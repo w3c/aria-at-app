@@ -1,0 +1,20 @@
+{
+  "name": "aria-at-report",
+  "version": "1.0.0",
+  "description": "Run ARIA-AT tests and report results",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bocoup/aria-at-report.git"
+  },
+  "author": "",
+  "license": "SEE LICENSE IN LICENSE.md",
+  "bugs": {
+    "url": "https://github.com/bocoup/aria-at-report/issues"
+  },
+  "homepage": "https://github.com/bocoup/aria-at-report#readme",
+  "dependencies": {}
+}
