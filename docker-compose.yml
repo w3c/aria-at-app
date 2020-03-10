@@ -1,0 +1,23 @@
+version: '3'
+
+services:
+    api:
+        build: .
+        volumes:
+            - ./server:/usr/src/server:rw
+            - ./node_modules:/usr/src/node_modules:rw
+        working_dir: "/usr/src/server"
+        env_file:
+            - ./config/dev.env
+        ports:
+            - "5000:5000"
+        command: "yarn dev"
+    app:
+        build: .
+        volumes:
+            - ./client:/usr/src/client:rw
+            - ./node_modules:/usr/src/node_modules:rw
+        ports:
+            - "3000:3000"
+        working_dir: "/usr/src/client"
+        command: "yarn dev"

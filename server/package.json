@@ -1,25 +1,23 @@
 {
-  "name": "aria-at-report",
+  "name": "server",
   "version": "1.0.0",
-  "description": "Run ARIA-AT tests and report results",
-  "main": "server/index.js",
-  "private": true,
+  "description": "Server for ARIA-AT report",
+  "main": "index.js",
   "scripts": {
-    "dev": "docker-compose up"
+    "dev": "nodemon --watch index.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/bocoup/aria-at-report.git"
   },
-  "author": "",
   "license": "SEE LICENSE IN LICENSE.md",
   "bugs": {
     "url": "https://github.com/bocoup/aria-at-report/issues"
   },
   "homepage": "https://github.com/bocoup/aria-at-report#readme",
-  "dependencies": {},
-  "workspaces": [
-    "client",
-    "server"
-  ]
+  "dependencies": {
+    "express": "^4.17.1",
+    "nodemon": "1.19.1"
+  },
+  "devDependencies": {}
 }
