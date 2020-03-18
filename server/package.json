@@ -4,7 +4,8 @@
   "description": "Server for ARIA-AT report",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon --watch index.js"
+    "dev": "nodemon server.js --watch",
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -19,5 +20,8 @@
     "express": "^4.17.1",
     "nodemon": "1.19.1"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "jest": "^25.1.0",
+    "supertest": "^4.0.2"
+  }
 }

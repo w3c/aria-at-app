@@ -1,6 +1,8 @@
 # Local Development for ARIA-AT Report
 
 ## Dependencies
+- Node
+  - Version 10.10.0 or greater
 - Yarn
   Yarn is resposible for installing dependencies, similar to npm. This project is utilizing yarn workspaces to organize the code into a monorepo structure.
   - macOS
@@ -18,6 +20,15 @@
      - See [docker-compose documentation](https://docs.docker.com/compose/install/).
 
 ## Running local application
+
+### Install Dependencies with Yarn
+Before running the application or its testing environment, make sure to install all dependencies with the following:
+```
+yarn install
+```
+
+### Local Environment with Docker
+
 The local application uses Docker Compose to create two containers, one for the API server and one for the React application. In these containers, docker will install the appriopriate node packages and run both services. Changes in your working directory will be hot reloaded into the docker containers.
 
 Docker Compose is only meant to be used in local development. A separate process for staging and production will be used.
@@ -27,3 +38,38 @@ yarn dev  // Runs dev server
 ```
 
 Now you can navigate your browser to: http://0.0.0.0:3000/
+
+## Testing
+React application tests are located in `client/tests`. Express server tests are located in `server/tests`.
+
+### Install Dependencies with Yarn
+Before running the application or its testing environment, make sure to install all dependencies with the following:
+```
+yarn install
+```
+
+### Running tests locally
+
+#### Manually
+The following command will run all the tests once.
+```
+yarn test
+```
+
+If running the tests on demand, in a hot-loaded way, run the following for each workspace with the --watchAll command. The downside to this approach is that separate terminals have to be used to run each command.
+```
+# Run all client tests and watch for changes
+yarn workspace client test --watchAll
+
+# Run all server tests and watch from changes
+yarn workspace server test --watchAll
+```
+
+#### *Beta*: Watch all client and server tests in a single window using docker
+All the client and server tests can be run in a docker container with the following:
+```
+yarn testAll
+```
+*The downside to this is that the tests only register changes about every 10 seconds. It is very slow.*
+
+To edit the docker test configuration, modify `docker-compose.test.yml`.
