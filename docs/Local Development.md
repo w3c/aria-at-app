@@ -2,7 +2,7 @@
 
 ## Dependencies
 - Node
-  - Version 10.10.0 or greater
+  - Version 10.13.0 or greater
 - Yarn
   Yarn is resposible for installing dependencies, similar to npm. This project is utilizing yarn workspaces to organize the code into a monorepo structure.
   - macOS
@@ -40,7 +40,12 @@ yarn dev  // Runs dev server
 Now you can navigate your browser to: http://0.0.0.0:3000/
 
 ## Testing
-React application tests are located in `client/tests`. Express server tests are located in `server/tests`.
+
+### Running all tests in a single pass
+The following command encompasses running the linter, formatter, and testing suite only once.
+```
+yarn test
+```
 
 ### Install Dependencies with Yarn
 Before running the application or its testing environment, make sure to install all dependencies with the following:
@@ -48,24 +53,38 @@ Before running the application or its testing environment, make sure to install 
 yarn install
 ```
 
+### Linting and formatting
+* Code linting is performed by **ESLint**. To manually run ESLint:
+```
+yarn lint
+```
+* Code formatting is performed by **Prettier**. To manually run Prettier:
+```
+yarn prettier
+```
 ### Running tests locally
+* React application tests are located in `client/tests`. 
+* Express server tests are located in `server/tests`.
+* Both the client and server side user **Jest** for testing.
+  * The client side, additionally, uses **Enzyme** to test React output
+  * The server side, additionally, user **Supertest** to test HTTP integration
 
-#### Manually
+#### Manually Running Jest
 The following command will run all the tests once.
 ```
-yarn test
+yarn jest
 ```
 
 If running the tests on demand, in a hot-loaded way, run the following for each workspace with the --watchAll command. The downside to this approach is that separate terminals have to be used to run each command.
 ```
 # Run all client tests and watch for changes
-yarn workspace client test --watchAll
+yarn workspace client jest --watchAll
 
 # Run all server tests and watch from changes
-yarn workspace server test --watchAll
+yarn workspace server jest --watchAll
 ```
 
-#### *Beta*: Watch all client and server tests in a single window using docker
+### *Beta*: Watch all client and server tests in a single window using docker
 All the client and server tests can be run in a docker container with the following:
 ```
 yarn testAll
