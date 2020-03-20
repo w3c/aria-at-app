@@ -92,3 +92,6 @@ yarn testAll
 *The downside to this is that the tests only register changes about every 10 seconds. It is very slow.*
 
 To edit the docker test configuration, modify `docker-compose.test.yml`.
+
+## Best Practices
+* Before submitting a pull request, please run `yarn test` to ensure formatting, linting, and passing tests. The CI system will pick up on failing tests, in addition to local testing.
