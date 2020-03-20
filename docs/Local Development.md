@@ -21,6 +21,10 @@
 
 ## Running local application
 
+### Set up local database
+
+Follow the instructions provided in [Database.md](https://github.com/bocoup/aria-at-report/blob/master/docs/Database.md).
+
 ### Install Dependencies with Yarn
 Before running the application or its testing environment, make sure to install all dependencies with the following:
 ```
