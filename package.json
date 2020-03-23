@@ -12,7 +12,8 @@
     "lint": "yarn workspaces run lint",
     "test": "yarn prettier; yarn lint; yarn jest",
     "db-init:dev": "bash db/scripts/db_init.sh dev",
-    "db-migrate:dev": "bash db/scripts/db_migrate.sh config/dev.env"
+    "db-migrate:dev": "bash db/scripts/db_migrate.sh config/dev.env",
+    "storybook": "yarn workspaces run storybook"
   },
   "repository": {
     "type": "git",
