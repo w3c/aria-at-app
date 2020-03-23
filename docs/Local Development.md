@@ -43,6 +43,19 @@ yarn dev  // Runs dev server
 
 Now you can navigate your browser to: http://0.0.0.0:3000/
 
+## Sandboxing UI Components with Storybook
+Client side React UI components can be prototyped on [Storybook](https://storybook.js.org/). Storybook is a tool that allows developers to create components outside of the overall application system.
+
+The following command runs the storybook server:
+```
+yarn storybook
+```
+
+If Storybook components will be shared as static files, run:
+```
+yarn workspace client build-storybook
+```
+
 ## Testing
 
 ### Running all tests in a single pass
