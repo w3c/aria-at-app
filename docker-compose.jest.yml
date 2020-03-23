@@ -1,0 +1,7 @@
+version: '3'
+
+services:
+    api:
+        command: "yarn jest --watchAll"
+    app:
+        command: "yarn jest --watchAll"

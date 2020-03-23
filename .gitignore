@@ -105,3 +105,6 @@ dist
 
 # Storybook Static
 storybook-static
+
+# Lighthouse
+.lighthouseci

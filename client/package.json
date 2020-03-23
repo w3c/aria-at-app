@@ -10,7 +10,8 @@
     "prettier": "prettier --write \"**/*.{js,jsx,css}\"",
     "lint": "eslint --ext js,jsx .",
     "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook"
+    "build-storybook": "build-storybook",
+    "lighthouse": "lhci autorun"
   },
   "repository": {
     "type": "git",
@@ -30,6 +31,7 @@
     "@storybook/addon-links": "^5.3.17",
     "@storybook/addons": "^5.3.17",
     "@storybook/react": "^5.3.17",
+    "@lhci/cli": "^0.3.12",
     "babel-jest": "^25.1.0",
     "babel-loader": "^8.0.6",
     "babel-polyfill": "^6.26.0",

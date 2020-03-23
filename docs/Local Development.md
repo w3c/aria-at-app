@@ -59,7 +59,7 @@ yarn workspace client build-storybook
 ## Testing
 
 ### Running all tests in a single pass
-The following command encompasses running the linter, formatter, and testing suite only once.
+The following command encompasses running the linter, formatter, Jest tests, and Lighthouse accessibility checks only once.
 ```
 yarn test
 ```
@@ -101,14 +101,20 @@ yarn workspace client jest --watchAll
 yarn workspace server jest --watchAll
 ```
 
-### *Beta*: Watch all client and server tests in a single window using docker
+### *Beta*: Watch all client and server Jest tests in a single window using docker
 All the client and server tests can be run in a docker container with the following:
 ```
-yarn testAll
+yarn jestAll
 ```
 *The downside to this is that the tests only register changes about every 10 seconds. It is very slow.*
 
 To edit the docker test configuration, modify `docker-compose.test.yml`.
+
+### Running accessibility tests
+[Lighthouse CI](https://github.com/GoogleChrome/lighthouse-ci) is used for automated accessibility testing of the React application. It has also been integrated into the CI workflow To run the Lighthouse tests, run:
+```
+yarn a11y
+```
 
 ## Best Practices
 * Before submitting a pull request, please run `yarn test` to ensure formatting, linting, and passing tests. The CI system will pick up on failing tests, in addition to local testing.
