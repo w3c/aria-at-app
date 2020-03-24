@@ -15,6 +15,7 @@ yarn db-init:dev
 ```
 
 ## Run database migrations
+Every time a new migration file is added, Flyway must be run again to apply the migration.
 
 ### Dev
 ```
