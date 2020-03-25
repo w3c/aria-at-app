@@ -40,9 +40,10 @@ yarn db-migrate:dev
 
 To connect to the Postgres table locally, export these variables:
 ```
-PGDATABASE=aria_at_report
-PGUSER=atr
-PGPASSWORD=atr
-PGHOST=localhost
-PGPORT=5432
+export PGDATABASE=aria_at_report
+export PGUSER=atr
+export PGPASSWORD=atr
+export PGHOST=localhost
+export PGPORT=5432
+export ROOTUSER=$USER
 ```
