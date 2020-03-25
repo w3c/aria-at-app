@@ -4,7 +4,7 @@
   "description": "Server for ARIA-AT report",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon server.js --watch",
+    "dev": "export $(cat ../config/dev.env); nodemon server.js --watch",
     "jest": "jest",
     "prettier": "prettier --write \"**/*.{js,jsx,css}\"",
     "lint": "eslint --ext js,jsx ."
@@ -19,8 +19,12 @@
   },
   "homepage": "https://github.com/bocoup/aria-at-report#readme",
   "dependencies": {
+    "dotenv": "^8.2.0",
     "express": "^4.17.1",
-    "nodemon": "1.19.1"
+    "nodemon": "1.19.1",
+    "pg": "^7.18.2",
+    "pg-hstore": "^2.3.3",
+    "sequelize": "^5.21.5"
   },
   "devDependencies": {
     "eslint": "^6.8.0",
@@ -30,6 +34,7 @@
     "eslint-plugin-prettier": "^3.1.2",
     "eslint-plugin-react": "^7.19.0",
     "jest": "^25.1.0",
+    "node-mocks-http": "^1.8.1",
     "prettier": "^1.19.1",
     "supertest": "^4.0.2"
   }
