@@ -47,15 +47,18 @@ CREATE TABLE browser_version (
   release_order    int
 );
 
-CREATE TABLE apg_example (
-  id          serial primary key,
-  name        text
-);
-
 CREATE TABLE test_version (
   id          serial primary key,
   git_repo    text,
-  git_tag     text
+  git_tag     text,
+  git_hash    text,
+  datetime    timestamp
+);
+
+CREATE TABLE apg_example (
+  id          serial primary key,
+  name        text,
+  test_version_id int not null references test_version(id)
 );
 
 CREATE TABLE test (
