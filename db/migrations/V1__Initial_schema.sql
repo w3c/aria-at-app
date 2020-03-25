@@ -1,7 +1,6 @@
 CREATE TABLE users (
   id          serial primary key,
-  first_name  text,
-  last_name   text,
+  fullname    text,
   username    text,
   email       text
 );
@@ -19,6 +18,7 @@ CREATE TABLE user_to_role (
 
 CREATE TABLE at (
   id          serial primary key,
+  key         text,
   name        text
 );
 
@@ -57,6 +57,7 @@ CREATE TABLE test_version (
 
 CREATE TABLE apg_example (
   id          serial primary key,
+  directory   text,
   name        text,
   test_version_id int not null references test_version(id)
 );
