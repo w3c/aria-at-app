@@ -1,14 +1,9 @@
 const { Router } = require('express');
+const post = require('../../tests/util/post');
 
 const router = Router();
 
-router.post('/', (req, res) => {
-    // eslint-disable-next-line no-unused-vars
-    return new Promise((resolve, reject) => {
-        const newUser = req.body;
-        res.status(201).send(newUser);
-        resolve();
-    });
-});
+router.post('/', post);
+router.post('/role', post);
 
 module.exports = router;
