@@ -21,4 +21,23 @@ const Users = sequelize.define(
     }
 );
 
-module.exports = Users;
+const UserToRole = sequelize.define(
+    'UserToRole',
+    {
+        user_id: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
+        role_id: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        }
+    },
+    {
+        tableName: 'user_to_role',
+        createdAt: false,
+        updatedAt: false
+    }
+);
+
+module.exports = { Users, UserToRole };

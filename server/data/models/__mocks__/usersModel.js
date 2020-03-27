@@ -1,10 +1,10 @@
+const create = require('../../../tests/util/create');
+
 const Users = {
-    create: user => {
-        // eslint-disable-next-line no-unused-vars
-        return new Promise((resolve, reject) => {
-            resolve(user);
-        });
-    }
+    create
+};
+const UserToRole = {
+    create
 };
 
-module.exports = Users;
+module.exports = { Users, UserToRole };
