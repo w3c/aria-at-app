@@ -11,13 +11,6 @@
     ```
   - Linux
     - See [yarn documentation](https://classic.yarnpkg.com/en/docs/install/#debian-stable)
-- docker
-  - Linux
-    - See [docker documentation](https://docs.docker.com/install/linux/docker-ce/debian/#install-docker-ce) (make sure to follow the instructions for the appropriate linux repository).
-    - Yarn will run docker NOT as root, so you also must follow [these instructions](https://docs.docker.com/install/linux/linux-postinstall/) to create the user group "docker" and add your user to it.
-- docker-compose
-   - Linux
-     - See [docker-compose documentation](https://docs.docker.com/compose/install/).
 
 ## Running local application
 
@@ -31,12 +24,7 @@ Before running the application or its testing environment, make sure to install 
 yarn install
 ```
 
-### Local Environment with Docker
-
-The local application uses Docker Compose to create two containers, one for the API server and one for the React application. In these containers, docker will install the appriopriate node packages and run both services. Changes in your working directory will be hot reloaded into the docker containers.
-
-Docker Compose is only meant to be used in local development. A separate process for staging and production will be used.
-
+### Local Environment
 ```
 yarn dev  // Runs dev server
 ```
@@ -100,15 +88,6 @@ yarn workspace client jest --watchAll
 # Run all server tests and watch from changes
 yarn workspace server jest --watchAll
 ```
-
-### *Beta*: Watch all client and server Jest tests in a single window using docker
-All the client and server tests can be run in a docker container with the following:
-```
-yarn jestAll
-```
-*The downside to this is that the tests only register changes about every 10 seconds. It is very slow.*
-
-To edit the docker test configuration, modify `docker-compose.test.yml`.
 
 ### Running accessibility tests
 [Lighthouse CI](https://github.com/GoogleChrome/lighthouse-ci) is used for automated accessibility testing of the React application. It has also been integrated into the CI workflow To run the Lighthouse tests, run:
