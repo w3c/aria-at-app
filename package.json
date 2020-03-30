@@ -6,9 +6,10 @@
   "private": true,
   "scripts": {
     "a11y": "yarn workspace client lighthouse",
-    "dev": "docker-compose up",
+    "dev": "npm-run-all --parallel dev:*",
+    "dev:client": "yarn workspace client run dev",
+    "dev:server": "yarn workspace server run dev",
     "jest": "yarn workspaces run jest",
-    "jestAll": "docker-compose -f docker-compose.yml -f docker-compose.jest.yml up",
     "prettier": "yarn workspaces run prettier",
     "lint": "yarn workspaces run lint",
     "test": "yarn prettier; yarn lint; yarn jest; yarn workspace client lighthouse",
@@ -30,5 +31,8 @@
   "workspaces": [
     "client",
     "server"
-  ]
+  ],
+  "devDependencies": {
+    "npm-run-all": "^4.1.5"
+  }
 }
