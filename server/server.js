@@ -14,7 +14,7 @@ global.sequelize = new Sequelize(
         logging: console.log // eslint-disable-line no-console
     }
 );
-const listener = require('./app');
+const { listener } = require('./app');
 const port = process.env.PORT || 5000;
 
 listener.listen(port, () => {
