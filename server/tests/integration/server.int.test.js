@@ -3,13 +3,6 @@ const listener = require('../../app');
 
 const endpointUrl = '/api';
 
-describe(endpointUrl, () => {
-    it(`GET ${endpointUrl}`, async () => {
-        const response = await request(listener).get(endpointUrl);
-        expect(response.statusCode).toBe(200);
-    });
-});
-
 const userEndpoint = `${endpointUrl}/user`;
 const newUser = require('../mock-data/newUser.json');
 const newUserToRole = require('../mock-data/newUserToRole.json');
