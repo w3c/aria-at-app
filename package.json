@@ -12,7 +12,7 @@
     "jest": "yarn workspaces run jest",
     "prettier": "yarn workspaces run prettier",
     "lint": "yarn workspaces run lint",
-    "test": "yarn prettier; yarn lint; yarn jest; yarn workspace client lighthouse",
+    "test": "set -e; yarn prettier; yarn lint; yarn jest; yarn workspace client lighthouse",
     "db-init:dev": "bash db/scripts/db_init.sh dev",
     "db-migrate:dev": "bash db/scripts/db_migrate.sh config/dev.env",
     "storybook": "yarn workspaces run storybook"
