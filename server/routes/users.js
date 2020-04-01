@@ -1,9 +1,12 @@
 const { Router } = require('express');
-const UsersController = require('../data/controllers/usersController');
+const {
+    addUser,
+    addUserToRole
+} = require('../data/controllers/UsersController');
 
 const router = Router();
 
-router.post('/', UsersController.addUser);
-router.post('/role', UsersController.addUserToRole);
+router.put('/', addUser);
+router.post('/role', addUserToRole);
 
 module.exports = router;

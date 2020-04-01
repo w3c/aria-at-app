@@ -1,7 +1,7 @@
-const { Users, UserToRole } = require('../models/usersModel');
+const { Users, UserToRole } = require('../models/UsersModel');
 
-class UsersService {
-    static async addUser(user) {
+module.exports = {
+    async addUser(user) {
         try {
             const newUser = await Users.create(user);
             return newUser;
@@ -9,9 +9,9 @@ class UsersService {
             console.error(`Error: ${error}`);
             throw error;
         }
-    }
+    },
 
-    static async addUserToRole(userToRole) {
+    async addUserToRole(userToRole) {
         try {
             const newUserToRole = await UserToRole.create(userToRole);
             return newUserToRole;
@@ -20,6 +20,4 @@ class UsersService {
             throw error;
         }
     }
-}
-
-module.exports = UsersService;
+};

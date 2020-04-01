@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/bocoup/aria-at-report#readme",
   "dependencies": {
+    "axios": "^0.19.2",
     "connect-pg-simple": "^6.1.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
@@ -39,6 +40,7 @@
     "eslint-plugin-prettier": "^3.1.2",
     "eslint-plugin-react": "^7.19.0",
     "jest": "^25.1.0",
+    "moxios": "^0.4.0",
     "node-mocks-http": "^1.8.1",
     "prettier": "^1.19.1",
     "supertest": "^4.0.2"

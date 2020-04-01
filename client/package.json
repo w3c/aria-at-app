@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "webpack-dev-server --mode development",
-    "build": "webpack --mode production",
+    "build": "webpack --config webpack.prod.js",
     "jest": "jest",
     "prettier": "prettier --write \"**/*.{js,jsx,css}\"",
     "lint": "eslint --ext js,jsx .",
@@ -21,17 +21,23 @@
   "bugs": {
     "url": "https://github.com/bocoup/aria-at-report/issues"
   },
+  "jest": {
+    "moduleNameMapper": {
+      "@components(.*)$": "<rootDir>/components/$1"
+    }
+  },
   "homepage": "https://github.com/bocoup/aria-at-report#readme",
   "dependencies": {},
   "devDependencies": {
+    "@babel/code-frame": "^7.8.3",
     "@babel/core": "^7.8.7",
     "@babel/preset-env": "^7.8.7",
     "@babel/preset-react": "^7.8.3",
+    "@lhci/cli": "^0.3.12",
     "@storybook/addon-actions": "^5.3.17",
     "@storybook/addon-links": "^5.3.17",
     "@storybook/addons": "^5.3.17",
     "@storybook/react": "^5.3.17",
-    "@lhci/cli": "^0.3.12",
     "babel-jest": "^25.1.0",
     "babel-loader": "^8.0.6",
     "babel-polyfill": "^6.26.0",
@@ -47,9 +53,12 @@
     "jest": "^25.1.0",
     "jest-enzyme": "^7.1.2",
     "prettier": "^1.19.1",
+    "prop-types": "^15.7.2",
     "react": "^16.13.0",
     "react-dom": "^16.13.0",
+    "react-router-config": "^5.1.1",
     "react-router-dom": "^5.1.2",
+    "reakit": "^1.0.0-rc.0",
     "webpack": "^4.42.0",
     "webpack-cli": "^3.3.11",
     "webpack-dev-server": "^3.10.3"

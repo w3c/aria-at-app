@@ -4,8 +4,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
     entry: ['babel-polyfill', './index.js'],
-    mode: 'development',
-    devtool: 'inline-source-map',
+    mode: 'production',
     module: {
         rules: [
             {
@@ -31,20 +30,6 @@ module.exports = {
         },
         extensions: ['*', '.js', '.jsx']
     },
-    devServer: {
-        contentBase: path.join(__dirname, 'static'),
-        port: process.env.CLIENT_PORT || 3000,
-        publicPath: '/',
-        historyApiFallback: true,
-        hotOnly: true,
-        proxy: {
-            '/api': 'http://localhost:5000/'
-        },
-        watchOptions: {
-            aggregateTimeout: 300,
-            poll: 1000
-        }
-    },
     plugins: [
         new CopyWebpackPlugin([
             {
@@ -54,5 +39,10 @@ module.exports = {
         new webpack.DefinePlugin({
             'process.env.API_SERVER': JSON.stringify(process.env.API_SERVER)
         })
-    ]
+    ],
+    performance: {
+        hints: false,
+        maxEntrypointSize: 512000,
+        maxAssetSize: 512000
+    }
 };
