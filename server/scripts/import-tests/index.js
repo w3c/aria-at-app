@@ -194,7 +194,7 @@ const ariaat = {
         );
         let atKeyID = atKeyResult.rowCount ? atKeyResult.rows[0].id : undefined;
         if (!atKeyID) {
-            atKeyID = await client.query(
+            atKeyID = await this.insertRowReturnId(
                 'INSERT INTO at(key, at_name_id, test_version_id) VALUES($1, $2, $3) RETURNING id',
                 [atKey, atNameID, testVersionID]
             );
