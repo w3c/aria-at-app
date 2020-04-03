@@ -40,4 +40,43 @@ const UserToRole = sequelize.define(
     }
 );
 
-module.exports = { Users, UserToRole };
+const TesterToRun = sequelize.define(
+    'TesterToRun',
+    {
+        user_id: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
+        run_id: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        }
+    },
+    {
+        tableName: 'tester_to_run',
+        createdAt: false,
+        updatedAt: false
+    }
+);
+
+const UserToAt = sequelize.define(
+    'UserToAt',
+    {
+        user_id: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
+        at_name_id: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        }
+    },
+    {
+        tableName: 'user_to_at',
+        createdAt: false,
+        updatedAt: false
+    }
+);
+
+
+module.exports = { Users, UserToRole, TesterToRun, UserToAt };
