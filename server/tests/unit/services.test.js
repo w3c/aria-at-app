@@ -1,10 +1,10 @@
 const moxios = require('moxios');
-const UsersService = require('../../../data/services/UsersService');
-const GithubService = require('../../../data/services/GithubService');
+const UsersService = require('../../services/UsersService');
+const GithubService = require('../../services/GithubService');
 
-const newUser = require('../../mock-data/newUser.json');
-const newUserToRole = require('../../mock-data/newUserToRole.json');
-jest.mock('../../../data/models/UsersModel');
+const newUser = require('../mock-data/newUser.json');
+const newUserToRole = require('../mock-data/newUserToRole.json');
+jest.mock('../../models/UsersModel');
 describe('UsersService', () => {
     describe('UsersService.addUser', () => {
         it('should have a addUser function', () => {

@@ -1,4 +1,4 @@
-const create = require('../../../tests/util/create');
+const create = require('../../tests/util/create');
 
 const UsersService = {
     addUser: create,
