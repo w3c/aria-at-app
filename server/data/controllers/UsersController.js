@@ -1,7 +1,7 @@
-const UsersService = require('../services/usersService');
+const UsersService = require('../services/UsersService');
 
-class UsersController {
-    static async addUser(req, res) {
+module.exports = {
+    async addUser(req, res) {
         const user = req.body;
         try {
             const createdUser = await UsersService.addUser(user);
@@ -9,8 +9,8 @@ class UsersController {
         } catch (error) {
             res.status(400);
         }
-    }
-    static async addUserToRole(req, res) {
+    },
+    async addUserToRole(req, res) {
         const userToRole = req.body;
         try {
             const createdUser = await UsersService.addUserToRole(userToRole);
@@ -19,6 +19,4 @@ class UsersController {
             res.status(400);
         }
     }
-}
-
-module.exports = UsersController;
+};

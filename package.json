@@ -6,7 +6,7 @@
   "private": true,
   "scripts": {
     "a11y": "yarn workspace client lighthouse",
-    "dev": "npm-run-all --parallel dev:*",
+    "dev": "export $(cat config/dev.env); npm-run-all --parallel dev:*",
     "dev:client": "yarn workspace client run dev",
     "dev:server": "yarn workspace server run dev",
     "jest": "yarn workspaces run jest",
