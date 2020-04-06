@@ -1,5 +1,5 @@
-const UsersController = require('../../../data/controllers/UsersController');
-const AuthController = require('../../../data/controllers/AuthController');
+const UsersController = require('../../controllers/UsersController');
+const AuthController = require('../../controllers/AuthController');
 const httpMocks = require('node-mocks-http');
 
 let req, res, next;
@@ -10,9 +10,9 @@ beforeEach(() => {
     next = null;
 });
 
-const newUser = require('../../mock-data/newUser.json');
-const newUserToRole = require('../../mock-data/newUserToRole.json');
-jest.mock('../../../data/services/UsersService');
+const newUser = require('../mock-data/newUser.json');
+const newUserToRole = require('../mock-data/newUserToRole.json');
+jest.mock('../../services/UsersService');
 describe('UsersController', () => {
     describe('UsersController.addUser', () => {
         beforeEach(() => {
@@ -53,7 +53,7 @@ describe('UsersController', () => {
     });
 });
 
-jest.mock('../../../data/services/GithubService');
+jest.mock('../../services/GithubService');
 describe('AuthController', () => {
     let req;
     beforeEach(() => {

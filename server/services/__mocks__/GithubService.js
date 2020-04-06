@@ -1,4 +1,4 @@
-const authorize = require('../../../tests/util/create');
+const authorize = require('../../tests/util/create');
 
 const GithubService = {
     url: 'localhost:5000/login',

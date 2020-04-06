@@ -8,6 +8,7 @@ module.exports = {
             res.status(201).json(createdUser);
         } catch (error) {
             res.status(400);
+            res.end();
         }
     },
     async addUserToRole(req, res) {
@@ -17,6 +18,7 @@ module.exports = {
             res.status(201).json(createdUser);
         } catch (error) {
             res.status(400);
+            res.end();
         }
     }
 };
