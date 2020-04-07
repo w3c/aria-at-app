@@ -78,5 +78,4 @@ const UserToAt = sequelize.define(
     }
 );
 
-
 module.exports = { Users, UserToRole, TesterToRun, UserToAt };

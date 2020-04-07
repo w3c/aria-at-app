@@ -1,16 +1,19 @@
 const { Router } = require('express');
-const { addUser, addUserToRole } = require('../controllers/UsersController');
+const UsersController = require('../controllers/UsersController');
 
 const router = Router();
 
-router.put('/', addUser);
-router.post('/role', addUserToRole);
+// Add new user
+router.put('/', UsersController.addUser);
 
-router.post('/assigntorun', UsersController.assignUsersToRun);
-router.post('/removefromrun', UsersController.removeUsersFromRun);
+// Add user to role
+router.post('/role', UsersController.addUserToRole);
 
-// This will return all the testers configurations
-// So, which testers can test which platform
-router.post('/config', UsersController.getAllTesters);
+// Add or delete list of users to run
+router.post('/run', UsersController.assignUsersToRun);
+router.delete('/run', UsersController.removeUsersFromRun);
+
+// Get tester configurations for all users
+router.get('/config', UsersController.getAllTesters);
 
 module.exports = router;
