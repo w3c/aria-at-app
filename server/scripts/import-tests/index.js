@@ -119,12 +119,13 @@ const ariaat = {
                         for (let at of ats) {
                             // for a title that includes "switches mode", the test is of mode switching,
                             // which only occurs for NVDA and JAWS
-                            if (testFullName.indexOf('switches mode') >= 0 && at.key === 'voiceover') continue;
+                            if (
+                                testFullName.indexOf('switches mode') >= 0 &&
+                                at.key === 'voiceover'
+                            )
+                                continue;
 
-                            await this.upsertTestToAt(
-                                testID,
-                                at.atID
-                            );
+                            await this.upsertTestToAt(testID, at.atID);
                         }
                     }
                 }
@@ -167,9 +168,10 @@ const ariaat = {
      * @return {int} id
      */
     async upsertAtName(atName) {
-        const atResult = await client.query('SELECT id FROM at_name WHERE name=$1', [
-            atName
-        ]);
+        const atResult = await client.query(
+            'SELECT id FROM at_name WHERE name=$1',
+            [atName]
+        );
         let atNameID = atResult.rowCount ? atResult.rows[0].id : undefined;
         if (!atNameID) {
             atNameID = await this.insertRowReturnId(
@@ -259,7 +261,9 @@ const ariaat = {
             'SELECT id FROM test_to_at WHERE test_id=$1 AND at_id=$2',
             [testID, atID]
         );
-        let testToAtID = testToAtResult.rowCount ? testToAtResult.rows[0].id : undefined;
+        let testToAtID = testToAtResult.rowCount
+            ? testToAtResult.rows[0].id
+            : undefined;
         if (!testToAtID) {
             testToAtID = await this.insertRowReturnId(
                 'INSERT INTO test_to_at(test_id, at_id) VALUES($1, $2) RETURNING id',
@@ -267,7 +271,6 @@ const ariaat = {
             );
         }
     },
-
 
     async insertRowReturnId(query, params) {
         let result;
