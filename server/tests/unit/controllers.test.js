@@ -85,4 +85,21 @@ describe('AuthController', () => {
             expect(res._isEndCalled()).toBeTruthy();
         });
     });
+    describe('AuthController.currentUser', () => {
+        it('should have an currentUser function', () => {
+            expect(typeof AuthController.currentUser).toBe('function');
+        });
+        it('should return 401 response code if there is no user in the session', async () => {
+            await AuthController.currentUser(req, res, next);
+            expect(res.statusCode).toBe(401);
+            expect(res._isEndCalled()).toBeTruthy();
+        });
+        it('should return 200 response code with user in the session', async () => {
+            const user = { name: 'Foo Bar', username: 'foobar' };
+            req.session.user = user;
+            await AuthController.currentUser(req, res, next);
+            expect(res.statusCode).toBe(200);
+            expect(res._getJSONData()).toStrictEqual(user);
+        });
+    });
 });
