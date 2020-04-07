@@ -16,5 +16,27 @@ module.exports = {
             }
         );
         return response.data.access_token;
+    },
+    async getUser(options) {
+        if (typeof options === 'undefined' || !('accessToken' in options)) {
+            throw new Error('Not authorized.');
+        }
+        const graphQLEndpoint = 'https://api.github.com/graphql';
+        const query = '{ viewer { login name } }';
+        const response = await axios.post(
+            graphQLEndpoint,
+            {
+                query
+            },
+            {
+                headers: { Authorization: `bearer ${options.accessToken}` }
+            }
+        );
+        const {
+            data: {
+                viewer: { login, name }
+            }
+        } = response.data;
+        return { username: login, name };
     }
 };

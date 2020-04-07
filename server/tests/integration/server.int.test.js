@@ -8,6 +8,9 @@ const authEndpoint = `${endpointUrl}/auth`;
 const newUser = require('../mock-data/newUser.json');
 const newUserToRole = require('../mock-data/newUserToRole.json');
 
+// mock the models to circumvent the actual database
+jest.mock('../../models/UsersModel');
+
 // mocking the middleware used by the express app
 const session = require('../../middleware/session.js');
 jest.mock('../../middleware/session.js', () =>
@@ -66,5 +69,9 @@ describe(authEndpoint, () => {
             `${authEndpoint}/authorize?code=12345&service=github`
         );
         expect(response.statusCode).toBe(303);
+    });
+    it(`GET ${authEndpoint}/me`, async () => {
+        const response = await request(listener).get(`${authEndpoint}/me`);
+        expect(response.statusCode).toBe(200);
     });
 });

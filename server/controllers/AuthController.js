@@ -20,8 +20,26 @@ module.exports = {
         const authService =
             services[`${service}Service`] || services.GithubService;
         req.session.accessToken = await authService.authorize(code);
-        res.redirect(303, req.session.referer);
+        try {
+            req.session.user = await authService.getUser({
+                accessToken: req.session.accessToken
+            });
+        } catch (error) {
+            res.status(401);
+            res.end();
+        }
+        res.redirect(303, `${req.session.referer}?login=true`);
         delete req.session.referer;
+        res.end();
+    },
+
+    currentUser(req, res) {
+        const { user } = req.session;
+        if (user) {
+            res.status(200).json(user);
+        } else {
+            res.status(401);
+        }
         res.end();
     }
 };

@@ -63,4 +63,37 @@ describe('GithubService', () => {
             await expect(accessToken).toBe(token);
         });
     });
+    describe('GithubService.getUser', () => {
+        it('should have a getUser function', () => {
+            expect(typeof GithubService.getUser).toBe('function');
+        });
+        it('should fail where there is no accessToken option', async () => {
+            await expect(GithubService.getUser()).rejects.toThrow();
+        });
+        it('should return', async () => {
+            const options = { accessToken: '123456' };
+            const responseObj = {
+                data: {
+                    viewer: {
+                        login: 'evmiguel',
+                        name: 'Erika Miguel'
+                    }
+                }
+            };
+            const userObj = {
+                username: 'evmiguel',
+                name: 'Erika Miguel'
+            };
+            moxios.wait(() => {
+                const request = moxios.requests.mostRecent();
+                request.respondWith({
+                    status: 200,
+                    response: responseObj
+                });
+            });
+
+            const received = await GithubService.getUser(options);
+            expect(received).toEqual(userObj);
+        });
+    });
 });
