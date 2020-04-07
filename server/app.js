@@ -13,7 +13,6 @@ app.use('/auth', authRoutes);
 app.use('/user', userRoutes);
 app.use('/cycle', cycleRoutes);
 
-
 const listener = express();
 listener.use('/api', app);
 
