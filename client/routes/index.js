@@ -2,6 +2,7 @@ import App from '@components/App';
 import Login from '@components/Login';
 import UserSettings from '@components/UserSettings';
 import ManageCycles from '@components/ManageCycles';
+import InitiateCycle from '@components/InitiateCycle';
 
 export default [
     {
@@ -22,6 +23,11 @@ export default [
                 path: '/cycles',
                 exact: true,
                 component: ManageCycles
+            },
+            {
+                path: '/initiate-cycle',
+                exact: true,
+                component: InitiateCycle
             }
         ]
     }
