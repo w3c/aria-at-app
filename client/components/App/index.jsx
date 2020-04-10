@@ -12,7 +12,6 @@ class App extends Component {
     componentDidMount() {
         const { location, dispatch } = this.props;
         const { login } = queryString.parse(location.search);
-        console.log('COMPONENT DID MOUNT - APP');
 
         if (login) {
             dispatch(handleLogin());

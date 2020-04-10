@@ -1,5 +1,17 @@
 import axios from 'axios';
-import { CYCLES } from './types';
+import { CYCLES, DELETE_CYCLE } from './types';
+
+export function deleteCycle(id) {
+    return async function(dispatch) {
+        const response = await axios.delete('/api/cycle', {
+            id
+        });
+        dispatch({
+            type: DELETE_CYCLE,
+            payload: response.data
+        });
+    };
+}
 
 export function getTestCycles() {
     return async function(dispatch) {
