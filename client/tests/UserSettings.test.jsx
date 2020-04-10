@@ -57,7 +57,7 @@ describe('render', () => {
                 'user-settings-authorized'
             );
             expect(component.length).toBe(1);
-            expect(component.text()).toContain('Foo Bar');
+            expect(component.text()).toContain('USER DETAILS');
         });
     });
 });

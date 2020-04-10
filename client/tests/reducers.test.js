@@ -1,5 +1,6 @@
-import { CHECK_LOGGED_IN, LOG_OUT } from '../actions/types';
+import { CHECK_LOGGED_IN, LOG_OUT, ATS } from '../actions/types';
 import loginReducer from '../reducers/login';
+import atsReducer from '../reducers/ats';
 
 describe('login reducer tests', () => {
     test('returns default initial state when no action is passed', () => {
@@ -32,5 +33,20 @@ describe('login reducer tests', () => {
         });
 
         expect(newState).toEqual({ isLoggedIn: false });
+    });
+});
+
+describe('ats reducer tests', () => {
+    test('returns default initial state when no action is passed', () => {
+        const newState = atsReducer(undefined, {});
+        expect(newState).toEqual({ names: [] });
+    });
+    test('returns object upon receiving an action of type `ATS`', () => {
+        const apiPayload = { names: ['Foo', 'Bar'] };
+        const newState = atsReducer(undefined, {
+            type: ATS,
+            payload: apiPayload
+        });
+        expect(newState).toEqual({ names: ['Foo', 'Bar'] });
     });
 });

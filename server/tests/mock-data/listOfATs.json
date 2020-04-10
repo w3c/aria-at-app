@@ -1,0 +1,15 @@
+{
+    "atsDB": [
+        {
+            "id": 0,
+            "name": "Foo"
+        },
+        {
+            "id": 1,
+            "name": "Bar"
+        }
+    ],
+    "atNames": {
+        "names": [ "Foo", "Bar"]
+    }
+}

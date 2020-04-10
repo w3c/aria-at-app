@@ -1,5 +1,6 @@
 const UsersController = require('../../controllers/UsersController');
 const AuthController = require('../../controllers/AuthController');
+const ATController = require('../../controllers/ATController');
 const httpMocks = require('node-mocks-http');
 
 let req, res, next;
@@ -12,6 +13,7 @@ beforeEach(() => {
 
 const newUser = require('../mock-data/newUser.json');
 const newUserToRole = require('../mock-data/newUserToRole.json');
+const listOfATNames = require('../mock-data/listOfATs.json');
 jest.mock('../../services/UsersService');
 describe('UsersController', () => {
     describe('UsersController.addUser', () => {
@@ -114,6 +116,20 @@ describe('AuthController', () => {
             await AuthController.logout(req, res, next);
             expect(res.statusCode).toBe(200);
             expect(res._isEndCalled()).toBeTruthy();
+        });
+    });
+});
+
+jest.mock('../../services/ATService');
+describe('ATController', () => {
+    describe('ATController.getATNames', () => {
+        it('should have a getATNames function', () => {
+            expect(typeof ATController.getATNames).toBe('function');
+        });
+        it('should return 200 response code with a list of ATs', async () => {
+            await ATController.getATNames(req, res, next);
+            expect(res.statusCode).toBe(200);
+            expect(res._getJSONData()).toStrictEqual(listOfATNames.atNames);
         });
     });
 });

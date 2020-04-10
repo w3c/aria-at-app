@@ -1,7 +1,7 @@
 const axios = require('axios');
 
 module.exports = {
-    url: `https://github.com/login/oauth/authorize?client_id=${process.env.GITHUB_CLIENT_ID}`,
+    url: `https://github.com/login/oauth/authorize?scope=user:email&client_id=${process.env.GITHUB_CLIENT_ID}`,
     async authorize(code) {
         const redirectURL = 'https://github.com/login/oauth/access_token';
         const response = await axios.post(
@@ -22,7 +22,7 @@ module.exports = {
             throw new Error('Not authorized.');
         }
         const graphQLEndpoint = 'https://api.github.com/graphql';
-        const query = '{ viewer { login name } }';
+        const query = '{ viewer { login name email } }';
         const response = await axios.post(
             graphQLEndpoint,
             {
@@ -34,9 +34,9 @@ module.exports = {
         );
         const {
             data: {
-                viewer: { login, name }
+                viewer: { login, name, email }
             }
         } = response.data;
-        return { username: login, name };
+        return { username: login, name, email };
     }
 };
