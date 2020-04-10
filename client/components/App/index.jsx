@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { renderRoutes } from 'react-router-config';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { Navbar, Nav } from 'react-bootstrap';
+import { Navbar, NavDropdown } from 'react-bootstrap';
 import queryString from 'query-string';
 import { handleLogin } from '../../actions/login';
 import { getTestCycles } from '../../actions/cycles';
@@ -26,13 +26,15 @@ class App extends Component {
         const { route } = this.props;
         return (
             <Fragment>
-                <Navbar bg="light" expand="lg">
-                  <Navbar.Brand href="#home">ARIA-AT Report</Navbar.Brand>
-                      <Nav.Link href="/login">Login</Nav.Link>
-                      <Nav.Link href="/account/settings">Settings</Nav.Link>
-                      <Nav.Link href="/cycles">Manage Cycles</Nav.Link>
-                </Navbar>
-                {renderRoutes(route.routes)}
+              <Navbar bg="light" expand="lg">
+                <Navbar.Brand href="#home">ARIA-AT Report</Navbar.Brand>
+                <Navbar.Text><Link to="/login">Login</Link></Navbar.Text>
+                  <NavDropdown title="Stuff">
+                    <NavDropdown.Item><Link to="/account/settings">Settings</Link></NavDropdown.Item>
+                    <NavDropdown.Item><Link to="/cycles">Manage Cycles</Link></NavDropdown.Item>
+                  </NavDropdown>
+              </Navbar>
+              {renderRoutes(route.routes)}
             </Fragment>
         );
     }
