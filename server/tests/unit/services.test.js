@@ -1,9 +1,11 @@
 const moxios = require('moxios');
 const UsersService = require('../../services/UsersService');
 const GithubService = require('../../services/GithubService');
+const ATService = require('../../services/ATService');
 
 const newUser = require('../mock-data/newUser.json');
 const newUserToRole = require('../mock-data/newUserToRole.json');
+const listOfATNames = require('../mock-data/listOfATs.json');
 jest.mock('../../models/UsersModel');
 describe('UsersService', () => {
     describe('UsersService.addUser', () => {
@@ -94,6 +96,19 @@ describe('GithubService', () => {
 
             const received = await GithubService.getUser(options);
             expect(received).toEqual(userObj);
+        });
+    });
+});
+
+jest.mock('../../models/ATModel');
+describe('ATService', () => {
+    describe('ATService.getATNames', () => {
+        it('should have a getATNames function', () => {
+            expect(typeof ATService.getATNames).toBe('function');
+        });
+        it('should return a list of AT names', async () => {
+            const expected = listOfATNames.atNames;
+            await expect(ATService.getATNames()).resolves.toEqual(expected);
         });
     });
 });

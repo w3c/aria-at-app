@@ -29,33 +29,33 @@ class App extends Component {
             <Fragment>
                 <Container fluid>
                     <Navbar bg="light" expand="lg">
-                        <Navbar.Brand href="/"><h1>ARIA-AT Report</h1></Navbar.Brand>
+                        <Navbar.Brand as={Link} to="/">
+                            <h1>ARIA-AT Report</h1>
+                        </Navbar.Brand>
                         <Navbar.Toggle aria-controls="basic-navbar-nav" />
-                        <Navbar.Collapse
-                            id="basic-navbar-nav"
-                        >
+                        <Navbar.Collapse id="basic-navbar-nav">
                             <NavDropdown title="Menu">
                                 {(!isLoggedIn && (
-                                    <NavDropdown.Item>
-                                        <Link to="/login">Login</Link>
+                                    <NavDropdown.Item as={Link} to="/login">
+                                        Login
                                     </NavDropdown.Item>
                                 )) || (
-                                    <NavDropdown.Item>
-                                        <Link
-                                            to="/"
-                                            onClick={this.logout}
-                                        >
-                                            Logout
-                                        </Link>
+                                    <NavDropdown.Item
+                                        as={Link}
+                                        to="/"
+                                        onClick={this.logout}
+                                    >
+                                        Logout
                                     </NavDropdown.Item>
                                 )}
-                                <NavDropdown.Item>
-                                    <Link to="/account/settings">Settings</Link>
+                                <NavDropdown.Item
+                                    as={Link}
+                                    to="/account/settings"
+                                >
+                                    Settings
                                 </NavDropdown.Item>
-                                <NavDropdown.Item>
-                                    <Link to="/cycles">
-                                        Testing Cycle Management
-                                    </Link>
+                                <NavDropdown.Item as={Link} to="/cycles">
+                                    Testing Cycle Management
                                 </NavDropdown.Item>
                             </NavDropdown>
                         </Navbar.Collapse>

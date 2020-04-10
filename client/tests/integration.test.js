@@ -1,5 +1,6 @@
 import { storeFactory } from './util';
 import { handleCheckLoggedIn, handleLogout } from '../actions/login';
+import { handleGetValidAts } from '../actions/ats';
 import moxios from 'moxios';
 
 describe('login actions dispatchers', () => {
@@ -17,10 +18,14 @@ describe('login actions dispatchers', () => {
             login: {
                 isLoggedIn: true,
                 username: 'foobar',
-                name: 'Foo Bar'
+                name: 'Foo Bar',
+                email: 'foo@bar.com'
             },
             cycles: {
                 cycles: []
+            },
+            ats: {
+                names: []
             }
         };
 
@@ -30,7 +35,8 @@ describe('login actions dispatchers', () => {
                 status: 200,
                 response: {
                     username: expectedState.login.username,
-                    name: expectedState.login.name
+                    name: expectedState.login.name,
+                    email: expectedState.login.email
                 }
             });
         });
@@ -48,6 +54,9 @@ describe('login actions dispatchers', () => {
             },
             cycles: {
                 cycles: []
+            },
+            ats: {
+                names: []
             }
         };
 
@@ -59,6 +68,44 @@ describe('login actions dispatchers', () => {
         });
 
         await store.dispatch(handleLogout());
+        const newState = store.getState();
+        expect(newState).toEqual(expectedState);
+    });
+});
+
+describe('ats action dispatchers', () => {
+    beforeEach(() => {
+        moxios.install();
+    });
+
+    afterEach(() => {
+        moxios.uninstall();
+    });
+    test('updates state correctly on get ATS', async () => {
+        const store = storeFactory();
+        const expectedState = {
+            login: {
+                isLoggedIn: false
+            },
+            cycles: {
+                cycles: []
+            },
+            ats: {
+                names: ['JAWS', 'NVDA', 'VoiceOver']
+            }
+        };
+
+        moxios.wait(() => {
+            const request = moxios.requests.mostRecent();
+            request.respondWith({
+                status: 200,
+                response: {
+                    names: expectedState.ats.names
+                }
+            });
+        });
+
+        await store.dispatch(handleGetValidAts());
         const newState = store.getState();
         expect(newState).toEqual(expectedState);
     });
