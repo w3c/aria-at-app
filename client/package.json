@@ -24,7 +24,9 @@
   "homepage": "https://github.com/bocoup/aria-at-report#readme",
   "dependencies": {
     "bootstrap": "^4.4.1",
-    "react-bootstrap": "^1.0.0"
+    "node-sass": "^4.13.1",
+    "react-bootstrap": "^1.0.0",
+    "sass-loader": "^8.0.2"
   },
   "devDependencies": {
     "@babel/code-frame": "^7.8.3",
