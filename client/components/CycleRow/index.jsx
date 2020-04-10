@@ -5,11 +5,14 @@ import { Button } from 'react-bootstrap';
 import { deleteCycle } from '../../actions/cycles';
 
 class CycleRow extends Component {
+    constructor(props) {
+        super(props);
+        this.deleteCycle = this.deleteCycle.bind(this);
+    }
 
     deleteCycle() {
-        const { id } = this.props.cycle;
-
-        // TODO: How do we call the delete cycle action..? :/
+        const { cycle, dispatch } = this.props;
+        dispatch(deleteCycle(cycle.id));
     }
 
     render() {
@@ -26,7 +29,8 @@ class CycleRow extends Component {
 }
 
 CycleRow.propTypes = {
-    cycle: PropTypes.object
+    cycle: PropTypes.object,
+    dispatch: PropTypes.func
 };
 
-export default CycleRow;
+export default connect()(CycleRow);

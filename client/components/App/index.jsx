@@ -6,7 +6,6 @@ import { connect } from 'react-redux';
 import { Navbar, NavDropdown } from 'react-bootstrap';
 import queryString from 'query-string';
 import { handleLogin } from '../../actions/login';
-import { getTestCycles } from '../../actions/cycles';
 
 class App extends Component {
     componentDidMount() {
@@ -16,10 +15,6 @@ class App extends Component {
         if (login) {
             dispatch(handleLogin());
         }
-
-        // TODO: I don't think this is the appropriate place to get this into the application
-        // maybe I should do this on the testCycles app. Or, maybe I should only do this AFTER log in...?
-        dispatch(getTestCycles());
     }
     render() {
         const { route } = this.props;
