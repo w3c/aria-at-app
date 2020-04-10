@@ -31,7 +31,7 @@ class App extends Component {
                 <Navbar.Text><Link to="/login">Login</Link></Navbar.Text>
                   <NavDropdown title="Stuff">
                     <NavDropdown.Item><Link to="/account/settings">Settings</Link></NavDropdown.Item>
-                    <NavDropdown.Item><Link to="/cycles">Manage Cycles</Link></NavDropdown.Item>
+                    <NavDropdown.Item><Link to="/cycles">Testing Cycle Management</Link></NavDropdown.Item>
                   </NavDropdown>
               </Navbar>
               {renderRoutes(route.routes)}
