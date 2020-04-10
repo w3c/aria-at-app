@@ -1,14 +1,14 @@
 import axios from 'axios';
 import { CYCLES, DELETE_CYCLE } from './types';
 
-export const deleteCycleDispatch = data => ({
+export const deleteCycleDispatch = payload => ({
     type: DELETE_CYCLE,
-    payload: data
+    payload
 });
 
-export const cyclesDispatch = data => ({
+export const cyclesDispatch = payload => ({
     type: CYCLES,
-    payload: data
+    payload
 });
 
 export function deleteCycle(id) {
