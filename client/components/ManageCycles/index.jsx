@@ -1,19 +1,32 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { Table, Button } from 'react-bootstrap';
+import CycleRow from '@components/CycleRow';
 
 class ManageCycles extends Component {
+
     render() {
         const { cycles } = this.props;
-        console.log("printing test cycles from props");
-        console.log(cycles);
-
-        if (cycles.length === 0) {
-            return <div>This will be replaced with a list/table of existing test cycles and their states</div>;
-        }
-        else {
-            return <div>DATAAAA: {cycles[0].name}</div>;
-        }
+        return <Fragment>
+                 <h2>Initiate a Test Cycle</h2>
+                 <Button>Initiate</Button>
+                 <h2>Test Cycle Status</h2>
+                 <Table striped bordered hover>
+                   <thead>
+                     <tr>
+                       <th>Test Cycle</th>
+                       <th>Date</th>
+                       <th>Status</th>
+                       <th>More Details</th>
+                     </tr>
+                   </thead>
+                   <tbody>
+                     {cycles.map((cycle) => <CycleRow cycle={cycle} />)}
+                   </tbody>
+                 </Table>
+               </Fragment>
+        ;
     }
 }
 
