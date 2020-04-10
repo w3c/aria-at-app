@@ -15,7 +15,9 @@ export default (state = initialState, action) => {
         }
         case DELETE_CYCLE: {
             const { cycleId } = action.payload;
-            let remainingCycles = state.cycles.filter((cycle) => cycle.id !== cycleId)
+            let remainingCycles = state.cycles.filter(
+                cycle => cycle.id !== cycleId
+            );
             return {
                 cycles: remainingCycles
             };

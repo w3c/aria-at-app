@@ -18,6 +18,9 @@ describe('handleLogIn action dispatcher', () => {
                 isLoggedIn: true,
                 username: 'foobar',
                 name: 'Foo Bar'
+            },
+            cycles: {
+                cycles: []
             }
         };
 

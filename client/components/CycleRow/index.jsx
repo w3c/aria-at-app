@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Button } from 'react-bootstrap';
@@ -16,13 +16,15 @@ class CycleRow extends Component {
     }
 
     render() {
-        const { name, date, id } = this.props.cycle;
+        const { name, date } = this.props.cycle;
         return (
             <tr>
-              <td>{name}</td>
-              <td>{date}</td>
-              <td>In Progress</td>
-              <td><Button onClick={this.deleteCycle}>Delete</Button></td>
+                <td>{name}</td>
+                <td>{date}</td>
+                <td>In Progress</td>
+                <td>
+                    <Button onClick={this.deleteCycle}>Delete</Button>
+                </td>
             </tr>
         );
     }

@@ -20,15 +20,21 @@ class App extends Component {
         const { route } = this.props;
         return (
             <Fragment>
-              <Navbar bg="light" expand="lg">
-                <Navbar.Brand href="#home">ARIA-AT Report</Navbar.Brand>
-                <Navbar.Text><Link to="/login">Login</Link></Navbar.Text>
-                  <NavDropdown title="Stuff">
-                    <NavDropdown.Item><Link to="/account/settings">Settings</Link></NavDropdown.Item>
-                    <NavDropdown.Item><Link to="/cycles">Testing Cycle Management</Link></NavDropdown.Item>
-                  </NavDropdown>
-              </Navbar>
-              {renderRoutes(route.routes)}
+                <Navbar bg="light" expand="lg">
+                    <Navbar.Brand href="#home">ARIA-AT Report</Navbar.Brand>
+                    <Navbar.Text>
+                        <Link to="/login">Login</Link>
+                    </Navbar.Text>
+                    <NavDropdown title="Stuff">
+                        <NavDropdown.Item>
+                            <Link to="/account/settings">Settings</Link>
+                        </NavDropdown.Item>
+                        <NavDropdown.Item>
+                            <Link to="/cycles">Testing Cycle Management</Link>
+                        </NavDropdown.Item>
+                    </NavDropdown>
+                </Navbar>
+                {renderRoutes(route.routes)}
             </Fragment>
         );
     }
