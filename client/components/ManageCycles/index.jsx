@@ -13,25 +13,28 @@ class ManageCycles extends Component {
 
     render() {
         const { cycles } = this.props;
-        return <Fragment>
-                 <h2>Initiate a Test Cycle</h2>
-                 <Button>Initiate</Button>
-                 <h2>Test Cycle Status</h2>
-                 <Table striped bordered hover>
-                   <thead>
-                     <tr>
-                       <th>Test Cycle</th>
-                       <th>Date</th>
-                       <th>Status</th>
-                       <th>More Details</th>
-                     </tr>
-                   </thead>
-                   <tbody>
-                     {cycles.map((cycle) => <CycleRow cycle={cycle} />)}
-                   </tbody>
-                 </Table>
-               </Fragment>
-        ;
+        return (
+            <Fragment>
+                <h2>Initiate a Test Cycle</h2>
+                <Button>Initiate</Button>
+                <h2>Test Cycle Status</h2>
+                <Table striped bordered hover>
+                    <thead>
+                        <tr>
+                            <th>Test Cycle</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>More Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {cycles.map(cycle => (
+                            <CycleRow key={cycle.id} cycle={cycle} />
+                        ))}
+                    </tbody>
+                </Table>
+            </Fragment>
+        );
     }
 }
 
