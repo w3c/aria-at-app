@@ -63,7 +63,11 @@ describe('AuthController', () => {
                 service: 'github'
             }
         });
-        req.session = {};
+        req.session = {
+            destroy: callback => {
+                callback();
+            }
+        };
     });
     describe('AuthController.login', () => {
         it('should have a login function', () => {
@@ -100,6 +104,16 @@ describe('AuthController', () => {
             await AuthController.currentUser(req, res, next);
             expect(res.statusCode).toBe(200);
             expect(res._getJSONData()).toStrictEqual(user);
+        });
+    });
+    describe('AuthController.logout', () => {
+        it('should have an logout function', () => {
+            expect(typeof AuthController.logout).toBe('function');
+        });
+        it('should return destroy the session and return 200 response code', async () => {
+            await AuthController.logout(req, res, next);
+            expect(res.statusCode).toBe(200);
+            expect(res._isEndCalled()).toBeTruthy();
         });
     });
 });

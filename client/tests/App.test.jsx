@@ -11,9 +11,7 @@ Enzyme.configure({ adapter: new EnzymeAdapter() });
 const setup = (initialState = {}) => {
     const store = storeFactory(initialState);
     // Step into the higher order connected component and step into the contents of the UserSettings component
-    const wrapper = shallow(
-        <App route={{ routes }} store={store} location={{}} />
-    ).dive();
+    const wrapper = shallow(<App route={{ routes }} store={store} />).dive();
     return wrapper;
 };
 

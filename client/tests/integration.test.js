@@ -1,8 +1,8 @@
 import { storeFactory } from './util';
-import { handleLogin } from '../actions/login';
+import { handleCheckLoggedIn, handleLogout } from '../actions/login';
 import moxios from 'moxios';
 
-describe('handleLogIn action dispatcher', () => {
+describe('login actions dispatchers', () => {
     beforeEach(() => {
         moxios.install();
     });
@@ -35,7 +35,30 @@ describe('handleLogIn action dispatcher', () => {
             });
         });
 
-        await store.dispatch(handleLogin());
+        await store.dispatch(handleCheckLoggedIn());
+        const newState = store.getState();
+        expect(newState).toEqual(expectedState);
+    });
+
+    test('updates state correctly on logout', async () => {
+        const store = storeFactory();
+        const expectedState = {
+            login: {
+                isLoggedIn: false
+            },
+            cycles: {
+                cycles: []
+            }
+        };
+
+        moxios.wait(() => {
+            const request = moxios.requests.mostRecent();
+            request.respondWith({
+                status: 200
+            });
+        });
+
+        await store.dispatch(handleLogout());
         const newState = store.getState();
         expect(newState).toEqual(expectedState);
     });

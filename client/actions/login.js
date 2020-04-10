@@ -1,14 +1,27 @@
 import axios from 'axios';
-import { LOG_IN } from './types';
+import { CHECK_LOGGED_IN, LOG_OUT } from './types';
 
-export const logIn = userData => ({
-    type: LOG_IN,
-    payload: userData
+export const checkLoggedIn = payload => ({
+    type: CHECK_LOGGED_IN,
+    payload
 });
 
-export function handleLogin() {
+export const logout = () => ({
+    type: LOG_OUT
+});
+
+export function handleCheckLoggedIn() {
     return async function(dispatch) {
         const response = await axios.get('/api/auth/me');
-        dispatch(logIn(response.data));
+        dispatch(checkLoggedIn(response.data));
+    };
+}
+
+export function handleLogout() {
+    return async function(dispatch) {
+        const response = await axios.post('/api/auth/logout');
+        if (response.status === 200) {
+            dispatch(logout());
+        }
     };
 }

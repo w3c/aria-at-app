@@ -12,11 +12,11 @@ const newUserToRole = require('../mock-data/newUserToRole.json');
 jest.mock('../../models/UsersModel');
 
 // mocking the middleware used by the express app
-const session = require('../../middleware/session.js');
-jest.mock('../../middleware/session.js', () =>
-    jest.fn((req, res, next) => next())
-);
-describe('session middleware', () => {
+const { session } = require('../../middleware/session.js');
+jest.mock('../../middleware/session.js', () => ({
+    session: jest.fn()
+}));
+describe('session middleware tests', () => {
     // setup and teardown of a listener to test the middleware
     const supertest = require('supertest');
     let server, agent;
@@ -34,9 +34,47 @@ describe('session middleware', () => {
     });
 
     it('uses session middleware', async () => {
+        session.mockImplementation((req, res, next) => {
+            req.session = {};
+            next();
+        });
         const response = await agent.get('/');
         expect(response.status).toBe(404);
         expect(session).toHaveBeenCalledTimes(1);
+    });
+
+    describe('login with session', () => {
+        it(`GET ${authEndpoint}/me unauthorized`, async () => {
+            session.mockImplementation((req, res, next) => {
+                req.session = {};
+                next();
+            });
+            const response = await agent.get('/auth/me');
+            expect(response.status).toBe(401);
+        });
+
+        it(`GET ${authEndpoint}/me authorized`, async () => {
+            session.mockImplementation((req, res, next) => {
+                req.session = { user: { username: 'foobar', name: 'Foo Bar' } };
+                next();
+            });
+            const response = await agent.get('/auth/me');
+            expect(response.status).toBe(200);
+        });
+    });
+    describe('logout with existing session', () => {
+        it(`POST ${authEndpoint}/logout`, async () => {
+            session.mockImplementation((req, res, next) => {
+                req.session = {
+                    destroy(cb) {
+                        cb();
+                    }
+                };
+                next();
+            });
+            const response = await agent.post('/auth/logout');
+            expect(response.status).toBe(200);
+        });
     });
 });
 
@@ -69,9 +107,5 @@ describe(authEndpoint, () => {
             `${authEndpoint}/authorize?code=12345&service=github`
         );
         expect(response.statusCode).toBe(303);
-    });
-    it(`GET ${authEndpoint}/me`, async () => {
-        const response = await request(listener).get(`${authEndpoint}/me`);
-        expect(response.statusCode).toBe(200);
     });
 });

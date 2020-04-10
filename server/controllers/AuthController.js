@@ -28,7 +28,7 @@ module.exports = {
             res.status(401);
             res.end();
         }
-        res.redirect(303, `${req.session.referer}?login=true`);
+        res.redirect(303, `${req.session.referer}`);
         delete req.session.referer;
         res.end();
     },
@@ -41,5 +41,16 @@ module.exports = {
             res.status(401);
         }
         res.end();
+    },
+
+    logout(req, res) {
+        req.session.destroy(err => {
+            if (err) {
+                res.status(500);
+            } else {
+                res.status(200);
+            }
+            res.end();
+        });
     }
 };

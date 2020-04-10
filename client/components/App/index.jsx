@@ -3,37 +3,64 @@ import PropTypes from 'prop-types';
 import { renderRoutes } from 'react-router-config';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { Navbar, NavDropdown } from 'react-bootstrap';
-import queryString from 'query-string';
-import { handleLogin } from '../../actions/login';
+import { Container, Navbar, NavDropdown } from 'react-bootstrap';
+import { handleCheckLoggedIn, handleLogout } from '../../actions/login';
 
 class App extends Component {
-    componentDidMount() {
-        const { location, dispatch } = this.props;
-        const { login } = queryString.parse(location.search);
+    constructor(props) {
+        super(props);
 
-        if (login) {
-            dispatch(handleLogin());
-        }
+        this.logout = this.logout.bind(this);
     }
+    componentDidMount() {
+        const { dispatch } = this.props;
+
+        dispatch(handleCheckLoggedIn());
+    }
+
+    logout() {
+        const { dispatch } = this.props;
+        dispatch(handleLogout());
+    }
+
     render() {
-        const { route } = this.props;
+        const { route, isLoggedIn } = this.props;
         return (
             <Fragment>
-                <Navbar bg="light" expand="lg">
-                    <Navbar.Brand href="#home">ARIA-AT Report</Navbar.Brand>
-                    <Navbar.Text>
-                        <Link to="/login">Login</Link>
-                    </Navbar.Text>
-                    <NavDropdown title="Stuff">
-                        <NavDropdown.Item>
-                            <Link to="/account/settings">Settings</Link>
-                        </NavDropdown.Item>
-                        <NavDropdown.Item>
-                            <Link to="/cycles">Testing Cycle Management</Link>
-                        </NavDropdown.Item>
-                    </NavDropdown>
-                </Navbar>
+                <Container fluid>
+                    <Navbar bg="light" expand="lg">
+                        <Navbar.Brand href="/"><h1>ARIA-AT Report</h1></Navbar.Brand>
+                        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+                        <Navbar.Collapse
+                            id="basic-navbar-nav"
+                        >
+                            <NavDropdown title="Menu">
+                                {(!isLoggedIn && (
+                                    <NavDropdown.Item>
+                                        <Link to="/login">Login</Link>
+                                    </NavDropdown.Item>
+                                )) || (
+                                    <NavDropdown.Item>
+                                        <Link
+                                            to="/"
+                                            onClick={this.logout}
+                                        >
+                                            Logout
+                                        </Link>
+                                    </NavDropdown.Item>
+                                )}
+                                <NavDropdown.Item>
+                                    <Link to="/account/settings">Settings</Link>
+                                </NavDropdown.Item>
+                                <NavDropdown.Item>
+                                    <Link to="/cycles">
+                                        Testing Cycle Management
+                                    </Link>
+                                </NavDropdown.Item>
+                            </NavDropdown>
+                        </Navbar.Collapse>
+                    </Navbar>
+                </Container>
                 {renderRoutes(route.routes)}
             </Fragment>
         );
@@ -41,9 +68,15 @@ class App extends Component {
 }
 
 App.propTypes = {
-    route: PropTypes.object,
+    dispatch: PropTypes.func,
+    isLoggedIn: PropTypes.bool,
     location: PropTypes.object,
-    dispatch: PropTypes.func
+    route: PropTypes.object
 };
 
-export default connect()(App);
+const mapStateToProps = state => {
+    const { isLoggedIn } = state.login;
+    return { isLoggedIn };
+};
+
+export default connect(mapStateToProps)(App);
