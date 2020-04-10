@@ -231,12 +231,21 @@ async function deleteCycle(id) {
  *       git_hash,
  *       git_commit_msg,
  *       datatime,
- *       supported_ats: [
+ *       supported_ats: [{
  *         at_name_id,
  *         at_name,
  *         at_key,
  *         at_id
- *       ]
+ *       }],
+ *       apg_examples: [{
+ *         directory,
+ *         id,
+ *         name
+ *       }],
+ *       browsers: [{
+ *         name
+ *         id
+ *       }]
  *     }
  */
 async function getAllTestVersions() {
@@ -247,6 +256,9 @@ async function getAllTestVersions() {
                *
              from
                test_version
+             order by
+               datetime DESC;
+
         `)
         )[0];
 
@@ -269,7 +281,17 @@ async function getAllTestVersions() {
           `)
             )[0];
 
+            let browsers = (
+                await sequelize.query(`
+               select
+                 *
+               from
+                 browser
+          `)
+            )[0];
+
             testVersion.supported_ats = ats;
+            testVersion.browsers = browsers;
 
             let examples = (
                 await sequelize.query(`
