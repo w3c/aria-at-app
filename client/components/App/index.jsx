@@ -1,8 +1,9 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { renderRoutes } from 'react-router-config';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
+import { Navbar, Nav } from 'react-bootstrap';
 import queryString from 'query-string';
 import { handleLogin } from '../../actions/login';
 import { getTestCycles } from '../../actions/cycles';
@@ -11,6 +12,8 @@ class App extends Component {
     componentDidMount() {
         const { location, dispatch } = this.props;
         const { login } = queryString.parse(location.search);
+        console.log('COMPONENT DID MOUNT - APP');
+
         if (login) {
             dispatch(handleLogin());
         }
@@ -22,13 +25,15 @@ class App extends Component {
     render() {
         const { route } = this.props;
         return (
-            <div>
-                <h1>ARIA-AT REPORT</h1>
-                <Link to="/login">Login</Link>
-                <br></br>
-                <Link to="/account/settings">Settings</Link>
+            <Fragment>
+                <Navbar bg="light" expand="lg">
+                  <Navbar.Brand href="#home">ARIA-AT Report</Navbar.Brand>
+                      <Nav.Link href="/login">Login</Nav.Link>
+                      <Nav.Link href="/account/settings">Settings</Nav.Link>
+                      <Nav.Link href="/cycles">Manage Cycles</Nav.Link>
+                </Navbar>
                 {renderRoutes(route.routes)}
-            </div>
+            </Fragment>
         );
     }
 }
