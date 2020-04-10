@@ -1,4 +1,4 @@
-import { LOG_IN } from '../actions/types';
+import { CHECK_LOGGED_IN } from '../actions/types';
 
 const initialState = {
     isLoggedIn: false
@@ -6,7 +6,7 @@ const initialState = {
 
 export default (state = initialState, action) => {
     switch (action.type) {
-        case LOG_IN: {
+        case CHECK_LOGGED_IN: {
             const { username, name } = action.payload;
             return {
                 isLoggedIn: true,

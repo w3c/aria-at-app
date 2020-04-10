@@ -1,14 +1,14 @@
 import axios from 'axios';
-import { LOG_IN } from './types';
+import { CHECK_LOGGED_IN } from './types';
 
-export const logIn = userData => ({
-    type: LOG_IN,
-    payload: userData
+export const checkLoggedIn = payload => ({
+    type: CHECK_LOGGED_IN,
+    payload
 });
 
-export function handleLogin() {
+export function handleCheckLoggedIn() {
     return async function(dispatch) {
         const response = await axios.get('/api/auth/me');
-        dispatch(logIn(response.data));
+        dispatch(checkLoggedIn(response.data));
     };
 }

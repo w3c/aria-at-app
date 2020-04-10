@@ -28,7 +28,7 @@ module.exports = {
             res.status(401);
             res.end();
         }
-        res.redirect(303, `${req.session.referer}?login=true`);
+        res.redirect(303, `${req.session.referer}`);
         delete req.session.referer;
         res.end();
     },
