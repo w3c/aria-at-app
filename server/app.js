@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
-const session = require('./middleware/session');
+const { session } = require('./middleware/session');
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/users');
 const cycleRoutes = require('./routes/cycle');

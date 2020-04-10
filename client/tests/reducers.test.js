@@ -1,4 +1,4 @@
-import { LOG_IN } from '../actions/types';
+import { CHECK_LOGGED_IN, LOG_OUT } from '../actions/types';
 import loginReducer from '../reducers/login';
 
 describe('login reducer tests', () => {
@@ -12,9 +12,25 @@ describe('login reducer tests', () => {
             name: 'Foo Bar'
         };
         const newState = loginReducer(undefined, {
-            type: LOG_IN,
+            type: CHECK_LOGGED_IN,
             payload: apiPayload
         });
         expect(newState).toEqual({ isLoggedIn: true, ...apiPayload });
+    });
+    test('returns object without username and name and isLoggedIn false with `LOG_OUT` type', () => {
+        const apiPayload = {
+            username: 'foo',
+            name: 'Foo Bar'
+        };
+        const loggedInState = loginReducer(undefined, {
+            type: CHECK_LOGGED_IN,
+            payload: apiPayload
+        });
+
+        const newState = loginReducer(loggedInState, {
+            type: LOG_OUT
+        });
+
+        expect(newState).toEqual({ isLoggedIn: false });
     });
 });
