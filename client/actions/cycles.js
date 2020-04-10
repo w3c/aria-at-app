@@ -4,7 +4,7 @@ import { CYCLES, DELETE_CYCLE } from './types';
 export function deleteCycle(id) {
     return async function(dispatch) {
         const response = await axios.delete('/api/cycle', {
-            id
+            data: { id }
         });
         dispatch({
             type: DELETE_CYCLE,

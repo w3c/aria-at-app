@@ -3,8 +3,13 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Table, Button } from 'react-bootstrap';
 import CycleRow from '@components/CycleRow';
+import { getTestCycles } from '../../actions/cycles';
 
 class ManageCycles extends Component {
+    componentDidMount() {
+        const { dispatch } = this.props;
+        dispatch(getTestCycles());
+    }
 
     render() {
         const { cycles } = this.props;
@@ -31,7 +36,8 @@ class ManageCycles extends Component {
 }
 
 ManageCycles.propTypes = {
-    cycles: PropTypes.array
+    cycles: PropTypes.array,
+    dispatch: PropTypes.func
 };
 
 const mapStateToProps = state => {
