@@ -38,7 +38,6 @@ class ConfigureRunsForExample extends Component {
             return;
         }
 
-
         let runTechnologyIndexes = [];
         for (let runTechnologyIndex in this.state.runSelected) {
             if (this.state.runSelected[runTechnologyIndex]) {
@@ -51,8 +50,7 @@ class ConfigureRunsForExample extends Component {
             this.setState({
                 userDropdownSelection: -2
             });
-        }
-        else {
+        } else {
             this.setState({
                 userDropdownSelection: value
             });
@@ -64,12 +62,21 @@ class ConfigureRunsForExample extends Component {
         const value = event.target.checked;
         const runIndex = event.target.name;
         this.setState({
-            runSelected: {...this.state.runSelected, [runIndex]: value}
+            runSelected: { ...this.state.runSelected, [runIndex]: value }
         });
     }
 
     render() {
-        const { example, runTechnologies, testerConfig, assignTesters, availableBrowsers, availableAts, users, runTestersByTechIndex } = this.props;
+        const {
+            example,
+            runTechnologies,
+            testerConfig,
+            assignTesters,
+            availableBrowsers,
+            availableAts,
+            users,
+            runTestersByTechIndex
+        } = this.props;
         let browserName = {};
         for (let browser of availableBrowsers) {
             browserName[browser.id] = browser.name;
@@ -82,10 +89,12 @@ class ConfigureRunsForExample extends Component {
         // Do not include "unconfigured" runs that do not have either an at_id or a browser_id
         let runsToConfigure = [];
         for (let i = 0; i < runTechnologies.length; i++) {
-            if (runTechnologies[i].at_id === undefined || runTechnologies[i].browser_id === undefined) {
+            if (
+                runTechnologies[i].at_id === undefined ||
+                runTechnologies[i].browser_id === undefined
+            ) {
                 continue;
-            }
-            else {
+            } else {
                 runsToConfigure.push({
                     techIndex: i,
                     run: runTechnologies[i]
@@ -103,70 +112,109 @@ class ConfigureRunsForExample extends Component {
         return (
             <Fragment>
                 <h4>{example.name}</h4>
-              {
-                  runsToConfigure.length !== 0  &&
-                      <Table bordered>
-                  <thead>
-                  <tr>
-                  <th>
-                      Assistive Technology and Browser
-                    </th>
-                    <th>
-                      Testers
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {runsToConfigure.map((runData) => {
-                      let run = runData.run;
-                      let checked = this.state.runSelected[runData.techIndex] ? true : false;
-                      let names = runTestersByTechIndex && runTestersByTechIndex[runData.techIndex]
-                          ? runTestersByTechIndex[runData.techIndex].map((testerId) => {
-                              let user = users.filter(u => u.id === testerId)[0];
-                              return user.fullname;
-                          })
-                          : undefined;
+                {runsToConfigure.length !== 0 && (
+                    <Table bordered>
+                        <thead>
+                            <tr>
+                                <th>Assistive Technology and Browser</th>
+                                <th>Testers</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {runsToConfigure.map(runData => {
+                                let run = runData.run;
+                                let checked = this.state.runSelected[
+                                    runData.techIndex
+                                ]
+                                    ? true
+                                    : false;
+                                let names =
+                                    runTestersByTechIndex &&
+                                    runTestersByTechIndex[runData.techIndex]
+                                        ? runTestersByTechIndex[
+                                              runData.techIndex
+                                          ].map(testerId => {
+                                              let user = users.filter(
+                                                  u => u.id === testerId
+                                              )[0];
+                                              return user.fullname;
+                                          })
+                                        : undefined;
 
-                      return <tr>
-                               <td>
-                                 <label>
-                                   <input type="checkbox" id={`${runData.techIndex}-configurerun`} name={runData.techIndex} checked={checked} onChange={this.handleRunCheck}></input>
-                                   {`${atName[run.at_id]} and ${browserName[run.browser_id]}`}
-                                 </label>
-
-                               </td>
-                               <td>
-                                 {names.length ? names.join(', ') : "no assignee"}
-                               </td>
-                             </tr>;
-                  })}
-                <tr>
-                  <td colSpan={2}><h5>Assign Testers</h5>
-                    <div>Choose a test from the dropdown menu to be assigned to the tests you have selected.</div>
-                    <Form.Control value={this.state.userDropdownSelection} onChange={this.updateTesters} as="select" custom>
-                      <option key={-2} value={-2}>Assignees</option>;
-                      <option key={-1} value={-1}>Clear Assignees</option>;
-                      {users.map((user) => {
-                          return <option key={user.id} value={user.id}>
-                                   {user.fullname}
-                                 </option>;
-                      })}
-                </Form.Control>
-                  </td>
-                </tr>
-                </tbody>
-              </Table>
-              }
-              {
-                  runsToConfigure.length === 0 &&
-                      <div>To initiate runs for this example, configure assistive technology and browser combinations above.</div>
-              }
+                                return (
+                                    <tr>
+                                        <td>
+                                            <label>
+                                                <input
+                                                    type="checkbox"
+                                                    id={`${runData.techIndex}-configurerun`}
+                                                    name={runData.techIndex}
+                                                    checked={checked}
+                                                    onChange={
+                                                        this.handleRunCheck
+                                                    }
+                                                ></input>
+                                                {`${atName[run.at_id]} and ${
+                                                    browserName[run.browser_id]
+                                                }`}
+                                            </label>
+                                        </td>
+                                        <td>
+                                            {names.length
+                                                ? names.join(', ')
+                                                : 'no assignee'}
+                                        </td>
+                                    </tr>
+                                );
+                            })}
+                            <tr>
+                                <td colSpan={2}>
+                                    <h5>Assign Testers</h5>
+                                    <div>
+                                        Choose a test from the dropdown menu to
+                                        be assigned to the tests you have
+                                        selected.
+                                    </div>
+                                    <Form.Control
+                                        value={this.state.userDropdownSelection}
+                                        onChange={this.updateTesters}
+                                        as="select"
+                                        custom
+                                    >
+                                        <option key={-2} value={-2}>
+                                            Assignees
+                                        </option>
+                                        ;
+                                        <option key={-1} value={-1}>
+                                            Clear Assignees
+                                        </option>
+                                        ;
+                                        {users.map(user => {
+                                            return (
+                                                <option
+                                                    key={user.id}
+                                                    value={user.id}
+                                                >
+                                                    {user.fullname}
+                                                </option>
+                                            );
+                                        })}
+                                    </Form.Control>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </Table>
+                )}
+                {runsToConfigure.length === 0 && (
+                    <div>
+                        To initiate runs for this example, configure assistive
+                        technology and browser combinations above.
+                    </div>
+                )}
             </Fragment>
         );
     }
 }
-
-
 
 ConfigureRunsForExample.propTypes = {
     example: PropTypes.object,
