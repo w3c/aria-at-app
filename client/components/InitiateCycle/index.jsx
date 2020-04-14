@@ -1,8 +1,8 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Form, Table, Button, Container, Row, Col } from 'react-bootstrap';
-import { getTestSuiteVersions } from '../../actions/cycles';
+import { Form, Button, Row, Col } from 'react-bootstrap';
+import { getTestSuiteVersions, saveCycle } from '../../actions/cycles';
 import { getAllUsers } from '../../actions/users';
 import ConfigureTechnologyRow from '@components/ConfigureTechnologyRow';
 import ConfigureRunsForExample from '@components/ConfigureRunsForExample';
@@ -16,10 +16,7 @@ class InitiateCycle extends Component {
                 ? testSuiteVersions[0].id
                 : undefined,
             name: '',
-            runTechnologies: [
-                { at_id: 1, browser_id: 1 },
-                { at_id: 2, browser_id: 1 }
-            ],
+            runTechnologyRows: [{}],
             runTestersByExample: {} // example_id: runTechnolgiesIndex: [userlist]
         };
 
@@ -34,12 +31,13 @@ class InitiateCycle extends Component {
 
         this.handleVersionChange = this.handleVersionChange.bind(this);
         this.handleNameChange = this.handleNameChange.bind(this);
-        this.handleRunTechnologiesChange = this.handleRunTechnologiesChange.bind(
+        this.handleTechnologyRowChange = this.handleTechnologyRowChange.bind(
             this
         );
-        this.addRunTechnologies = this.addRunTechnologies.bind(this);
+        this.addTechnologyRow = this.addTechnologyRow.bind(this);
         this.assignTesters = this.assignTesters.bind(this);
         this.removeAllTestersFromRun = this.removeAllTestersFromRun.bind(this);
+        this.initiateCycle = this.initiateCycle.bind(this);
     }
 
     componentDidMount() {
@@ -57,7 +55,7 @@ class InitiateCycle extends Component {
         // When we get the testSuiteVersions list for the first time, the application automatically
         // selected the most recent version
         if (
-            prevState.selectVersion === undefined &&
+            prevState.selectedVersion === undefined &&
             nextProps.testSuiteVersions.length > 0
         ) {
             return {
@@ -65,6 +63,61 @@ class InitiateCycle extends Component {
             };
         }
         return null;
+    }
+
+    initiateCycle() {
+        const { dispatch, testSuiteVersions, history } = this.props;
+        let versionData = testSuiteVersions.filter(
+            version => version.id === this.state.selectedVersion
+        )[0];
+
+        let cycle = {
+            name: this.state.name,
+            test_version_id: this.state.selectedVersion,
+            created_user_id: 1
+        };
+
+        // TODO: Do not allow saving of cycle without a name. Put focus on name field
+
+        const runs = [];
+        for (
+            let index = 0;
+            index < this.state.runTechnologyRows.length;
+            index++
+        ) {
+            const runTechnologyPair = this.state.runTechnologyRows[index];
+
+            if (
+                !runTechnologyPair.at_id ||
+                !runTechnologyPair.at_version ||
+                !runTechnologyPair.browser_id ||
+                !runTechnologyPair.browser_version
+            ) {
+                // TODO: if one of these fields is not filled out, put focus on field
+                // TODO: if ALL of these fields are blank, ignore it
+                continue;
+            }
+
+            for (let example of versionData.apg_examples) {
+                let runTestersByTechIndex = this.state.runTestersByExample[
+                    example.id
+                ];
+
+                runs.push({
+                    ...runTechnologyPair,
+                    apg_example_id: example.id,
+                    users:
+                        runTestersByTechIndex && runTestersByTechIndex[index]
+                            ? runTestersByTechIndex[index]
+                            : []
+                });
+            }
+        }
+
+        cycle.runs = runs;
+        dispatch(saveCycle(cycle));
+
+        history.push('/cycles');
     }
 
     assignTesters(exampleId, runTechnologyIndexes, userId) {
@@ -88,7 +141,9 @@ class InitiateCycle extends Component {
 
         for (let technologyIndex of runTechnologyIndexes) {
             let nameId =
-                atIdToNameId[this.state.runTechnologies[technologyIndex].at_id];
+                atIdToNameId[
+                    this.state.runTechnologyRows[technologyIndex].at_id
+                ];
             if (atNameIdsForUser.indexOf(nameId) >= 0) {
                 if (newRunTestersByTechIndex[technologyIndex]) {
                     newRunTestersByTechIndex[technologyIndex].push(userId);
@@ -124,12 +179,13 @@ class InitiateCycle extends Component {
         const { testSuiteVersions } = this.props;
 
         let versionData = testSuiteVersions.filter(
-            version => version.id === event.currentTarget.value
+            version => version.id === parseInt(event.currentTarget.value)
         )[0];
 
         this.setState({
             selectedVersion: versionData.id,
-            runTechnologies: [{}]
+            runTechnologyRows: [{}],
+            runTestersByExample: {}
         });
     }
 
@@ -139,25 +195,25 @@ class InitiateCycle extends Component {
         });
     }
 
-    handleRunTechnologiesChange(runTechnologies, index) {
+    handleTechnologyRowChange(runTechnologies, index) {
         let newRunTechnologies = [];
-        for (let i = 0; i < this.state.runTechnologies.length; i++) {
+        for (let i = 0; i < this.state.runTechnologyRows.length; i++) {
             if (i === index) {
                 newRunTechnologies.push(runTechnologies);
             } else {
-                newRunTechnologies.push({ ...this.state.runTechnologies[i] });
+                newRunTechnologies.push({ ...this.state.runTechnologyRows[i] });
             }
         }
         this.setState({
-            runTechnologies: newRunTechnologies
+            runTechnologyRows: newRunTechnologies
         });
     }
 
-    addRunTechnologies() {
-        let newRunTechnologies = [...this.state.runTechnologies];
+    addTechnologyRow() {
+        let newRunTechnologies = [...this.state.runTechnologyRows];
         newRunTechnologies.push({});
         this.setState({
-            runTechnologies: newRunTechnologies
+            runTechnologyRows: newRunTechnologies
         });
     }
 
@@ -221,25 +277,23 @@ class InitiateCycle extends Component {
                         <Col>Version</Col>
                     </Row>
                     {versionData &&
-                        this.state.runTechnologies.map(
-                            (runTechnologies, index) => {
-                                return (
-                                    <ConfigureTechnologyRow
-                                        key={index}
-                                        runTechnologies={runTechnologies}
-                                        index={index}
-                                        availableAts={versionData.supported_ats}
-                                        availableBrowsers={versionData.browsers}
-                                        handleRunTechnologiesChange={
-                                            this.handleRunTechnologiesChange
-                                        }
-                                    />
-                                );
-                            }
-                        )}
+                        this.state.runTechnologyRows.map((runTech, index) => {
+                            return (
+                                <ConfigureTechnologyRow
+                                    key={index}
+                                    runTechnologies={runTech}
+                                    index={index}
+                                    availableAts={versionData.supported_ats}
+                                    availableBrowsers={versionData.browsers}
+                                    handleTechnologyRowChange={
+                                        this.handleTechnologyRowChange
+                                    }
+                                />
+                            );
+                        })}
                     <Row>
                         <Col>
-                            <Button onClick={this.addRunTechnologies}>
+                            <Button onClick={this.addTechnologyRow}>
                                 Add another AT/Browser
                             </Button>
                         </Col>
@@ -252,7 +306,7 @@ class InitiateCycle extends Component {
                             <ConfigureRunsForExample
                                 key={example.id}
                                 example={example}
-                                runTechnologies={this.state.runTechnologies}
+                                runTechnologies={this.state.runTechnologyRows}
                                 availableAts={versionData.supported_ats}
                                 availableBrowsers={versionData.browsers}
                                 users={users}
@@ -266,6 +320,9 @@ class InitiateCycle extends Component {
                             />
                         );
                     })}
+                <div>
+                    <Button onClick={this.initiateCycle}>Initiate Cycle</Button>
+                </div>
             </Fragment>
         );
     }
@@ -273,7 +330,9 @@ class InitiateCycle extends Component {
 
 InitiateCycle.propTypes = {
     testSuiteVersions: PropTypes.array,
-    dispatch: PropTypes.func
+    dispatch: PropTypes.func,
+    history: PropTypes.func,
+    users: PropTypes.array
 };
 
 const mapStateToProps = state => {

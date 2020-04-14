@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { Table, Button } from 'react-bootstrap';
+import { Table } from 'react-bootstrap';
 import CycleRow from '@components/CycleRow';
 import { getTestCycles } from '../../actions/cycles';
 

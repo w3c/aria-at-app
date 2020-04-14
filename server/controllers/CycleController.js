@@ -1,7 +1,7 @@
 const CycleService = require('../services/CycleService');
 
 async function configureCycle(req, res) {
-    const cycle = req.body;
+    const cycle = req.body.data;
     try {
         const savedCycle = await CycleService.configureCycle(cycle);
         res.status(201).json(savedCycle);
