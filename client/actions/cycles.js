@@ -35,7 +35,6 @@ export function getTestCycles() {
 export function getTestSuiteVersions() {
     return async function(dispatch) {
         const response = await axios.get('/api/cycle/testversions');
-        console.log("response.data", response.data);
         dispatch(testSuiteVersionsDispatch(response.data));
     };
 }

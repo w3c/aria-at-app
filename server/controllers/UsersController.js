@@ -51,7 +51,7 @@ async function removeUsersFromRun(req, res) {
 async function getAllTesters(req, res) {
     try {
         const testers = await UsersService.getAllTesters();
-        console.log("TESTERSSS", testers);
+        console.log('TESTERSSS', testers);
         res.status(201).json(testers);
     } catch (error) {
         res.status(400);

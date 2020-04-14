@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { USER_CONFIGS } from './types';
 
-
 export const getAllUsersDispatch = payload => ({
     type: USER_CONFIGS,
     payload
