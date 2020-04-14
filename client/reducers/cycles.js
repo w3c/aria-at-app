@@ -1,4 +1,9 @@
-import { CYCLES, DELETE_CYCLE, TEST_SUITE_VERSIONS } from '../actions/types';
+import {
+    CYCLES,
+    DELETE_CYCLE,
+    SAVE_CYCLE,
+    TEST_SUITE_VERSIONS
+} from '../actions/types';
 
 // TODO: Change this into a object key'd by cycle id?
 const initialState = {
@@ -27,6 +32,14 @@ export default (state = initialState, action) => {
             );
             return Object.assign({}, state, {
                 cycles: remainingCycles
+            });
+        }
+        case SAVE_CYCLE: {
+            const cycle = action.payload;
+            let newCycleList = [...state.cycles];
+            newCycleList.unshift(cycle);
+            return Object.assign({}, state, {
+                cycles: newCycleList
             });
         }
         default:

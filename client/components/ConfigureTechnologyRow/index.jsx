@@ -18,69 +18,61 @@ class ConfigureTechnologyRow extends Component {
         const {
             runTechnologies,
             index,
-            handleRunTechnologiesChange
+            handleTechnologyRowChange
         } = this.props;
-        let newRunTechnologies = { ...runTechnologies };
-        newRunTechnologies.browser_version =
-            event.currentTarget.value === -1
-                ? undefined
-                : event.currentTarget.value;
 
-        handleRunTechnologiesChange(newRunTechnologies, index);
+        let version = event.currentTarget.value;
+        let newRunTechnologies = { ...runTechnologies };
+        newRunTechnologies.browser_version = version;
+
+        handleTechnologyRowChange(newRunTechnologies, index);
     }
 
     handleAtVersionChange(event) {
         const {
             runTechnologies,
             index,
-            handleRunTechnologiesChange
+            handleTechnologyRowChange
         } = this.props;
-        let newRunTechnologies = { ...runTechnologies };
-        newRunTechnologies.at_version =
-            event.currentTarget.value === -1
-                ? undefined
-                : event.currentTarget.value;
 
-        handleRunTechnologiesChange(newRunTechnologies, index);
+        let version = event.currentTarget.value;
+        let newRunTechnologies = { ...runTechnologies };
+        newRunTechnologies.at_version = version;
+
+        handleTechnologyRowChange(newRunTechnologies, index);
     }
 
     handleBrowserChange(event) {
         const {
             runTechnologies,
             index,
-            handleRunTechnologiesChange
+            handleTechnologyRowChange
         } = this.props;
+
+        let browserId = parseInt(event.currentTarget.value);
         let newRunTechnologies = { ...runTechnologies };
         newRunTechnologies.browser_id =
-            event.currentTarget.value === -1
-                ? undefined
-                : event.currentTarget.value;
+            browserId === -1 ? undefined : browserId;
 
-        handleRunTechnologiesChange(newRunTechnologies, index);
+        handleTechnologyRowChange(newRunTechnologies, index);
     }
 
     handleAtChange(event) {
         const {
             runTechnologies,
             index,
-            handleRunTechnologiesChange
+            handleTechnologyRowChange
         } = this.props;
-        let newRunTechnologies = { ...runTechnologies };
-        newRunTechnologies.at_id =
-            event.currentTarget.value === -1
-                ? undefined
-                : event.currentTarget.value;
 
-        handleRunTechnologiesChange(newRunTechnologies, index);
+        let atId = parseInt(event.currentTarget.value);
+        let newRunTechnologies = { ...runTechnologies };
+        newRunTechnologies.at_id = atId === -1 ? undefined : atId;
+
+        handleTechnologyRowChange(newRunTechnologies, index);
     }
 
     render() {
-        const {
-            availableBrowsers,
-            availableAts,
-            runTechnologies,
-            index
-        } = this.props;
+        const { availableBrowsers, availableAts, runTechnologies } = this.props;
 
         return (
             <Row>
@@ -146,7 +138,7 @@ ConfigureTechnologyRow.propTypes = {
     index: PropTypes.number,
     availableAts: PropTypes.array,
     availableBrowsers: PropTypes.array,
-    handleRunTechnologiesChange: PropTypes.func
+    handleTechnologyRowChange: PropTypes.func
 };
 
 export default ConfigureTechnologyRow;

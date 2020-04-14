@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import { Form, InputGroup, Table } from 'react-bootstrap';
+import { Form, Table } from 'react-bootstrap';
 
 class ConfigureRunsForExample extends Component {
     constructor(props) {
@@ -70,8 +70,6 @@ class ConfigureRunsForExample extends Component {
         const {
             example,
             runTechnologies,
-            testerConfig,
-            assignTesters,
             availableBrowsers,
             availableAts,
             users,
@@ -111,7 +109,7 @@ class ConfigureRunsForExample extends Component {
 
         return (
             <Fragment>
-                <h4>{example.name}</h4>
+                <h4>{example.name || example.directory}</h4>
                 {runsToConfigure.length !== 0 && (
                     <Table bordered>
                         <thead>
@@ -123,26 +121,30 @@ class ConfigureRunsForExample extends Component {
                         <tbody>
                             {runsToConfigure.map(runData => {
                                 let run = runData.run;
+
                                 let checked = this.state.runSelected[
                                     runData.techIndex
                                 ]
                                     ? true
                                     : false;
-                                let names =
+
+                                let names = undefined;
+                                if (
                                     runTestersByTechIndex &&
                                     runTestersByTechIndex[runData.techIndex]
-                                        ? runTestersByTechIndex[
-                                              runData.techIndex
-                                          ].map(testerId => {
-                                              let user = users.filter(
-                                                  u => u.id === testerId
-                                              )[0];
-                                              return user.fullname;
-                                          })
-                                        : undefined;
+                                ) {
+                                    names = runTestersByTechIndex[
+                                        runData.techIndex
+                                    ].map(testerId => {
+                                        let user = users.filter(
+                                            u => u.id === testerId
+                                        )[0];
+                                        return user.fullname;
+                                    });
+                                }
 
                                 return (
-                                    <tr>
+                                    <tr key={runData.techIndex}>
                                         <td>
                                             <label>
                                                 <input
@@ -160,7 +162,7 @@ class ConfigureRunsForExample extends Component {
                                             </label>
                                         </td>
                                         <td>
-                                            {names.length
+                                            {names && names.length
                                                 ? names.join(', ')
                                                 : 'no assignee'}
                                         </td>

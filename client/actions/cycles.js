@@ -1,5 +1,10 @@
 import axios from 'axios';
-import { CYCLES, DELETE_CYCLE, TEST_SUITE_VERSIONS } from './types';
+import { CYCLES, DELETE_CYCLE, SAVE_CYCLE, TEST_SUITE_VERSIONS } from './types';
+
+export const saveCycleDispatch = payload => ({
+    type: SAVE_CYCLE,
+    payload
+});
 
 export const deleteCycleDispatch = payload => ({
     type: DELETE_CYCLE,
@@ -15,6 +20,15 @@ export const testSuiteVersionsDispatch = payload => ({
     type: TEST_SUITE_VERSIONS,
     payload
 });
+
+export function saveCycle(cycle) {
+    return async function(dispatch) {
+        const response = await axios.post('/api/cycle', {
+            data: cycle
+        });
+        dispatch(saveCycleDispatch(response.data));
+    };
+}
 
 export function deleteCycle(id) {
     return async function(dispatch) {
