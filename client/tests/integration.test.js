@@ -22,7 +22,8 @@ describe('login actions dispatchers', () => {
                 email: 'foo@bar.com'
             },
             cycles: {
-                cycles: []
+                cycles: [],
+                testSuiteVersions: []
             },
             ats: {
                 names: []
