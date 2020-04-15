@@ -4,11 +4,15 @@ SELECT
   run.test_cycle_id AS test_cycle_id,
   browser_version.version AS browser_version,
   browser.name AS browser_name,
+  browser.id AS browser_id,
   at.key AS at_key,
+  at.id AS at_id,
   at_name.name AS at_name,
+  at_name.id AS at_name_id,
   at_version.version AS at_version,
   apg_example.directory AS apg_example_directory,
-  apg_example.name AS apg_example_name
+  apg_example.name AS apg_example_name,
+  apg_example.id AS apg_example_id
 FROM
   run,
   browser_version,

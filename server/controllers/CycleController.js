@@ -35,6 +35,31 @@ async function deleteCycle(req, res) {
     }
 }
 
+async function saveTestResults(req, res) {
+    try {
+        const testResult = req.body;
+        const savedTestResult = await CycleService.saveTestResults(testResult);
+        res.status(201).json(savedTestResult);
+    } catch (error) {
+        res.status(400);
+        res.end();
+        console.error(`Error caught in CycleController: ${error}`);
+    }
+}
+
+async function getRunsForCycleAndUser(req, res) {
+    try {
+        const cycleId = req.body.cycle_id;
+        const userId = req.body.user_id;
+        let runsById = await CycleService.getRunsForCycleAndUser(cycleId, userId);
+        res.status(201).json({ runsById });
+    } catch (error) {
+        res.status(400);
+        res.end();
+        console.error(`Error caught in CycleController: ${error}`);
+    }
+}
+
 async function getAllTestVersions(req, res) {
     try {
         const testVersions = await CycleService.getAllTestVersions();
@@ -50,5 +75,7 @@ module.exports = {
     configureCycle,
     getAllCycles,
     deleteCycle,
+    saveTestResults,
+    getRunsForCycleAndUser,
     getAllTestVersions
 };
