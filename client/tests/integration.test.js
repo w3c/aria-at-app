@@ -54,10 +54,14 @@ describe('login actions dispatchers', () => {
                 isLoggedIn: false
             },
             cycles: {
-                cycles: []
+                cycles: [],
+                testSuiteVersions: []
             },
             ats: {
                 names: []
+            },
+            users: {
+                users: []
             }
         };
 
