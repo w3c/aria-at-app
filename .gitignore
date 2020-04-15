@@ -108,3 +108,6 @@ storybook-static
 
 # Lighthouse
 .lighthouseci
+
+#VSCode
+.vscode

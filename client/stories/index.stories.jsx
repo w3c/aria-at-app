@@ -7,6 +7,7 @@ import { linkTo } from '@storybook/addon-links';
 import { Button, Welcome } from '@storybook/react/demo';
 import App from '../components/App';
 import Login from '../components/Login';
+import Signup from '../components/Signup';
 
 storiesOf('Welcome', module).add('to Storybook', () => (
     <Welcome showApp={linkTo('Button')} />
@@ -27,4 +28,8 @@ storiesOf('Button', module)
 storiesOf('App', module).add('the app', () => <App />);
 storiesOf('Login', module).add('login button', () => (
     <Login githubClientId={'12345'} />
+));
+
+storiesOf('Signup', module).add('signup button', () => (
+    <Signup onClick={action('clicked')} />
 ));

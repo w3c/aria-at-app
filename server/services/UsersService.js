@@ -1,5 +1,30 @@
-const { Users, UserToRole, TesterToRun } = require('../models/UsersModel');
+const {
+    Users,
+    UserToRole,
+    Role,
+    TesterToRun
+} = require('../models/UsersModel');
+const GithubService = require('./GithubService');
 const sequelize = global.sequelize;
+
+async function getUser({ fullname, username, email }) {
+    try {
+        const users = await Users.findAll({
+            where: {
+                fullname,
+                username,
+                email
+            }
+        });
+        if (users.length === 1) {
+            return users[0].dataValues;
+        }
+    } catch (error) {
+        console.error(`Error: ${error}`);
+        throw error;
+    }
+    return false;
+}
 
 async function addUser(user) {
     try {
@@ -156,10 +181,78 @@ async function getAllTesters() {
     }
 }
 
+async function saveUserAndRoles(options) {
+    let saved = false;
+    if (Object.keys(options).length === 0) return saved;
+    const {
+        user: { username, name, email },
+        accessToken
+    } = options;
+    const teams = await GithubService.getUserTeams({
+        accessToken,
+        userLogin: username
+    });
+
+    if (teams.length > 0) {
+        let userId;
+        try {
+            const newUser = await addUser({
+                fullname: name,
+                username,
+                email
+            });
+            userId = newUser.id;
+        } catch (error) {
+            console.error(`Error: ${error}`);
+            throw error;
+        }
+
+        let roleRows,
+            rolesMap = {};
+        try {
+            roleRows = await Role.findAll();
+        } catch (error) {
+            console.error(`Error: ${error}`);
+            throw error;
+        }
+
+        roleRows.map(r => (rolesMap[r.dataValues.name] = { ...r.dataValues }));
+        for (let team of teams) {
+            try {
+                const newUserToRole = await addUserToRole({
+                    user_id: userId,
+                    role_id: rolesMap[GithubService.teamToRole[team]].id
+                });
+                if (newUserToRole) saved = true;
+            } catch (error) {
+                console.error(`Error: ${error}`);
+                throw error;
+            }
+        }
+    }
+
+    return saved;
+}
+
+async function signupUser(options) {
+    const { name: fullname, username, email } = options.user;
+    const user = await getUser({
+        fullname,
+        username,
+        email
+    });
+    if (user) {
+        return true;
+    }
+    return saveUserAndRoles(options);
+}
+
 module.exports = {
+    getUser,
     addUser,
     addUserToRole,
     assignUsersToRun,
     removeUsersFromRun,
-    getAllTesters
+    getAllTesters,
+    signupUser
 };

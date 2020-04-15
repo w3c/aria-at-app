@@ -6,16 +6,16 @@ import { Button } from 'react-bootstrap';
 class Login extends Component {
     render() {
         const { isLoggedIn } = this.props;
-        const loginURL = `${process.env.API_SERVER}/api/auth/login?referer=${location.origin}&service=github`;
+        const loginURL = `${process.env.API_SERVER}/api/auth/oauth?referer=${location.origin}&service=github&type=login`;
         return (
-            (!isLoggedIn && (
+            !isLoggedIn && (
                 <Button
                     variant="primary"
                     onClick={() => (window.location.href = loginURL)}
                 >
                     Login with GitHub
                 </Button>
-            )) || <p>Logged In</p>
+            )
         );
     }
 }

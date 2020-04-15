@@ -1,10 +1,26 @@
 const create = require('../../tests/util/create');
 
 const Users = {
-    create
+    create,
+    findAll() {
+        return [];
+    }
 };
 const UserToRole = {
     create
 };
 
-module.exports = { Users, UserToRole };
+const Role = {
+    findAll() {
+        return [
+            {
+                dataValues: { name: 'tester', id: 1 }
+            },
+            {
+                dataValues: { name: 'admin', id: 2 }
+            }
+        ];
+    }
+};
+
+module.exports = { Users, UserToRole, Role };

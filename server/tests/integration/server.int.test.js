@@ -101,8 +101,8 @@ describe(userEndpoint, () => {
 
 jest.mock('../../routes/auth');
 describe(authEndpoint, () => {
-    it(`GET ${authEndpoint}/login`, async () => {
-        const response = await request(listener).get(`${authEndpoint}/login`);
+    it(`GET ${authEndpoint}/oauth`, async () => {
+        const response = await request(listener).get(`${authEndpoint}/oauth`);
         expect(response.statusCode).toBe(303);
     });
     it(`GET ${authEndpoint}/authorize`, async () => {
