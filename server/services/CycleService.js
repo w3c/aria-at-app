@@ -152,6 +152,7 @@ async function configureCycle(cycle) {
  *           at_version,
  *           apg_example_directory,
  *           apg_example_name
+ *           users: [user_id, user_id]
  *         }
  *       ]
  *     };
@@ -176,6 +177,21 @@ async function getAllCycles(id) {
                     run_data.test_cycle_id = ${cycle.id}
             `)
             )[0];
+
+            for (let run of runs) {
+                let users = (
+                    await sequelize.query(`
+                  select
+                    user_id
+                  from
+                    tester_to_run
+                  where
+                    tester_to_run.run_id = ${run.id}
+                `)
+                )[0];
+
+                run.user = users.map(u => u.user_id);
+            }
 
             cycle.runs = runs;
         }
@@ -316,9 +332,167 @@ async function getAllTestVersions() {
     }
 }
 
+
+/**
+ * Saves a test result and marks the test as "complete"
+ *
+ * @param {object} result - result object to save
+ * @return {object} - the saved result object (the same data, now with "id" and "status: complete")
+ *
+ * @example
+ *
+ *     result = {
+ *       test_id,
+ *       run_id,
+ *       user_id,
+ *       result
+ *     };
+ */
+async function saveTestResults(testResult) {
+    try {
+        let statusId = (
+            await sequelize.query(`
+             SELECT
+               id
+             FROM
+               test_status
+             WHERE
+               test_status.name = 'complete'
+        `)
+        )[0][0].id;
+
+        let testResultId = (
+            await sequelize.query(`
+             INSERT INTO
+               test_result(test_id, run_id, user_id, status_id, result)
+             VALUES
+               (${testResult.test_id}, ${testResult.run_id}, ${testResult.user_id}, ${statusId}, ${testResult.result ? testResult.result : "NULL"})
+             RETURNING ID
+        `)
+        )[0];
+
+        testResult.id = testResultId;
+        testResult.status = 'complete';
+        return testResult;
+    } catch (error) {
+        console.error(`Error: ${error}`);
+        throw error;
+    }
+}
+
+/**
+ * Gets all the runs that a user is assigned to or can perform within a cycle
+ *
+ * @param {int} cycleId - cycle id
+ * @param {int} userId - user id
+ * @return {object} - list of tests (with save test result data if it exists) keyed by runs
+ *
+ * @example
+ *
+ *    {
+ *      run_id: {
+ *        tests:[{
+ *            id               // test.id
+ *            name             // test.name
+ *            file             // test.file
+ *            execution_order
+ *            test_result : {
+ *              test_result_id
+ *              user_id
+ *              status_id
+ *              result
+ *            }
+ *          }]
+ *        }
+ *      }
+ *    }
+ */
+async function getRunsForCycleAndUser(cycleId, userId) {
+    try {
+
+        // We need to get all the runs for which the user has been configured
+        // or for which there is an AT that the user can test
+        let runs = (
+            await sequelize.query(`
+              select
+                *
+              from
+                run_data
+              where
+                run_data.test_cycle_id = ${cycleId}
+                and run_data.at_name in (
+                  select
+                    at_name.name
+                  from
+                    at_name,
+                    user_to_at
+                  where
+                    user_to_at.at_name_id = at_name.id
+                    and user_to_at.user_id = ${userId}
+                )
+        `)
+        )[0];
+
+        let runsById = {};
+
+        for (let run of runs) {
+            runsById[run.id] = {tests: []};
+
+            let tests = (await sequelize.query(`
+              select
+                id,
+                name,
+                file,
+                execution_order
+              from
+                test
+              where
+                test.apg_example_id = ${run.apg_example_id}
+              order by
+                execution_order
+            `))[0];
+
+            let test_results = (await sequelize.query(`
+              select
+                test_result.id as id,
+                test_result.result as result,
+                test_result.test_id as test_id,
+                test_status.name as status
+              from
+                test_result,
+                test_status
+              where
+                test_result.status_id = test_status.id
+                and test_result.run_id = ${run.id}
+                and test_result.user_id = ${userId}
+            `))[0];
+
+            for (let test of tests) {
+                let results = test_results.filter(r => r.test_id === test.id);
+                if (results.length === 1) {
+                    test.result = {
+                        id: results[0].id,
+                        result: results[0].result,
+                        status: results[0].status,
+                        user_id: userId
+                    }
+                }
+                runsById[run.id].tests.push(test);
+            }
+        }
+
+        return runsById;
+    } catch (error) {
+        console.error(`Error: ${error}`);
+        throw error;
+    }
+}
+
 module.exports = {
     configureCycle,
     getAllCycles,
     deleteCycle,
-    getAllTestVersions
+    getAllTestVersions,
+    getRunsForCycleAndUser,
+    saveTestResults
 };

@@ -1,9 +1,9 @@
-CREATE TABLE status (
+CREATE TABLE test_status (
   id              serial primary key,
   name            text
 );
 
-INSERT INTO status (name) VALUES
+INSERT INTO test_status (name) VALUES
     ('skipped'),
     ('incomplete'),
     ('complete');
@@ -13,6 +13,7 @@ CREATE TABLE test_result (
   test_id         int not null references test(id),
   run_id          int not null references run(id),
   user_id         int not null references users(id),
-  status_id       int references test_result_status(id),
+  status_id       int references test_status(id),
   result          json
 );
+
