@@ -51,7 +51,10 @@ async function getRunsForCycleAndUser(req, res) {
     try {
         const cycleId = req.body.cycle_id;
         const userId = req.body.user_id;
-        let runsById = await CycleService.getRunsForCycleAndUser(cycleId, userId);
+        let runsById = await CycleService.getRunsForCycleAndUser(
+            cycleId,
+            userId
+        );
         res.status(201).json({ runsById });
     } catch (error) {
         res.status(400);
