@@ -332,7 +332,6 @@ async function getAllTestVersions() {
     }
 }
 
-
 /**
  * Saves a test result and marks the test as "complete"
  *
@@ -366,7 +365,9 @@ async function saveTestResults(testResult) {
              INSERT INTO
                test_result(test_id, run_id, user_id, status_id, result)
              VALUES
-               (${testResult.test_id}, ${testResult.run_id}, ${testResult.user_id}, ${statusId}, ${testResult.result ? testResult.result : "NULL"})
+               (${testResult.test_id}, ${testResult.run_id}, ${
+                testResult.user_id
+            }, ${statusId}, ${testResult.result ? testResult.result : 'NULL'})
              RETURNING ID
         `)
         )[0];
@@ -409,7 +410,6 @@ async function saveTestResults(testResult) {
  */
 async function getRunsForCycleAndUser(cycleId, userId) {
     try {
-
         // We need to get all the runs for which the user has been configured
         // or for which there is an AT that the user can test
         let runs = (
@@ -436,9 +436,10 @@ async function getRunsForCycleAndUser(cycleId, userId) {
         let runsById = {};
 
         for (let run of runs) {
-            runsById[run.id] = {tests: []};
+            runsById[run.id] = { tests: [] };
 
-            let tests = (await sequelize.query(`
+            let tests = (
+                await sequelize.query(`
               select
                 id,
                 name,
@@ -450,9 +451,11 @@ async function getRunsForCycleAndUser(cycleId, userId) {
                 test.apg_example_id = ${run.apg_example_id}
               order by
                 execution_order
-            `))[0];
+            `)
+            )[0];
 
-            let test_results = (await sequelize.query(`
+            let test_results = (
+                await sequelize.query(`
               select
                 test_result.id as id,
                 test_result.result as result,
@@ -465,7 +468,8 @@ async function getRunsForCycleAndUser(cycleId, userId) {
                 test_result.status_id = test_status.id
                 and test_result.run_id = ${run.id}
                 and test_result.user_id = ${userId}
-            `))[0];
+            `)
+            )[0];
 
             for (let test of tests) {
                 let results = test_results.filter(r => r.test_id === test.id);
@@ -475,7 +479,7 @@ async function getRunsForCycleAndUser(cycleId, userId) {
                         result: results[0].result,
                         status: results[0].status,
                         user_id: userId
-                    }
+                    };
                 }
                 runsById[run.id].tests.push(test);
             }
