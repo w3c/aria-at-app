@@ -6,4 +6,4 @@ export const DELETE_CYCLE = 'DELETE_CYCLE';
 export const ATS = 'ATS';
 export const SAVE_CYCLE = 'SAVE_CYCLE';
 export const TEST_SUITE_VERSIONS = 'TEST_SUITE_VERSIONS';
-export const USER_CONFIGS = 'USER_CONFIGS';
+export const GET_USERS = 'GET_USERS';
