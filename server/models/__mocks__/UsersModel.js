@@ -1,4 +1,5 @@
 const create = require('../../tests/util/create');
+const listOfAts = require('../../tests/mock-data/listOfATs.json');
 
 const Users = {
     create,
@@ -23,4 +24,10 @@ const Role = {
     }
 };
 
-module.exports = { Users, UserToRole, Role };
+const UserToAt = {
+    findAll() {
+        return listOfAts.atsDB;
+    }
+};
+
+module.exports = { Users, UserToRole, Role, UserToAt };

@@ -10,7 +10,7 @@ const ATService = require('../../services/ATService');
 
 const newUser = require('../mock-data/newUser.json');
 const newUserToRole = require('../mock-data/newUserToRole.json');
-const listOfATNames = require('../mock-data/listOfATs.json');
+const listOfATs = require('../mock-data/listOfATs.json');
 jest.mock('../../models/UsersModel');
 
 describe('UsersService', () => {
@@ -75,6 +75,15 @@ describe('UsersService', () => {
             });
             const userSaved = await UsersService.signupUser({ user: newUser });
             expect(userSaved).toBe(true);
+        });
+    });
+    describe('UsersService.getUserAts', () => {
+        it('should have a getUserAts function', () => {
+            expect(typeof UsersService.getUserAts).toBe('function');
+        });
+        it('should return a list of AT ids', async () => {
+            let userAts = await UsersService.getUserAts(1);
+            expect(userAts).toEqual(listOfATs.atsDB);
         });
     });
 });
@@ -151,13 +160,13 @@ describe('GithubService', () => {
 
 jest.mock('../../models/ATModel');
 describe('ATService', () => {
-    describe('ATService.getATNames', () => {
-        it('should have a getATNames function', () => {
-            expect(typeof ATService.getATNames).toBe('function');
+    describe('ATService.getATs', () => {
+        it('should have a getATs function', () => {
+            expect(typeof ATService.getATs).toBe('function');
         });
         it('should return a list of AT names', async () => {
-            const expected = listOfATNames.atNames;
-            await expect(ATService.getATNames()).resolves.toEqual(expected);
+            const expected = listOfATs.atsDB;
+            await expect(ATService.getATs()).resolves.toEqual(expected);
         });
     });
 });

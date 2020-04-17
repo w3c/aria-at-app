@@ -16,4 +16,8 @@ router.post('/role', UsersController.addUserToRole);
 router.post('/run', UsersController.assignUsersToRun);
 router.delete('/run', UsersController.removeUsersFromRun);
 
+// Get or set ATs for a given user
+router.get('/ats', UsersController.getUserAts);
+router.post('/ats', UsersController.setUserAts);
+
 module.exports = router;

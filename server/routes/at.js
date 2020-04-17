@@ -3,6 +3,6 @@ const ATController = require('../controllers/ATController');
 
 const router = Router();
 
-router.get('/', ATController.getATNames);
+router.get('/', ATController.getATs);
 
 module.exports = router;

@@ -1,16 +1,11 @@
 import { ATS } from '../actions/types';
 
-const initialState = {
-    names: []
-};
+const initialState = [];
 
 export default (state = initialState, action) => {
     switch (action.type) {
         case ATS: {
-            const { names } = action.payload;
-            return {
-                names
-            };
+            return action.payload;
         }
         default:
             return state;

@@ -1,6 +1,7 @@
-import { CHECK_LOGGED_IN, LOG_OUT, ATS } from '../actions/types';
+import { CHECK_LOGGED_IN, LOG_OUT, ATS, SET_USER_ATS } from '../actions/types';
 import loginReducer from '../reducers/login';
 import atsReducer from '../reducers/ats';
+import usersReducer from '../reducers/users';
 
 describe('login reducer tests', () => {
     test('returns default initial state when no action is passed', () => {
@@ -39,7 +40,7 @@ describe('login reducer tests', () => {
 describe('ats reducer tests', () => {
     test('returns default initial state when no action is passed', () => {
         const newState = atsReducer(undefined, {});
-        expect(newState).toEqual({ names: [] });
+        expect(newState).toEqual([]);
     });
     test('returns object upon receiving an action of type `ATS`', () => {
         const apiPayload = { names: ['Foo', 'Bar'] };
@@ -48,5 +49,23 @@ describe('ats reducer tests', () => {
             payload: apiPayload
         });
         expect(newState).toEqual({ names: ['Foo', 'Bar'] });
+    });
+});
+
+describe('users reducer tests', () => {
+    test('returns default initial state when no action is passed', () => {
+        const newState = usersReducer(undefined, {});
+        expect(newState).toEqual({ users: [], currentUser: { ats: [] } });
+    });
+    test('returns object upon receiving an action of type `SET_USER_ATS`', () => {
+        const apiPayload = ['Foo', 'Bar'];
+        const newState = usersReducer(undefined, {
+            type: SET_USER_ATS,
+            payload: apiPayload
+        });
+        expect(newState).toEqual({
+            users: [],
+            currentUser: { ats: apiPayload }
+        });
     });
 });

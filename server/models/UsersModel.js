@@ -83,6 +83,9 @@ const UserToAt = sequelize.define(
         at_name_id: {
             type: DataTypes.INTEGER,
             allowNull: false
+        },
+        active: {
+            type: DataTypes.BOOLEAN
         }
     },
     {
