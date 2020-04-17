@@ -1,4 +1,4 @@
-import { USER_CONFIGS } from '../actions/types';
+import { GET_USERS } from '../actions/types';
 
 // TODO: Change this into a object key'd by user id?
 const initialState = {
@@ -7,10 +7,10 @@ const initialState = {
 
 export default (state = initialState, action) => {
     switch (action.type) {
-        case USER_CONFIGS: {
-            const userConfigs = action.payload;
+        case GET_USERS: {
+            const users = action.payload;
             return Object.assign({}, state, {
-                users: userConfigs
+                users
             });
         }
         default:

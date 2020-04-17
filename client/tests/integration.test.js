@@ -27,6 +27,9 @@ describe('login actions dispatchers', () => {
             },
             ats: {
                 names: []
+            },
+            users: {
+                users: []
             }
         };
 
@@ -93,10 +96,14 @@ describe('ats action dispatchers', () => {
                 isLoggedIn: false
             },
             cycles: {
-                cycles: []
+                cycles: [],
+                testSuiteVersions: []
             },
             ats: {
                 names: ['JAWS', 'NVDA', 'VoiceOver']
+            },
+            users: {
+                users: []
             }
         };
 

@@ -37,7 +37,7 @@ export default (state = initialState, action) => {
         case SAVE_CYCLE: {
             const cycle = action.payload;
             let newCycleList = [...state.cycles];
-            newCycleList.unshift(cycle);
+            newCycleList.push(cycle);
             return Object.assign({}, state, {
                 cycles: newCycleList
             });

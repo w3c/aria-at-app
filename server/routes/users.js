@@ -6,14 +6,14 @@ const router = Router();
 // Add new user
 router.put('/', UsersController.addUser);
 
+// Get all users and their configs
+router.get('/', UsersController.getAllTesters);
+
 // Add user to role
 router.post('/role', UsersController.addUserToRole);
 
 // Add or delete list of users to run
 router.post('/run', UsersController.assignUsersToRun);
 router.delete('/run', UsersController.removeUsersFromRun);
-
-// Get tester configurations for all users
-router.get('/config', UsersController.getAllTesters);
 
 module.exports = router;

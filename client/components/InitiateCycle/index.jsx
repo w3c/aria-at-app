@@ -20,15 +20,6 @@ class InitiateCycle extends Component {
             runTestersByExample: {} // example_id: runTechnolgiesIndex: [userlist]
         };
 
-        /*
-         * at_version,
-         * browser_version,
-         * at_id,
-         * browser_id,
-         * apg_example_id,
-         * users: [user_id, user_id]
-         */
-
         this.handleVersionChange = this.handleVersionChange.bind(this);
         this.handleNameChange = this.handleNameChange.bind(this);
         this.handleTechnologyRowChange = this.handleTechnologyRowChange.bind(
@@ -77,7 +68,11 @@ class InitiateCycle extends Component {
             created_user_id: 1
         };
 
-        // TODO: Do not allow saving of cycle without a name. Put focus on name field
+        // Do not allow saving of cycle without a name. Put focus on name field
+        if (!this.state.name || this.state.name === '') {
+            this.nameInput.focus();
+            return;
+        }
 
         const runs = [];
         for (
@@ -114,6 +109,13 @@ class InitiateCycle extends Component {
             }
         }
 
+        if (runs.length === 0) {
+            window.alert(
+                "TODO: Make sure it's clear to user you need to fill in the AT/Browser fields all the way"
+            );
+            return;
+        }
+
         cycle.runs = runs;
         dispatch(saveCycle(cycle));
 
@@ -134,8 +136,7 @@ class InitiateCycle extends Component {
         let user = users.filter(u => u.id === userId)[0];
         let atNameIdsForUser = user.configured_ats.map(a => a.at_name_id);
 
-        let newRunTestersByExample = { ...this.state.runTestersByExample };
-        let newRunTestersByTechIndex = {
+        let testersByTechIndex = {
             ...this.state.runTestersByExample[exampleId]
         };
 
@@ -145,18 +146,19 @@ class InitiateCycle extends Component {
                     this.state.runTechnologyRows[technologyIndex].at_id
                 ];
             if (atNameIdsForUser.indexOf(nameId) >= 0) {
-                if (newRunTestersByTechIndex[technologyIndex]) {
-                    newRunTestersByTechIndex[technologyIndex].push(userId);
+                if (
+                    testersByTechIndex[technologyIndex] &&
+                    testersByTechIndex[technologyIndex].indexOf(userId) < 0
+                ) {
+                    testersByTechIndex[technologyIndex].push(userId);
                 } else {
-                    newRunTestersByTechIndex[technologyIndex] = [userId];
+                    testersByTechIndex[technologyIndex] = [userId];
                 }
             }
         }
-
-        newRunTestersByExample[exampleId] = newRunTestersByTechIndex;
-        this.setState({
-            runTestersByExample: newRunTestersByExample
-        });
+        let newRunTestersByExample = { ...this.state.runTestersByExample };
+        newRunTestersByExample[exampleId] = testersByTechIndex;
+        this.setState({ runTestersByExample: newRunTestersByExample });
     }
 
     removeAllTestersFromRun(exampleId, runTechnologyIndexes) {
@@ -260,6 +262,9 @@ class InitiateCycle extends Component {
                                 <Form.Control
                                     value={this.state.name}
                                     onChange={this.handleNameChange}
+                                    ref={input => {
+                                        this.nameInput = input;
+                                    }}
                                 />
                             </Form.Group>
                         </Col>
@@ -331,7 +336,7 @@ class InitiateCycle extends Component {
 InitiateCycle.propTypes = {
     testSuiteVersions: PropTypes.array,
     dispatch: PropTypes.func,
-    history: PropTypes.func,
+    history: PropTypes.object,
     users: PropTypes.array
 };
 

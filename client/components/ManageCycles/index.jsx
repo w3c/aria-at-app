@@ -8,8 +8,10 @@ import { getTestCycles } from '../../actions/cycles';
 
 class ManageCycles extends Component {
     componentDidMount() {
-        const { dispatch } = this.props;
-        dispatch(getTestCycles());
+        const { dispatch, cycles } = this.props;
+        if (cycles.length === 0) {
+            dispatch(getTestCycles());
+        }
     }
 
     render() {
