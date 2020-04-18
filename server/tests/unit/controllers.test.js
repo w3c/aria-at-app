@@ -62,21 +62,23 @@ describe('AuthController', () => {
         req = httpMocks.createRequest({
             query: {
                 referer: 'localhost:5000',
-                service: 'github'
+                service: 'github',
+                code: '1345908724adsf32'
             }
         });
         req.session = {
             destroy: callback => {
                 callback();
-            }
+            },
+            referer: 'localhost:5000'
         };
     });
-    describe('AuthController.login', () => {
-        it('should have a login function', () => {
-            expect(typeof AuthController.login).toBe('function');
+    describe('AuthController.oauth', () => {
+        it('should have a oauth function', () => {
+            expect(typeof AuthController.oauth).toBe('function');
         });
         it('should return 303 response code', async () => {
-            await AuthController.login(req, res, next);
+            await AuthController.oauth(req, res, next);
             expect(res.statusCode).toBe(303);
             expect(res._isEndCalled()).toBeTruthy();
         });
@@ -85,10 +87,27 @@ describe('AuthController', () => {
         it('should have an authorize function', () => {
             expect(typeof AuthController.authorize).toBe('function');
         });
-        it('should return 303 response code', async () => {
+        it('should return 303 response code to signup instructions when there is no authorize type', async () => {
             await AuthController.authorize(req, res, next);
             expect(res.statusCode).toBe(303);
             expect(res._isEndCalled()).toBeTruthy();
+            expect(res._getRedirectUrl()).toBe(
+                'localhost:5000/signupInstructions'
+            );
+        });
+        it('should return 303 response code to referer on signup auth type', async () => {
+            req.session['authType'] = 'signup';
+            await AuthController.authorize(req, res, next);
+            expect(res.statusCode).toBe(303);
+            expect(res._isEndCalled()).toBeTruthy();
+            expect(res._getRedirectUrl()).toBe('localhost:5000');
+        });
+        it('should return 303 response code to referer on login auth type', async () => {
+            req.session['authType'] = 'login';
+            await AuthController.authorize(req, res, next);
+            expect(res.statusCode).toBe(303);
+            expect(res._isEndCalled()).toBeTruthy();
+            expect(res._getRedirectUrl()).toBe('localhost:5000');
         });
     });
     describe('AuthController.currentUser', () => {

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { renderRoutes } from 'react-router-config';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { Container, Navbar, NavDropdown } from 'react-bootstrap';
+import { Container, Navbar, Nav } from 'react-bootstrap';
 import { handleCheckLoggedIn, handleLogout } from '../../actions/login';
 
 class App extends Component {
@@ -33,31 +33,34 @@ class App extends Component {
                             <h1>ARIA-AT Report</h1>
                         </Navbar.Brand>
                         <Navbar.Toggle aria-controls="basic-navbar-nav" />
-                        <Navbar.Collapse id="basic-navbar-nav">
-                            <NavDropdown title="Menu">
-                                {(!isLoggedIn && (
-                                    <NavDropdown.Item as={Link} to="/login">
+                        <Navbar.Collapse
+                            id="basic-navbar-nav"
+                            className="justify-content-end"
+                        >
+                            {(!isLoggedIn && (
+                                <React.Fragment>
+                                    <Nav.Link as={Link} to="/login">
                                         Login
-                                    </NavDropdown.Item>
-                                )) || (
-                                    <NavDropdown.Item
-                                        as={Link}
-                                        to="/"
-                                        onClick={this.logout}
-                                    >
-                                        Logout
-                                    </NavDropdown.Item>
-                                )}
-                                <NavDropdown.Item
+                                    </Nav.Link>
+                                    <Nav.Link as={Link} to="/signup">
+                                        Sign Up
+                                    </Nav.Link>
+                                </React.Fragment>
+                            )) || (
+                                <Nav.Link
                                     as={Link}
-                                    to="/account/settings"
+                                    to="/"
+                                    onClick={this.logout}
                                 >
-                                    Settings
-                                </NavDropdown.Item>
-                                <NavDropdown.Item as={Link} to="/cycles">
-                                    Testing Cycle Management
-                                </NavDropdown.Item>
-                            </NavDropdown>
+                                    Logout
+                                </Nav.Link>
+                            )}
+                            <Nav.Link as={Link} to="/account/settings">
+                                Settings
+                            </Nav.Link>
+                            <Nav.Link as={Link} to="/cycles">
+                                Testing Cycle Management
+                            </Nav.Link>
                         </Navbar.Collapse>
                     </Navbar>
                 </Container>

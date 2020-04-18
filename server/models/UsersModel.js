@@ -21,6 +21,20 @@ const Users = sequelize.define(
     }
 );
 
+const Role = sequelize.define(
+    'Role',
+    {
+        name: {
+            type: DataTypes.TEXT
+        }
+    },
+    {
+        tableName: 'role',
+        createdAt: false,
+        updatedAt: false
+    }
+);
+
 const UserToRole = sequelize.define(
     'UserToRole',
     {
@@ -78,4 +92,4 @@ const UserToAt = sequelize.define(
     }
 );
 
-module.exports = { Users, UserToRole, TesterToRun, UserToAt };
+module.exports = { Users, UserToRole, Role, TesterToRun, UserToAt };

@@ -1,3 +1,8 @@
+process.env = {
+    ...process.env,
+    GITHUB_TEAM_TESTER: 'Team 1',
+    GITHUB_TEAM_ADMIN: 'Team 2'
+};
 const moxios = require('moxios');
 const UsersService = require('../../services/UsersService');
 const GithubService = require('../../services/GithubService');
@@ -7,6 +12,7 @@ const newUser = require('../mock-data/newUser.json');
 const newUserToRole = require('../mock-data/newUserToRole.json');
 const listOfATNames = require('../mock-data/listOfATs.json');
 jest.mock('../../models/UsersModel');
+
 describe('UsersService', () => {
     describe('UsersService.addUser', () => {
         it('should have a addUser function', () => {
@@ -26,6 +32,49 @@ describe('UsersService', () => {
             await expect(
                 UsersService.addUserToRole(newUserToRole)
             ).resolves.toEqual(newUserToRole);
+        });
+    });
+    describe('UsersService.signupUser', () => {
+        beforeEach(() => {
+            moxios.install();
+        });
+
+        afterEach(() => {
+            moxios.uninstall();
+        });
+
+        it('should have a signupUser function', () => {
+            expect(typeof UsersService.signupUser).toBe('function');
+        });
+        it('should save a user and role if the user is new', async () => {
+            moxios.wait(() => {
+                const request = moxios.requests.mostRecent();
+                request.respondWith({
+                    status: 200,
+                    response: {
+                        data: {
+                            organization: {
+                                teams: {
+                                    edges: [
+                                        {
+                                            node: {
+                                                name: 'Team 1'
+                                            }
+                                        },
+                                        {
+                                            node: {
+                                                name: 'Team 2'
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                });
+            });
+            const userSaved = await UsersService.signupUser({ user: newUser });
+            expect(userSaved).toBe(true);
         });
     });
 });

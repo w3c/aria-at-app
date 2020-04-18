@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const {
-    login,
+    oauth,
     authorize,
     currentUser,
     logout
@@ -8,7 +8,7 @@ const {
 
 const router = Router();
 
-router.get('/login', login);
+router.get('/oauth', oauth);
 router.get('/authorize', authorize);
 router.get('/me', currentUser);
 router.post('/logout', logout);

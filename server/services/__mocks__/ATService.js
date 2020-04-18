@@ -4,6 +4,6 @@ const ATService = {
     getATNames() {
         return listOfATNames.atNames;
     }
-}
+};
 
 module.exports = ATService;

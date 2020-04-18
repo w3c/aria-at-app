@@ -7,13 +7,13 @@ const ATModel = {
         return this.ats.map(at => {
             let obj = {};
             attributes.forEach(a => {
-                obj[a] = at[a]
-            })
+                obj[a] = at[a];
+            });
             return obj;
         });
     }
-}
+};
 
 module.exports = {
     ATModel
-}
+};
