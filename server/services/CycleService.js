@@ -190,7 +190,7 @@ async function getAllCycles(id) {
                 `)
                 )[0];
 
-                run.user = users.map(u => u.user_id);
+                run.testers = users.map(u => u.user_id);
             }
 
             cycle.runs = runs;
@@ -287,14 +287,12 @@ async function getAllTestVersions() {
                  at.key as at_key,
                  at.id as at_id
                from
-                 test_to_at,
                  at,
                  at_name
                where
-                 test_to_at.test_id = ${testVersion.id}
-                 AND test_to_at.at_id = at.id
+                 at.test_version_id = ${testVersion.id}
                  AND at.at_name_id = at_name.id
-          `)
+            `)
             )[0];
 
             let browsers = (
@@ -303,7 +301,7 @@ async function getAllTestVersions() {
                  *
                from
                  browser
-          `)
+            `)
             )[0];
 
             testVersion.supported_ats = ats;
@@ -391,19 +389,21 @@ async function saveTestResults(testResult) {
  * @example
  *
  *    {
- *      run_id: {
- *        tests:[{
- *            id               // test.id
- *            name             // test.name
- *            file             // test.file
- *            execution_order
- *            test_result : {
- *              test_result_id
- *              user_id
- *              status_id
- *              result
- *            }
- *          }]
+ *      cycle_id: {
+ *        run_id: {
+ *          tests:[{
+ *              id               // test.id
+ *              name             // test.name
+ *              file             // test.file
+ *              execution_order
+ *              test_result : {
+ *                test_result_id
+ *                user_id
+ *                status_id
+ *                result
+ *              }
+ *            }]
+ *          }
  *        }
  *      }
  *    }
@@ -441,14 +441,17 @@ async function getRunsForCycleAndUser(cycleId, userId) {
             let tests = (
                 await sequelize.query(`
               select
-                id,
+                test.id as id,
                 name,
                 file,
                 execution_order
               from
-                test
+                test,
+                test_to_at
               where
                 test.apg_example_id = ${run.apg_example_id}
+                and test_to_at.test_id = test.id
+                and test_to_at.at_id = ${run.at_id}
               order by
                 execution_order
             `)

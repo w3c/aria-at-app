@@ -5,6 +5,8 @@ import SignupInstructions from '@components/SignupInstructions';
 import UserSettings from '@components/UserSettings';
 import ManageCycles from '@components/ManageCycles';
 import InitiateCycle from '@components/InitiateCycle';
+import TesterHome from '@components/TesterHome';
+import TestQueue from '@components/TestQueue';
 
 export default [
     {
@@ -35,6 +37,15 @@ export default [
                 path: '/cycles',
                 exact: true,
                 component: ManageCycles
+            },
+            {
+                path: '/cycle/:cycleId/test-queue',
+                component: TestQueue,
+            },
+            {
+                path: '/tester-home',
+                exact: true,
+                component: TesterHome
             },
             {
                 path: '/initiate-cycle',

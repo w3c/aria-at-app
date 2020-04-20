@@ -54,6 +54,19 @@ const UserToRole = sequelize.define(
     }
 );
 
+Users.belongsToMany(Role, {
+    through: 'UserToRole',
+    foreignKey: {
+        name: 'user_id'
+    }
+});
+Role.belongsToMany(Users, {
+    through: 'UserToRole',
+    foreignKey: {
+        name: 'role_id'
+    }
+});
+
 const TesterToRun = sequelize.define(
     'TesterToRun',
     {

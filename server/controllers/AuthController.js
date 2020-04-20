@@ -61,7 +61,10 @@ module.exports = {
                 username,
                 email
             });
-            if (dbUser) authorized = true;
+            if (dbUser) {
+                authorized = true;
+                userToAuthorize = dbUser;
+            }
         }
 
         if (authorized) {

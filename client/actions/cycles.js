@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { CYCLES, DELETE_CYCLE, SAVE_CYCLE, TEST_SUITE_VERSIONS } from './types';
+import { CYCLES, DELETE_CYCLE, SAVE_CYCLE, TEST_SUITE_VERSIONS, RUNS_FOR_USER_AND_CYCLE } from './types';
 
 export const saveCycleDispatch = payload => ({
     type: SAVE_CYCLE,
@@ -18,6 +18,11 @@ export const cyclesDispatch = payload => ({
 
 export const testSuiteVersionsDispatch = payload => ({
     type: TEST_SUITE_VERSIONS,
+    payload
+});
+
+export const runsForUserAndCycleDispatch = payload => ({
+    type: RUNS_FOR_USER_AND_CYCLE,
     payload
 });
 
@@ -43,6 +48,13 @@ export function getTestCycles() {
     return async function(dispatch) {
         const response = await axios.get('/api/cycle');
         dispatch(cyclesDispatch(response.data));
+    };
+}
+
+export function getRunsForUserAndCycle(cycleId) {
+    return async function(dispatch) {
+        const response = await axios.get(`/api/cycle/runs?cycleId=${cycleId}`);
+        dispatch(runsForUserAndCycleDispatch(response.data));
     };
 }
 

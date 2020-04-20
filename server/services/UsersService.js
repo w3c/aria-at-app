@@ -12,6 +12,7 @@ async function getUser(user) {
     const { fullname, username, email } = user;
     try {
         const users = await Users.findAll({
+            attributes: ['id', 'fullname', 'username', 'email'],
             where: {
                 fullname,
                 username,
@@ -19,7 +20,12 @@ async function getUser(user) {
             }
         });
         if (users.length === 1) {
-            return users[0].dataValues;
+            const rolesForUser = await users[0].getRoles();
+            const roles = rolesForUser.map(r => r.dataValues.name)
+            return {
+                ...users[0].dataValues,
+                roles
+            };
         }
     } catch (error) {
         console.error(`Error: ${error}`);

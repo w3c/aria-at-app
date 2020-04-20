@@ -2,13 +2,15 @@ import {
     CYCLES,
     DELETE_CYCLE,
     SAVE_CYCLE,
-    TEST_SUITE_VERSIONS
+    TEST_SUITE_VERSIONS,
+    RUNS_FOR_USER_AND_CYCLE
 } from '../actions/types';
 
 // TODO: Change this into a object key'd by cycle id?
 const initialState = {
     cycles: [],
-    testSuiteVersions: []
+    testSuiteVersions: [],
+    runsForCycle: {}
 };
 
 export default (state = initialState, action) => {
@@ -40,6 +42,14 @@ export default (state = initialState, action) => {
             newCycleList.push(cycle);
             return Object.assign({}, state, {
                 cycles: newCycleList
+            });
+        }
+        case RUNS_FOR_USER_AND_CYCLE: {
+            return Object.assign({}, state, {
+                runsForCycle: {
+                    ...state.runsForCycle,
+                    [parseInt(action.payload.cycleId)]: action.payload.runsForCycle
+                }
             });
         }
         default:
