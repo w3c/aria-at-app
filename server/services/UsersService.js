@@ -6,6 +6,7 @@ const {
     UserToAt
 } = require('../models/UsersModel');
 const GithubService = require('./GithubService');
+const { Op } = require('sequelize');
 const sequelize = global.sequelize;
 
 async function getUser(user) {
@@ -57,32 +58,50 @@ async function addUserToRole(userToRole) {
 /**
  * Saves new entries to the tester_to_run table.
  *
- * @param {object} data - data to save
- * @return {object} - a list of all tester_to_run records (user_id, run_id) for the provide run_id
+ * @param {array} users - a list of users
+ * @param {array} runs - a list of runs
+ * @return {object} - lists of all users for a run (not just the newly saved users) keyed by run.
  *
  * @example
  *
- *     assignUsersToRun({
- *       run_id: run_id
- *       users: [id1, id2]
- *     });
+ *     assignUsersToRuns(
+ *       [run_id1, run_id2]
+ *       [id1, id2]
+ *     );
  */
-async function assignUsersToRun(data) {
+async function assignUsersToRuns(users, runs) {
     try {
-        for (let id of data.users) {
-            await TesterToRun.create({
-                user_id: id,
-                run_id: data.run_id
-            });
+        let entries = [];
+        for (let id of users) {
+            for (let run of runs) {
+                entries.push({
+                    user_id: id,
+                    run_id: run
+                });
+            }
         }
 
-        let currentUsersToRun = TesterToRun.findAll({
+        await TesterToRun.bulkCreate(entries);
+
+        let currentUsersToRuns = await TesterToRun.findAll({
             where: {
-                run_id: data.run_id
+                run_id: {
+                    [Op.in]: runs
+                }
             }
         });
 
-        return currentUsersToRun;
+        let usersByRun = {};
+        for (let r of currentUsersToRuns) {
+            let { run_id, user_id } = r.dataValues;
+            if (run_id in usersByRun) {
+                usersByRun[run_id].push(user_id);
+            } else {
+                usersByRun[run_id] = [user_id];
+            }
+        }
+
+        return usersByRun;
     } catch (error) {
         console.error(`Error: ${error}`);
         throw error;
@@ -92,34 +111,36 @@ async function assignUsersToRun(data) {
 /**
  * Deletes entries in the tester_to_run table.
  *
- * @param {object} data - data to save
- * @return {object} - a list of all tester_to_run records (user_id, run_id) for the provide run_id
+ * @param {array} users - list of user ids
+ * @param {int} runId - run id
+ * @return {object} - a list of users still assigned to the run
  *
  * @example
  *
- *     removeUsersFromRun({
- *       run_id: run_id
- *       users: [id1, id2]
- *     });
+ *     removeUsersFromRun(
+ *       [id1, id2]
+ *       runId
+ *     );
  */
-async function removeUsersFromRun(data) {
+async function removeUsersFromRun(users, runId) {
     try {
-        for (let id of data.users) {
+        for (let id of users) {
             await TesterToRun.destroy({
                 where: {
                     user_id: id,
-                    run_id: data.run_id
+                    run_id: runId
                 }
             });
         }
 
         let currentUsersToRun = TesterToRun.findAll({
+            attributes: ['user_id'],
             where: {
-                run_id: data.run_id
+                run_id: runId
             }
         });
 
-        return currentUsersToRun;
+        return currentUsersToRun.map(r => r.user_id);
     } catch (error) {
         console.error(`Error: ${error}`);
         throw error;
@@ -344,7 +365,7 @@ module.exports = {
     getUser,
     addUser,
     addUserToRole,
-    assignUsersToRun,
+    assignUsersToRuns,
     removeUsersFromRun,
     getAllTesters,
     signupUser,

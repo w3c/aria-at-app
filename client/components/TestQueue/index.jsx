@@ -86,7 +86,8 @@ class TestQueue extends Component {
 
         let atBrowserRunSets = [];
         if (cycle) {
-            for (let run of cycle.runs) {
+            for (let runId of cycle.runsById) {
+                const run = cycle[runId];
                 const { at_name, browser_name } = run;
 
                 if (!configuredAtNames.includes(at_name)) {
@@ -135,18 +136,12 @@ TestQueue.propTypes = {
 };
 
 const mapStateToProps = (state, ownProps) => {
-    const { cycles, runsForCycle } = state.cycles;
+    const { cyclesById, runsForCycle } = state.cycles;
     const { users } = state.users;
     const userId = state.login.id;
     const cycleId = parseInt(ownProps.match.params.cycleId);
 
-    let cycle = undefined;
-    for (let c of cycles) {
-        if (c.id === cycleId) {
-            cycle = c;
-            break;
-        }
-    }
+    let cycle = cyclesById[cycleId];
 
     let testsForRuns = undefined;
     if (runsForCycle && runsForCycle[cycleId]) {

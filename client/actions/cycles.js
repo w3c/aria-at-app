@@ -4,7 +4,9 @@ import {
     DELETE_CYCLE,
     SAVE_CYCLE,
     TEST_SUITE_VERSIONS,
-    RUNS_FOR_USER_AND_CYCLE
+    RUNS_FOR_USER_AND_CYCLE,
+    SAVE_USERS_TO_RUNS,
+    DELETE_USERS_FROM_RUN
 } from './types';
 
 export const saveCycleDispatch = payload => ({
@@ -29,6 +31,16 @@ export const testSuiteVersionsDispatch = payload => ({
 
 export const runsForUserAndCycleDispatch = payload => ({
     type: RUNS_FOR_USER_AND_CYCLE,
+    payload
+});
+
+export const saveUsersToRunsDispatch = payload => ({
+    type: SAVE_USERS_TO_RUNS,
+    payload
+});
+
+export const deleteUsersFromRunDispatch = payload => ({
+    type: DELETE_USERS_FROM_RUN,
     payload
 });
 
@@ -68,5 +80,24 @@ export function getTestSuiteVersions() {
     return async function(dispatch) {
         const response = await axios.get('/api/cycle/testversions');
         dispatch(testSuiteVersionsDispatch(response.data));
+    };
+}
+
+export function saveUsersToRuns(users, runs, cycleId) {
+    return async function(dispatch) {
+        const response = await axios.post('/api/user/run', {
+            users,
+            runs
+        });
+        dispatch(saveUsersToRunsDispatch({ ...response.data, cycleId }));
+    };
+}
+
+export function deleteUsersFromRun(users, runId, cycleId) {
+    return async function(dispatch) {
+        const response = await axios.delete('/api/user/run', {
+            data: { users, runId }
+        });
+        dispatch(deleteUsersFromRunDispatch({ ...response.data, cycleId }));
     };
 }

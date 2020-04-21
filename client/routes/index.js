@@ -7,6 +7,7 @@ import ManageCycles from '@components/ManageCycles';
 import InitiateCycle from '@components/InitiateCycle';
 import TesterHome from '@components/TesterHome';
 import TestQueue from '@components/TestQueue';
+import CycleSummary from '@components/CycleSummary';
 
 export default [
     {
@@ -46,6 +47,10 @@ export default [
                 path: '/tester-home',
                 exact: true,
                 component: TesterHome
+            },
+            {
+                path: '/cycle/:cycleId/summary',
+                component: CycleSummary
             },
             {
                 path: '/initiate-cycle',

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
 import { Button } from 'react-bootstrap';
 import { deleteCycle } from '../../actions/cycles';
 
@@ -16,10 +17,12 @@ class CycleRow extends Component {
     }
 
     render() {
-        const { name, date } = this.props.cycle;
+        const { name, date, id } = this.props.cycle;
         return (
             <tr>
-                <td>{name}</td>
+                <td>
+                    <Link to={`/cycle/${id}/summary`}>{name}</Link>
+                </td>
                 <td>{date}</td>
                 <td>In Progress</td>
                 <td>

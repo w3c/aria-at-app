@@ -16,7 +16,13 @@ class ConfigureRunsForExample extends Component {
     }
 
     updateTesters(event) {
-        const { assignTesters, removeAllTestersFromRun, example } = this.props;
+        const {
+            assignTesters,
+            removeAllTestersFromRun,
+            example,
+            users,
+            runs
+        } = this.props;
         let value = parseInt(event.currentTarget.value);
 
         if (value === -2) {
@@ -26,11 +32,13 @@ class ConfigureRunsForExample extends Component {
             return;
         }
         if (value === -1) {
-            let techIndexes = [];
-            for (let techIndex in this.state.runSelected) {
-                techIndexes.push(techIndex);
+            let runIds = [];
+            for (let id in this.state.runSelected) {
+                if (this.state.runSelected[id]) {
+                    runIds.push(id);
+                }
             }
-            removeAllTestersFromRun(example.id, techIndexes);
+            removeAllTestersFromRun(example.id, runIds);
 
             this.setState({
                 userDropdownSelection: -2
@@ -38,79 +46,49 @@ class ConfigureRunsForExample extends Component {
             return;
         }
 
-        let runTechnologyIndexes = [];
-        for (let runTechnologyIndex in this.state.runSelected) {
-            if (this.state.runSelected[runTechnologyIndex]) {
-                runTechnologyIndexes.push(runTechnologyIndex);
+        let runIds = [];
+        for (let runId of Object.keys(this.state.runSelected)) {
+            if (this.state.runSelected[runId]) {
+                // Make sure the user can be assigned to this run
+                runId = parseInt(runId);
+                const atName = runs.find(r => r.id === runId).at_name;
+                const userAts = users.find(u => u.id === value).configured_ats;
+                if (userAts.find(ua => ua.at_name === atName)) {
+                    runIds.push(runId);
+                }
             }
         }
 
-        // If there was no runs selected, then do not update dropdown
-        if (runTechnologyIndexes.length === 0) {
-            this.setState({
-                userDropdownSelection: -2
-            });
-        } else {
-            this.setState({
-                userDropdownSelection: value
-            });
-            assignTesters(example.id, runTechnologyIndexes, value);
+        if (runIds.length !== 0) {
+            assignTesters(example.id, runIds, value);
         }
+        this.setState({
+            userDropdownSelection: value
+        });
     }
 
     handleRunCheck(event) {
         const value = event.target.checked;
-        const runIndex = event.target.name;
+        const runIndex = parseInt(event.target.name);
         this.setState({
             runSelected: { ...this.state.runSelected, [runIndex]: value }
         });
     }
 
     render() {
-        const {
-            example,
-            runTechnologies,
-            availableBrowsers,
-            availableAts,
-            users,
-            runTestersByTechIndex
-        } = this.props;
-        let browserName = {};
-        for (let browser of availableBrowsers) {
-            browserName[browser.id] = browser.name;
-        }
-        let atName = {};
-        for (let at of availableAts) {
-            atName[at.at_id] = at.at_name;
-        }
+        const { example, users, testersByRunId, runs } = this.props;
 
-        // Do not include "unconfigured" runs that do not have either an at_id or a browser_id
-        let runsToConfigure = [];
-        for (let i = 0; i < runTechnologies.length; i++) {
-            if (
-                runTechnologies[i].at_id === undefined ||
-                runTechnologies[i].browser_id === undefined
-            ) {
-                continue;
-            } else {
-                runsToConfigure.push({
-                    techIndex: i,
-                    run: runTechnologies[i]
-                });
+        runs.sort(function(a, b) {
+            if (a.at_id === b.at_id) {
+                return b.browser_id - a.browser_id;
             }
-        }
-
-        runsToConfigure.sort(function(a, b) {
-            if (a.run.at_id === b.run.at_id) {
-                return b.run.browser_id - a.run.browser_id;
-            }
-            return b.run.at_id - a.run.at_id;
+            return b.at_id - a.at_id;
         });
 
         return (
             <Fragment>
                 <h4>{example.name || example.directory}</h4>
-                {runsToConfigure.length !== 0 && (
+                {runs.length !== 0 && (
                     <Table bordered>
                         <thead>
                             <tr>
@@ -119,46 +97,37 @@ class ConfigureRunsForExample extends Component {
                             </tr>
                         </thead>
                         <tbody>
-                            {runsToConfigure.map(runData => {
-                                let run = runData.run;
-
-                                let checked = this.state.runSelected[
-                                    runData.techIndex
-                                ]
+                            {runs.map(run => {
+                                let checked = this.state.runSelected[run.id]
                                     ? true
                                     : false;
 
                                 let names = undefined;
-                                if (
-                                    runTestersByTechIndex &&
-                                    runTestersByTechIndex[runData.techIndex]
-                                ) {
-                                    names = runTestersByTechIndex[
-                                        runData.techIndex
-                                    ].map(testerId => {
-                                        let user = users.filter(
-                                            u => u.id === testerId
-                                        )[0];
-                                        return user.fullname;
-                                    });
+                                if (testersByRunId && testersByRunId[run.id]) {
+                                    names = testersByRunId[run.id].map(
+                                        testerId => {
+                                            let user = users.filter(
+                                                u => u.id === testerId
+                                            )[0];
+                                            return user.fullname;
+                                        }
+                                    );
                                 }
 
                                 return (
-                                    <tr key={runData.techIndex}>
+                                    <tr key={run.id}>
                                         <td>
                                             <label>
                                                 <input
                                                     type="checkbox"
-                                                    id={`${runData.techIndex}-configurerun`}
-                                                    name={runData.techIndex}
+                                                    id={`${run.id}-configurerun`}
+                                                    name={run.id}
                                                     checked={checked}
                                                     onChange={
                                                         this.handleRunCheck
                                                     }
                                                 ></input>
-                                                {`${atName[run.at_id]} and ${
-                                                    browserName[run.browser_id]
-                                                }`}
+                                                {`${run.at_name} and ${run.browser_name}`}
                                             </label>
                                         </td>
                                         <td>
@@ -207,7 +176,7 @@ class ConfigureRunsForExample extends Component {
                         </tbody>
                     </Table>
                 )}
-                {runsToConfigure.length === 0 && (
+                {runs.length === 0 && (
                     <div>
                         To initiate runs for this example, configure assistive
                         technology and browser combinations above.
@@ -220,13 +189,11 @@ class ConfigureRunsForExample extends Component {
 
 ConfigureRunsForExample.propTypes = {
     example: PropTypes.object,
-    runTechnologies: PropTypes.array,
     users: PropTypes.array,
-    availableAts: PropTypes.array,
-    availableBrowsers: PropTypes.array,
     assignTesters: PropTypes.func,
     removeAllTestersFromRun: PropTypes.func,
-    runTestersByTechIndex: PropTypes.object
+    testersByRunId: PropTypes.object,
+    runs: PropTypes.array
 };
 
 export default ConfigureRunsForExample;

@@ -7,14 +7,14 @@ import { getTestCycles } from '../../actions/cycles';
 
 class TesterHome extends Component {
     componentDidMount() {
-        const { dispatch, cycles } = this.props;
-        if (cycles.length === 0) {
+        const { dispatch, cyclesById } = this.props;
+        if (Object.keys(cyclesById).length === 0) {
             dispatch(getTestCycles());
         }
     }
 
     render() {
-        const { cycles } = this.props;
+        const { cyclesById } = this.props;
         return (
             <Fragment>
                 <h2>Test Cycles</h2>
@@ -28,15 +28,15 @@ class TesterHome extends Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {cycles.map(cycle => (
-                            <tr key={cycle.id}>
-                                <td>{cycle.name}</td>
-                                <td>{cycle.date}</td>
+                        {Object.keys(cyclesById).map(cycleId => (
+                            <tr key={cycleId}>
+                                <td>{cyclesById[cycleId].name}</td>
+                                <td>{cyclesById[cycleId].date}</td>
                                 <td>In Progress</td>
                                 <td>
                                     <Button
                                         as={Link}
-                                        to={`/cycle/${cycle.id}/test-queue`}
+                                        to={`/cycle/${cycleId}/test-queue`}
                                     >
                                         Contribute Tests
                                     </Button>
@@ -51,13 +51,13 @@ class TesterHome extends Component {
 }
 
 TesterHome.propTypes = {
-    cycles: PropTypes.array,
+    cyclesById: PropTypes.array,
     dispatch: PropTypes.func
 };
 
 const mapStateToProps = state => {
-    const { cycles } = state.cycles;
-    return { cycles };
+    const { cyclesById } = state.cycles;
+    return { cyclesById };
 };
 
 export default connect(mapStateToProps)(TesterHome);

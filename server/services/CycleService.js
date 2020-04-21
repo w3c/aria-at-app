@@ -142,8 +142,8 @@ async function configureCycle(cycle) {
  *       name,
  *       test_version_id,
  *       created_user_id,
- *       runs: [
- *         {
+ *       runsById: {
+ *         id : {
  *           id,
  *           browser_version,
  *           browser_name,
@@ -152,9 +152,9 @@ async function configureCycle(cycle) {
  *           at_version,
  *           apg_example_directory,
  *           apg_example_name
- *           users: [user_id, user_id]
+ *           testers: [user_id, user_id]
  *         }
- *       ]
+ *       }
  *     };
  */
 async function getAllCycles(id) {
@@ -178,6 +178,7 @@ async function getAllCycles(id) {
             `)
             )[0];
 
+            let runsById = {};
             for (let run of runs) {
                 let users = (
                     await sequelize.query(`
@@ -191,9 +192,11 @@ async function getAllCycles(id) {
                 )[0];
 
                 run.testers = users.map(u => u.user_id);
+
+                runsById[run.id] = run;
             }
 
-            cycle.runs = runs;
+            cycle.runsById = runsById;
         }
 
         return cycles;

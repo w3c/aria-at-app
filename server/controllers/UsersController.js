@@ -24,11 +24,11 @@ async function addUserToRole(req, res) {
     }
 }
 
-async function assignUsersToRun(req, res) {
-    const data = req.body;
+async function assignUsersToRuns(req, res) {
+    const { users, runs } = req.body;
     try {
-        const usersForRun = await UsersService.assignUsersToRun(data);
-        res.status(201).json(usersForRun);
+        const savedRuns = await UsersService.assignUsersToRuns(users, runs);
+        res.status(201).json({ savedRuns });
     } catch (error) {
         res.status(400);
         res.end();
@@ -37,10 +37,10 @@ async function assignUsersToRun(req, res) {
 }
 
 async function removeUsersFromRun(req, res) {
-    const user = req.body;
+    const { users, runId } = req.body;
     try {
-        const usersForRun = await UsersService.removeUsersFromRun(user);
-        res.status(201).json(usersForRun);
+        const usersForRun = await UsersService.removeUsersFromRun(users, runId);
+        res.status(201).json({ runId, usersForRun });
     } catch (error) {
         res.status(400);
         res.end();
@@ -74,7 +74,7 @@ async function setUserAts(req, res) {
 module.exports = {
     addUser,
     addUserToRole,
-    assignUsersToRun,
+    assignUsersToRuns,
     removeUsersFromRun,
     getAllTesters,
     setUserAts
