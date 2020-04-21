@@ -72,13 +72,6 @@ class ConfigureRunsForExample extends Component {
     }
 
     render() {
-        // TODO:
-        // - [X] SWITCH THIS TO EXPECT: "runs" -- which is either a saved list of runs (with an id OR with a technology index)
-        // - [X] ^ once we do this, we don't need to pass "availableBrowsers" or "availableAts"
-        // - [ ] CONSIDER putting the user list on the "run" object as well.
-        // - [ ] then move the make sure a user can be assigned to a AT logic to this file
-        // - [ ] then you call "assignTesters" with either a list of "ids" or "technologyIndexs"
-
         const {
             example,
             users,
