@@ -123,37 +123,18 @@ class InitiateCycle extends Component {
     }
 
     assignTesters(exampleId, runTechnologyIndexes, userId) {
-        const { users, testSuiteVersions } = this.props;
-
-        let atIdToNameId = {};
-        let supportedAts = testSuiteVersions.filter(
-            version => version.id === this.state.selectedVersion
-        )[0].supported_ats;
-        for (let at of supportedAts) {
-            atIdToNameId[at.at_id] = at.at_name_id;
-        }
-
-        let user = users.filter(u => u.id === userId)[0];
-        let atNameIdsForUser = user.configured_ats.map(a => a.at_name_id);
-
         let testersByTechIndex = {
             ...this.state.runTestersByExample[exampleId]
         };
 
         for (let technologyIndex of runTechnologyIndexes) {
-            let nameId =
-                atIdToNameId[
-                    this.state.runTechnologyRows[technologyIndex].at_id
-                ];
-            if (atNameIdsForUser.indexOf(nameId) >= 0) {
-                if (
-                    testersByTechIndex[technologyIndex] &&
-                    testersByTechIndex[technologyIndex].indexOf(userId) < 0
-                ) {
-                    testersByTechIndex[technologyIndex].push(userId);
-                } else {
-                    testersByTechIndex[technologyIndex] = [userId];
-                }
+            if (
+                testersByTechIndex[technologyIndex] &&
+                testersByTechIndex[technologyIndex].indexOf(userId) < 0
+            ) {
+                testersByTechIndex[technologyIndex].push(userId);
+            } else {
+                testersByTechIndex[technologyIndex] = [userId];
             }
         }
         let newRunTestersByExample = { ...this.state.runTestersByExample };
@@ -246,9 +227,41 @@ class InitiateCycle extends Component {
     render() {
         const { testSuiteVersions, users } = this.props;
 
+        if (!testSuiteVersions.length) {
+            return <div>LOADING</div>;
+        }
+
         let versionData = testSuiteVersions.filter(
             version => version.id === this.state.selectedVersion
         )[0];
+
+        let runs = [];
+        if (versionData) {
+            for (let i = 0; i < this.state.runTechnologyRows.length; i++) {
+                let row = this.state.runTechnologyRows[i];
+
+                // Skip rows that don't have both browser and at
+                if (row.at_id === undefined || row.browser_id === undefined) {
+                    continue;
+                }
+
+                let at_name = versionData.supported_ats.find(at => {
+                    return row.at_id === at.at_id;
+                }).at_name;
+
+                let browser_name = versionData.browsers.find(b => {
+                    return row.browser_id === b.id;
+                }).name;
+
+                runs.push({
+                    id: i,
+                    at_name: at_name,
+                    browser_name: browser_name,
+                    at_id: row.at_id,
+                    browser_id: row.browser_id
+                });
+            }
+        }
 
         return (
             <Fragment>
@@ -309,17 +322,16 @@ class InitiateCycle extends Component {
                     versionData.apg_examples.map(example => {
                         return (
                             <ConfigureRunsForExample
+                                newRun={true}
+                                runs={runs}
                                 key={example.id}
                                 example={example}
-                                runTechnologies={this.state.runTechnologyRows}
-                                availableAts={versionData.supported_ats}
-                                availableBrowsers={versionData.browsers}
                                 users={users}
                                 assignTesters={this.assignTesters}
                                 removeAllTestersFromRun={
                                     this.removeAllTestersFromRun
                                 }
-                                runTestersByTechIndex={
+                                testersByRunId={
                                     this.state.runTestersByExample[example.id]
                                 }
                             />

@@ -49,7 +49,7 @@ async function saveTestResults(req, res) {
 
 async function getRunsForCycleAndUser(req, res) {
     try {
-        const cycleId = req.query.cycleId;
+        const cycleId = parseInt(req.query.cycleId);
         const userId = req.session.user.id;
         const runsForCycle = await CycleService.getRunsForCycleAndUser(
             cycleId,

@@ -13,7 +13,7 @@ router.get('/', UsersController.getAllTesters);
 router.post('/role', UsersController.addUserToRole);
 
 // Add or delete list of users to run
-router.post('/run', UsersController.assignUsersToRun);
+router.post('/run', UsersController.assignUsersToRuns);
 router.delete('/run', UsersController.removeUsersFromRun);
 
 // Get or set ATs for a given user

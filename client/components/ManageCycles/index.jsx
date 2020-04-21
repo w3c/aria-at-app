@@ -2,24 +2,26 @@ import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { Table } from 'react-bootstrap';
+import { Button, Table } from 'react-bootstrap';
 import CycleRow from '@components/CycleRow';
 import { getTestCycles } from '../../actions/cycles';
 
 class ManageCycles extends Component {
     componentDidMount() {
-        const { dispatch, cycles } = this.props;
-        if (cycles.length === 0) {
+        const { dispatch, cyclesById } = this.props;
+        if (Object.keys(cyclesById).length === 0) {
             dispatch(getTestCycles());
         }
     }
 
     render() {
-        const { cycles } = this.props;
+        const { cyclesById } = this.props;
         return (
             <Fragment>
                 <h2>Initiate a Test Cycle</h2>
-                <Link to="/initiate-cycle">Initiate</Link>
+                <Button as={Link} to="/initiate-cycle">
+                    Initiate
+                </Button>
                 <h2>Test Cycle Status</h2>
                 <Table striped bordered hover>
                     <thead>
@@ -31,8 +33,11 @@ class ManageCycles extends Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {cycles.map(cycle => (
-                            <CycleRow key={cycle.id} cycle={cycle} />
+                        {Object.keys(cyclesById).map(cycleId => (
+                            <CycleRow
+                                key={cycleId}
+                                cycle={cyclesById[cycleId]}
+                            />
                         ))}
                     </tbody>
                 </Table>
@@ -42,13 +47,13 @@ class ManageCycles extends Component {
 }
 
 ManageCycles.propTypes = {
-    cycles: PropTypes.array,
+    cyclesById: PropTypes.array,
     dispatch: PropTypes.func
 };
 
 const mapStateToProps = state => {
-    const { cycles } = state.cycles;
-    return { cycles };
+    const { cyclesById } = state.cycles;
+    return { cyclesById };
 };
 
 export default connect(mapStateToProps)(ManageCycles);

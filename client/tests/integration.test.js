@@ -22,10 +22,10 @@ describe('login actions dispatchers', () => {
                 name: 'Foo Bar',
                 email: 'foo@bar.com',
                 id: undefined,
-                role: undefined
+                roles: undefined
             },
             cycles: {
-                cycles: [],
+                cyclesById: {},
                 runsForCycle: {},
                 testSuiteVersions: []
             },
@@ -59,7 +59,7 @@ describe('login actions dispatchers', () => {
                 isLoggedIn: false
             },
             cycles: {
-                cycles: [],
+                cyclesById: {},
                 runsForCycle: {},
                 testSuiteVersions: []
             },
@@ -97,7 +97,7 @@ describe('ats action dispatchers', () => {
                 isLoggedIn: false
             },
             cycles: {
-                cycles: [],
+                cyclesById: {},
                 runsForCycle: {},
                 testSuiteVersions: []
             },
