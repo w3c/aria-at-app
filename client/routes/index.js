@@ -5,6 +5,7 @@ import SignupInstructions from '@components/SignupInstructions';
 import UserSettings from '@components/UserSettings';
 import ManageCycles from '@components/ManageCycles';
 import InitiateCycle from '@components/InitiateCycle';
+import CycleSummary from '@components/CycleSummary';
 
 export default [
     {
@@ -35,6 +36,10 @@ export default [
                 path: '/cycles',
                 exact: true,
                 component: ManageCycles
+            },
+            {
+                path: '/cycle/:cycleId/summary',
+                component: CycleSummary,
             },
             {
                 path: '/initiate-cycle',
