@@ -117,6 +117,6 @@ describe(atEndpoint, () => {
     it(`GET ${atEndpoint}`, async () => {
         const response = await request(listener).get(`${atEndpoint}`);
         expect(response.statusCode).toBe(200);
-        expect(response.body).toEqual(listOfATs.atNames);
+        expect(response.body).toEqual(listOfATs.atsDB);
     });
 });

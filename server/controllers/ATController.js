@@ -1,9 +1,9 @@
 const ATService = require('../services/ATService');
 
-async function getATNames(req, res) {
+async function getATs(req, res) {
     try {
-        const atNames = await ATService.getATNames();
-        res.status(200).json(atNames);
+        const ats = await ATService.getATs();
+        res.status(200).json(ats);
     } catch (error) {
         res.status(400);
         res.end();
@@ -12,5 +12,5 @@ async function getATNames(req, res) {
 }
 
 module.exports = {
-    getATNames
+    getATs
 };

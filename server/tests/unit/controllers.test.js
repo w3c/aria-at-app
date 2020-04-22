@@ -141,14 +141,14 @@ describe('AuthController', () => {
 
 jest.mock('../../services/ATService');
 describe('ATController', () => {
-    describe('ATController.getATNames', () => {
-        it('should have a getATNames function', () => {
-            expect(typeof ATController.getATNames).toBe('function');
+    describe('ATController.getATs', () => {
+        it('should have a getATs function', () => {
+            expect(typeof ATController.getATs).toBe('function');
         });
         it('should return 200 response code with a list of ATs', async () => {
-            await ATController.getATNames(req, res, next);
+            await ATController.getATs(req, res, next);
             expect(res.statusCode).toBe(200);
-            expect(res._getJSONData()).toStrictEqual(listOfATNames.atNames);
+            expect(res._getJSONData()).toStrictEqual(listOfATNames.atsDB);
         });
     });
 });

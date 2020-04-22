@@ -1,11 +1,9 @@
 const { ATModel } = require('../models/ATModel');
 
-async function getATNames() {
+async function getATs() {
     try {
-        const atNames = await ATModel.findAll({
-            attributes: ['name']
-        });
-        return { names: atNames.map(atObj => atObj.name) };
+        const ats = await ATModel.findAll();
+        return ats;
     } catch (error) {
         console.error(`Error: ${error}`);
         throw error;
@@ -13,5 +11,5 @@ async function getATNames() {
 }
 
 module.exports = {
-    getATNames
+    getATs
 };

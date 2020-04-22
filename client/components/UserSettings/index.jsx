@@ -6,6 +6,7 @@ import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import { handleGetValidAts } from '../../actions/ats';
+import { handleSetUserAts, handleGetUserAts } from '../../actions/users';
 
 class UserSettings extends Component {
     constructor(props) {
@@ -14,11 +15,13 @@ class UserSettings extends Component {
         this.state = {};
 
         this.onCheckboxClicked = this.onCheckboxClicked.bind(this);
+        this.onSubmit = this.onSubmit.bind(this);
     }
 
     componentDidMount() {
-        const { dispatch } = this.props;
+        const { dispatch, username, fullname, email } = this.props;
         dispatch(handleGetValidAts());
+        dispatch(handleGetUserAts({ username, fullname, email }));
     }
 
     componentDidUpdate(prevProps) {
@@ -27,7 +30,28 @@ class UserSettings extends Component {
                 Object.assign(
                     {},
                     ...this.props.ats
-                        .map(at => [at, { checked: false }])
+                        .map(at => [at.name, { checked: false }])
+                        .map(([k, v]) => ({ [k]: v }))
+                )
+            );
+        }
+
+        if (
+            this.props.ats &&
+            prevProps.currentUserAts !== this.props.currentUserAts
+        ) {
+            this.setState(
+                Object.assign(
+                    {},
+                    ...this.props.ats
+                        .map(at => [
+                            at.name,
+                            {
+                                checked:
+                                    this.props.currentUserAts.indexOf(at.id) >=
+                                    0
+                            }
+                        ])
                         .map(([k, v]) => ({ [k]: v }))
                 )
             );
@@ -36,20 +60,32 @@ class UserSettings extends Component {
 
     onCheckboxClicked(event) {
         if (event.target) {
-            const { id } = event.target;
+            const { id, checked } = event.target;
             // Need to do this check because some SyntheticEvents have a null target
             if (id) {
                 this.setState(prevState => {
                     return {
                         ...prevState,
                         [id]: {
-                            checked: !prevState[id].checked
+                            checked
                         }
                     };
                 });
             }
         }
     }
+
+    onSubmit(event) {
+        const { dispatch, username, email, fullname, ats } = this.props;
+        let currentUser = { username, email, fullname };
+        const selectedAts = Object.entries(this.state)
+            .filter(atEntry => atEntry[1].checked)
+            .map(atEntry => atEntry[0])
+            .map(atName => ats.filter(at => at.name === atName).shift().id);
+        dispatch(handleSetUserAts(currentUser, selectedAts));
+        event.preventDefault();
+    }
+
     render() {
         const { ats, isLoggedIn, username, email } = this.props;
         const contents = isLoggedIn ? (
@@ -62,17 +98,25 @@ class UserSettings extends Component {
                 <Col>
                     <h2>Assistive Technology</h2>
                     <p>Add the assistive technologies that you can use</p>
-                    <Form>
+                    <Form onSubmit={this.onSubmit}>
                         <Form.Group controlId="formBasicCheckbox">
                             {ats &&
-                                ats.map(at => (
-                                    <Form.Check
-                                        id={at}
-                                        key={at}
-                                        label={at}
-                                        onClick={this.onCheckboxClicked}
-                                    />
-                                ))}
+                                ats.map(at => {
+                                    return (
+                                        <Form.Check
+                                            id={at.name}
+                                            key={at.id}
+                                            label={at.name}
+                                            onChange={this.onCheckboxClicked}
+                                            checked={
+                                                this.state[at.name]
+                                                    ? this.state[at.name]
+                                                          .checked
+                                                    : false
+                                            }
+                                        />
+                                    );
+                                })}
                         </Form.Group>
                         <Button variant="primary" type="submit">
                             Save
@@ -90,16 +134,27 @@ class UserSettings extends Component {
 
 UserSettings.propTypes = {
     isLoggedIn: PropTypes.bool,
+    fullname: PropTypes.string,
     username: PropTypes.string,
     email: PropTypes.string,
     ats: PropTypes.array,
-    dispatch: PropTypes.func
+    dispatch: PropTypes.func,
+    currentUserAts: PropTypes.array
 };
 
 const mapStateToProps = state => {
-    const { isLoggedIn, username, email } = state.login;
-    const { names: atNames } = state.ats;
-    return { isLoggedIn, username, email, ats: atNames };
+    const { isLoggedIn } = state.login;
+    const {
+        currentUser: { username, email, name: fullname, ats: currentUserAts }
+    } = state.users;
+    return {
+        isLoggedIn,
+        username,
+        fullname,
+        email,
+        ats: state.ats,
+        currentUserAts
+    };
 };
 
 export default connect(mapStateToProps)(UserSettings);

@@ -8,8 +8,5 @@
             "id": 1,
             "name": "Bar"
         }
-    ],
-    "atNames": {
-        "names": [ "Foo", "Bar"]
-    }
+    ]
 }

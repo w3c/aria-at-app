@@ -2,12 +2,14 @@ const {
     Users,
     UserToRole,
     Role,
-    TesterToRun
+    TesterToRun,
+    UserToAt
 } = require('../models/UsersModel');
 const GithubService = require('./GithubService');
 const sequelize = global.sequelize;
 
-async function getUser({ fullname, username, email }) {
+async function getUser(user) {
+    const { fullname, username, email } = user;
     try {
         const users = await Users.findAll({
             where: {
@@ -247,6 +249,90 @@ async function signupUser(options) {
     return saveUserAndRoles(options);
 }
 
+async function getUserAts(options) {
+    let user_id = options;
+    if (typeof options !== 'number') {
+        let user = await getUser(options);
+        user_id = user.id;
+    }
+    try {
+        let userAts = await UserToAt.findAll({ where: { user_id } });
+        return userAts;
+    } catch (error) {
+        console.error(`Error: ${error}`);
+        throw error;
+    }
+}
+
+async function saveUserAts(options) {
+    const { user, ats } = options;
+    let { id: user_id } = await getUser(user);
+    const existingUserAtsIds = (await getUserAts(user_id)).map(
+        userAt => userAt.dataValues.at_name_id
+    );
+    const userAtsInactive = existingUserAtsIds.filter(
+        existingUserAtsId => ats.indexOf(existingUserAtsId) === -1
+    );
+    const userAtsActiveCreate = ats.filter(
+        at => existingUserAtsIds.indexOf(at) === -1
+    );
+    const userAtsActiveUpdate = ats.filter(at =>
+        existingUserAtsIds.find(id => id === at)
+    );
+    let savedUserAts = [];
+
+    // these rows already exist in the database
+    for (let at_name_id of userAtsInactive) {
+        try {
+            let inactiveUserAt = await UserToAt.update(
+                { active: false },
+                { where: { at_name_id } }
+            );
+            if (inactiveUserAt.find(inactiveUserAt => inactiveUserAt === 1)) {
+                savedUserAts.push({ at_name_id, user_id, active: false });
+            }
+        } catch (error) {
+            console.error(`Error: ${error}`);
+            throw error;
+        }
+    }
+
+    // create these rows in the database
+    try {
+        let createdUserAt = await UserToAt.bulkCreate(
+            userAtsActiveCreate.map(at_name_id => ({
+                user_id,
+                at_name_id,
+                active: true
+            }))
+        );
+        savedUserAts.push(
+            ...createdUserAt.map(userToAt => userToAt.dataValues)
+        );
+    } catch (error) {
+        console.error(`Error: ${error}`);
+        throw error;
+    }
+
+    // these rows also exist in the database
+    for (let at_name_id of userAtsActiveUpdate) {
+        try {
+            let activeUserAt = await UserToAt.update(
+                { active: true },
+                { where: { at_name_id } }
+            );
+            if (activeUserAt.find(activeUserAt => activeUserAt === 1)) {
+                savedUserAts.push({ at_name_id, user_id, active: true });
+            }
+        } catch (error) {
+            console.error(`Error: ${error}`);
+            throw error;
+        }
+    }
+
+    return savedUserAts;
+}
+
 module.exports = {
     getUser,
     addUser,
@@ -254,5 +340,7 @@ module.exports = {
     assignUsersToRun,
     removeUsersFromRun,
     getAllTesters,
-    signupUser
+    signupUser,
+    saveUserAts,
+    getUserAts
 };
