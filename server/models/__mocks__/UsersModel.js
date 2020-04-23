@@ -1,10 +1,11 @@
 const create = require('../../tests/util/create');
 const listOfAts = require('../../tests/mock-data/listOfATs.json');
+const users = require('../../tests/mock-data/users.json');
 
 const Users = {
     create,
     findAll() {
-        return [];
+        return users.map(user => ({ dataValues: { ...user } }));
     }
 };
 const UserToRole = {

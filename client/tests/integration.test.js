@@ -1,7 +1,7 @@
 import { storeFactory } from './util';
 import { handleCheckLoggedIn, handleLogout } from '../actions/login';
 import { handleGetValidAts } from '../actions/ats';
-import { handleSetUserAts, handleGetUserAts } from '../actions/users';
+import { handleSetUserAts, getAllUsers } from '../actions/users';
 import moxios from 'moxios';
 
 describe('login actions dispatchers', () => {
@@ -28,13 +28,7 @@ describe('login actions dispatchers', () => {
             },
             ats: [],
             users: {
-                users: [],
-                currentUser: {
-                    username: 'foobar',
-                    name: 'Foo Bar',
-                    email: 'foo@bar.com',
-                    ats: []
-                }
+                users: []
             }
         };
 
@@ -67,8 +61,7 @@ describe('login actions dispatchers', () => {
             },
             ats: [],
             users: {
-                users: [],
-                currentUser: { ats: [] }
+                users: []
             }
         };
 
@@ -107,8 +100,7 @@ describe('ats action dispatchers', () => {
                 names: ['JAWS', 'NVDA', 'VoiceOver']
             },
             users: {
-                users: [],
-                currentUser: { ats: [] }
+                users: []
             }
         };
 
@@ -141,10 +133,22 @@ describe('users action dispatchers', () => {
             },
             ats: [],
             users: {
-                users: [],
-                currentUser: {
-                    ats: [1, 2]
-                }
+                users: [
+                    {
+                        id: 1,
+                        username: 'foobar',
+                        configured_ats: [
+                            {
+                                at_name_id: 1,
+                                active: false
+                            },
+                            {
+                                at_name_id: 2,
+                                active: true
+                            }
+                        ]
+                    }
+                ]
             }
         };
         moxios.install();
@@ -157,45 +161,44 @@ describe('users action dispatchers', () => {
     test('updates state correctly on set user ATs', async () => {
         const store = storeFactory();
         moxios.wait(() => {
-            const request = moxios.requests.mostRecent();
+            const request = moxios.requests.first();
             request.respondWith({
-                status: 200
+                status: 200,
+                response: [
+                    {
+                        id: 1,
+                        username: 'foobar',
+                        configured_ats: []
+                    }
+                ]
             });
         });
 
-        await store.dispatch(
-            handleSetUserAts(
-                { username: 'foobar' },
-                expectedState.users.currentUser.ats
-            )
-        );
-        const newState = store.getState();
-        expect(newState).toEqual(expectedState);
-    });
+        await store.dispatch(getAllUsers());
 
-    test('updates state correctly on get user ATs', async () => {
-        const store = storeFactory();
         moxios.wait(() => {
             const request = moxios.requests.mostRecent();
             request.respondWith({
                 status: 200,
                 response: [
                     {
-                        active: true,
-                        at_name_id: 1
+                        at_name_id: 1,
+                        active: false
                     },
                     {
-                        active: true,
-                        at_name_id: 2
-                    },
-                    {
-                        active: false,
-                        at_name_id: 3
+                        at_name_id: 2,
+                        active: true
                     }
                 ]
             });
         });
-        await store.dispatch(handleGetUserAts());
+
+        await store.dispatch(
+            handleSetUserAts(
+                { username: 'foobar', id: 1 },
+                expectedState.users.users[0].configured_ats
+            )
+        );
         const newState = store.getState();
         expect(newState).toEqual(expectedState);
     });

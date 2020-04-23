@@ -5,6 +5,8 @@ import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { Container, Navbar, Nav } from 'react-bootstrap';
 import { handleCheckLoggedIn, handleLogout } from '../../actions/login';
+import { getAllUsers } from '../../actions/users';
+import { handleGetValidAts } from '../../actions/ats';
 
 class App extends Component {
     constructor(props) {
@@ -16,6 +18,8 @@ class App extends Component {
         const { dispatch } = this.props;
 
         dispatch(handleCheckLoggedIn());
+        dispatch(handleGetValidAts());
+        dispatch(getAllUsers());
     }
 
     logout() {

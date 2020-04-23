@@ -5,8 +5,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
-import { handleGetValidAts } from '../../actions/ats';
-import { handleSetUserAts, handleGetUserAts } from '../../actions/users';
+import { handleSetUserAts } from '../../actions/users';
 
 class UserSettings extends Component {
     constructor(props) {
@@ -16,45 +15,43 @@ class UserSettings extends Component {
 
         this.onCheckboxClicked = this.onCheckboxClicked.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
+        this.hydrateSelectedUserAts = this.hydrateSelectedUserAts.bind(this);
     }
 
-    componentDidMount() {
-        const { dispatch, username, fullname, email } = this.props;
-        dispatch(handleGetValidAts());
-        dispatch(handleGetUserAts({ username, fullname, email }));
-    }
-
-    componentDidUpdate(prevProps) {
-        if (prevProps.ats !== this.props.ats) {
-            this.setState(
-                Object.assign(
-                    {},
-                    ...this.props.ats
-                        .map(at => [at.name, { checked: false }])
-                        .map(([k, v]) => ({ [k]: v }))
-                )
-            );
-        }
-
-        if (
-            this.props.ats &&
-            prevProps.currentUserAts !== this.props.currentUserAts
-        ) {
-            this.setState(
-                Object.assign(
-                    {},
-                    ...this.props.ats
-                        .map(at => [
+    hydrateSelectedUserAts() {
+        this.setState(
+            Object.assign(
+                {},
+                ...this.props.ats
+                    .map(at => {
+                        let userAt = this.props.currentUserAts.filter(
+                            userAt => at.id === userAt.at_name_id
+                        );
+                        return [
                             at.name,
                             {
                                 checked:
-                                    this.props.currentUserAts.indexOf(at.id) >=
-                                    0
+                                    userAt.length > 0
+                                        ? userAt.pop().active
+                                        : false
                             }
-                        ])
-                        .map(([k, v]) => ({ [k]: v }))
-                )
-            );
+                        ];
+                    })
+                    .map(([k, v]) => ({ [k]: v }))
+            )
+        );
+    }
+
+    componentDidMount() {
+        this.hydrateSelectedUserAts();
+    }
+
+    componentDidUpdate(prevProps) {
+        if (
+            prevProps.ats !== this.props.ats ||
+            prevProps.currentUserAts !== this.props.currentUserAts
+        ) {
+            this.hydrateSelectedUserAts();
         }
     }
 
@@ -81,7 +78,7 @@ class UserSettings extends Component {
         const selectedAts = Object.entries(this.state)
             .filter(atEntry => atEntry[1].checked)
             .map(atEntry => atEntry[0])
-            .map(atName => ats.filter(at => at.name === atName).shift().id);
+            .map(atName => ats.filter(at => at.name === atName).shift());
         dispatch(handleSetUserAts(currentUser, selectedAts));
         event.preventDefault();
     }
@@ -143,10 +140,14 @@ UserSettings.propTypes = {
 };
 
 const mapStateToProps = state => {
-    const { isLoggedIn } = state.login;
-    const {
-        currentUser: { username, email, name: fullname, ats: currentUserAts }
-    } = state.users;
+    const { isLoggedIn, username, name: fullname, email } = state.login;
+    let currentUserAts = [];
+    if (username && state.users.users.length > 0) {
+        currentUserAts = state.users.users.filter(
+            user => user.username === state.login.username
+        )[0].configured_ats;
+    }
+
     return {
         isLoggedIn,
         username,
