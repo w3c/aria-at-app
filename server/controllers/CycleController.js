@@ -55,7 +55,7 @@ async function getRunsForCycleAndUser(req, res) {
             cycleId,
             userId
         );
-        res.status(201).json({cycleId, runsForCycle});
+        res.status(201).json({ cycleId, runsForCycle });
     } catch (error) {
         res.status(400);
         res.end();

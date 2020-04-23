@@ -1,5 +1,11 @@
 import axios from 'axios';
-import { CYCLES, DELETE_CYCLE, SAVE_CYCLE, TEST_SUITE_VERSIONS, RUNS_FOR_USER_AND_CYCLE } from './types';
+import {
+    CYCLES,
+    DELETE_CYCLE,
+    SAVE_CYCLE,
+    TEST_SUITE_VERSIONS,
+    RUNS_FOR_USER_AND_CYCLE
+} from './types';
 
 export const saveCycleDispatch = payload => ({
     type: SAVE_CYCLE,

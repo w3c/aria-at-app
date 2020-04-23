@@ -20,10 +20,13 @@ describe('login actions dispatchers', () => {
                 isLoggedIn: true,
                 username: 'foobar',
                 name: 'Foo Bar',
-                email: 'foo@bar.com'
+                email: 'foo@bar.com',
+                id: undefined,
+                role: undefined
             },
             cycles: {
                 cycles: [],
+                runsForCycle: {},
                 testSuiteVersions: []
             },
             ats: [],
@@ -57,6 +60,7 @@ describe('login actions dispatchers', () => {
             },
             cycles: {
                 cycles: [],
+                runsForCycle: {},
                 testSuiteVersions: []
             },
             ats: [],
@@ -94,6 +98,7 @@ describe('ats action dispatchers', () => {
             },
             cycles: {
                 cycles: [],
+                runsForCycle: {},
                 testSuiteVersions: []
             },
             ats: {

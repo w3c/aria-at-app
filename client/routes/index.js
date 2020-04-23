@@ -40,7 +40,7 @@ export default [
             },
             {
                 path: '/cycle/:cycleId/test-queue',
-                component: TestQueue,
+                component: TestQueue
             },
             {
                 path: '/tester-home',

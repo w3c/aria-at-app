@@ -6,7 +6,6 @@ import { Button, Table } from 'react-bootstrap';
 import { getTestCycles } from '../../actions/cycles';
 
 class TesterHome extends Component {
-
     componentDidMount() {
         const { dispatch, cycles } = this.props;
         if (cycles.length === 0) {
@@ -30,14 +29,19 @@ class TesterHome extends Component {
                     </thead>
                     <tbody>
                         {cycles.map(cycle => (
-                          <tr key={cycle.id}>
-                              <td>{cycle.name}</td>
-                              <td>{cycle.date}</td>
-                              <td>In Progress</td>
-                              <td>
-                                <Button as={Link} to={`/cycle/${cycle.id}/test-queue`}>Contribute Tests</Button>
-                              </td>
-                          </tr>
+                            <tr key={cycle.id}>
+                                <td>{cycle.name}</td>
+                                <td>{cycle.date}</td>
+                                <td>In Progress</td>
+                                <td>
+                                    <Button
+                                        as={Link}
+                                        to={`/cycle/${cycle.id}/test-queue`}
+                                    >
+                                        Contribute Tests
+                                    </Button>
+                                </td>
+                            </tr>
                         ))}
                     </tbody>
                 </Table>

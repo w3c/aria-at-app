@@ -48,7 +48,8 @@ export default (state = initialState, action) => {
             return Object.assign({}, state, {
                 runsForCycle: {
                     ...state.runsForCycle,
-                    [parseInt(action.payload.cycleId)]: action.payload.runsForCycle
+                    [parseInt(action.payload.cycleId)]: action.payload
+                        .runsForCycle
                 }
             });
         }

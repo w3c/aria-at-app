@@ -21,7 +21,7 @@ async function getUser(user) {
         });
         if (users.length === 1) {
             const rolesForUser = await users[0].getRoles();
-            const roles = rolesForUser.map(r => r.dataValues.name)
+            const roles = rolesForUser.map(r => r.dataValues.name);
             return {
                 ...users[0].dataValues,
                 roles
