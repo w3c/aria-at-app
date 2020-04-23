@@ -1,6 +1,5 @@
 import axios from 'axios';
 import { CHECK_LOGGED_IN, LOG_OUT } from './types';
-import { setCurrentUser } from './users';
 
 export const checkLoggedIn = payload => ({
     type: CHECK_LOGGED_IN,
@@ -15,7 +14,6 @@ export function handleCheckLoggedIn() {
     return async function(dispatch) {
         const response = await axios.get('/api/auth/me');
         dispatch(checkLoggedIn(response.data));
-        dispatch(setCurrentUser(response.data));
     };
 }
 

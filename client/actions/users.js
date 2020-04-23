@@ -1,13 +1,8 @@
 import axios from 'axios';
-import { GET_USERS, SET_USER_ATS, SET_CURRENT_USER } from './types';
+import { GET_USERS, SET_USER_ATS } from './types';
 
 export const getAllUsersDispatch = payload => ({
     type: GET_USERS,
-    payload
-});
-
-export const setCurrentUser = payload => ({
-    type: SET_CURRENT_USER,
     payload
 });
 
@@ -27,20 +22,7 @@ export function handleSetUserAts(user, ats) {
     return async function(dispatch) {
         const response = await axios.post('/api/user/ats', { user, ats });
         if (response.status === 200) {
-            dispatch(setUserAts(ats));
+            dispatch(setUserAts({ user, ats: response.data }));
         }
-    };
-}
-
-export function handleGetUserAts() {
-    return async function(dispatch) {
-        const response = await axios.get('/api/user/ats');
-        dispatch(
-            setUserAts(
-                response.data
-                    .filter(atObj => atObj.active)
-                    .map(atObj => atObj.at_name_id)
-            )
-        );
     };
 }

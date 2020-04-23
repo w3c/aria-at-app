@@ -157,7 +157,8 @@ async function getAllTesters() {
                 await sequelize.query(`
                  select
                    at_name_id,
-                   name as at_name
+                   name as at_name,
+                   active
                  from
                    user_to_at,
                    at_name
@@ -171,7 +172,8 @@ async function getAllTesters() {
             for (let result of results) {
                 user.configured_ats.push({
                     at_name_id: result.at_name_id,
-                    at_name: result.at_name
+                    at_name: result.at_name,
+                    active: result.active
                 });
             }
         }
@@ -271,13 +273,13 @@ async function saveUserAts(options) {
         userAt => userAt.dataValues.at_name_id
     );
     const userAtsInactive = existingUserAtsIds.filter(
-        existingUserAtsId => ats.indexOf(existingUserAtsId) === -1
+        existingUserAtsId => !ats.find(at => at.id === existingUserAtsId)
     );
     const userAtsActiveCreate = ats.filter(
-        at => existingUserAtsIds.indexOf(at) === -1
+        at => existingUserAtsIds.indexOf(at.id) === -1
     );
     const userAtsActiveUpdate = ats.filter(at =>
-        existingUserAtsIds.find(id => id === at)
+        existingUserAtsIds.find(id => id === at.id)
     );
     let savedUserAts = [];
 
@@ -315,21 +317,20 @@ async function saveUserAts(options) {
     }
 
     // these rows also exist in the database
-    for (let at_name_id of userAtsActiveUpdate) {
+    for (let at of userAtsActiveUpdate) {
         try {
             let activeUserAt = await UserToAt.update(
                 { active: true },
-                { where: { at_name_id } }
+                { where: { at_name_id: at.id } }
             );
             if (activeUserAt.find(activeUserAt => activeUserAt === 1)) {
-                savedUserAts.push({ at_name_id, user_id, active: true });
+                savedUserAts.push({ at_name_id: at.id, user_id, active: true });
             }
         } catch (error) {
             console.error(`Error: ${error}`);
             throw error;
         }
     }
-
     return savedUserAts;
 }
 
@@ -341,6 +342,5 @@ module.exports = {
     removeUsersFromRun,
     getAllTesters,
     signupUser,
-    saveUserAts,
-    getUserAts
+    saveUserAts
 };

@@ -11,9 +11,23 @@ const ATService = require('../../services/ATService');
 const newUser = require('../mock-data/newUser.json');
 const newUserToRole = require('../mock-data/newUserToRole.json');
 const listOfATs = require('../mock-data/listOfATs.json');
+const users = require('../mock-data/users.json');
 jest.mock('../../models/UsersModel');
 
 describe('UsersService', () => {
+    describe('UsersService.getUser', () => {
+        it('should have a getUser function', () => {
+            expect(typeof UsersService.getUser).toBe('function');
+        });
+        it('should return a user', async () => {
+            await expect(UsersService.getUser({ ...newUser })).resolves.toEqual(
+                {
+                    id: 1,
+                    ...newUser
+                }
+            );
+        });
+    });
     describe('UsersService.addUser', () => {
         it('should have a addUser function', () => {
             expect(typeof UsersService.addUser).toBe('function');
@@ -34,56 +48,18 @@ describe('UsersService', () => {
             ).resolves.toEqual(newUserToRole);
         });
     });
-    describe('UsersService.signupUser', () => {
-        beforeEach(() => {
-            moxios.install();
+    describe('UsersService.getAllTesters', () => {
+        it('should have a getAllTesters function', () => {
+            expect(typeof UsersService.getAllTesters).toBe('function');
         });
-
-        afterEach(() => {
-            moxios.uninstall();
-        });
-
-        it('should have a signupUser function', () => {
-            expect(typeof UsersService.signupUser).toBe('function');
-        });
-        it('should save a user and role if the user is new', async () => {
-            moxios.wait(() => {
-                const request = moxios.requests.mostRecent();
-                request.respondWith({
-                    status: 200,
-                    response: {
-                        data: {
-                            organization: {
-                                teams: {
-                                    edges: [
-                                        {
-                                            node: {
-                                                name: 'Team 1'
-                                            }
-                                        },
-                                        {
-                                            node: {
-                                                name: 'Team 2'
-                                            }
-                                        }
-                                    ]
-                                }
-                            }
-                        }
-                    }
-                });
+        it('return a list of users', async () => {
+            const testers = await UsersService.getAllTesters();
+            expect(testers[0]).toEqual({
+                ...users[0],
+                configured_ats: [
+                    { active: true, at_name: 'Foo', at_name_id: 1 }
+                ]
             });
-            const userSaved = await UsersService.signupUser({ user: newUser });
-            expect(userSaved).toBe(true);
-        });
-    });
-    describe('UsersService.getUserAts', () => {
-        it('should have a getUserAts function', () => {
-            expect(typeof UsersService.getUserAts).toBe('function');
-        });
-        it('should return a list of AT ids', async () => {
-            let userAts = await UsersService.getUserAts(1);
-            expect(userAts).toEqual(listOfATs.atsDB);
         });
     });
 });
@@ -154,6 +130,44 @@ describe('GithubService', () => {
 
             const received = await GithubService.getUser(options);
             expect(received).toEqual(userObj);
+        });
+    });
+
+    // Putting this test here because GitHub is part of the signup process
+    describe('UsersService.signupUser', () => {
+        it('should have a signupUser function', () => {
+            expect(typeof UsersService.signupUser).toBe('function');
+        });
+
+        it('should save a user and role if the user is new', async () => {
+            moxios.wait(() => {
+                const request = moxios.requests.mostRecent();
+                request.respondWith({
+                    status: 200,
+                    response: {
+                        data: {
+                            organization: {
+                                teams: {
+                                    edges: [
+                                        {
+                                            node: {
+                                                name: 'Team 1'
+                                            }
+                                        },
+                                        {
+                                            node: {
+                                                name: 'Team 2'
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                });
+            });
+            const userSaved = await UsersService.signupUser({ user: newUser });
+            expect(userSaved).toBe(true);
         });
     });
 });

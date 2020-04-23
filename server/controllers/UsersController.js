@@ -71,28 +71,11 @@ async function setUserAts(req, res) {
     }
 }
 
-async function getUserAts(req, res) {
-    let { username, name: fullname, email } = req.session.user;
-    try {
-        const response = await UsersService.getUserAts({
-            username,
-            fullname,
-            email
-        });
-        res.status(200).json(response);
-    } catch (error) {
-        res.status(400);
-        res.end();
-        console.error(`Error caught in UsersController: ${error}`);
-    }
-}
-
 module.exports = {
     addUser,
     addUserToRole,
     assignUsersToRun,
     removeUsersFromRun,
     getAllTesters,
-    setUserAts,
-    getUserAts
+    setUserAts
 };

@@ -97,6 +97,33 @@ describe(userEndpoint, () => {
         expect(response.statusCode).toBe(201);
         expect(response.body).toBeTruthy();
     });
+    it(`GET ${userEndpoint}/`, async () => {
+        const response = await request(listener).get(`${userEndpoint}/`);
+        expect(response.statusCode).toBe(200);
+        expect(response.body).toBeTruthy();
+    });
+    it(`POST ${userEndpoint}/ats`, async () => {
+        const response = await request(listener)
+            .post(`${userEndpoint}/ats`)
+            .send({
+                user: {
+                    id: 1,
+                    username: 'foobar'
+                },
+                ats: [
+                    {
+                        at_name_id: 1,
+                        active: false
+                    },
+                    {
+                        at_name_id: 2,
+                        active: true
+                    }
+                ]
+            });
+        expect(response.statusCode).toBe(200);
+        expect(response.body).toBeTruthy();
+    });
 });
 
 jest.mock('../../routes/auth');
