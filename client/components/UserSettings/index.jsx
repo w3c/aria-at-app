@@ -140,7 +140,7 @@ UserSettings.propTypes = {
 };
 
 const mapStateToProps = state => {
-    const { isLoggedIn, username, name: fullname, email } = state.login;
+    const { isLoggedIn, username, fullname, email } = state.login;
     let currentUserAts = [];
     if (username && state.users.users.length > 0) {
         currentUserAts = state.users.users.filter(
