@@ -65,6 +65,9 @@ class App extends Component {
                             <Nav.Link as={Link} to="/cycles">
                                 Testing Cycle Management
                             </Nav.Link>
+                            <Nav.Link as={Link} to="/tester-home">
+                                Tester Home
+                            </Nav.Link>
                         </Navbar.Collapse>
                     </Navbar>
                 </Container>

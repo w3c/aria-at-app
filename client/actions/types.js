@@ -8,3 +8,4 @@ export const SET_USER_ATS = 'SET_USER_ATS';
 export const SAVE_CYCLE = 'SAVE_CYCLE';
 export const TEST_SUITE_VERSIONS = 'TEST_SUITE_VERSIONS';
 export const GET_USERS = 'GET_USERS';
+export const RUNS_FOR_USER_AND_CYCLE = 'RUNS_FOR_USER_AND_CYCLE';

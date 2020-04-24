@@ -23,7 +23,8 @@ describe('UsersService', () => {
             await expect(UsersService.getUser({ ...newUser })).resolves.toEqual(
                 {
                     id: 1,
-                    ...newUser
+                    ...newUser,
+                    roles: ['admin', 'tester']
                 }
             );
         });
