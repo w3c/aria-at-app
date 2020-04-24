@@ -134,6 +134,7 @@ describe('users action dispatchers', () => {
             },
             cycles: {
                 cycles: [],
+                runsForCycle: {},
                 testSuiteVersions: []
             },
             ats: [],
