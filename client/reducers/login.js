@@ -7,15 +7,10 @@ const initialState = {
 export default (state = initialState, action) => {
     switch (action.type) {
         case CHECK_LOGGED_IN: {
-            const { username, name, email, id, roles } = action.payload;
             return {
                 ...state,
                 isLoggedIn: true,
-                username,
-                name,
-                email,
-                id,
-                roles
+                ...action.payload
             };
         }
         case LOG_OUT: {
