@@ -5,7 +5,15 @@ const users = require('../../tests/mock-data/users.json');
 const Users = {
     create,
     findAll() {
-        return users.map(user => ({ dataValues: { ...user } }));
+        return users.map(user => ({
+            dataValues: { ...user },
+            getRoles() {
+                return [
+                    { dataValues: { name: 'admin' } },
+                    { dataValues: { name: 'tester' } }
+                ];
+            }
+        }));
     }
 };
 const UserToRole = {
