@@ -47,7 +47,7 @@ class CycleSummary extends Component {
     render() {
         const { cycle, users, testSuiteVersionData } = this.props;
 
-        if (!cycle) {
+        if (!cycle || !testSuiteVersionData) {
             return <div>LOADING</div>;
         }
 

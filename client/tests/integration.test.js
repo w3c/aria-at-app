@@ -133,7 +133,7 @@ describe('users action dispatchers', () => {
                 isLoggedIn: false
             },
             cycles: {
-                cyclesById: [],
+                cyclesById: {},
                 runsForCycle: {},
                 testSuiteVersions: []
             },

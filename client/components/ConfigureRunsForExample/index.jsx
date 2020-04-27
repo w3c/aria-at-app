@@ -53,7 +53,7 @@ class ConfigureRunsForExample extends Component {
                 runId = parseInt(runId);
                 const atName = runs.find(r => r.id === runId).at_name;
                 const userAts = users.find(u => u.id === value).configured_ats;
-                if (userAts.find(ua => ua.at_name === atName)) {
+                if (userAts.find(ua => ua.at_name === atName && ua.active)) {
                     runIds.push(runId);
                 }
             }
