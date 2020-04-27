@@ -74,10 +74,6 @@ const ariaat = {
             exampleName[example.directory] = example.name;
         }
 
-        // TODO: When the support.json is updated with information about
-        // which the "applies_to" field in test files, we will need to consume
-        // and use that data
-
         let exampleDirs = fse.readdirSync(testDirectory);
         for (let i = 0; i < exampleDirs.length; i++) {
             const exampleDir = exampleDirs[i];
@@ -95,37 +91,51 @@ const ariaat = {
                 for (let j = 0; j < tests.length; j++) {
                     const test = tests[j];
                     const testFullPath = path.join(subDirFullPath, test);
-
                     if (
                         path.extname(test) === '.html' &&
                         test !== 'index.html'
                     ) {
-                        const file = path.relative(tmpDirectory, testFullPath);
+                        // Get the test name from the html file
+                        const htmlFile = path.relative(tmpDirectory, testFullPath);
                         const root = np.parse(
                             fse.readFileSync(testFullPath, 'utf8'),
                             { script: true }
                         );
                         const testFullName = root.querySelector('title')
                             .innerHTML;
+
+                        // Get the test order from the file name
+                        const executionOrder = parseInt(test.split('-')[1]);
+
                         const testID = await this.upsertTest(
                             testFullName,
-                            file,
+                            htmlFile,
                             exampleID,
-                            testVersionID
+                            testVersionID,
+                            executionOrder
                         );
 
-                        // TODO: we need to update this table with the actual mapping between tests
-                        // and screen readers. Right now this data is MOCKED for testing purposes.
-                        for (let at of ats) {
-                            // for a title that includes "switches mode", the test is of mode switching,
-                            // which only occurs for NVDA and JAWS
-                            if (
-                                testFullName.indexOf('switches mode') >= 0 &&
-                                at.key === 'voiceover'
-                            )
-                                continue;
+                        const testBaseName = path.basename(test, '.html');
+                        const jsonFile =  path.join(subDirFullPath, `${testBaseName}.json`);
+                        const testData = JSON.parse(
+                            fse.readFileSync(jsonFile, 'utf8')
+                        );
 
-                            await this.upsertTestToAt(testID, at.atID);
+                        let appliesToList = [];
+                        for (let a of testData.applies_to) {
+                            if (support.applies_to[a]) {
+                                appliesToList = appliesToList.concat(support.applies_to[a]);
+                            }
+                            else {
+                                appliesToList.push(a);
+                            }
+                        }
+
+                        for (let name of appliesToList) {
+                            const at = support.ats.find(a => a.name === name);
+                            if (at) {
+                                await this.upsertTestToAt(testID, at.atID);
+                            }
                         }
                     }
                 }
@@ -234,9 +244,10 @@ const ariaat = {
      * @param {string} file - the relative path to the test in the repo
      * @param {int} exampleID - foreign key into the apg_example table
      * @param {int} testVersionID - foreign key into the test_version table
+     * @param {int} executionOrder - order of the tests (within APG pattern)
      * @return {int} id
      */
-    async upsertTest(testFullName, file, exampleID, testVersionID) {
+    async upsertTest(testFullName, file, exampleID, testVersionID, executionOrder) {
         const testResult = await client.query(
             'SELECT id FROM test WHERE file=$1 AND test_version_id=$2',
             [file, testVersionID]
@@ -244,8 +255,8 @@ const ariaat = {
         let testID = testResult.rowCount ? testResult.rows[0].id : undefined;
         if (!testID) {
             testID = await this.insertRowReturnId(
-                'INSERT INTO test(name, file, apg_example_id, test_version_id) VALUES($1, $2, $3, $4) RETURNING id',
-                [testFullName, file, exampleID, testVersionID]
+                'INSERT INTO test(name, file, apg_example_id, test_version_id, execution_order) VALUES($1, $2, $3, $4, $5) RETURNING id',
+                [testFullName, file, exampleID, testVersionID, executionOrder]
             );
         }
         return testID;
