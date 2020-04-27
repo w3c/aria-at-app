@@ -1,5 +1,5 @@
 const create = require('../../tests/util/create');
-
+const users = require('../../tests/mock-data/users.json');
 const UsersService = {
     addUser: create,
     addUserToRole: create,
@@ -9,6 +9,16 @@ const UsersService = {
     },
     getUser(options) {
         return options;
+    },
+    getAllTesters() {
+        return [
+            {
+                ...users[0],
+                configured_ats: [
+                    { active: true, at_name: 'Foo', at_name_id: 1 }
+                ]
+            }
+        ];
     }
 };
 
