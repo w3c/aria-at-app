@@ -51,7 +51,7 @@ class TesterHome extends Component {
 }
 
 TesterHome.propTypes = {
-    cyclesById: PropTypes.array,
+    cyclesById: PropTypes.object,
     dispatch: PropTypes.func
 };
 
