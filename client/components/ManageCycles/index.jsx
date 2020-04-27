@@ -47,7 +47,7 @@ class ManageCycles extends Component {
 }
 
 ManageCycles.propTypes = {
-    cyclesById: PropTypes.array,
+    cyclesById: PropTypes.object,
     dispatch: PropTypes.func
 };
 

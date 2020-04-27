@@ -35,7 +35,8 @@ export default (state = initialState, action) => {
             });
         }
         case DELETE_CYCLE: {
-            let remainingCycles = delete state.cyclesById[cycleId];
+            let remainingCycles = { ...state.cyclesById };
+            delete remainingCycles[cycleId];
             return Object.assign({}, state, {
                 cyclesById: remainingCycles
             });
@@ -43,8 +44,10 @@ export default (state = initialState, action) => {
         case SAVE_CYCLE: {
             const cycle = action.payload;
             return Object.assign({}, state, {
-                ...state.cyclesById,
-                [cycle.id]: cycle
+                cyclesById: {
+                    ...state.cyclesById,
+                    [cycle.id]: cycle
+                }
             });
         }
         case RUNS_FOR_USER_AND_CYCLE: {

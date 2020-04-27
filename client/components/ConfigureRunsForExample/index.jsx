@@ -50,9 +50,13 @@ class ConfigureRunsForExample extends Component {
         let runIds = [];
         for (let runId of Object.keys(this.state.runSelected)) {
             if (this.state.runSelected[runId]) {
-
                 // Do not add to run if tester already assigned to run
-                if (testersByRunId[runId].includes(value)) continue;
+                if (
+                    testersByRunId &&
+                    testersByRunId[runId] &&
+                    testersByRunId[runId].includes(value)
+                )
+                    continue;
 
                 // Make sure the user can be assigned to this run
                 runId = parseInt(runId);

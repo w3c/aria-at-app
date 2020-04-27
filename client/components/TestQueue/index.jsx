@@ -87,7 +87,6 @@ class TestQueue extends Component {
         let atBrowserRunSets = [];
         if (cycle) {
             for (let runId in cycle.runsById) {
-
                 const run = cycle.runsById[runId];
                 const { at_name, browser_name } = run;
 
