@@ -115,10 +115,9 @@ async function configureCycle(cycle) {
             `)
             )[0][0].id;
 
-            UsersService.assignUsersToRun({
-                run_id: runId,
-                users: run.users
-            });
+            if (run.users && run.users.length > 0) {
+                UsersService.assignUsersToRuns(run.users, [runId]);
+            }
         }
 
         return (await this.getAllCycles(cycleId))[0];
