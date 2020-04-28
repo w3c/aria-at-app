@@ -40,20 +40,20 @@ export default [
                 component: ManageCycles
             },
             {
-                path: '/cycle/:cycleId/test-queue',
+                path: '/test-queue/:cycleId',
                 component: TestQueue
             },
             {
-                path: '/tester-home',
+                path: '/test-queue',
                 exact: true,
                 component: TesterHome
             },
             {
-                path: '/cycle/:cycleId/summary',
+                path: '/cycles/:cycleId',
                 component: CycleSummary
             },
             {
-                path: '/initiate-cycle',
+                path: '/cycles/new',
                 exact: true,
                 component: InitiateCycle
             }
