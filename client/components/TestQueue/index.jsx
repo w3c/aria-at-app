@@ -36,7 +36,7 @@ class TestQueue extends Component {
         let designPatternLinkOrName;
         if (currentUserAssigned) {
             designPatternLinkOrName = (
-                <Link to={`/cycle/${cycleId}/run-tests/${run.id}`}>
+                <Link to={`/cycles/${cycleId}/run-tests/${run.id}`}>
                     {run.apg_example_name}
                 </Link>
             );

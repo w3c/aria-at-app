@@ -213,7 +213,8 @@ async function getAllTesters() {
 }
 
 async function saveUserAndRoles(options) {
-    let saved = false;
+    let saved = false,
+        newUser;
     if (Object.keys(options).length === 0) return saved;
     const {
         user: { username, name, email },
@@ -227,7 +228,7 @@ async function saveUserAndRoles(options) {
     if (teams.length > 0) {
         let userId;
         try {
-            const newUser = await addUser({
+            newUser = await addUser({
                 fullname: name,
                 username,
                 email
@@ -262,7 +263,7 @@ async function saveUserAndRoles(options) {
         }
     }
 
-    return saved;
+    return newUser.dataValues;
 }
 
 async function signupUser(options) {
@@ -273,7 +274,7 @@ async function signupUser(options) {
         email
     });
     if (user) {
-        return true;
+        return user;
     }
     return saveUserAndRoles(options);
 }
@@ -329,7 +330,7 @@ async function saveUserAts(options) {
     // create these rows in the database
     try {
         let createdUserAt = await UserToAt.bulkCreate(
-            userAtsActiveCreate.map(at_name_id => ({
+            userAtsActiveCreate.map(({ id: at_name_id }) => ({
                 user_id,
                 at_name_id,
                 active: true

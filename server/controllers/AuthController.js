@@ -53,7 +53,10 @@ module.exports = {
                 accessToken: req.session.accessToken,
                 user: userToAuthorize
             });
-            if (userSaved) authorized = true;
+            if (userSaved) {
+                authorized = true;
+                userToAuthorize = userSaved;
+            }
         } else if (req.session.authType === LOGIN) {
             const { name: fullname, username, email } = userToAuthorize;
             const dbUser = await services.UsersService.getUser({
@@ -66,7 +69,6 @@ module.exports = {
                 userToAuthorize = dbUser;
             }
         }
-
         if (authorized) {
             req.session.user = userToAuthorize;
             res.redirect(303, `${req.session.referer}`);
