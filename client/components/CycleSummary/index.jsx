@@ -80,9 +80,11 @@ class CycleSummary extends Component {
 
         return (
             <Fragment>
-              <Helmet>
-                <title>Test Management (for cycle: {cycle.name}) | ARIA-AT</title>
-              </Helmet>
+                <Helmet>
+                    <title>
+                        Test Management (for cycle: {cycle.name}) | ARIA-AT
+                    </title>
+                </Helmet>
                 <h2>{cycle.name} - Status</h2>
                 <h3>Git commit of tests</h3>
                 <p>{`${

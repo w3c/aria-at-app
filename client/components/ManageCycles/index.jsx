@@ -19,9 +19,9 @@ class ManageCycles extends Component {
         const { cyclesById } = this.props;
         return (
             <Fragment>
-              <Helmet>
-                <title>Test Management | ARIA-AT</title>
-              </Helmet>
+                <Helmet>
+                    <title>Test Management | ARIA-AT</title>
+                </Helmet>
                 <h2>Initiate a Test Cycle</h2>
                 <Button as={Link} to="/new">
                     Initiate

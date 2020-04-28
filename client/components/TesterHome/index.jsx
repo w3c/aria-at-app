@@ -19,7 +19,7 @@ class TesterHome extends Component {
         return (
             <Fragment>
                 <Helmet>
-                  <title>Test Queue (for all cycles) | ARIA-AT</title>
+                    <title>Test Queue (for all cycles) | ARIA-AT</title>
                 </Helmet>
                 <h2>Test Cycles</h2>
                 <Table striped bordered hover>

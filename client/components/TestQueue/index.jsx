@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { Table } from 'react-bootstrap';
-import { Helmet } from "react-helmet";
+import { Helmet } from 'react-helmet';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { getTestCycles, getRunsForUserAndCycle } from '../../actions/cycles';
@@ -116,7 +116,7 @@ class TestQueue extends Component {
         return (
             <Fragment>
                 <Helmet>
-                  <title>{`Test queue (for cycle: ${cycle.name}) | ARIA-AT`}</title>
+                    <title>{`Test queue (for cycle: ${cycle.name}) | ARIA-AT`}</title>
                 </Helmet>
                 <h2>
                     Test Run Queue For Test Cycle:{' '}
