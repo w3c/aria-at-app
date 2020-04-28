@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Button, Table } from 'react-bootstrap';
-import CycleRow from '@components/CycleRow';
+import ManageCycleRow from '@components/ManageCycleRow';
 import { getTestCycles } from '../../actions/cycles';
 
 class ManageCycles extends Component {
@@ -19,7 +19,7 @@ class ManageCycles extends Component {
         return (
             <Fragment>
                 <h2>Initiate a Test Cycle</h2>
-                <Button as={Link} to="/initiate-cycle">
+                <Button as={Link} to="/new">
                     Initiate
                 </Button>
                 <h2>Test Cycle Status</h2>
@@ -34,7 +34,7 @@ class ManageCycles extends Component {
                     </thead>
                     <tbody>
                         {Object.keys(cyclesById).map(cycleId => (
-                            <CycleRow
+                            <ManageCycleRow
                                 key={cycleId}
                                 cycle={cyclesById[cycleId]}
                             />

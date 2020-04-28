@@ -51,23 +51,25 @@ class App extends Component {
                                     </Nav.Link>
                                 </React.Fragment>
                             )) || (
-                                <Nav.Link
-                                    as={Link}
-                                    to="/"
-                                    onClick={this.logout}
-                                >
-                                    Logout
-                                </Nav.Link>
+                                <React.Fragment>
+                                    <Nav.Link as={Link} to="/cycles">
+                                        Test Management
+                                    </Nav.Link>
+                                    <Nav.Link as={Link} to="/test-queue">
+                                        Test Queue
+                                    </Nav.Link>
+                                    <Nav.Link as={Link} to="/account/settings">
+                                        Settings
+                                    </Nav.Link>
+                                    <Nav.Link
+                                        as={Link}
+                                        to="/"
+                                        onClick={this.logout}
+                                    >
+                                        Logout
+                                    </Nav.Link>
+                                </React.Fragment>
                             )}
-                            <Nav.Link as={Link} to="/account/settings">
-                                Settings
-                            </Nav.Link>
-                            <Nav.Link as={Link} to="/cycles">
-                                Testing Cycle Management
-                            </Nav.Link>
-                            <Nav.Link as={Link} to="/tester-home">
-                                Tester Home
-                            </Nav.Link>
                         </Navbar.Collapse>
                     </Navbar>
                 </Container>

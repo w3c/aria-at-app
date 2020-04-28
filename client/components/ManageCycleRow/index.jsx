@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { Button } from 'react-bootstrap';
 import { deleteCycle } from '../../actions/cycles';
 
-class CycleRow extends Component {
+class ManageCycleRow extends Component {
     constructor(props) {
         super(props);
         this.deleteCycle = this.deleteCycle.bind(this);
@@ -21,7 +21,7 @@ class CycleRow extends Component {
         return (
             <tr>
                 <td>
-                    <Link to={`/cycle/${id}/summary`}>{name}</Link>
+                    <Link to={`/cycles/${id}`}>{name}</Link>
                 </td>
                 <td>{date}</td>
                 <td>In Progress</td>
@@ -33,9 +33,9 @@ class CycleRow extends Component {
     }
 }
 
-CycleRow.propTypes = {
+ManageCycleRow.propTypes = {
     cycle: PropTypes.object,
     dispatch: PropTypes.func
 };
 
-export default connect()(CycleRow);
+export default connect()(ManageCycleRow);

@@ -36,7 +36,7 @@ class TesterHome extends Component {
                                 <td>
                                     <Button
                                         as={Link}
-                                        to={`/cycle/${cycleId}/test-queue`}
+                                        to={`/test-queue/${cycleId}`}
                                     >
                                         Contribute Tests
                                     </Button>
