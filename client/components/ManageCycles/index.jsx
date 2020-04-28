@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
 import { Button, Table } from 'react-bootstrap';
 import ManageCycleRow from '@components/ManageCycleRow';
@@ -18,6 +19,9 @@ class ManageCycles extends Component {
         const { cyclesById } = this.props;
         return (
             <Fragment>
+              <Helmet>
+                <title>Test Management | ARIA-AT</title>
+              </Helmet>
                 <h2>Initiate a Test Cycle</h2>
                 <Button as={Link} to="/new">
                     Initiate

@@ -2,6 +2,7 @@ import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Table } from 'react-bootstrap';
+import { Helmet } from 'react-helmet';
 import {
     getTestSuiteVersions,
     getTestCycles,
@@ -79,6 +80,9 @@ class CycleSummary extends Component {
 
         return (
             <Fragment>
+              <Helmet>
+                <title>Test Management (for cycle: {cycle.name}) | ARIA-AT</title>
+              </Helmet>
                 <h2>{cycle.name} - Status</h2>
                 <h3>Git commit of tests</h3>
                 <p>{`${

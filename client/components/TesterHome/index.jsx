@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
 import { Button, Table } from 'react-bootstrap';
 import { getTestCycles } from '../../actions/cycles';
@@ -17,6 +18,9 @@ class TesterHome extends Component {
         const { cyclesById } = this.props;
         return (
             <Fragment>
+                <Helmet>
+                  <title>Test Queue (for all cycles) | ARIA-AT</title>
+                </Helmet>
                 <h2>Test Cycles</h2>
                 <Table striped bordered hover>
                     <thead>
