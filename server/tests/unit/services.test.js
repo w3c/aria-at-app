@@ -168,7 +168,13 @@ describe('GithubService', () => {
                 });
             });
             const userSaved = await UsersService.signupUser({ user: newUser });
-            expect(userSaved).toBe(true);
+            expect(userSaved).toEqual({
+                email: 'foo@bar.com',
+                fullname: 'Foo Bar',
+                id: 1,
+                roles: ['admin', 'tester'],
+                username: 'foobar'
+            });
         });
     });
 });
