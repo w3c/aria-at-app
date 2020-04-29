@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import { Button, Table } from 'react-bootstrap';
 import ManageCycleRow from '@components/ManageCycleRow';
 import { getTestCycles } from '../../actions/cycles';
+import { Redirect } from 'react-router-dom';
 
 class ManageCycles extends Component {
     componentDidMount() {
@@ -16,7 +17,12 @@ class ManageCycles extends Component {
     }
 
     render() {
-        const { cyclesById } = this.props;
+        const { cyclesById, isAdmin } = this.props;
+
+        if (!isAdmin) {
+            return <Redirect to={{ pathname: '/'}} />;
+        }
+
         return (
             <Fragment>
                 <Helmet>
@@ -52,12 +58,17 @@ class ManageCycles extends Component {
 
 ManageCycles.propTypes = {
     cyclesById: PropTypes.object,
-    dispatch: PropTypes.func
+    dispatch: PropTypes.func,
+    isAdmin: PropTypes.bool
 };
 
 const mapStateToProps = state => {
+    const { roles } = state.login;
     const { cyclesById } = state.cycles;
-    return { cyclesById };
+
+    let isAdmin = roles ? roles.includes('admin') : false;
+
+    return { cyclesById, isAdmin };
 };
 
 export default connect(mapStateToProps)(ManageCycles);
