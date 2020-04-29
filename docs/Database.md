@@ -16,6 +16,7 @@
 
 #### Mac
 ```
+createdb # run this if the PostgreSQL installation is freshly installed
 yarn db-init:dev
 ```
 
