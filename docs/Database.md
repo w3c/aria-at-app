@@ -12,7 +12,6 @@
   * If you are on a linux computer, you might have to follow the instructions [here](https://stackoverflow.com/a/21889759) to change the default authentication from "peer" to "md5".
 
 
-
 ### Initialize the database
 
 #### Mac
@@ -27,18 +26,22 @@ sudo -u postgres yarn db-init:dev
 ```
 
 
-## Run database migrations
+### Run database migrations
 Every time a new migration file is added, Flyway must be run again to apply the migration.
-
-### Dev
 ```
 yarn db-migrate:dev
 ```
 
 
-## Local PG development
+### Import test results
+To import test data into the local database, run:
+```
+yarn db-import-tests:dev
+```
 
-To connect to the Postgres table locally, export these variables:
+### Inspecting the database
+
+To connect to the Postgres table locally (with psql), export these variables:
 ```
 export PGDATABASE=aria_at_report
 export PGUSER=atr
