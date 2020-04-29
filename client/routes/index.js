@@ -60,7 +60,7 @@ export default [
                 component: InitiateCycle
             },
             {
-                path: '/cycles/:cycleId(\\d+)/run-tests/:runId(\\d+)',
+                path: '/cycles/:cycleId(\\d+)/run/:runId(\\d+)',
                 component: TestRun
             }
         ]
