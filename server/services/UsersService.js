@@ -55,6 +55,17 @@ async function addUserToRole(userToRole) {
     }
 }
 
+async function deleteUserFromRole(userToRole) {
+    try {
+        const newUserToRole = await UserToRole.destroy({
+            where: userToRole
+        });
+    } catch (error) {
+        console.error(`Error: ${error}`);
+        throw error;
+    }
+}
+
 /**
  * Saves new entries to the tester_to_run table.
  *
@@ -266,6 +277,53 @@ async function saveUserAndRoles(options) {
     return newUser.dataValues;
 }
 
+async function getUserAndUpdateRoles(options) {
+    const { user, accessToken } = options;
+
+    let dbUser = await getUser(user);
+    const teams = await GithubService.getUserTeams({
+        accessToken,
+        userLogin: user.username
+    });
+    const githubUserRoles = teams.map(t => GithubService.teamToRole[t]);
+
+    const roleRows = await Role.findAll();
+    const rolesMap = {};
+    roleRows.map(r => (rolesMap[r.dataValues.name] = { ...r.dataValues }));
+
+    let newRoleList = [];
+    for (let role in rolesMap) {
+        let userHasRole = dbUser.roles.includes(role);
+        let userInTeam = githubUserRoles.includes(role);
+
+        // User has role and is in the correct team
+        if (userHasRole && userInTeam) {
+            newRoleList.push(role);
+            continue;
+        }
+
+        // User has the role but is not in the correct team
+        if (userHasRole && !userInTeam) {
+            await deleteUserFromRole({
+                user_id: dbUser.id,
+                role_id: rolesMap[role].id
+            });
+        }
+
+        // User does not have the role but is in the correct team
+        if (!userHasRole && userInTeam) {
+            await addUserToRole({
+                user_id: dbUser.id,
+                role_id: rolesMap[role].id
+            });
+            newRoleList.push(role);
+        }
+    }
+
+    dbUser.roles = newRoleList;
+    return dbUser;
+}
+
 async function signupUser(options) {
     const { name: fullname, username, email } = options.user;
     const user = await getUser({
@@ -370,5 +428,6 @@ module.exports = {
     removeUsersFromRun,
     getAllTesters,
     signupUser,
-    saveUserAts
+    saveUserAts,
+    getUserAndUpdateRoles
 };

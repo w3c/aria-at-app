@@ -96,7 +96,10 @@ const ariaat = {
                         test !== 'index.html'
                     ) {
                         // Get the test name from the html file
-                        const htmlFile = path.relative(tmpDirectory, testFullPath);
+                        const htmlFile = path.relative(
+                            tmpDirectory,
+                            testFullPath
+                        );
                         const root = np.parse(
                             fse.readFileSync(testFullPath, 'utf8'),
                             { script: true }
@@ -116,7 +119,10 @@ const ariaat = {
                         );
 
                         const testBaseName = path.basename(test, '.html');
-                        const jsonFile =  path.join(subDirFullPath, `${testBaseName}.json`);
+                        const jsonFile = path.join(
+                            subDirFullPath,
+                            `${testBaseName}.json`
+                        );
                         const testData = JSON.parse(
                             fse.readFileSync(jsonFile, 'utf8')
                         );
@@ -124,9 +130,10 @@ const ariaat = {
                         let appliesToList = [];
                         for (let a of testData.applies_to) {
                             if (support.applies_to[a]) {
-                                appliesToList = appliesToList.concat(support.applies_to[a]);
-                            }
-                            else {
+                                appliesToList = appliesToList.concat(
+                                    support.applies_to[a]
+                                );
+                            } else {
                                 appliesToList.push(a);
                             }
                         }
@@ -247,7 +254,13 @@ const ariaat = {
      * @param {int} executionOrder - order of the tests (within APG pattern)
      * @return {int} id
      */
-    async upsertTest(testFullName, file, exampleID, testVersionID, executionOrder) {
+    async upsertTest(
+        testFullName,
+        file,
+        exampleID,
+        testVersionID,
+        executionOrder
+    ) {
         const testResult = await client.query(
             'SELECT id FROM test WHERE file=$1 AND test_version_id=$2',
             [file, testVersionID]

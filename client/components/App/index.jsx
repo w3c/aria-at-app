@@ -28,7 +28,7 @@ class App extends Component {
     }
 
     render() {
-        const { route, isLoggedIn } = this.props;
+        const { route, isLoggedIn, isAdmin, isTester } = this.props;
         return (
             <Fragment>
                 <Container fluid>
@@ -52,12 +52,16 @@ class App extends Component {
                                 </React.Fragment>
                             )) || (
                                 <React.Fragment>
-                                    <Nav.Link as={Link} to="/cycles">
-                                        Test Management
-                                    </Nav.Link>
-                                    <Nav.Link as={Link} to="/test-queue">
-                                        Test Queue
-                                    </Nav.Link>
+                                    {isAdmin && (
+                                        <Nav.Link as={Link} to="/cycles">
+                                            Test Management
+                                        </Nav.Link>
+                                    )}
+                                    {isTester && (
+                                        <Nav.Link as={Link} to="/test-queue">
+                                            Test Queue
+                                        </Nav.Link>
+                                    )}
                                     <Nav.Link as={Link} to="/account/settings">
                                         Settings
                                     </Nav.Link>
@@ -82,13 +86,17 @@ class App extends Component {
 App.propTypes = {
     dispatch: PropTypes.func,
     isLoggedIn: PropTypes.bool,
+    isAdmin: PropTypes.bool,
+    isTester: PropTypes.bool,
     location: PropTypes.object,
     route: PropTypes.object
 };
 
 const mapStateToProps = state => {
-    const { isLoggedIn } = state.login;
-    return { isLoggedIn };
+    const { isLoggedIn, roles } = state.login;
+    let isAdmin = roles ? roles.includes('admin') : false;
+    let isTester = isAdmin || (roles && roles.includes('tester'));
+    return { isLoggedIn, isAdmin, isTester };
 };
 
 export default connect(mapStateToProps)(App);
