@@ -5,6 +5,8 @@ import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import Button from 'react-bootstrap/Button';
 import { getTestCycles, getRunsForUserAndCycle } from '../../actions/cycles';
+import io from 'socket.io-client';
+const socket = io(process.env.API_SERVER);
 
 class TestRun extends Component {
     constructor(props) {
@@ -16,6 +18,10 @@ class TestRun extends Component {
         };
 
         this.nextTest = this.nextTest.bind(this);
+        this.socket = socket;
+        this.socket.on('repoStatus', (msg) => {
+            console.log('repoStatus', msg)
+        })
     }
 
     async componentDidMount() {
@@ -24,6 +30,7 @@ class TestRun extends Component {
             dispatch(getTestCycles());
             dispatch(getRunsForUserAndCycle(cycleId));
         }
+        this.socket.emit('repoAvailable');
     }
 
     nextTest() {

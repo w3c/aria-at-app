@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { Form, Button, Row, Col } from 'react-bootstrap';
 import { getTestSuiteVersions, saveCycle } from '../../actions/cycles';
 import { getAllUsers } from '../../actions/users';
+import { cloneAriaAtRepo } from '../../actions/repo';
 import ConfigureTechnologyRow from '@components/ConfigureTechnologyRow';
 import ConfigureRunsForExample from '@components/ConfigureRunsForExample';
 import { Redirect } from 'react-router-dom';
@@ -119,8 +120,10 @@ class InitiateCycle extends Component {
 
         cycle.runs = runs;
         dispatch(saveCycle(cycle));
+        dispatch(cloneAriaAtRepo());
 
-        history.push('/cycles');
+        //TODO: uncomment
+        //history.push('/cycles');
     }
 
     assignTesters(exampleId, runTechnologyIndexes, userId) {

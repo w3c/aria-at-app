@@ -23,6 +23,19 @@ const port = process.env.PORT || 5000;
 // TODO: make this path configurable
 listener.use(express.static(process.env.ARIA_AT_REPO_DIR));
 
+io.on('connection', (socket) => {
+    console.log('connected to IO')
+    socket.on('clone', (msg) => {
+        console.log('clone repo msg: ', msg)
+    })
+    socket.on('repoAvailable', () => {
+        socket.emit('repoStatus', false);
+    })
+    socket.on('fromAPI', (msg) => {
+        console.log(msg)
+    })
+});
+
 http.listen(port, () => {
     // eslint-disable-next-line no-console
     console.log(`Listening on ${port}`);
