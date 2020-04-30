@@ -365,7 +365,7 @@ const mapStateToProps = state => {
 
     let isAdmin = roles ? roles.includes('admin') : false;
 
-    return { testSuiteVersions, users };
+    return { testSuiteVersions, users, isAdmin };
 };
 
 export default connect(mapStateToProps)(InitiateCycle);

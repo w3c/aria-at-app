@@ -165,7 +165,7 @@ const mapStateToProps = (state, ownProps) => {
         );
     }
 
-    return { cycle, users, testSuiteVersionData };
+    return { cycle, users, testSuiteVersionData, isAdmin };
 };
 
 export default connect(mapStateToProps)(CycleSummary);
