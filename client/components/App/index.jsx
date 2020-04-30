@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
+import './App.css';
 import { renderRoutes } from 'react-router-config';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
