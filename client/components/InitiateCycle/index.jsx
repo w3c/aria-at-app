@@ -33,12 +33,12 @@ class InitiateCycle extends Component {
     }
 
     componentDidMount() {
-        const { dispatch, testSuiteVersions, users } = this.props;
+        const { dispatch, testSuiteVersions, usersById } = this.props;
 
         if (!testSuiteVersions.length) {
             dispatch(getTestSuiteVersions());
         }
-        if (!users.length) {
+        if (!Object.keys(usersById).length) {
             dispatch(getAllUsers());
         }
     }
@@ -226,7 +226,7 @@ class InitiateCycle extends Component {
     }
 
     render() {
-        const { testSuiteVersions, users, isAdmin } = this.props;
+        const { testSuiteVersions, usersById, isAdmin } = this.props;
 
         if (!isAdmin) {
             return <Redirect to={{ pathname: '/404' }} />;
@@ -331,7 +331,7 @@ class InitiateCycle extends Component {
                                 runs={runs}
                                 key={example.id}
                                 example={example}
-                                users={users}
+                                usersById={usersById}
                                 assignTesters={this.assignTesters}
                                 removeAllTestersFromRun={
                                     this.removeAllTestersFromRun
@@ -355,17 +355,17 @@ InitiateCycle.propTypes = {
     dispatch: PropTypes.func,
     history: PropTypes.object,
     isAdmin: PropTypes.bool,
-    users: PropTypes.array
+    usersById: PropTypes.object
 };
 
 const mapStateToProps = state => {
     const { testSuiteVersions } = state.cycles;
-    const { users } = state.users;
+    const { usersById } = state.users;
     const { roles } = state.login;
 
     let isAdmin = roles ? roles.includes('admin') : false;
 
-    return { testSuiteVersions, users, isAdmin };
+    return { testSuiteVersions, usersById, isAdmin };
 };
 
 export default connect(mapStateToProps)(InitiateCycle);

@@ -353,9 +353,9 @@ async function getUserAts(options) {
 }
 
 async function saveUserAts(options) {
-    const { user, ats } = options;
-    let { id: user_id } = await getUser(user);
-    const existingUserAtsIds = (await getUserAts(user_id)).map(
+    console.log('OPTIONS IN USERSSERVICES', options);
+    const { userId, ats } = options;
+    const existingUserAtsIds = (await getUserAts(userId)).map(
         userAt => userAt.dataValues.at_name_id
     );
     const userAtsInactive = existingUserAtsIds.filter(
@@ -377,7 +377,11 @@ async function saveUserAts(options) {
                 { where: { at_name_id } }
             );
             if (inactiveUserAt.find(inactiveUserAt => inactiveUserAt === 1)) {
-                savedUserAts.push({ at_name_id, user_id, active: false });
+                savedUserAts.push({
+                    at_name_id,
+                    user_id: userId,
+                    active: false
+                });
             }
         } catch (error) {
             console.error(`Error: ${error}`);
@@ -389,7 +393,7 @@ async function saveUserAts(options) {
     try {
         let createdUserAt = await UserToAt.bulkCreate(
             userAtsActiveCreate.map(({ id: at_name_id }) => ({
-                user_id,
+                user_id: userId,
                 at_name_id,
                 active: true
             }))
@@ -410,7 +414,11 @@ async function saveUserAts(options) {
                 { where: { at_name_id: at.id } }
             );
             if (activeUserAt.find(activeUserAt => activeUserAt === 1)) {
-                savedUserAts.push({ at_name_id: at.id, user_id, active: true });
+                savedUserAts.push({
+                    at_name_id: at.id,
+                    user_id: userId,
+                    active: true
+                });
             }
         } catch (error) {
             console.error(`Error: ${error}`);

@@ -21,7 +21,7 @@ class ConfigureRunsForExample extends Component {
             removeAllTestersFromRun,
             testersByRunId,
             example,
-            users,
+            usersById,
             runs
         } = this.props;
         let value = parseInt(event.currentTarget.value);
@@ -61,7 +61,7 @@ class ConfigureRunsForExample extends Component {
                 // Make sure the user can be assigned to this run
                 runId = parseInt(runId);
                 const atName = runs.find(r => r.id === runId).at_name;
-                const userAts = users.find(u => u.id === value).configured_ats;
+                const userAts = usersById[value].configured_ats;
                 if (userAts.find(ua => ua.at_name === atName && ua.active)) {
                     runIds.push(runId);
                 }
@@ -85,7 +85,7 @@ class ConfigureRunsForExample extends Component {
     }
 
     render() {
-        const { example, users, testersByRunId, runs } = this.props;
+        const { example, usersById, testersByRunId, runs } = this.props;
 
         runs.sort(function(a, b) {
             if (a.at_id === b.at_id) {
@@ -115,9 +115,7 @@ class ConfigureRunsForExample extends Component {
                                 if (testersByRunId && testersByRunId[run.id]) {
                                     names = testersByRunId[run.id].map(
                                         testerId => {
-                                            let user = users.filter(
-                                                u => u.id === testerId
-                                            )[0];
+                                            let user = usersById[testerId];
                                             return user.fullname;
                                         }
                                     );
@@ -169,13 +167,10 @@ class ConfigureRunsForExample extends Component {
                                             Clear Assignees
                                         </option>
                                         ;
-                                        {users.map(user => {
+                                        {Object.keys(usersById).map(id => {
                                             return (
-                                                <option
-                                                    key={user.id}
-                                                    value={user.id}
-                                                >
-                                                    {user.fullname}
+                                                <option key={id} value={id}>
+                                                    {usersById[id].fullname}
                                                 </option>
                                             );
                                         })}
@@ -198,7 +193,7 @@ class ConfigureRunsForExample extends Component {
 
 ConfigureRunsForExample.propTypes = {
     example: PropTypes.object,
-    users: PropTypes.array,
+    usersById: PropTypes.object,
     assignTesters: PropTypes.func,
     removeAllTestersFromRun: PropTypes.func,
     testersByRunId: PropTypes.object,

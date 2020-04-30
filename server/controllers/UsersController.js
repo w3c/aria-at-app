@@ -60,9 +60,10 @@ async function getAllTesters(req, res) {
 }
 
 async function setUserAts(req, res) {
-    const { ats, user } = req.body;
+    const { ats, userId } = req.body;
+    console.log('REQ.BODY IN CONTROLLER', req.body);
     try {
-        const response = await UsersService.saveUserAts({ user, ats });
+        const response = await UsersService.saveUserAts({ userId, ats });
         res.status(200).json(response);
     } catch (error) {
         res.status(400);

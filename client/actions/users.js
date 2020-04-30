@@ -18,11 +18,11 @@ export function getAllUsers() {
     };
 }
 
-export function handleSetUserAts(user, ats) {
+export function handleSetUserAts(userId, ats) {
     return async function(dispatch) {
-        const response = await axios.post('/api/user/ats', { user, ats });
+        const response = await axios.post('/api/user/ats', { userId, ats });
         if (response.status === 200) {
-            dispatch(setUserAts({ user, ats: response.data }));
+            dispatch(setUserAts({ userId, ats: response.data }));
         }
     };
 }

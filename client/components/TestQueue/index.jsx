@@ -9,12 +9,18 @@ import { getAllUsers } from '../../actions/users';
 
 class TestQueue extends Component {
     componentDidMount() {
-        const { dispatch, cycle, cycleId, testsForRuns, users } = this.props;
+        const {
+            dispatch,
+            cycle,
+            cycleId,
+            testsForRuns,
+            usersById
+        } = this.props;
         if (!cycle) {
             dispatch(getTestCycles());
         }
 
-        if (!users.length) {
+        if (!Object.keys(usersById).length) {
             dispatch(getAllUsers());
         }
 
@@ -24,13 +30,13 @@ class TestQueue extends Component {
     }
 
     renderRunRow(run) {
-        const { cycleId, userId, users } = this.props;
+        const { cycleId, userId, usersById } = this.props;
 
         let currentUserAssigned = run.testers.includes(userId);
 
         // TODO: Fix when users is a mapped id => user object
         let userNames = run.testers.map(uid => {
-            return users.find(u => u.id === uid).fullname;
+            return usersById[uid].fullname;
         });
 
         let designPatternLinkOrName;
@@ -76,13 +82,13 @@ class TestQueue extends Component {
     }
 
     render() {
-        const { cycle, cycleId, testsForRuns, users, userId } = this.props;
+        const { cycle, cycleId, testsForRuns, usersById, userId } = this.props;
 
-        if (!testsForRuns || !cycle || !users.length) {
+        if (!testsForRuns || !cycle || !Object.keys(usersById).length) {
             return <div>Loading</div>;
         }
 
-        let currentUser = users.find(u => u.id === userId);
+        let currentUser = usersById[userId];
         let configuredAtNames = currentUser.configured_ats.map(a => a.at_name);
 
         let atBrowserRunSets = [];
@@ -134,14 +140,14 @@ TestQueue.propTypes = {
     cycle: PropTypes.object,
     cycleId: PropTypes.number,
     testsForRuns: PropTypes.object,
-    users: PropTypes.array,
+    usersById: PropTypes.object,
     userId: PropTypes.number,
     dispatch: PropTypes.func
 };
 
 const mapStateToProps = (state, ownProps) => {
     const { cyclesById, runsForCycle } = state.cycles;
-    const { users } = state.users;
+    const { usersById } = state.users;
     const userId = state.login.id;
     const cycleId = parseInt(ownProps.match.params.cycleId);
 
@@ -152,7 +158,7 @@ const mapStateToProps = (state, ownProps) => {
         testsForRuns = runsForCycle[cycleId];
     }
 
-    return { cycle, cycleId, testsForRuns, users, userId };
+    return { cycle, cycleId, testsForRuns, usersById, userId };
 };
 
 export default connect(mapStateToProps)(TestQueue);
