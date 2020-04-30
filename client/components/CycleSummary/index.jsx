@@ -11,6 +11,7 @@ import {
 } from '../../actions/cycles';
 import { getAllUsers } from '../../actions/users';
 import ConfigureRunsForExample from '@components/ConfigureRunsForExample';
+import { Redirect } from 'react-router-dom';
 
 class CycleSummary extends Component {
     constructor(props) {
@@ -46,7 +47,11 @@ class CycleSummary extends Component {
     }
 
     render() {
-        const { cycle, users, testSuiteVersionData } = this.props;
+        const { cycle, isAdmin, users, testSuiteVersionData } = this.props;
+
+        if (!isAdmin) {
+            return <Redirect to={{ pathname: '/404' }} />;
+        }
 
         if (!cycle || !testSuiteVersionData) {
             return <div>LOADING</div>;
@@ -139,12 +144,16 @@ CycleSummary.propTypes = {
     cycle: PropTypes.object,
     dispatch: PropTypes.func,
     users: PropTypes.array,
+    isAdmin: PropTypes.bool,
     testSuiteVersionData: PropTypes.object
 };
 
 const mapStateToProps = (state, ownProps) => {
+    const { roles } = state.login;
     const { cyclesById, testSuiteVersions } = state.cycles;
     const { users } = state.users;
+
+    let isAdmin = roles ? roles.includes('admin') : false;
 
     const cycleId = parseInt(ownProps.match.params.cycleId);
 
@@ -156,7 +165,7 @@ const mapStateToProps = (state, ownProps) => {
         );
     }
 
-    return { cycle, users, testSuiteVersionData };
+    return { cycle, users, testSuiteVersionData, isAdmin };
 };
 
 export default connect(mapStateToProps)(CycleSummary);

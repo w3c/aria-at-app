@@ -59,10 +59,14 @@ module.exports = {
             }
         } else if (req.session.authType === LOGIN) {
             const { name: fullname, username, email } = userToAuthorize;
-            const dbUser = await services.UsersService.getUser({
-                fullname,
-                username,
-                email
+
+            const dbUser = await services.UsersService.getUserAndUpdateRoles({
+                accessToken: req.session.accessToken,
+                user: {
+                    fullname,
+                    username,
+                    email
+                }
             });
             if (dbUser) {
                 authorized = true;
