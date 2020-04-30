@@ -6,6 +6,7 @@ import { getTestSuiteVersions, saveCycle } from '../../actions/cycles';
 import { getAllUsers } from '../../actions/users';
 import ConfigureTechnologyRow from '@components/ConfigureTechnologyRow';
 import ConfigureRunsForExample from '@components/ConfigureRunsForExample';
+import { Redirect } from 'react-router-dom';
 
 class InitiateCycle extends Component {
     constructor(props) {
@@ -225,7 +226,11 @@ class InitiateCycle extends Component {
     }
 
     render() {
-        const { testSuiteVersions, users } = this.props;
+        const { testSuiteVersions, users, isAdmin } = this.props;
+
+        if (!isAdmin) {
+            return <Redirect to={{ pathname: '/404'}} />;
+        }
 
         if (!testSuiteVersions.length) {
             return <div>LOADING</div>;
@@ -349,12 +354,17 @@ InitiateCycle.propTypes = {
     testSuiteVersions: PropTypes.array,
     dispatch: PropTypes.func,
     history: PropTypes.object,
+    isAdmin: PropTypes.bool,
     users: PropTypes.array
 };
 
 const mapStateToProps = state => {
     const { testSuiteVersions } = state.cycles;
     const { users } = state.users;
+    const { roles } = state.login;
+
+    let isAdmin = roles ? roles.includes('admin') : false;
+
     return { testSuiteVersions, users };
 };
 

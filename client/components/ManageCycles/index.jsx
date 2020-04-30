@@ -20,7 +20,7 @@ class ManageCycles extends Component {
         const { cyclesById, isAdmin } = this.props;
 
         if (!isAdmin) {
-            return <Redirect to={{ pathname: '/'}} />;
+            return <Redirect to={{ pathname: '/404'}} />;
         }
 
         return (
