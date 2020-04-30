@@ -50,7 +50,7 @@ class CycleSummary extends Component {
         const { cycle, isAdmin, users, testSuiteVersionData } = this.props;
 
         if (!isAdmin) {
-            return <Redirect to={{ pathname: '/404'}} />;
+            return <Redirect to={{ pathname: '/404' }} />;
         }
 
         if (!cycle || !testSuiteVersionData) {

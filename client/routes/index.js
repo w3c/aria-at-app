@@ -15,7 +15,6 @@ import TestQueue from '@components/TestQueue';
 import TestRun from '@components/TestRun';
 import UserSettings from '@components/UserSettings';
 
-
 export default [
     {
         component: App,
@@ -23,7 +22,7 @@ export default [
             {
                 path: '/',
                 exact: true,
-                component: Home,
+                component: Home
             },
             {
                 path: '/login',
@@ -81,9 +80,8 @@ export default [
             },
             {
                 component: () => {
-                    return <Redirect to={{ pathname: '/404'}} />;
+                    return <Redirect to={{ pathname: '/404' }} />;
                 }
-
             }
         ]
     }

@@ -229,7 +229,7 @@ class InitiateCycle extends Component {
         const { testSuiteVersions, users, isAdmin } = this.props;
 
         if (!isAdmin) {
-            return <Redirect to={{ pathname: '/404'}} />;
+            return <Redirect to={{ pathname: '/404' }} />;
         }
 
         if (!testSuiteVersions.length) {
