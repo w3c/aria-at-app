@@ -52,9 +52,12 @@ module.exports = {
         publicPath: '/',
         historyApiFallback: true,
         hotOnly: true,
-        proxy: {
-            '/api': 'http://localhost:5000/'
-        },
+        proxy: [
+            {
+                context: ['/tests', '/api'],
+                target: 'http://localhost:5000'
+            }
+        ],
         watchOptions: {
             aggregateTimeout: 300,
             poll: 1000
