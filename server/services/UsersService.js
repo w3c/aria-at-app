@@ -57,7 +57,7 @@ async function addUserToRole(userToRole) {
 
 async function deleteUserFromRole(userToRole) {
     try {
-        const newUserToRole = await UserToRole.destroy({
+        await UserToRole.destroy({
             where: userToRole
         });
     } catch (error) {

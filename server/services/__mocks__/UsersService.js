@@ -10,6 +10,9 @@ const UsersService = {
     getUser(options) {
         return options;
     },
+    getUserAndUpdateRoles(options) {
+        return options;
+    },
     getAllTesters() {
         return [
             {
