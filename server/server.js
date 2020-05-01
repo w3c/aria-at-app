@@ -1,3 +1,4 @@
+const express = require('express');
 const Sequelize = require('sequelize');
 global.sequelize = new Sequelize(
     process.env.PGDATABASE,
@@ -16,6 +17,9 @@ global.sequelize = new Sequelize(
 );
 const { listener } = require('./app');
 const port = process.env.PORT || 5000;
+
+// TODO: make this path configurable
+listener.use(express.static(process.env.ARIA_AT_REPO_DIR));
 
 listener.listen(port, () => {
     // eslint-disable-next-line no-console

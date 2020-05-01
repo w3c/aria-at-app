@@ -73,7 +73,8 @@
   "jest": {
     "moduleNameMapper": {
       "^@client(.*)": "<rootDir>/$1",
-      "^@components(.*)": "<rootDir>/components/$1"
+      "^@components(.*)": "<rootDir>/components/$1",
+      "\\.(css|less)$": "<rootDir>/tests/__mocks__/styleMock.js"
     }
   }
 }
