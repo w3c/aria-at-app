@@ -19,10 +19,11 @@ export default (state = initialState, action) => {
         }
         case SET_USER_ATS: {
             let { userId, ats } = action.payload;
-            let updatedUser = { ...state.usersById[userId] };
+            let updateUser = { ...state.usersById[userId] };
+            let configuredUserAts = updateUser.configured_ats;
 
             let updatedAts = [];
-            for (let at of updatedUser.configured_ats) {
+            for (let at of ats) {
                 let atFound = configuredUserAts.find(
                     configuredAt => configuredAt.at_name_id === at.at_name_id
                 );
@@ -33,13 +34,13 @@ export default (state = initialState, action) => {
                     updatedAts.push(at);
                 }
             }
-            updatedUser.configured_ats = updatedAts;
+            updateUser.configured_ats = updatedAts;
 
             return {
                 ...state,
                 usersById: {
                     ...state.usersById,
-                    [userId]: updatedUser
+                    [userId]: updateUser
                 }
             };
         }

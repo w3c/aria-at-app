@@ -133,6 +133,7 @@ UserSettings.propTypes = {
     fullname: PropTypes.string,
     username: PropTypes.string,
     email: PropTypes.string,
+    userId: PropTypes.number,
     ats: PropTypes.array,
     dispatch: PropTypes.func,
     currentUserAts: PropTypes.array

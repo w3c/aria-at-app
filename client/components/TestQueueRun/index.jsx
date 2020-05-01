@@ -1,10 +1,9 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Button } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { deleteUsersFromRun, saveUsersToRuns } from '../../actions/cycles';
-
 
 class TestQueueRow extends Component {
     constructor(props) {
@@ -24,7 +23,14 @@ class TestQueueRow extends Component {
     }
 
     render() {
-        const { cycleId, userId, usersById, runId, testers, apgExampleName } = this.props;
+        const {
+            cycleId,
+            userId,
+            usersById,
+            runId,
+            testers,
+            apgExampleName
+        } = this.props;
         let currentUserAssigned = testers.includes(userId);
 
         let userNames = testers.map(uid => {
@@ -45,15 +51,11 @@ class TestQueueRow extends Component {
         let assignOrUnassignButton;
         if (currentUserAssigned) {
             assignOrUnassignButton = (
-                <Button onClick={this.handleUnassignClick}>
-                  Unassign Me
-                </Button>
+                <Button onClick={this.handleUnassignClick}>Unassign Me</Button>
             );
         } else if (testers.length < 2) {
             assignOrUnassignButton = (
-                <Button onClick={this.handleAssignClick}>
-                  Assign Me
-                </Button>
+                <Button onClick={this.handleAssignClick}>Assign Me</Button>
             );
         }
 
@@ -75,7 +77,7 @@ TestQueueRow.propTypes = {
     testers: PropTypes.array,
     usersById: PropTypes.object,
     userId: PropTypes.number,
-    dispatch: PropTypes.func,
+    dispatch: PropTypes.func
 };
 
 export default connect()(TestQueueRow);

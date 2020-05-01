@@ -1,9 +1,8 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import { Table, Button } from 'react-bootstrap';
+import { Table } from 'react-bootstrap';
 import { Helmet } from 'react-helmet';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
 import { getTestCycles, getRunsForUserAndCycle } from '../../actions/cycles';
 import { getAllUsers } from '../../actions/users';
 
@@ -33,7 +32,12 @@ class TestQueue extends Component {
 
     renderAtBrowserList(runIds) {
         const { userId, usersById, cycle } = this.props;
-        const { at_name, at_version, browser_name, browser_version } = cycle.runsById[runIds[0]];
+        const {
+            at_name,
+            at_version,
+            browser_name,
+            browser_version
+        } = cycle.runsById[runIds[0]];
 
         return (
             <div key={`${at_name}${browser_name}`}>
@@ -47,18 +51,21 @@ class TestQueue extends Component {
                             <th>Actions</th>
                         </tr>
                     </thead>
-                <tbody>{runIds.map(runId => (
-                    <TestQueueRun
-                      key={runId}
-                      runId={runId}
-                      apgExampleName={cycle.runsById[runId].apg_example_name}
-                      testers={cycle.runsById[runId].testers}
-                      cycleId={cycle.id}
-                      usersById={usersById}
-                      userId={userId}
-                    />
-                ))}
-                </tbody>
+                    <tbody>
+                        {runIds.map(runId => (
+                            <TestQueueRun
+                                key={runId}
+                                runId={runId}
+                                apgExampleName={
+                                    cycle.runsById[runId].apg_example_name
+                                }
+                                testers={cycle.runsById[runId].testers}
+                                cycleId={cycle.id}
+                                usersById={usersById}
+                                userId={userId}
+                            />
+                        ))}
+                    </tbody>
                 </Table>
             </div>
         );

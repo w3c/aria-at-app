@@ -353,8 +353,8 @@ async function getUserAts(options) {
 }
 
 async function saveUserAts(options) {
-    console.log('OPTIONS IN USERSSERVICES', options);
     const { userId, ats } = options;
+
     const existingUserAtsIds = (await getUserAts(userId)).map(
         userAt => userAt.dataValues.at_name_id
     );
@@ -372,17 +372,15 @@ async function saveUserAts(options) {
     // these rows already exist in the database
     for (let at_name_id of userAtsInactive) {
         try {
-            let inactiveUserAt = await UserToAt.update(
+            await UserToAt.update(
                 { active: false },
-                { where: { at_name_id } }
+                { where: { at_name_id, user_id: userId } }
             );
-            if (inactiveUserAt.find(inactiveUserAt => inactiveUserAt === 1)) {
-                savedUserAts.push({
-                    at_name_id,
-                    user_id: userId,
-                    active: false
-                });
-            }
+            savedUserAts.push({
+                at_name_id,
+                user_id: userId,
+                active: false
+            });
         } catch (error) {
             console.error(`Error: ${error}`);
             throw error;
@@ -409,17 +407,15 @@ async function saveUserAts(options) {
     // these rows also exist in the database
     for (let at of userAtsActiveUpdate) {
         try {
-            let activeUserAt = await UserToAt.update(
+            await UserToAt.update(
                 { active: true },
-                { where: { at_name_id: at.id } }
+                { where: { at_name_id: at.id, user_id: userId } }
             );
-            if (activeUserAt.find(activeUserAt => activeUserAt === 1)) {
-                savedUserAts.push({
-                    at_name_id: at.id,
-                    user_id: userId,
-                    active: true
-                });
-            }
+            savedUserAts.push({
+                at_name_id: at.id,
+                user_id: userId,
+                active: true
+            });
         } catch (error) {
             console.error(`Error: ${error}`);
             throw error;

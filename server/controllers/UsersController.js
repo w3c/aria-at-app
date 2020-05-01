@@ -61,7 +61,6 @@ async function getAllTesters(req, res) {
 
 async function setUserAts(req, res) {
     const { ats, userId } = req.body;
-    console.log('REQ.BODY IN CONTROLLER', req.body);
     try {
         const response = await UsersService.saveUserAts({ userId, ats });
         res.status(200).json(response);
