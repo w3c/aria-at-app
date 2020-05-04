@@ -19,13 +19,12 @@ class TestRun extends Component {
     }
 
     async componentDidMount() {
-        const { dispatch, cycleId, tests, testSuiteVersions } = this.props;
+        const { dispatch, cycleId, tests, testSuiteVersionData } = this.props;
         if (!tests) {
             dispatch(getTestCycles());
             dispatch(getRunsForUserAndCycle(cycleId));
         }
-        if (testSuiteVersions.length === 0) {
-            console.log('getting test suite versions')
+        if (!testSuiteVersionData) {
             dispatch(getTestSuiteVersions());
         }
     }
@@ -49,11 +48,12 @@ class TestRun extends Component {
     }
 
     render() {
-        const { run, tests } = this.props;
+        const { run, tests, testSuiteVersionData } = this.props;
 
-        if (!run || !tests) {
+        if (!run || !tests || !testSuiteVersionData) {
             return <div data-test="test-run-loading">Loading</div>;
         }
+        const { git_hash } = testSuiteVersionData;
 
         const {
             apg_example_name,
@@ -89,8 +89,7 @@ class TestRun extends Component {
                 content = (
                     <React.Fragment>
                         <iframe
-                            src={`/${
-                                tests[this.state.currentTestIndex - 1].file
+                            src={`/aria-at/${git_hash}/${tests[this.state.currentTestIndex - 1].file
                             }?at=${at_key}`}
                             id="test-iframe"
                         ></iframe>
@@ -147,15 +146,20 @@ const mapStateToProps = (state, ownProps) => {
     const runId = parseInt(ownProps.match.params.runId);
 
     let cycle = cyclesById[cycleId];
-    let run;
-    if (cycle) run = cycle.runsById[runId];
+    let run, testSuiteVersionData;
+    if (cycle) {
+        run = cycle.runsById[runId];
+        testSuiteVersionData = testSuiteVersions.find(
+            v => v.id === cycle.test_version_id
+        );
+    }
 
     let tests = undefined;
     if (runsForCycle && runsForCycle[cycleId] && runsForCycle[cycleId][runId]) {
         tests = runsForCycle[cycleId][runId].tests;
     }
 
-    return { cycle, cycleId, run, tests, testSuiteVersions, usersById, userId };
+    return { cycle, cycleId, run, tests, testSuiteVersionData, usersById, userId };
 };
 
 export default connect(mapStateToProps)(TestRun);
