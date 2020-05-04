@@ -40,7 +40,7 @@ describe('render', () => {
         let wrapper;
         beforeEach(() => {
             const initialState = {
-                login: { isLoggedIn: true, username: 'foobar', name: 'Foo Bar' }
+                login: { isLoggedIn: true, loadedUserData: true, username: 'foobar', name: 'Foo Bar' }
             };
             wrapper = setup(initialState);
         });

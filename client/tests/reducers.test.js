@@ -6,7 +6,7 @@ import usersReducer from '../reducers/users';
 describe('login reducer tests', () => {
     test('returns default initial state when no action is passed', () => {
         const newState = loginReducer(undefined, {});
-        expect(newState).toEqual({ isLoggedIn: false });
+        expect(newState).toEqual({ isLoggedIn: false, loadedUserData: false });
     });
     test('returns object upon receiving an action of type `LOG_IN`', () => {
         const apiPayload = {
@@ -17,7 +17,7 @@ describe('login reducer tests', () => {
             type: CHECK_LOGGED_IN,
             payload: apiPayload
         });
-        expect(newState).toEqual({ isLoggedIn: true, ...apiPayload });
+        expect(newState).toEqual({ isLoggedIn: true, loadedUserData: true, ...apiPayload });
     });
     test('returns object without username and name and isLoggedIn false with `LOG_OUT` type', () => {
         const apiPayload = {
@@ -33,7 +33,7 @@ describe('login reducer tests', () => {
             type: LOG_OUT
         });
 
-        expect(newState).toEqual({ isLoggedIn: false });
+        expect(newState).toEqual({ isLoggedIn: false, loadedUserData: true });
     });
 });
 
