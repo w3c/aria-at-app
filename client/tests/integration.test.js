@@ -18,6 +18,7 @@ describe('login actions dispatchers', () => {
         const expectedState = {
             login: {
                 isLoggedIn: true,
+                loadedUserData: true,
                 username: 'foobar',
                 name: 'Foo Bar',
                 email: 'foo@bar.com',
@@ -56,7 +57,8 @@ describe('login actions dispatchers', () => {
         const store = storeFactory();
         const expectedState = {
             login: {
-                isLoggedIn: false
+                isLoggedIn: false,
+                loadedUserData: false
             },
             cycles: {
                 cyclesById: {},
@@ -94,7 +96,8 @@ describe('ats action dispatchers', () => {
         const store = storeFactory();
         const expectedState = {
             login: {
-                isLoggedIn: false
+                isLoggedIn: false,
+                loadedUserData: false
             },
             cycles: {
                 cyclesById: {},
@@ -130,7 +133,8 @@ describe('users action dispatchers', () => {
     beforeEach(() => {
         expectedState = {
             login: {
-                isLoggedIn: false
+                isLoggedIn: false,
+                loadedUserData: false
             },
             cycles: {
                 cyclesById: {},
