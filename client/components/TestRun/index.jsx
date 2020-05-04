@@ -4,7 +4,11 @@ import './TestRun.css';
 import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import Button from 'react-bootstrap/Button';
-import { getTestCycles, getRunsForUserAndCycle, getTestSuiteVersions } from '../../actions/cycles';
+import {
+    getTestCycles,
+    getRunsForUserAndCycle,
+    getTestSuiteVersions
+} from '../../actions/cycles';
 
 class TestRun extends Component {
     constructor(props) {
@@ -89,7 +93,8 @@ class TestRun extends Component {
                 content = (
                     <React.Fragment>
                         <iframe
-                            src={`/aria-at/${git_hash}/${tests[this.state.currentTestIndex - 1].file
+                            src={`/aria-at/${git_hash}/${
+                                tests[this.state.currentTestIndex - 1].file
                             }?at=${at_key}`}
                             id="test-iframe"
                         ></iframe>
@@ -135,7 +140,8 @@ TestRun.propTypes = {
     dispatch: PropTypes.func,
     cycleId: PropTypes.number,
     tests: PropTypes.array,
-    run: PropTypes.object
+    run: PropTypes.object,
+    testSuiteVersionData: PropTypes.object
 };
 
 const mapStateToProps = (state, ownProps) => {
@@ -159,7 +165,15 @@ const mapStateToProps = (state, ownProps) => {
         tests = runsForCycle[cycleId][runId].tests;
     }
 
-    return { cycle, cycleId, run, tests, testSuiteVersionData, usersById, userId };
+    return {
+        cycle,
+        cycleId,
+        run,
+        tests,
+        testSuiteVersionData,
+        usersById,
+        userId
+    };
 };
 
 export default connect(mapStateToProps)(TestRun);

@@ -199,10 +199,7 @@ describe('users action dispatchers', () => {
             });
         });
         await store.dispatch(
-            handleSetUserAts(
-                1,
-                expectedState.users.usersById[1].configured_ats
-            )
+            handleSetUserAts(1, expectedState.users.usersById[1].configured_ats)
         );
         const newState = store.getState();
         expect(newState).toEqual(expectedState);
