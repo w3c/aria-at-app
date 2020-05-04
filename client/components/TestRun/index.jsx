@@ -4,7 +4,7 @@ import './TestRun.css';
 import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import Button from 'react-bootstrap/Button';
-import { getTestCycles, getRunsForUserAndCycle } from '../../actions/cycles';
+import { getTestCycles, getRunsForUserAndCycle, getTestSuiteVersions } from '../../actions/cycles';
 
 class TestRun extends Component {
     constructor(props) {
@@ -19,10 +19,14 @@ class TestRun extends Component {
     }
 
     async componentDidMount() {
-        const { dispatch, cycleId, tests } = this.props;
+        const { dispatch, cycleId, tests, testSuiteVersions } = this.props;
         if (!tests) {
             dispatch(getTestCycles());
             dispatch(getRunsForUserAndCycle(cycleId));
+        }
+        if (testSuiteVersions.length === 0) {
+            console.log('getting test suite versions')
+            dispatch(getTestSuiteVersions());
         }
     }
 
@@ -136,7 +140,7 @@ TestRun.propTypes = {
 };
 
 const mapStateToProps = (state, ownProps) => {
-    const { cyclesById, runsForCycle } = state.cycles;
+    const { cyclesById, runsForCycle, testSuiteVersions } = state.cycles;
     const { usersById } = state.users;
     const userId = state.login.id;
     const cycleId = parseInt(ownProps.match.params.cycleId);
@@ -151,7 +155,7 @@ const mapStateToProps = (state, ownProps) => {
         tests = runsForCycle[cycleId][runId].tests;
     }
 
-    return { cycle, cycleId, run, tests, usersById, userId };
+    return { cycle, cycleId, run, tests, testSuiteVersions, usersById, userId };
 };
 
 export default connect(mapStateToProps)(TestRun);
