@@ -31,7 +31,7 @@ describe('login actions dispatchers', () => {
             },
             ats: [],
             users: {
-                users: []
+                usersById: {}
             }
         };
 
@@ -65,7 +65,7 @@ describe('login actions dispatchers', () => {
             },
             ats: [],
             users: {
-                users: []
+                usersById: {}
             }
         };
 
@@ -105,7 +105,7 @@ describe('ats action dispatchers', () => {
                 names: ['JAWS', 'NVDA', 'VoiceOver']
             },
             users: {
-                users: []
+                usersById: {}
             }
         };
 
@@ -139,8 +139,8 @@ describe('users action dispatchers', () => {
             },
             ats: [],
             users: {
-                users: [
-                    {
+                usersById: {
+                    1: {
                         id: 1,
                         username: 'foobar',
                         configured_ats: [
@@ -154,7 +154,7 @@ describe('users action dispatchers', () => {
                             }
                         ]
                     }
-                ]
+                }
             }
         };
         moxios.install();
