@@ -1,5 +1,5 @@
 import thunk from 'redux-thunk';
-import logger from 'redux-logger'
+import logger from 'redux-logger';
 import { applyMiddleware } from 'redux';
 
 let middleware = [thunk];

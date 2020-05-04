@@ -43,7 +43,8 @@ describe('render', () => {
                                     browser_name: 'browser_name',
                                     browser_version: 'browser_version'
                                 }
-                            }
+                            },
+                            test_version_id: 1
                         }
                     },
                     runsForCycle: {
@@ -52,7 +53,15 @@ describe('render', () => {
                                 tests: [{ name: 'Test 1' }]
                             }
                         }
-                    }
+                    },
+                    testSuiteVersions: [
+                        {
+                            git_commit_msg: 'commit message',
+                            git_hash: '123412345',
+                            git_repo: 'https://github.com/foo/foo.git',
+                            id: 1
+                        }
+                    ]
                 }
             };
             wrapper = setup(initialState);
