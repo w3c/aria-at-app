@@ -1,5 +1,9 @@
 import thunk from 'redux-thunk';
-
+import logger from 'redux-logger'
 import { applyMiddleware } from 'redux';
 
-export default applyMiddleware(thunk);
+let middleware = [thunk];
+
+if (process.env.ENVIRONMENT === 'dev') middleware = [...middleware, logger];
+
+export default applyMiddleware(...middleware);
