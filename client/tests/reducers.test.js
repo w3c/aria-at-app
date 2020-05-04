@@ -55,11 +55,11 @@ describe('ats reducer tests', () => {
 describe('users reducer tests', () => {
     test('returns default initial state when no action is passed', () => {
         const newState = usersReducer(undefined, {});
-        expect(newState).toEqual({ users: [] });
+        expect(newState).toEqual({ usersById: {} });
     });
     test('returns object upon receiving an action of type `SET_USER_ATS`', () => {
         const apiPayload = {
-            user: { username: 'foobar' },
+            userId: 1,
             ats: [
                 { at_name_id: 1, active: true },
                 { at_name_id: 2, active: true }
@@ -67,13 +67,13 @@ describe('users reducer tests', () => {
         };
         const newState = usersReducer(
             {
-                users: [
-                    {
+                usersById: {
+                    1: {
                         id: 1,
                         username: 'foobar',
                         configured_ats: [{ at_name_id: 1, active: false }]
                     }
-                ]
+                }
             },
             {
                 type: SET_USER_ATS,
@@ -81,8 +81,8 @@ describe('users reducer tests', () => {
             }
         );
         expect(newState).toEqual({
-            users: [
-                {
+            usersById: {
+                1: {
                     id: 1,
                     username: 'foobar',
                     configured_ats: [
@@ -90,7 +90,7 @@ describe('users reducer tests', () => {
                         { at_name_id: 2, active: true }
                     ]
                 }
-            ]
+            }
         });
     });
 });

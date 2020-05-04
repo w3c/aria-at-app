@@ -198,11 +198,10 @@ describe('users action dispatchers', () => {
                 ]
             });
         });
-
         await store.dispatch(
             handleSetUserAts(
-                { username: 'foobar', id: 1 },
-                expectedState.users.users[0].configured_ats
+                1,
+                expectedState.users.usersById[1].configured_ats
             )
         );
         const newState = store.getState();
