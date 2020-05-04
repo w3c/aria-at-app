@@ -32,21 +32,26 @@ class TesterHome extends Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {Object.keys(cyclesById).map(cycleId => (
-                            <tr key={cycleId}>
-                                <td>{cyclesById[cycleId].name}</td>
-                                <td>{cyclesById[cycleId].date}</td>
-                                <td>In Progress</td>
-                                <td>
-                                    <Button
-                                        as={Link}
-                                        to={`/test-queue/${cycleId}`}
-                                    >
-                                        Contribute Tests
-                                    </Button>
-                                </td>
-                            </tr>
-                        ))}
+                        {Object.keys(cyclesById).map(cycleId => {
+                            const name = cyclesById[cycleId].name;
+                            const date = cyclesById[cycleId].date;
+                            return (
+                                <tr key={cycleId}>
+                                    <td>{name}</td>
+                                    <td>{date}</td>
+                                    <td>In Progress</td>
+                                    <td>
+                                        <Button
+                                            as={Link}
+                                            to={`/test-queue/${cycleId}`}
+                                            aria-label={`Contribute tests to cycle: ${name}`}
+                                        >
+                                            Contribute Tests
+                                        </Button>
+                                    </td>
+                                </tr>
+                            );
+                        })}
                     </tbody>
                 </Table>
             </Fragment>

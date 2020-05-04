@@ -63,6 +63,8 @@ class TestQueue extends Component {
                                 cycleId={cycle.id}
                                 usersById={usersById}
                                 userId={userId}
+                                atName={at_name}
+                                browserName={browser_name}
                             />
                         ))}
                     </tbody>
