@@ -83,46 +83,49 @@ class UserSettings extends Component {
     }
 
     render() {
-        const { ats, isLoggedIn, username, email } = this.props;
-        const contents = isLoggedIn ? (
-            <Row data-test="user-settings-authorized">
-                <Col>
-                    <h2>USER DETAILS</h2>
-                    <p>{username}</p>
-                    <p>{email}</p>
-                </Col>
-                <Col>
-                    <h2>Assistive Technology</h2>
-                    <p>Add the assistive technologies that you can use</p>
-                    <Form onSubmit={this.onSubmit}>
-                        <Form.Group controlId="formBasicCheckbox">
-                            {ats &&
-                                ats.map(at => {
-                                    return (
-                                        <Form.Check
-                                            id={at.name}
-                                            key={at.id}
-                                            label={at.name}
-                                            onChange={this.onCheckboxClicked}
-                                            checked={
-                                                this.state[at.name]
-                                                    ? this.state[at.name]
-                                                          .checked
-                                                    : false
-                                            }
-                                        />
-                                    );
-                                })}
-                        </Form.Group>
-                        <Button variant="primary" type="submit">
-                            Save
-                        </Button>
-                    </Form>
-                </Col>
-            </Row>
-        ) : (
-            <p data-test="user-settings-unauthorized">Unauthorized</p>
-        );
+        const { ats, isLoggedIn, username, email, loadedUserData } = this.props;
+        const contents =
+            loadedUserData && isLoggedIn ? (
+                <Row data-test="user-settings-authorized">
+                    <Col>
+                        <h2>USER DETAILS</h2>
+                        <p>{username}</p>
+                        <p>{email}</p>
+                    </Col>
+                    <Col>
+                        <h2>Assistive Technology</h2>
+                        <p>Add the assistive technologies that you can use</p>
+                        <Form onSubmit={this.onSubmit}>
+                            <Form.Group controlId="formBasicCheckbox">
+                                {ats &&
+                                    ats.map(at => {
+                                        return (
+                                            <Form.Check
+                                                id={at.name}
+                                                key={at.id}
+                                                label={at.name}
+                                                onChange={
+                                                    this.onCheckboxClicked
+                                                }
+                                                checked={
+                                                    this.state[at.name]
+                                                        ? this.state[at.name]
+                                                              .checked
+                                                        : false
+                                                }
+                                            />
+                                        );
+                                    })}
+                            </Form.Group>
+                            <Button variant="primary" type="submit">
+                                Save
+                            </Button>
+                        </Form>
+                    </Col>
+                </Row>
+            ) : (
+                <p data-test="user-settings-unauthorized">Unauthorized</p>
+            );
 
         return <div data-test="component-user-settings">{contents}</div>;
     }
@@ -130,6 +133,7 @@ class UserSettings extends Component {
 
 UserSettings.propTypes = {
     isLoggedIn: PropTypes.bool,
+    loadedUserData: PropTypes.bool,
     fullname: PropTypes.string,
     username: PropTypes.string,
     email: PropTypes.string,
@@ -140,7 +144,14 @@ UserSettings.propTypes = {
 };
 
 const mapStateToProps = state => {
-    const { isLoggedIn, username, fullname, email, id } = state.login;
+    const {
+        loadedUserData,
+        isLoggedIn,
+        username,
+        fullname,
+        email,
+        id
+    } = state.login;
     const { usersById } = state.users;
 
     let currentUserAts = [];
@@ -150,6 +161,7 @@ const mapStateToProps = state => {
 
     return {
         isLoggedIn,
+        loadedUserData,
         username,
         fullname,
         email,
