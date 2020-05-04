@@ -8,10 +8,10 @@ export default (state = initialState, action) => {
     switch (action.type) {
         case GET_USERS: {
             const users = action.payload;
-            const usersById = {};
-            users.map(u => {
-                usersById[u.id] = u;
-            });
+            const usersById = users.reduce((accum, user) => {
+                accum[user.id] = user;
+                return accum;
+            }, {});
             return {
                 ...state,
                 usersById
