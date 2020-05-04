@@ -3,18 +3,25 @@ import PropTypes from 'prop-types';
 import { Table } from 'react-bootstrap';
 import { Helmet } from 'react-helmet';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
 import { getTestCycles, getRunsForUserAndCycle } from '../../actions/cycles';
 import { getAllUsers } from '../../actions/users';
 
+import TestQueueRun from '@components/TestQueueRun';
+
 class TestQueue extends Component {
     componentDidMount() {
-        const { dispatch, cycle, cycleId, testsForRuns, users } = this.props;
+        const {
+            dispatch,
+            cycle,
+            cycleId,
+            testsForRuns,
+            usersById
+        } = this.props;
         if (!cycle) {
             dispatch(getTestCycles());
         }
 
-        if (!users.length) {
+        if (!Object.keys(usersById).length) {
             dispatch(getAllUsers());
         }
 
@@ -23,39 +30,14 @@ class TestQueue extends Component {
         }
     }
 
-    renderRunRow(run) {
-        const { cycleId, userId, users } = this.props;
-
-        let currentUserAssigned = run.testers.includes(userId);
-
-        // TODO: Fix when users is a mapped id => user object
-        let userNames = run.testers.map(uid => {
-            return users.find(u => u.id === uid).fullname;
-        });
-
-        let designPatternLinkOrName;
-        if (currentUserAssigned) {
-            designPatternLinkOrName = (
-                <Link to={`/cycles/${cycleId}/run/${run.id}`}>
-                    {run.apg_example_name}
-                </Link>
-            );
-        } else {
-            designPatternLinkOrName = run.apg_example_name;
-        }
-
-        return (
-            <tr key={run.id}>
-                <td>{designPatternLinkOrName}</td>
-                <td>{userNames.join(', ')}</td>
-                <td>status</td>
-                <td>actions</td>
-            </tr>
-        );
-    }
-
-    renderAtBrowserList(runs) {
-        const { at_name, at_version, browser_name, browser_version } = runs[0];
+    renderAtBrowserList(runIds) {
+        const { userId, usersById, cycle } = this.props;
+        const {
+            at_name,
+            at_version,
+            browser_name,
+            browser_version
+        } = cycle.runsById[runIds[0]];
 
         return (
             <div key={`${at_name}${browser_name}`}>
@@ -69,20 +51,34 @@ class TestQueue extends Component {
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody>{runs.map(run => this.renderRunRow(run))}</tbody>
+                    <tbody>
+                        {runIds.map(runId => (
+                            <TestQueueRun
+                                key={runId}
+                                runId={runId}
+                                apgExampleName={
+                                    cycle.runsById[runId].apg_example_name
+                                }
+                                testers={cycle.runsById[runId].testers}
+                                cycleId={cycle.id}
+                                usersById={usersById}
+                                userId={userId}
+                            />
+                        ))}
+                    </tbody>
                 </Table>
             </div>
         );
     }
 
     render() {
-        const { cycle, cycleId, testsForRuns, users, userId } = this.props;
+        const { cycle, cycleId, testsForRuns, usersById, userId } = this.props;
 
-        if (!testsForRuns || !cycle || !users.length) {
+        if (!testsForRuns || !cycle || !Object.keys(usersById).length) {
             return <div>Loading</div>;
         }
 
-        let currentUser = users.find(u => u.id === userId);
+        let currentUser = usersById[userId];
         let configuredAtNames = currentUser.configured_ats.map(a => a.at_name);
 
         let atBrowserRunSets = [];
@@ -102,12 +98,12 @@ class TestQueue extends Component {
                 });
 
                 if (atBrowserRun.length === 1) {
-                    atBrowserRun[0].runs.push(run);
+                    atBrowserRun[0].runIds.push(parseInt(runId));
                 } else {
                     atBrowserRunSets.push({
                         at_name,
                         browser_name,
-                        runs: [run]
+                        runIds: [parseInt(runId)]
                     });
                 }
             }
@@ -123,7 +119,7 @@ class TestQueue extends Component {
                     {cycle ? cycle.name : cycleId}
                 </h2>
                 {atBrowserRunSets.map(abr =>
-                    this.renderAtBrowserList(abr.runs)
+                    this.renderAtBrowserList(abr.runIds)
                 )}
             </Fragment>
         );
@@ -134,14 +130,14 @@ TestQueue.propTypes = {
     cycle: PropTypes.object,
     cycleId: PropTypes.number,
     testsForRuns: PropTypes.object,
-    users: PropTypes.array,
+    usersById: PropTypes.object,
     userId: PropTypes.number,
     dispatch: PropTypes.func
 };
 
 const mapStateToProps = (state, ownProps) => {
     const { cyclesById, runsForCycle } = state.cycles;
-    const { users } = state.users;
+    const { usersById } = state.users;
     const userId = state.login.id;
     const cycleId = parseInt(ownProps.match.params.cycleId);
 
@@ -152,7 +148,7 @@ const mapStateToProps = (state, ownProps) => {
         testsForRuns = runsForCycle[cycleId];
     }
 
-    return { cycle, cycleId, testsForRuns, users, userId };
+    return { cycle, cycleId, testsForRuns, usersById, userId };
 };
 
 export default connect(mapStateToProps)(TestQueue);

@@ -22,12 +22,12 @@ class CycleSummary extends Component {
     }
 
     componentDidMount() {
-        const { dispatch, cycle, users, testSuiteVersionData } = this.props;
+        const { dispatch, cycle, usersById, testSuiteVersionData } = this.props;
 
         if (!cycle) {
             dispatch(getTestCycles());
         }
-        if (!users.length) {
+        if (!Object.keys(usersById).length) {
             dispatch(getAllUsers());
         }
         if (!testSuiteVersionData) {
@@ -47,7 +47,7 @@ class CycleSummary extends Component {
     }
 
     render() {
-        const { cycle, isAdmin, users, testSuiteVersionData } = this.props;
+        const { cycle, isAdmin, usersById, testSuiteVersionData } = this.props;
 
         if (!isAdmin) {
             return <Redirect to={{ pathname: '/404' }} />;
@@ -126,7 +126,7 @@ class CycleSummary extends Component {
                                 runs={runsByExample[example.id]}
                                 key={example.id}
                                 example={example}
-                                users={users}
+                                usersById={usersById}
                                 assignTesters={this.assignTesters}
                                 removeAllTestersFromRun={
                                     this.removeAllTestersFromRun
@@ -143,7 +143,7 @@ class CycleSummary extends Component {
 CycleSummary.propTypes = {
     cycle: PropTypes.object,
     dispatch: PropTypes.func,
-    users: PropTypes.array,
+    usersById: PropTypes.object,
     isAdmin: PropTypes.bool,
     testSuiteVersionData: PropTypes.object
 };
@@ -151,7 +151,7 @@ CycleSummary.propTypes = {
 const mapStateToProps = (state, ownProps) => {
     const { roles } = state.login;
     const { cyclesById, testSuiteVersions } = state.cycles;
-    const { users } = state.users;
+    const { usersById } = state.users;
 
     let isAdmin = roles ? roles.includes('admin') : false;
 
@@ -165,7 +165,7 @@ const mapStateToProps = (state, ownProps) => {
         );
     }
 
-    return { cycle, users, testSuiteVersionData, isAdmin };
+    return { cycle, usersById, testSuiteVersionData, isAdmin };
 };
 
 export default connect(mapStateToProps)(CycleSummary);

@@ -73,13 +73,12 @@ class UserSettings extends Component {
     }
 
     onSubmit(event) {
-        const { dispatch, username, email, fullname, ats } = this.props;
-        let currentUser = { username, email, fullname };
+        const { dispatch, ats, userId } = this.props;
         const selectedAts = Object.entries(this.state)
             .filter(atEntry => atEntry[1].checked)
             .map(atEntry => atEntry[0])
             .map(atName => ats.filter(at => at.name === atName).shift());
-        dispatch(handleSetUserAts(currentUser, selectedAts));
+        dispatch(handleSetUserAts(userId, selectedAts));
         event.preventDefault();
     }
 
@@ -134,18 +133,19 @@ UserSettings.propTypes = {
     fullname: PropTypes.string,
     username: PropTypes.string,
     email: PropTypes.string,
+    userId: PropTypes.number,
     ats: PropTypes.array,
     dispatch: PropTypes.func,
     currentUserAts: PropTypes.array
 };
 
 const mapStateToProps = state => {
-    const { isLoggedIn, username, fullname, email } = state.login;
+    const { isLoggedIn, username, fullname, email, id } = state.login;
+    const { usersById } = state.users;
+
     let currentUserAts = [];
-    if (username && state.users.users.length > 0) {
-        currentUserAts = state.users.users.filter(
-            user => user.username === state.login.username
-        )[0].configured_ats;
+    if (username && usersById[id]) {
+        currentUserAts = usersById[id].configured_ats;
     }
 
     return {
@@ -154,6 +154,7 @@ const mapStateToProps = state => {
         fullname,
         email,
         ats: state.ats,
+        userId: id,
         currentUserAts
     };
 };

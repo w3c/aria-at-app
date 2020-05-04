@@ -137,7 +137,7 @@ TestRun.propTypes = {
 
 const mapStateToProps = (state, ownProps) => {
     const { cyclesById, runsForCycle } = state.cycles;
-    const { users } = state.users;
+    const { usersById } = state.users;
     const userId = state.login.id;
     const cycleId = parseInt(ownProps.match.params.cycleId);
     const runId = parseInt(ownProps.match.params.runId);
@@ -151,7 +151,7 @@ const mapStateToProps = (state, ownProps) => {
         tests = runsForCycle[cycleId][runId].tests;
     }
 
-    return { cycle, cycleId, run, tests, users, userId };
+    return { cycle, cycleId, run, tests, usersById, userId };
 };
 
 export default connect(mapStateToProps)(TestRun);
