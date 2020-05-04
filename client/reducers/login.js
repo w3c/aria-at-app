@@ -1,7 +1,8 @@
-import { CHECK_LOGGED_IN, LOG_OUT } from '../actions/types';
+import { CHECK_LOGGED_IN, LOG_OUT, LOGGED_IN_FAIL } from '../actions/types';
 
 const initialState = {
-    isLoggedIn: false
+    isLoggedIn: false,
+    loadedUserData: false
 };
 
 export default (state = initialState, action) => {
@@ -10,7 +11,15 @@ export default (state = initialState, action) => {
             return {
                 ...state,
                 isLoggedIn: true,
+                loadedUserData: true,
                 ...action.payload
+            };
+        }
+        case LOGGED_IN_FAIL: {
+            return {
+                ...state,
+                isLoggedIn: false,
+                loadedUserData: true
             };
         }
         case LOG_OUT: {

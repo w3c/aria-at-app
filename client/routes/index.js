@@ -1,8 +1,9 @@
 import React from 'react';
-import { Redirect } from 'react-router-dom';
+import { Route, Redirect } from 'react-router-dom';
 
 import App from '@components/App';
 import CycleSummary from '@components/CycleSummary';
+import ConfirmAuth from '@components/ConfirmAuth';
 import Home from '@components/Home';
 import InitiateCycle from '@components/InitiateCycle';
 import Login from '@components/Login';
@@ -48,7 +49,13 @@ export default [
             {
                 path: '/cycles',
                 exact: true,
-                component: ManageCycles
+                component: () => {
+                    return (
+                        <ConfirmAuth requiredPermission="admin">
+                            <Route component={ManageCycles} />
+                        </ConfirmAuth>
+                    );
+                }
             },
             {
                 path: '/test-queue/:cycleId(\\d+)',
@@ -62,12 +69,24 @@ export default [
             {
                 path: '/cycles/:cycleId(\\d+)',
                 exact: true,
-                component: CycleSummary
+                component: () => {
+                    return (
+                        <ConfirmAuth requiredPermission="admin">
+                            <Route component={CycleSummary} />
+                        </ConfirmAuth>
+                    );
+                }
             },
             {
                 path: '/cycles/new',
                 exact: true,
-                component: InitiateCycle
+                component: () => {
+                    return (
+                        <ConfirmAuth requiredPermission="admin">
+                            <Route component={InitiateCycle} />
+                        </ConfirmAuth>
+                    );
+                }
             },
             {
                 path: '/cycles/:cycleId(\\d+)/run/:runId(\\d+)',
