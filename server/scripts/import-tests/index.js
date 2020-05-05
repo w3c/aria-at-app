@@ -8,7 +8,8 @@ const np = require('node-html-parser');
 
 const args = require('minimist')(process.argv.slice(2), {
     alias: {
-        h: 'help'
+        h: 'help',
+        c: 'commit'
     }
 });
 
@@ -16,10 +17,13 @@ if (args.help) {
     console.log(`
 Default use:
   No arguments:
-    Will fetch most recent aria-at tests to update database.
+    Fetch most recent aria-at tests to update database, by default, the lastest commit on master.
   Arguments:
     -h, --help
        Show this message.
+    -c, --commit
+       Import tests at the specified git commit
+
 `);
     process.exit();
 }
@@ -44,19 +48,36 @@ const ariaat = {
             'Cloned ' + path.basename(ariaAtRepo) + ' to ' + repo.workdir()
         );
 
-        let latestCommit = fse
-            .readFileSync(
-                path.join(tmpDirectory, '.git', 'refs', 'heads', 'master'),
-                'utf8'
-            )
-            .trim();
-        let commit = await nodegit.Commit.lookup(repo, latestCommit);
+        let commit;
+        if (args.commit) {
+            try {
+                commit = await nodegit.Commit.lookup(repo, args.commit);
+            }
+            catch (error) {
+                console.log("IMPORT FAILED! Cannot checkout repo at comit:", args.commit);
+                throw error;
+            }
+
+            await nodegit.Checkout.tree(repo, commit);
+            await repo.setHeadDetached(commit);
+        }
+        else {
+            let latestCommit = fse
+                .readFileSync(
+                    path.join(tmpDirectory, '.git', 'refs', 'heads', 'master'),
+                    'utf8'
+                )
+                .trim();
+            commit = await nodegit.Commit.lookup(repo, latestCommit);
+        }
+
         let commitDate = commit.date();
         let commitMsg = commit.message();
+        let commitHash = commit.id().tostrS();
 
         const testVersionID = await this.upsertTestVersion(
             ariaAtRepo,
-            latestCommit,
+            commitHash,
             commitDate,
             commitMsg
         );
