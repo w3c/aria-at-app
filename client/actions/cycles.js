@@ -3,11 +3,17 @@ import {
     CYCLES,
     DELETE_CYCLE,
     SAVE_CYCLE,
+    SAVE_RESULT,
     TEST_SUITE_VERSIONS,
     RUNS_FOR_USER_AND_CYCLE,
     SAVE_USERS_TO_RUNS,
     DELETE_USERS_FROM_RUN
 } from './types';
+
+export const saveResultDispatch = payload => ({
+    type: SAVE_RESULT,
+    payload
+});
 
 export const saveCycleDispatch = payload => ({
     type: SAVE_CYCLE,
@@ -43,6 +49,15 @@ export const deleteUsersFromRunDispatch = payload => ({
     type: DELETE_USERS_FROM_RUN,
     payload
 });
+
+export function saveResult(result) {
+    return async function(dispatch) {
+        const response = await axios.post('/api/cycle/result', {
+            data: result
+        });
+        dispatch(saveResultDispatch(response.data));
+    };
+}
 
 export function saveCycle(cycle) {
     return async function(dispatch) {

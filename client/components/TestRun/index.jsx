@@ -7,7 +7,8 @@ import Button from 'react-bootstrap/Button';
 import {
     getTestCycles,
     getRunsForUserAndCycle,
-    getTestSuiteVersions
+    getTestSuiteVersions,
+    saveResult
 } from '../../actions/cycles';
 
 class TestRun extends Component {
@@ -16,10 +17,15 @@ class TestRun extends Component {
 
         this.state = {
             currentTestIndex: 1,
-            runComplete: false
+            runComplete: false,
+            remindFinishTest: false
         };
 
-        this.nextTest = this.nextTest.bind(this);
+        this.handleSkipTestClick = this.handleSkipTestClick.bind(this);
+        this.handleNextTestClick = this.handleNextTestClick.bind(this);
+        this.handleSaveResultClick = this.handleSaveResultClick.bind(this);
+
+        this.testIframe = React.createRef();
     }
 
     async componentDidMount() {
@@ -31,6 +37,42 @@ class TestRun extends Component {
         if (!testSuiteVersionData) {
             dispatch(getTestSuiteVersions());
         }
+    }
+
+    handleSkipTestClick() {
+        // TODO: show the popup Isaac designed here
+        this.nextTest();
+    }
+
+    handleNextTestClick() {
+        // This button just goes to next test. You will only see this button when "reviewing" previously saved test results.
+        this.nextTest();
+    }
+
+    handleSaveResultClick() {
+        const { dispatch, cycleId, tests, run, userId } = this.props;
+        let resultsEl = this.testIframe.current.contentDocument.querySelector(
+            '#__ariaatharness__results__'
+        );
+
+        if (!resultsEl) {
+            // TODO: show popup here that says "You cannot save results until you complete and review the test"
+            return;
+        }
+
+        const result = JSON.parse(resultsEl.innerHTML);
+        const test = tests[this.state.currentTestIndex - 1];
+        dispatch(
+            saveResult({
+                test_id: test.id,
+                run_id: run.id,
+                cycle_id: cycleId,
+                user_id: userId,
+                result
+            })
+        );
+
+        this.nextTest();
     }
 
     nextTest() {
@@ -69,10 +111,11 @@ class TestRun extends Component {
         } = run;
 
         let testName,
+            test,
             testsToRun = false;
         if (tests.length > 0) {
-            const { name } = tests[this.state.currentTestIndex - 1];
-            testName = name;
+            test = tests[this.state.currentTestIndex - 1];
+            testName = test.name;
             testsToRun = true;
         }
 
@@ -90,19 +133,46 @@ class TestRun extends Component {
                 </React.Fragment>
             );
             if (!this.state.runComplete) {
-                content = (
-                    <React.Fragment>
-                        <iframe
-                            src={`/aria-at/${git_hash}/${
-                                tests[this.state.currentTestIndex - 1].file
-                            }?at=${at_key}`}
-                            id="test-iframe"
-                        ></iframe>
-                        <Button variant="primary" onClick={this.nextTest}>
-                            Next test
-                        </Button>
-                    </React.Fragment>
-                );
+                if (!test.result) {
+                    content = (
+                        <React.Fragment>
+                            <iframe
+                                src={`/aria-at/${git_hash}/${
+                                    tests[this.state.currentTestIndex - 1].file
+                                }?at=${at_key}`}
+                                id="test-iframe"
+                                ref={this.testIframe}
+                            ></iframe>
+                            <Button
+                                variant="primary"
+                                onClick={this.handleSkipTestClick}
+                            >
+                                Skip to next test
+                            </Button>
+                            <Button
+                                variant="primary"
+                                onClick={this.handleSaveResultClick}
+                            >
+                                Save results and go to next test
+                            </Button>
+                        </React.Fragment>
+                    );
+                } else {
+                    content = (
+                        <React.Fragment>
+                            <div>
+                                RESULTS EXIST!!!!!! TODO: Make a view of the
+                                existng tests
+                            </div>
+                            <Button
+                                variant="primary"
+                                onClick={this.handleNextTestClick}
+                            >
+                                Go to next test
+                            </Button>
+                        </React.Fragment>
+                    );
+                }
             } else {
                 content = (
                     <React.Fragment>
@@ -139,6 +209,7 @@ class TestRun extends Component {
 TestRun.propTypes = {
     dispatch: PropTypes.func,
     cycleId: PropTypes.number,
+    userId: PropTypes.number,
     tests: PropTypes.array,
     run: PropTypes.object,
     testSuiteVersionData: PropTypes.object

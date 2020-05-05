@@ -52,16 +52,17 @@ const ariaat = {
         if (args.commit) {
             try {
                 commit = await nodegit.Commit.lookup(repo, args.commit);
-            }
-            catch (error) {
-                console.log("IMPORT FAILED! Cannot checkout repo at comit:", args.commit);
+            } catch (error) {
+                console.log(
+                    'IMPORT FAILED! Cannot checkout repo at comit:',
+                    args.commit
+                );
                 throw error;
             }
 
             await nodegit.Checkout.tree(repo, commit);
             await repo.setHeadDetached(commit);
-        }
-        else {
+        } else {
             let latestCommit = fse
                 .readFileSync(
                     path.join(tmpDirectory, '.git', 'refs', 'heads', 'master'),
