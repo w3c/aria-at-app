@@ -2,6 +2,7 @@ import {
     CYCLES,
     DELETE_CYCLE,
     SAVE_CYCLE,
+    SAVE_RESULT,
     TEST_SUITE_VERSIONS,
     RUNS_FOR_USER_AND_CYCLE,
     SAVE_USERS_TO_RUNS,
@@ -47,6 +48,42 @@ export default (state = initialState, action) => {
                 cyclesById: {
                     ...state.cyclesById,
                     [cycle.id]: cycle
+                }
+            });
+        }
+        case SAVE_RESULT: {
+            const result = action.payload;
+
+            const tests = state.runsForCycle[result.cycle_id][result.run_id].tests;
+            const testIndex = tests.findIndex(t => {
+                return t.id === result.test_id;
+            });
+            const newTests = [...tests];
+            newTests[testIndex] = {
+                ...tests[testIndex],
+                result
+            };
+            console.log(Object.assign({}, state, {
+                runsForCycle : {
+                    ...state.runsForCycle,
+                    [result.cycle_id]: {
+                        ...state.runsForCycle[result.run_id],
+                        [result.run_id]: {
+                            tests: newTests
+                        }
+                    }
+                }
+            }));
+
+            return Object.assign({}, state, {
+                runsForCycle : {
+                    ...state.runsForCycle,
+                    [result.cycle_id]: {
+                        ...state.runsForCycle[result.run_id],
+                        [result.run_id]: {
+                            tests: newTests
+                        }
+                    }
                 }
             });
         }

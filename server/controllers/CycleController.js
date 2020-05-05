@@ -37,7 +37,7 @@ async function deleteCycle(req, res) {
 
 async function saveTestResults(req, res) {
     try {
-        const testResult = req.body;
+        const testResult = req.body.data;
         const savedTestResult = await CycleService.saveTestResults(testResult);
         res.status(201).json(savedTestResult);
     } catch (error) {

@@ -336,7 +336,7 @@ async function getAllTestVersions() {
  * Saves a test result and marks the test as "complete"
  *
  * @param {object} result - result object to save
- * @return {object} - the saved result object (the same data, now with "id" and "status: complete")
+ * @return {object} - the saved result object (the same data, now with "id" and "status: complete" and "cycle_id")
  *
  * @example
  *
@@ -349,31 +349,81 @@ async function getAllTestVersions() {
  */
 async function saveTestResults(testResult) {
     try {
-        let statusId = (
-            await sequelize.query(`
+        const { test_id, run_id, user_id, status_id, result } = testResult;
+        let statusId, testResultId;
+
+        let resultRows = await sequelize.query(`
              SELECT
                id
              FROM
-               test_status
+               test_result
              WHERE
-               test_status.name = 'complete'
-        `)
-        )[0][0].id;
+               test_result.user_id = ${user_id}
+               AND test_result.run_id = ${run_id}
+               AND test_result.test_id = ${test_id}
+        `);
 
-        let testResultId = (
+        console.log(resultRows);
+        if (resultRows[0].length) {
+            testResultId = resultRows[0][0].id;
+        }
+
+
+        // If a result has been sent, insert or update result row
+        if (result) {
+
+            statusId = (
+                await sequelize.query(`
+                 SELECT
+                   id
+                 FROM
+                   test_status
+                 WHERE
+                   test_status.name = 'complete'
+            `)
+            )[0][0].id;
+
+            const stringifiedResult = result
+                  ? `'${JSON.stringify(result).replace(/'/g, "''")}'`
+                  : 'NULL';
+
+            if (!testResultId) {
+                testResultId = (
+                    await sequelize.query(`
+                      INSERT INTO
+                        test_result(test_id, run_id, user_id, status_id, result)
+                      VALUES
+                        (${test_id}, ${run_id}, ${user_id}, ${statusId}, ${stringifiedResult})
+                      RETURNING ID
+                     `)
+                )[0];
+            } else {
+                await sequelize.query(`
+                   UPDATE
+                     test_result
+                   SET
+                     result = ${stringifiedResult}
+                   WHERE
+                     id = ${testResultId}
+                `);
+            }
+        }
+
+        let cycle_id = (
             await sequelize.query(`
-             INSERT INTO
-               test_result(test_id, run_id, user_id, status_id, result)
-             VALUES
-               (${testResult.test_id}, ${testResult.run_id}, ${
-                testResult.user_id
-            }, ${statusId}, ${testResult.result ? testResult.result : 'NULL'})
-             RETURNING ID
+             SELECT
+               test_cycle_id as cycle_id
+             FROM
+               run
+             WHERE
+               id = ${testResult.run_id}
         `)
-        )[0];
+        )[0][0].cycle_id;
 
         testResult.id = testResultId;
         testResult.status = 'complete';
+        testResult.cycle_id = cycle_id;
+
         return testResult;
     } catch (error) {
         console.error(`Error: ${error}`);
@@ -399,9 +449,9 @@ async function saveTestResults(testResult) {
  *              file             // test.file
  *              execution_order
  *              test_result : {
- *                test_result_id
+ *                id
  *                user_id
- *                status_id
+ *                status
  *                result
  *              }
  *            }]
