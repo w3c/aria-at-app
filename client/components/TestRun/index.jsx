@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import './TestRun.css';
 import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
-import { Container, Row, Col, Card } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import {
@@ -28,9 +27,15 @@ class TestRun extends Component {
         this.handleNextTestClick = this.handleNextTestClick.bind(this);
         this.handleSaveResultClick = this.handleSaveResultClick.bind(this);
 
-        this.handleCantSaveResultModalClose = this.handleCantSaveResultModalClose.bind(this);
-        this.handleConfirmSkipModalClose = this.handleConfirmSkipModalClose.bind(this);
-        this.handleConfirmSkipModalContinue = this.handleConfirmSkipModalContinue.bind(this);
+        this.handleCantSaveResultModalClose = this.handleCantSaveResultModalClose.bind(
+            this
+        );
+        this.handleConfirmSkipModalClose = this.handleConfirmSkipModalClose.bind(
+            this
+        );
+        this.handleConfirmSkipModalContinue = this.handleConfirmSkipModalContinue.bind(
+            this
+        );
 
         this.testIframe = React.createRef();
     }
@@ -99,7 +104,9 @@ class TestRun extends Component {
         try {
             result = JSON.parse(resultsEl.innerText);
         } catch (error) {
-            console.error("Cannot save tests do to malformed information from test file.");
+            console.error(
+                'Cannot save tests do to malformed information from test file.'
+            );
             throw error;
         }
 
@@ -116,8 +123,7 @@ class TestRun extends Component {
 
         if (exit) {
             history.push(`/test-queue/${cycleId}`);
-        }
-        else {
+        } else {
             this.setState(prevState => {
                 return {
                     ...this.nextTestState(prevState),
@@ -144,33 +150,57 @@ class TestRun extends Component {
     }
 
     renderModals() {
-        return(
+        return (
             <React.Fragment>
-              <Modal show={this.state.showCantSaveResultModal} onHide={this.handleCantSaveResultModalClose} centered animation={false}>
-                <Modal.Header closeButton>
-                  <Modal.Title>Cannot Save Results</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>Test is not complete, we cannot save incomplete and unreviewd tests. Please fill in the entire tests and click "review results", then you can save.</Modal.Body>
-                <Modal.Footer>
-                  <Button variant="secondary" onClick={this.handleCantSaveResultModalClose}>
-                    Close
-                  </Button>
-                </Modal.Footer>
-              </Modal>
-              <Modal show={this.state.showConfirmSkipModal} onHide={this.handleConfirmSkipModalClose} centered animation={false}>
-                <Modal.Header closeButton>
-                  <Modal.Title>Skip to Next Tests</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>{`Are you sure you want to continue? Your progress on test ${this.state.currentTestIndex} won't be saved.`}</Modal.Body>
-                <Modal.Footer>
-                  <Button variant="secondary" onClick={this.handleConfirmSkipModalClose}>
-                    Cancel
-                  </Button>
-                  <Button variant="secondary" onClick={this.handleConfirmSkipModalContinue}>
-                    Continue
-                  </Button>
-                </Modal.Footer>
-              </Modal>
+                <Modal
+                    show={this.state.showCantSaveResultModal}
+                    onHide={this.handleCantSaveResultModalClose}
+                    centered
+                    animation={false}
+                >
+                    <Modal.Header closeButton>
+                        <Modal.Title>Cannot Save Results</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        Test is not complete, we cannot save incomplete and
+                        unreviewd tests. Please fill in the entire tests and
+                        click the button <b>review results</b>, then you can
+                        save.
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button
+                            variant="secondary"
+                            onClick={this.handleCantSaveResultModalClose}
+                        >
+                            Close
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+                <Modal
+                    show={this.state.showConfirmSkipModal}
+                    onHide={this.handleConfirmSkipModalClose}
+                    centered
+                    animation={false}
+                >
+                    <Modal.Header closeButton>
+                        <Modal.Title>Skip to Next Tests</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>{`Are you sure you want to continue? Your progress on test ${this.state.currentTestIndex} won't be saved.`}</Modal.Body>
+                    <Modal.Footer>
+                        <Button
+                            variant="secondary"
+                            onClick={this.handleConfirmSkipModalClose}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            variant="secondary"
+                            onClick={this.handleConfirmSkipModalContinue}
+                        >
+                            Continue
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
             </React.Fragment>
         );
     }
@@ -228,13 +258,17 @@ class TestRun extends Component {
                             <Button variant="primary">Previous Test</Button>
                             <Button
                                 variant="primary"
-                                onClick={() => this.handleSaveResultClick({exit: true})}
+                                onClick={() =>
+                                    this.handleSaveResultClick({ exit: true })
+                                }
                             >
                                 Save results and exit
                             </Button>
                             <Button
                                 variant="primary"
-                                onClick={() => this.handleSaveResultClick({exit: false})}
+                                onClick={() =>
+                                    this.handleSaveResultClick({ exit: false })
+                                }
                             >
                                 Save results and go to next test
                             </Button>
@@ -246,7 +280,6 @@ class TestRun extends Component {
                             >
                                 Skip to next test
                             </Button>
-
                         </React.Fragment>
                     );
                 } else {

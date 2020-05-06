@@ -17,7 +17,11 @@ describe('login reducer tests', () => {
             type: CHECK_LOGGED_IN,
             payload: apiPayload
         });
-        expect(newState).toEqual({ isLoggedIn: true, loadedUserData: true, ...apiPayload });
+        expect(newState).toEqual({
+            isLoggedIn: true,
+            loadedUserData: true,
+            ...apiPayload
+        });
     });
     test('returns object without username and name and isLoggedIn false with `LOG_OUT` type', () => {
         const apiPayload = {
