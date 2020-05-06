@@ -29,7 +29,9 @@ class TestQueueRow extends Component {
             usersById,
             runId,
             testers,
-            apgExampleName
+            apgExampleName,
+            atName,
+            browserName
         } = this.props;
         let currentUserAssigned = testers.includes(userId);
 
@@ -48,14 +50,15 @@ class TestQueueRow extends Component {
             designPatternLinkOrName = apgExampleName;
         }
 
+        let testrun = `${apgExampleName} for ${atName} on ${browserName}`;
         let assignOrUnassignButton;
         if (currentUserAssigned) {
             assignOrUnassignButton = (
-                <Button onClick={this.handleUnassignClick}>Unassign Me</Button>
+                <Button onClick={this.handleUnassignClick} aria-label={`Unassign me from the test run ${testrun}`}>Unassign Me</Button>
             );
         } else if (testers.length < 2) {
             assignOrUnassignButton = (
-                <Button onClick={this.handleAssignClick}>Assign Me</Button>
+                <Button onClick={this.handleAssignClick} aria-label={`Assign me to the test run ${testrun}`}>Assign Me</Button>
             );
         }
 
@@ -77,6 +80,8 @@ TestQueueRow.propTypes = {
     testers: PropTypes.array,
     usersById: PropTypes.object,
     userId: PropTypes.number,
+    atName: PropTypes.string,
+    browserName: PropTypes.string,
     dispatch: PropTypes.func
 };
 

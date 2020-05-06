@@ -72,12 +72,13 @@ class ConfigureTechnologyRow extends Component {
     }
 
     render() {
-        const { availableBrowsers, availableAts, runTechnologies } = this.props;
+        const { availableBrowsers, availableAts, runTechnologies, index } = this.props;
 
         return (
             <Row>
                 <Col>
                     <Form.Control
+                        aria-label={`Assistive Technology, configuration ${index}`}
                         value={
                             runTechnologies.at_id ? runTechnologies.at_id : -1
                         }
@@ -97,12 +98,14 @@ class ConfigureTechnologyRow extends Component {
                 </Col>
                 <Col>
                     <Form.Control
-                        value={runTechnologies.at_version}
+                        aria-label={`Assistive Technology Version, configuration ${index}`}
+                        value={runTechnologies.at_version || ''}
                         onChange={this.handleAtVersionChange}
                     />
                 </Col>
                 <Col>
                     <Form.Control
+                        aria-label={`Browser, configuration ${index}`}
                         value={
                             runTechnologies.browser_id
                                 ? runTechnologies.browser_id
@@ -124,7 +127,8 @@ class ConfigureTechnologyRow extends Component {
                 </Col>
                 <Col>
                     <Form.Control
-                        value={runTechnologies.browser_version}
+                        aria-label={`Browser version, configuration ${index}`}
+                        value={runTechnologies.browser_version || ''}
                         onChange={this.handleBrowserVersionChange}
                     />
                 </Col>
