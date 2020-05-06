@@ -56,9 +56,7 @@ export default (state = initialState, action) => {
 
             const tests =
                 state.runsForCycle[result.cycle_id][result.run_id].tests;
-            const testIndex = tests.findIndex(t => {
-                return t.id === result.test_id;
-            });
+            const testIndex = tests.findIndex(t => t.id === result.test_id);
             const newTests = [...tests];
             newTests[testIndex] = {
                 ...tests[testIndex],

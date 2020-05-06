@@ -60,7 +60,14 @@ class TestRun extends Component {
             return;
         }
 
-        const result = JSON.parse(resultsEl.innerHTML);
+        let result;
+        try {
+            result = JSON.parse(resultsEl.innerText);
+        } catch (error) {
+            console.error("Cannot save tests do to malformed information from test file.");
+            throw error;
+        }
+
         const test = tests[this.state.currentTestIndex - 1];
         dispatch(
             saveResult({
