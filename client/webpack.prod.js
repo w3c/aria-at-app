@@ -14,6 +14,21 @@ module.exports = {
                 options: {
                     babelrcRoots: ['.', '../..']
                 }
+            },
+            {
+                test: /\.css$/,
+                use: ['style-loader', 'css-loader']
+            },
+            {
+                test: /\.s[ac]ss$/i,
+                use: [
+                    // Creates `style` nodes from JS strings
+                    'style-loader',
+                    // Translates CSS into CommonJS
+                    'css-loader',
+                    // Compiles Sass to CSS
+                    'sass-loader'
+                ]
             }
         ]
     },
@@ -37,7 +52,8 @@ module.exports = {
             }
         ]),
         new webpack.DefinePlugin({
-            'process.env.API_SERVER': JSON.stringify(process.env.API_SERVER)
+            'process.env.API_SERVER': JSON.stringify(process.env.API_SERVER),
+            'process.env.ENVIRONMENT': JSON.stringify(process.env.ENVIRONMENT)
         })
     ],
     performance: {
