@@ -1,6 +1,5 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import './TestRun.css';
 import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import {
@@ -18,7 +17,7 @@ import {
     getTestSuiteVersions,
     saveResult
 } from '../../actions/cycles';
-import TestResult from '@components/TestResult';
+import DisplayTest from '@components/DisplayTest';
 
 class TestRun extends Component {
     constructor(props) {
@@ -27,22 +26,11 @@ class TestRun extends Component {
         this.state = {
             currentTestIndex: 1,
             runComplete: false,
-            showConfirmLeaveTestModal: false
         };
 
-        this.testHasResult = false;
-
-        this.handleNextTestClick = this.handleNextTestClick.bind(this);
-        this.handlePreviousTestClick = this.handlePreviousTestClick.bind(this);
-        this.handleCloseRunClick = this.handleCloseRunClick.bind(this);
-        this.handleCloseLeaveTestModal = this.handleCloseLeaveTestModal.bind(
-            this
-        );
-        this.handleConfirmLeaveTest = this.handleConfirmLeaveTest.bind(
-            this
-        );
-
-        this.testIframe = React.createRef();
+        this.displayNextTest = this.displayNextTest.bind(this);
+        this.displayPreviousTest = this.displayPreviousTest.bind(this);
+        this.saveResultFromTest = this.saveResultFromTest.bind(this);
     }
 
     async componentDidMount() {
@@ -56,88 +44,32 @@ class TestRun extends Component {
         }
     }
 
-    handleCloseLeaveTestModal() {
-        this.setState({
-            showConfirmLeaveTestModal: false
+    displayNextTest() {
+        const { tests } = this.props;
+        this.setState(prevState => {
+            let currentTestIndex = prevState.currentTestIndex + 1;
+            if (currentTestIndex <= tests.length) {
+                return {
+                    ...prevState,
+                    currentTestIndex
+                };
+            } else {
+                return {
+                    ...prevState,
+                    runComplete: true
+                };
+            }
         });
     }
 
-    handleConfirmLeaveTest() {
-        const { cycleId, history } = this.props;
-        if (this.state.exitAfterConfirm) {
-            history.push(`/test-queue/${cycleId}`);
-        }
-        else {
-            this.setState(prevState => {
-                return {
-                    ...this.nextTestState(prevState),
-                    showConfirmLeaveTestModal: false
-                };
-            });
-        }
+    displayPreviousTest() {
+        this.setState({
+            currentTestIndex: this.state.currentTestIndex - 1
+        });
     }
 
-    handleNextTestClick() {
-        // Do not try to save if showing results
-        let goToNextTest = this.testHasResults
-            ? true
-            : this.trySaving();
-
-        if (goToNextTest) {
-            this.setState(prevState => {
-                return {
-                    ...this.nextTestState(prevState)
-                };
-            });
-        }
-    }
-
-    handlePreviousTestClick() {
-        let goToPreviousTest = this.testHasResults
-            ? true
-            : this.trySaving();
-
-        if (goToPreviousTest) {
-            this.setState({
-                currentTestIndex: this.state.currentTestIndex - 1
-            });
-        }
-    }
-
-    handleCloseRunClick() {
-        const { cycleId, history } = this.props;
-        if (this.testHasResults || this.trySaving({ exitAfterConfirm: true })) {
-            history.push(`/test-queue/${cycleId}`);
-        }
-    }
-
-    trySaving(options) {
+    saveResultFromTest(result) {
         const { dispatch, cycleId, tests, run, userId } = this.props;
-
-        let exitAfterConfirm = options ? options.exitAfterConfirm : false;
-
-        let resultsEl = this.testIframe.current.contentDocument.querySelector(
-            '#__ariaatharness__results__'
-        );
-
-        if (!resultsEl) {
-            this.setState({
-                showConfirmLeaveTestModal: true,
-                exitAfterConfirm
-            });
-            return false;
-        }
-
-        let result;
-        try {
-            result = JSON.parse(resultsEl.innerText);
-        } catch (error) {
-            console.error(
-                'Cannot save tests do to malformed information from test file.'
-            );
-            throw error;
-        }
-
         const test = tests[this.state.currentTestIndex - 1];
         dispatch(
             saveResult({
@@ -151,56 +83,8 @@ class TestRun extends Component {
         return true;
     }
 
-    nextTestState(prevState) {
-        const { tests } = this.props;
-        let currentTestIndex = prevState.currentTestIndex + 1;
-        if (currentTestIndex <= tests.length) {
-            return {
-                ...prevState,
-                currentTestIndex
-            };
-        } else {
-            return {
-                ...prevState,
-                runComplete: true
-            };
-        }
-    }
-
-    renderModal() {
-        return (
-            <Fragment>
-                <Modal
-                    show={this.state.showConfirmLeaveTestModal}
-                    onHide={this.handleCloseLeaveTestModal}
-                    centered
-                    animation={false}
-                >
-                    <Modal.Header closeButton>
-                        <Modal.Title>Leave Test</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>{`Are you sure you want to leave this test? Because the test has not been completed in full, your progress on test ${this.state.currentTestIndex} won't be saved.`}</Modal.Body>
-                    <Modal.Footer>
-                        <Button
-                            variant="secondary"
-                            onClick={this.handleCloseLeaveTestModal}
-                        >
-                            Cancel
-                        </Button>
-                        <Button
-                            variant="secondary"
-                            onClick={this.handleConfirmLeaveTest}
-                        >
-                            Continue
-                        </Button>
-                    </Modal.Footer>
-                </Modal>
-            </Fragment>
-        );
-    }
-
     render() {
-        const { run, tests, testSuiteVersionData } = this.props;
+        const { run, tests, cycleId, testSuiteVersionData } = this.props;
 
         if (!run || !tests || !testSuiteVersionData) {
             return <div data-test="test-run-loading">Loading</div>;
@@ -248,55 +132,18 @@ class TestRun extends Component {
             );
 
             if (!this.state.runComplete) {
-                menuUnderContent = (
-                    <ButtonToolbar className="testrun__button-toolbar--margin">
-                        {this.state.currentTestIndex !== 1 &&
-                             <Button variant="primary"
-                                     onClick={this.handlePreviousTestClick}
-                             >
-                               Previous Test
-                             </Button>
-                        }
-                          <Button
-                            className="testrun__button--right"
-                              variant="primary"
-                              onClick={this.handleNextTestClick}
-                          >
-                              Next Test
-
-                          </Button>
-                    </ButtonToolbar>
-                );
-                menuRightOContent = (
-                    <ButtonGroup vertical>
-                        <Button variant="primary">Raise an issue</Button>
-                        <Button variant="primary">Re-do Test</Button>
-                        <Button
-                          variant="primary"
-                          onClick={this.handleCloseRunClick}
-                        >
-                          {this.testHasResults ? 'Close' : 'Save and Close'}
-                        </Button>
-                    </ButtonGroup>
-                );
-
-                if (this.testHasResults) {
-                    testContent = (
-                        <TestResult
-                          testResult={test.result}
+                testContent = (
+                        <DisplayTest
+                          test={test}
+                          testIndex={this.state.currentTestIndex}
+                          git_hash={git_hash}
+                          at_key={at_key}
+                          displayNextTest={this.displayNextTest}
+                          displayPreviousTest={this.displayPreviousTest}
+                          saveResultFromTest={this.saveResultFromTest}
+                          cycleId={cycleId}
                         />
                     );
-                } else {
-                    testContent = (
-                        <iframe
-                            src={`/aria-at/${git_hash}/${
-                                tests[this.state.currentTestIndex - 1].file
-                            }?at=${at_key}`}
-                            id="test-iframe"
-                            ref={this.testIframe}
-                        ></iframe>
-                    );
-                }
             } else {
                 content = <div>Tests are complete.</div>;
             }
@@ -310,8 +157,6 @@ class TestRun extends Component {
             content = <div>No tests for this browser / AT combination</div>;
         }
 
-        let modals = this.renderModal();
-
         return (
             <Fragment>
                 <Helmet>
@@ -323,20 +168,9 @@ class TestRun extends Component {
                     </Row>
 
                     <Row>
-                        {testContent && menuUnderContent && menuRightOContent ? (
-                            <Fragment>
-                                <Col md={9}>
-                                    <Row>{testContent}</Row>
-                                    <Row>{menuUnderContent}</Row>
-                                </Col>
-                                <Col md={3}>{menuRightOContent}</Col>
-                            </Fragment>
-                        ) : (
-                            <Col>{content}</Col>
-                        )}
+                        {testContent || <Col>{content}</Col>}
                     </Row>
                 </Container>
-                {modals}
             </Fragment>
         );
     }
@@ -348,8 +182,7 @@ TestRun.propTypes = {
     userId: PropTypes.number,
     tests: PropTypes.array,
     run: PropTypes.object,
-    testSuiteVersionData: PropTypes.object,
-    history: PropTypes.object
+    testSuiteVersionData: PropTypes.object
 };
 
 const mapStateToProps = (state, ownProps) => {
