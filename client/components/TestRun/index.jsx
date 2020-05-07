@@ -18,6 +18,7 @@ import {
     getTestSuiteVersions,
     saveResult
 } from '../../actions/cycles';
+import TestResult from '@components/TestResult';
 
 class TestRun extends Component {
     constructor(props) {
@@ -314,15 +315,14 @@ class TestRun extends Component {
                 } else {
                     content = (
                         <Fragment>
-                            <div>
-                                RESULTS EXIST!!!!!! TODO: Make a view of the
-                                existng tests
-                            </div>
+                            <TestResult
+                              testResult={test.result}
+                            />
                             <Button
                                 variant="primary"
                                 onClick={this.handleNextTestClick}
                             >
-                                Go to next test
+                                Next Test
                             </Button>
                         </Fragment>
                     );
