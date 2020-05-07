@@ -85,7 +85,7 @@ class ConfigureRunsForExample extends Component {
     }
 
     render() {
-        const { example, usersById, testersByRunId, runs } = this.props;
+        const { example, usersById, testersByRunId, runs = [] } = this.props;
 
         runs.sort(function(a, b) {
             if (a.at_id === b.at_id) {
