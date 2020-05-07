@@ -27,21 +27,18 @@ class TestRun extends Component {
         this.state = {
             currentTestIndex: 1,
             runComplete: false,
-            showCantSaveResultModal: false,
-            showConfirmSkipModal: false
+            showConfirmLeaveTestModal: false
         };
 
-        this.handleSkipTestClick = this.handleSkipTestClick.bind(this);
-        this.handleNextTestClick = this.handleNextTestClick.bind(this);
-        this.handleSaveResultClick = this.handleSaveResultClick.bind(this);
+        this.testHasResult = false;
 
-        this.handleCantSaveResultModalClose = this.handleCantSaveResultModalClose.bind(
+        this.handleNextTestClick = this.handleNextTestClick.bind(this);
+        this.handlePreviousTestClick = this.handlePreviousTestClick.bind(this);
+        this.handleCloseRunClick = this.handleCloseRunClick.bind(this);
+        this.handleCloseLeaveTestModal = this.handleCloseLeaveTestModal.bind(
             this
         );
-        this.handleConfirmSkipModalClose = this.handleConfirmSkipModalClose.bind(
-            this
-        );
-        this.handleConfirmSkipModalContinue = this.handleConfirmSkipModalContinue.bind(
+        this.handleConfirmLeaveTest = this.handleConfirmLeaveTest.bind(
             this
         );
 
@@ -59,43 +56,65 @@ class TestRun extends Component {
         }
     }
 
-    handleCantSaveResultModalClose() {
+    handleCloseLeaveTestModal() {
         this.setState({
-            showCantSaveResultModal: false
+            showConfirmLeaveTestModal: false
         });
     }
 
-    handleConfirmSkipModalClose() {
-        this.setState({
-            showConfirmSkipModal: false
-        });
-    }
-
-    handleConfirmSkipModalContinue() {
-        this.setState(prevState => {
-            return {
-                ...this.nextTestState(prevState),
-                showConfirmSkipModal: false
-            };
-        });
-    }
-
-    handleSkipTestClick() {
-        this.setState({
-            showConfirmSkipModal: true
-        });
+    handleConfirmLeaveTest() {
+        const { cycleId, history } = this.props;
+        if (this.state.exitAfterConfirm) {
+            history.push(`/test-queue/${cycleId}`);
+        }
+        else {
+            this.setState(prevState => {
+                return {
+                    ...this.nextTestState(prevState),
+                    showConfirmLeaveTestModal: false
+                };
+            });
+        }
     }
 
     handleNextTestClick() {
-        this.setState(prevState => {
-            return {
-                ...this.nextTestState(prevState)
-            };
-        });
+        // Do not try to save if showing results
+        let goToNextTest = this.testHasResults
+            ? true
+            : this.trySaving();
+
+        if (goToNextTest) {
+            this.setState(prevState => {
+                return {
+                    ...this.nextTestState(prevState)
+                };
+            });
+        }
     }
 
-    handleSaveResultClick({ exit }) {
-        const { dispatch, cycleId, tests, run, userId, history } = this.props;
+    handlePreviousTestClick() {
+        let goToPreviousTest = this.testHasResults
+            ? true
+            : this.trySaving();
+
+        if (goToPreviousTest) {
+            this.setState({
+                currentTestIndex: this.state.currentTestIndex - 1
+            });
+        }
+    }
+
+    handleCloseRunClick() {
+        const { cycleId, history } = this.props;
+        if (this.testHasResults || this.trySaving({ exitAfterConfirm: true })) {
+            history.push(`/test-queue/${cycleId}`);
+        }
+    }
+
+    trySaving(options) {
+        const { dispatch, cycleId, tests, run, userId } = this.props;
+
+        let exitAfterConfirm = options ? options.exitAfterConfirm : false;
 
         let resultsEl = this.testIframe.current.contentDocument.querySelector(
             '#__ariaatharness__results__'
@@ -103,9 +122,10 @@ class TestRun extends Component {
 
         if (!resultsEl) {
             this.setState({
-                showCantSaveResultModal: true
+                showConfirmLeaveTestModal: true,
+                exitAfterConfirm
             });
-            return;
+            return false;
         }
 
         let result;
@@ -128,17 +148,7 @@ class TestRun extends Component {
                 result
             })
         );
-
-        if (exit) {
-            history.push(`/test-queue/${cycleId}`);
-        } else {
-            this.setState(prevState => {
-                return {
-                    ...this.nextTestState(prevState),
-                    showConfirmSkipModal: false
-                };
-            });
-        }
+        return true;
     }
 
     nextTestState(prevState) {
@@ -157,53 +167,29 @@ class TestRun extends Component {
         }
     }
 
-    renderModals() {
+    renderModal() {
         return (
             <Fragment>
                 <Modal
-                    show={this.state.showCantSaveResultModal}
-                    onHide={this.handleCantSaveResultModalClose}
+                    show={this.state.showConfirmLeaveTestModal}
+                    onHide={this.handleCloseLeaveTestModal}
                     centered
                     animation={false}
                 >
                     <Modal.Header closeButton>
-                        <Modal.Title>Cannot Save Results</Modal.Title>
+                        <Modal.Title>Leave Test</Modal.Title>
                     </Modal.Header>
-                    <Modal.Body>
-                        Test is not complete, we cannot save incomplete and
-                        unreviewd tests. Please fill in the entire tests and
-                        click the button <b>review results</b>, then you can
-                        save.
-                    </Modal.Body>
+                    <Modal.Body>{`Are you sure you want to leave this test? Because the test has not been completed in full, your progress on test ${this.state.currentTestIndex} won't be saved.`}</Modal.Body>
                     <Modal.Footer>
                         <Button
                             variant="secondary"
-                            onClick={this.handleCantSaveResultModalClose}
-                        >
-                            Close
-                        </Button>
-                    </Modal.Footer>
-                </Modal>
-                <Modal
-                    show={this.state.showConfirmSkipModal}
-                    onHide={this.handleConfirmSkipModalClose}
-                    centered
-                    animation={false}
-                >
-                    <Modal.Header closeButton>
-                        <Modal.Title>Skip to Next Tests</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>{`Are you sure you want to continue? Your progress on test ${this.state.currentTestIndex} won't be saved.`}</Modal.Body>
-                    <Modal.Footer>
-                        <Button
-                            variant="secondary"
-                            onClick={this.handleConfirmSkipModalClose}
+                            onClick={this.handleCloseLeaveTestModal}
                         >
                             Cancel
                         </Button>
                         <Button
                             variant="secondary"
-                            onClick={this.handleConfirmSkipModalContinue}
+                            onClick={this.handleConfirmLeaveTest}
                         >
                             Continue
                         </Button>
@@ -239,11 +225,15 @@ class TestRun extends Component {
             testsToRun = true;
         }
 
+        this.testHasResults = test.result ? true : false;
+        console.log(this.testHasResults);
+
+
         let heading = null;
         let content = null;
-        let iframe = null;
-        let menuUnderIframe = null;
-        let menuRightOfIframe = null;
+        let testContent = null;
+        let menuUnderContent = null;
+        let menuRightOContent = null;
 
         if (testsToRun) {
             heading = (
@@ -258,8 +248,46 @@ class TestRun extends Component {
             );
 
             if (!this.state.runComplete) {
-                if (!test.result) {
-                    iframe = (
+                menuUnderContent = (
+                    <ButtonToolbar className="testrun__button-toolbar--margin">
+                        {this.state.currentTestIndex !== 1 &&
+                             <Button variant="primary"
+                                     onClick={this.handlePreviousTestClick}
+                             >
+                               Previous Test
+                             </Button>
+                        }
+                          <Button
+                            className="testrun__button--right"
+                              variant="primary"
+                              onClick={this.handleNextTestClick}
+                          >
+                              Next Test
+
+                          </Button>
+                    </ButtonToolbar>
+                );
+                menuRightOContent = (
+                    <ButtonGroup vertical>
+                        <Button variant="primary">Raise an issue</Button>
+                        <Button variant="primary">Re-do Test</Button>
+                        <Button
+                          variant="primary"
+                          onClick={this.handleCloseRunClick}
+                        >
+                          {this.testHasResults ? 'Close' : 'Save and Close'}
+                        </Button>
+                    </ButtonGroup>
+                );
+
+                if (this.testHasResults) {
+                    testContent = (
+                        <TestResult
+                          testResult={test.result}
+                        />
+                    );
+                } else {
+                    testContent = (
                         <iframe
                             src={`/aria-at/${git_hash}/${
                                 tests[this.state.currentTestIndex - 1].file
@@ -267,64 +295,6 @@ class TestRun extends Component {
                             id="test-iframe"
                             ref={this.testIframe}
                         ></iframe>
-                    );
-
-                    menuUnderIframe = (
-                        <ButtonToolbar className="testrun__button-toolbar--margin">
-                            <Button variant="primary">Previous Test</Button>
-
-                            <ButtonGroup
-                                aria-label="Save results buttons"
-                                className="testrun__button-group--right"
-                            >
-                                <Button
-                                    variant="primary"
-                                    onClick={() =>
-                                        this.handleSaveResultClick({
-                                            exit: true
-                                        })
-                                    }
-                                >
-                                    Save and close
-                                </Button>
-                                <Button
-                                    variant="primary"
-                                    onClick={() =>
-                                        this.handleSaveResultClick({
-                                            exit: false
-                                        })
-                                    }
-                                >
-                                    Save results and go to next test
-                                </Button>
-                            </ButtonGroup>
-                        </ButtonToolbar>
-                    );
-                    menuRightOfIframe = (
-                        <ButtonGroup vertical>
-                            <Button variant="primary">Raise an issue</Button>
-                            <Button variant="primary">Re-do Test</Button>
-                            <Button
-                                variant="primary"
-                                onClick={this.handleSkipTestClick}
-                            >
-                                Skip to next test
-                            </Button>
-                        </ButtonGroup>
-                    );
-                } else {
-                    content = (
-                        <Fragment>
-                            <TestResult
-                              testResult={test.result}
-                            />
-                            <Button
-                                variant="primary"
-                                onClick={this.handleNextTestClick}
-                            >
-                                Next Test
-                            </Button>
-                        </Fragment>
                     );
                 }
             } else {
@@ -340,7 +310,7 @@ class TestRun extends Component {
             content = <div>No tests for this browser / AT combination</div>;
         }
 
-        let modals = this.renderModals();
+        let modals = this.renderModal();
 
         return (
             <Fragment>
@@ -353,13 +323,13 @@ class TestRun extends Component {
                     </Row>
 
                     <Row>
-                        {iframe && menuUnderIframe && menuRightOfIframe ? (
+                        {testContent && menuUnderContent && menuRightOContent ? (
                             <Fragment>
                                 <Col md={9}>
-                                    <Row>{iframe}</Row>
-                                    <Row>{menuUnderIframe}</Row>
+                                    <Row>{testContent}</Row>
+                                    <Row>{menuUnderContent}</Row>
                                 </Col>
-                                <Col md={3}>{menuRightOfIframe}</Col>
+                                <Col md={3}>{menuRightOContent}</Col>
                             </Fragment>
                         ) : (
                             <Col>{content}</Col>

@@ -48,7 +48,6 @@ class TestResult extends Component {
 
         return (
             <Fragment>
-                <h2>Test Cycles</h2>
                 <Table striped bordered hover>
                     <thead>
                         <tr>
