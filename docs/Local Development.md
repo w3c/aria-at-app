@@ -2,7 +2,8 @@
 
 ## Dependencies
 - Node
-  - Version 10.13.0 or greater
+  - Version >= 10.13.0 and < 13
+  - It is recommended to install node with [`nvm`](https://github.com/nvm-sh/nvm)
 - Yarn
   Yarn is resposible for installing dependencies, similar to npm. This project is utilizing yarn workspaces to organize the code into a monorepo structure.
   - macOS
@@ -22,7 +23,7 @@ yarn install
 
 ### Set up local database
 
-Follow the instructions provided in [Database.md](https://github.com/bocoup/aria-at-report/blob/master/docs/Database.md).
+Follow the instructions provided in [Database.md](https://github.com/bocoup/aria-at-report/blob/main/docs/Database.md).
 
 ### Local Environment
 ```
