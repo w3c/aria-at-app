@@ -1,10 +1,17 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import './TestRun.css';
 import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
+import {
+    Button,
+    ButtonGroup,
+    ButtonToolbar,
+    Col,
+    Container,
+    Modal,
+    Row
+} from 'react-bootstrap';
 import {
     getTestCycles,
     getRunsForUserAndCycle,
@@ -151,7 +158,7 @@ class TestRun extends Component {
 
     renderModals() {
         return (
-            <React.Fragment>
+            <Fragment>
                 <Modal
                     show={this.state.showCantSaveResultModal}
                     onHide={this.handleCantSaveResultModalClose}
@@ -201,7 +208,7 @@ class TestRun extends Component {
                         </Button>
                     </Modal.Footer>
                 </Modal>
-            </React.Fragment>
+            </Fragment>
         );
     }
 
@@ -231,47 +238,69 @@ class TestRun extends Component {
             testsToRun = true;
         }
 
-        let heading, content;
+        let heading = null;
+        let content = null;
+        let iframe = null;
+        let menuUnderIframe = null;
+        let menuRightOfIframe = null;
 
         if (testsToRun) {
             heading = (
-                <React.Fragment>
+                <Fragment>
                     <h2 data-test="test-run-h2">
                         {' '}
                         {`${apg_example_name} (${this.state.currentTestIndex} of ${tests.length})`}
                     </h2>
                     <h3 data-test="test-run-h3">{`${at_name} ${at_version} with ${browser_name} ${browser_version}`}</h3>
                     <h4 data-test="test-run-h4">Testing task: {testName}</h4>
-                </React.Fragment>
+                </Fragment>
             );
+
             if (!this.state.runComplete) {
                 if (!test.result) {
-                    content = (
-                        <React.Fragment>
-                            <iframe
-                                src={`/aria-at/${git_hash}/${
-                                    tests[this.state.currentTestIndex - 1].file
-                                }?at=${at_key}`}
-                                id="test-iframe"
-                                ref={this.testIframe}
-                            ></iframe>
+                    iframe = (
+                        <iframe
+                            src={`/aria-at/${git_hash}/${
+                                tests[this.state.currentTestIndex - 1].file
+                            }?at=${at_key}`}
+                            id="test-iframe"
+                            ref={this.testIframe}
+                        ></iframe>
+                    );
+
+                    menuUnderIframe = (
+                        <ButtonToolbar className="testrun__button-toolbar--margin">
                             <Button variant="primary">Previous Test</Button>
-                            <Button
-                                variant="primary"
-                                onClick={() =>
-                                    this.handleSaveResultClick({ exit: true })
-                                }
+
+                            <ButtonGroup
+                                aria-label="Save results buttons"
+                                className="testrun__button-group--right"
                             >
-                                Save results and exit
-                            </Button>
-                            <Button
-                                variant="primary"
-                                onClick={() =>
-                                    this.handleSaveResultClick({ exit: false })
-                                }
-                            >
-                                Save results and go to next test
-                            </Button>
+                                <Button
+                                    variant="primary"
+                                    onClick={() =>
+                                        this.handleSaveResultClick({
+                                            exit: true
+                                        })
+                                    }
+                                >
+                                    Save and close
+                                </Button>
+                                <Button
+                                    variant="primary"
+                                    onClick={() =>
+                                        this.handleSaveResultClick({
+                                            exit: false
+                                        })
+                                    }
+                                >
+                                    Save results and go to next test
+                                </Button>
+                            </ButtonGroup>
+                        </ButtonToolbar>
+                    );
+                    menuRightOfIframe = (
+                        <ButtonGroup vertical>
                             <Button variant="primary">Raise an issue</Button>
                             <Button variant="primary">Re-do Test</Button>
                             <Button
@@ -280,11 +309,11 @@ class TestRun extends Component {
                             >
                                 Skip to next test
                             </Button>
-                        </React.Fragment>
+                        </ButtonGroup>
                     );
                 } else {
                     content = (
-                        <React.Fragment>
+                        <Fragment>
                             <div>
                                 RESULTS EXIST!!!!!! TODO: Make a view of the
                                 existng tests
@@ -295,41 +324,50 @@ class TestRun extends Component {
                             >
                                 Go to next test
                             </Button>
-                        </React.Fragment>
+                        </Fragment>
                     );
                 }
             } else {
-                content = (
-                    <React.Fragment>
-                        <div>Tests are complete.</div>
-                    </React.Fragment>
-                );
+                content = <div>Tests are complete.</div>;
             }
         } else {
             heading = (
-                <React.Fragment>
+                <Fragment>
                     <h2>{`${apg_example_name}`}</h2>
                     <h3>{`${at_name} ${at_version} with ${browser_name} ${browser_version}`}</h3>
-                </React.Fragment>
+                </Fragment>
             );
-            content = (
-                <React.Fragment>
-                    <div>No tests for this browser / AT combination</div>
-                </React.Fragment>
-            );
+            content = <div>No tests for this browser / AT combination</div>;
         }
 
         let modals = this.renderModals();
 
         return (
-            <React.Fragment>
+            <Fragment>
                 <Helmet>
                     <title>{`Testing ${apg_example_name} for ${at_name} ${at_version} with ${browser_name} ${browser_version} | ARIA-AT`}</title>
                 </Helmet>
-                {heading}
-                {content}
+                <Container fluid>
+                    <Row>
+                        <Col>{heading}</Col>
+                    </Row>
+
+                    <Row>
+                        {iframe && menuUnderIframe && menuRightOfIframe ? (
+                            <Fragment>
+                                <Col md={9}>
+                                    <Row>{iframe}</Row>
+                                    <Row>{menuUnderIframe}</Row>
+                                </Col>
+                                <Col md={3}>{menuRightOfIframe}</Col>
+                            </Fragment>
+                        ) : (
+                            <Col>{content}</Col>
+                        )}
+                    </Row>
+                </Container>
                 {modals}
-            </React.Fragment>
+            </Fragment>
         );
     }
 }
