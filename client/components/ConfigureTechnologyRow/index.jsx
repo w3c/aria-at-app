@@ -72,7 +72,12 @@ class ConfigureTechnologyRow extends Component {
     }
 
     render() {
-        const { availableBrowsers, availableAts, runTechnologies, index } = this.props;
+        const {
+            availableBrowsers,
+            availableAts,
+            runTechnologies,
+            index
+        } = this.props;
 
         return (
             <Row>

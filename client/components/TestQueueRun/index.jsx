@@ -54,11 +54,21 @@ class TestQueueRow extends Component {
         let assignOrUnassignButton;
         if (currentUserAssigned) {
             assignOrUnassignButton = (
-                <Button onClick={this.handleUnassignClick} aria-label={`Unassign me from the test run ${testrun}`}>Unassign Me</Button>
+                <Button
+                    onClick={this.handleUnassignClick}
+                    aria-label={`Unassign me from the test run ${testrun}`}
+                >
+                    Unassign Me
+                </Button>
             );
         } else if (testers.length < 2) {
             assignOrUnassignButton = (
-                <Button onClick={this.handleAssignClick} aria-label={`Assign me to the test run ${testrun}`}>Assign Me</Button>
+                <Button
+                    onClick={this.handleAssignClick}
+                    aria-label={`Assign me to the test run ${testrun}`}
+                >
+                    Assign Me
+                </Button>
             );
         }
 

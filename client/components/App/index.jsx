@@ -78,9 +78,9 @@ class App extends Component {
                         </Navbar.Collapse>
                     </Navbar>
                 </Container>
-                <main>
+                <Container as="main" fluid>
                     {renderRoutes(route.routes)}
-                </main>
+                </Container>
             </Fragment>
         );
     }
