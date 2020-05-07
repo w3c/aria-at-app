@@ -344,14 +344,10 @@ class TestRun extends Component {
 
         return (
             <Fragment>
+                <Helmet>
+                    <title>{`Testing ${apg_example_name} for ${at_name} ${at_version} with ${browser_name} ${browser_version} | ARIA-AT`}</title>
+                </Helmet>
                 <Container fluid>
-                    <Row>
-                        <Col>
-                            <Helmet>
-                                <title>{`Testing ${apg_example_name} for ${at_name} ${at_version} with ${browser_name} ${browser_version} | ARIA-AT`}</title>
-                            </Helmet>
-                        </Col>
-                    </Row>
                     <Row>
                         <Col>{heading}</Col>
                     </Row>
