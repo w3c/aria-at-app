@@ -2,15 +2,7 @@ import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
-import {
-    Button,
-    ButtonGroup,
-    ButtonToolbar,
-    Col,
-    Container,
-    Modal,
-    Row
-} from 'react-bootstrap';
+import { Col, Container, Row } from 'react-bootstrap';
 import {
     getTestCycles,
     getRunsForUserAndCycle,
@@ -25,7 +17,7 @@ class TestRun extends Component {
 
         this.state = {
             currentTestIndex: 1,
-            runComplete: false,
+            runComplete: false
         };
 
         this.displayNextTest = this.displayNextTest.bind(this);
@@ -110,14 +102,10 @@ class TestRun extends Component {
         }
 
         this.testHasResults = test.result ? true : false;
-        console.log(this.testHasResults);
-
 
         let heading = null;
         let content = null;
         let testContent = null;
-        let menuUnderContent = null;
-        let menuRightOContent = null;
 
         if (testsToRun) {
             heading = (
@@ -133,17 +121,17 @@ class TestRun extends Component {
 
             if (!this.state.runComplete) {
                 testContent = (
-                        <DisplayTest
-                          test={test}
-                          testIndex={this.state.currentTestIndex}
-                          git_hash={git_hash}
-                          at_key={at_key}
-                          displayNextTest={this.displayNextTest}
-                          displayPreviousTest={this.displayPreviousTest}
-                          saveResultFromTest={this.saveResultFromTest}
-                          cycleId={cycleId}
-                        />
-                    );
+                    <DisplayTest
+                        test={test}
+                        testIndex={this.state.currentTestIndex}
+                        git_hash={git_hash}
+                        at_key={at_key}
+                        displayNextTest={this.displayNextTest}
+                        displayPreviousTest={this.displayPreviousTest}
+                        saveResultFromTest={this.saveResultFromTest}
+                        cycleId={cycleId}
+                    />
+                );
             } else {
                 content = <div>Tests are complete.</div>;
             }
@@ -167,9 +155,7 @@ class TestRun extends Component {
                         <Col>{heading}</Col>
                     </Row>
 
-                    <Row>
-                        {testContent || <Col>{content}</Col>}
-                    </Row>
+                    <Row>{testContent || <Col>{content}</Col>}</Row>
                 </Container>
             </Fragment>
         );

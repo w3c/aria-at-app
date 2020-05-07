@@ -7,7 +7,6 @@ import {
     ButtonGroup,
     ButtonToolbar,
     Col,
-    Container,
     Modal,
     Row
 } from 'react-bootstrap';
@@ -29,9 +28,7 @@ class DisplayTest extends Component {
         this.handleCloseLeaveTestModal = this.handleCloseLeaveTestModal.bind(
             this
         );
-        this.handleConfirmLeaveTest = this.handleConfirmLeaveTest.bind(
-            this
-        );
+        this.handleConfirmLeaveTest = this.handleConfirmLeaveTest.bind(this);
 
         this.testIframe = React.createRef();
     }
@@ -50,8 +47,12 @@ class DisplayTest extends Component {
     }
 
     performButtonAction() {
-        console.log(this.props);
-        const { cycleId, history, displayNextTest, displayPreviousTest } = this.props;
+        const {
+            cycleId,
+            history,
+            displayNextTest,
+            displayPreviousTest
+        } = this.props;
         if (this.buttonAction === 'exitAfterConfirm') {
             history.push(`/test-queue/${cycleId}`);
         }
@@ -79,7 +80,7 @@ class DisplayTest extends Component {
         this.trySaving();
     }
 
-    trySaving(options) {
+    trySaving() {
         const { saveResultFromTest, test } = this.props;
 
         // Only to to save if results don't exist
@@ -153,50 +154,41 @@ class DisplayTest extends Component {
 
         const testHasResult = test.result ? true : false;
 
-        let heading = null;
-        let content = null;
         let testContent = null;
         let menuUnderContent = null;
         let menuRightOContent = null;
 
         menuUnderContent = (
             <ButtonToolbar className="testrun__button-toolbar--margin">
-                {testIndex !== 1 &&
-                     <Button variant="primary"
-                             onClick={this.handlePreviousTestClick}
-                     >
-                       Previous Test
-                     </Button>
-                }
-                  <Button
+                {testIndex !== 1 && (
+                    <Button
+                        variant="primary"
+                        onClick={this.handlePreviousTestClick}
+                    >
+                        Previous Test
+                    </Button>
+                )}
+                <Button
                     className="testrun__button--right"
-                      variant="primary"
-                      onClick={this.handleNextTestClick}
-                  >
-                      Next Test
-
-                  </Button>
+                    variant="primary"
+                    onClick={this.handleNextTestClick}
+                >
+                    Next Test
+                </Button>
             </ButtonToolbar>
         );
         menuRightOContent = (
             <ButtonGroup vertical>
                 <Button variant="primary">Raise an issue</Button>
                 <Button variant="primary">Re-do Test</Button>
-                <Button
-                  variant="primary"
-                  onClick={this.handleCloseRunClick}
-                >
-                  {testHasResult ? 'Close' : 'Save and Close'}
+                <Button variant="primary" onClick={this.handleCloseRunClick}>
+                    {testHasResult ? 'Close' : 'Save and Close'}
                 </Button>
             </ButtonGroup>
         );
 
         if (testHasResult) {
-            testContent = (
-                <TestResult
-                  testResult={test.result}
-                />
-            );
+            testContent = <TestResult testResult={test.result} />;
         } else {
             testContent = (
                 <iframe
@@ -207,17 +199,16 @@ class DisplayTest extends Component {
             );
         }
 
-
         let modals = this.renderModal();
 
         return (
             <Fragment>
-              <Col md={9}>
-                <Row>{testContent}</Row>
-                <Row>{menuUnderContent}</Row>
-              </Col>
-              <Col md={3}>{menuRightOContent}</Col>
-              {modals}
+                <Col md={9}>
+                    <Row>{testContent}</Row>
+                    <Row>{menuUnderContent}</Row>
+                </Col>
+                <Col md={3}>{menuRightOContent}</Col>
+                {modals}
             </Fragment>
         );
     }
