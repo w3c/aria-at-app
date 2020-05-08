@@ -5,5 +5,7 @@
   roles:
     - permissions
     - database
+    - nodejs
+    - application
   vars_files:
     - vars/main.yml

@@ -14,7 +14,7 @@
     "prettier": "yarn workspaces run prettier",
     "lint": "yarn workspaces run lint",
     "test": "set -e; yarn prettier; yarn lint; yarn jest; yarn workspace client lighthouse",
-    "db-init:dev": "bash db/scripts/db_init.sh dev",
+    "db-init:dev": "bash db/scripts/db_init.sh config/dev.env",
     "db-migrate:dev": "bash db/scripts/db_migrate.sh config/dev.env",
     "db-import-tests:dev": "export $(cat config/dev.env | xargs); yarn workspace server import-tests",
     "storybook": "yarn workspaces run storybook"

@@ -1,15 +1,26 @@
 #!/bin/bash
 
-ENVIRONMENT=$1
+set -euo pipefail
 
-function create_dev_db() {
-    echo "Creating aria_at_report database..."
-    createdb aria_at_report && echo "Created!" || echo "Error creating database!"
-    psql -c "CREATE ROLE atr WITH LOGIN PASSWORD 'atr'" || echo "Error creating role"
-    psql -c "GRANT ALL PRIVILEGES ON DATABASE aria_at_report to atr;" || echo "Error granting privileges"
-}
+source $1
 
-if [ "$ENVIRONMENT" == "dev" ];
-then
-    create_dev_db
+result="$(psql -tAc "SELECT 1 FROM pg_database WHERE datname='${PGDATABASE}'")"
+
+if [ $result = '1' ]; then
+  echo "Database ${PGDATABASE} already exists."
+else
+  echo "Creating ${PGDATABASE} database..."
+
+  createdb ${PGDATABASE} && echo "Created!" || echo "Error creating database!"
+fi
+
+result="$(psql postgres -tAc "SELECT 1 FROM pg_roles WHERE rolname='${PGUSER}'")"
+
+if [ $result = '1' ]; then
+  echo "User ${PGUSER} already exists."
+else
+  echo "Creating ${PGUSER} user..."
+
+  psql -c "CREATE ROLE ${PGUSER} WITH LOGIN PASSWORD '${PGPASSWORD}'" || echo "Error creating role"
+  psql -c "GRANT ALL PRIVILEGES ON DATABASE ${PGDATABASE} to ${PGUSER};" || echo "Error granting privileges"
 fi

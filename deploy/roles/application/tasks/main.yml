@@ -1,0 +1,40 @@
+---
+- name: Install version control software
+  apt:
+    name: git
+    state: present
+
+- name: Define source code location
+  set_fact:
+    source_dir: /home/{{application_user}}/aria-at-report
+
+- name: Fetch application code
+  git:
+    repo: https://github.com/bocoup/aria-at-report.git
+    dest: '{{source_dir}}'
+    version: main
+  when: not is_development
+
+- name: Link application code
+  file:
+    dest: '{{source_dir}}'
+    src: /vagrant
+    state: link
+  when: is_development
+
+- name: Install Node.js dependencies
+  command: yarn install
+  args:
+    chdir: '{{source_dir}}'
+
+- name: Insert environment configuration file
+  copy:
+    dest: /home/{{application_user}}/config.env
+    src: files/config-staging.env.vault
+    owner: '{{application_user}}'
+  register: environment_config
+
+- name: Create database and database user
+  command: sudo -u postgres ./db/scripts/db_init.sh {{environment_config.dest}}
+  args:
+    chdir: '{{source_dir}}'

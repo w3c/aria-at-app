@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -euo pipefail
+
 ENV_FILE=$1
 
 source $ENV_FILE

@@ -1,0 +1,25 @@
+---
+- name: Add software repository keys
+  apt_key:
+    state: present
+    url: '{{item}}'
+  with_items:
+    - https://dl.yarnpkg.com/debian/pubkey.gpg
+    - https://deb.nodesource.com/gpgkey/nodesource.gpg.key
+
+- name: Addd software repositories
+  apt_repository:
+    state: present
+    repo: '{{item}}'
+    update_cache: True
+  with_items:
+    - deb https://dl.yarnpkg.com/debian/ stable main
+    - deb https://deb.nodesource.com/node_10.x buster main
+    - deb-src https://deb.nodesource.com/node_10.x buster main
+
+- name: Install packages
+  apt:
+    name:
+      - nodejs
+      - yarn
+    state: present
