@@ -31,7 +31,7 @@ class TestQueue extends Component {
     }
 
     renderAtBrowserList(runIds) {
-        const { userId, usersById, cycle } = this.props;
+        const { userId, usersById, cycle, testsForRuns } = this.props;
         const {
             at_name,
             at_version,
@@ -52,21 +52,25 @@ class TestQueue extends Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {runIds.map(runId => (
-                            <TestQueueRun
-                                key={runId}
-                                runId={runId}
-                                apgExampleName={
-                                    cycle.runsById[runId].apg_example_name
-                                }
-                                testers={cycle.runsById[runId].testers}
-                                cycleId={cycle.id}
-                                usersById={usersById}
-                                userId={userId}
-                                atName={at_name}
-                                browserName={browser_name}
-                            />
-                        ))}
+                        {runIds.map(runId => {
+                            let testsForRun = testsForRuns[runId].tests;
+                            return (
+                                <TestQueueRun
+                                    key={runId}
+                                    runId={runId}
+                                    apgExampleName={
+                                        cycle.runsById[runId].apg_example_name
+                                    }
+                                    testers={cycle.runsById[runId].testers}
+                                    cycleId={cycle.id}
+                                    usersById={usersById}
+                                    userId={userId}
+                                    atName={at_name}
+                                    browserName={browser_name}
+                                    testsForRun={testsForRun}
+                                />
+                            );
+                        })}
                     </tbody>
                 </Table>
             </div>
