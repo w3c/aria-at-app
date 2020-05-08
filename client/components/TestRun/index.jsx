@@ -23,6 +23,7 @@ class TestRun extends Component {
         this.displayNextTest = this.displayNextTest.bind(this);
         this.displayPreviousTest = this.displayPreviousTest.bind(this);
         this.saveResultFromTest = this.saveResultFromTest.bind(this);
+        this.deleteResultFromTest = this.deleteResultFromTest.bind(this);
     }
 
     async componentDidMount() {
@@ -75,6 +76,21 @@ class TestRun extends Component {
         return true;
     }
 
+    deleteResultFromTest() {
+        const { dispatch, cycleId, tests, run, userId } = this.props;
+        const test = tests[this.state.currentTestIndex - 1];
+        dispatch(
+            saveResult({
+                test_id: test.id,
+                run_id: run.id,
+                cycle_id: cycleId,
+                user_id: userId,
+                skip: true
+            })
+        );
+        return true;
+    }
+
     render() {
         const { run, tests, cycleId, testSuiteVersionData } = this.props;
 
@@ -100,8 +116,6 @@ class TestRun extends Component {
             testName = test.name;
             testsToRun = true;
         }
-
-        this.testHasResults = test.result ? true : false;
 
         let heading = null;
         let content = null;
@@ -129,6 +143,7 @@ class TestRun extends Component {
                         displayNextTest={this.displayNextTest}
                         displayPreviousTest={this.displayPreviousTest}
                         saveResultFromTest={this.saveResultFromTest}
+                        deleteResultFromTest={this.deleteResultFromTest}
                         cycleId={cycleId}
                     />
                 );

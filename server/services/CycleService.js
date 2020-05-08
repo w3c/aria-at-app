@@ -406,6 +406,42 @@ async function saveTestResults(testResult) {
             }
         }
 
+        // If result is empty, add a "skipped" entry
+        else {
+            statusId = (
+                await sequelize.query(`
+                 SELECT
+                   id
+                 FROM
+                   test_status
+                 WHERE
+                   test_status.name = 'skipped'
+            `)
+            )[0][0].id;
+
+            if (!testResultId) {
+                testResultId = (
+                    await sequelize.query(`
+                      INSERT INTO
+                        test_result(test_id, run_id, user_id, status_id)
+                      VALUES
+                        (${test_id}, ${run_id}, ${user_id}, ${statusId})
+                      RETURNING ID
+                     `)
+                )[0];
+            } else {
+                await sequelize.query(`
+                   UPDATE
+                     test_result
+                   SET
+                     result = NULL,
+                     status_id = ${statusId}
+                   WHERE
+                     id = ${testResultId}
+                `);
+            }
+        }
+
         let cycle_id = (
             await sequelize.query(`
              SELECT
@@ -418,7 +454,7 @@ async function saveTestResults(testResult) {
         )[0][0].cycle_id;
 
         testResult.id = testResultId;
-        testResult.status = 'complete';
+        testResult.status = result ? 'complete' : 'skipped';
         testResult.cycle_id = cycle_id;
 
         return testResult;

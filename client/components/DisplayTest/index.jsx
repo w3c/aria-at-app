@@ -22,9 +22,13 @@ class DisplayTest extends Component {
 
         this.buttonAction = '';
 
+        // Test run actions
         this.handleNextTestClick = this.handleNextTestClick.bind(this);
         this.handlePreviousTestClick = this.handlePreviousTestClick.bind(this);
         this.handleCloseRunClick = this.handleCloseRunClick.bind(this);
+        this.handleRedoClick = this.handleRedoClick.bind(this);
+
+        // Modal actions
         this.handleCloseLeaveTestModal = this.handleCloseLeaveTestModal.bind(
             this
         );
@@ -44,6 +48,19 @@ class DisplayTest extends Component {
             showConfirmLeaveTestModal: false
         });
         this.performButtonAction();
+    }
+
+    handleRedoClick() {
+        const { deleteResultFromTest } = this.props;
+
+        if (!this.testHasResult) {
+            document
+                .getElementById('test-iframe')
+                .contentWindow.location.reload();
+            return;
+        }
+
+        deleteResultFromTest();
     }
 
     performButtonAction() {
@@ -81,10 +98,10 @@ class DisplayTest extends Component {
     }
 
     trySaving() {
-        const { saveResultFromTest, test } = this.props;
+        const { saveResultFromTest } = this.props;
 
         // Only to to save if results don't exist
-        if (!test.result) {
+        if (!this.testHasResult) {
             let resultsEl = this.testIframe.current.contentDocument.querySelector(
                 '#__ariaatharness__results__'
             );
@@ -125,7 +142,7 @@ class DisplayTest extends Component {
                 <Modal.Header closeButton>
                     <Modal.Title>Leave Test</Modal.Title>
                 </Modal.Header>
-                <Modal.Body>{`Are you sure you want to leave this test? Because the test has not been completed in full, your progress on test ${testIndex} won't be saved.`}</Modal.Body>
+                <Modal.Body>{`Are you sure you want to leave this test? Because the test has not been completed in full, your progress on test ${testIndex} won't be saved. Click Review Results to complete test.`}</Modal.Body>
                 <Modal.Footer>
                     <Button
                         variant="secondary"
@@ -147,7 +164,8 @@ class DisplayTest extends Component {
     render() {
         const { test, git_hash, at_key, testIndex } = this.props;
 
-        const testHasResult = test.result ? true : false;
+        this.testHasResult =
+            test.result && test.result.status === 'complete' ? true : false;
 
         let testContent = null;
         let menuUnderContent = null;
@@ -174,15 +192,22 @@ class DisplayTest extends Component {
         );
         menuRightOContent = (
             <ButtonGroup vertical>
-                <Button variant="primary">Raise an issue</Button>
-                <Button variant="primary">Re-do Test</Button>
+                <Button
+                    href="https://github.com/w3c/aria-at/issues"
+                    variant="primary"
+                >
+                    Raise an issue
+                </Button>
+                <Button variant="primary" onClick={this.handleRedoClick}>
+                    Re-do Test
+                </Button>
                 <Button variant="primary" onClick={this.handleCloseRunClick}>
-                    {testHasResult ? 'Close' : 'Save and Close'}
+                    {this.testHasResult ? 'Close' : 'Save and Close'}
                 </Button>
             </ButtonGroup>
         );
 
-        if (testHasResult) {
+        if (this.testHasResult) {
             testContent = <TestResult testResult={test.result} />;
         } else {
             testContent = (
@@ -219,7 +244,8 @@ DisplayTest.propTypes = {
     history: PropTypes.object,
     displayNextTest: PropTypes.func,
     displayPreviousTest: PropTypes.func,
-    saveResultFromTest: PropTypes.func
+    saveResultFromTest: PropTypes.func,
+    deleteResultFromTest: PropTypes.func
 };
 
 export default withRouter(DisplayTest);
