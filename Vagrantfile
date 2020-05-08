@@ -14,6 +14,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.define 'vagrant'
 
   config.vm.provision 'ansible_local' do |ansible|
+    ansible.compatibility_mode = '2.0'
     ansible.provisioning_path = '/vagrant/deploy'
     ansible.playbook = 'provision.yml'
     ansible.inventory_path = 'inventory/vagrant.yml'
