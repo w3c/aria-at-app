@@ -147,7 +147,6 @@ class DisplayTest extends Component {
         if (this.state.buttonAction === 'goToNextTest') {
             modalTitle = 'Next Test';
             action = 'You are about to move to the next test.';
-
         }
         if (this.state.buttonAction === 'goToPreviousTest') {
             modalTitle = 'Previous Test';
@@ -165,7 +164,7 @@ class DisplayTest extends Component {
                     <Modal.Title>{modalTitle}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                  {`${action} Test ${testIndex} has not been completed in full and your progress on this test won’t be saved.`}
+                    {`${action} Test ${testIndex} has not been completed in full and your progress on this test won’t be saved.`}
                 </Modal.Body>
                 <Modal.Footer>
                     <Button
