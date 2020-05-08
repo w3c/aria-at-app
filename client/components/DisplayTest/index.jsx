@@ -17,10 +17,9 @@ class DisplayTest extends Component {
         super(props);
 
         this.state = {
-            showConfirmLeaveTestModal: false
+            showConfirmLeaveTestModal: false,
+            buttonAction: ''
         };
-
-        this.state.buttonAction = '';
 
         // Test run actions
         this.handleNextTestClick = this.handleNextTestClick.bind(this);
