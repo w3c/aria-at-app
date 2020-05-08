@@ -38,3 +38,13 @@
   command: sudo -u postgres ./db/scripts/db_init.sh {{environment_config.dest}}
   args:
     chdir: '{{source_dir}}'
+
+- name: Migrate database
+  command: ./db/scripts/db_migrate.sh {{environment_config.dest}}
+  args:
+    chdir: '{{source_dir}}'
+
+- name: Import tests into database
+  command: ./db/scripts/db_import_tests.sh {{environment_config.dest}}
+  args:
+    chdir: '{{source_dir}}'
