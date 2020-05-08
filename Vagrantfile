@@ -17,8 +17,5 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     ansible.provisioning_path = '/vagrant/deploy'
     ansible.playbook = 'provision.yml'
     ansible.inventory_path = 'inventory/vagrant.yml'
-    ansible.extra_vars = {
-      is_development: true
-    }
   end
 end

@@ -8,19 +8,18 @@
   set_fact:
     source_dir: /home/{{application_user}}/aria-at-report
 
-- name: Fetch application code
-  git:
-    repo: https://github.com/bocoup/aria-at-report.git
+- name: Upload project source code
+  synchronize:
+    src: '{{playbook_dir}}/..'
     dest: '{{source_dir}}'
-    version: main
-  when: not is_development
+  when: deployment_mode != 'development'
 
 - name: Link application code
   file:
     dest: '{{source_dir}}'
     src: /vagrant
     state: link
-  when: is_development
+  when: deployment_mode == 'development'
 
 - name: Install Node.js dependencies
   command: yarn install
@@ -30,7 +29,7 @@
 - name: Insert environment configuration file
   copy:
     dest: /home/{{application_user}}/config.env
-    src: files/config-staging.env.vault
+    src: files/config-{{deployment_mode}}.env
     owner: '{{application_user}}'
   register: environment_config
 
