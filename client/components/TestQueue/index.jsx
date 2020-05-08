@@ -31,17 +31,17 @@ class TestQueue extends Component {
     }
 
     renderAtBrowserList(runIds) {
-        const { userId, usersById, cycle } = this.props;
+        const { userId, usersById, cycle, testsForRuns } = this.props;
         const {
-            at_name,
-            at_version,
-            browser_name,
-            browser_version
+            at_name: atName,
+            at_version: atVersion,
+            browser_name: browserName,
+            browser_version: browserVersion
         } = cycle.runsById[runIds[0]];
 
         return (
-            <div key={`${at_name}${browser_name}`}>
-                <h3>{`${at_name} ${at_version} with ${browser_name} ${browser_version}`}</h3>
+            <div key={`${atName}${browserName}`}>
+                <h3>{`${atName} ${atVersion} with ${browserName} ${browserVersion}`}</h3>
                 <Table striped bordered hover>
                     <thead>
                         <tr>
@@ -52,21 +52,26 @@ class TestQueue extends Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {runIds.map(runId => (
-                            <TestQueueRun
-                                key={runId}
-                                runId={runId}
-                                apgExampleName={
-                                    cycle.runsById[runId].apg_example_name
-                                }
-                                testers={cycle.runsById[runId].testers}
-                                cycleId={cycle.id}
-                                usersById={usersById}
-                                userId={userId}
-                                atName={at_name}
-                                browserName={browser_name}
-                            />
-                        ))}
+                        {runIds.map(runId => {
+                            const {
+                                apg_example_name: apgExampleName,
+                                testers,
+                            } = cycle.runsById[runId];
+                            return (
+                                <TestQueueRun
+                                    key={runId}
+                                    runId={runId}
+                                    apgExampleName={apgExampleName}
+                                    testers={testers}
+                                    cycleId={cycle.id}
+                                    usersById={usersById}
+                                    userId={userId}
+                                    atName={atName}
+                                    browserName={browserName}
+                                    testsForRun={testsForRuns[runId].tests}
+                                />
+                            );
+                        })}
                     </tbody>
                 </Table>
             </div>

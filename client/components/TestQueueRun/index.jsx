@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import nextId from 'react-id-generator';
 import { Button } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
@@ -31,13 +32,10 @@ class TestQueueRow extends Component {
             testers,
             apgExampleName,
             atName,
-            browserName
+            browserName,
+            testsForRun
         } = this.props;
         let currentUserAssigned = testers.includes(userId);
-
-        let userNames = testers.map(uid => {
-            return usersById[uid].fullname;
-        });
 
         let designPatternLinkOrName;
         if (currentUserAssigned) {
@@ -72,11 +70,34 @@ class TestQueueRow extends Component {
             );
         }
 
+        let totalTests = testsForRun.length;
+        let testsCompleted = testsForRun.filter(
+            t => t.result && t.result.status === 'complete'
+        ).length;
+
+        let userInfo = testers
+            .filter(uid => uid !== userId)
+            .map(uid => (
+                <div key={nextId()}>{`${usersById[uid].fullname} 0/${totalTests} complete`}</div>
+            ));
+        if (currentUserAssigned) {
+            userInfo.unshift(
+                <div key={nextId()}>{`${usersById[userId].fullname} ${testsCompleted}/${totalTests} complete `}</div>
+            );
+        }
+
+        let status = 'Not started';
+        if (currentUserAssigned && testsCompleted > 0) {
+            status = 'In Progress';
+        }
+
         return (
             <tr key={runId}>
                 <td>{designPatternLinkOrName}</td>
-                <td>{userNames.join(', ')}</td>
-                <td>status</td>
+                <td>
+                    {userInfo.length !== 0 ? userInfo : 'No testers assigned'}
+                </td>
+                <td>{status}</td>
                 <td>{assignOrUnassignButton}</td>
             </tr>
         );
@@ -92,7 +113,8 @@ TestQueueRow.propTypes = {
     userId: PropTypes.number,
     atName: PropTypes.string,
     browserName: PropTypes.string,
-    dispatch: PropTypes.func
+    dispatch: PropTypes.func,
+    testsForRun: PropTypes.array
 };
 
 export default connect()(TestQueueRow);
