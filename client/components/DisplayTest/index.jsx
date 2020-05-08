@@ -53,7 +53,7 @@ class DisplayTest extends Component {
     handleRedoClick() {
         const { deleteResultFromTest, test } = this.props;
 
-        if (!test.result || test.result.status !== 'complete') {
+        if (!this.testHasResult) {
             document
                 .getElementById('test-iframe')
                 .contentWindow.location.reload();
@@ -101,7 +101,7 @@ class DisplayTest extends Component {
         const { saveResultFromTest, test } = this.props;
 
         // Only to to save if results don't exist
-        if (!test.result || test.result.status !== 'complete') {
+        if (!this.testHasResult) {
             let resultsEl = this.testIframe.current.contentDocument.querySelector(
                 '#__ariaatharness__results__'
             );
@@ -164,7 +164,7 @@ class DisplayTest extends Component {
     render() {
         const { test, git_hash, at_key, testIndex } = this.props;
 
-        const testHasResult =
+        this.testHasResult =
             test.result && test.result.status === 'complete' ? true : false;
 
         let testContent = null;
@@ -202,12 +202,12 @@ class DisplayTest extends Component {
                     Re-do Test
                 </Button>
                 <Button variant="primary" onClick={this.handleCloseRunClick}>
-                    {testHasResult ? 'Close' : 'Save and Close'}
+                    {this.testHasResult ? 'Close' : 'Save and Close'}
                 </Button>
             </ButtonGroup>
         );
 
-        if (testHasResult) {
+        if (this.testHasResult) {
             testContent = <TestResult testResult={test.result} />;
         } else {
             testContent = (
