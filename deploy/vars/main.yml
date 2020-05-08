@@ -1,0 +1,5 @@
+---
+application_user: aria-bot
+application_group: aria-group
+# This value is overridden in the project's Vagrantfile
+is_development: false

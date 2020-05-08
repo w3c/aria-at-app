@@ -1,0 +1,36 @@
+---
+- name: Install PostgreSQL
+  apt:
+    name:
+      - postgresql
+      - postgresql-contrib
+
+- name: Download Flyway
+  get_url:
+    url: https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/6.4.1/flyway-commandline-6.4.1-linux-x64.tar.gz
+    checksum: md5:f2553075b96f2114e1a170d8765f4437
+    dest: /root/flyway-6.4.1.tar.gz
+  register: download_flyway
+
+- name: Define fact
+  set_fact:
+    flyway_root: /opt/{{download_flyway.dest | basename | regex_replace('\.tar\.gz$', '')}}
+
+- name: Extract Flyway
+  unarchive:
+    src: '{{download_flyway.dest}}'
+    dest: /opt
+    creates: '{{flyway_root}}'
+    remote_src: True
+
+- name: Allow execution
+  file:
+    state: file
+    mode: 0755
+    dest: '{{flyway_root}}/flyway'
+
+- name: Install Flyway
+  file:
+    state: link
+    dest: /usr/local/bin/flyway
+    src: '{{flyway_root}}/flyway'

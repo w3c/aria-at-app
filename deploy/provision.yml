@@ -1,0 +1,9 @@
+---
+- hosts: all
+  become: yes
+  become_method: sudo
+  roles:
+    - permissions
+    - database
+  vars_files:
+    - vars/main.yml

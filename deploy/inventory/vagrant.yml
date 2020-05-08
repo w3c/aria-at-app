@@ -1,0 +1,7 @@
+---
+all:
+  hosts:
+    vagrant:
+  vars:
+    ansible_connection: local
+    fqdn: localhost
