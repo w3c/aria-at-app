@@ -106,10 +106,7 @@ class DisplayTest extends Component {
                 throw error;
             }
 
-            saveResultFromTest({
-                test_id: test.id,
-                result
-            });
+            saveResultFromTest(result);
         }
 
         // Save was successful
