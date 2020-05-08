@@ -20,7 +20,7 @@ class DisplayTest extends Component {
             showConfirmLeaveTestModal: false
         };
 
-        this.buttonAction = '';
+        this.state.buttonAction = '';
 
         // Test run actions
         this.handleNextTestClick = this.handleNextTestClick.bind(this);
@@ -70,30 +70,35 @@ class DisplayTest extends Component {
             displayNextTest,
             displayPreviousTest
         } = this.props;
-        if (this.buttonAction === 'exitAfterConfirm') {
+        if (this.state.buttonAction === 'exitAfterConfirm') {
             history.push(`/test-queue/${cycleId}`);
         }
-        if (this.buttonAction === 'goToNextTest') {
+        if (this.state.buttonAction === 'goToNextTest') {
             displayNextTest();
         }
-        if (this.buttonAction === 'goToPreviousTest') {
+        if (this.state.buttonAction === 'goToPreviousTest') {
             displayPreviousTest();
         }
-        this.buttonAction = '';
     }
 
     handleNextTestClick() {
-        this.buttonAction = 'goToNextTest';
+        this.setState({
+            buttonAction: 'goToNextTest'
+        });
         this.trySaving();
     }
 
     handlePreviousTestClick() {
-        this.buttonAction = 'goToPreviousTest';
+        this.setState({
+            buttonAction: 'goToPreviousTest'
+        });
         this.trySaving();
     }
 
     handleCloseRunClick() {
-        this.buttonAction = 'exitAfterConfirm';
+        this.setState({
+            buttonAction: 'exitAfterConfirm'
+        });
         this.trySaving();
     }
 
@@ -132,6 +137,23 @@ class DisplayTest extends Component {
 
     renderModal() {
         let { testIndex } = this.props;
+
+        let modalTitle, action;
+
+        if (this.state.buttonAction === 'exitAfterConfirm') {
+            modalTitle = 'Save and Close';
+            action = 'You are about to leave this test run.';
+        }
+        if (this.state.buttonAction === 'goToNextTest') {
+            modalTitle = 'Next Test';
+            action = 'You are about to move to the next test.';
+
+        }
+        if (this.state.buttonAction === 'goToPreviousTest') {
+            modalTitle = 'Previous Test';
+            action = 'You are about to move to the previous test.';
+        }
+
         return (
             <Modal
                 show={this.state.showConfirmLeaveTestModal}
@@ -140,9 +162,11 @@ class DisplayTest extends Component {
                 animation={false}
             >
                 <Modal.Header closeButton>
-                    <Modal.Title>Leave Test</Modal.Title>
+                    <Modal.Title>{modalTitle}</Modal.Title>
                 </Modal.Header>
-                <Modal.Body>{`Are you sure you want to leave this test? Because the test has not been completed in full, your progress on test ${testIndex} won't be saved. Click Review Results to complete test.`}</Modal.Body>
+                <Modal.Body>
+                  {`${action} Test ${testIndex} has not been completed in full and your progress on this test won’t be saved.`}
+                </Modal.Body>
                 <Modal.Footer>
                     <Button
                         variant="secondary"
