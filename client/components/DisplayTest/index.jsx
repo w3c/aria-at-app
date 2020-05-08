@@ -116,33 +116,31 @@ class DisplayTest extends Component {
     renderModal() {
         let { testIndex } = this.props;
         return (
-            <Fragment>
-                <Modal
-                    show={this.state.showConfirmLeaveTestModal}
-                    onHide={this.handleCloseLeaveTestModal}
-                    centered
-                    animation={false}
-                >
-                    <Modal.Header closeButton>
-                        <Modal.Title>Leave Test</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>{`Are you sure you want to leave this test? Because the test has not been completed in full, your progress on test ${testIndex} won't be saved.`}</Modal.Body>
-                    <Modal.Footer>
-                        <Button
-                            variant="secondary"
-                            onClick={this.handleCloseLeaveTestModal}
-                        >
-                            Cancel
-                        </Button>
-                        <Button
-                            variant="secondary"
-                            onClick={this.handleConfirmLeaveTest}
-                        >
-                            Continue
-                        </Button>
-                    </Modal.Footer>
-                </Modal>
-            </Fragment>
+            <Modal
+                show={this.state.showConfirmLeaveTestModal}
+                onHide={this.handleCloseLeaveTestModal}
+                centered
+                animation={false}
+            >
+                <Modal.Header closeButton>
+                    <Modal.Title>Leave Test</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>{`Are you sure you want to leave this test? Because the test has not been completed in full, your progress on test ${testIndex} won't be saved.`}</Modal.Body>
+                <Modal.Footer>
+                    <Button
+                        variant="secondary"
+                        onClick={this.handleCloseLeaveTestModal}
+                    >
+                        Cancel
+                    </Button>
+                    <Button
+                        variant="secondary"
+                        onClick={this.handleConfirmLeaveTest}
+                    >
+                        Continue
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         );
     }
 
