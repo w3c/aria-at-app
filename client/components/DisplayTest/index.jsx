@@ -51,7 +51,7 @@ class DisplayTest extends Component {
     }
 
     handleRedoClick() {
-        const { deleteResultFromTest, test } = this.props;
+        const { deleteResultFromTest } = this.props;
 
         if (!this.testHasResult) {
             document
@@ -98,7 +98,7 @@ class DisplayTest extends Component {
     }
 
     trySaving() {
-        const { saveResultFromTest, test } = this.props;
+        const { saveResultFromTest } = this.props;
 
         // Only to to save if results don't exist
         if (!this.testHasResult) {
