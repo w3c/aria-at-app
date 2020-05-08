@@ -17,7 +17,7 @@ class DisplayTest extends Component {
         super(props);
 
         this.state = {
-            showConfirmLeaveTestModal: false,
+            showConfirmModal: false,
             buttonAction: ''
         };
 
@@ -28,38 +28,30 @@ class DisplayTest extends Component {
         this.handleRedoClick = this.handleRedoClick.bind(this);
 
         // Modal actions
-        this.handleCloseLeaveTestModal = this.handleCloseLeaveTestModal.bind(
-            this
-        );
-        this.handleConfirmLeaveTest = this.handleConfirmLeaveTest.bind(this);
+        this.handleModalCloseClick = this.handleModalCloseClick.bind(this);
+        this.handleModalConfirmClick = this.handleModalConfirmClick.bind(this);
 
         this.testIframe = React.createRef();
     }
 
-    handleCloseLeaveTestModal() {
+    handleModalCloseClick() {
         this.setState({
-            showConfirmLeaveTestModal: false
+            showConfirmModal: false
         });
     }
 
-    handleConfirmLeaveTest() {
+    handleModalConfirmClick() {
         this.setState({
-            showConfirmLeaveTestModal: false
+            showConfirmModal: false
         });
         this.performButtonAction();
     }
 
     handleRedoClick() {
-        const { deleteResultFromTest } = this.props;
-
-        if (!this.testHasResult) {
-            document
-                .getElementById('test-iframe')
-                .contentWindow.location.reload();
-            return;
-        }
-
-        deleteResultFromTest();
+        this.setState({
+            buttonAction: 'redoTest',
+            showConfirmModal: true
+        });
     }
 
     performButtonAction() {
@@ -67,7 +59,8 @@ class DisplayTest extends Component {
             cycleId,
             history,
             displayNextTest,
-            displayPreviousTest
+            displayPreviousTest,
+            deleteResultFromTest
         } = this.props;
         if (this.state.buttonAction === 'exitAfterConfirm') {
             history.push(`/test-queue/${cycleId}`);
@@ -77,6 +70,15 @@ class DisplayTest extends Component {
         }
         if (this.state.buttonAction === 'goToPreviousTest') {
             displayPreviousTest();
+        }
+        if (this.state.buttonAction === 'redoTest') {
+            if (!this.testHasResult) {
+                document
+                    .getElementById('test-iframe')
+                    .contentWindow.location.reload();
+                return;
+            }
+            deleteResultFromTest();
         }
     }
 
@@ -112,7 +114,7 @@ class DisplayTest extends Component {
 
             if (!resultsEl) {
                 this.setState({
-                    showConfirmLeaveTestModal: true
+                    showConfirmModal: true
                 });
                 return;
             }
@@ -138,43 +140,46 @@ class DisplayTest extends Component {
         let { testIndex } = this.props;
 
         let modalTitle, action;
+        let cannotSave = `Test ${testIndex} has not been completed in full and your progress on this test won’t be saved.`;
 
         if (this.state.buttonAction === 'exitAfterConfirm') {
             modalTitle = 'Save and Close';
-            action = 'You are about to leave this test run.';
+            action = `You are about to leave this test run. ${cannotSave}`;
         }
         if (this.state.buttonAction === 'goToNextTest') {
             modalTitle = 'Next Test';
-            action = 'You are about to move to the next test.';
+            action = `You are about to move to the next test. ${cannotSave}`;
         }
         if (this.state.buttonAction === 'goToPreviousTest') {
             modalTitle = 'Previous Test';
-            action = 'You are about to move to the previous test.';
+            action = `You are about to move to the previous test. ${cannotSave}`;
+        }
+        if (this.state.buttonAction === 'redoTest') {
+            modalTitle = 'Re-Do';
+            action = `Are you sure you want to re-do test ${testIndex}. Your progress (if any) will be lost.`;
         }
 
         return (
             <Modal
-                show={this.state.showConfirmLeaveTestModal}
-                onHide={this.handleCloseLeaveTestModal}
+                show={this.state.showConfirmModal}
+                onHide={this.handleModalCloseClick}
                 centered
                 animation={false}
             >
                 <Modal.Header closeButton>
                     <Modal.Title>{modalTitle}</Modal.Title>
                 </Modal.Header>
-                <Modal.Body>
-                    {`${action} Test ${testIndex} has not been completed in full and your progress on this test won’t be saved.`}
-                </Modal.Body>
+                <Modal.Body>{action}</Modal.Body>
                 <Modal.Footer>
                     <Button
                         variant="secondary"
-                        onClick={this.handleCloseLeaveTestModal}
+                        onClick={this.handleModalCloseClick}
                     >
                         Cancel
                     </Button>
                     <Button
                         variant="secondary"
-                        onClick={this.handleConfirmLeaveTest}
+                        onClick={this.handleModalConfirmClick}
                     >
                         Continue
                     </Button>
