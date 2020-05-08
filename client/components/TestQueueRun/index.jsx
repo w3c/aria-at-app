@@ -78,11 +78,15 @@ class TestQueueRow extends Component {
         let userInfo = testers
             .filter(uid => uid !== userId)
             .map(uid => (
-                <div key={nextId()}>{`${usersById[uid].fullname} 0/${totalTests} complete`}</div>
+                <div
+                    key={nextId()}
+                >{`${usersById[uid].fullname} 0/${totalTests} complete`}</div>
             ));
         if (currentUserAssigned) {
             userInfo.unshift(
-                <div key={nextId()}>{`${usersById[userId].fullname} ${testsCompleted}/${totalTests} complete `}</div>
+                <div
+                    key={nextId()}
+                >{`${usersById[userId].fullname} ${testsCompleted}/${totalTests} complete `}</div>
             );
         }
 

@@ -55,7 +55,7 @@ class TestQueue extends Component {
                         {runIds.map(runId => {
                             const {
                                 apg_example_name: apgExampleName,
-                                testers,
+                                testers
                             } = cycle.runsById[runId];
                             return (
                                 <TestQueueRun
