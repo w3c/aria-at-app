@@ -293,7 +293,7 @@ async function getUserAndUpdateRoles(options) {
 
     let newRoleList = [];
     for (let role in rolesMap) {
-        let userHasRole = dbUser.roles.includes(role);
+        let userHasRole = dbUser && dbUser.roles.includes(role);
         let userInTeam = githubUserRoles.includes(role);
 
         // User has role and is in the correct team
