@@ -32,4 +32,13 @@ configuration files. Those unfamiliar with Ansible may contact the project
 maintainers for more detailed instructions. Note that the resulting virtual
 machine will not have all the capabilities of the production system.
 
+## Deployment
 
+To deploy this project to a the "staging" server:
+
+1. Obtain a copy of the `ansible-vault-password.txt` file and place it in the
+   directory which contains this document
+2. Install [Ansible](https://www.ansible.com/)
+3. Execute the following command:
+
+       ansible-playbook provision.yml --inventory inventory/staging.yml
