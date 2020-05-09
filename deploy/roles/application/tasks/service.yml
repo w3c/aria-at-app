@@ -1,0 +1,25 @@
+---
+# Create a service that starts and keeps the Node.js server running
+- name: Configure logging
+  become: yes
+  copy:
+    src: aria-at-report-journal.conf
+    dest: /etc/systemd/journald.conf.d
+  notify:
+    - Restart journald daemon
+
+- name: Define a service to build and run production site
+  become: yes
+  template:
+    src: templates/aria-at-report.service.j2
+    dest: /etc/systemd/system/aria-at-report.service
+  notify:
+    - Reload systemd daemon
+
+- name: Enable system service
+  become: yes
+  systemd:
+    name: aria-at-report
+    enabled: true
+  notify:
+    - Restart server

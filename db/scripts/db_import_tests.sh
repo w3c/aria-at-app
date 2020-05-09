@@ -8,4 +8,4 @@ cd "${BASH_SOURCE%/*}/"
 
 cd ../../server
 
-node ./scripts/import-tests/index.js
+node ./scripts/import-tests/index.js "${@:2}"

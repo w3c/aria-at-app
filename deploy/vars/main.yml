@@ -3,3 +3,5 @@ application_user: aria-bot
 application_group: aria-group
 # This value is overridden in the project's Vagrantfile
 is_development: false
+
+aria_at_test_revision: ff1ed8a347dfc5ca7be47fa8620cfac681af0439

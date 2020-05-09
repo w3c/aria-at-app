@@ -9,14 +9,13 @@
     "dev": "export $(cat config/dev.env | xargs); npm-run-all --parallel dev:*",
     "dev:client": "yarn workspace client run dev",
     "dev:server": "yarn workspace server run dev",
-    "staging": "export $(cat config/dev.env | xargs); DOTENV_CONFIG_PATH=./config/server/dev.env node -r dotenv/config index.js",
     "jest": "yarn workspaces run jest",
     "prettier": "yarn workspaces run prettier",
     "lint": "yarn workspaces run lint",
     "test": "set -e; yarn prettier; yarn lint; yarn jest; yarn workspace client lighthouse",
     "db-init:dev": "bash db/scripts/db_init.sh config/dev.env",
     "db-migrate:dev": "bash db/scripts/db_migrate.sh config/dev.env",
-    "db-import-tests:dev": "bash db/scripts/db_import_tests.sh config/dev.env",
+    "db-import-tests:dev": "export $(cat config/dev.env | xargs); yarn workspace server import-tests",
     "storybook": "yarn workspaces run storybook"
   },
   "repository": {
