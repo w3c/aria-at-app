@@ -15,6 +15,7 @@
     dest: /etc/systemd/system/aria-at-report.service
   notify:
     - Reload systemd daemon
+    - Restart server
 
 - name: Enable system service
   become: yes

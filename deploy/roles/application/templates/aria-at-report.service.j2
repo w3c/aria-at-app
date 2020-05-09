@@ -7,7 +7,7 @@ After=network.target
 Type=simple
 Environment=DOTENV_CONFIG_PATH={{environment_config.dest}}
 WorkingDirectory={{source_dir}}
-ExecStart=/usr/bin/node -r dotenv/config index.js
+ExecStart=/usr/bin/authbind /usr/bin/node -r dotenv/config index.js
 Restart=always
 User={{application_user}}
 
