@@ -1,6 +1,9 @@
 const create = require('../../tests/util/create');
 const users = require('../../tests/mock-data/users.json');
+
+const getUserAndUpdateRoles = jest.fn().mockImplementation((options) => options);
 const UsersService = {
+    getUserAndUpdateRoles,
     addUser: create,
     addUserToRole: create,
     signupUser(options) {
@@ -8,9 +11,6 @@ const UsersService = {
         return { fullname, email, username };
     },
     getUser(options) {
-        return options;
-    },
-    getUserAndUpdateRoles(options) {
         return options;
     },
     getAllTesters() {

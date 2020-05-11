@@ -1,7 +1,14 @@
 const UsersController = require('../../controllers/UsersController');
 const AuthController = require('../../controllers/AuthController');
 const ATController = require('../../controllers/ATController');
+const UsersService = require('../../services/UsersService');
 const httpMocks = require('node-mocks-http');
+
+
+const newUser = require('../mock-data/newUser.json');
+const newUserToRole = require('../mock-data/newUserToRole.json');
+const listOfATNames = require('../mock-data/listOfATs.json');
+jest.mock('../../services/UsersService');
 
 let req, res, next;
 beforeEach(() => {
@@ -10,11 +17,10 @@ beforeEach(() => {
     res = httpMocks.createResponse();
     next = null;
 });
+afterEach(() => {
+    UsersService.getUserAndUpdateRoles.mockClear();
+});
 
-const newUser = require('../mock-data/newUser.json');
-const newUserToRole = require('../mock-data/newUserToRole.json');
-const listOfATNames = require('../mock-data/listOfATs.json');
-jest.mock('../../services/UsersService');
 describe('UsersController', () => {
     describe('UsersController.addUser', () => {
         beforeEach(() => {
@@ -87,7 +93,7 @@ describe('AuthController', () => {
         it('should have an authorize function', () => {
             expect(typeof AuthController.authorize).toBe('function');
         });
-        it('should return 303 response code to signup instructions when there is no authorize type', async () => {
+        it('should return 303 response code to sign up instructions when there is no authorize type', async () => {
             await AuthController.authorize(req, res, next);
             expect(res.statusCode).toBe(303);
             expect(res._isEndCalled()).toBeTruthy();
@@ -95,12 +101,17 @@ describe('AuthController', () => {
                 'localhost:5000/signupInstructions'
             );
         });
-        it('should return 303 response code to referer on signup auth type', async () => {
+        it('should return 303 response code to referer on sign up auth type', async () => {
             req.session['authType'] = 'signup';
             await AuthController.authorize(req, res, next);
             expect(res.statusCode).toBe(303);
             expect(res._isEndCalled()).toBeTruthy();
             expect(res._getRedirectUrl()).toBe('localhost:5000');
+        });
+        it('should provide a user with updated roles assigned on sign up', async () => {
+            req.session['authType'] = 'signup';
+            await AuthController.authorize(req, res, next);
+            expect(UsersService.getUserAndUpdateRoles.mock.results.length).toBe(1);
         });
         it('should return 303 response code to referer on login auth type', async () => {
             req.session['authType'] = 'login';
@@ -108,6 +119,11 @@ describe('AuthController', () => {
             expect(res.statusCode).toBe(303);
             expect(res._isEndCalled()).toBeTruthy();
             expect(res._getRedirectUrl()).toBe('localhost:5000');
+        });
+        it('should provide a user with updated roles assigned on log in', async () => {
+            req.session['authType'] = 'signup';
+            await AuthController.authorize(req, res, next);
+            expect(UsersService.getUserAndUpdateRoles.mock.results.length).toBe(1);
         });
     });
     describe('AuthController.currentUser', () => {

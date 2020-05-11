@@ -1,4 +1,5 @@
 const services = require('../services');
+const { GithubService, UsersService } = services;
 const SIGN_UP = 'signup';
 const LOGIN = 'login';
 
@@ -21,7 +22,7 @@ module.exports = {
         const { service, referer, type } = req.query;
         const authService =
             services[`${capitalizeServiceString(service)}Service`] ||
-            services.GithubService;
+            GithubService;
         req.session.referer = referer;
         req.session.authType = type;
         const loginURL = authService.url;
@@ -33,7 +34,7 @@ module.exports = {
         const { service, code } = req.query;
         const authService =
             services[`${capitalizeServiceString(service)}Service`] ||
-            services.GithubService;
+            GithubService;
 
         req.session.accessToken = await authService.authorize(code);
 
@@ -48,32 +49,35 @@ module.exports = {
             return;
         }
         let authorized = false;
-        if (req.session.authType === SIGN_UP) {
-            const userSaved = await services.UsersService.signupUser({
-                accessToken: req.session.accessToken,
-                user: userToAuthorize
-            });
-            if (userSaved) {
-                authorized = true;
-                userToAuthorize = userSaved;
-            }
-        } else if (req.session.authType === LOGIN) {
-            const { name: fullname, username, email } = userToAuthorize;
+        if (
+            req.session.authType === SIGN_UP ||
+            req.session.authType === LOGIN
+        ) {
+            let user;
 
-            const dbUser = await services.UsersService.getUserAndUpdateRoles({
-                accessToken: req.session.accessToken,
-                user: {
+            if (req.session.authType === SIGN_UP) {
+                user = await UsersService.signupUser({
+                    accessToken: req.session.accessToken,
+                    user: userToAuthorize
+                });
+            } else {
+                const { name: fullname, username, email } = userToAuthorize;
+                user = {
                     fullname,
                     username,
                     email
-                }
-            });
-            if (dbUser) {
+                };
+            }
+
+            if (user) {
                 authorized = true;
-                userToAuthorize = dbUser;
+                userToAuthorize = await UsersService.getUserAndUpdateRoles({
+                    accessToken: req.session.accessToken,
+                    user
+                });
             }
         }
-        if (authorized) {
+        if (authorized && userToAuthorize) {
             req.session.user = userToAuthorize;
             res.redirect(303, `${req.session.referer}`);
             res.end(() => {
