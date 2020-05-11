@@ -1,16 +1,15 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import './TestRun.css';
 import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
+import { Col, Container, Row } from 'react-bootstrap';
 import {
     getTestCycles,
     getRunsForUserAndCycle,
     getTestSuiteVersions,
     saveResult
 } from '../../actions/cycles';
+import DisplayTest from '@components/DisplayTest';
 
 class TestRun extends Component {
     constructor(props) {
@@ -18,26 +17,13 @@ class TestRun extends Component {
 
         this.state = {
             currentTestIndex: 1,
-            runComplete: false,
-            showCantSaveResultModal: false,
-            showConfirmSkipModal: false
+            runComplete: false
         };
 
-        this.handleSkipTestClick = this.handleSkipTestClick.bind(this);
-        this.handleNextTestClick = this.handleNextTestClick.bind(this);
-        this.handleSaveResultClick = this.handleSaveResultClick.bind(this);
-
-        this.handleCantSaveResultModalClose = this.handleCantSaveResultModalClose.bind(
-            this
-        );
-        this.handleConfirmSkipModalClose = this.handleConfirmSkipModalClose.bind(
-            this
-        );
-        this.handleConfirmSkipModalContinue = this.handleConfirmSkipModalContinue.bind(
-            this
-        );
-
-        this.testIframe = React.createRef();
+        this.displayNextTest = this.displayNextTest.bind(this);
+        this.displayPreviousTest = this.displayPreviousTest.bind(this);
+        this.saveResultFromTest = this.saveResultFromTest.bind(this);
+        this.deleteResultFromTest = this.deleteResultFromTest.bind(this);
     }
 
     async componentDidMount() {
@@ -51,65 +37,32 @@ class TestRun extends Component {
         }
     }
 
-    handleCantSaveResultModalClose() {
-        this.setState({
-            showCantSaveResultModal: false
-        });
-    }
-
-    handleConfirmSkipModalClose() {
-        this.setState({
-            showConfirmSkipModal: false
-        });
-    }
-
-    handleConfirmSkipModalContinue() {
+    displayNextTest() {
+        const { tests } = this.props;
         this.setState(prevState => {
-            return {
-                ...this.nextTestState(prevState),
-                showConfirmSkipModal: false
-            };
+            let currentTestIndex = prevState.currentTestIndex + 1;
+            if (currentTestIndex <= tests.length) {
+                return {
+                    ...prevState,
+                    currentTestIndex
+                };
+            } else {
+                return {
+                    ...prevState,
+                    runComplete: true
+                };
+            }
         });
     }
 
-    handleSkipTestClick() {
+    displayPreviousTest() {
         this.setState({
-            showConfirmSkipModal: true
+            currentTestIndex: this.state.currentTestIndex - 1
         });
     }
 
-    handleNextTestClick() {
-        this.setState(prevState => {
-            return {
-                ...this.nextTestState(prevState)
-            };
-        });
-    }
-
-    handleSaveResultClick({ exit }) {
-        const { dispatch, cycleId, tests, run, userId, history } = this.props;
-
-        let resultsEl = this.testIframe.current.contentDocument.querySelector(
-            '#__ariaatharness__results__'
-        );
-
-        if (!resultsEl) {
-            this.setState({
-                showCantSaveResultModal: true
-            });
-            return;
-        }
-
-        let result;
-        try {
-            result = JSON.parse(resultsEl.innerText);
-        } catch (error) {
-            console.error(
-                'Cannot save tests do to malformed information from test file.'
-            );
-            throw error;
-        }
-
+    saveResultFromTest(result) {
+        const { dispatch, cycleId, tests, run, userId } = this.props;
         const test = tests[this.state.currentTestIndex - 1];
         dispatch(
             saveResult({
@@ -120,93 +73,26 @@ class TestRun extends Component {
                 result
             })
         );
-
-        if (exit) {
-            history.push(`/test-queue/${cycleId}`);
-        } else {
-            this.setState(prevState => {
-                return {
-                    ...this.nextTestState(prevState),
-                    showConfirmSkipModal: false
-                };
-            });
-        }
+        return true;
     }
 
-    nextTestState(prevState) {
-        const { tests } = this.props;
-        let currentTestIndex = prevState.currentTestIndex + 1;
-        if (currentTestIndex <= tests.length) {
-            return {
-                ...prevState,
-                currentTestIndex
-            };
-        } else {
-            return {
-                ...prevState,
-                runComplete: true
-            };
-        }
-    }
-
-    renderModals() {
-        return (
-            <React.Fragment>
-                <Modal
-                    show={this.state.showCantSaveResultModal}
-                    onHide={this.handleCantSaveResultModalClose}
-                    centered
-                    animation={false}
-                >
-                    <Modal.Header closeButton>
-                        <Modal.Title>Cannot Save Results</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        Test is not complete, we cannot save incomplete and
-                        unreviewd tests. Please fill in the entire tests and
-                        click the button <b>review results</b>, then you can
-                        save.
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button
-                            variant="secondary"
-                            onClick={this.handleCantSaveResultModalClose}
-                        >
-                            Close
-                        </Button>
-                    </Modal.Footer>
-                </Modal>
-                <Modal
-                    show={this.state.showConfirmSkipModal}
-                    onHide={this.handleConfirmSkipModalClose}
-                    centered
-                    animation={false}
-                >
-                    <Modal.Header closeButton>
-                        <Modal.Title>Skip to Next Tests</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>{`Are you sure you want to continue? Your progress on test ${this.state.currentTestIndex} won't be saved.`}</Modal.Body>
-                    <Modal.Footer>
-                        <Button
-                            variant="secondary"
-                            onClick={this.handleConfirmSkipModalClose}
-                        >
-                            Cancel
-                        </Button>
-                        <Button
-                            variant="secondary"
-                            onClick={this.handleConfirmSkipModalContinue}
-                        >
-                            Continue
-                        </Button>
-                    </Modal.Footer>
-                </Modal>
-            </React.Fragment>
+    deleteResultFromTest() {
+        const { dispatch, cycleId, tests, run, userId } = this.props;
+        const test = tests[this.state.currentTestIndex - 1];
+        dispatch(
+            saveResult({
+                test_id: test.id,
+                run_id: run.id,
+                cycle_id: cycleId,
+                user_id: userId,
+                skip: true
+            })
         );
+        return true;
     }
 
     render() {
-        const { run, tests, testSuiteVersionData } = this.props;
+        const { run, tests, cycleId, testSuiteVersionData } = this.props;
 
         if (!run || !tests || !testSuiteVersionData) {
             return <div data-test="test-run-loading">Loading</div>;
@@ -231,105 +117,62 @@ class TestRun extends Component {
             testsToRun = true;
         }
 
-        let heading, content;
+        let heading = null;
+        let content = null;
+        let testContent = null;
 
         if (testsToRun) {
             heading = (
-                <React.Fragment>
+                <Fragment>
                     <h2 data-test="test-run-h2">
                         {' '}
                         {`${apg_example_name} (${this.state.currentTestIndex} of ${tests.length})`}
                     </h2>
                     <h3 data-test="test-run-h3">{`${at_name} ${at_version} with ${browser_name} ${browser_version}`}</h3>
                     <h4 data-test="test-run-h4">Testing task: {testName}</h4>
-                </React.Fragment>
+                </Fragment>
             );
+
             if (!this.state.runComplete) {
-                if (!test.result) {
-                    content = (
-                        <React.Fragment>
-                            <iframe
-                                src={`/aria-at/${git_hash}/${
-                                    tests[this.state.currentTestIndex - 1].file
-                                }?at=${at_key}`}
-                                id="test-iframe"
-                                ref={this.testIframe}
-                            ></iframe>
-                            <Button variant="primary">Previous Test</Button>
-                            <Button
-                                variant="primary"
-                                onClick={() =>
-                                    this.handleSaveResultClick({ exit: true })
-                                }
-                            >
-                                Save results and exit
-                            </Button>
-                            <Button
-                                variant="primary"
-                                onClick={() =>
-                                    this.handleSaveResultClick({ exit: false })
-                                }
-                            >
-                                Save results and go to next test
-                            </Button>
-                            <Button variant="primary">Raise an issue</Button>
-                            <Button variant="primary">Re-do Test</Button>
-                            <Button
-                                variant="primary"
-                                onClick={this.handleSkipTestClick}
-                            >
-                                Skip to next test
-                            </Button>
-                        </React.Fragment>
-                    );
-                } else {
-                    content = (
-                        <React.Fragment>
-                            <div>
-                                RESULTS EXIST!!!!!! TODO: Make a view of the
-                                existng tests
-                            </div>
-                            <Button
-                                variant="primary"
-                                onClick={this.handleNextTestClick}
-                            >
-                                Go to next test
-                            </Button>
-                        </React.Fragment>
-                    );
-                }
-            } else {
-                content = (
-                    <React.Fragment>
-                        <div>Tests are complete.</div>
-                    </React.Fragment>
+                testContent = (
+                    <DisplayTest
+                        test={test}
+                        testIndex={this.state.currentTestIndex}
+                        git_hash={git_hash}
+                        at_key={at_key}
+                        displayNextTest={this.displayNextTest}
+                        displayPreviousTest={this.displayPreviousTest}
+                        saveResultFromTest={this.saveResultFromTest}
+                        deleteResultFromTest={this.deleteResultFromTest}
+                        cycleId={cycleId}
+                    />
                 );
+            } else {
+                content = <div>Tests are complete.</div>;
             }
         } else {
             heading = (
-                <React.Fragment>
+                <Fragment>
                     <h2>{`${apg_example_name}`}</h2>
                     <h3>{`${at_name} ${at_version} with ${browser_name} ${browser_version}`}</h3>
-                </React.Fragment>
+                </Fragment>
             );
-            content = (
-                <React.Fragment>
-                    <div>No tests for this browser / AT combination</div>
-                </React.Fragment>
-            );
+            content = <div>No tests for this browser / AT combination</div>;
         }
 
-        let modals = this.renderModals();
-
         return (
-            <React.Fragment>
+            <Fragment>
                 <Helmet>
                     <title>{`Testing ${apg_example_name} for ${at_name} ${at_version} with ${browser_name} ${browser_version} | ARIA-AT`}</title>
                 </Helmet>
-                {heading}
-                {content}
-                {modals}
-            </React.Fragment>
+                <Container fluid>
+                    <Row>
+                        <Col>{heading}</Col>
+                    </Row>
+
+                    <Row>{testContent || <Col>{content}</Col>}</Row>
+                </Container>
+            </Fragment>
         );
     }
 }
@@ -340,8 +183,7 @@ TestRun.propTypes = {
     userId: PropTypes.number,
     tests: PropTypes.array,
     run: PropTypes.object,
-    testSuiteVersionData: PropTypes.object,
-    history: PropTypes.object
+    testSuiteVersionData: PropTypes.object
 };
 
 const mapStateToProps = (state, ownProps) => {
