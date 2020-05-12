@@ -1,0 +1,7 @@
+---
+all:
+  hosts:
+    ara.w3.org:
+      ansible_user: root
+  vars:
+    deployment_mode: staging

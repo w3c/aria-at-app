@@ -4,11 +4,10 @@
   "description": "Server for ARIA-AT report",
   "main": "index.js",
   "scripts": {
-    "dev": "DOTENV_CONFIG_PATH=../config/server/dev.env nodemon -r dotenv/config server.js --watch",
+    "dev": "DOTENV_CONFIG_PATH=../config/dev.env nodemon -r dotenv/config server.js --watch",
     "jest": "jest",
     "prettier": "prettier --write \"**/*.{js,jsx,css}\"",
-    "lint": "eslint --ext js,jsx .",
-    "import-tests": "node ./scripts/import-tests/index.js"
+    "lint": "eslint --ext js,jsx ."
   },
   "repository": {
     "type": "git",

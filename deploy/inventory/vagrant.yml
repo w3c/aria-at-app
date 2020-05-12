@@ -1,0 +1,8 @@
+---
+all:
+  hosts:
+    vagrant:
+  vars:
+    ansible_become: yes
+    deployment_mode: development
+    ansible_connection: local

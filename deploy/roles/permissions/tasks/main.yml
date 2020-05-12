@@ -1,0 +1,20 @@
+---
+- name: Disallow password authentication
+  lineinfile: dest=/etc/ssh/sshd_config
+              regexp="^PasswordAuthentication"
+              line="PasswordAuthentication no"
+              state=present
+  notify: Restart ssh
+
+- name: Create group
+  group:
+    name: '{{application_group}}'
+    state: present
+    system: true
+
+- name: Create user account
+  user:
+    name: '{{application_user}}'
+    state: present
+    system: true
+    shell: /bin/bash

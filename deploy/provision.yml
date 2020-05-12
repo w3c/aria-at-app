@@ -1,0 +1,10 @@
+---
+- hosts: all
+  become_method: sudo
+  roles:
+    - permissions
+    - database
+    - nodejs
+    - application
+  vars_files:
+    - vars/main.yml

@@ -1,0 +1,78 @@
+---
+- name: Install version control software
+  apt:
+    name: git
+    state: present
+
+- name: Define source code location
+  set_fact:
+    source_dir: /home/{{application_user}}/aria-at-report
+
+- name: Upload project source code
+  synchronize:
+    src: '{{playbook_dir}}/..'
+    dest: '{{source_dir}}'
+  when: deployment_mode != 'development'
+
+- name: Link application code
+  file:
+    dest: '{{source_dir}}'
+    src: /vagrant
+    state: link
+  when: deployment_mode == 'development'
+
+- name: Install Node.js dependencies
+  command: yarn install
+  args:
+    chdir: '{{source_dir}}'
+
+- name: Insert environment configuration file
+  copy:
+    dest: /home/{{application_user}}/config.env
+    src: files/config-{{deployment_mode}}.env
+    owner: '{{application_user}}'
+  register: environment_config
+
+- name: Create database and database user
+  command: sudo -u postgres ./db/scripts/db_init.sh {{environment_config.dest}}
+  args:
+    chdir: '{{source_dir}}'
+
+- name: Migrate database
+  command: ./db/scripts/db_migrate.sh {{environment_config.dest}}
+  args:
+    chdir: '{{source_dir}}'
+
+- name: Import tests into database
+  command: ./deploy/scripts/export-and-exec.sh {{environment_config.dest}} node ./server/scripts/import-tests/index.js -c {{aria_at_test_revision}}
+  args:
+    chdir: '{{source_dir}}'
+
+- name: Build front end package
+  command: ./deploy/scripts/export-and-exec.sh {{environment_config.dest}} yarn workspace client build
+  args:
+    chdir: '{{source_dir}}'
+
+- name: Create directory to store aria-at repository
+  file:
+    path: '{{source_dir}}/../aria-at-report'
+    state: directory
+
+- name: Clone the aria-at repository
+  git:
+    repo: https://github.com/w3c/aria-at.git
+    version: '{{aria_at_test_revision}}'
+    dest: '{{source_dir}}/../aria-at-tests/{{aria_at_test_revision}}'
+
+- name: Install authbind
+  apt:
+    name: authbind
+
+# https://superuser.com/questions/710253/allow-non-root-process-to-bind-to-port-80-and-443#892391
+- name: Allow non-root process to bind to port 80
+  file:
+    path: /etc/authbind/byport/80
+    state: touch
+    mode: '0777'
+
+- include: service.yml

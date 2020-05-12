@@ -1,9 +1,0 @@
-{
-    "dev": {
-        "driver": "pg",
-        "user": "atr",
-        "password": "atr",
-        "host": "localhost",
-        "database": "aria_at_report"
-    }
-}
