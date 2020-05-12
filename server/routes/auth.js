@@ -3,7 +3,7 @@ const {
     oauth,
     authorize,
     currentUser,
-    logout
+    signout
 } = require('../controllers/AuthController');
 
 const router = Router();
@@ -11,6 +11,6 @@ const router = Router();
 router.get('/oauth', oauth);
 router.get('/authorize', authorize);
 router.get('/me', currentUser);
-router.post('/logout', logout);
+router.post('/signout', signout);
 
 module.exports = router;

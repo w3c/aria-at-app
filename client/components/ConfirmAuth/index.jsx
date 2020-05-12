@@ -9,7 +9,7 @@ const ConfirmAuth = ({
     roles,
     requiredPermission,
     loadedUserData,
-    isLoggedIn,
+    isSignedIn,
     ...rest
 }) => {
     if (!loadedUserData) {
@@ -20,7 +20,7 @@ const ConfirmAuth = ({
     if (!AuthConfirmed) {
         // If you are an admin, you can all other roles by default
         AuthConfirmed =
-            isLoggedIn &&
+            isSignedIn &&
             (roles.includes(requiredPermission) || roles.includes('admin'));
     }
 
@@ -39,8 +39,8 @@ const ConfirmAuth = ({
 };
 
 function mapStateToProps(state) {
-    const { isLoggedIn, username, roles, loadedUserData } = state.login;
-    return { isLoggedIn, username, roles, loadedUserData };
+    const { isSignedIn, username, roles, loadedUserData } = state.user;
+    return { isSignedIn, username, roles, loadedUserData };
 }
 
 ConfirmAuth.propTypes = {
@@ -49,7 +49,7 @@ ConfirmAuth.propTypes = {
         PropTypes.node
     ]).isRequired,
     isAuthorized: PropTypes.bool,
-    isLoggedIn: PropTypes.bool,
+    isSignedIn: PropTypes.bool,
     loadedUserData: PropTypes.bool,
     roles: PropTypes.array,
     requiredPermission: PropTypes.string

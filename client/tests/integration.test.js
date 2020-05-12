@@ -1,10 +1,10 @@
 import { storeFactory } from './util';
-import { handleCheckLoggedIn, handleLogout } from '../actions/login';
+import { handleCheckSignedIn, handleSignout } from '../actions/user';
 import { handleGetValidAts } from '../actions/ats';
 import { handleSetUserAts, getAllUsers } from '../actions/users';
 import moxios from 'moxios';
 
-describe('login actions dispatchers', () => {
+describe('sign in actions dispatchers', () => {
     beforeEach(() => {
         moxios.install();
     });
@@ -13,11 +13,11 @@ describe('login actions dispatchers', () => {
         moxios.uninstall();
     });
 
-    test('updates state correctly on login', async () => {
+    test('updates state correctly on sign in', async () => {
         const store = storeFactory();
         const expectedState = {
-            login: {
-                isLoggedIn: true,
+            user: {
+                isSignedIn: true,
                 loadedUserData: true,
                 username: 'foobar',
                 name: 'Foo Bar',
@@ -41,14 +41,14 @@ describe('login actions dispatchers', () => {
             request.respondWith({
                 status: 200,
                 response: {
-                    username: expectedState.login.username,
-                    name: expectedState.login.name,
-                    email: expectedState.login.email
+                    username: expectedState.user.username,
+                    name: expectedState.user.name,
+                    email: expectedState.user.email
                 }
             });
         });
 
-        await store.dispatch(handleCheckLoggedIn());
+        await store.dispatch(handleCheckSignedIn());
         const newState = store.getState();
         expect(newState).toEqual(expectedState);
     });
@@ -56,8 +56,8 @@ describe('login actions dispatchers', () => {
     test('updates state correctly on logout', async () => {
         const store = storeFactory();
         const expectedState = {
-            login: {
-                isLoggedIn: false,
+            user: {
+                isSignedIn: false,
                 loadedUserData: false
             },
             cycles: {
@@ -78,7 +78,7 @@ describe('login actions dispatchers', () => {
             });
         });
 
-        await store.dispatch(handleLogout());
+        await store.dispatch(handleSignout());
         const newState = store.getState();
         expect(newState).toEqual(expectedState);
     });
@@ -95,8 +95,8 @@ describe('ats action dispatchers', () => {
     test('updates state correctly on get ATS', async () => {
         const store = storeFactory();
         const expectedState = {
-            login: {
-                isLoggedIn: false,
+            user: {
+                isSignedIn: false,
                 loadedUserData: false
             },
             cycles: {
@@ -132,8 +132,8 @@ describe('users action dispatchers', () => {
     let expectedState;
     beforeEach(() => {
         expectedState = {
-            login: {
-                isLoggedIn: false,
+            user: {
+                isSignedIn: false,
                 loadedUserData: false
             },
             cycles: {

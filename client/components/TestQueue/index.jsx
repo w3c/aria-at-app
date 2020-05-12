@@ -145,7 +145,7 @@ TestQueue.propTypes = {
 const mapStateToProps = (state, ownProps) => {
     const { cyclesById, runsForCycle } = state.cycles;
     const { usersById } = state.users;
-    const userId = state.login.id;
+    const userId = state.user.id;
     const cycleId = parseInt(ownProps.match.params.cycleId);
 
     let cycle = cyclesById[cycleId];

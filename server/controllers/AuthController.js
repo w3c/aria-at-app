@@ -1,7 +1,6 @@
 const services = require('../services');
 const { GithubService, UsersService } = services;
-const SIGN_UP = 'signup';
-const LOGIN = 'login';
+const OAUTH = 'oauth';
 
 const capitalizeServiceString = service =>
     `${service.charAt(0).toUpperCase()}${service.slice(1)}`;
@@ -17,58 +16,60 @@ function destroySession(req, res) {
     });
 }
 
+function resolveService(service) {
+    return (
+        services[`${capitalizeServiceString(service)}Service`] || GithubService
+    );
+}
+
 module.exports = {
     async oauth(req, res) {
-        const { service, referer, type } = req.query;
-        const authService =
-            services[`${capitalizeServiceString(service)}Service`] ||
-            GithubService;
+        const { service, referer } = req.query;
+        const authService = resolveService(service);
         req.session.referer = referer;
-        req.session.authType = type;
-        const loginURL = authService.url;
-        res.redirect(303, loginURL);
+        req.session.authType = OAUTH;
+        res.redirect(303, authService.url);
         res.end();
     },
 
     async authorize(req, res) {
         const { service, code } = req.query;
-        const authService =
-            services[`${capitalizeServiceString(service)}Service`] ||
-            GithubService;
+        const authService = resolveService(service);
 
         req.session.accessToken = await authService.authorize(code);
 
         let userToAuthorize;
+        let authorizationError;
         try {
             userToAuthorize = await authService.getUser({
                 accessToken: req.session.accessToken
             });
         } catch (error) {
-            res.status(401);
-            res.end();
-            return;
+            authorizationError = error;
         }
         let authorized = false;
-        if (
-            req.session.authType === SIGN_UP ||
-            req.session.authType === LOGIN
-        ) {
+        if (req.session.authType === OAUTH) {
             let user;
 
-            if (req.session.authType === SIGN_UP) {
+            // If this is a known user that we can authorize...
+            if (userToAuthorize) {
+                const { name: fullname, username, email } = userToAuthorize;
+                user = await UsersService.getUser({
+                    fullname,
+                    username,
+                    email
+                });
+            }
+
+            // ...otherwise, add them as a new user.
+            if (!user) {
                 user = await UsersService.signupUser({
                     accessToken: req.session.accessToken,
                     user: userToAuthorize
                 });
-            } else {
-                const { name: fullname, username, email } = userToAuthorize;
-                user = {
-                    fullname,
-                    username,
-                    email
-                };
             }
 
+            // Assuming we now have a user, assign updated roles
             if (user) {
                 authorized = true;
                 userToAuthorize = await UsersService.getUserAndUpdateRoles({
@@ -85,8 +86,13 @@ module.exports = {
                 delete req.session.authType;
             });
         } else {
-            res.redirect(303, `${req.session.referer}/signupInstructions`);
-            res.end(() => destroySession(req, res));
+            if (authorizationError) {
+                res.status(401);
+                res.end();
+            } else {
+                res.redirect(303, `${req.session.referer}/signupInstructions`);
+                res.end(() => destroySession(req, res));
+            }
         }
     },
 
@@ -100,7 +106,7 @@ module.exports = {
         res.end();
     },
 
-    logout(req, res) {
+    signout(req, res) {
         destroySession(req, res);
     }
 };

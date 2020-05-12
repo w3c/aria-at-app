@@ -5,6 +5,6 @@ const AuthController = require('../../controllers/AuthController');
 router.get('/oauth', (req, res) => res.redirect(303, 'localhost:5000'));
 router.get('/authorize', (req, res) => res.redirect(303, 'localhost:5000'));
 router.get('/me', AuthController.currentUser);
-router.post('/logout', AuthController.logout);
+router.post('/signout', AuthController.signout);
 
 module.exports = router;

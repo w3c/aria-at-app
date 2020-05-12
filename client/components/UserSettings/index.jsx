@@ -83,9 +83,9 @@ class UserSettings extends Component {
     }
 
     render() {
-        const { ats, isLoggedIn, username, email, loadedUserData } = this.props;
+        const { ats, isSignedIn, username, email, loadedUserData } = this.props;
         const contents =
-            loadedUserData && isLoggedIn ? (
+            loadedUserData && isSignedIn ? (
                 <Row data-test="user-settings-authorized">
                     <Col>
                         <h2>USER DETAILS</h2>
@@ -132,7 +132,7 @@ class UserSettings extends Component {
 }
 
 UserSettings.propTypes = {
-    isLoggedIn: PropTypes.bool,
+    isSignedIn: PropTypes.bool,
     loadedUserData: PropTypes.bool,
     fullname: PropTypes.string,
     username: PropTypes.string,
@@ -146,12 +146,12 @@ UserSettings.propTypes = {
 const mapStateToProps = state => {
     const {
         loadedUserData,
-        isLoggedIn,
+        isSignedIn,
         username,
         fullname,
         email,
         id
-    } = state.login;
+    } = state.user;
     const { usersById } = state.users;
 
     let currentUserAts = [];
@@ -160,7 +160,7 @@ const mapStateToProps = state => {
     }
 
     return {
-        isLoggedIn,
+        isSignedIn,
         loadedUserData,
         username,
         fullname,

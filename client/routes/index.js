@@ -6,10 +6,8 @@ import CycleSummary from '@components/CycleSummary';
 import ConfirmAuth from '@components/ConfirmAuth';
 import Home from '@components/Home';
 import InitiateCycle from '@components/InitiateCycle';
-import Login from '@components/Login';
 import ManageCycles from '@components/ManageCycles';
 import NotFound from '@components/NotFound';
-import Signup from '@components/Signup';
 import SignupInstructions from '@components/SignupInstructions';
 import TesterHome from '@components/TesterHome';
 import TestQueue from '@components/TestQueue';
@@ -24,17 +22,6 @@ export default [
                 path: '/',
                 exact: true,
                 component: Home
-            },
-            {
-                path: '/login',
-                exact: true,
-                component: Login,
-                githubClientId: process.env.GITHUB_CLIENT_ID
-            },
-            {
-                path: '/signup',
-                exact: true,
-                component: Signup
             },
             {
                 path: '/signupInstructions',

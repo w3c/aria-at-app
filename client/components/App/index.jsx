@@ -5,7 +5,7 @@ import { renderRoutes } from 'react-router-config';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { Container, Navbar, Nav } from 'react-bootstrap';
-import { handleCheckLoggedIn, handleLogout } from '../../actions/login';
+import { handleCheckSignedIn, handleSignout } from '../../actions/user';
 import { getAllUsers } from '../../actions/users';
 import { handleGetValidAts } from '../../actions/ats';
 
@@ -13,23 +13,37 @@ class App extends Component {
     constructor(props) {
         super(props);
 
-        this.logout = this.logout.bind(this);
+        this.signOut = this.signOut.bind(this);
+        this.state = {
+            ready: false
+        };
     }
-    componentDidMount() {
+    async componentDidMount() {
         const { dispatch } = this.props;
 
-        dispatch(handleCheckLoggedIn());
-        dispatch(handleGetValidAts());
-        dispatch(getAllUsers());
+        await dispatch(handleCheckSignedIn());
+        await dispatch(handleGetValidAts());
+        await dispatch(getAllUsers());
+
+        this.setState({ ready: true });
     }
 
-    logout() {
+    async signOut() {
         const { dispatch } = this.props;
-        dispatch(handleLogout());
+        await dispatch(handleSignout());
+        // Avoid the flash of "logged in user" after
+        // pressing "log out"
+        location.href = '/';
     }
 
     render() {
-        const { route, isLoggedIn, isAdmin, isTester } = this.props;
+        const { ready } = this.state;
+        // This is used to prevent the flash of "unauthorized user"
+        if (!ready) {
+            return null;
+        }
+        const { route, isSignedIn, isAdmin, isTester } = this.props;
+        const signInURL = `${process.env.API_SERVER}/api/auth/oauth?referer=${location.origin}&service=github`;
         return (
             <Fragment>
                 <Container fluid>
@@ -42,15 +56,16 @@ class App extends Component {
                             id="basic-navbar-nav"
                             className="justify-content-end"
                         >
-                            {(!isLoggedIn && (
-                                <React.Fragment>
-                                    <Nav.Link as={Link} to="/login">
-                                        Login
-                                    </Nav.Link>
-                                    <Nav.Link as={Link} to="/signup">
-                                        Sign Up
-                                    </Nav.Link>
-                                </React.Fragment>
+                            {(!isSignedIn && (
+                                <Nav.Link
+                                    as={Link}
+                                    to="/"
+                                    onClick={() =>
+                                        (window.location.href = signInURL)
+                                    }
+                                >
+                                    Sign in with GitHub
+                                </Nav.Link>
                             )) || (
                                 <React.Fragment>
                                     {isAdmin && (
@@ -69,9 +84,9 @@ class App extends Component {
                                     <Nav.Link
                                         as={Link}
                                         to="/"
-                                        onClick={this.logout}
+                                        onClick={this.signOut}
                                     >
-                                        Logout
+                                        Sign out
                                     </Nav.Link>
                                 </React.Fragment>
                             )}
@@ -88,7 +103,7 @@ class App extends Component {
 
 App.propTypes = {
     dispatch: PropTypes.func,
-    isLoggedIn: PropTypes.bool,
+    isSignedIn: PropTypes.bool,
     isAdmin: PropTypes.bool,
     isTester: PropTypes.bool,
     location: PropTypes.object,
@@ -96,10 +111,10 @@ App.propTypes = {
 };
 
 const mapStateToProps = state => {
-    const { isLoggedIn, roles } = state.login;
+    const { isSignedIn, roles } = state.user;
     let isAdmin = roles ? roles.includes('admin') : false;
     let isTester = isAdmin || (roles && roles.includes('tester'));
-    return { isLoggedIn, isAdmin, isTester };
+    return { isSignedIn, isAdmin, isTester };
 };
 
 export default connect(mapStateToProps)(App);

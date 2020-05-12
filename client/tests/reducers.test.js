@@ -1,43 +1,43 @@
-import { CHECK_LOGGED_IN, LOG_OUT, ATS, SET_USER_ATS } from '../actions/types';
-import loginReducer from '../reducers/login';
+import { CHECK_SIGNED_IN, SIGN_OUT, ATS, SET_USER_ATS } from '../actions/types';
 import atsReducer from '../reducers/ats';
+import userReducer from '../reducers/user';
 import usersReducer from '../reducers/users';
 
-describe('login reducer tests', () => {
+describe('user reducer tests', () => {
     test('returns default initial state when no action is passed', () => {
-        const newState = loginReducer(undefined, {});
-        expect(newState).toEqual({ isLoggedIn: false, loadedUserData: false });
+        const newState = userReducer(undefined, {});
+        expect(newState).toEqual({ isSignedIn: false, loadedUserData: false });
     });
     test('returns object upon receiving an action of type `LOG_IN`', () => {
         const apiPayload = {
             username: 'foo',
             name: 'Foo Bar'
         };
-        const newState = loginReducer(undefined, {
-            type: CHECK_LOGGED_IN,
+        const newState = userReducer(undefined, {
+            type: CHECK_SIGNED_IN,
             payload: apiPayload
         });
         expect(newState).toEqual({
-            isLoggedIn: true,
+            isSignedIn: true,
             loadedUserData: true,
             ...apiPayload
         });
     });
-    test('returns object without username and name and isLoggedIn false with `LOG_OUT` type', () => {
+    test('returns object without username and name and isSignedIn false with `SIGN_OUT` type', () => {
         const apiPayload = {
             username: 'foo',
             name: 'Foo Bar'
         };
-        const loggedInState = loginReducer(undefined, {
-            type: CHECK_LOGGED_IN,
+        const loggedInState = userReducer(undefined, {
+            type: CHECK_SIGNED_IN,
             payload: apiPayload
         });
 
-        const newState = loginReducer(loggedInState, {
-            type: LOG_OUT
+        const newState = userReducer(loggedInState, {
+            type: SIGN_OUT
         });
 
-        expect(newState).toEqual({ isLoggedIn: false, loadedUserData: true });
+        expect(newState).toEqual({ isSignedIn: false, loadedUserData: true });
     });
 });
 
