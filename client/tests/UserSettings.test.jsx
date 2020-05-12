@@ -15,10 +15,10 @@ const setup = (initialState = {}) => {
 };
 
 describe('render', () => {
-    describe('user is not logged in', () => {
+    describe('user is not signed in', () => {
         let wrapper;
         beforeEach(() => {
-            const initialState = { login: { isLoggedIn: false } };
+            const initialState = { user: { isSignedIn: false } };
             wrapper = setup(initialState);
         });
         test('renders component without error', () => {
@@ -28,7 +28,7 @@ describe('render', () => {
             );
             expect(component.length).toBe(1);
         });
-        test('renders not logged in text', () => {
+        test('renders not signed in text', () => {
             const component = findByTestAttr(
                 wrapper,
                 'user-settings-unauthorized'
@@ -36,12 +36,12 @@ describe('render', () => {
             expect(component.length).toBe(1);
         });
     });
-    describe('user is logged in', () => {
+    describe('user is signed in', () => {
         let wrapper;
         beforeEach(() => {
             const initialState = {
-                login: {
-                    isLoggedIn: true,
+                user: {
+                    isSignedIn: true,
                     loadedUserData: true,
                     username: 'foobar',
                     name: 'Foo Bar'

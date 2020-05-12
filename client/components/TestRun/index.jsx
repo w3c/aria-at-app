@@ -189,7 +189,7 @@ TestRun.propTypes = {
 const mapStateToProps = (state, ownProps) => {
     const { cyclesById, runsForCycle, testSuiteVersions } = state.cycles;
     const { usersById } = state.users;
-    const userId = state.login.id;
+    const userId = state.user.id;
     const cycleId = parseInt(ownProps.match.params.cycleId);
     const runId = parseInt(ownProps.match.params.runId);
 

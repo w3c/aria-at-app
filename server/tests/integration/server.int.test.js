@@ -46,7 +46,7 @@ describe('session middleware tests', () => {
         expect(session).toHaveBeenCalledTimes(1);
     });
 
-    describe('login with session', () => {
+    describe('sign in with session', () => {
         it(`GET ${authEndpoint}/me unauthorized`, async () => {
             session.mockImplementation((req, res, next) => {
                 req.session = {};
@@ -65,8 +65,8 @@ describe('session middleware tests', () => {
             expect(response.status).toBe(200);
         });
     });
-    describe('logout with existing session', () => {
-        it(`POST ${authEndpoint}/logout`, async () => {
+    describe('sign out with existing session', () => {
+        it(`POST ${authEndpoint}/signout`, async () => {
             session.mockImplementation((req, res, next) => {
                 req.session = {
                     destroy(cb) {
@@ -75,7 +75,7 @@ describe('session middleware tests', () => {
                 };
                 next();
             });
-            const response = await agent.post('/auth/logout');
+            const response = await agent.post('/auth/signout');
             expect(response.status).toBe(200);
         });
     });
