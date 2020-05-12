@@ -14,9 +14,6 @@ class App extends Component {
         super(props);
 
         this.signOut = this.signOut.bind(this);
-        this.state = {
-            ready: false
-        };
     }
     async componentDidMount() {
         const { dispatch } = this.props;
@@ -24,8 +21,6 @@ class App extends Component {
         await dispatch(handleCheckSignedIn());
         await dispatch(handleGetValidAts());
         await dispatch(getAllUsers());
-
-        this.setState({ ready: true });
     }
 
     async signOut() {
@@ -37,9 +32,9 @@ class App extends Component {
     }
 
     render() {
-        const { ready } = this.state;
+        const { loadedUserData } = this.props;
         // This is used to prevent the flash of "unauthorized user"
-        if (!ready) {
+        if (!loadedUserData) {
             return null;
         }
         const { route, isSignedIn, isAdmin, isTester } = this.props;
@@ -111,10 +106,10 @@ App.propTypes = {
 };
 
 const mapStateToProps = state => {
-    const { isSignedIn, roles } = state.user;
+    const { isSignedIn, loadedUserData, roles } = state.user;
     let isAdmin = roles ? roles.includes('admin') : false;
     let isTester = isAdmin || (roles && roles.includes('tester'));
-    return { isSignedIn, isAdmin, isTester };
+    return { isSignedIn, isAdmin, isTester, loadedUserData };
 };
 
 export default connect(mapStateToProps)(App);
