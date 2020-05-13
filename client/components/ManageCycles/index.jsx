@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import { Button, Table } from 'react-bootstrap';
 import ManageCycleRow from '@components/ManageCycleRow';
 import { getTestCycles } from '../../actions/cycles';
+import nextId from 'react-id-generator';
 
 class ManageCycles extends Component {
     componentDidMount() {
@@ -18,6 +19,8 @@ class ManageCycles extends Component {
     render() {
         const { cyclesById } = this.props;
 
+        let tableId = `table_name_${nextId()}`;
+
         return (
             <Fragment>
                 <Helmet>
@@ -27,8 +30,8 @@ class ManageCycles extends Component {
                 <Button as={Link} to="/cycles/new">
                     Initiate
                 </Button>
-                <h2>Test Cycle Status</h2>
-                <Table striped bordered hover>
+                <h2 id={tableId}>Test Cycle Status</h2>
+                <Table aria-labelledby={tableId} striped bordered hover>
                     <thead>
                         <tr>
                             <th>Test Cycle</th>

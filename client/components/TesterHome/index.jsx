@@ -5,6 +5,7 @@ import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
 import { Button, Table } from 'react-bootstrap';
 import { getTestCycles } from '../../actions/cycles';
+import nextId from 'react-id-generator';
 
 class TesterHome extends Component {
     componentDidMount() {
@@ -16,13 +17,16 @@ class TesterHome extends Component {
 
     render() {
         const { cyclesById } = this.props;
+
+        let tableId = `table_name_${nextId()}`;
+
         return (
             <Fragment>
                 <Helmet>
                     <title>Test Queue (for all cycles) | ARIA-AT</title>
                 </Helmet>
-                <h2>Test Cycles</h2>
-                <Table striped bordered hover>
+                <h2 id={tableId}>Test Cycles</h2>
+                <Table aria-labelledby={tableId} striped bordered hover>
                     <thead>
                         <tr>
                             <th>Test Cycle</th>

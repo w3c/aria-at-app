@@ -5,6 +5,7 @@ import { Helmet } from 'react-helmet';
 import { connect } from 'react-redux';
 import { getTestCycles, getRunsForUserAndCycle } from '../../actions/cycles';
 import { getAllUsers } from '../../actions/users';
+import nextId from 'react-id-generator';
 
 import TestQueueRun from '@components/TestQueueRun';
 
@@ -39,10 +40,12 @@ class TestQueue extends Component {
             browser_version: browserVersion
         } = cycle.runsById[runIds[0]];
 
+        let tableId = `table_name_${nextId()}`;
+
         return (
             <div key={`${atName}${browserName}`}>
-                <h3>{`${atName} ${atVersion} with ${browserName} ${browserVersion}`}</h3>
-                <Table striped bordered hover>
+                <h3 id={tableId}>{`${atName} ${atVersion} with ${browserName} ${browserVersion}`}</h3>
+                <Table aria-labelledby={tableId} striped bordered hover>
                     <thead>
                         <tr>
                             <th>Test Plan</th>
