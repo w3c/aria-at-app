@@ -44,7 +44,7 @@
     chdir: '{{source_dir}}'
 
 - name: Import tests into database
-  command: DOTENV_CONFIG_PATH={{environment_config.dest}} node -r dotenv/config ./scripts/import-tests/index.js -c {{aria_at_test_revision}}
+  command: ./deploy/scripts/export-and-exec.sh {{environment_config.dest}} node ./server/scripts/import-tests/index.js -c {{aria_at_test_revision}}
   args:
     chdir: '{{source_dir}}'
 
