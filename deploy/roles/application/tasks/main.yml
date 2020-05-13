@@ -12,6 +12,8 @@
   synchronize:
     src: '{{playbook_dir}}/..'
     dest: '{{source_dir}}'
+    rsync_opts:
+      - "--filter=':- .gitignore'"
   when: deployment_mode != 'development'
 
 - name: Link application code
