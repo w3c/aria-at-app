@@ -1,6 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const Dotenv = require('dotenv-webpack');
 
 module.exports = {
     entry: ['babel-polyfill', './index.js'],
@@ -64,6 +65,7 @@ module.exports = {
         }
     },
     plugins: [
+        new Dotenv({ path: '../config/dev.env' }),
         new CopyWebpackPlugin([
             {
                 from: 'static'
