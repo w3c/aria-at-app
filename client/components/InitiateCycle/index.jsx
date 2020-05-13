@@ -57,7 +57,7 @@ class InitiateCycle extends Component {
     }
 
     initiateCycle() {
-        const { dispatch, testSuiteVersions, history } = this.props;
+        const { dispatch, testSuiteVersions, history, user } = this.props;
         let versionData = testSuiteVersions.filter(
             version => version.id === this.state.selectedVersion
         )[0];
@@ -65,7 +65,7 @@ class InitiateCycle extends Component {
         let cycle = {
             name: this.state.name,
             test_version_id: this.state.selectedVersion,
-            created_user_id: 1
+            created_user_id: user.id
         };
 
         // Do not allow saving of cycle without a name. Put focus on name field
@@ -349,14 +349,15 @@ InitiateCycle.propTypes = {
     testSuiteVersions: PropTypes.array,
     dispatch: PropTypes.func,
     history: PropTypes.object,
-    usersById: PropTypes.object
+    usersById: PropTypes.object,
+    user: PropTypes.object
 };
 
 const mapStateToProps = state => {
     const { testSuiteVersions } = state.cycles;
     const { usersById } = state.users;
-
-    return { testSuiteVersions, usersById };
+    const { user } = state;
+    return { testSuiteVersions, usersById, user };
 };
 
 export default connect(mapStateToProps)(InitiateCycle);
