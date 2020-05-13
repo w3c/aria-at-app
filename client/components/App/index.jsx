@@ -64,7 +64,7 @@ class App extends Component {
             return null;
         }
 
-        const { route, isSignedIn, isAdmin, isTester, location } = this.props;
+        const { route, isSignedIn, isAdmin, isTester } = this.props;
         const signInURL = `${process.env.API_SERVER}/api/auth/oauth?referer=${window.location.origin}&service=github`;
 
         return (
@@ -92,16 +92,25 @@ class App extends Component {
                             )) || (
                                 <React.Fragment>
                                     {isAdmin && (
-                                        <Nav.Link as={Link} {...this.navProps('/cycles')}>
+                                        <Nav.Link
+                                            as={Link}
+                                            {...this.navProps('/cycles')}
+                                        >
                                             Test Management
                                         </Nav.Link>
                                     )}
                                     {isTester && (
-                                        <Nav.Link as={Link} {...this.navProps('/test-queue')}>
+                                        <Nav.Link
+                                            as={Link}
+                                            {...this.navProps('/test-queue')}
+                                        >
                                             Test Queue
                                         </Nav.Link>
                                     )}
-                                    <Nav.Link as={Link} {...this.navProps('/account/settings')}>
+                                    <Nav.Link
+                                        as={Link}
+                                        {...this.navProps('/account/settings')}
+                                    >
                                         Settings
                                     </Nav.Link>
                                     <Nav.Link

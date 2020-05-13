@@ -93,7 +93,9 @@ class CycleSummary extends Component {
                 <p>{`${
                     testSuiteVersionData.git_commit_msg
                 } - ${testSuiteVersionData.git_hash.slice(0, 8)}`}</p>
-                <h3 id={tableId} >Configured assistive technologies and browser versions</h3>
+                <h3 id={tableId}>
+                    Configured assistive technologies and browser versions
+                </h3>
                 <Table aria-labelledby={tableId} striped bordered hover>
                     <thead>
                         <tr>
