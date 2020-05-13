@@ -102,7 +102,8 @@ App.propTypes = {
     isAdmin: PropTypes.bool,
     isTester: PropTypes.bool,
     location: PropTypes.object,
-    route: PropTypes.object
+    route: PropTypes.object,
+    loadedUserData: PropTypes.bool
 };
 
 const mapStateToProps = state => {
