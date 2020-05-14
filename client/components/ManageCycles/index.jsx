@@ -19,7 +19,7 @@ class ManageCycles extends Component {
     render() {
         const { cyclesById } = this.props;
 
-        let tableId = `table_name_${nextId()}`;
+        let tableId = nextId('table_name_');
 
         return (
             <Fragment>

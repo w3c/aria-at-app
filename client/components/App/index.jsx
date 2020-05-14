@@ -35,11 +35,11 @@ class App extends Component {
     }
 
     async signOut() {
-        const { dispatch, location } = this.props;
+        const { dispatch } = this.props;
         await dispatch(handleSignout());
         // Avoid the flash of "logged in user" after
         // pressing "log out"
-        location.href = '/';
+        window.location.href = '/';
     }
 
     navProps(href) {

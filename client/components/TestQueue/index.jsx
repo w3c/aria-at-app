@@ -40,7 +40,7 @@ class TestQueue extends Component {
             browser_version: browserVersion
         } = cycle.runsById[runIds[0]];
 
-        let tableId = `table_name_${nextId()}`;
+        let tableId = nextId('table_name_');
 
         return (
             <div key={`${atName}${browserName}`}>

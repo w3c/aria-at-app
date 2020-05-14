@@ -79,7 +79,7 @@ class CycleSummary extends Component {
             }
         }
 
-        let tableId = `table_name_${nextId()}`;
+        let tableId = nextId('table_name_');
 
         return (
             <Fragment>
