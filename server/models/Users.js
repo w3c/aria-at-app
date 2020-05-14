@@ -1,8 +1,8 @@
 /* jshint indent: 2 */
 
 module.exports = function(sequelize, DataTypes) {
-    return sequelize.define(
-        'TestVersion',
+    let Users = sequelize.define(
+        'Users',
         {
             id: {
                 type: DataTypes.INTEGER,
@@ -10,30 +10,38 @@ module.exports = function(sequelize, DataTypes) {
                 primaryKey: true,
                 autoIncrement: true
             },
-            git_repo: {
+            fullname: {
                 type: DataTypes.TEXT,
                 allowNull: true
             },
-            git_tag: {
+            username: {
                 type: DataTypes.TEXT,
-                allowNull: true
+                allowNull: true,
+                unique: true
             },
-            git_hash: {
+            email: {
                 type: DataTypes.TEXT,
-                allowNull: true
-            },
-            git_commit_msg: {
-                type: DataTypes.TEXT,
-                allowNull: true
-            },
-            datetime: {
-                type: DataTypes.DATE,
                 allowNull: true
             }
         },
         {
             timestamps: false,
-            tableName: 'test_version'
+            tableName: 'users'
         }
     );
+
+    Users.associate = function(models) {
+        models.Users.belongsToMany(models.Role, {
+            through: 'user_to_role',
+            timestamps: false,
+            foreignKey: {
+                name: 'user_id'
+            },
+            otherKey: {
+                name: 'role_id'
+            }
+        });
+    };
+
+    return Users;
 };

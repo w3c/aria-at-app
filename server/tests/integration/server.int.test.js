@@ -11,8 +11,7 @@ const newUserToRole = require('../mock-data/newUserToRole.json');
 const listOfATs = require('../mock-data/listOfATs.json');
 
 // mock the models to circumvent the actual database
-jest.mock('../../models/UsersModel');
-jest.mock('../../models/ATModel');
+jest.mock('../../models/index.js');
 
 // mocking the middleware used by the express app
 const { session } = require('../../middleware/session.js');

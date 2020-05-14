@@ -1,4 +1,4 @@
-const sequelize = global.sequelize;
+const db = require('../models/index');
 const UsersService = require('./UsersService');
 
 /**
@@ -28,7 +28,7 @@ const UsersService = require('./UsersService');
 async function configureCycle(cycle) {
     try {
         let cycleId = (
-            await sequelize.query(`
+            await db.sequelize.query(`
              INSERT INTO
                test_cycle(name, test_version_id, created_user_id, date)
              VALUES
@@ -40,7 +40,7 @@ async function configureCycle(cycle) {
         for (let run of cycle.runs) {
             // Get the browser version if it exists, or save it
             let results = (
-                await sequelize.query(`
+                await db.sequelize.query(`
                   select
                     id
                   from
@@ -53,7 +53,7 @@ async function configureCycle(cycle) {
 
             if (!browserVersionId) {
                 browserVersionId = (
-                    await sequelize.query(`
+                    await db.sequelize.query(`
                   INSERT INTO
                     browser_version (browser_id, version)
                   VALUES
@@ -65,7 +65,7 @@ async function configureCycle(cycle) {
 
             // Get the at version if it exists, or save it
             results = (
-                await sequelize.query(`
+                await db.sequelize.query(`
                   select
                     at_version.id
                   from
@@ -83,7 +83,7 @@ async function configureCycle(cycle) {
 
             if (!atVersionId) {
                 let atNameId = (
-                    await sequelize.query(`
+                    await db.sequelize.query(`
                     select
                       at_name_id
                     from
@@ -94,7 +94,7 @@ async function configureCycle(cycle) {
                 )[0][0].at_name_id;
 
                 atVersionId = (
-                    await sequelize.query(`
+                    await db.sequelize.query(`
                   INSERT INTO
                     at_version (at_name_id, version)
                   VALUES
@@ -106,7 +106,7 @@ async function configureCycle(cycle) {
 
             // Save the runs
             let runId = (
-                await sequelize.query(`
+                await db.sequelize.query(`
                 INSERT INTO
                   run(test_cycle_id, at_version_id, at_id, browser_version_id, apg_example_id)
                 VALUES
@@ -163,11 +163,11 @@ async function getAllCycles(id) {
             cycleQuery += ` where id = ${id}`;
         }
 
-        let cycles = (await sequelize.query(cycleQuery))[0];
+        let cycles = (await db.sequelize.query(cycleQuery))[0];
 
         for (let cycle of cycles) {
             let runs = (
-                await sequelize.query(`
+                await db.sequelize.query(`
                   select
                     *
                   from
@@ -180,7 +180,7 @@ async function getAllCycles(id) {
             let runsById = {};
             for (let run of runs) {
                 let users = (
-                    await sequelize.query(`
+                    await db.sequelize.query(`
                   select
                     user_id
                   from
@@ -214,19 +214,19 @@ async function getAllCycles(id) {
 async function deleteCycle(id) {
     try {
         let runs = (
-            await sequelize.query(
+            await db.sequelize.query(
                 `select id from run where test_cycle_id=${id}`
             )
         )[0];
 
         for (let run of runs) {
-            await sequelize.query(
+            await db.sequelize.query(
                 `delete from tester_to_run where run_id=${run.id}`
             );
         }
 
-        await sequelize.query(`delete from run where test_cycle_id=${id}`);
-        await sequelize.query(`delete from test_cycle where id=${id}`);
+        await db.sequelize.query(`delete from run where test_cycle_id=${id}`);
+        await db.sequelize.query(`delete from test_cycle where id=${id}`);
         return;
     } catch (error) {
         console.error(`Error: ${error}`);
@@ -269,7 +269,7 @@ async function deleteCycle(id) {
 async function getAllTestVersions() {
     try {
         let testVersions = (
-            await sequelize.query(`
+            await db.sequelize.query(`
              select
                *
              from
@@ -282,7 +282,7 @@ async function getAllTestVersions() {
 
         for (let testVersion of testVersions) {
             let ats = (
-                await sequelize.query(`
+                await db.sequelize.query(`
                select
                  at_name.id as at_name_id,
                  at_name.name as at_name,
@@ -298,7 +298,7 @@ async function getAllTestVersions() {
             )[0];
 
             let browsers = (
-                await sequelize.query(`
+                await db.sequelize.query(`
                select
                  *
                from
@@ -310,7 +310,7 @@ async function getAllTestVersions() {
             testVersion.browsers = browsers;
 
             let examples = (
-                await sequelize.query(`
+                await db.sequelize.query(`
                select
                  id,
                  name,
@@ -352,7 +352,7 @@ async function saveTestResults(testResult) {
         const { test_id, run_id, user_id, result } = testResult;
         let statusId, testResultId;
 
-        let resultRows = await sequelize.query(`
+        let resultRows = await db.sequelize.query(`
              SELECT
                id
              FROM
@@ -370,7 +370,7 @@ async function saveTestResults(testResult) {
         // If a result has been sent, insert or update result row
         if (result) {
             statusId = (
-                await sequelize.query(`
+                await db.sequelize.query(`
                  SELECT
                    id
                  FROM
@@ -386,7 +386,7 @@ async function saveTestResults(testResult) {
 
             if (!testResultId) {
                 testResultId = (
-                    await sequelize.query(`
+                    await db.sequelize.query(`
                       INSERT INTO
                         test_result(test_id, run_id, user_id, status_id, result)
                       VALUES
@@ -395,7 +395,7 @@ async function saveTestResults(testResult) {
                      `)
                 )[0];
             } else {
-                await sequelize.query(`
+                await db.sequelize.query(`
                    UPDATE
                      test_result
                    SET
@@ -409,7 +409,7 @@ async function saveTestResults(testResult) {
         // If result is empty, add a "skipped" entry
         else {
             statusId = (
-                await sequelize.query(`
+                await db.sequelize.query(`
                  SELECT
                    id
                  FROM
@@ -421,7 +421,7 @@ async function saveTestResults(testResult) {
 
             if (!testResultId) {
                 testResultId = (
-                    await sequelize.query(`
+                    await db.sequelize.query(`
                       INSERT INTO
                         test_result(test_id, run_id, user_id, status_id)
                       VALUES
@@ -430,7 +430,7 @@ async function saveTestResults(testResult) {
                      `)
                 )[0];
             } else {
-                await sequelize.query(`
+                await db.sequelize.query(`
                    UPDATE
                      test_result
                    SET
@@ -443,7 +443,7 @@ async function saveTestResults(testResult) {
         }
 
         let cycle_id = (
-            await sequelize.query(`
+            await db.sequelize.query(`
              SELECT
                test_cycle_id as cycle_id
              FROM
@@ -498,7 +498,7 @@ async function getRunsForCycleAndUser(cycleId, userId) {
         // We need to get all the runs for which the user has been configured
         // or for which there is an AT that the user can test
         let runs = (
-            await sequelize.query(`
+            await db.sequelize.query(`
               select
                 *
               from
@@ -524,7 +524,7 @@ async function getRunsForCycleAndUser(cycleId, userId) {
             runsById[run.id] = { tests: [] };
 
             let tests = (
-                await sequelize.query(`
+                await db.sequelize.query(`
               select
                 test.id as id,
                 name,
@@ -543,7 +543,7 @@ async function getRunsForCycleAndUser(cycleId, userId) {
             )[0];
 
             let test_results = (
-                await sequelize.query(`
+                await db.sequelize.query(`
               select
                 test_result.id as id,
                 test_result.result as result,
