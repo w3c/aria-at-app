@@ -32,6 +32,19 @@ yarn dev  // Runs dev server
 
 Now you can navigate your browser to: http://0.0.0.0:3000/
 
+### Debugging
+
+Instead of running `yarn dev` to start the local enviornment run `yarn run dev-debug`.
+
+This will add [express debuging](https://expressjs.com/en/guide/debugging.html)
+to information about routes, middleware and the request responce cycle.
+
+Additionally it adds the the ability for you use chrome dev tools and a
+`debbuger` to step through code via node's build in
+[inspector](https://nodejs.org/en/docs/guides/debugging-getting-started/). Just
+navigate to (chrome://inspect/#devices)[chrome://inspect/#devices] and open the
+dedicated dev tools for node.
+
 ## Sandboxing UI Components with Storybook
 Client side React UI components can be prototyped on [Storybook](https://storybook.js.org/). Storybook is a tool that allows developers to create components outside of the overall application system.
 
