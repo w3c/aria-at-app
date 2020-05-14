@@ -60,26 +60,34 @@ describe('render', () => {
                     testSuiteVersions: [
                         {
                             datetime: '2020-05-06T04:00:00.000Z',
-                            git_commit_msg: 'Checkbox: Test navigating through group with arrows',
-                            git_hash: 'ff1ed8a347dfc5ca7be47fa8620cfac681af0439',
+                            git_commit_msg:
+                                'Checkbox: Test navigating through group with arrows',
+                            git_hash:
+                                'ff1ed8a347dfc5ca7be47fa8620cfac681af0439',
                             git_repo: 'https://github.com/w3c/aria-at.git',
                             git_tag: null,
                             id: 1,
-                            supported_ats: [{
-                                at_id: 1,
-                                at_key: 'vader-voice',
-                                at_name: 'Vader Voice',
-                                at_name_id: 1,
-                            }],
-                            apg_examples: [{
-                                directory: 'checkbox',
-                                id: 1,
-                                name: 'Checkbox Example (Two State)',
-                            }],
-                            browsers: [{
-                                id: 1,
-                                name: 'Firefox'
-                            }]
+                            supported_ats: [
+                                {
+                                    at_id: 1,
+                                    at_key: 'vader-voice',
+                                    at_name: 'Vader Voice',
+                                    at_name_id: 1
+                                }
+                            ],
+                            apg_examples: [
+                                {
+                                    directory: 'checkbox',
+                                    id: 1,
+                                    name: 'Checkbox Example (Two State)'
+                                }
+                            ],
+                            browsers: [
+                                {
+                                    id: 1,
+                                    name: 'Firefox'
+                                }
+                            ]
                         }
                     ]
                 },
@@ -92,7 +100,7 @@ describe('render', () => {
                     roles: (2)[('admin', 'tester')],
                     username: 'jane'
                 },
-                user: {
+                users: {
                     usersById: {
                         10: {
                             configured_ats: [],
@@ -130,7 +138,9 @@ describe('render', () => {
 
             component = findByTestAttr(wrapper, 'initiate-cycle-commit-select');
             expect(component.length).toBe(1);
-            expect(component.text()).toContain('ff1ed8a - Checkbox: Test navigating thro...');
+            expect(component.text()).toContain(
+                'ff1ed8a - Checkbox: Test navigating thro...'
+            );
 
             component = findByTestAttr(wrapper, 'initiate-cycle-run-1');
             expect(component.length).toBe(1);
