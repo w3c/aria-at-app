@@ -14,13 +14,24 @@ class App extends Component {
         super(props);
 
         this.signOut = this.signOut.bind(this);
+        this.currentNavItem = React.createRef();
     }
+
     async componentDidMount() {
         const { dispatch } = this.props;
 
-        await dispatch(handleCheckSignedIn());
-        await dispatch(handleGetValidAts());
-        await dispatch(getAllUsers());
+        dispatch(handleCheckSignedIn());
+        dispatch(handleGetValidAts());
+        dispatch(getAllUsers());
+    }
+
+    componentDidUpdate(prevProps) {
+        // Focus on the navigation link after updating the page
+        if (this.props.location.pathname !== prevProps.location.pathname) {
+            if (this.currentNavItem.current) {
+                this.currentNavItem.current.focus();
+            }
+        }
     }
 
     async signOut() {
@@ -28,7 +39,22 @@ class App extends Component {
         await dispatch(handleSignout());
         // Avoid the flash of "logged in user" after
         // pressing "log out"
-        location.href = '/';
+        window.location.href = '/';
+    }
+
+    navProps(href) {
+        const { location } = this.props;
+
+        let navProps = {
+            to: href
+        };
+
+        if (location.pathname === href) {
+            navProps['aria-current'] = true;
+            navProps['ref'] = this.currentNavItem;
+        }
+
+        return navProps;
     }
 
     render() {
@@ -37,14 +63,16 @@ class App extends Component {
         if (!loadedUserData) {
             return null;
         }
+
         const { route, isSignedIn, isAdmin, isTester } = this.props;
-        const signInURL = `${process.env.API_SERVER}/api/auth/oauth?referer=${location.origin}&service=github`;
+        const signInURL = `${process.env.API_SERVER}/api/auth/oauth?referer=${window.location.origin}&service=github`;
+
         return (
             <Fragment>
                 <Container fluid>
                     <Navbar bg="light" expand="lg">
-                        <Navbar.Brand as={Link} to="/">
-                            <h1>ARIA-AT Report</h1>
+                        <Navbar.Brand as={Link} {...this.navProps('/')}>
+                            <h1>ARIA-AT</h1>
                         </Navbar.Brand>
                         <Navbar.Toggle aria-controls="basic-navbar-nav" />
                         <Navbar.Collapse
@@ -64,16 +92,25 @@ class App extends Component {
                             )) || (
                                 <React.Fragment>
                                     {isAdmin && (
-                                        <Nav.Link as={Link} to="/cycles">
+                                        <Nav.Link
+                                            as={Link}
+                                            {...this.navProps('/cycles')}
+                                        >
                                             Test Management
                                         </Nav.Link>
                                     )}
                                     {isTester && (
-                                        <Nav.Link as={Link} to="/test-queue">
+                                        <Nav.Link
+                                            as={Link}
+                                            {...this.navProps('/test-queue')}
+                                        >
                                             Test Queue
                                         </Nav.Link>
                                     )}
-                                    <Nav.Link as={Link} to="/account/settings">
+                                    <Nav.Link
+                                        as={Link}
+                                        {...this.navProps('/account/settings')}
+                                    >
                                         Settings
                                     </Nav.Link>
                                     <Nav.Link

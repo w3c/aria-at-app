@@ -80,13 +80,13 @@ class TestQueueRow extends Component {
             .map(uid => (
                 <div
                     key={nextId()}
-                >{`${usersById[uid].fullname} 0/${totalTests} complete`}</div>
+                >{`${usersById[uid].fullname} 0 of ${totalTests} tests complete`}</div>
             ));
         if (currentUserAssigned) {
             userInfo.unshift(
                 <div
                     key={nextId()}
-                >{`${usersById[userId].fullname} ${testsCompleted}/${totalTests} complete `}</div>
+                >{`${usersById[userId].fullname} ${testsCompleted} of ${totalTests} tests complete `}</div>
             );
         }
 

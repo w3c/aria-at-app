@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { Form, Table } from 'react-bootstrap';
+import nextId from 'react-id-generator';
 
 class ConfigureRunsForExample extends Component {
     constructor(props) {
@@ -94,11 +95,14 @@ class ConfigureRunsForExample extends Component {
             return b.at_id - a.at_id;
         });
 
+        let exampleTableTitle = example.name || example.directory;
+        let tableId = nextId('table_name_');
+
         return (
             <Fragment>
-                <h4>{example.name || example.directory}</h4>
+                <h4 id={tableId}>{exampleTableTitle}</h4>
                 {runs.length !== 0 && (
-                    <Table bordered>
+                    <Table aria-labelledby={tableId} bordered>
                         <thead>
                             <tr>
                                 <th>Assistive Technology and Browser</th>
