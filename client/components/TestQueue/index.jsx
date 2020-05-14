@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Table } from 'react-bootstrap';
 import { Helmet } from 'react-helmet';
 import { connect } from 'react-redux';
-import { getTestCycles, getRunsForUserAndCycle } from '../../actions/cycles';
+import { getTestCycles, getTestsForRunsCycle } from '../../actions/cycles';
 import { getAllUsers } from '../../actions/users';
 import nextId from 'react-id-generator';
 
@@ -15,7 +15,7 @@ class TestQueue extends Component {
             dispatch,
             cycle,
             cycleId,
-            testsForRuns,
+            testsFetched,
             usersById
         } = this.props;
         if (!cycle) {
@@ -26,13 +26,13 @@ class TestQueue extends Component {
             dispatch(getAllUsers());
         }
 
-        if (!testsForRuns) {
-            dispatch(getRunsForUserAndCycle(cycleId));
+        if (!testsFetched) {
+            dispatch(getTestsForRunsCycle(cycleId));
         }
     }
 
     renderAtBrowserList(runIds) {
-        const { userId, usersById, cycle, testsForRuns } = this.props;
+        const { userId, usersById, cycle, testsByRunId } = this.props;
         const {
             at_name: atName,
             at_version: atVersion,
@@ -73,7 +73,7 @@ class TestQueue extends Component {
                                     userId={userId}
                                     atName={atName}
                                     browserName={browserName}
-                                    testsForRun={testsForRuns[runId].tests}
+                                    testsForRun={testsByRunId[runId]}
                                 />
                             );
                         })}
@@ -84,14 +84,16 @@ class TestQueue extends Component {
     }
 
     render() {
-        const { cycle, cycleId, testsForRuns, usersById, userId } = this.props;
+        const { cycle, cycleId, testsFetched, usersById, userId } = this.props;
 
-        if (!testsForRuns || !cycle || !Object.keys(usersById).length) {
+        if (!testsFetched || !cycle || !Object.keys(usersById).length) {
             return <div>Loading</div>;
         }
 
         let currentUser = usersById[userId];
-        let configuredAtNames = currentUser.configured_ats.map(a => a.at_name);
+        let configuredAtNames = currentUser.configured_ats
+            .filter(a => a.active)
+            .map(a => a.at_name);
 
         let atBrowserRunSets = [];
         if (cycle) {
@@ -141,26 +143,33 @@ class TestQueue extends Component {
 TestQueue.propTypes = {
     cycle: PropTypes.object,
     cycleId: PropTypes.number,
-    testsForRuns: PropTypes.object,
+    testsByRunId: PropTypes.object,
     usersById: PropTypes.object,
     userId: PropTypes.number,
+    testsFetched: PropTypes.bool,
     dispatch: PropTypes.func
 };
 
 const mapStateToProps = (state, ownProps) => {
-    const { cyclesById, runsForCycle } = state.cycles;
+    const { cyclesById, testsByRunId } = state.cycles;
     const { usersById } = state.users;
     const userId = state.user.id;
     const cycleId = parseInt(ownProps.match.params.cycleId);
 
     let cycle = cyclesById[cycleId];
-
-    let testsForRuns = undefined;
-    if (runsForCycle && runsForCycle[cycleId]) {
-        testsForRuns = runsForCycle[cycleId];
+    let testsFetched = true;
+    if (!cycle) {
+        testsFetched = false;
+    } else {
+        for (let runId of Object.keys(cycle.runsById)) {
+            if (!testsByRunId[runId]) {
+                testsFetched = false;
+                break;
+            }
+        }
     }
 
-    return { cycle, cycleId, testsForRuns, usersById, userId };
+    return { cycle, cycleId, testsByRunId, testsFetched, usersById, userId };
 };
 
 export default connect(mapStateToProps)(TestQueue);

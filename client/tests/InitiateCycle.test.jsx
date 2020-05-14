@@ -50,11 +50,9 @@ describe('render', () => {
                             test_version_id: 1
                         }
                     },
-                    runsForCycle: {
+                    testsByRunId: {
                         1: {
-                            1: {
-                                tests: [{ name: 'Test 1' }]
-                            }
+                            tests: [{ name: 'Test 1' }]
                         }
                     },
                     testSuiteVersions: [

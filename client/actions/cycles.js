@@ -5,7 +5,7 @@ import {
     SAVE_CYCLE,
     SAVE_RESULT,
     TEST_SUITE_VERSIONS,
-    RUNS_FOR_USER_AND_CYCLE,
+    TESTS_BY_RUN_ID,
     SAVE_USERS_TO_RUNS,
     DELETE_USERS_FROM_RUN
 } from './types';
@@ -35,8 +35,8 @@ export const testSuiteVersionsDispatch = payload => ({
     payload
 });
 
-export const runsForUserAndCycleDispatch = payload => ({
-    type: RUNS_FOR_USER_AND_CYCLE,
+export const testsByRunIdDispatch = payload => ({
+    type: TESTS_BY_RUN_ID,
     payload
 });
 
@@ -84,10 +84,10 @@ export function getTestCycles() {
     };
 }
 
-export function getRunsForUserAndCycle(cycleId) {
+export function getTestsForRunsCycle(cycleId) {
     return async function(dispatch) {
         const response = await axios.get(`/api/cycle/runs?cycleId=${cycleId}`);
-        dispatch(runsForUserAndCycleDispatch(response.data));
+        dispatch(testsByRunIdDispatch(response.data));
     };
 }
 

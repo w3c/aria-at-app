@@ -163,7 +163,9 @@ const ariaat = {
                         // There is a bug in the test where sometimes "key" is used in the applies to list,
                         // and sometimes the "name"
                         for (let name of appliesToList) {
-                            const at = support.ats.find(a => ( a.name === name || a.key === name ));
+                            const at = support.ats.find(
+                                a => a.name === name || a.key === name
+                            );
                             if (at) {
                                 await this.upsertTestToAt(testID, at.atID);
                             }

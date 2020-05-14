@@ -27,7 +27,7 @@ describe('sign in actions dispatchers', () => {
             },
             cycles: {
                 cyclesById: {},
-                runsForCycle: {},
+                testsByRunId: {},
                 testSuiteVersions: []
             },
             ats: [],
@@ -62,7 +62,7 @@ describe('sign in actions dispatchers', () => {
             },
             cycles: {
                 cyclesById: {},
-                runsForCycle: {},
+                testsByRunId: {},
                 testSuiteVersions: []
             },
             ats: [],
@@ -101,7 +101,7 @@ describe('ats action dispatchers', () => {
             },
             cycles: {
                 cyclesById: {},
-                runsForCycle: {},
+                testsByRunId: {},
                 testSuiteVersions: []
             },
             ats: {
@@ -138,7 +138,7 @@ describe('users action dispatchers', () => {
             },
             cycles: {
                 cyclesById: {},
-                runsForCycle: {},
+                testsByRunId: {},
                 testSuiteVersions: []
             },
             ats: [],

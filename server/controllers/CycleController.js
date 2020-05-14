@@ -47,15 +47,13 @@ async function saveTestResults(req, res) {
     }
 }
 
-async function getRunsForCycleAndUser(req, res) {
+async function getTestsForRunsForCycle(req, res) {
     try {
         const cycleId = parseInt(req.query.cycleId);
-        const userId = req.session.user.id;
-        const runsForCycle = await CycleService.getRunsForCycleAndUser(
-            cycleId,
-            userId
+        const testsByRunId = await CycleService.getTestsForRunsForCycle(
+            cycleId
         );
-        res.status(201).json({ cycleId, runsForCycle });
+        res.status(201).json({ testsByRunId });
     } catch (error) {
         res.status(400);
         res.end();
@@ -79,6 +77,6 @@ module.exports = {
     getAllCycles,
     deleteCycle,
     saveTestResults,
-    getRunsForCycleAndUser,
+    getTestsForRunsForCycle,
     getAllTestVersions
 };
