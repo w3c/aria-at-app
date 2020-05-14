@@ -57,7 +57,7 @@ class InitiateCycle extends Component {
     }
 
     initiateCycle() {
-        const { dispatch, testSuiteVersions, history } = this.props;
+        const { dispatch, testSuiteVersions, history, user } = this.props;
         let versionData = testSuiteVersions.filter(
             version => version.id === this.state.selectedVersion
         )[0];
@@ -65,7 +65,7 @@ class InitiateCycle extends Component {
         let cycle = {
             name: this.state.name,
             test_version_id: this.state.selectedVersion,
-            created_user_id: 1
+            created_user_id: user.id
         };
 
         // Do not allow saving of cycle without a name. Put focus on name field
@@ -205,6 +205,7 @@ class InitiateCycle extends Component {
 
         return (
             <Form.Control
+                data-test="initiate-cycle-commit-select"
                 value={this.state.selectedVersion}
                 onChange={this.handleVersionChange}
                 as="select"
@@ -228,7 +229,7 @@ class InitiateCycle extends Component {
         const { testSuiteVersions, usersById } = this.props;
 
         if (!testSuiteVersions.length) {
-            return <div>Loading...</div>;
+            return <div data-test="initiate-cycle-loading">Loading</div>;
         }
 
         let versionData = testSuiteVersions.filter(
@@ -265,14 +266,17 @@ class InitiateCycle extends Component {
 
         return (
             <Fragment>
-                <h2>Initiate a Test Cycle</h2>
-                <h3>Test Cycle Configuration</h3>
+                <h2 data-test="initiate-cycle-h2">Initiate a Test Cycle</h2>
+                <h3 data-test="initiate-cycle-h3">Test Cycle Configuration</h3>
                 <Form className="init-box">
                     <Row>
                         <Col>
                             <Form.Group controlId="cycleName">
-                                <Form.Label>Test Cycle Name</Form.Label>
+                                <Form.Label data-test="initiate-cycle-name-label">
+                                    Test Cycle Name
+                                </Form.Label>
                                 <Form.Control
+                                    data-test="initiate-cycle-name-input"
                                     value={this.state.name}
                                     onChange={this.handleNameChange}
                                     ref={input => {
@@ -283,7 +287,9 @@ class InitiateCycle extends Component {
                         </Col>
                         <Col>
                             <Form.Group controlId="testVersion">
-                                <Form.Label>Git Commit of Tests</Form.Label>
+                                <Form.Label data-test="initiate-cycle-commit-label">
+                                    Git Commit of Tests
+                                </Form.Label>
                                 {this.renderTestVersionSelect()}
                             </Form.Group>
                         </Col>
@@ -317,11 +323,12 @@ class InitiateCycle extends Component {
                         </Col>
                     </Row>
                 </Form>
-                <h3>Test Plans</h3>
+                <h3 data-test="initiate-cycle-test-plans">Test Plans</h3>
                 {versionData &&
                     versionData.apg_examples.map(example => {
                         return (
                             <ConfigureRunsForExample
+                                data-test={`initiate-cycle-run-${example.id}`}
                                 newRun={true}
                                 runs={runs}
                                 key={example.id}
@@ -349,14 +356,15 @@ InitiateCycle.propTypes = {
     testSuiteVersions: PropTypes.array,
     dispatch: PropTypes.func,
     history: PropTypes.object,
-    usersById: PropTypes.object
+    usersById: PropTypes.object,
+    user: PropTypes.object
 };
 
 const mapStateToProps = state => {
     const { testSuiteVersions } = state.cycles;
     const { usersById } = state.users;
-
-    return { testSuiteVersions, usersById };
+    const { user } = state;
+    return { testSuiteVersions, usersById, user };
 };
 
 export default connect(mapStateToProps)(InitiateCycle);
