@@ -9,6 +9,8 @@
     "dev": "npm-run-all --parallel dev:*",
     "dev:client": "yarn workspace client run dev",
     "dev:server": "yarn workspace server run dev",
+    "dev-debug": "npm-run-all --parallel dev:client dev-debug:server",
+    "dev-debug:server": "yarn workspace server run dev-debug",
     "jest": "yarn workspaces run jest",
     "prettier": "yarn workspaces run prettier",
     "lint": "yarn workspaces run lint",
