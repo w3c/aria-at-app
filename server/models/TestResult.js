@@ -1,8 +1,6 @@
-/* jshint indent: 2 */
-
 module.exports = function(sequelize, DataTypes) {
     return sequelize.define(
-        'Run',
+        'TestResult',
         {
             id: {
                 type: DataTypes.INTEGER,
@@ -10,50 +8,46 @@ module.exports = function(sequelize, DataTypes) {
                 primaryKey: true,
                 autoIncrement: true
             },
-            test_cycle_id: {
+            test_id: {
                 type: DataTypes.INTEGER,
                 allowNull: false,
                 references: {
-                    model: 'test_cycle',
+                    model: 'test',
                     key: 'id'
                 }
             },
-            at_version_id: {
+            run_id: {
                 type: DataTypes.INTEGER,
                 allowNull: false,
                 references: {
-                    model: 'at_version',
+                    model: 'run',
                     key: 'id'
                 }
             },
-            at_id: {
+            user_id: {
                 type: DataTypes.INTEGER,
                 allowNull: false,
                 references: {
-                    model: 'at',
+                    model: 'users',
                     key: 'id'
                 }
             },
-            browser_version_id: {
+            status_id: {
                 type: DataTypes.INTEGER,
-                allowNull: false,
+                allowNull: true,
                 references: {
-                    model: 'browser_version',
+                    model: 'test_status',
                     key: 'id'
                 }
             },
-            apg_example_id: {
-                type: DataTypes.INTEGER,
-                allowNull: false,
-                references: {
-                    model: 'apg_example',
-                    key: 'id'
-                }
+            result: {
+                type: DataTypes.JSON,
+                allowNull: true
             }
         },
         {
             timestamps: false,
-            tableName: 'run'
+            tableName: 'test_result'
         }
     );
 };

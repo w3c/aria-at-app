@@ -1,8 +1,6 @@
-/* jshint indent: 2 */
-
 module.exports = function(sequelize, DataTypes) {
     return sequelize.define(
-        'UserToAt',
+        'Test',
         {
             id: {
                 type: DataTypes.INTEGER,
@@ -10,31 +8,38 @@ module.exports = function(sequelize, DataTypes) {
                 primaryKey: true,
                 autoIncrement: true
             },
-            at_name_id: {
-                type: DataTypes.INTEGER,
-                allowNull: false,
-                references: {
-                    model: 'at_name',
-                    key: 'id'
-                },
-                unique: true
+            name: {
+                type: DataTypes.TEXT,
+                allowNull: true
             },
-            user_id: {
+            file: {
+                type: DataTypes.TEXT,
+                allowNull: true
+            },
+            execution_order: {
+                type: DataTypes.INTEGER,
+                allowNull: true
+            },
+            apg_example_id: {
                 type: DataTypes.INTEGER,
                 allowNull: false,
                 references: {
-                    model: 'users',
+                    model: 'apg_example',
                     key: 'id'
                 }
             },
-            active: {
-                type: DataTypes.BOOLEAN,
-                allowNull: true
+            test_version_id: {
+                type: DataTypes.INTEGER,
+                allowNull: false,
+                references: {
+                    model: 'test_version',
+                    key: 'id'
+                }
             }
         },
         {
             timestamps: false,
-            tableName: 'user_to_at'
+            tableName: 'test'
         }
     );
 };

@@ -1,8 +1,6 @@
-/* jshint indent: 2 */
-
 module.exports = function(sequelize, DataTypes) {
     return sequelize.define(
-        'UserToRole',
+        'TestToAt',
         {
             id: {
                 type: DataTypes.INTEGER,
@@ -10,27 +8,26 @@ module.exports = function(sequelize, DataTypes) {
                 primaryKey: true,
                 autoIncrement: true
             },
-            user_id: {
+            test_id: {
                 type: DataTypes.INTEGER,
                 allowNull: false,
                 references: {
-                    model: 'users',
+                    model: 'test',
                     key: 'id'
-                },
-                unique: true
+                }
             },
-            role_id: {
+            at_id: {
                 type: DataTypes.INTEGER,
                 allowNull: false,
                 references: {
-                    model: 'role',
+                    model: 'at',
                     key: 'id'
                 }
             }
         },
         {
             timestamps: false,
-            tableName: 'user_to_role'
+            tableName: 'test_to_at'
         }
     );
 };

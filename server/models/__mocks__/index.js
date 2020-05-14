@@ -52,6 +52,6 @@ db.AtName = {
 db.sequelize = {
     define: obj => obj,
     query: () => [[{ at_name_id: 1, at_name: 'Foo', active: true }]]
-}
+};
 
 module.exports = db;

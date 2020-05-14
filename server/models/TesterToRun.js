@@ -1,8 +1,6 @@
-/* jshint indent: 2 */
-
 module.exports = function(sequelize, DataTypes) {
     return sequelize.define(
-        'Test',
+        'TesterToRun',
         {
             id: {
                 type: DataTypes.INTEGER,
@@ -10,38 +8,26 @@ module.exports = function(sequelize, DataTypes) {
                 primaryKey: true,
                 autoIncrement: true
             },
-            name: {
-                type: DataTypes.TEXT,
-                allowNull: true
-            },
-            file: {
-                type: DataTypes.TEXT,
-                allowNull: true
-            },
-            execution_order: {
-                type: DataTypes.INTEGER,
-                allowNull: true
-            },
-            apg_example_id: {
+            run_id: {
                 type: DataTypes.INTEGER,
                 allowNull: false,
                 references: {
-                    model: 'apg_example',
+                    model: 'run',
                     key: 'id'
                 }
             },
-            test_version_id: {
+            user_id: {
                 type: DataTypes.INTEGER,
                 allowNull: false,
                 references: {
-                    model: 'test_version',
+                    model: 'users',
                     key: 'id'
                 }
             }
         },
         {
             timestamps: false,
-            tableName: 'test'
+            tableName: 'tester_to_run'
         }
     );
 };
