@@ -42,12 +42,7 @@ yarn db-import-tests:dev
 
 ### Inspecting the database
 
-To connect to the Postgres table locally (with psql), export these variables:
+To connect to the Postgres table locally:
 ```
-export PGDATABASE=aria_at_report
-export PGUSER=atr
-export PGPASSWORD=atr
-export PGHOST=localhost
-export PGPORT=5432
-export ROOTUSER=$USER
+dotenv -f config/dev.env psql
 ```
