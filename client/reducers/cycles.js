@@ -4,7 +4,7 @@ import {
     SAVE_CYCLE,
     SAVE_RESULT,
     TEST_SUITE_VERSIONS,
-    RUNS_FOR_USER_AND_CYCLE,
+    TESTS_BY_RUN_ID,
     SAVE_USERS_TO_RUNS,
     DELETE_USERS_FROM_RUN
 } from '../actions/types';
@@ -12,7 +12,7 @@ import {
 const initialState = {
     cyclesById: {},
     testSuiteVersions: [],
-    runsForCycle: {}
+    testsByRunId: {}
 };
 
 export default (state = initialState, action) => {
@@ -54,31 +54,30 @@ export default (state = initialState, action) => {
         case SAVE_RESULT: {
             const result = action.payload;
 
-            const tests =
-                state.runsForCycle[result.cycle_id][result.run_id].tests;
+            const tests = state.testsByRunId[result.run_id];
             const testIndex = tests.findIndex(t => t.id === result.test_id);
             const newTests = [...tests];
-            newTests[testIndex] = {
+            const newTest = {
                 ...tests[testIndex],
-                result
+                results: {
+                    ...tests[testIndex].results,
+                    [result.user_id]: result
+                }
             };
+            newTests[testIndex] = newTest;
+
             return Object.assign({}, state, {
-                runsForCycle: {
-                    ...state.runsForCycle,
-                    [result.cycle_id]: {
-                        ...state.runsForCycle[result.run_id],
-                        [result.run_id]: {
-                            tests: newTests
-                        }
-                    }
+                testsByRunId: {
+                    ...state,
+                    [result.run_id]: newTests
                 }
             });
         }
-        case RUNS_FOR_USER_AND_CYCLE: {
+        case TESTS_BY_RUN_ID: {
             return Object.assign({}, state, {
-                runsForCycle: {
-                    ...state.runsForCycle,
-                    [cycleId]: action.payload.runsForCycle
+                testsByRunId: {
+                    ...state.testsByRunId,
+                    ...action.payload.testsByRunId
                 }
             });
         }

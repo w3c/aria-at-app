@@ -23,17 +23,33 @@ class TestQueueRow extends Component {
         dispatch(saveUsersToRuns([userId], [runId], cycleId));
     }
 
+    renderTestsCompletedByUser(uid) {
+        const { testsForRun, usersById } = this.props;
+
+        let totalTests = testsForRun.length;
+        let testsCompleted = testsForRun.filter(
+            t =>
+                t.results &&
+                t.results[uid] &&
+                t.results[uid].status === 'complete'
+        ).length;
+
+        return (
+            <div
+                key={nextId()}
+            >{`${usersById[uid].username} ${testsCompleted} of ${totalTests} tests complete`}</div>
+        );
+    }
+
     render() {
         const {
             cycleId,
             userId,
-            usersById,
             runId,
             testers,
             apgExampleName,
             atName,
-            browserName,
-            testsForRun
+            browserName
         } = this.props;
         let currentUserAssigned = testers.includes(userId);
 
@@ -70,28 +86,16 @@ class TestQueueRow extends Component {
             );
         }
 
-        let totalTests = testsForRun.length;
-        let testsCompleted = testsForRun.filter(
-            t => t.result && t.result.status === 'complete'
-        ).length;
-
         let userInfo = testers
             .filter(uid => uid !== userId)
-            .map(uid => (
-                <div
-                    key={nextId()}
-                >{`${usersById[uid].fullname} 0 of ${totalTests} tests complete`}</div>
-            ));
+            .map(uid => this.renderTestsCompletedByUser(uid));
+
         if (currentUserAssigned) {
-            userInfo.unshift(
-                <div
-                    key={nextId()}
-                >{`${usersById[userId].fullname} ${testsCompleted} of ${totalTests} tests complete `}</div>
-            );
+            userInfo.unshift(this.renderTestsCompletedByUser(userId));
         }
 
         let status = 'Not started';
-        if (currentUserAssigned && testsCompleted > 0) {
+        if (userInfo.length) {
             status = 'In Progress';
         }
 

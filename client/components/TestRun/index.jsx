@@ -5,7 +5,7 @@ import { Helmet } from 'react-helmet';
 import { Col, Container, Row } from 'react-bootstrap';
 import {
     getTestCycles,
-    getRunsForUserAndCycle,
+    getTestsForRunsCycle,
     getTestSuiteVersions,
     saveResult
 } from '../../actions/cycles';
@@ -30,7 +30,7 @@ class TestRun extends Component {
         const { dispatch, cycleId, tests, testSuiteVersionData } = this.props;
         if (!tests) {
             dispatch(getTestCycles());
-            dispatch(getRunsForUserAndCycle(cycleId));
+            dispatch(getTestsForRunsCycle(cycleId));
         }
         if (!testSuiteVersionData) {
             dispatch(getTestSuiteVersions());
@@ -92,7 +92,13 @@ class TestRun extends Component {
     }
 
     render() {
-        const { run, tests, cycleId, testSuiteVersionData } = this.props;
+        const {
+            run,
+            tests,
+            cycleId,
+            testSuiteVersionData,
+            userId
+        } = this.props;
 
         if (!run || !tests || !testSuiteVersionData) {
             return <div data-test="test-run-loading">Loading</div>;
@@ -108,12 +114,10 @@ class TestRun extends Component {
             browser_version
         } = run;
 
-        let testName,
-            test,
+        let test,
             testsToRun = false;
         if (tests.length > 0) {
             test = tests[this.state.currentTestIndex - 1];
-            testName = test.name;
             testsToRun = true;
         }
 
@@ -129,7 +133,6 @@ class TestRun extends Component {
                         {`${apg_example_name} (${this.state.currentTestIndex} of ${tests.length})`}
                     </h2>
                     <h3 data-test="test-run-h3">{`${at_name} ${at_version} with ${browser_name} ${browser_version}`}</h3>
-                    <h4 data-test="test-run-h4">Testing task: {testName}</h4>
                 </Fragment>
             );
 
@@ -145,6 +148,7 @@ class TestRun extends Component {
                         saveResultFromTest={this.saveResultFromTest}
                         deleteResultFromTest={this.deleteResultFromTest}
                         cycleId={cycleId}
+                        userId={userId}
                     />
                 );
             } else {
@@ -170,7 +174,11 @@ class TestRun extends Component {
                         <Col>{heading}</Col>
                     </Row>
 
-                    <Row>{testContent || <Col>{content}</Col>}</Row>
+                    {testContent || (
+                        <Row>
+                            <Col>{content}</Col>
+                        </Row>
+                    )}
                 </Container>
             </Fragment>
         );
@@ -187,7 +195,7 @@ TestRun.propTypes = {
 };
 
 const mapStateToProps = (state, ownProps) => {
-    const { cyclesById, runsForCycle, testSuiteVersions } = state.cycles;
+    const { cyclesById, testsByRunId, testSuiteVersions } = state.cycles;
     const { usersById } = state.users;
     const userId = state.user.id;
     const cycleId = parseInt(ownProps.match.params.cycleId);
@@ -203,8 +211,8 @@ const mapStateToProps = (state, ownProps) => {
     }
 
     let tests = undefined;
-    if (runsForCycle && runsForCycle[cycleId] && runsForCycle[cycleId][runId]) {
-        tests = runsForCycle[cycleId][runId].tests;
+    if (testsByRunId[runId]) {
+        tests = testsByRunId[runId];
     }
 
     return {

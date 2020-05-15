@@ -47,12 +47,8 @@ describe('render', () => {
                             test_version_id: 1
                         }
                     },
-                    runsForCycle: {
-                        1: {
-                            1: {
-                                tests: [{ name: 'Test 1' }]
-                            }
-                        }
+                    testsByRunId: {
+                        1: [{ name: 'Test 1' }]
                     },
                     testSuiteVersions: [
                         {
@@ -75,10 +71,6 @@ describe('render', () => {
             component = findByTestAttr(wrapper, 'test-run-h3');
             expect(component.length).toBe(1);
             expect(component.text()).toContain('with');
-
-            component = findByTestAttr(wrapper, 'test-run-h4');
-            expect(component.length).toBe(1);
-            expect(component.text()).toContain('Testing task:');
         });
     });
 });

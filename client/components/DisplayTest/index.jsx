@@ -189,10 +189,14 @@ class DisplayTest extends Component {
     }
 
     render() {
-        const { test, git_hash, at_key, testIndex } = this.props;
+        const { test, git_hash, at_key, testIndex, userId } = this.props;
 
         this.testHasResult =
-            test.result && test.result.status === 'complete' ? true : false;
+            test.results &&
+            test.results[userId] &&
+            test.results[userId].status === 'complete'
+                ? true
+                : false;
 
         let testContent = null;
         let menuUnderContent = null;
@@ -235,7 +239,7 @@ class DisplayTest extends Component {
         );
 
         if (this.testHasResult) {
-            testContent = <TestResult testResult={test.result} />;
+            testContent = <TestResult testResult={test.results[userId]} />;
         } else {
             testContent = (
                 <iframe
@@ -250,11 +254,20 @@ class DisplayTest extends Component {
 
         return (
             <Fragment>
-                <Col md={9}>
-                    <Row>{testContent}</Row>
-                    <Row>{menuUnderContent}</Row>
-                </Col>
-                <Col md={3}>{menuRightOContent}</Col>
+                <Row>
+                    <Col>
+                        <h4 data-test="test-run-h4">
+                            Testing task: {test.name}
+                        </h4>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col md={9}>
+                        <Row>{testContent}</Row>
+                        <Row>{menuUnderContent}</Row>
+                    </Col>
+                    <Col md={3}>{menuRightOContent}</Col>
+                </Row>
                 {modals}
             </Fragment>
         );
@@ -268,6 +281,7 @@ DisplayTest.propTypes = {
     git_hash: PropTypes.string,
     at_key: PropTypes.string,
     cycleId: PropTypes.number,
+    userId: PropTypes.number,
     history: PropTypes.object,
     displayNextTest: PropTypes.func,
     displayPreviousTest: PropTypes.func,

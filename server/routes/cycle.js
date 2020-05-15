@@ -13,8 +13,8 @@ router.get('/', CycleController.getAllCycles);
 // Save result
 router.post('/result', CycleController.saveTestResults);
 
-// Gets all runs for a given cycle and user
-router.get('/runs', CycleController.getRunsForCycleAndUser);
+// Gets all runs for a given cycle
+router.get('/runs', CycleController.getTestsForRunsForCycle);
 
 // Gets test version information necessary to initiate cycle
 router.get('/testversions', CycleController.getAllTestVersions);

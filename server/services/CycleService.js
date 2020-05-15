@@ -465,35 +465,31 @@ async function saveTestResults(testResult) {
 }
 
 /**
- * Gets all the runs that a user is assigned to or can perform within a cycle
+ * Gets all the runs for a cycle
  *
  * @param {int} cycleId - cycle id
- * @param {int} userId - user id
  * @return {object} - list of tests (with save test result data if it exists) keyed by runs
  *
  * @example
  *
  *    {
- *      cycle_id: {
- *        run_id: {
- *          tests:[{
- *              id               // test.id
- *              name             // test.name
- *              file             // test.file
- *              execution_order
- *              test_result : {
- *                id
- *                user_id
- *                status
- *                result
- *              }
- *            }]
+ *      run_id:[{
+ *        id               // test.id
+ *        name             // test.name
+ *        file             // test.file
+ *        execution_order
+ *        results : [
+ *          user_id: {
+ *            id
+ *            user_id
+ *            status
+ *            result
  *          }
- *        }
- *      }
+ *        ]
+ *      }]
  *    }
  */
-async function getRunsForCycleAndUser(cycleId, userId) {
+async function getTestsForRunsForCycle(cycleId) {
     try {
         // We need to get all the runs for which the user has been configured
         // or for which there is an AT that the user can test
@@ -505,23 +501,13 @@ async function getRunsForCycleAndUser(cycleId, userId) {
                 run_data
               where
                 run_data.test_cycle_id = ${cycleId}
-                and run_data.at_name in (
-                  select
-                    at_name.name
-                  from
-                    at_name,
-                    user_to_at
-                  where
-                    user_to_at.at_name_id = at_name.id
-                    and user_to_at.user_id = ${userId}
-                )
         `)
         )[0];
 
-        let runsById = {};
+        let testsForRun = {};
 
         for (let run of runs) {
-            runsById[run.id] = { tests: [] };
+            testsForRun[run.id] = [];
 
             let tests = (
                 await db.sequelize.query(`
@@ -548,6 +534,7 @@ async function getRunsForCycleAndUser(cycleId, userId) {
                 test_result.id as id,
                 test_result.result as result,
                 test_result.test_id as test_id,
+                test_result.user_id as user_id,
                 test_status.name as status
               from
                 test_result,
@@ -555,25 +542,23 @@ async function getRunsForCycleAndUser(cycleId, userId) {
               where
                 test_result.status_id = test_status.id
                 and test_result.run_id = ${run.id}
-                and test_result.user_id = ${userId}
             `)
             )[0];
 
             for (let test of tests) {
                 let results = test_results.filter(r => r.test_id === test.id);
-                if (results.length === 1) {
-                    test.result = {
-                        id: results[0].id,
-                        result: results[0].result,
-                        status: results[0].status,
-                        user_id: userId
-                    };
+                let resultsByUserId = {};
+                for (let result of results) {
+                    resultsByUserId[result.user_id] = result;
                 }
-                runsById[run.id].tests.push(test);
+                if (results.length > 0) {
+                    test.results = resultsByUserId;
+                }
+                testsForRun[run.id].push(test);
             }
         }
 
-        return runsById;
+        return testsForRun;
     } catch (error) {
         console.error(`Error: ${error}`);
         throw error;
@@ -585,6 +570,6 @@ module.exports = {
     getAllCycles,
     deleteCycle,
     getAllTestVersions,
-    getRunsForCycleAndUser,
+    getTestsForRunsForCycle,
     saveTestResults
 };
