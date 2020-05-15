@@ -12,7 +12,8 @@ const newUser = require('../mock-data/newUser.json');
 const newUserToRole = require('../mock-data/newUserToRole.json');
 const listOfATs = require('../mock-data/listOfATs.json');
 const users = require('../mock-data/users.json');
-jest.mock('../../models/UsersModel');
+
+jest.mock('../../models/index.js');
 
 describe('UsersService', () => {
     describe('UsersService.getUser', () => {
@@ -179,7 +180,7 @@ describe('GithubService', () => {
     });
 });
 
-jest.mock('../../models/ATModel');
+jest.mock('../../models/index.js');
 describe('ATService', () => {
     describe('ATService.getATs', () => {
         it('should have a getATs function', () => {

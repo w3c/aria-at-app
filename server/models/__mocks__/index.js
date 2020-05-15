@@ -1,8 +1,10 @@
 const create = require('../../tests/util/create');
 const listOfAts = require('../../tests/mock-data/listOfATs.json');
 const users = require('../../tests/mock-data/users.json');
+const atsData = require('../../tests/mock-data/listOfATs.json');
+const db = {};
 
-const Users = {
+db.Users = {
     create,
     findAll() {
         return users.map(user => ({
@@ -16,11 +18,12 @@ const Users = {
         }));
     }
 };
-const UserToRole = {
+
+db.UserToRole = {
     create
 };
 
-const Role = {
+db.Role = {
     findAll() {
         return [
             {
@@ -33,10 +36,22 @@ const Role = {
     }
 };
 
-const UserToAt = {
+db.UserToAt = {
     findAll() {
         return listOfAts.atsDB;
     }
 };
 
-module.exports = { Users, UserToRole, Role, UserToAt };
+db.AtName = {
+    ats: atsData.atsDB,
+    findAll() {
+        return this.ats;
+    }
+};
+
+db.sequelize = {
+    define: obj => obj,
+    query: () => [[{ at_name_id: 1, at_name: 'Foo', active: true }]]
+};
+
+module.exports = db;

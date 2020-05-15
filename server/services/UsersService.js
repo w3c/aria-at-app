@@ -1,18 +1,10 @@
-const {
-    Users,
-    UserToRole,
-    Role,
-    TesterToRun,
-    UserToAt
-} = require('../models/UsersModel');
+const db = require('../models/index');
 const GithubService = require('./GithubService');
-const { Op } = require('sequelize');
-const sequelize = global.sequelize;
 
 async function getUser(user) {
     const { fullname, username, email } = user;
     try {
-        const users = await Users.findAll({
+        const users = await db.Users.findAll({
             attributes: ['id', 'fullname', 'username', 'email'],
             where: {
                 fullname,
@@ -37,7 +29,7 @@ async function getUser(user) {
 
 async function addUser(user) {
     try {
-        const newUser = await Users.create(user);
+        const newUser = await db.Users.create(user);
         return newUser;
     } catch (error) {
         console.error(`Error: ${error}`);
@@ -47,7 +39,7 @@ async function addUser(user) {
 
 async function addUserToRole(userToRole) {
     try {
-        const newUserToRole = await UserToRole.create(userToRole);
+        const newUserToRole = await db.UserToRole.create(userToRole);
         return newUserToRole;
     } catch (error) {
         console.error(`Error: ${error}`);
@@ -57,7 +49,7 @@ async function addUserToRole(userToRole) {
 
 async function deleteUserFromRole(userToRole) {
     try {
-        await UserToRole.destroy({
+        await db.UserToRole.destroy({
             where: userToRole
         });
     } catch (error) {
@@ -92,12 +84,12 @@ async function assignUsersToRuns(users, runs) {
             }
         }
 
-        await TesterToRun.bulkCreate(entries);
+        await db.TesterToRun.bulkCreate(entries);
 
-        let currentUsersToRuns = await TesterToRun.findAll({
+        let currentUsersToRuns = await db.TesterToRun.findAll({
             where: {
                 run_id: {
-                    [Op.in]: runs
+                    [db.Sequelize.Op.in]: runs
                 }
             }
         });
@@ -136,7 +128,7 @@ async function assignUsersToRuns(users, runs) {
 async function removeUsersFromRun(users, runId) {
     try {
         for (let id of users) {
-            await TesterToRun.destroy({
+            await db.TesterToRun.destroy({
                 where: {
                     user_id: id,
                     run_id: runId
@@ -144,7 +136,7 @@ async function removeUsersFromRun(users, runId) {
             });
         }
 
-        let currentUsersToRun = TesterToRun.findAll({
+        let currentUsersToRun = db.TesterToRun.findAll({
             attributes: ['user_id'],
             where: {
                 run_id: runId
@@ -186,13 +178,13 @@ async function removeUsersFromRun(users, runId) {
  */
 async function getAllTesters() {
     try {
-        let currentUsers = (await Users.findAll()).map(
+        let currentUsers = (await db.Users.findAll()).map(
             userData => userData.dataValues
         );
 
         for (let user of currentUsers) {
             let results = (
-                await sequelize.query(`
+                await db.sequelize.query(`
                  select
                    at_name_id,
                    name as at_name,
@@ -253,7 +245,7 @@ async function saveUserAndRoles(options) {
         let roleRows,
             rolesMap = {};
         try {
-            roleRows = await Role.findAll();
+            roleRows = await db.Role.findAll();
         } catch (error) {
             console.error(`Error: ${error}`);
             throw error;
@@ -287,7 +279,7 @@ async function getUserAndUpdateRoles(options) {
     });
     const githubUserRoles = teams.map(t => GithubService.teamToRole[t]);
 
-    const roleRows = await Role.findAll();
+    const roleRows = await db.Role.findAll();
     const rolesMap = {};
     roleRows.map(r => (rolesMap[r.dataValues.name] = { ...r.dataValues }));
 
@@ -344,7 +336,7 @@ async function getUserAts(options) {
         user_id = user.id;
     }
     try {
-        let userAts = await UserToAt.findAll({ where: { user_id } });
+        let userAts = await db.UserToAt.findAll({ where: { user_id } });
         return userAts;
     } catch (error) {
         console.error(`Error: ${error}`);
@@ -372,7 +364,7 @@ async function saveUserAts(options) {
     // these rows already exist in the database
     for (let at_name_id of userAtsInactive) {
         try {
-            await UserToAt.update(
+            await db.UserToAt.update(
                 { active: false },
                 { where: { at_name_id, user_id: userId } }
             );
@@ -389,7 +381,7 @@ async function saveUserAts(options) {
 
     // create these rows in the database
     try {
-        let createdUserAt = await UserToAt.bulkCreate(
+        let createdUserAt = await db.UserToAt.bulkCreate(
             userAtsActiveCreate.map(({ id: at_name_id }) => ({
                 user_id: userId,
                 at_name_id,
@@ -407,7 +399,7 @@ async function saveUserAts(options) {
     // these rows also exist in the database
     for (let at of userAtsActiveUpdate) {
         try {
-            await UserToAt.update(
+            await db.UserToAt.update(
                 { active: true },
                 { where: { at_name_id: at.id, user_id: userId } }
             );
