@@ -71,10 +71,6 @@ describe('render', () => {
             component = findByTestAttr(wrapper, 'test-run-h3');
             expect(component.length).toBe(1);
             expect(component.text()).toContain('with');
-
-            component = findByTestAttr(wrapper, 'test-run-h4');
-            expect(component.length).toBe(1);
-            expect(component.text()).toContain('Testing task:');
         });
     });
 });
