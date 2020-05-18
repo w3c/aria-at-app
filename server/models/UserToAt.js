@@ -1,5 +1,5 @@
 module.exports = function(sequelize, DataTypes) {
-    return sequelize.define(
+    let UserToAt = sequelize.define(
         'UserToAt',
         {
             id: {
@@ -35,4 +35,17 @@ module.exports = function(sequelize, DataTypes) {
             tableName: 'user_to_at'
         }
     );
+
+    UserToAt.associate = function(models) {
+        models.UserToAt.belongsTo(models.Users, {
+            foreignKey: 'user_id',
+            targetKey: 'id'
+        });
+        models.UserToAt.belongsTo(models.AtName, {
+            foreignKey: 'at_name_id',
+            targetKey: 'id'
+        });
+    };
+
+    return UserToAt;
 };

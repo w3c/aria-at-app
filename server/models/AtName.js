@@ -1,5 +1,5 @@
 module.exports = function(sequelize, DataTypes) {
-    return sequelize.define(
+    let AtName = sequelize.define(
         'AtName',
         {
             id: {
@@ -19,4 +19,6 @@ module.exports = function(sequelize, DataTypes) {
             tableName: 'at_name'
         }
     );
+
+    return AtName;
 };

@@ -168,7 +168,6 @@ async function removeUsersFromRun(users, runId) {
  *         configured_ats: [
  *           {
  *             at_name_id: at_name.id
- *             at_name: at_name.name
  *           },
  *           ...
  *         ]
@@ -183,29 +182,14 @@ async function getAllTesters() {
         );
 
         for (let user of currentUsers) {
-            let results = (
-                await db.sequelize.query(`
-                 select
-                   at_name_id,
-                   name as at_name,
-                   active
-                 from
-                   user_to_at,
-                   at_name
-                 where
-                   user_to_at.at_name_id = at_name.id
-                   and user_id=${user.id}
-            `)
-            )[0];
+            let ats = await db.UserToAt.findAll({
+                where: { user_id: user.id, active: true },
+                include: db.AtName
+            });
 
-            user.configured_ats = [];
-            for (let result of results) {
-                user.configured_ats.push({
-                    at_name_id: result.at_name_id,
-                    at_name: result.at_name,
-                    active: result.active
-                });
-            }
+            user.configured_ats = ats.map(r => ({
+                at_name_id: r.dataValues.at_name_id
+            }));
         }
 
         return currentUsers;
@@ -329,27 +313,12 @@ async function signupUser(options) {
     return saveUserAndRoles(options);
 }
 
-async function getUserAts(options) {
-    let user_id = options;
-    if (typeof options !== 'number') {
-        let user = await getUser(options);
-        user_id = user.id;
-    }
-    try {
-        let userAts = await db.UserToAt.findAll({ where: { user_id } });
-        return userAts;
-    } catch (error) {
-        console.error(`Error: ${error}`);
-        throw error;
-    }
-}
-
 async function saveUserAts(options) {
     const { userId, ats } = options;
 
-    const existingUserAtsIds = (await getUserAts(userId)).map(
-        userAt => userAt.dataValues.at_name_id
-    );
+    const existingUserAtsIds = (
+        await db.UserToAt.findAll({ where: { user_id: userId } })
+    ).map(userAt => userAt.dataValues.at_name_id);
     const userAtsInactive = existingUserAtsIds.filter(
         existingUserAtsId => !ats.find(at => at.id === existingUserAtsId)
     );
@@ -368,11 +337,6 @@ async function saveUserAts(options) {
                 { active: false },
                 { where: { at_name_id, user_id: userId } }
             );
-            savedUserAts.push({
-                at_name_id,
-                user_id: userId,
-                active: false
-            });
         } catch (error) {
             console.error(`Error: ${error}`);
             throw error;
@@ -389,7 +353,9 @@ async function saveUserAts(options) {
             }))
         );
         savedUserAts.push(
-            ...createdUserAt.map(userToAt => userToAt.dataValues)
+            ...createdUserAt.map(userToAt => ({
+                at_name_id: userToAt.dataValues.at_name_id
+            }))
         );
     } catch (error) {
         console.error(`Error: ${error}`);
@@ -404,9 +370,7 @@ async function saveUserAts(options) {
                 { where: { at_name_id: at.id, user_id: userId } }
             );
             savedUserAts.push({
-                at_name_id: at.id,
-                user_id: userId,
-                active: true
+                at_name_id: at.id
             });
         } catch (error) {
             console.error(`Error: ${error}`);

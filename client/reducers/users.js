@@ -19,22 +19,9 @@ export default (state = initialState, action) => {
         }
         case SET_USER_ATS: {
             let { userId, ats } = action.payload;
-            let updateUser = { ...state.usersById[userId] };
-            let configuredUserAts = updateUser.configured_ats;
 
-            let updatedAts = [];
-            for (let at of ats) {
-                let atFound = configuredUserAts.find(
-                    configuredAt => configuredAt.at_name_id === at.at_name_id
-                );
-                if (atFound) {
-                    atFound.active = at.active;
-                    updatedAts.push(atFound);
-                } else {
-                    updatedAts.push(at);
-                }
-            }
-            updateUser.configured_ats = updatedAts;
+            let updateUser = { ...state.usersById[userId] };
+            updateUser.configured_ats = ats;
 
             return {
                 ...state,

@@ -149,12 +149,10 @@ describe('users action dispatchers', () => {
                         username: 'foobar',
                         configured_ats: [
                             {
-                                at_name_id: 1,
-                                active: false
+                                at_name_id: 1
                             },
                             {
-                                at_name_id: 2,
-                                active: true
+                                at_name_id: 2
                             }
                         ]
                     }
@@ -192,12 +190,10 @@ describe('users action dispatchers', () => {
                 status: 200,
                 response: [
                     {
-                        at_name_id: 1,
-                        active: false
+                        at_name_id: 1
                     },
                     {
-                        at_name_id: 2,
-                        active: true
+                        at_name_id: 2
                     }
                 ]
             });

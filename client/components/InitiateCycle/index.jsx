@@ -246,9 +246,11 @@ class InitiateCycle extends Component {
                     continue;
                 }
 
-                let at_name = versionData.supported_ats.find(at => {
-                    return row.at_id === at.at_id;
-                }).at_name;
+                let { at_name, at_name_id } = versionData.supported_ats.find(
+                    at => {
+                        return row.at_id === at.at_id;
+                    }
+                );
 
                 let browser_name = versionData.browsers.find(b => {
                     return row.browser_id === b.id;
@@ -257,6 +259,7 @@ class InitiateCycle extends Component {
                 runs.push({
                     id: i,
                     at_name: at_name,
+                    at_name_id: at_name_id,
                     browser_name: browser_name,
                     at_id: row.at_id,
                     browser_id: row.browser_id

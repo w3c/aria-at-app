@@ -17,9 +17,7 @@ const UsersService = {
         return [
             {
                 ...users[0],
-                configured_ats: [
-                    { active: true, at_name: 'Foo', at_name_id: 1 }
-                ]
+                configured_ats: [{ at_name_id: 1 }]
             }
         ];
     }

@@ -1,5 +1,4 @@
 const create = require('../../tests/util/create');
-const listOfAts = require('../../tests/mock-data/listOfATs.json');
 const users = require('../../tests/mock-data/users.json');
 const atsData = require('../../tests/mock-data/listOfATs.json');
 const db = {};
@@ -38,7 +37,11 @@ db.Role = {
 
 db.UserToAt = {
     findAll() {
-        return listOfAts.atsDB;
+        return [
+            {
+                dataValues: { at_name_id: 1 }
+            }
+        ];
     }
 };
 

@@ -58,9 +58,7 @@ describe('UsersService', () => {
             const testers = await UsersService.getAllTesters();
             expect(testers[0]).toEqual({
                 ...users[0],
-                configured_ats: [
-                    { active: true, at_name: 'Foo', at_name_id: 1 }
-                ]
+                configured_ats: [{ at_name_id: 1 }]
             });
         });
     });
