@@ -22,6 +22,12 @@ Every time a new migration file is added it must be run again to apply the migra
 dotenv -f config/dev.env npx sequelize-cli db:migrate
 ```
 
+### Import seed data
+To import seed data into the local database
+```
+dotenv -f config/dev.env npx sequelize-cli db:seed:all
+```
+
 ### Import test results
 To import test data into the local database, run:
 ```
