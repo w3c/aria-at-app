@@ -72,7 +72,7 @@ module.exports = {
                             primaryKey: true
                         },
                         sess: {
-                            type: Sequelize.DataTypes.JSON,
+                            type: Sequelize.DataTypes.JSONB,
                             allowNull: false
                         },
                         expire: {
@@ -626,7 +626,7 @@ module.exports = {
                             }
                         },
                         result: {
-                            type: Sequelize.DataTypes.JSON,
+                            type: Sequelize.DataTypes.JSONB,
                             allowNull: true
                         }
                     },

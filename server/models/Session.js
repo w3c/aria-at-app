@@ -8,7 +8,7 @@ module.exports = function(sequelize, DataTypes) {
                 primaryKey: true
             },
             sess: {
-                type: DataTypes.JSON,
+                type: DataTypes.JSONB,
                 allowNull: false
             },
             expire: {

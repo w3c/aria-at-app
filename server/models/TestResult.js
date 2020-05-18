@@ -41,7 +41,7 @@ module.exports = function(sequelize, DataTypes) {
                 }
             },
             result: {
-                type: DataTypes.JSON,
+                type: DataTypes.JSONB,
                 allowNull: true
             }
         },
