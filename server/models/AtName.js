@@ -20,5 +20,16 @@ module.exports = function(sequelize, DataTypes) {
         }
     );
 
+    AtName.associate = function(models) {
+        models.AtName.hasMany(models.AtVersion, {
+            foreignKey: 'at_name_id',
+            sourceKey: 'id'
+        });
+        models.AtName.hasMany(models.At, {
+            foreignKey: 'at_name_id',
+            sourceKey: 'id'
+        });
+    };
+
     return AtName;
 };

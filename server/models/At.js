@@ -1,5 +1,5 @@
 module.exports = function(sequelize, DataTypes) {
-    return sequelize.define(
+    let At = sequelize.define(
         'At',
         {
             id: {
@@ -34,4 +34,13 @@ module.exports = function(sequelize, DataTypes) {
             tableName: 'at'
         }
     );
+
+    At.associate = function(models) {
+        models.At.belongsTo(models.AtName, {
+            foreignKey: 'at_name_id',
+            targetKey: 'id'
+        });
+    };
+
+    return At;
 };
