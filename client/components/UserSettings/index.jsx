@@ -1,10 +1,8 @@
-import React, { Component } from 'react';
+import React, { Fragment, Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-import Form from 'react-bootstrap/Form';
-import Button from 'react-bootstrap/Button';
+import { Helmet } from 'react-helmet';
+import { Button, Col, Container, Form, Row } from 'react-bootstrap';
 import { handleSetUserAts } from '../../actions/users';
 
 class UserSettings extends Component {
@@ -81,11 +79,11 @@ class UserSettings extends Component {
 
     render() {
         const { ats, isSignedIn, username, email, loadedUserData } = this.props;
-        const contents =
+        const content =
             loadedUserData && isSignedIn ? (
                 <Row data-test="user-settings-authorized">
                     <Col>
-                        <h2>USER DETAILS</h2>
+                        <h2>User Details</h2>
                         <p>{username}</p>
                         <p>{email}</p>
                     </Col>
@@ -124,7 +122,16 @@ class UserSettings extends Component {
                 <p data-test="user-settings-unauthorized">Unauthorized</p>
             );
 
-        return <div data-test="component-user-settings">{contents}</div>;
+        return (
+            <Fragment>
+                <Container fluid data-test="user-settings-contents">
+                    <Helmet>
+                        <title>Settings | ARIA-AT</title>
+                    </Helmet>
+                    {content}
+                </Container>
+            </Fragment>
+        );
     }
 }
 
