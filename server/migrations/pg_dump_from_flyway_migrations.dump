@@ -1,0 +1,1306 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 11.7 (Debian 11.7-0+deb10u1)
+-- Dumped by pg_dump version 11.7 (Debian 11.7-0+deb10u1)
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
+-- Name: apg_example; Type: TABLE; Schema: public; Owner: atr
+--
+
+CREATE TABLE public.apg_example (
+    id integer NOT NULL,
+    directory text,
+    name text,
+    test_version_id integer NOT NULL
+);
+
+
+ALTER TABLE public.apg_example OWNER TO atr;
+
+--
+-- Name: apg_example_id_seq; Type: SEQUENCE; Schema: public; Owner: atr
+--
+
+CREATE SEQUENCE public.apg_example_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.apg_example_id_seq OWNER TO atr;
+
+--
+-- Name: apg_example_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: atr
+--
+
+ALTER SEQUENCE public.apg_example_id_seq OWNED BY public.apg_example.id;
+
+
+--
+-- Name: at; Type: TABLE; Schema: public; Owner: atr
+--
+
+CREATE TABLE public.at (
+    id integer NOT NULL,
+    key text,
+    at_name_id integer NOT NULL,
+    test_version_id integer NOT NULL
+);
+
+
+ALTER TABLE public.at OWNER TO atr;
+
+--
+-- Name: at_id_seq; Type: SEQUENCE; Schema: public; Owner: atr
+--
+
+CREATE SEQUENCE public.at_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.at_id_seq OWNER TO atr;
+
+--
+-- Name: at_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: atr
+--
+
+ALTER SEQUENCE public.at_id_seq OWNED BY public.at.id;
+
+
+--
+-- Name: at_name; Type: TABLE; Schema: public; Owner: atr
+--
+
+CREATE TABLE public.at_name (
+    id integer NOT NULL,
+    name text
+);
+
+
+ALTER TABLE public.at_name OWNER TO atr;
+
+--
+-- Name: at_name_id_seq; Type: SEQUENCE; Schema: public; Owner: atr
+--
+
+CREATE SEQUENCE public.at_name_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.at_name_id_seq OWNER TO atr;
+
+--
+-- Name: at_name_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: atr
+--
+
+ALTER SEQUENCE public.at_name_id_seq OWNED BY public.at_name.id;
+
+
+--
+-- Name: at_version; Type: TABLE; Schema: public; Owner: atr
+--
+
+CREATE TABLE public.at_version (
+    id integer NOT NULL,
+    at_name_id integer NOT NULL,
+    version character varying(256),
+    release_order integer
+);
+
+
+ALTER TABLE public.at_version OWNER TO atr;
+
+--
+-- Name: at_version_id_seq; Type: SEQUENCE; Schema: public; Owner: atr
+--
+
+CREATE SEQUENCE public.at_version_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.at_version_id_seq OWNER TO atr;
+
+--
+-- Name: at_version_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: atr
+--
+
+ALTER SEQUENCE public.at_version_id_seq OWNED BY public.at_version.id;
+
+
+--
+-- Name: browser; Type: TABLE; Schema: public; Owner: atr
+--
+
+CREATE TABLE public.browser (
+    id integer NOT NULL,
+    name text
+);
+
+
+ALTER TABLE public.browser OWNER TO atr;
+
+--
+-- Name: browser_id_seq; Type: SEQUENCE; Schema: public; Owner: atr
+--
+
+CREATE SEQUENCE public.browser_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.browser_id_seq OWNER TO atr;
+
+--
+-- Name: browser_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: atr
+--
+
+ALTER SEQUENCE public.browser_id_seq OWNED BY public.browser.id;
+
+
+--
+-- Name: browser_version; Type: TABLE; Schema: public; Owner: atr
+--
+
+CREATE TABLE public.browser_version (
+    id integer NOT NULL,
+    browser_id integer NOT NULL,
+    version character varying(256),
+    release_order integer
+);
+
+
+ALTER TABLE public.browser_version OWNER TO atr;
+
+--
+-- Name: browser_version_id_seq; Type: SEQUENCE; Schema: public; Owner: atr
+--
+
+CREATE SEQUENCE public.browser_version_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.browser_version_id_seq OWNER TO atr;
+
+--
+-- Name: browser_version_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: atr
+--
+
+ALTER SEQUENCE public.browser_version_id_seq OWNED BY public.browser_version.id;
+
+
+--
+-- Name: flyway_schema_history; Type: TABLE; Schema: public; Owner: atr
+--
+
+CREATE TABLE public.flyway_schema_history (
+    installed_rank integer NOT NULL,
+    version character varying(50),
+    description character varying(200) NOT NULL,
+    type character varying(20) NOT NULL,
+    script character varying(1000) NOT NULL,
+    checksum integer,
+    installed_by character varying(100) NOT NULL,
+    installed_on timestamp without time zone DEFAULT now() NOT NULL,
+    execution_time integer NOT NULL,
+    success boolean NOT NULL
+);
+
+
+ALTER TABLE public.flyway_schema_history OWNER TO atr;
+
+--
+-- Name: role; Type: TABLE; Schema: public; Owner: atr
+--
+
+CREATE TABLE public.role (
+    id integer NOT NULL,
+    name text
+);
+
+
+ALTER TABLE public.role OWNER TO atr;
+
+--
+-- Name: role_id_seq; Type: SEQUENCE; Schema: public; Owner: atr
+--
+
+CREATE SEQUENCE public.role_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.role_id_seq OWNER TO atr;
+
+--
+-- Name: role_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: atr
+--
+
+ALTER SEQUENCE public.role_id_seq OWNED BY public.role.id;
+
+
+--
+-- Name: run; Type: TABLE; Schema: public; Owner: atr
+--
+
+CREATE TABLE public.run (
+    id integer NOT NULL,
+    test_cycle_id integer NOT NULL,
+    at_version_id integer NOT NULL,
+    at_id integer NOT NULL,
+    browser_version_id integer NOT NULL,
+    apg_example_id integer NOT NULL
+);
+
+
+ALTER TABLE public.run OWNER TO atr;
+
+--
+-- Name: run_data; Type: VIEW; Schema: public; Owner: atr
+--
+
+CREATE VIEW public.run_data AS
+ SELECT run.id,
+    run.test_cycle_id,
+    browser_version.version AS browser_version,
+    browser.name AS browser_name,
+    browser.id AS browser_id,
+    at.key AS at_key,
+    at.id AS at_id,
+    at_name.name AS at_name,
+    at_name.id AS at_name_id,
+    at_version.version AS at_version,
+    apg_example.directory AS apg_example_directory,
+    apg_example.name AS apg_example_name,
+    apg_example.id AS apg_example_id
+   FROM public.run,
+    public.browser_version,
+    public.browser,
+    public.at,
+    public.at_name,
+    public.at_version,
+    public.apg_example
+  WHERE ((run.browser_version_id = browser_version.id) AND (browser_version.browser_id = browser.id) AND (run.at_id = at.id) AND (at.at_name_id = at_name.id) AND (run.at_version_id = at_version.id) AND (run.apg_example_id = apg_example.id));
+
+
+ALTER TABLE public.run_data OWNER TO atr;
+
+--
+-- Name: run_id_seq; Type: SEQUENCE; Schema: public; Owner: atr
+--
+
+CREATE SEQUENCE public.run_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.run_id_seq OWNER TO atr;
+
+--
+-- Name: run_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: atr
+--
+
+ALTER SEQUENCE public.run_id_seq OWNED BY public.run.id;
+
+
+--
+-- Name: session; Type: TABLE; Schema: public; Owner: atr
+--
+
+CREATE TABLE public.session (
+    sid character varying NOT NULL,
+    sess json NOT NULL,
+    expire timestamp(6) without time zone NOT NULL
+);
+
+
+ALTER TABLE public.session OWNER TO atr;
+
+--
+-- Name: test; Type: TABLE; Schema: public; Owner: atr
+--
+
+CREATE TABLE public.test (
+    id integer NOT NULL,
+    name text,
+    file text,
+    execution_order integer,
+    apg_example_id integer NOT NULL,
+    test_version_id integer NOT NULL
+);
+
+
+ALTER TABLE public.test OWNER TO atr;
+
+--
+-- Name: test_cycle; Type: TABLE; Schema: public; Owner: atr
+--
+
+CREATE TABLE public.test_cycle (
+    id integer NOT NULL,
+    name text,
+    test_version_id integer NOT NULL,
+    created_user_id integer NOT NULL,
+    date date
+);
+
+
+ALTER TABLE public.test_cycle OWNER TO atr;
+
+--
+-- Name: test_cycle_id_seq; Type: SEQUENCE; Schema: public; Owner: atr
+--
+
+CREATE SEQUENCE public.test_cycle_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.test_cycle_id_seq OWNER TO atr;
+
+--
+-- Name: test_cycle_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: atr
+--
+
+ALTER SEQUENCE public.test_cycle_id_seq OWNED BY public.test_cycle.id;
+
+
+--
+-- Name: test_id_seq; Type: SEQUENCE; Schema: public; Owner: atr
+--
+
+CREATE SEQUENCE public.test_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.test_id_seq OWNER TO atr;
+
+--
+-- Name: test_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: atr
+--
+
+ALTER SEQUENCE public.test_id_seq OWNED BY public.test.id;
+
+
+--
+-- Name: test_result; Type: TABLE; Schema: public; Owner: atr
+--
+
+CREATE TABLE public.test_result (
+    id integer NOT NULL,
+    test_id integer NOT NULL,
+    run_id integer NOT NULL,
+    user_id integer NOT NULL,
+    status_id integer,
+    result json
+);
+
+
+ALTER TABLE public.test_result OWNER TO atr;
+
+--
+-- Name: test_result_id_seq; Type: SEQUENCE; Schema: public; Owner: atr
+--
+
+CREATE SEQUENCE public.test_result_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.test_result_id_seq OWNER TO atr;
+
+--
+-- Name: test_result_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: atr
+--
+
+ALTER SEQUENCE public.test_result_id_seq OWNED BY public.test_result.id;
+
+
+--
+-- Name: test_status; Type: TABLE; Schema: public; Owner: atr
+--
+
+CREATE TABLE public.test_status (
+    id integer NOT NULL,
+    name text
+);
+
+
+ALTER TABLE public.test_status OWNER TO atr;
+
+--
+-- Name: test_status_id_seq; Type: SEQUENCE; Schema: public; Owner: atr
+--
+
+CREATE SEQUENCE public.test_status_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.test_status_id_seq OWNER TO atr;
+
+--
+-- Name: test_status_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: atr
+--
+
+ALTER SEQUENCE public.test_status_id_seq OWNED BY public.test_status.id;
+
+
+--
+-- Name: test_to_at; Type: TABLE; Schema: public; Owner: atr
+--
+
+CREATE TABLE public.test_to_at (
+    id integer NOT NULL,
+    test_id integer NOT NULL,
+    at_id integer NOT NULL
+);
+
+
+ALTER TABLE public.test_to_at OWNER TO atr;
+
+--
+-- Name: test_to_at_id_seq; Type: SEQUENCE; Schema: public; Owner: atr
+--
+
+CREATE SEQUENCE public.test_to_at_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.test_to_at_id_seq OWNER TO atr;
+
+--
+-- Name: test_to_at_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: atr
+--
+
+ALTER SEQUENCE public.test_to_at_id_seq OWNED BY public.test_to_at.id;
+
+
+--
+-- Name: test_version; Type: TABLE; Schema: public; Owner: atr
+--
+
+CREATE TABLE public.test_version (
+    id integer NOT NULL,
+    git_repo text,
+    git_tag text,
+    git_hash text,
+    git_commit_msg text,
+    datetime timestamp with time zone
+);
+
+
+ALTER TABLE public.test_version OWNER TO atr;
+
+--
+-- Name: test_version_id_seq; Type: SEQUENCE; Schema: public; Owner: atr
+--
+
+CREATE SEQUENCE public.test_version_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.test_version_id_seq OWNER TO atr;
+
+--
+-- Name: test_version_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: atr
+--
+
+ALTER SEQUENCE public.test_version_id_seq OWNED BY public.test_version.id;
+
+
+--
+-- Name: tester_to_run; Type: TABLE; Schema: public; Owner: atr
+--
+
+CREATE TABLE public.tester_to_run (
+    id integer NOT NULL,
+    run_id integer NOT NULL,
+    user_id integer NOT NULL
+);
+
+
+ALTER TABLE public.tester_to_run OWNER TO atr;
+
+--
+-- Name: tester_to_run_id_seq; Type: SEQUENCE; Schema: public; Owner: atr
+--
+
+CREATE SEQUENCE public.tester_to_run_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.tester_to_run_id_seq OWNER TO atr;
+
+--
+-- Name: tester_to_run_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: atr
+--
+
+ALTER SEQUENCE public.tester_to_run_id_seq OWNED BY public.tester_to_run.id;
+
+
+--
+-- Name: user_to_at; Type: TABLE; Schema: public; Owner: atr
+--
+
+CREATE TABLE public.user_to_at (
+    id integer NOT NULL,
+    at_name_id integer NOT NULL,
+    user_id integer NOT NULL,
+    active boolean
+);
+
+
+ALTER TABLE public.user_to_at OWNER TO atr;
+
+--
+-- Name: user_to_at_id_seq; Type: SEQUENCE; Schema: public; Owner: atr
+--
+
+CREATE SEQUENCE public.user_to_at_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.user_to_at_id_seq OWNER TO atr;
+
+--
+-- Name: user_to_at_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: atr
+--
+
+ALTER SEQUENCE public.user_to_at_id_seq OWNED BY public.user_to_at.id;
+
+
+--
+-- Name: user_to_role; Type: TABLE; Schema: public; Owner: atr
+--
+
+CREATE TABLE public.user_to_role (
+    id integer NOT NULL,
+    user_id integer NOT NULL,
+    role_id integer NOT NULL
+);
+
+
+ALTER TABLE public.user_to_role OWNER TO atr;
+
+--
+-- Name: user_to_role_id_seq; Type: SEQUENCE; Schema: public; Owner: atr
+--
+
+CREATE SEQUENCE public.user_to_role_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.user_to_role_id_seq OWNER TO atr;
+
+--
+-- Name: user_to_role_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: atr
+--
+
+ALTER SEQUENCE public.user_to_role_id_seq OWNED BY public.user_to_role.id;
+
+
+--
+-- Name: users; Type: TABLE; Schema: public; Owner: atr
+--
+
+CREATE TABLE public.users (
+    id integer NOT NULL,
+    fullname text,
+    username text,
+    email text
+);
+
+
+ALTER TABLE public.users OWNER TO atr;
+
+--
+-- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: atr
+--
+
+CREATE SEQUENCE public.users_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.users_id_seq OWNER TO atr;
+
+--
+-- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: atr
+--
+
+ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
+
+
+--
+-- Name: apg_example id; Type: DEFAULT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.apg_example ALTER COLUMN id SET DEFAULT nextval('public.apg_example_id_seq'::regclass);
+
+
+--
+-- Name: at id; Type: DEFAULT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.at ALTER COLUMN id SET DEFAULT nextval('public.at_id_seq'::regclass);
+
+
+--
+-- Name: at_name id; Type: DEFAULT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.at_name ALTER COLUMN id SET DEFAULT nextval('public.at_name_id_seq'::regclass);
+
+
+--
+-- Name: at_version id; Type: DEFAULT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.at_version ALTER COLUMN id SET DEFAULT nextval('public.at_version_id_seq'::regclass);
+
+
+--
+-- Name: browser id; Type: DEFAULT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.browser ALTER COLUMN id SET DEFAULT nextval('public.browser_id_seq'::regclass);
+
+
+--
+-- Name: browser_version id; Type: DEFAULT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.browser_version ALTER COLUMN id SET DEFAULT nextval('public.browser_version_id_seq'::regclass);
+
+
+--
+-- Name: role id; Type: DEFAULT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.role ALTER COLUMN id SET DEFAULT nextval('public.role_id_seq'::regclass);
+
+
+--
+-- Name: run id; Type: DEFAULT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.run ALTER COLUMN id SET DEFAULT nextval('public.run_id_seq'::regclass);
+
+
+--
+-- Name: test id; Type: DEFAULT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.test ALTER COLUMN id SET DEFAULT nextval('public.test_id_seq'::regclass);
+
+
+--
+-- Name: test_cycle id; Type: DEFAULT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.test_cycle ALTER COLUMN id SET DEFAULT nextval('public.test_cycle_id_seq'::regclass);
+
+
+--
+-- Name: test_result id; Type: DEFAULT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.test_result ALTER COLUMN id SET DEFAULT nextval('public.test_result_id_seq'::regclass);
+
+
+--
+-- Name: test_status id; Type: DEFAULT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.test_status ALTER COLUMN id SET DEFAULT nextval('public.test_status_id_seq'::regclass);
+
+
+--
+-- Name: test_to_at id; Type: DEFAULT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.test_to_at ALTER COLUMN id SET DEFAULT nextval('public.test_to_at_id_seq'::regclass);
+
+
+--
+-- Name: test_version id; Type: DEFAULT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.test_version ALTER COLUMN id SET DEFAULT nextval('public.test_version_id_seq'::regclass);
+
+
+--
+-- Name: tester_to_run id; Type: DEFAULT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.tester_to_run ALTER COLUMN id SET DEFAULT nextval('public.tester_to_run_id_seq'::regclass);
+
+
+--
+-- Name: user_to_at id; Type: DEFAULT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.user_to_at ALTER COLUMN id SET DEFAULT nextval('public.user_to_at_id_seq'::regclass);
+
+
+--
+-- Name: user_to_role id; Type: DEFAULT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.user_to_role ALTER COLUMN id SET DEFAULT nextval('public.user_to_role_id_seq'::regclass);
+
+
+--
+-- Name: users id; Type: DEFAULT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_id_seq'::regclass);
+
+
+--
+-- Name: apg_example apg_example_pkey; Type: CONSTRAINT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.apg_example
+    ADD CONSTRAINT apg_example_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: at_name at_name_name_key; Type: CONSTRAINT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.at_name
+    ADD CONSTRAINT at_name_name_key UNIQUE (name);
+
+
+--
+-- Name: at_name at_name_pkey; Type: CONSTRAINT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.at_name
+    ADD CONSTRAINT at_name_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: at at_pkey; Type: CONSTRAINT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.at
+    ADD CONSTRAINT at_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: at_version at_version_at_name_id_version_key; Type: CONSTRAINT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.at_version
+    ADD CONSTRAINT at_version_at_name_id_version_key UNIQUE (at_name_id, version);
+
+
+--
+-- Name: at_version at_version_pkey; Type: CONSTRAINT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.at_version
+    ADD CONSTRAINT at_version_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: browser browser_name_key; Type: CONSTRAINT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.browser
+    ADD CONSTRAINT browser_name_key UNIQUE (name);
+
+
+--
+-- Name: browser browser_pkey; Type: CONSTRAINT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.browser
+    ADD CONSTRAINT browser_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: browser_version browser_version_browser_id_version_key; Type: CONSTRAINT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.browser_version
+    ADD CONSTRAINT browser_version_browser_id_version_key UNIQUE (browser_id, version);
+
+
+--
+-- Name: browser_version browser_version_pkey; Type: CONSTRAINT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.browser_version
+    ADD CONSTRAINT browser_version_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: flyway_schema_history flyway_schema_history_pk; Type: CONSTRAINT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.flyway_schema_history
+    ADD CONSTRAINT flyway_schema_history_pk PRIMARY KEY (installed_rank);
+
+
+--
+-- Name: role role_name_key; Type: CONSTRAINT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.role
+    ADD CONSTRAINT role_name_key UNIQUE (name);
+
+
+--
+-- Name: role role_pkey; Type: CONSTRAINT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.role
+    ADD CONSTRAINT role_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: run run_pkey; Type: CONSTRAINT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.run
+    ADD CONSTRAINT run_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: session session_pkey; Type: CONSTRAINT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.session
+    ADD CONSTRAINT session_pkey PRIMARY KEY (sid);
+
+
+--
+-- Name: test_cycle test_cycle_pkey; Type: CONSTRAINT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.test_cycle
+    ADD CONSTRAINT test_cycle_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: test test_pkey; Type: CONSTRAINT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.test
+    ADD CONSTRAINT test_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: test_result test_result_pkey; Type: CONSTRAINT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.test_result
+    ADD CONSTRAINT test_result_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: test_status test_status_pkey; Type: CONSTRAINT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.test_status
+    ADD CONSTRAINT test_status_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: test_to_at test_to_at_pkey; Type: CONSTRAINT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.test_to_at
+    ADD CONSTRAINT test_to_at_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: test_version test_version_pkey; Type: CONSTRAINT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.test_version
+    ADD CONSTRAINT test_version_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: tester_to_run tester_to_run_pkey; Type: CONSTRAINT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.tester_to_run
+    ADD CONSTRAINT tester_to_run_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: user_to_at user_to_at_at_name_id_user_id_key; Type: CONSTRAINT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.user_to_at
+    ADD CONSTRAINT user_to_at_at_name_id_user_id_key UNIQUE (at_name_id, user_id);
+
+
+--
+-- Name: user_to_at user_to_at_pkey; Type: CONSTRAINT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.user_to_at
+    ADD CONSTRAINT user_to_at_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: user_to_role user_to_role_pkey; Type: CONSTRAINT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.user_to_role
+    ADD CONSTRAINT user_to_role_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: user_to_role user_to_role_user_id_role_id_key; Type: CONSTRAINT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.user_to_role
+    ADD CONSTRAINT user_to_role_user_id_role_id_key UNIQUE (user_id, role_id);
+
+
+--
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: users users_username_key; Type: CONSTRAINT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_username_key UNIQUE (username);
+
+
+--
+-- Name: IDX_session_expire; Type: INDEX; Schema: public; Owner: atr
+--
+
+CREATE INDEX "IDX_session_expire" ON public.session USING btree (expire);
+
+
+--
+-- Name: flyway_schema_history_s_idx; Type: INDEX; Schema: public; Owner: atr
+--
+
+CREATE INDEX flyway_schema_history_s_idx ON public.flyway_schema_history USING btree (success);
+
+
+--
+-- Name: apg_example apg_example_test_version_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.apg_example
+    ADD CONSTRAINT apg_example_test_version_id_fkey FOREIGN KEY (test_version_id) REFERENCES public.test_version(id);
+
+
+--
+-- Name: at at_at_name_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.at
+    ADD CONSTRAINT at_at_name_id_fkey FOREIGN KEY (at_name_id) REFERENCES public.at_name(id);
+
+
+--
+-- Name: at at_test_version_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.at
+    ADD CONSTRAINT at_test_version_id_fkey FOREIGN KEY (test_version_id) REFERENCES public.test_version(id);
+
+
+--
+-- Name: at_version at_version_at_name_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.at_version
+    ADD CONSTRAINT at_version_at_name_id_fkey FOREIGN KEY (at_name_id) REFERENCES public.at_name(id);
+
+
+--
+-- Name: browser_version browser_version_browser_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.browser_version
+    ADD CONSTRAINT browser_version_browser_id_fkey FOREIGN KEY (browser_id) REFERENCES public.browser(id);
+
+
+--
+-- Name: run run_apg_example_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.run
+    ADD CONSTRAINT run_apg_example_id_fkey FOREIGN KEY (apg_example_id) REFERENCES public.apg_example(id);
+
+
+--
+-- Name: run run_at_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.run
+    ADD CONSTRAINT run_at_id_fkey FOREIGN KEY (at_id) REFERENCES public.at(id);
+
+
+--
+-- Name: run run_at_version_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.run
+    ADD CONSTRAINT run_at_version_id_fkey FOREIGN KEY (at_version_id) REFERENCES public.at_version(id);
+
+
+--
+-- Name: run run_browser_version_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.run
+    ADD CONSTRAINT run_browser_version_id_fkey FOREIGN KEY (browser_version_id) REFERENCES public.browser_version(id);
+
+
+--
+-- Name: run run_test_cycle_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.run
+    ADD CONSTRAINT run_test_cycle_id_fkey FOREIGN KEY (test_cycle_id) REFERENCES public.test_cycle(id);
+
+
+--
+-- Name: test test_apg_example_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.test
+    ADD CONSTRAINT test_apg_example_id_fkey FOREIGN KEY (apg_example_id) REFERENCES public.apg_example(id);
+
+
+--
+-- Name: test_cycle test_cycle_created_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.test_cycle
+    ADD CONSTRAINT test_cycle_created_user_id_fkey FOREIGN KEY (created_user_id) REFERENCES public.users(id);
+
+
+--
+-- Name: test_cycle test_cycle_test_version_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.test_cycle
+    ADD CONSTRAINT test_cycle_test_version_id_fkey FOREIGN KEY (test_version_id) REFERENCES public.test_version(id);
+
+
+--
+-- Name: test_result test_result_run_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.test_result
+    ADD CONSTRAINT test_result_run_id_fkey FOREIGN KEY (run_id) REFERENCES public.run(id);
+
+
+--
+-- Name: test_result test_result_status_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.test_result
+    ADD CONSTRAINT test_result_status_id_fkey FOREIGN KEY (status_id) REFERENCES public.test_status(id);
+
+
+--
+-- Name: test_result test_result_test_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.test_result
+    ADD CONSTRAINT test_result_test_id_fkey FOREIGN KEY (test_id) REFERENCES public.test(id);
+
+
+--
+-- Name: test_result test_result_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.test_result
+    ADD CONSTRAINT test_result_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+
+--
+-- Name: test test_test_version_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.test
+    ADD CONSTRAINT test_test_version_id_fkey FOREIGN KEY (test_version_id) REFERENCES public.test_version(id);
+
+
+--
+-- Name: test_to_at test_to_at_at_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.test_to_at
+    ADD CONSTRAINT test_to_at_at_id_fkey FOREIGN KEY (at_id) REFERENCES public.at(id);
+
+
+--
+-- Name: test_to_at test_to_at_test_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.test_to_at
+    ADD CONSTRAINT test_to_at_test_id_fkey FOREIGN KEY (test_id) REFERENCES public.test(id);
+
+
+--
+-- Name: tester_to_run tester_to_run_run_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.tester_to_run
+    ADD CONSTRAINT tester_to_run_run_id_fkey FOREIGN KEY (run_id) REFERENCES public.run(id);
+
+
+--
+-- Name: tester_to_run tester_to_run_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.tester_to_run
+    ADD CONSTRAINT tester_to_run_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+
+--
+-- Name: user_to_at user_to_at_at_name_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.user_to_at
+    ADD CONSTRAINT user_to_at_at_name_id_fkey FOREIGN KEY (at_name_id) REFERENCES public.at_name(id);
+
+
+--
+-- Name: user_to_at user_to_at_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.user_to_at
+    ADD CONSTRAINT user_to_at_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+
+--
+-- Name: user_to_role user_to_role_role_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.user_to_role
+    ADD CONSTRAINT user_to_role_role_id_fkey FOREIGN KEY (role_id) REFERENCES public.role(id);
+
+
+--
+-- Name: user_to_role user_to_role_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public.user_to_role
+    ADD CONSTRAINT user_to_role_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+
+--
+-- PostgreSQL database dump complete
+--
+

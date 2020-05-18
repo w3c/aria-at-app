@@ -8,7 +8,8 @@ module.exports = {
         dialect: 'postgres',
         dialectOption: {
             ssl: true,
-            native: true
+            native: true,
+            multipleStatements: true
         },
         logging: console.log // eslint-disable-line no-console
     }
