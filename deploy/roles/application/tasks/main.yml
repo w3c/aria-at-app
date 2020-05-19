@@ -36,17 +36,15 @@
   register: environment_config
 
 - name: Create database and database user
-  command: dotenv -f config/dev.env npx sequelize-cli db:migrate
+  command: sudo -u postgres ./db/scripts/db_init.sh {{environment_config.dest}}
   args:
     chdir: '{{source_dir}}'
 
 - name: Migrate database
-  command: ./db/scripts/db_migrate.sh {{environment_config.dest}}
-  args:
-    chdir: '{{source_dir}}'
+  shell: DOTENV_CONFIG_PATH=/home/aria-bot/config.env node -r /home/aria-bot/aria-at-report/node_modules/dotenv/config /vagrant/node_modules/.bin/sequelize-cli db:migrate --config /home/aria-bot/aria-at-report/config/config.js --migrations-path /home/aria-bot/aria-at-report/server/migrations/
 
 - name: Seed database
-  command: dotenv -f {{environment_config.dest}} npx sequelize-cli db:seed:all
+  shell: DOTENV_CONFIG_PATH=/home/aria-bot/config.env node -r /home/aria-bot/aria-at-report/node_modules/dotenv/config /vagrant/node_modules/.bin/sequelize-cli db:seed:all --config /home/aria-bot/aria-at-report/config/config.js --seeders-path /home/aria-bot/aria-at-report/server/seeders/
   args:
     chdir: '{{source_dir}}'
 

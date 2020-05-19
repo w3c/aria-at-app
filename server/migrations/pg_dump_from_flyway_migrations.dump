@@ -1057,12 +1057,6 @@ ALTER TABLE ONLY public.users
 CREATE INDEX "IDX_session_expire" ON public.session USING btree (expire);
 
 
---
--- Name: flyway_schema_history_s_idx; Type: INDEX; Schema: public; Owner: atr
---
-
-CREATE INDEX flyway_schema_history_s_idx ON public.flyway_schema_history USING btree (success);
-
 
 --
 -- Name: apg_example apg_example_test_version_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: atr
