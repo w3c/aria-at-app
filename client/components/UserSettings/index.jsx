@@ -30,10 +30,7 @@ class UserSettings extends Component {
                         return [
                             at.name,
                             {
-                                checked:
-                                    userAt.length > 0
-                                        ? userAt.pop().active
-                                        : false
+                                checked: userAt.length ? true : false
                             }
                         ];
                     })

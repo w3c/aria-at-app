@@ -91,17 +91,17 @@ class TestQueue extends Component {
         }
 
         let currentUser = usersById[userId];
-        let configuredAtNames = currentUser.configured_ats
-            .filter(a => a.active)
-            .map(a => a.at_name);
+        let configuredAtNameIds = currentUser.configured_ats.map(
+            a => a.at_name_id
+        );
 
         let atBrowserRunSets = [];
         if (cycle) {
             for (let runId in cycle.runsById) {
                 const run = cycle.runsById[runId];
-                const { at_name, browser_name } = run;
+                const { at_name_id, at_name, browser_name } = run;
 
-                if (!configuredAtNames.includes(at_name)) {
+                if (!configuredAtNameIds.includes(at_name_id)) {
                     continue;
                 }
 
