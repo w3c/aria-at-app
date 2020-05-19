@@ -339,7 +339,7 @@ ALTER SEQUENCE public.run_id_seq OWNED BY public.run.id;
 
 CREATE TABLE public.session (
     sid character varying NOT NULL,
-    sess json NOT NULL,
+    sess jsonb NOT NULL,
     expire timestamp(6) without time zone NOT NULL
 );
 
@@ -431,7 +431,7 @@ CREATE TABLE public.test_result (
     run_id integer NOT NULL,
     user_id integer NOT NULL,
     status_id integer,
-    result json
+    result jsonb
 );
 
 
