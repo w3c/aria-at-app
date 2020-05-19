@@ -19,13 +19,13 @@ sudo -u postgres yarn db-init:dev
 ### Run database migrations
 Every time a new migration file is added it must be run again to apply the migration.
 ```
-dotenv -f config/dev.env npx sequelize-cli db:migrate
+yarn run sequelize -- db:migrate
 ```
 
 ### Import seed data
 To import seed data into the local database
 ```
-dotenv -f config/dev.env npx sequelize-cli db:seed:all
+yarn run sequelize -- db:seed:all
 ```
 
 ### Import test results
@@ -38,5 +38,5 @@ yarn db-import-tests:dev
 
 To connect to the Postgres table locally:
 ```
-dotenv -f config/dev.env psql
+yarn run dotenv -e config/dev.env psql
 ```
