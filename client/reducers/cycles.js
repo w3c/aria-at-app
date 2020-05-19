@@ -6,11 +6,14 @@ import {
     TEST_SUITE_VERSIONS,
     TESTS_BY_RUN_ID,
     SAVE_USERS_TO_RUNS,
-    DELETE_USERS_FROM_RUN
+    DELETE_USERS_FROM_RUN,
+    CREATE_ISSUE_SUCCESS,
+    ISSUES_BY_TEST_ID
 } from '../actions/types';
 
 const initialState = {
     cyclesById: {},
+    issuesByTestId: {},
     testSuiteVersions: [],
     testsByRunId: {}
 };
@@ -123,6 +126,34 @@ export default (state = initialState, action) => {
                     }
                 }
             });
+        }
+        case ISSUES_BY_TEST_ID: {
+            const { test_id, issues } = action.payload;
+
+            const issuesByTestId = {
+                [test_id]: issues
+            };
+
+            return {
+                ...state,
+                issuesByTestId
+            };
+        }
+        case CREATE_ISSUE_SUCCESS: {
+            const { issuesByTestId } = state;
+
+            const { test_id, issues } = action.payload;
+
+            if (!issuesByTestId[test_id]) {
+                issuesByTestId[test_id] = [];
+            }
+
+            issuesByTestId[test_id].push(...issues);
+
+            return {
+                ...state,
+                issuesByTestId
+            };
         }
         default:
             return state;

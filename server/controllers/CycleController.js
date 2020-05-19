@@ -72,11 +72,48 @@ async function getAllTestVersions(req, res) {
     }
 }
 
+async function getIssuesByTestId(req, res) {
+    const test_id = parseInt(req.query.test_id);
+    const { accessToken } = req.session;
+    try {
+        const issues = await CycleService.getIssuesByTestId({
+            accessToken,
+            test_id
+        });
+        res.status(200).json(issues);
+    } catch (error) {
+        res.status(400);
+        res.end();
+        console.error(`Error caught in CycleController: ${error}`);
+    }
+}
+
+async function createIssue(req, res) {
+    const { run_id, test_id, title, body } = req.body.data;
+    const { accessToken } = req.session;
+    try {
+        const result = await CycleService.createIssue({
+            accessToken,
+            run_id,
+            test_id,
+            title,
+            body
+        });
+        res.status(201).json(result);
+    } catch (error) {
+        res.status(400);
+        res.end();
+        console.error(`Error caught in CycleController: ${error}`);
+    }
+}
+
 module.exports = {
     configureCycle,
     getAllCycles,
     deleteCycle,
     saveTestResults,
     getTestsForRunsForCycle,
-    getAllTestVersions
+    getAllTestVersions,
+    getIssuesByTestId,
+    createIssue
 };

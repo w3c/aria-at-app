@@ -139,6 +139,7 @@ class TestRun extends Component {
             if (!this.state.runComplete) {
                 testContent = (
                     <DisplayTest
+                        run={run}
                         test={test}
                         testIndex={this.state.currentTestIndex}
                         git_hash={git_hash}

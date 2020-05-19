@@ -10,6 +10,8 @@ import {
     Modal,
     Row
 } from 'react-bootstrap';
+import RaiseIssueModal from '@components/RaiseIssueModal';
+import StatusBar from '@components/StatusBar';
 import TestResult from '@components/TestResult';
 
 class DisplayTest extends Component {
@@ -17,6 +19,7 @@ class DisplayTest extends Component {
         super(props);
 
         this.state = {
+            showRaiseIssueModal: false,
             showConfirmModal: false,
             buttonAction: ''
         };
@@ -26,12 +29,19 @@ class DisplayTest extends Component {
         this.handlePreviousTestClick = this.handlePreviousTestClick.bind(this);
         this.handleCloseRunClick = this.handleCloseRunClick.bind(this);
         this.handleRedoClick = this.handleRedoClick.bind(this);
+        this.handleRaiseIssueClick = this.handleRaiseIssueClick.bind(this);
 
         // Modal actions
         this.handleModalCloseClick = this.handleModalCloseClick.bind(this);
         this.handleModalConfirmClick = this.handleModalConfirmClick.bind(this);
 
         this.testIframe = React.createRef();
+    }
+
+    handleRaiseIssueClick() {
+        this.setState({
+            showRaiseIssueModal: !this.state.showRaiseIssueModal
+        });
     }
 
     handleModalCloseClick() {
@@ -137,7 +147,15 @@ class DisplayTest extends Component {
     }
 
     renderModal() {
-        let { testIndex } = this.props;
+        let {
+            at_key,
+            cycleId,
+            git_hash,
+            run,
+            test,
+            testIndex,
+            userId
+        } = this.props;
 
         let modalTitle, action;
         let cannotSave = `Test ${testIndex} has not been completed in full and your progress on this test won’t be saved.`;
@@ -160,36 +178,74 @@ class DisplayTest extends Component {
         }
 
         return (
-            <Modal
-                show={this.state.showConfirmModal}
-                onHide={this.handleModalCloseClick}
-                centered
-                animation={false}
-            >
-                <Modal.Header closeButton>
-                    <Modal.Title>{modalTitle}</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>{action}</Modal.Body>
-                <Modal.Footer>
-                    <Button
-                        variant="secondary"
-                        onClick={this.handleModalCloseClick}
-                    >
-                        Cancel
-                    </Button>
-                    <Button
-                        variant="secondary"
-                        onClick={this.handleModalConfirmClick}
-                    >
-                        Continue
-                    </Button>
-                </Modal.Footer>
-            </Modal>
+            <>
+                <Modal
+                    show={this.state.showConfirmModal}
+                    onHide={this.handleModalCloseClick}
+                    centered
+                    animation={false}
+                >
+                    <Modal.Header closeButton>
+                        <Modal.Title>{modalTitle}</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>{action}</Modal.Body>
+                    <Modal.Footer>
+                        <Button
+                            variant="secondary"
+                            onClick={this.handleModalCloseClick}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            variant="secondary"
+                            onClick={this.handleModalConfirmClick}
+                        >
+                            Continue
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+
+                <RaiseIssueModal
+                    at_key={at_key}
+                    cycleId={cycleId}
+                    git_hash={git_hash}
+                    onHide={this.handleRaiseIssueClick}
+                    run={run}
+                    show={this.state.showRaiseIssueModal}
+                    test={test}
+                    testIndex={testIndex}
+                    userId={userId}
+                />
+            </>
         );
     }
 
     render() {
-        const { test, git_hash, at_key, testIndex, userId } = this.props;
+        const {
+            handleCloseRunClick,
+            handleRaiseIssueClick,
+            handleRedoClick
+        } = this;
+
+        const {
+            cycleId,
+            run,
+            test,
+            git_hash,
+            at_key,
+            testIndex,
+            userId
+        } = this.props;
+
+        const statusProps = {
+            run,
+            test,
+            git_hash,
+            cycleId,
+            handleCloseRunClick,
+            handleRaiseIssueClick,
+            handleRedoClick
+        };
 
         this.testHasResult =
             test.results &&
@@ -223,16 +279,13 @@ class DisplayTest extends Component {
         );
         menuRightOContent = (
             <ButtonGroup vertical>
-                <Button
-                    href="https://github.com/w3c/aria-at/issues"
-                    variant="primary"
-                >
+                <Button variant="primary" onClick={handleRaiseIssueClick}>
                     Raise an issue
                 </Button>
-                <Button variant="primary" onClick={this.handleRedoClick}>
+                <Button variant="primary" onClick={handleRedoClick}>
                     Re-do Test
                 </Button>
-                <Button variant="primary" onClick={this.handleCloseRunClick}>
+                <Button variant="primary" onClick={handleCloseRunClick}>
                     {this.testHasResult ? 'Close' : 'Save and Close'}
                 </Button>
             </ButtonGroup>
@@ -252,6 +305,10 @@ class DisplayTest extends Component {
 
         let modals = this.renderModal();
 
+        // Quick and lazy fix to make sure the
+        // content row lines up with everything
+        // else on the left.
+        const contentRowStyle = { marginLeft: '0px' };
         return (
             <Fragment>
                 <Row>
@@ -262,6 +319,12 @@ class DisplayTest extends Component {
                     </Col>
                 </Row>
                 <Row>
+                    <Col>
+                        <StatusBar {...statusProps} />
+                    </Col>
+                </Row>
+
+                <Row style={contentRowStyle}>
                     <Col md={9}>
                         <Row>{testContent}</Row>
                         <Row>{menuUnderContent}</Row>
@@ -276,6 +339,7 @@ class DisplayTest extends Component {
 
 DisplayTest.propTypes = {
     dispatch: PropTypes.func,
+    run: PropTypes.object,
     test: PropTypes.object,
     testIndex: PropTypes.number,
     git_hash: PropTypes.string,
