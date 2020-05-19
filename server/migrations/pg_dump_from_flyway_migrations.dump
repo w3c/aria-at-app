@@ -232,26 +232,6 @@ ALTER SEQUENCE public.browser_version_id_seq OWNED BY public.browser_version.id;
 
 
 --
--- Name: flyway_schema_history; Type: TABLE; Schema: public; Owner: atr
---
-
-CREATE TABLE public.flyway_schema_history (
-    installed_rank integer NOT NULL,
-    version character varying(50),
-    description character varying(200) NOT NULL,
-    type character varying(20) NOT NULL,
-    script character varying(1000) NOT NULL,
-    checksum integer,
-    installed_by character varying(100) NOT NULL,
-    installed_on timestamp without time zone DEFAULT now() NOT NULL,
-    execution_time integer NOT NULL,
-    success boolean NOT NULL
-);
-
-
-ALTER TABLE public.flyway_schema_history OWNER TO atr;
-
---
 -- Name: role; Type: TABLE; Schema: public; Owner: atr
 --
 
@@ -932,14 +912,6 @@ ALTER TABLE ONLY public.browser_version
 
 ALTER TABLE ONLY public.browser_version
     ADD CONSTRAINT browser_version_pkey PRIMARY KEY (id);
-
-
---
--- Name: flyway_schema_history flyway_schema_history_pk; Type: CONSTRAINT; Schema: public; Owner: atr
---
-
-ALTER TABLE ONLY public.flyway_schema_history
-    ADD CONSTRAINT flyway_schema_history_pk PRIMARY KEY (installed_rank);
 
 
 --

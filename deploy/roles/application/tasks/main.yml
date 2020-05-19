@@ -36,12 +36,17 @@
   register: environment_config
 
 - name: Create database and database user
-  command: sudo -u postgres ./db/scripts/db_init.sh {{environment_config.dest}}
+  command: dotenv -f config/dev.env npx sequelize-cli db:migrate
   args:
     chdir: '{{source_dir}}'
 
 - name: Migrate database
   command: ./db/scripts/db_migrate.sh {{environment_config.dest}}
+  args:
+    chdir: '{{source_dir}}'
+
+- name: Seed database
+  command: dotenv -f {{environment_config.dest}} npx sequelize-cli db:seed:all
   args:
     chdir: '{{source_dir}}'
 
