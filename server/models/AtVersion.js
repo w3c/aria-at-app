@@ -1,5 +1,5 @@
 module.exports = function(sequelize, DataTypes) {
-    return sequelize.define(
+    let AtVersion = sequelize.define(
         'AtVersion',
         {
             id: {
@@ -32,4 +32,13 @@ module.exports = function(sequelize, DataTypes) {
             tableName: 'at_version'
         }
     );
+
+    AtVersion.associate = function(models) {
+        models.AtVersion.belongsTo(models.AtName, {
+            foreignKey: 'at_name_id',
+            targetKey: 'id'
+        });
+    };
+
+    return AtVersion;
 };
