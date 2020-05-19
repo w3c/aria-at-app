@@ -32,7 +32,7 @@ class TestQueue extends Component {
     }
 
     renderAtBrowserList(runIds) {
-        const { userId, usersById, cycle, testsByRunId } = this.props;
+        const { userId, usersById, cycle, testsByRunId, admin } = this.props;
         const {
             at_name: atName,
             at_version: atVersion,
@@ -60,7 +60,8 @@ class TestQueue extends Component {
                         {runIds.map(runId => {
                             const {
                                 apg_example_name: apgExampleName,
-                                testers
+                                testers,
+                                at_name_id
                             } = cycle.runsById[runId];
                             return (
                                 <TestQueueRun
@@ -72,8 +73,10 @@ class TestQueue extends Component {
                                     usersById={usersById}
                                     userId={userId}
                                     atName={atName}
+                                    atNameId={at_name_id}
                                     browserName={browserName}
                                     testsForRun={testsByRunId[runId]}
+                                    admin={admin}
                                 />
                             );
                         })}
@@ -84,12 +87,18 @@ class TestQueue extends Component {
     }
 
     render() {
-        const { cycle, cycleId, testsFetched, usersById, userId } = this.props;
+        const {
+            cycle,
+            cycleId,
+            testsFetched,
+            usersById,
+            userId,
+            admin
+        } = this.props;
 
         if (!testsFetched || !cycle || !Object.keys(usersById).length) {
             return <div>Loading</div>;
         }
-
         let currentUser = usersById[userId];
         let configuredAtNameIds = currentUser.configured_ats.map(
             a => a.at_name_id
@@ -101,8 +110,11 @@ class TestQueue extends Component {
                 const run = cycle.runsById[runId];
                 const { at_name_id, at_name, browser_name } = run;
 
-                if (!configuredAtNameIds.includes(at_name_id)) {
-                    continue;
+                // If you are not an admin, you cannot see runs you cannot perform
+                if (!admin) {
+                    if (!configuredAtNameIds.includes(at_name_id)) {
+                        continue;
+                    }
                 }
 
                 let atBrowserRun = atBrowserRunSets.filter(r => {
@@ -141,6 +153,7 @@ class TestQueue extends Component {
 }
 
 TestQueue.propTypes = {
+    admin: PropTypes.number,
     cycle: PropTypes.object,
     cycleId: PropTypes.number,
     testsByRunId: PropTypes.object,
@@ -154,6 +167,7 @@ const mapStateToProps = (state, ownProps) => {
     const { cyclesById, testsByRunId } = state.cycles;
     const { usersById } = state.users;
     const userId = state.user.id;
+    const roles = state.user.roles;
     const cycleId = parseInt(ownProps.match.params.cycleId);
 
     let cycle = cyclesById[cycleId];
@@ -169,7 +183,16 @@ const mapStateToProps = (state, ownProps) => {
         }
     }
 
-    return { cycle, cycleId, testsByRunId, testsFetched, usersById, userId };
+    let admin = roles.includes('admin');
+    return {
+        cycle,
+        cycleId,
+        testsByRunId,
+        testsFetched,
+        usersById,
+        userId,
+        admin
+    };
 };
 
 export default connect(mapStateToProps)(TestQueue);
