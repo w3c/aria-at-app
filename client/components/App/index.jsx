@@ -71,8 +71,8 @@ class App extends Component {
             <Fragment>
                 <Container fluid>
                     <Navbar bg="light" expand="lg">
-                        <Navbar.Brand as={Link} {...this.navProps('/')}>
-                            <h1>ARIA-AT</h1>
+                        <Navbar.Brand className="logo" as={Link} {...this.navProps('/')}>
+                            ARIA-AT
                         </Navbar.Brand>
                         <Navbar.Toggle aria-controls="basic-navbar-nav" />
                         <Navbar.Collapse

@@ -166,6 +166,7 @@ class TestQueue extends Component {
                 <Helmet>
                     <title>{`Test queue (for cycle: ${cycle.name}) | ARIA-AT`}</title>
                 </Helmet>
+                <h1>Test Queue</h1>
                 <h2>
                     Test Run Queue For Test Cycle:{' '}
                     {cycle ? cycle.name : cycleId}

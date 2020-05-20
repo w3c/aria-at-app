@@ -26,6 +26,7 @@ class ManageCycles extends Component {
                 <Helmet>
                     <title>Test Management | ARIA-AT</title>
                 </Helmet>
+                <h1>Test Management</h1>
                 <h2>Initiate a Test Cycle</h2>
                 <Button as={Link} to="/cycles/new">
                     Initiate

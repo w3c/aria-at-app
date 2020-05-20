@@ -128,6 +128,7 @@ class UserSettings extends Component {
                     <Helmet>
                         <title>Settings | ARIA-AT</title>
                     </Helmet>
+                    <h1>Settings</h1>
                     {content}
                 </Container>
             </Fragment>
