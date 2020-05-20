@@ -1,6 +1,6 @@
 # ARIA and Assistive Technologies App (ARIA-AT App)
 ## ARIA-AT APP
-ARIA-AT aims to improve interoperability between different Assistive Technologies (ATs) in how they render ARIA patterns. This is achieved through running manual tests and presenting test results to AT vendors. The tests are based on examples from WAI-ARIA Authoring Practices, and are vetted with stakeholders following the working mode process.
+ARIA-AT aims to improve interoperability between different Assistive Technologies (ATs) in how they render ARIA patterns. This is achieved through running manual tests and presenting test results to AT vendors. The tests are based on examples from [WAI-ARIA Authoring Practices](https://w3c.github.io/aria-practices/), and are vetted with stakeholders following the [Working Mode](https://github.com/w3c/aria-at/wiki/Working-Mode) process.
 
 This app includes a reports page that shows the public results of manual testing across various browser / AT combinations. The app is also used by manual testers
 
