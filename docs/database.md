@@ -2,16 +2,6 @@
 
 ## Local database setup
 
-### Dependencies
-* Flyway
-  * Flyway is a database migration tool that keeps track of each change to the database
-  * Migrations are stored in db/migrations
-  * Mac Install: `brew install flyway`
-  * Other OS install: https://flywaydb.org/download/
-* Postgres
-  * If you are on a linux computer, you might have to follow the instructions [here](https://stackoverflow.com/a/21889759) to change the default authentication from "peer" to "md5".
-
-
 ### Initialize the database
 
 #### Mac
@@ -26,13 +16,17 @@ sudo -u postgres yarn db-init:dev
 
 ```
 
-
 ### Run database migrations
-Every time a new migration file is added, Flyway must be run again to apply the migration.
+Every time a new migration file is added it must be run again to apply the migration.
 ```
-yarn db-migrate:dev
+yarn run sequelize -- db:migrate
 ```
 
+### Import seed data
+To import seed data into the local database
+```
+yarn run sequelize -- db:seed:all
+```
 
 ### Import test results
 To import test data into the local database, run:
@@ -42,12 +36,36 @@ yarn db-import-tests:dev
 
 ### Inspecting the database
 
-To connect to the Postgres table locally (with psql), export these variables:
+To connect to the Postgres table locally:
 ```
-export PGDATABASE=aria_at_report
-export PGUSER=atr
-export PGPASSWORD=atr
-export PGHOST=localhost
-export PGPORT=5432
-export ROOTUSER=$USER
+yarn run dotenv -e config/dev.env psql
 ```
+
+### Destroying Flyway Managed Database and Migrating to Sequelize
+**Note: These instructions were performed on a Mac. Other OS users, please update these docs in a separate PR.**
+
+This section is for users who were previously managing their database using Flyway. The application has moved away from using Flyway for database management in favor of Sequelize. To change the database management to Sequelize, follow these instructions:
+
+#### 1. Destroy Database
+- Flyway clear out the database by undoing the migrations:
+```
+flyway clean -user=$PGUSER -password=$PGPASSWORD -url=jdbc:postgresql://$PGHOST:$PGPORT/$PGDATABASE -locations=filesystem:$(pwd)/db/migrations -baselineVersion=0 -baselineOnMigrate=true
+```
+- Reset PostgreSQL variables
+```
+export PGDATABASE=
+export PGUSER=
+export PGPASSWORD=
+export PGHOST=
+export PGPORT=
+```
+
+- Drop the database
+  - `psql -c "DROP DATABASE aria_at_report;"`
+
+#### 2. Initialize a new database
+
+- Follow the **Local database setup** instructions above, starting with **Initialize the database**
+- Follow the **Import test results** instructions above.
+- Run app as usual.
+

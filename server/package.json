@@ -24,6 +24,7 @@
     "axios": "^0.19.2",
     "connect-pg-simple": "^6.1.0",
     "dotenv": "^8.2.0",
+    "dotenv-cli": "^3.1.0",
     "express": "^4.17.1",
     "express-session": "^1.17.0",
     "node-html-parser": "^1.2.14",

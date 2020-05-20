@@ -13,6 +13,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # conflict with that of another project.
   config.vm.network :private_network, ip: '192.168.10.40'
 
+  config.vm.post_up_message = 'The app is now running at http://192.168.10.40/'
+
   # A specific name looks much better than "default" in ansible output.
   config.vm.define 'vagrant'
 

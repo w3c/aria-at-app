@@ -117,3 +117,4 @@ deploy/ansible-vault-password.txt
 
 # Vagrant
 /.vagrant/
+deploy/provision.retry

@@ -7,7 +7,7 @@
     - https://dl.yarnpkg.com/debian/pubkey.gpg
     - https://deb.nodesource.com/gpgkey/nodesource.gpg.key
 
-- name: Addd software repositories
+- name: Add software repositories
   apt_repository:
     state: present
     repo: '{{item}}'
