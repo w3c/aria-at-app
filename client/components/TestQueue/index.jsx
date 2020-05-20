@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 import { Table } from 'react-bootstrap';
 import { Helmet } from 'react-helmet';
 import { connect } from 'react-redux';
@@ -96,15 +97,40 @@ class TestQueue extends Component {
             admin
         } = this.props;
 
+        const loading = <div data-test="test-queue-loading">Loading</div>;
+
         if (!testsFetched || !cycle || !Object.keys(usersById).length) {
-            return <div>Loading</div>;
+            return loading;
         }
-        let currentUser = usersById[userId];
+
+        const currentUser = usersById[userId];
+
+        if (!currentUser) {
+            return loading;
+        }
+
         let configuredAtNameIds = currentUser.configured_ats.map(
             a => a.at_name_id
         );
 
-        let atBrowserRunSets = [];
+        if (!configuredAtNameIds.length) {
+            const noAts = 'No Assistive Technologies Configured';
+            const settingsLink = <Link to="/account/settings">Settings</Link>;
+            return (
+                <Fragment>
+                    <Helmet>
+                        <title>{noAts} | ARIA-AT</title>
+                    </Helmet>
+                    <h2 data-test="test-queue-no-ats-h2">{noAts}</h2>
+                    <p data-test="test-queue-no-ats-p">
+                        To contribute tests, please configure the relevant
+                        Assistive Technologies in {settingsLink}
+                    </p>
+                </Fragment>
+            );
+        }
+
+        const atBrowserRunSets = [];
         if (cycle) {
             for (let runId in cycle.runsById) {
                 const run = cycle.runsById[runId];
@@ -153,7 +179,7 @@ class TestQueue extends Component {
 }
 
 TestQueue.propTypes = {
-    admin: PropTypes.number,
+    admin: PropTypes.bool,
     cycle: PropTypes.object,
     cycleId: PropTypes.number,
     testsByRunId: PropTypes.object,
@@ -183,7 +209,8 @@ const mapStateToProps = (state, ownProps) => {
         }
     }
 
-    let admin = roles.includes('admin');
+    let admin = (roles || []).includes('admin');
+
     return {
         cycle,
         cycleId,

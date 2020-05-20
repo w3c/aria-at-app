@@ -22,10 +22,7 @@ describe('render', () => {
             wrapper = setup(initialState);
         });
         test('renders component without error', () => {
-            const component = findByTestAttr(
-                wrapper,
-                'component-user-settings'
-            );
+            const component = findByTestAttr(wrapper, 'user-settings-contents');
             expect(component.length).toBe(1);
         });
         test('renders not signed in text', () => {
@@ -50,10 +47,7 @@ describe('render', () => {
             wrapper = setup(initialState);
         });
         test('renders component without error', () => {
-            const component = findByTestAttr(
-                wrapper,
-                'component-user-settings'
-            );
+            const component = findByTestAttr(wrapper, 'user-settings-contents');
             expect(component.length).toBe(1);
         });
         test('renders username', () => {
@@ -62,7 +56,7 @@ describe('render', () => {
                 'user-settings-authorized'
             );
             expect(component.length).toBe(1);
-            expect(component.text()).toContain('USER DETAILS');
+            expect(component.text()).toContain('User Details');
         });
     });
 });

@@ -27,93 +27,41 @@ const UsersService = require('./UsersService');
  */
 async function configureCycle(cycle) {
     try {
-        let cycleId = (
-            await db.sequelize.query(`
-             INSERT INTO
-               test_cycle(name, test_version_id, created_user_id, date)
-             VALUES
-               ('${cycle.name}', ${cycle.test_version_id}, ${cycle.created_user_id}, CURRENT_DATE)
-             RETURNING ID
-        `)
-        )[0][0].id;
+        const cycleRow = await db.TestCycle.create({
+            name: cycle.name,
+            test_version_id: cycle.test_version_id,
+            created_user_id: cycle.created_user_id,
+            date: new Date()
+        });
+        let cycleId = cycleRow.dataValues.id;
 
         for (let run of cycle.runs) {
-            // Get the browser version if it exists, or save it
-            let results = (
-                await db.sequelize.query(`
-                  select
-                    id
-                  from
-                    browser_version
-                  where
-                    browser_id = ${run.browser_id} and version = '${run.browser_version}'
-            `)
-            )[0];
-            let browserVersionId = results.length ? results[0].id : undefined;
+            const browserVersionRows = await db.BrowserVersion.findOrCreate({
+                where: {
+                    browser_id: run.browser_id,
+                    version: run.browser_version
+                }
+            });
+            const browserVersionId = browserVersionRows[0].dataValues.id;
 
-            if (!browserVersionId) {
-                browserVersionId = (
-                    await db.sequelize.query(`
-                  INSERT INTO
-                    browser_version (browser_id, version)
-                  VALUES
-                    (${run.browser_id}, '${run.browser_version}')
-                  RETURNING id
-                `)
-                )[0][0].id;
-            }
+            const atNameId = (await db.At.findByPk(run.at_id)).dataValues
+                .at_name_id;
+            const atVersionRow = await db.AtVersion.findOrCreate({
+                where: {
+                    version: run.at_version,
+                    at_name_id: atNameId
+                }
+            });
+            const atVersionId = atVersionRow[0].dataValues.id;
 
-            // Get the at version if it exists, or save it
-            results = (
-                await db.sequelize.query(`
-                  select
-                    at_version.id
-                  from
-                    at_version,
-                    at,
-                    at_name
-                  where
-                    at_name.id = at.at_name_id
-                    and at_name.id = at_version.at_name_id
-                    and at.id = ${run.at_id}
-                    and at_version.version = '${run.at_version}'
-            `)
-            )[0];
-            let atVersionId = results.length ? results[0].id : undefined;
-
-            if (!atVersionId) {
-                let atNameId = (
-                    await db.sequelize.query(`
-                    select
-                      at_name_id
-                    from
-                      at
-                    where
-                      at.id = ${run.at_id}
-                `)
-                )[0][0].at_name_id;
-
-                atVersionId = (
-                    await db.sequelize.query(`
-                  INSERT INTO
-                    at_version (at_name_id, version)
-                  VALUES
-                    (${atNameId}, '${run.at_version}')
-                  RETURNING id
-                `)
-                )[0][0].id;
-            }
-
-            // Save the runs
-            let runId = (
-                await db.sequelize.query(`
-                INSERT INTO
-                  run(test_cycle_id, at_version_id, at_id, browser_version_id, apg_example_id)
-                VALUES
-                  (${cycleId}, ${atVersionId}, ${run.at_id}, ${browserVersionId}, ${run.apg_example_id})
-                RETURNING ID
-            `)
-            )[0][0].id;
+            const runRow = await db.Run.create({
+                test_cycle_id: cycleId,
+                at_version_id: atVersionId,
+                at_id: run.at_id,
+                browser_version_id: browserVersionId,
+                apg_example_id: run.apg_example_id
+            });
+            let runId = runRow.dataValues.id;
 
             if (run.users && run.users.length > 0) {
                 UsersService.assignUsersToRuns(run.users, [runId]);
