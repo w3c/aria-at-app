@@ -26,6 +26,7 @@ class TesterHome extends Component {
                     <title>Test Queue (for all cycles) | ARIA-AT</title>
                 </Helmet>
                 <h1>Test Queue</h1>
+                <p>Choose a Test Cycle below to see what test plans are available.</p>
                 <h2 id={tableId}>Test Cycles</h2>
                 <Table aria-labelledby={tableId} striped bordered hover>
                     <thead>
@@ -49,9 +50,9 @@ class TesterHome extends Component {
                                         <Button
                                             as={Link}
                                             to={`/test-queue/${cycleId}`}
-                                            aria-label={`Contribute tests to cycle: ${name}`}
+                                            aria-label={`Open Test Cycle: ${name}`}
                                         >
-                                            Contribute Tests
+                                            Open Test Cycle
                                         </Button>
                                     </td>
                                 </tr>
