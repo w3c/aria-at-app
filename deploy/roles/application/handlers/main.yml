@@ -14,3 +14,4 @@
   systemd:
     name: aria-at-report
     state: restarted
+  listen: "restart server"
