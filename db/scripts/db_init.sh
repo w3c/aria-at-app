@@ -6,7 +6,7 @@ source $1
 
 result="$(psql -tAc "SELECT 1 FROM pg_database WHERE datname='${PGDATABASE}'")"
 
-if [ $result = '1' ]; then
+if [[ $result = '1' ]]; then
   echo "Database ${PGDATABASE} already exists."
 else
   echo "Creating ${PGDATABASE} database..."
