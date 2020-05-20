@@ -27,9 +27,9 @@ class ManageCycles extends Component {
                     <title>Test Management | ARIA-AT</title>
                 </Helmet>
                 <h1>Test Management</h1>
-                <h2>Initiate a Test Cycle</h2>
+                <p>Initiate a full test cycle or a partial test cycle and assign testers to different test plan runs.</p>
                 <Button as={Link} to="/cycles/new">
-                    Initiate
+                    Initiate Test Cycle
                 </Button>
                 <h2 id={tableId}>Test Cycle Status</h2>
                 <Table aria-labelledby={tableId} striped bordered hover>

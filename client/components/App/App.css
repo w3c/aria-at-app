@@ -52,11 +52,6 @@ main.container-fluid .row {
 nav .logo.navbar-brand {
   font-weight: 700;
   font-size: 1.6em;
-  color: #214e86;
-}
-
-nav .logo.navbar-brand:hover {
-  color: #214e86;
 }
 
 a {
@@ -67,6 +62,27 @@ a:hover {
   color: #214e86;
 }
 
+h1 {
+  margin-bottom: .5em;
+  border-bottom: 1px solid gainsboro;
+  padding-bottom: .25em;
+  font-size: 2em;
+}
 
+h2 {
+  margin: 1em 0 .5em;
+  font-size: 1.5em;
+}
+
+h3 {
+  margin: 1em 0 .5em;
+  font-size: 1.25em;
+}
+
+h4 {
+  margin: 1em 0 .5em;
+  font-size: 1em;
+  font-weight: 600;
+}
 
 

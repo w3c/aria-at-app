@@ -100,7 +100,7 @@ class ConfigureRunsForExample extends Component {
 
         return (
             <Fragment>
-                <h4 id={tableId}>{exampleTableTitle}</h4>
+                <h3 id={tableId}>{exampleTableTitle}</h3>
                 {runs.length !== 0 && (
                     <Table aria-labelledby={tableId} bordered>
                         <thead>
