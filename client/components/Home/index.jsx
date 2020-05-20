@@ -14,7 +14,7 @@ class Home extends Component {
                     <a href="https://w3c.github.io/aria-practices/">
                         WAI-ARIA Authoring Practices
                     </a>
-                    , and are vetted with stakeholders following the
+                    {', and are vetted with stakeholders following the '}
                     <a href="https://github.com/w3c/aria-at/wiki/Working-Mode">
                         Working Mode
                     </a>
