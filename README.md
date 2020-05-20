@@ -5,7 +5,7 @@ ARIA-AT aims to improve interoperability between different Assistive Technologie
 This app includes a reports page that shows the public results of manual testing across various browser / AT combinations. The app is also used by manual testers
 
 ## About this Software
-This repo contains the react, node and graphql software for running the web application that manages testers to run the manual tests, launches the tests in an iframe, stores results, and reports results once they are reviewed.
+This repo contains the software for running the web application that manages testers to run the manual tests, launches the tests in an iframe, stores results, and reports results once they are reviewed. This software is implemented on a react, node, express, sequelize, and postgresql stack. This repo also contains the ansible scripts for provisioning and deploying the software.
 
 The test material and test harness themselves are managed in [w3c/aria-at](https://github.com/w3c/aria-at).
 
