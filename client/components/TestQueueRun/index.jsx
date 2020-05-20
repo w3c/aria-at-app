@@ -47,36 +47,16 @@ class TestQueueRow extends Component {
         }
     }
 
-    renderTestsCompletedByUser(uid) {
-        const { testsForRun, usersById } = this.props;
+    testRun() {
+        const { apgExampleName, atName, browserName } = this.props;
 
-        let totalTests = testsForRun.length;
-        let testsCompleted = testsForRun.filter(
-            t =>
-                t.results &&
-                t.results[uid] &&
-                t.results[uid].status === 'complete'
-        ).length;
-
-        return (
-            <li
-                key={nextId()}
-            >{`${usersById[uid].username} ${testsCompleted} of ${totalTests} tests complete`}</li>
-        );
+        return `${apgExampleName} for ${atName} on ${browserName}`;
     }
 
     renderAssignDropdowns() {
-        const {
-            apgExampleName,
-            atName,
-            atNameId,
-            browserName,
-            testers,
-            usersById
-        } = this.props;
+        const { atNameId, testers, usersById } = this.props;
 
-        let testrun = `${apgExampleName} for ${atName} on ${browserName}`;
-
+        let testrun = this.testRun();
         let canUnassignTesters = [];
         let canAssignTesters = [];
         for (let uid of Object.keys(usersById)) {
@@ -142,10 +122,77 @@ class TestQueueRow extends Component {
         );
     }
 
-    renderAssignSelfButton(currentUserAssigned) {
-        const { apgExampleName, atName, browserName } = this.props;
+    renderAdminOptions() {
+        const { testers, usersById } = this.props;
 
-        let testrun = `${apgExampleName} for ${atName} on ${browserName}`;
+        let testrun = this.testRun();
+
+        let testersWithResults = [];
+        for (let uid of Object.keys(usersById)) {
+            const tester = usersById[uid];
+            if (
+                testers.includes(tester.id) &&
+                this.testsCompletedByUser[tester.id]
+            ) {
+                testersWithResults.push(tester);
+            }
+        }
+        return (
+            <Fragment>
+                <Dropdown>
+                    <Dropdown.Toggle
+                        id={nextId()}
+                        aria-label={`Delete results for ${testrun}`}
+                        disabled={testersWithResults.length ? false : true}
+                    >
+                        Delete Results
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu>
+                        {testersWithResults.map(t => {
+                            return (
+                                <Dropdown.Item
+                                    as="button"
+                                    key={nextId()}
+                                    value={t.id}
+                                >
+                                    {t.username}
+                                </Dropdown.Item>
+                            );
+                        })}
+                    </Dropdown.Menu>
+                </Dropdown>
+                <Dropdown>
+                    <Dropdown.Toggle
+                        id={nextId()}
+                        aria-label={`Open run ${testrun} as tester`}
+                        disabled={testersWithResults.length ? false : true}
+                    >
+                        Open run as...
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu>
+                        {testersWithResults.map(t => {
+                            return (
+                                <Dropdown.Item
+                                    as="button"
+                                    key={nextId()}
+                                    value={t.id}
+                                >
+                                    {t.username}
+                                </Dropdown.Item>
+                            );
+                        })}
+                    </Dropdown.Menu>
+                </Dropdown>
+            </Fragment>
+        );
+    }
+
+    renderDraftOptions() {
+        return;
+    }
+
+    renderAssignSelfButton(currentUserAssigned) {
+        let testrun = this.testRun;
 
         if (currentUserAssigned) {
             return (
@@ -168,6 +215,17 @@ class TestQueueRow extends Component {
         }
     }
 
+    renderTestsCompletedByUser(uid) {
+        const { testsForRun, usersById } = this.props;
+        let totalTests = testsForRun.length;
+        let testsCompleted = this.testsCompletedByUser[uid];
+        return (
+            <li
+                key={nextId()}
+            >{`${usersById[uid].username} ${testsCompleted} of ${totalTests} tests complete`}</li>
+        );
+    }
+
     renderTesterList(currentUserAssigned) {
         const { testers, userId } = this.props;
 
@@ -188,8 +246,10 @@ class TestQueueRow extends Component {
             userId,
             runId,
             testers,
+            testsForRun,
             apgExampleName
         } = this.props;
+
         let currentUserAssigned = testers.includes(userId);
 
         let designPatternLinkOrName;
@@ -203,17 +263,42 @@ class TestQueueRow extends Component {
             designPatternLinkOrName = apgExampleName;
         }
 
-        let assignOptions;
-        if (admin) {
-            assignOptions = this.renderAssignDropdowns();
-        } else {
-            assignOptions = this.renderAssignSelfButton(currentUserAssigned);
-        }
+        this.testsCompletedByUser = testers.reduce((acc, uid) => {
+            acc[uid] = testsForRun.filter(
+                t =>
+                    t.results &&
+                    t.results[uid] &&
+                    t.results[uid].status === 'complete'
+            ).length;
+            return acc;
+        }, {});
 
         let testerList = this.renderTesterList(currentUserAssigned);
         let status = 'Not started';
         if (testerList.length) {
             status = 'In Progress';
+        }
+
+        let actions;
+        if (admin) {
+            actions = (
+                <Fragment>
+                    {this.renderAssignDropdowns()}
+                    {this.renderAdminOptions()}
+                    <Button>Mark As Draft</Button>
+                </Fragment>
+            );
+        } else {
+            actions = (
+                <Fragment>
+                    {this.renderAssignSelfButton(currentUserAssigned)}
+                    {this.testsCompletedByUser[userId] ? (
+                        <Button>Delete My Results</Button>
+                    ) : (
+                        undefined
+                    )}
+                </Fragment>
+            );
         }
 
         return (
@@ -229,7 +314,7 @@ class TestQueueRow extends Component {
                     </ul>
                 </td>
                 <td>{status}</td>
-                <td>{assignOptions}</td>
+                <td>{actions}</td>
             </tr>
         );
     }
@@ -244,7 +329,7 @@ TestQueueRow.propTypes = {
     usersById: PropTypes.object,
     userId: PropTypes.number,
     atName: PropTypes.string,
-    atNameId: PropTypes.atNameId,
+    atNameId: PropTypes.number,
     browserName: PropTypes.string,
     dispatch: PropTypes.func,
     testsForRun: PropTypes.array
