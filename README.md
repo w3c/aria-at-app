@@ -13,12 +13,12 @@ The test material and test harness themselves are managed in [w3c/aria-at](https
 Documentation for getting this software running locally is available in [docs/local-development.md](docs/local-development.md) directory.
 
 ## Get involved
-Join the [community group](https://www.w3.org/community/aria-at/)
-Sign up as a tester
-Write more tests: https://github.com/w3c/aria-at/wiki/How-to-contribute-tests
-Review the assertions of existing test plans: https://w3c.github.io/aria-at/review-test-plans/
-Review test results
-Fix a [good first issue](https://github.com/w3c/aria-at/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22)
+* Join the [community group](https://www.w3.org/community/aria-at/)
+* [Sign up as a tester](https://github.com/w3c/aria-at/issues/162) for the Pilot Test (May 27 - June 2)
+* [Write more tests](https://github.com/w3c/aria-at/wiki/How-to-contribute-tests)
+* [Review the assertions of existing test plans](https://w3c.github.io/aria-at/review-test-plans/)
+* [Review test results](https://w3c.github.io/aria-at/results/)
+* Fix a [good first issue](https://github.com/w3c/aria-at/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22)
 
 ## Conduct
 All contributors to this project are expected to adhere to the Code of Conduct, available in the file named CODE_OF_CONDUCT.md.
