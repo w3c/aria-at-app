@@ -46,22 +46,32 @@ yarn run dotenv -e config/dev.env psql
 
 This section is for users who were previously managing their database using Flyway. The application has moved away from using Flyway for database management in favor of Sequelize. To change the database management to Sequelize, follow these instructions:
 
+#### 0. Open a new terminal and set environment
+- These instructions should not be performed in the same terminal as the terminal where the app is being run.
+- Export dev Postgres variables:
+  - `export $(cat config/dev.env | xargs)`
+- Go to the `aria-at-app` server folder
+  - `cd server`
+
 #### 1. Destroy Database
 - Flyway clear out the database by undoing the migrations:
 ```
 flyway clean -user=$PGUSER -password=$PGPASSWORD -url=jdbc:postgresql://$PGHOST:$PGPORT/$PGDATABASE -locations=filesystem:$(pwd)/db/migrations -baselineVersion=0 -baselineOnMigrate=true
 ```
-- Reset PostgreSQL variables
+- Unset PostgreSQL variables
 ```
-export PGDATABASE=
-export PGUSER=
-export PGPASSWORD=
-export PGHOST=
-export PGPORT=
+unset PGDATABASE
+unset PGUSER
+unset PGPASSWORD
+unset PGHOST
+unset PGPORT
 ```
 
 - Drop the database
   - `psql -c "DROP DATABASE aria_at_report;"`
+
+- Go to the root application folder
+  - `cd ../`
 
 #### 2. Initialize a new database
 
