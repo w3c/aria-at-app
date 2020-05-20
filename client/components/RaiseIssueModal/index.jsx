@@ -176,7 +176,11 @@ class RaiseIssueModal extends Component {
                 <Button tabIndex={6} variant="secondary" onClick={onHide}>
                     Cancel
                 </Button>
-                <Button tabIndex={7} variant="primary" onClick={onCreateNewIssueSubmit}>
+                <Button
+                    tabIndex={7}
+                    variant="primary"
+                    onClick={onCreateNewIssueSubmit}
+                >
                     Submit new issue
                 </Button>
             </Fragment>

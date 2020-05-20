@@ -223,6 +223,8 @@ class DisplayTest extends Component {
     render() {
         const {
             handleCloseRunClick,
+            handleNextTestClick,
+            handlePreviousTestClick,
             handleRaiseIssueClick,
             handleRedoClick
         } = this;
@@ -238,13 +240,16 @@ class DisplayTest extends Component {
         } = this.props;
 
         const statusProps = {
+            cycleId,
+            git_hash,
+            handleCloseRunClick,
+            handleNextTestClick,
+            handlePreviousTestClick,
+            handleRaiseIssueClick,
+            handleRedoClick,
             run,
             test,
-            git_hash,
-            cycleId,
-            handleCloseRunClick,
-            handleRaiseIssueClick,
-            handleRedoClick
+            testIndex
         };
 
         this.testHasResult =
@@ -261,19 +266,16 @@ class DisplayTest extends Component {
         menuUnderContent = (
             <ButtonToolbar className="testrun__button-toolbar--margin">
                 {testIndex !== 1 && (
-                    <Button
-                        variant="primary"
-                        onClick={this.handlePreviousTestClick}
-                    >
-                        Previous Test
+                    <Button variant="primary" onClick={handlePreviousTestClick}>
+                        Previous test
                     </Button>
                 )}
                 <Button
                     className="testrun__button--right"
                     variant="primary"
-                    onClick={this.handleNextTestClick}
+                    onClick={handleNextTestClick}
                 >
-                    Next Test
+                    Next test
                 </Button>
             </ButtonToolbar>
         );
@@ -283,10 +285,10 @@ class DisplayTest extends Component {
                     Raise an issue
                 </Button>
                 <Button variant="primary" onClick={handleRedoClick}>
-                    Re-do Test
+                    Re-do test
                 </Button>
                 <Button variant="primary" onClick={handleCloseRunClick}>
-                    {this.testHasResult ? 'Close' : 'Save and Close'}
+                    {this.testHasResult ? 'Close' : 'Save and close'}
                 </Button>
             </ButtonGroup>
         );

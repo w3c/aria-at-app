@@ -10,8 +10,7 @@ import {
     DELETE_USERS_FROM_RUN,
     CREATE_ISSUE_SUCCESS,
     ISSUES_BY_TEST_ID,
-    CONFLICTS_BY_CYCLE_ID,
-    RESULTS_BY_CYCLE_ID
+    CONFLICTS_BY_CYCLE_ID
 } from './types';
 
 export const saveResultDispatch = payload => ({
@@ -66,11 +65,6 @@ export const createIssueSuccessDispatch = payload => ({
 
 export const getConflictsByCycleIdDispatch = payload => ({
     type: CONFLICTS_BY_CYCLE_ID,
-    payload
-});
-
-export const getResultsByCycleIdDispatch = payload => ({
-    type: RESULTS_BY_CYCLE_ID,
     payload
 });
 
@@ -190,23 +184,5 @@ export function getConflictsByCycleId(cycle_id) {
         // This is to cheat the linter until the feature is implemented
         void cycle_id;
         dispatch(getConflictsByCycleIdDispatch([]));
-    };
-}
-
-/**
- * getResultsByCycleId          Returns an array of results for a
- *                              test in a given cycle.
- * @param  {Number} cycle_id    The id of the cycle to retrieve results
- * @return {Array}              An array of result objects.
- */
-export function getResultsByCycleId(cycle_id) {
-    return async function(dispatch) {
-        // const response = await axios.get(
-        //     `/api/cycle/results?cycle_id=${cycle_id}`
-        // );
-        // dispatch(getResultsByCycleIdDispatch(response.data));
-        // This is to cheat the linter until the feature is implemented
-        void cycle_id;
-        dispatch(getResultsByCycleIdDispatch([]));
     };
 }
