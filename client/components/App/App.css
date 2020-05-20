@@ -1,4 +1,68 @@
 #root {
-    width: 100vw;
-    height: 100vh;
+  width: 100vw;
+  height: 100vh;
+  background: #eaeaea;
 }
+
+#root > div, main {
+  height: 100%
+}
+
+main {
+  background: white;
+}
+
+main, nav.navbar {
+  max-width: 1200px;
+  margin: auto;
+}
+
+.container-fluid, .container-sm, .container-md, .container-lg, .container-xl {
+  padding: 0rem;
+}
+
+nav.navbar {
+  padding: .5rem 1rem;
+}
+
+main.container-fluid .row {
+  padding: .5rem 1rem;
+}
+
+@media (min-width: 700px) {
+    
+  nav.navbar {
+    padding: .5rem 3rem;
+  }
+
+  main.container-fluid > .row {
+    padding: 2rem 3rem;
+  }
+}
+
+/* @media (min-width: 900px) {
+  
+  nav.navbar {
+    padding: .5rem 4rem;
+  }
+  
+  main.container-fluid > .row {
+    padding: 3rem 4rem;
+  }
+} */
+
+@media (min-width: 1000px) {
+  
+  nav.navbar {
+    padding: .5rem 5rem;
+  }
+  
+  main.container-fluid > .row {
+    padding: 4rem 5rem;
+  }
+}
+
+
+
+
+

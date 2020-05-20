@@ -4,7 +4,7 @@ import './App.css';
 import { renderRoutes } from 'react-router-config';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { Container, Navbar, Nav } from 'react-bootstrap';
+import { Container, Row, Col, Navbar, Nav } from 'react-bootstrap';
 import { handleCheckSignedIn, handleSignout } from '../../actions/user';
 import { getAllUsers } from '../../actions/users';
 import { handleGetValidAts } from '../../actions/ats';
@@ -126,7 +126,11 @@ class App extends Component {
                     </Navbar>
                 </Container>
                 <Container as="main" fluid>
-                    {renderRoutes(route.routes)}
+                  <Row>
+                    <Col>
+                      {renderRoutes(route.routes)}
+                    </Col>
+                  </Row>
                 </Container>
             </Fragment>
         );
