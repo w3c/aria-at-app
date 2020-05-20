@@ -23,7 +23,7 @@ yarn install
 
 ### Set up local database
 
-Follow the instructions provided in [Database.md](https://github.com/bocoup/aria-at-report/blob/main/docs/Database.md).
+Follow the instructions provided in [database.md](database.md).
 
 ### Local Environment
 ```
@@ -82,7 +82,7 @@ yarn lint
 yarn prettier
 ```
 ### Running tests locally
-* React application tests are located in `client/tests`. 
+* React application tests are located in `client/tests`.
 * Express server tests are located in `server/tests`.
 * Both the client and server side user **Jest** for testing.
   * The client side, additionally, uses **Enzyme** to test React output
