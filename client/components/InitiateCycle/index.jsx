@@ -269,8 +269,8 @@ class InitiateCycle extends Component {
 
         return (
             <Fragment>
-                <h2 data-test="initiate-cycle-h2">Initiate a Test Cycle</h2>
-                <h3 data-test="initiate-cycle-h3">Test Cycle Configuration</h3>
+                <h1 data-test="initiate-cycle-h2">Initiate a Test Cycle</h1>
+                <h2 data-test="initiate-cycle-h3">Test Cycle Configuration</h2>
                 <Form className="init-box">
                     <Row>
                         <Col>
@@ -326,7 +326,7 @@ class InitiateCycle extends Component {
                         </Col>
                     </Row>
                 </Form>
-                <h3 data-test="initiate-cycle-test-plans">Test Plans</h3>
+                <h2 data-test="initiate-cycle-test-plans">Test Plans</h2>
                 {versionData &&
                     versionData.apg_examples.map(example => {
                         return (

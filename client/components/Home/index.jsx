@@ -4,7 +4,7 @@ class Home extends Component {
     render() {
         return (
             <Fragment>
-                <h2>About this project</h2>
+                <h1>About this project</h1>
                 <p>
                     ARIA AT aims to improve interoperability between different
                     Assistive Technologies (ATs) in how they render ARIA
