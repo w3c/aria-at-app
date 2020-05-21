@@ -1,4 +1,4 @@
-module.exports = function(sequelize, { BOOLEAN, INTEGER }) {
+module.exports = function(sequelize, { INTEGER }) {
     return sequelize.define(
         'TestIssue',
         {
