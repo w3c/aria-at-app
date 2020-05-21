@@ -27,10 +27,6 @@ module.exports = function(sequelize, { BOOLEAN, INTEGER }) {
             issue_number: {
                 type: INTEGER,
                 allowNull: false
-            },
-            open: {
-                type: BOOLEAN,
-                allowNull: true
             }
         },
         {
