@@ -167,10 +167,14 @@ class TestQueue extends Component {
                     <title>{`Test queue (for cycle: ${cycle.name}) | ARIA-AT`}</title>
                 </Helmet>
                 <h1>Test Queue</h1>
-                <p>Assign yourself a test plan or start executing one that it's already assigned to you.</p>
-                <h2>
-                    {cycle ? cycle.name : cycleId}
-                </h2>
+                <p>
+                    {// This style of setting the paragraph string
+                    //  allows the react/no-unescaped-entities error
+                    //  to disappear in eslint.
+                    `Assign yourself a test plan or start executing one that it's
+                        already assigned to you.`}
+                </p>
+                <h2>{cycle ? cycle.name : cycleId}</h2>
                 {atBrowserRunSets.map(abr =>
                     this.renderAtBrowserList(abr.runIds)
                 )}

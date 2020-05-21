@@ -27,7 +27,10 @@ class ManageCycles extends Component {
                     <title>Test Management | ARIA-AT</title>
                 </Helmet>
                 <h1>Test Management</h1>
-                <p>Initiate a full test cycle or a partial test cycle and assign testers to different test plan runs.</p>
+                <p>
+                    Initiate a full test cycle or a partial test cycle and
+                    assign testers to different test plan runs.
+                </p>
                 <Button as={Link} to="/cycles/new">
                     Initiate Test Cycle
                 </Button>

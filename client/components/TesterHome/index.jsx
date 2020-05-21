@@ -26,7 +26,10 @@ class TesterHome extends Component {
                     <title>Test Queue (for all cycles) | ARIA-AT</title>
                 </Helmet>
                 <h1>Test Queue</h1>
-                <p>Choose a Test Cycle below to see what test plans are available.</p>
+                <p>
+                    Choose a Test Cycle below to see what test plans are
+                    available.
+                </p>
                 <h2 id={tableId}>Test Cycles</h2>
                 <Table aria-labelledby={tableId} striped bordered hover>
                     <thead>

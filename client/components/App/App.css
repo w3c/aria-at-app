@@ -1,92 +1,96 @@
 #root {
-  width: 100vw;
-  height: 100vh;
-  background: #eaeaea;
+    width: 100vw;
+    height: 100vh;
+    background: #eaeaea;
 }
 
-#root > div, main {
-  height: 100%
+#root > div,
+main {
+    height: 100%;
 }
 
 main {
-  background: white;
+    background: white;
 }
 
-main, nav.navbar {
-  max-width: 1200px;
-  margin: auto;
+main,
+nav.navbar {
+    max-width: 1200px;
+    margin: auto;
 }
 
-.container-fluid, .container-sm, .container-md, .container-lg, .container-xl {
-  padding: 0rem;
+.container-fluid,
+.container-sm,
+.container-md,
+.container-lg,
+.container-xl {
+    padding: 0rem;
 }
 
 nav.navbar {
-  padding: .5rem 1rem;
+    padding: 0.5rem 1rem;
 }
 
 main.container-fluid .row {
-  padding: .5rem 1rem;
+    padding: 0.5rem 1rem;
 }
 
 @media (min-width: 700px) {
-  nav.navbar {
-    padding: .5rem 3rem;
-  }
+    nav.navbar {
+        padding: 0.5rem 3rem;
+    }
 
-  main.container-fluid > .row {
-    padding: 2rem 3rem;
-  }
+    main.container-fluid > .row {
+        padding: 2rem 3rem;
+    }
 }
 
 @media (min-width: 1000px) {
-  nav.navbar {
-    padding: .5rem 5rem;
-  }
-  
-  main.container-fluid > .row {
-    padding: 4rem 5rem;
-  }
+    nav.navbar {
+        padding: 0.5rem 5rem;
+    }
+
+    main.container-fluid > .row {
+        padding: 4rem 5rem;
+    }
 }
 
 nav .logo.navbar-brand {
-  font-weight: 700;
-  font-size: 1.6em;
+    font-weight: 700;
+    font-size: 1.6em;
 }
 
 a {
-  color:#2D73C7;
+    color: #2d73c7;
 }
 
 a:hover {
-  color: #214e86;
+    color: #214e86;
 }
 
 h1 {
-  margin-bottom: .5em;
-  border-bottom: 1px solid gainsboro;
-  padding-bottom: .25em;
-  font-size: 2em;
+    margin-bottom: 0.5em;
+    border-bottom: 1px solid gainsboro;
+    padding-bottom: 0.25em;
+    font-size: 2em;
 }
 
 h2 {
-  margin: 1em 0 .5em;
-  font-size: 1.5em;
+    margin: 1em 0 0.5em;
+    font-size: 1.5em;
 }
 
 h3 {
-  margin: 1em 0 .5em;
-  font-size: 1.25em;
+    margin: 1em 0 0.5em;
+    font-size: 1.25em;
 }
 
 h4 {
-  margin: 1em 0 .5em;
-  font-size: 1em;
-  font-weight: 600;
+    margin: 1em 0 0.5em;
+    font-size: 1em;
+    font-weight: 600;
 }
 
 button {
-  margin: 0.25em 0;
+    margin: 0.25em 0;
 }
-
-

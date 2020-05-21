@@ -71,7 +71,11 @@ class App extends Component {
             <Fragment>
                 <Container fluid>
                     <Navbar bg="light" expand="lg">
-                        <Navbar.Brand className="logo" as={Link} {...this.navProps('/')}>
+                        <Navbar.Brand
+                            className="logo"
+                            as={Link}
+                            {...this.navProps('/')}
+                        >
                             ARIA-AT
                         </Navbar.Brand>
                         <Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -126,11 +130,9 @@ class App extends Component {
                     </Navbar>
                 </Container>
                 <Container as="main" fluid>
-                  <Row>
-                    <Col>
-                      {renderRoutes(route.routes)}
-                    </Col>
-                  </Row>
+                    <Row>
+                        <Col>{renderRoutes(route.routes)}</Col>
+                    </Row>
                 </Container>
             </Fragment>
         );
