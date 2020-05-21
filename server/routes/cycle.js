@@ -10,6 +10,12 @@ router.delete('/', CycleController.deleteCycle);
 // Gets all cycles
 router.get('/', CycleController.getAllCycles);
 
+// Gets all issues by test id
+router.get('/issues', CycleController.getIssuesByTestId);
+
+// Save an issue to github and create a record locally
+router.post('/issue', CycleController.createIssue);
+
 // Save result
 router.post('/result', CycleController.saveTestResults);
 

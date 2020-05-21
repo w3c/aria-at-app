@@ -1,4 +1,5 @@
 const db = require('../models/index');
+const GithubService = require('./GithubService');
 const UsersService = require('./UsersService');
 
 /**
@@ -513,11 +514,78 @@ async function getTestsForRunsForCycle(cycleId) {
     }
 }
 
+async function getIssuesByTestId({ accessToken, test_id }) {
+    try {
+        const issues = await db.TestIssue.findAll({
+            where: {
+                test_id
+            }
+        });
+
+        const results = await GithubService.getIssues({
+            accessToken,
+            issues
+        });
+
+        const response = {
+            test_id,
+            issues: []
+        };
+
+        for (let result of results) {
+            response.issues.push(result);
+        }
+
+        return response;
+    } catch (error) {
+        console.error(`Error: ${error}`);
+        throw error;
+    }
+}
+
+async function createIssue({ accessToken, run_id, test_id, title, body }) {
+    try {
+        const issue = await GithubService.createIssue({
+            accessToken,
+            issue: {
+                title,
+                body
+            }
+        });
+
+        if (issue) {
+            const issue_number = issue.number;
+            const record = {
+                run_id,
+                test_id,
+                title,
+                body,
+                issue_number
+            };
+
+            const created = await db.TestIssue.create(record);
+
+            if (created && created.dataValues) {
+                return {
+                    test_id,
+                    issues: [issue]
+                };
+            }
+            throw new Error(`TestIssue was not created, ${created}`);
+        }
+    } catch (error) {
+        console.error(`Error: ${error}`);
+        throw error;
+    }
+}
+
 module.exports = {
     configureCycle,
     getAllCycles,
     deleteCycle,
     getAllTestVersions,
     getTestsForRunsForCycle,
-    saveTestResults
+    saveTestResults,
+    getIssuesByTestId,
+    createIssue
 };

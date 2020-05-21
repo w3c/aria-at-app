@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import { Col, Container, Row } from 'react-bootstrap';
+import nextId from 'react-id-generator';
 import {
     getTestCycles,
     getTestsForRunsCycle,
@@ -139,6 +140,8 @@ class TestRun extends Component {
             if (!this.state.runComplete) {
                 testContent = (
                     <DisplayTest
+                        key={nextId()}
+                        run={run}
                         test={test}
                         testIndex={this.state.currentTestIndex}
                         git_hash={git_hash}
