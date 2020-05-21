@@ -27,9 +27,10 @@ class TestQueue extends Component {
             dispatch(getAllUsers());
         }
 
-        if (!testsFetched) {
-            dispatch(getTestsForRunsCycle(cycleId));
-        }
+        // TODO: Add better caching/cache invalidation.
+        // Right now, everytime we go to the test queue page, we will fetch
+        // the test results.
+        dispatch(getTestsForRunsCycle(cycleId));
     }
 
     renderAtBrowserList(runIds) {

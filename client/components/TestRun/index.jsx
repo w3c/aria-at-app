@@ -40,20 +40,17 @@ class TestRun extends Component {
 
     displayNextTest() {
         const { tests } = this.props;
-        this.setState(prevState => {
-            let currentTestIndex = prevState.currentTestIndex + 1;
-            if (currentTestIndex <= tests.length) {
-                return {
-                    ...prevState,
-                    currentTestIndex
-                };
-            } else {
-                return {
-                    ...prevState,
-                    runComplete: true
-                };
-            }
-        });
+        let newIndex = this.state.currentTestIndex + 1;
+        if (newIndex === tests.length) {
+            this.setState({
+                runComplete: true
+            });
+
+        } else {
+            this.setState({
+                currentTestIndex: newIndex
+            });
+        }
     }
 
     displayPreviousTest() {
