@@ -1,0 +1,7 @@
+---
+all:
+  hosts:
+    aria-at.w3.org:
+      ansible_user: root
+  vars:
+    deployment_mode: production
