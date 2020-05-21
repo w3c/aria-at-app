@@ -74,7 +74,7 @@ export function saveResult(result) {
         const response = await axios.post('/api/cycle/result', {
             data: result
         });
-        dispatch(saveResultDispatch(response.data));
+        return dispatch(saveResultDispatch(response.data));
     };
 }
 
@@ -83,7 +83,7 @@ export function saveCycle(cycle) {
         const response = await axios.post('/api/cycle', {
             data: cycle
         });
-        dispatch(saveCycleDispatch(response.data));
+        return dispatch(saveCycleDispatch(response.data));
     };
 }
 
@@ -92,28 +92,28 @@ export function deleteCycle(id) {
         const response = await axios.delete('/api/cycle', {
             data: { id }
         });
-        dispatch(deleteCycleDispatch(response.data));
+        return dispatch(deleteCycleDispatch(response.data));
     };
 }
 
 export function getTestCycles() {
     return async function(dispatch) {
         const response = await axios.get('/api/cycle');
-        dispatch(cyclesDispatch(response.data));
+        return dispatch(cyclesDispatch(response.data));
     };
 }
 
 export function getTestsForRunsCycle(cycleId) {
     return async function(dispatch) {
         const response = await axios.get(`/api/cycle/runs?cycleId=${cycleId}`);
-        dispatch(testsByRunIdDispatch(response.data));
+        return dispatch(testsByRunIdDispatch(response.data));
     };
 }
 
 export function getTestSuiteVersions() {
     return async function(dispatch) {
         const response = await axios.get('/api/cycle/testversions');
-        dispatch(testSuiteVersionsDispatch(response.data));
+        return dispatch(testSuiteVersionsDispatch(response.data));
     };
 }
 
@@ -123,7 +123,7 @@ export function saveUsersToRuns(users, runs, cycleId) {
             users,
             runs
         });
-        dispatch(saveUsersToRunsDispatch({ ...response.data, cycleId }));
+        return dispatch(saveUsersToRunsDispatch({ ...response.data, cycleId }));
     };
 }
 
@@ -132,7 +132,9 @@ export function deleteUsersFromRun(users, runId, cycleId) {
         const response = await axios.delete('/api/user/run', {
             data: { users, runId }
         });
-        dispatch(deleteUsersFromRunDispatch({ ...response.data, cycleId }));
+        return dispatch(
+            deleteUsersFromRunDispatch({ ...response.data, cycleId })
+        );
     };
 }
 
@@ -147,7 +149,7 @@ export function getIssuesByTestId(test_id) {
         const response = await axios.get(
             `/api/cycle/issues?test_id=${test_id}`
         );
-        dispatch(getIssuesByTestIdDispatch(response.data));
+        return dispatch(getIssuesByTestIdDispatch(response.data));
     };
 }
 
@@ -161,7 +163,7 @@ export function createIssue(data) {
         const response = await axios.post('/api/cycle/issue', {
             data
         });
-        dispatch(createIssueSuccessDispatch(response.data));
+        return dispatch(createIssueSuccessDispatch(response.data));
     };
 }
 
@@ -187,7 +189,7 @@ export function getConflictsByTestResults(test, userId) {
         const conflicts = test.results
             ? checkForConflict(test.results, userId)
             : [];
-        dispatch(
+        return dispatch(
             getConflictsByTestResultsDispatch({
                 test_id: test.id,
                 conflicts

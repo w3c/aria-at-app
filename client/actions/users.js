@@ -14,7 +14,7 @@ export const setUserAts = payload => ({
 export function getAllUsers() {
     return async function(dispatch) {
         const response = await axios.get('/api/user');
-        dispatch(getAllUsersDispatch(response.data));
+        return dispatch(getAllUsersDispatch(response.data));
     };
 }
 
@@ -22,7 +22,7 @@ export function handleSetUserAts(userId, ats) {
     return async function(dispatch) {
         const response = await axios.post('/api/user/ats', { userId, ats });
         if (response.status === 200) {
-            dispatch(setUserAts({ userId, ats: response.data }));
+            return dispatch(setUserAts({ userId, ats: response.data }));
         }
     };
 }

@@ -19,10 +19,10 @@ export function handleCheckSignedIn() {
         await axios
             .get('/api/auth/me')
             .then(function(response) {
-                dispatch(checkSignedIn(response.data));
+                return dispatch(checkSignedIn(response.data));
             })
             .catch(function() {
-                dispatch(signedInFail());
+                return dispatch(signedInFail());
             });
     };
 }
@@ -31,7 +31,7 @@ export function handleSignout() {
     return async function(dispatch) {
         const response = await axios.post('/api/auth/signout');
         if (response.status === 200) {
-            dispatch(signout());
+            return dispatch(signout());
         }
     };
 }

@@ -9,6 +9,6 @@ const setAts = payload => ({
 export function handleGetValidAts() {
     return async function(dispatch) {
         const response = await axios.get('/api/at');
-        dispatch(setAts(response.data));
+        return dispatch(setAts(response.data));
     };
 }

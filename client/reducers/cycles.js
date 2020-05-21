@@ -73,7 +73,7 @@ export default (state = initialState, action) => {
 
             return Object.assign({}, state, {
                 testsByRunId: {
-                    ...state,
+                    ...state.testsByRunId,
                     [result.run_id]: newTests
                 }
             });
