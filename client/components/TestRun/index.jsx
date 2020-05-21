@@ -45,7 +45,6 @@ class TestRun extends Component {
             this.setState({
                 runComplete: true
             });
-
         } else {
             this.setState({
                 currentTestIndex: newIndex

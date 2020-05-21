@@ -27,6 +27,7 @@
     "dotenv-webpack": "^1.8.0",
     "node-sass": "^4.13.1",
     "react-bootstrap": "^1.0.0",
+    "react-copy-to-clipboard": "^5.0.2",
     "react-helmet": "^6.0.0",
     "react-id-generator": "^3.0.0",
     "sass-loader": "^8.0.2"

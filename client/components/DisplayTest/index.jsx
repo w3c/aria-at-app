@@ -11,8 +11,10 @@ import {
     Row
 } from 'react-bootstrap';
 import RaiseIssueModal from '@components/RaiseIssueModal';
+import ReviewConflictsModal from '@components/ReviewConflictsModal';
 import StatusBar from '@components/StatusBar';
 import TestResult from '@components/TestResult';
+import checkForConflict from '../../utils/checkForConflict';
 
 class DisplayTest extends Component {
     constructor(props) {
@@ -21,6 +23,7 @@ class DisplayTest extends Component {
         this.state = {
             showRaiseIssueModal: false,
             showConfirmModal: false,
+            showConflictsModal: false
         };
 
         // Test run actions
@@ -29,6 +32,12 @@ class DisplayTest extends Component {
         this.handleCloseRunClick = this.handleCloseRunClick.bind(this);
         this.handleRedoClick = this.handleRedoClick.bind(this);
         this.handleRaiseIssueClick = this.handleRaiseIssueClick.bind(this);
+        this.handleConflictsModalClick = this.handleConflictsModalClick.bind(
+            this
+        );
+        this.handleRaiseIssueFromConflictClick = this.handleRaiseIssueFromConflictClick.bind(
+            this
+        );
 
         // Modal actions
         this.handleModalCloseClick = this.handleModalCloseClick.bind(this);
@@ -39,7 +48,21 @@ class DisplayTest extends Component {
 
     handleRaiseIssueClick() {
         this.setState({
-            showRaiseIssueModal: !this.state.showRaiseIssueModal
+            showRaiseIssueModal: !this.state.showRaiseIssueModal,
+            showConflictsModal: false
+        });
+    }
+
+    handleConflictsModalClick() {
+        this.setState({
+            showConflictsModal: !this.state.showConflictsModal
+        });
+    }
+
+    handleRaiseIssueFromConflictClick() {
+        this.setState({
+            showConflictsModal: false,
+            showRaiseIssueModal: true
         });
     }
 
@@ -199,6 +222,16 @@ class DisplayTest extends Component {
                     </Modal.Footer>
                 </Modal>
 
+                {this.testConflicts && (
+                    <ReviewConflictsModal
+                        onHide={this.handleConflictsModalClick}
+                        show={this.state.showConflictsModal}
+                        userId={userId}
+                        conflicts={this.testConflicts}
+                        handleRaiseIssueClick={this.handleRaiseIssueClick}
+                    />
+                )}
+
                 <RaiseIssueModal
                     at_key={at_key}
                     cycleId={cycleId}
@@ -209,6 +242,7 @@ class DisplayTest extends Component {
                     test={test}
                     testIndex={testIndex}
                     userId={userId}
+                    conflicts={this.testConflicts}
                 />
             </>
         );
@@ -220,7 +254,8 @@ class DisplayTest extends Component {
             handleNextTestClick,
             handlePreviousTestClick,
             handleRaiseIssueClick,
-            handleRedoClick
+            handleRedoClick,
+            handleConflictsModalClick
         } = this;
 
         const {
@@ -233,6 +268,16 @@ class DisplayTest extends Component {
             userId
         } = this.props;
 
+        this.testHasResult =
+            test.results &&
+            test.results[userId] &&
+            test.results[userId].status === 'complete'
+                ? true
+                : false;
+
+        // TODO: We could probably memoize this
+        this.testConflicts = checkForConflict(test.results, userId);
+
         const statusProps = {
             cycleId,
             git_hash,
@@ -241,17 +286,12 @@ class DisplayTest extends Component {
             handlePreviousTestClick,
             handleRaiseIssueClick,
             handleRedoClick,
+            handleConflictsModalClick,
             run,
             test,
-            testIndex
+            testIndex,
+            conflicts: this.testConflicts
         };
-
-        this.testHasResult =
-            test.results &&
-            test.results[userId] &&
-            test.results[userId].status === 'complete'
-                ? true
-                : false;
 
         let testContent = null;
         let menuUnderContent = null;

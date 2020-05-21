@@ -16,9 +16,9 @@ class TestQueue extends Component {
             dispatch,
             cycle,
             cycleId,
-            testsFetched,
             usersById
         } = this.props;
+
         if (!cycle) {
             dispatch(getTestCycles());
         }

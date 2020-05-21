@@ -74,9 +74,9 @@ class TestResult extends Component {
                                         <p>Failing Assertions:</p>{' '}
                                         {this.renderOutcomeList(failing)}
                                         <p>Unexpected Behaviors:</p>{' '}
-                                        {this.renderOutcomeList(
-                                            unexpected_behaviors
-                                        )}
+                                        {this.renderOutcomeList([
+                                            ...unexpected_behaviors
+                                        ])}
                                     </td>
                                 </tr>
                             );

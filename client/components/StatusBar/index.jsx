@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { Alert, Button, ButtonGroup } from 'react-bootstrap';
 import { Octicon, Octicons } from 'octicons-react';
 import nextId from 'react-id-generator';
-import { getConflictsByCycleId, getIssuesByTestId } from '../../actions/cycles';
+import { getIssuesByTestId } from '../../actions/cycles';
 
 class StatusBar extends Component {
     constructor(props) {
@@ -25,12 +25,10 @@ class StatusBar extends Component {
     }
 
     async componentDidMount() {
-        const { cycle, dispatch, test, tests, user } = this.props;
+        const { dispatch, test, tests, user, conflicts } = this.props;
         let { statuses } = this.state;
 
         await dispatch(getIssuesByTestId(test.id));
-        // TODO: Make these actually do something
-        await dispatch(getConflictsByCycleId(cycle.Id));
 
         if (this.props.issues.length) {
             let variant = 'warning';
@@ -53,12 +51,14 @@ class StatusBar extends Component {
             });
         }
 
-        // TODO: Not implemented
-        if (this.props.conflicts.length) {
+        if (conflicts) {
             let variant = 'warning';
             let action = (
-                <Button variant={variant} onClick={this.props.handleRedoClick}>
-                    Re-do Test
+                <Button
+                    variant={variant}
+                    onClick={this.props.handleConflictsModalClick}
+                >
+                    Review Conflicts
                 </Button>
             );
             let icon = 'alert';
@@ -150,24 +150,20 @@ StatusBar.propTypes = {
     handleNextTestClick: PropTypes.func,
     handlePreviousTestClick: PropTypes.func,
     handleRaiseIssueClick: PropTypes.func,
-    handleRedoClick: PropTypes.func
+    handleRedoClick: PropTypes.func,
+    handleConflictsModalClick: PropTypes.func
 };
 
 const mapStateToProps = (state, ownProps) => {
     const {
-        cycles: { cyclesById, issuesByTestId, testsByRunId },
+        cycles: { issuesByTestId, testsByRunId },
         user
     } = state;
-    const cycle = cyclesById[ownProps.cycleId] || {};
     const issues = (issuesByTestId[ownProps.test.id] || []).filter(
         ({ closed }) => !closed
     );
 
-    // These are placeholders for the next
-    // iteration of this component.
-    const conflicts = [];
     const tests = testsByRunId[ownProps.run.id];
-
-    return { conflicts, cycle, issues, tests, user };
+    return { issues, tests, user };
 };
 export default connect(mapStateToProps, null)(StatusBar);
