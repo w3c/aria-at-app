@@ -15,6 +15,7 @@
     rsync_opts:
       - '--filter=:- .gitignore'
   when: deployment_mode != 'development'
+  notify: "restart server"
 
 - name: Link application code
   file:
