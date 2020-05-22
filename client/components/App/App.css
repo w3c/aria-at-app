@@ -5,10 +5,13 @@
 }
 
 #root > div,
+main {
+    overflow: visible;
+}
 
 main {
     background: white;
-    height:100vh
+    height:100%
 }
 
 main,
@@ -71,7 +74,7 @@ a:hover {
 }
 
 h1 {
-    margin: 0.5em;
+    margin-bottom: 0.5em;
     border-bottom: 1px solid gainsboro;
     padding-bottom: 0.25em;
     font-size: 2em;
