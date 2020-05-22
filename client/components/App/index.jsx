@@ -69,7 +69,7 @@ class App extends Component {
 
         return (
             <Fragment>
-                <Container fluid>
+                <Container>
                     <Navbar bg="light" expand="lg">
                         <Navbar.Brand
                             className="logo"
@@ -129,10 +129,10 @@ class App extends Component {
                         </Navbar.Collapse>
                     </Navbar>
                 </Container>
-                <Container as="main" fluid>
-                    <Row>
+                <Container>
+                    <div className="row">
                         <Col>{renderRoutes(route.routes)}</Col>
-                    </Row>
+                    </div>
                 </Container>
             </Fragment>
         );

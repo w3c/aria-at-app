@@ -5,10 +5,14 @@
 }
 
 #root > div,
+main {
+    height:100vh;
+}
 
 
 main {
     background: white;
+    height:100vh
 }
 
 main,
@@ -23,6 +27,10 @@ nav.navbar {
 .container-lg,
 .container-xl {
     padding: 0rem;
+}
+
+.container {
+    background-color: white;
 }
 
 nav.navbar {
@@ -67,7 +75,7 @@ a:hover {
 }
 
 h1 {
-    margin-bottom: 0.5em;
+    margin: 0.5em;
     border-bottom: 1px solid gainsboro;
     padding-bottom: 0.25em;
     font-size: 2em;
@@ -92,3 +100,5 @@ h4 {
 button {
     margin: 0.25em 0;
 }
+
+
