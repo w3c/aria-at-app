@@ -34,11 +34,31 @@ machine will not have all the capabilities of the production system.
 
 ## Deployment
 
-To deploy this project to a the "staging" server:
+To deploy this project to  server:
 
 1. Obtain a copy of the `ansible-vault-password.txt` file and place it in the
    directory which contains this document
 2. Install [Ansible](https://www.ansible.com/)
 3. Execute the following command:
+   - Staging:
 
-       ansible-playbook provision.yml --inventory inventory/staging.yml
+      `ansible-playbook provision.yml --inventory inventory/staging.yml`
+
+   - Production:
+
+      `ansible-playbook provision.yml --inventory inventory/production.yml`
+
+## Creating new environment configuration
+
+Configuration files are located in the `files/` folder. Each config file is in the format `config-<environment>.env`
+
+Change the following variables (at minimum) to create a new configuration:
+- PGPASSWORD
+- GITHUB_CLIENT_ID
+   - A new GitHub OAuth application must be created for a new environment. Instructions TBD.
+- GITHUB_CLIENT_SECRET
+- SESSION_SECRET
+
+## Deploying a new ARIA-AT test revision (workaround)
+ - Change the revision string of the variable `aria_at_test_revision` in `vars/main.yml`
+ - Deploy to environment of choice
