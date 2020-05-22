@@ -4,7 +4,7 @@ import './App.css';
 import { renderRoutes } from 'react-router-config';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { Container, Col, Navbar, Nav } from 'react-bootstrap';
+import { Container, Col, Navbar, Nav, Row } from 'react-bootstrap';
 import { handleCheckSignedIn, handleSignout } from '../../actions/user';
 import { getAllUsers } from '../../actions/users';
 import { handleGetValidAts } from '../../actions/ats';
@@ -69,7 +69,7 @@ class App extends Component {
 
         return (
             <Fragment>
-                <Container>
+                <Container fluid>
                     <Navbar bg="light" expand="lg">
                         <Navbar.Brand
                             className="logo"
@@ -129,10 +129,10 @@ class App extends Component {
                         </Navbar.Collapse>
                     </Navbar>
                 </Container>
-                <Container>
-                    <div className="row">
+                <Container as="main" fluid>
+                    <Row>
                         <Col>{renderRoutes(route.routes)}</Col>
-                    </div>
+                    </Row>
                 </Container>
             </Fragment>
         );
