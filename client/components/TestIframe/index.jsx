@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { serialize, hydrate } from '../../lib/form-serialization';
+import { serialize, hydrate } from '../../utils/formSerialization';
 
 class TestIframe extends Component {
     constructor(props) {
@@ -65,7 +65,7 @@ class TestIframe extends Component {
             };
             window.addEventListener('message', handleLoadMessage);
             // trigger reload
-            this.iframeEl.current.src = this.iframeEl.current.src;
+            this.iframeEl.current.src = this.iframeEl.current.src; // eslint-disable-line no-self-assign
         });
     }
 
