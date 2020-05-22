@@ -170,7 +170,8 @@ class DisplayTest extends Component {
             run,
             test,
             testIndex,
-            userId
+            userId,
+            testerId
         } = this.props;
 
         let modalTitle, action;
@@ -225,6 +226,7 @@ class DisplayTest extends Component {
                     onHide={this.handleConflictsModalClick}
                     show={this.state.showConflictsModal}
                     userId={userId}
+                    testerId={testerId}
                     test={test}
                     handleRaiseIssueClick={this.handleRaiseIssueClick}
                 />
@@ -239,6 +241,7 @@ class DisplayTest extends Component {
                     test={test}
                     testIndex={testIndex}
                     userId={userId}
+                    testerId={testerId}
                 />
             </>
         );
@@ -261,15 +264,15 @@ class DisplayTest extends Component {
             git_hash,
             at_key,
             testIndex,
-            userId
+            testerId
         } = this.props;
 
         const { conflicts } = this.state;
 
         this.testHasResult =
             test.results &&
-            test.results[userId] &&
-            test.results[userId].status === 'complete'
+            test.results[testerId] &&
+            test.results[testerId].status === 'complete'
                 ? true
                 : false;
 
@@ -323,7 +326,7 @@ class DisplayTest extends Component {
         );
 
         if (this.testHasResult) {
-            testContent = <TestResult testResult={test.results[userId]} />;
+            testContent = <TestResult testResult={test.results[testerId]} />;
         } else {
             testContent = (
                 <iframe
@@ -377,6 +380,7 @@ DisplayTest.propTypes = {
     at_key: PropTypes.string,
     cycleId: PropTypes.number,
     userId: PropTypes.number,
+    testerId: PropTypes.number,
     history: PropTypes.object,
     displayNextTest: PropTypes.func,
     displayPreviousTest: PropTypes.func,

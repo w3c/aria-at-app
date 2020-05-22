@@ -9,7 +9,11 @@ const setup = (initialState = {}) => {
     const store = storeFactory(initialState);
     // Step into the higher order connected component and step into the contents of the UserSettings component
     const wrapper = shallow(
-        <TestRun store={store} match={{ params: { cycleId: 1, runId: 1 } }} />
+        <TestRun
+            store={store}
+            match={{ params: { cycleId: 1, runId: 1 } }}
+            location={{}}
+        />
     )
         .dive()
         .dive();
