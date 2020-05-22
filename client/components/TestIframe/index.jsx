@@ -65,7 +65,7 @@ class TestIframe extends Component {
             };
             window.addEventListener('message', handleLoadMessage);
             // trigger reload
-            this.iframeEl.current.contentWindow.location.reload();
+            this.iframeEl.current.src = this.iframeEl.current.src;
         });
     }
 

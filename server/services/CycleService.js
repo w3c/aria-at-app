@@ -495,6 +495,7 @@ async function getTestsForRunsForCycle(cycleId) {
               select
                 test_result.id as id,
                 test_result.result as result,
+                test_result.serialized_form as serialized_form,
                 test_result.test_id as test_id,
                 test_result.user_id as user_id,
                 test_status.name as status
