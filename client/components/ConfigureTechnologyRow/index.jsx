@@ -89,7 +89,6 @@ class ConfigureTechnologyRow extends Component {
                         }
                         onChange={this.handleAtChange}
                         as="select"
-                        custom
                     >
                         <option key={-1} value={-1}></option>;
                         {availableAts.map((at, index) => {
@@ -118,7 +117,6 @@ class ConfigureTechnologyRow extends Component {
                         }
                         onChange={this.handleBrowserChange}
                         as="select"
-                        custom
                     >
                         <option key={-1} value={-1}></option>;
                         {availableBrowsers.map((browser, index) => {
