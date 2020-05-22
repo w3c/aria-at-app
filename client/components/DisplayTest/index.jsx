@@ -70,7 +70,7 @@ class DisplayTest extends Component {
     async performButtonAction(action) {
         const {
             test,
-            userId,
+            testerId,
             cycleId,
             history,
             displayNextTest,
@@ -102,7 +102,7 @@ class DisplayTest extends Component {
             case 'editTest': {
                 // save serialized form state, since it will be
                 // gone from state after results are deleted
-                const serializedForm = test.results[userId].serialized_form;
+                const serializedForm = test.results[testerId].serialized_form;
                 await deleteResultFromTest();
                 // hydrate form with serialized state
                 this.iframe.current.reloadAndHydrate(serializedForm);
