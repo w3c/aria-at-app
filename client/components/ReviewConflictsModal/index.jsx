@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { Button, Modal } from 'react-bootstrap';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
@@ -30,12 +30,12 @@ class ReviewConflictsModal extends Component {
                         a => a.user !== userId
                     );
                     return (
-                        <>
-                            <h5 key={nextId()}>{`Difference ${index + 1} - Testing command "${
+                        <Fragment key={nextId()}>
+                            <h5>{`Difference ${index + 1} - Testing command "${
                                 conflict.command
                             }" for assertion "${conflict.assertion}"`}</h5>
                             <ul>
-                                <li key={nextId()}>
+                                <li>
                                     {`Your result: ${yourAnswer.answer} (for output "${yourAnswer.output}")`}
                                 </li>
                                 {otherAnswers.map(answer => {
@@ -46,7 +46,7 @@ class ReviewConflictsModal extends Component {
                                     );
                                 })}
                             </ul>
-                        </>
+                        </Fragment>
                     );
                 } else {
                     let yourUnexpecteds = conflict.answers.find(
@@ -56,13 +56,13 @@ class ReviewConflictsModal extends Component {
                         a => a.user !== userId
                     );
                     return (
-                        <>
-                            <h5 key={nextId()}>{`Difference ${index +
+                        <Fragment key={nextId()}>
+                            <h5>{`Difference ${index +
                                 1} - Unexpected behavior when testing command "${
                                 conflict.command
                             }"`}</h5>
                             <ul>
-                                <li key={nextId()}>
+                                <li>
                                     {`Your result: ${yourUnexpecteds.answer} (for output "${yourUnexpecteds.output}")`}
                                 </li>
                                 {otherUnexpecteds.map(answer => {
@@ -73,7 +73,7 @@ class ReviewConflictsModal extends Component {
                                     );
                                 })}
                             </ul>
-                        </>
+                        </Fragment>
                     );
                 }
             })

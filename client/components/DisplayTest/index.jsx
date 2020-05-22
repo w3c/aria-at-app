@@ -20,7 +20,17 @@ class DisplayTest extends Component {
     constructor(props) {
         super(props);
 
+        let {
+            test,
+            userId
+        } = this.props;
+
+        let conflicts = test.results
+            ? checkForConflict(test.results, userId)
+            : [];
+
         this.state = {
+            conflicts,
             showRaiseIssueModal: false,
             showConfirmModal: false,
             showConflictsModal: false
@@ -174,6 +184,10 @@ class DisplayTest extends Component {
             userId
         } = this.props;
 
+        const {
+            conflicts
+        } = this.state;
+
         let modalTitle, action;
         let cannotSave = `Test ${testIndex} has not been completed in full and your progress on this test won’t be saved.`;
 
@@ -222,18 +236,17 @@ class DisplayTest extends Component {
                     </Modal.Footer>
                 </Modal>
 
-                {this.testConflicts && (
-                    <ReviewConflictsModal
-                        onHide={this.handleConflictsModalClick}
-                        show={this.state.showConflictsModal}
-                        userId={userId}
-                        conflicts={this.testConflicts}
-                        handleRaiseIssueClick={this.handleRaiseIssueClick}
-                    />
-                )}
+                <ReviewConflictsModal
+                    onHide={this.handleConflictsModalClick}
+                    show={this.state.showConflictsModal}
+                    userId={userId}
+                    conflicts={conflicts}
+                    handleRaiseIssueClick={this.handleRaiseIssueClick}
+                />
 
                 <RaiseIssueModal
                     at_key={at_key}
+                    conflicts={conflicts}
                     cycleId={cycleId}
                     git_hash={git_hash}
                     onHide={this.handleRaiseIssueClick}
@@ -242,7 +255,6 @@ class DisplayTest extends Component {
                     test={test}
                     testIndex={testIndex}
                     userId={userId}
-                    conflicts={this.testConflicts}
                 />
             </>
         );
@@ -268,6 +280,10 @@ class DisplayTest extends Component {
             userId
         } = this.props;
 
+        const {
+            conflicts
+        } = this.state;
+
         this.testHasResult =
             test.results &&
             test.results[userId] &&
@@ -276,9 +292,10 @@ class DisplayTest extends Component {
                 : false;
 
         // TODO: We could probably memoize this
-        this.testConflicts = checkForConflict(test.results, userId);
+
 
         const statusProps = {
+            conflicts,
             cycleId,
             git_hash,
             handleCloseRunClick,
@@ -289,8 +306,7 @@ class DisplayTest extends Component {
             handleConflictsModalClick,
             run,
             test,
-            testIndex,
-            conflicts: this.testConflicts
+            testIndex
         };
 
         let testContent = null;

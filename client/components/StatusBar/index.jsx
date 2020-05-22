@@ -25,12 +25,12 @@ class StatusBar extends Component {
     }
 
     async componentDidMount() {
-        const { dispatch, test, tests, user, conflicts } = this.props;
+        const { conflicts, dispatch, issues, test, tests, user } = this.props;
         let { statuses } = this.state;
 
         await dispatch(getIssuesByTestId(test.id));
 
-        if (this.props.issues.length) {
+        if (issues.length) {
             let variant = 'warning';
             let action = (
                 <Button
@@ -51,7 +51,8 @@ class StatusBar extends Component {
             });
         }
 
-        if (conflicts) {
+        console.log("conflicts?", conflicts);
+        if (conflicts.length) {
             let variant = 'warning';
             let action = (
                 <Button
