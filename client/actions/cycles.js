@@ -1,3 +1,4 @@
+import checkForConflict from '../utils/checkForConflict';
 import axios from 'axios';
 import {
     CYCLES,
@@ -10,7 +11,7 @@ import {
     DELETE_USERS_FROM_RUN,
     CREATE_ISSUE_SUCCESS,
     ISSUES_BY_TEST_ID,
-    CONFLICTS_BY_CYCLE_ID
+    CONFLICTS_BY_TEST_RESULTS
 } from './types';
 
 export const saveResultDispatch = payload => ({
@@ -63,8 +64,8 @@ export const createIssueSuccessDispatch = payload => ({
     payload
 });
 
-export const getConflictsByCycleIdDispatch = payload => ({
-    type: CONFLICTS_BY_CYCLE_ID,
+export const getConflictsByTestResultsDispatch = payload => ({
+    type: CONFLICTS_BY_TEST_RESULTS,
     payload
 });
 
@@ -170,19 +171,27 @@ export function createIssue(data) {
 //
 
 /**
- * getConflictsByCycleId        Returns an array of conflicts for a
- *                              test in a given cycle.
- * @param  {Number} cycle_id    The id of the cycle to retrieve conflicts
- * @return {Array}              An array of conflict objects.
+ * getConflictsByTestResults    Returns an array of conflicts for a
+ *                              test in a given test results set.
+ * @param  {Test} test          The test object
+ * @param  {Number} userId      This user's id
+ *
+ * @return {Object { test_id, conflicts }}
  */
-export function getConflictsByCycleId(cycle_id) {
+export function getConflictsByTestResults(test, userId) {
     return async function(dispatch) {
         // const response = await axios.get(
         //     `/api/cycle/conflicts?cycle_id=${cycle_id}`
         // );
-        // dispatch(getConflictsByCycleIdDispatch(response.data));
-        // This is to cheat the linter until the feature is implemented
-        void cycle_id;
-        dispatch(getConflictsByCycleIdDispatch([]));
+        // dispatch(getConflictsByTestResultsDispatch(response.data));
+        const conflicts = test.results
+            ? checkForConflict(test.results, userId)
+            : [];
+        dispatch(
+            getConflictsByTestResultsDispatch({
+                test_id: test.id,
+                conflicts
+            })
+        );
     };
 }

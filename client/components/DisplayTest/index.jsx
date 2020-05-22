@@ -14,20 +14,12 @@ import RaiseIssueModal from '@components/RaiseIssueModal';
 import ReviewConflictsModal from '@components/ReviewConflictsModal';
 import StatusBar from '@components/StatusBar';
 import TestResult from '@components/TestResult';
-import checkForConflict from '../../utils/checkForConflict';
 
 class DisplayTest extends Component {
     constructor(props) {
         super(props);
 
-        let { test, userId } = this.props;
-
-        let conflicts = test.results
-            ? checkForConflict(test.results, userId)
-            : [];
-
         this.state = {
-            conflicts,
             showRaiseIssueModal: false,
             showConfirmModal: false,
             showConflictsModal: false
@@ -181,8 +173,6 @@ class DisplayTest extends Component {
             userId
         } = this.props;
 
-        const { conflicts } = this.state;
-
         let modalTitle, action;
         let cannotSave = `Test ${testIndex} has not been completed in full and your progress on this test won’t be saved.`;
 
@@ -235,13 +225,12 @@ class DisplayTest extends Component {
                     onHide={this.handleConflictsModalClick}
                     show={this.state.showConflictsModal}
                     userId={userId}
-                    conflicts={conflicts}
+                    test={test}
                     handleRaiseIssueClick={this.handleRaiseIssueClick}
                 />
 
                 <RaiseIssueModal
                     at_key={at_key}
-                    conflicts={conflicts}
                     cycleId={cycleId}
                     git_hash={git_hash}
                     onHide={this.handleRaiseIssueClick}

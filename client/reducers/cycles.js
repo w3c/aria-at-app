@@ -8,10 +8,12 @@ import {
     SAVE_USERS_TO_RUNS,
     DELETE_USERS_FROM_RUN,
     CREATE_ISSUE_SUCCESS,
-    ISSUES_BY_TEST_ID
+    ISSUES_BY_TEST_ID,
+    CONFLICTS_BY_TEST_RESULTS
 } from '../actions/types';
 
 const initialState = {
+    conflictsByTestId: {},
     cyclesById: {},
     issuesByTestId: {},
     testSuiteVersions: [],
@@ -129,14 +131,24 @@ export default (state = initialState, action) => {
         }
         case ISSUES_BY_TEST_ID: {
             const { test_id, issues } = action.payload;
-
-            const issuesByTestId = {
-                [test_id]: issues
-            };
-
+            const issuesByTestId = test_id ? { [test_id]: issues } : {};
             return {
                 ...state,
-                issuesByTestId
+                issuesByTestId: {
+                    ...state.issuesByTestId,
+                    ...issuesByTestId
+                }
+            };
+        }
+        case CONFLICTS_BY_TEST_RESULTS: {
+            const { test_id, conflicts } = action.payload;
+            const conflictsByTestId = test_id ? { [test_id]: conflicts } : {};
+            return {
+                ...state,
+                conflictsByTestId: {
+                    ...state.conflictsByTestId,
+                    ...conflictsByTestId
+                }
             };
         }
         case CREATE_ISSUE_SUCCESS: {
