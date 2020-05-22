@@ -6,7 +6,12 @@
 
 #root > div,
 main {
+    overflow: visible;
+}
+
+main {
     background: white;
+    height:100%
 }
 
 main,
@@ -21,6 +26,10 @@ nav.navbar {
 .container-lg,
 .container-xl {
     padding: 0rem;
+}
+
+.container {
+    background-color: white;
 }
 
 nav.navbar {
@@ -90,3 +99,5 @@ h4 {
 button {
     margin: 0.25em 0;
 }
+
+
