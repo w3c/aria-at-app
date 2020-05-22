@@ -120,7 +120,7 @@ class ConfigureRunsForExample extends Component {
                                     names = testersByRunId[run.id].map(
                                         testerId => {
                                             let user = usersById[testerId];
-                                            return user.fullname;
+                                            return user.username;
                                         }
                                     );
                                 }
@@ -174,7 +174,7 @@ class ConfigureRunsForExample extends Component {
                                         {Object.keys(usersById).map(id => {
                                             return (
                                                 <option key={id} value={id}>
-                                                    {usersById[id].fullname}
+                                                    {usersById[id].username}
                                                 </option>
                                             );
                                         })}

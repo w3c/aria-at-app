@@ -6,13 +6,14 @@ import { Button, Form, Modal } from 'react-bootstrap';
 import { getIssuesByTestId, createIssue } from '../../actions/cycles';
 import IssueCards from './IssueCards';
 import MarkdownEditor from './MarkdownEditor';
+import formatConflictsAsText from '../../utils/formatConflictsAsText';
 import './RaiseIssueModal.css';
 
 const REPO_LINK = `https://github.com/${process.env.GITHUB_REPO_OWNER}/${process.env.GITHUB_REPO_NAME}`;
 
-function createIssueDefaults(test, cycle, run, sha) {
+function createIssueDefaults(test, cycle, run, sha, userId, conflicts) {
     const title = `Tester issue report for: "${test.name}"`;
-    const body = `
+    let body = `
 ### Test file at exact commit
 
 [${test.file}](https://github.com/w3c/aria-at/blob/${sha}/${test.file})
@@ -35,7 +36,13 @@ Type your description here.
 
 `;
 
-    // TODO: append conflicting outcome "diff"
+    if (conflicts) {
+        body += `
+### Conflicts with other results
+
+${formatConflictsAsText(conflicts, userId, true)}
+`;
+    }
 
     return { title, body };
 }
@@ -44,8 +51,15 @@ class RaiseIssueModal extends Component {
     constructor(props) {
         super(props);
 
-        const { test, cycle, run, git_hash } = this.props;
-        const { title, body } = createIssueDefaults(test, cycle, run, git_hash);
+        const { test, cycle, run, git_hash, userId, conflicts } = this.props;
+        const { title, body } = createIssueDefaults(
+            test,
+            cycle,
+            run,
+            git_hash,
+            userId,
+            conflicts
+        );
         this.state = {
             isReady: false,
             showCreateIssue: false,
@@ -255,6 +269,7 @@ class RaiseIssueModal extends Component {
 
 RaiseIssueModal.propTypes = {
     at_key: PropTypes.string,
+    conflicts: PropTypes.array,
     cycle: PropTypes.object,
     cycleId: PropTypes.number,
     dispatch: PropTypes.func,

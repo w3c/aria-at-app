@@ -11,17 +11,26 @@ import {
     Row
 } from 'react-bootstrap';
 import RaiseIssueModal from '@components/RaiseIssueModal';
+import ReviewConflictsModal from '@components/ReviewConflictsModal';
 import StatusBar from '@components/StatusBar';
 import TestResult from '@components/TestResult';
+import checkForConflict from '../../utils/checkForConflict';
 
 class DisplayTest extends Component {
     constructor(props) {
         super(props);
 
+        let { test, userId } = this.props;
+
+        let conflicts = test.results
+            ? checkForConflict(test.results, userId)
+            : [];
+
         this.state = {
+            conflicts,
             showRaiseIssueModal: false,
             showConfirmModal: false,
-            buttonAction: ''
+            showConflictsModal: false
         };
 
         // Test run actions
@@ -30,6 +39,12 @@ class DisplayTest extends Component {
         this.handleCloseRunClick = this.handleCloseRunClick.bind(this);
         this.handleRedoClick = this.handleRedoClick.bind(this);
         this.handleRaiseIssueClick = this.handleRaiseIssueClick.bind(this);
+        this.handleConflictsModalClick = this.handleConflictsModalClick.bind(
+            this
+        );
+        this.handleRaiseIssueFromConflictClick = this.handleRaiseIssueFromConflictClick.bind(
+            this
+        );
 
         // Modal actions
         this.handleModalCloseClick = this.handleModalCloseClick.bind(this);
@@ -40,7 +55,21 @@ class DisplayTest extends Component {
 
     handleRaiseIssueClick() {
         this.setState({
-            showRaiseIssueModal: !this.state.showRaiseIssueModal
+            showRaiseIssueModal: !this.state.showRaiseIssueModal,
+            showConflictsModal: false
+        });
+    }
+
+    handleConflictsModalClick() {
+        this.setState({
+            showConflictsModal: !this.state.showConflictsModal
+        });
+    }
+
+    handleRaiseIssueFromConflictClick() {
+        this.setState({
+            showConflictsModal: false,
+            showRaiseIssueModal: true
         });
     }
 
@@ -58,8 +87,8 @@ class DisplayTest extends Component {
     }
 
     handleRedoClick() {
+        this.buttonAction = 'redoTest';
         this.setState({
-            buttonAction: 'redoTest',
             showConfirmModal: true
         });
     }
@@ -72,16 +101,17 @@ class DisplayTest extends Component {
             displayPreviousTest,
             deleteResultFromTest
         } = this.props;
-        if (this.state.buttonAction === 'exitAfterConfirm') {
+
+        if (this.buttonAction === 'exitAfterConfirm') {
             history.push(`/test-queue/${cycleId}`);
         }
-        if (this.state.buttonAction === 'goToNextTest') {
+        if (this.buttonAction === 'goToNextTest') {
             displayNextTest();
         }
-        if (this.state.buttonAction === 'goToPreviousTest') {
+        if (this.buttonAction === 'goToPreviousTest') {
             displayPreviousTest();
         }
-        if (this.state.buttonAction === 'redoTest') {
+        if (this.buttonAction === 'redoTest') {
             if (!this.testHasResult) {
                 document
                     .getElementById('test-iframe')
@@ -93,23 +123,17 @@ class DisplayTest extends Component {
     }
 
     handleNextTestClick() {
-        this.setState({
-            buttonAction: 'goToNextTest'
-        });
+        this.buttonAction = 'goToNextTest';
         this.trySaving();
     }
 
     handlePreviousTestClick() {
-        this.setState({
-            buttonAction: 'goToPreviousTest'
-        });
+        this.buttonAction = 'goToPreviousTest';
         this.trySaving();
     }
 
     handleCloseRunClick() {
-        this.setState({
-            buttonAction: 'exitAfterConfirm'
-        });
+        this.buttonAction = 'exitAfterConfirm';
         this.trySaving();
     }
 
@@ -157,22 +181,24 @@ class DisplayTest extends Component {
             userId
         } = this.props;
 
+        const { conflicts } = this.state;
+
         let modalTitle, action;
         let cannotSave = `Test ${testIndex} has not been completed in full and your progress on this test won’t be saved.`;
 
-        if (this.state.buttonAction === 'exitAfterConfirm') {
+        if (this.buttonAction === 'exitAfterConfirm') {
             modalTitle = 'Save and Close';
             action = `You are about to leave this test run. ${cannotSave}`;
         }
-        if (this.state.buttonAction === 'goToNextTest') {
+        if (this.buttonAction === 'goToNextTest') {
             modalTitle = 'Next Test';
             action = `You are about to move to the next test. ${cannotSave}`;
         }
-        if (this.state.buttonAction === 'goToPreviousTest') {
+        if (this.buttonAction === 'goToPreviousTest') {
             modalTitle = 'Previous Test';
             action = `You are about to move to the previous test. ${cannotSave}`;
         }
-        if (this.state.buttonAction === 'redoTest') {
+        if (this.buttonAction === 'redoTest') {
             modalTitle = 'Re-Do';
             action = `Are you sure you want to re-do test ${testIndex}. Your progress (if any) will be lost.`;
         }
@@ -205,8 +231,17 @@ class DisplayTest extends Component {
                     </Modal.Footer>
                 </Modal>
 
+                <ReviewConflictsModal
+                    onHide={this.handleConflictsModalClick}
+                    show={this.state.showConflictsModal}
+                    userId={userId}
+                    conflicts={conflicts}
+                    handleRaiseIssueClick={this.handleRaiseIssueClick}
+                />
+
                 <RaiseIssueModal
                     at_key={at_key}
+                    conflicts={conflicts}
                     cycleId={cycleId}
                     git_hash={git_hash}
                     onHide={this.handleRaiseIssueClick}
@@ -226,7 +261,8 @@ class DisplayTest extends Component {
             handleNextTestClick,
             handlePreviousTestClick,
             handleRaiseIssueClick,
-            handleRedoClick
+            handleRedoClick,
+            handleConflictsModalClick
         } = this;
 
         const {
@@ -239,18 +275,7 @@ class DisplayTest extends Component {
             userId
         } = this.props;
 
-        const statusProps = {
-            cycleId,
-            git_hash,
-            handleCloseRunClick,
-            handleNextTestClick,
-            handlePreviousTestClick,
-            handleRaiseIssueClick,
-            handleRedoClick,
-            run,
-            test,
-            testIndex
-        };
+        const { conflicts } = this.state;
 
         this.testHasResult =
             test.results &&
@@ -258,6 +283,23 @@ class DisplayTest extends Component {
             test.results[userId].status === 'complete'
                 ? true
                 : false;
+
+        // TODO: We could probably memoize this
+
+        const statusProps = {
+            conflicts,
+            cycleId,
+            git_hash,
+            handleCloseRunClick,
+            handleNextTestClick,
+            handlePreviousTestClick,
+            handleRaiseIssueClick,
+            handleRedoClick,
+            handleConflictsModalClick,
+            run,
+            test,
+            testIndex
+        };
 
         let testContent = null;
         let menuUnderContent = null;
