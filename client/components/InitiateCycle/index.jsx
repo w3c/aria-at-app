@@ -209,7 +209,6 @@ class InitiateCycle extends Component {
                 value={this.state.selectedVersion}
                 onChange={this.handleVersionChange}
                 as="select"
-                custom
             >
                 {testSuiteVersions.map(version => {
                     return (

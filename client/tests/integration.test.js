@@ -29,7 +29,8 @@ describe('sign in actions dispatchers', () => {
                 cyclesById: {},
                 issuesByTestId: {},
                 testsByRunId: {},
-                testSuiteVersions: []
+                testSuiteVersions: [],
+                conflictsByTestId: {}
             },
             ats: [],
             users: {
@@ -65,7 +66,8 @@ describe('sign in actions dispatchers', () => {
                 cyclesById: {},
                 issuesByTestId: {},
                 testsByRunId: {},
-                testSuiteVersions: []
+                testSuiteVersions: [],
+                conflictsByTestId: {}
             },
             ats: [],
             users: {
@@ -105,7 +107,8 @@ describe('ats action dispatchers', () => {
                 cyclesById: {},
                 issuesByTestId: {},
                 testsByRunId: {},
-                testSuiteVersions: []
+                testSuiteVersions: [],
+                conflictsByTestId: {}
             },
             ats: {
                 names: ['JAWS', 'NVDA', 'VoiceOver']
@@ -143,7 +146,8 @@ describe('users action dispatchers', () => {
                 cyclesById: {},
                 issuesByTestId: {},
                 testsByRunId: {},
-                testSuiteVersions: []
+                testSuiteVersions: [],
+                conflictsByTestId: {}
             },
             ats: [],
             users: {
