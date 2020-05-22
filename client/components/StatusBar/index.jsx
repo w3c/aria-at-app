@@ -4,7 +4,10 @@ import { connect } from 'react-redux';
 import { Alert, Button, ButtonGroup } from 'react-bootstrap';
 import { Octicon, Octicons } from 'octicons-react';
 import nextId from 'react-id-generator';
-import { getIssuesByTestId } from '../../actions/cycles';
+import {
+    getConflictsByTestResults,
+    getIssuesByTestId
+} from '../../actions/cycles';
 
 class StatusBar extends Component {
     constructor(props) {
@@ -25,10 +28,13 @@ class StatusBar extends Component {
     }
 
     async componentDidMount() {
-        const { conflicts, dispatch, issues, test, tests, user } = this.props;
+        const { dispatch, test, tests, user } = this.props;
         let { statuses } = this.state;
 
+        await dispatch(getConflictsByTestResults(test, user.id));
         await dispatch(getIssuesByTestId(test.id));
+
+        const { conflicts, issues } = this.props;
 
         if (issues.length) {
             let variant = 'warning';
@@ -55,6 +61,7 @@ class StatusBar extends Component {
             let variant = 'warning';
             let action = (
                 <Button
+                    className="ml-2"
                     variant={variant}
                     onClick={this.props.handleConflictsModalClick}
                 >
@@ -156,14 +163,15 @@ StatusBar.propTypes = {
 
 const mapStateToProps = (state, ownProps) => {
     const {
-        cycles: { issuesByTestId, testsByRunId },
+        cycles: { conflictsByTestId, issuesByTestId, testsByRunId },
         user
     } = state;
+    const conflicts = conflictsByTestId[ownProps.test.id] || [];
     const issues = (issuesByTestId[ownProps.test.id] || []).filter(
         ({ closed }) => !closed
     );
 
     const tests = testsByRunId[ownProps.run.id];
-    return { issues, tests, user };
+    return { conflicts, issues, tests, user };
 };
 export default connect(mapStateToProps, null)(StatusBar);

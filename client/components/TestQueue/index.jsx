@@ -12,12 +12,7 @@ import TestQueueRun from '@components/TestQueueRun';
 
 class TestQueue extends Component {
     componentDidMount() {
-        const {
-            dispatch,
-            cycle,
-            cycleId,
-            usersById
-        } = this.props;
+        const { dispatch, cycle, cycleId, usersById } = this.props;
 
         if (!cycle) {
             dispatch(getTestCycles());

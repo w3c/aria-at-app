@@ -1,24 +1,32 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import { Button, Modal } from 'react-bootstrap';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import formatConflictsAsText from '../../utils/formatConflictsAsText';
 import nextId from 'react-id-generator';
+import { getConflictsByTestResults } from '../../actions/cycles';
 
 class ReviewConflictsModal extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
+            isReady: false,
             conflictText: '',
             modalBody: ''
         };
     }
 
     async componentDidMount() {
-        const { conflicts, userId } = this.props;
+        const { dispatch, test, userId } = this.props;
+
+        await dispatch(getConflictsByTestResults(test, userId));
+
+        const { conflicts } = this.props;
 
         this.setState({
+            isReady: true,
             conflictsText: formatConflictsAsText(conflicts, userId),
             modalBody: conflicts.map((conflict, index) => {
                 if (conflict.assertion) {
@@ -80,8 +88,12 @@ class ReviewConflictsModal extends Component {
     }
 
     render() {
+        const { isReady } = this.state;
         const { show, onHide, handleRaiseIssueClick, conflicts } = this.props;
 
+        if (!isReady) {
+            return null;
+        }
         return (
             <Modal
                 autoFocus
@@ -118,11 +130,19 @@ class ReviewConflictsModal extends Component {
 }
 
 ReviewConflictsModal.propTypes = {
+    conflicts: PropTypes.array,
+    dispatch: PropTypes.func,
     onHide: PropTypes.func,
     handleRaiseIssueClick: PropTypes.func,
     show: PropTypes.bool,
-    userId: PropTypes.number,
-    conflicts: PropTypes.array
+    test: PropTypes.object,
+    userId: PropTypes.number
 };
 
-export default ReviewConflictsModal;
+const mapStateToProps = (state, ownProps) => {
+    const { conflictsByTestId } = state.cycles;
+    const conflicts = conflictsByTestId[ownProps.test.id] || [];
+    return { conflicts };
+};
+
+export default connect(mapStateToProps)(ReviewConflictsModal);
