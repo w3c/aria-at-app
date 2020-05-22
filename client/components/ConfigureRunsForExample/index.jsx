@@ -161,7 +161,6 @@ class ConfigureRunsForExample extends Component {
                                         value={this.state.userDropdownSelection}
                                         onChange={this.updateTesters}
                                         as="select"
-                                        custom
                                     >
                                         <option key={-2} value={-2}>
                                             Assignees

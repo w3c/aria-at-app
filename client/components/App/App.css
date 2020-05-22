@@ -5,10 +5,6 @@
 }
 
 #root > div,
-main {
-    height:100vh;
-}
-
 
 main {
     background: white;

@@ -3,7 +3,11 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Button, Form, Modal } from 'react-bootstrap';
-import { getIssuesByTestId, createIssue } from '../../actions/cycles';
+import {
+    getConflictsByTestResults,
+    getIssuesByTestId,
+    createIssue
+} from '../../actions/cycles';
 import IssueCards from './IssueCards';
 import MarkdownEditor from './MarkdownEditor';
 import formatConflictsAsText from '../../utils/formatConflictsAsText';
@@ -11,7 +15,7 @@ import './RaiseIssueModal.css';
 
 const REPO_LINK = `https://github.com/${process.env.GITHUB_REPO_OWNER}/${process.env.GITHUB_REPO_NAME}`;
 
-function createIssueDefaults(test, cycle, run, sha, userId, conflicts) {
+function createIssueDefaults(test, cycle, run, sha) {
     const title = `Tester issue report for: "${test.name}"`;
     let body = `
 ### Test file at exact commit
@@ -36,29 +40,32 @@ Type your description here.
 
 `;
 
-    if (conflicts) {
-        body += `
+    return { title, body };
+}
+
+function appendConflicts(body, conflicts, userId) {
+    const useMarkdown = true;
+    return `
+${body}
+
 ### Conflicts with other results
 
-${formatConflictsAsText(conflicts, userId, true)}
-`;
-    }
+${formatConflictsAsText(conflicts, userId, useMarkdown)}
 
-    return { title, body };
+`;
 }
 
 class RaiseIssueModal extends Component {
     constructor(props) {
         super(props);
 
-        const { test, cycle, run, git_hash, userId, conflicts } = this.props;
+        const { test, cycle, run, git_hash, userId } = this.props;
         const { title, body } = createIssueDefaults(
             test,
             cycle,
             run,
             git_hash,
-            userId,
-            conflicts
+            userId
         );
         this.state = {
             isReady: false,
@@ -75,9 +82,19 @@ class RaiseIssueModal extends Component {
     }
 
     async componentDidMount() {
-        await this.props.dispatch(getIssuesByTestId(this.props.test.id));
+        const { dispatch, test, userId } = this.props;
+
+        await dispatch(getConflictsByTestResults(test, userId));
+        await dispatch(getIssuesByTestId(test.id));
+
+        const { conflicts } = this.props;
+
+        const body = this.props.conflicts.length
+            ? appendConflicts(this.state.body, conflicts, userId)
+            : this.state.body;
 
         this.setState({
+            body,
             showCreateIssue: !this.props.issues.length,
             isReady: true
         });
@@ -286,13 +303,14 @@ RaiseIssueModal.propTypes = {
 
 const mapStateToProps = (state, ownProps) => {
     const {
-        cycles: { cyclesById, issuesByTestId }
+        cycles: { conflictsByTestId, cyclesById, issuesByTestId }
     } = state;
 
+    const conflicts = conflictsByTestId[ownProps.test.id];
     const cycle = cyclesById[ownProps.cycleId] || {};
     const issues = (issuesByTestId[ownProps.test.id] || []).filter(
         ({ closed }) => !closed
     );
-    return { cycle, issues, issuesByTestId };
+    return { conflicts, cycle, issues, issuesByTestId };
 };
 export default connect(mapStateToProps, null)(RaiseIssueModal);
