@@ -6,17 +6,20 @@
  */
 
 export default function(results, userId) {
-    let baseResult = userId ? results[userId] : results[0];
-
-    let baseUserId = baseResult.user_id;
-    let otherResults = Object.values(results).filter(
-        r => r.user_id !== baseUserId
+    let allResults = Object.values(results).filter(
+        (r) => r.status === 'complete'
     );
 
-    // There are no conflicts trivially
-    if (otherResults.length === 0) {
-        return undefined;
+    // If there is only one result or no results
+    if (allResults <= 1) {
+        return [];
     }
+
+    let baseResult = userId ? results[userId] : allResults[0];
+    let baseUserId = baseResult.user_id;
+    let otherResults = allResults.filter(
+        r => r.user_id !== baseUserId
+    );
 
     // if (allResultsPass([baseResult, ...otherResults]) { return undefined; }
 
@@ -121,8 +124,5 @@ export default function(results, userId) {
         }
     }
 
-    if (conflictList) {
-        return conflictList;
-    }
-    return undefined;
+    return conflictList;
 }

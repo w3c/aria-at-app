@@ -4,6 +4,7 @@ import nextId from 'react-id-generator';
 import { Button, Dropdown } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
+import checkForConflict from '../../utils/checkForConflict';
 import { deleteUsersFromRun, saveUsersToRuns } from '../../actions/cycles';
 
 class TestQueueRow extends Component {
@@ -273,9 +274,26 @@ class TestQueueRow extends Component {
         }, {});
 
         let testerList = this.renderTesterList(currentUserAssigned);
+
         let status = 'Not started';
-        if (testerList.length) {
-            status = 'In Progress';
+        let totalConflicts = 0;
+        let testsWithResults = 0;
+        for (let test of testsForRun) {
+            if (test.results && Object.keys(test.results).length) {
+                testsWithResults++;
+                if (checkForConflict(test.results).length) {
+                    totalConflicts++;
+                }
+            }
+        }
+        if (testsWithResults > 0 && totalConflicts > 0) {
+            status = `In progress with ${totalConflicts} conflicting test${totalConflicts === 1 ? '' : 's'}`;
+        }
+        else if (testsWithResults > 0) {
+            status = 'In progress';
+        }
+        else if (testsWithResults === testsForRun.length) {
+            status = 'Tests complete with no conflicts';
         }
 
         let actions;
