@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import { Col, Container, Row } from 'react-bootstrap';
 import nextId from 'react-id-generator';
+import queryString from 'query-string';
 import {
     getTestCycles,
     getTestsForRunsCycle,
@@ -59,14 +60,21 @@ class TestRun extends Component {
     }
 
     saveResultFromTest(result) {
-        const { dispatch, cycleId, tests, run, userId } = this.props;
+        const {
+            dispatch,
+            cycleId,
+            tests,
+            run,
+            userId,
+            openAsUser
+        } = this.props;
         const test = tests[this.state.currentTestIndex - 1];
         dispatch(
             saveResult({
                 test_id: test.id,
                 run_id: run.id,
                 cycle_id: cycleId,
-                user_id: userId,
+                user_id: openAsUser || userId,
                 result
             })
         );
@@ -74,14 +82,21 @@ class TestRun extends Component {
     }
 
     deleteResultFromTest() {
-        const { dispatch, cycleId, tests, run, userId } = this.props;
+        const {
+            dispatch,
+            cycleId,
+            tests,
+            run,
+            userId,
+            openAsUser
+        } = this.props;
         const test = tests[this.state.currentTestIndex - 1];
         dispatch(
             saveResult({
                 test_id: test.id,
                 run_id: run.id,
                 cycle_id: cycleId,
-                user_id: userId,
+                user_id: openAsUser || userId,
                 skip: true
             })
         );
@@ -94,7 +109,9 @@ class TestRun extends Component {
             tests,
             cycleId,
             testSuiteVersionData,
-            userId
+            userId,
+            usersById,
+            openAsUser
         } = this.props;
 
         if (!run || !tests || !testSuiteVersionData) {
@@ -121,10 +138,24 @@ class TestRun extends Component {
         let heading = null;
         let content = null;
         let testContent = null;
+        let runningAsUserHeader = null;
+
+        if (openAsUser) {
+            runningAsUserHeader = (
+                <>
+                    <h2>
+                        Reviewings tests of{' '}
+                        <b>{`${usersById[openAsUser].username}`}</b>
+                    </h2>
+                    <p>{`All changes will be saved as performed by ${usersById[openAsUser].username}.`}</p>
+                </>
+            );
+        }
 
         if (testsToRun) {
             heading = (
                 <Fragment>
+                    {runningAsUserHeader}
                     <h2 data-test="test-run-h2">
                         {' '}
                         {`${apg_example_name} (${this.state.currentTestIndex} of ${tests.length})`}
@@ -148,6 +179,7 @@ class TestRun extends Component {
                         deleteResultFromTest={this.deleteResultFromTest}
                         cycleId={cycleId}
                         userId={userId}
+                        testerId={openAsUser || userId}
                     />
                 );
             } else {
@@ -163,10 +195,21 @@ class TestRun extends Component {
             content = <div>No tests for this browser / AT combination</div>;
         }
 
+        let prepend = '';
+        let title = `${apg_example_name} for ${at_name} ${at_version} with ${browser_name} ${browser_version} | ARIA-AT`;
+
+        if (openAsUser) {
+            prepend = `Reviewing test results for ${usersById[openAsUser].username} for `;
+        } else {
+            prepend = 'Testing ';
+        }
+
+        title = `${prepend}${title}`;
+
         return (
             <Fragment>
                 <Helmet>
-                    <title>{`Testing ${apg_example_name} for ${at_name} ${at_version} with ${browser_name} ${browser_version} | ARIA-AT`}</title>
+                    <title>{title}</title>
                 </Helmet>
                 <Container fluid>
                     <Row>
@@ -188,17 +231,29 @@ TestRun.propTypes = {
     dispatch: PropTypes.func,
     cycleId: PropTypes.number,
     userId: PropTypes.number,
+    openAsUser: PropTypes.number,
     tests: PropTypes.array,
     run: PropTypes.object,
-    testSuiteVersionData: PropTypes.object
+    testSuiteVersionData: PropTypes.object,
+    usersById: PropTypes.object
 };
 
 const mapStateToProps = (state, ownProps) => {
     const { cyclesById, testsByRunId, testSuiteVersions } = state.cycles;
     const { usersById } = state.users;
-    const userId = state.user.id;
+    let userId = state.user.id;
+    const isAdmin = state.user.roles && state.user.roles.includes('admin');
+
     const cycleId = parseInt(ownProps.match.params.cycleId);
     const runId = parseInt(ownProps.match.params.runId);
+
+    let openAsUser;
+    const openAsUserQuery = parseInt(
+        queryString.parse(ownProps.location.search).user
+    );
+    if (isAdmin && openAsUserQuery && usersById[openAsUserQuery]) {
+        openAsUser = openAsUserQuery;
+    }
 
     let cycle = cyclesById[cycleId];
     let run, testSuiteVersionData;
@@ -221,6 +276,7 @@ const mapStateToProps = (state, ownProps) => {
         tests,
         testSuiteVersionData,
         usersById,
+        openAsUser,
         userId
     };
 };

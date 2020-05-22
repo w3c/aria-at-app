@@ -123,7 +123,7 @@ class TestQueueRow extends Component {
     }
 
     renderAdminOptions() {
-        const { testers, usersById } = this.props;
+        const { cycleId, runId, testers, usersById } = this.props;
 
         let testrun = this.testRun();
 
@@ -173,9 +173,8 @@ class TestQueueRow extends Component {
                         {testersWithResults.map(t => {
                             return (
                                 <Dropdown.Item
-                                    as="button"
+                                    href={`/cycles/${cycleId}/run/${runId}?user=${t.id}`}
                                     key={nextId()}
-                                    value={t.id}
                                 >
                                     {t.username}
                                 </Dropdown.Item>

@@ -19,22 +19,24 @@ class ReviewConflictsModal extends Component {
     }
 
     async componentDidMount() {
-        const { dispatch, test, userId } = this.props;
+        const { dispatch, test, testerId, usersById } = this.props;
 
-        await dispatch(getConflictsByTestResults(test, userId));
+        await dispatch(getConflictsByTestResults(test, testerId));
 
         const { conflicts } = this.props;
 
+        const you = usersById[testerId].username;
+
         this.setState({
             isReady: true,
-            conflictsText: formatConflictsAsText(conflicts, userId),
+            conflictsText: formatConflictsAsText(conflicts, testerId),
             modalBody: conflicts.map((conflict, index) => {
                 if (conflict.assertion) {
                     let yourAnswer = conflict.answers.find(
-                        a => a.user === userId
+                        a => a.user === testerId
                     );
                     let otherAnswers = conflict.answers.filter(
-                        a => a.user !== userId
+                        a => a.user !== testerId
                     );
                     return (
                         <Fragment key={nextId()}>
@@ -43,12 +45,13 @@ class ReviewConflictsModal extends Component {
                             }" for assertion "${conflict.assertion}"`}</h5>
                             <ul>
                                 <li>
-                                    {`Your result: ${yourAnswer.answer} (for output "${yourAnswer.output}")`}
+                                    {`${you}'s result: ${yourAnswer.answer} (for output "${yourAnswer.output}")`}
                                 </li>
                                 {otherAnswers.map(answer => {
+                                    let other = usersById[answer.user].username;
                                     return (
                                         <li key={nextId()}>
-                                            {`Other's result: ${answer.answer} (for output "${answer.output}")`}
+                                            {`${other}'s result: ${answer.answer} (for output "${answer.output}")`}
                                         </li>
                                     );
                                 })}
@@ -57,10 +60,10 @@ class ReviewConflictsModal extends Component {
                     );
                 } else {
                     let yourUnexpecteds = conflict.answers.find(
-                        a => a.user === userId
+                        a => a.user === testerId
                     );
                     let otherUnexpecteds = conflict.answers.filter(
-                        a => a.user !== userId
+                        a => a.user !== testerId
                     );
                     return (
                         <Fragment key={nextId()}>
@@ -70,12 +73,13 @@ class ReviewConflictsModal extends Component {
                             }"`}</h5>
                             <ul>
                                 <li>
-                                    {`Your result: ${yourUnexpecteds.answer} (for output "${yourUnexpecteds.output}")`}
+                                    {`${you}'s result: ${yourUnexpecteds.answer} (for output "${yourUnexpecteds.output}")`}
                                 </li>
                                 {otherUnexpecteds.map(answer => {
+                                    let other = usersById[answer.user].username;
                                     return (
                                         <li key={nextId()}>
-                                            {`Other's result: ${answer.answer} (for output "${answer.output}")`}
+                                            {`${other}'s result: ${answer.answer} (for output "${answer.output}")`}
                                         </li>
                                     );
                                 })}
@@ -136,13 +140,15 @@ ReviewConflictsModal.propTypes = {
     handleRaiseIssueClick: PropTypes.func,
     show: PropTypes.bool,
     test: PropTypes.object,
-    userId: PropTypes.number
+    usersById: PropTypes.object,
+    testerId: PropTypes.number
 };
 
 const mapStateToProps = (state, ownProps) => {
     const { conflictsByTestId } = state.cycles;
+    const { usersById } = state.users;
     const conflicts = conflictsByTestId[ownProps.test.id] || [];
-    return { conflicts };
+    return { conflicts, usersById };
 };
 
 export default connect(mapStateToProps)(ReviewConflictsModal);

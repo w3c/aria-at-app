@@ -43,14 +43,14 @@ Type your description here.
     return { title, body };
 }
 
-function appendConflicts(body, conflicts, userId) {
+function appendConflicts(body, conflicts, testerId) {
     const useMarkdown = true;
     return `
 ${body}
 
 ### Conflicts with other results
 
-${formatConflictsAsText(conflicts, userId, useMarkdown)}
+${formatConflictsAsText(conflicts, testerId, useMarkdown)}
 
 `;
 }
@@ -82,15 +82,15 @@ class RaiseIssueModal extends Component {
     }
 
     async componentDidMount() {
-        const { dispatch, test, userId } = this.props;
+        const { dispatch, test, testerId } = this.props;
 
-        await dispatch(getConflictsByTestResults(test, userId));
+        await dispatch(getConflictsByTestResults(test, testerId));
         await dispatch(getIssuesByTestId(test.id));
 
         const { conflicts } = this.props;
 
         const body = this.props.conflicts.length
-            ? appendConflicts(this.state.body, conflicts, userId)
+            ? appendConflicts(this.state.body, conflicts, testerId)
             : this.state.body;
 
         this.setState({
@@ -298,7 +298,8 @@ RaiseIssueModal.propTypes = {
     show: PropTypes.bool,
     test: PropTypes.object,
     testIndex: PropTypes.number,
-    userId: PropTypes.number
+    userId: PropTypes.number,
+    testerId: PropTypes.number
 };
 
 const mapStateToProps = (state, ownProps) => {
