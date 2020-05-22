@@ -11,7 +11,7 @@ main {
 
 main {
     background: white;
-    height:100%
+    height: 100%;
 }
 
 main,
@@ -99,5 +99,3 @@ h4 {
 button {
     margin: 0.25em 0;
 }
-
-

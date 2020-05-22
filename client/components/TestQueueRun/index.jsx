@@ -287,12 +287,12 @@ class TestQueueRow extends Component {
             }
         }
         if (testsWithResults > 0 && totalConflicts > 0) {
-            status = `In progress with ${totalConflicts} conflicting test${totalConflicts === 1 ? '' : 's'}`;
-        }
-        else if (testsWithResults > 0) {
+            status = `In progress with ${totalConflicts} conflicting test${
+                totalConflicts === 1 ? '' : 's'
+            }`;
+        } else if (testsWithResults > 0) {
             status = 'In progress';
-        }
-        else if (testsWithResults === testsForRun.length) {
+        } else if (testsWithResults === testsForRun.length) {
             status = 'Tests complete with no conflicts';
         }
 

@@ -7,7 +7,7 @@
 
 export default function(results, userId) {
     let allResults = Object.values(results).filter(
-        (r) => r.status === 'complete'
+        r => r.status === 'complete'
     );
 
     // If there is only one result or no results
@@ -17,9 +17,7 @@ export default function(results, userId) {
 
     let baseResult = userId ? results[userId] : allResults[0];
     let baseUserId = baseResult.user_id;
-    let otherResults = allResults.filter(
-        r => r.user_id !== baseUserId
-    );
+    let otherResults = allResults.filter(r => r.user_id !== baseUserId);
 
     // if (allResultsPass([baseResult, ...otherResults]) { return undefined; }
 

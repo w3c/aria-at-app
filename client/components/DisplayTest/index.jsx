@@ -26,7 +26,7 @@ class DisplayTest extends Component {
             showConfirmModal: false,
             showConflictsModal: false
         };
-        this.buttonAction = null
+        this.buttonAction = null;
 
         // Test run actions
         this.handleNextTestClick = this.handleNextTestClick.bind(this);
@@ -60,7 +60,7 @@ class DisplayTest extends Component {
 
     handleModalConfirmClick() {
         const action = this.buttonAction;
-        this.buttonAction = null
+        this.buttonAction = null;
         this.setState({
             showConfirmModal: false
         });
