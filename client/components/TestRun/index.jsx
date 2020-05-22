@@ -195,14 +195,16 @@ class TestRun extends Component {
             content = <div>No tests for this browser / AT combination</div>;
         }
 
+        let prepend = '';
         let title = `${apg_example_name} for ${at_name} ${at_version} with ${browser_name} ${browser_version} | ARIA-AT`;
+
         if (openAsUser) {
-            title =
-                `Reviewing test results for ${usersById[openAsUser].username} for ` +
-                title;
+            prepend = `Reviewing test results for ${usersById[openAsUser].username} for `;
         } else {
-            title = `Testing ` + title;
+            prepend = 'Testing ';
         }
+
+        title = `${prepend}${title}`;
 
         return (
             <Fragment>
