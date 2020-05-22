@@ -5,9 +5,7 @@
 }
 
 #root > div,
-main {
-    height: 100%;
-}
+
 
 main {
     background: white;
