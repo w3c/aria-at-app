@@ -5,7 +5,6 @@ import { CopyToClipboard } from 'react-copy-to-clipboard';
 import formatConflictsAsText from '../../utils/formatConflictsAsText';
 import nextId from 'react-id-generator';
 
-
 class ReviewConflictsModal extends Component {
     constructor(props) {
         super(props);
@@ -81,7 +80,7 @@ class ReviewConflictsModal extends Component {
     }
 
     render() {
-        const { show, onHide, handleRaiseIssueClick, conflicts} = this.props;
+        const { show, onHide, handleRaiseIssueClick, conflicts } = this.props;
 
         return (
             <Modal
@@ -104,11 +103,11 @@ class ReviewConflictsModal extends Component {
                 </Modal.Header>
                 <Modal.Body>{this.state.modalBody}</Modal.Body>
                 <Modal.Footer>
-                  <CopyToClipboard text={this.state.conflictsText}>
-                    <Button variant="secondary">
-                      Copy Conflicts to Clipboard
-                    </Button>
-                  </CopyToClipboard>
+                    <CopyToClipboard text={this.state.conflictsText}>
+                        <Button variant="secondary">
+                            Copy Conflicts to Clipboard
+                        </Button>
+                    </CopyToClipboard>
                     <Button variant="secondary" onClick={handleRaiseIssueClick}>
                         Raise an Issue for this Conflict
                     </Button>

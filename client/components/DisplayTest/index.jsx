@@ -20,10 +20,7 @@ class DisplayTest extends Component {
     constructor(props) {
         super(props);
 
-        let {
-            test,
-            userId
-        } = this.props;
+        let { test, userId } = this.props;
 
         let conflicts = test.results
             ? checkForConflict(test.results, userId)
@@ -184,9 +181,7 @@ class DisplayTest extends Component {
             userId
         } = this.props;
 
-        const {
-            conflicts
-        } = this.state;
+        const { conflicts } = this.state;
 
         let modalTitle, action;
         let cannotSave = `Test ${testIndex} has not been completed in full and your progress on this test won’t be saved.`;
@@ -280,9 +275,7 @@ class DisplayTest extends Component {
             userId
         } = this.props;
 
-        const {
-            conflicts
-        } = this.state;
+        const { conflicts } = this.state;
 
         this.testHasResult =
             test.results &&
@@ -292,7 +285,6 @@ class DisplayTest extends Component {
                 : false;
 
         // TODO: We could probably memoize this
-
 
         const statusProps = {
             conflicts,

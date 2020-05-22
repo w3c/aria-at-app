@@ -51,7 +51,6 @@ class StatusBar extends Component {
             });
         }
 
-        console.log("conflicts?", conflicts);
         if (conflicts.length) {
             let variant = 'warning';
             let action = (
