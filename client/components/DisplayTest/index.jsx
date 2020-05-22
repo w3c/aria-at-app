@@ -273,8 +273,6 @@ class DisplayTest extends Component {
                 ? true
                 : false;
 
-        // TODO: We could probably memoize this
-
         const statusProps = {
             conflicts,
             cycleId,
