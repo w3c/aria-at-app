@@ -1,13 +1,22 @@
-const express = require('express');
 const path = require('path');
+const cache = require('apicache').middleware;
+
+const proxyMiddleware = require('rawgit/lib/middleware');
+const BaseURL = 'https://raw.githubusercontent.com';
 
 const { listener } = require('./app');
 const port = process.env.PORT || 5000;
 
-// TODO: make this path configurable
-listener.use(
-    '/aria-at',
-    express.static(path.join(__dirname, process.env.ARIA_AT_REPO_DIR))
+const onlyStatus200 = (req, res) => res.statusCode === 200;
+
+listener.route('/aria-at/:branch/*').get(
+    cache('7 days', onlyStatus200),
+    (req, res, next) => {
+        req.url = path.join('w3c', req.url);
+        next();
+    },
+    proxyMiddleware.fileRedirect(BaseURL),
+    proxyMiddleware.proxyPath(BaseURL)
 );
 
 listener.listen(port, () => {
