@@ -63,7 +63,8 @@ class TestQueueRow extends Component {
         for (let uid of Object.keys(usersById)) {
             const tester = usersById[uid];
 
-            if (testers.includes(tester.id)) {
+            // You can only unassign if no tests results have been saved
+            if (testers.includes(tester.id) && this.testsCompletedByUser[tester.id]) {
                 canUnassignTesters.push(tester);
             } else if (
                 tester.configured_ats.find(ua => ua.at_name_id === atNameId)
@@ -138,13 +139,19 @@ class TestQueueRow extends Component {
                 testersWithResults.push(tester);
             }
         }
+
+        // TODO: When we build out deleting, disable based on whether
+        // there are results that can be deleted
+        // let disableDelete = testersWithResults.length ? false : true;
+        let disableDelete = true;
+
         return (
             <Fragment>
                 <Dropdown>
                     <Dropdown.Toggle
                         id={nextId()}
                         aria-label={`Delete results for ${testrun}`}
-                        disabled={testersWithResults.length ? false : true}
+                        disabled={disableDelete}
                     >
                         Delete Results
                     </Dropdown.Toggle>
@@ -192,13 +199,18 @@ class TestQueueRow extends Component {
     }
 
     renderAssignSelfButton(currentUserAssigned) {
+        const { userId } = this.props;
         let testrun = this.testRun;
+
+        // You can only unassign yourself if you have not contributed tests
+        let disabled = this.testsCompletedByUser[userId] > 0 ? true : false;
 
         if (currentUserAssigned) {
             return (
                 <Button
                     onClick={this.handleUnassignSelfClick}
                     aria-label={`Unassign me from the test run ${testrun}`}
+                    disabled={disabled}
                 >
                     Unassign Me
                 </Button>
@@ -310,7 +322,7 @@ class TestQueueRow extends Component {
                 <Fragment>
                     {this.renderAssignSelfButton(currentUserAssigned)}
                     {this.testsCompletedByUser[userId] ? (
-                        <Button>Delete My Results</Button>
+                        <Button disabled={true}>Delete My Results</Button>
                     ) : (
                         undefined
                     )}
