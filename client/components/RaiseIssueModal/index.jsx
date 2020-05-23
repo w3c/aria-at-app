@@ -177,16 +177,16 @@ class RaiseIssueModal extends Component {
                 <Form.Group controlId="create-an-issue-title">
                     <Form.Control
                         autoFocus
-                        tabIndex={2}
+                        tabindex={2}
                         as="input"
                         name="title"
                         onChange={onIssueChange}
                         defaultValue={title}
                     />
                 </Form.Group>
-                <Form.Group tabIndex={3} controlId="create-an-issue-body">
+                <Form.Group tabindex={3} controlId="create-an-issue-body">
                     <MarkdownEditor
-                        tabIndex={4}
+                        tabindex={4}
                         name="body"
                         onChange={onIssueChange}
                         defaultValue={body}
@@ -196,7 +196,7 @@ class RaiseIssueModal extends Component {
             <Fragment key="create-issue-form-buttons">
                 {issues.length ? (
                     <Button
-                        tabIndex={5}
+                        tabindex={5}
                         variant="secondary"
                         className="float-left"
                         onClick={onBackClick}
@@ -204,11 +204,11 @@ class RaiseIssueModal extends Component {
                         Back to issues list
                     </Button>
                 ) : null}
-                <Button tabIndex={6} variant="secondary" onClick={onHide}>
+                <Button tabindex={6} variant="secondary" onClick={onHide}>
                     Cancel
                 </Button>
                 <Button
-                    tabIndex={7}
+                    tabindex={7}
                     variant="primary"
                     onClick={onCreateNewIssueSubmit}
                 >
@@ -258,22 +258,21 @@ class RaiseIssueModal extends Component {
             ? this.renderCreateIssue()
             : this.renderIssues();
 
+        const role = 'dialog';
         return (
             <Modal
-                autoFocus
+                aria-labelledby="raise-issue-modal-title"
+                aria-modal="true"
                 keyboard
                 scrollable
                 dialogClassName="modal-xl"
                 onHide={onHide}
+                role={role}
                 show={show}
-                aria-labelledby="raise-issue-modal-title"
+                tabindex={-1}
             >
                 <Modal.Header closeButton>
-                    <Modal.Title
-                        autoFocus
-                        id="raise-issue-modal-title"
-                        tabIndex={1}
-                    >
+                    <Modal.Title id="raise-issue-modal-title">
                         {title}
                     </Modal.Title>
                 </Modal.Header>

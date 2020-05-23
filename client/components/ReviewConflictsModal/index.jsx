@@ -98,22 +98,21 @@ class ReviewConflictsModal extends Component {
         if (!isReady) {
             return null;
         }
+        const role = 'dialog';
         return (
             <Modal
-                autoFocus
+                aria-labelledby="review-conflicts-modal-title"
+                aria-modal="true"
                 keyboard
                 scrollable
                 dialogClassName="modal-xl"
                 onHide={onHide}
+                role={role}
                 show={show}
-                aria-labelledby="raise-issue-modal-title"
+                tabIndex={-1}
             >
                 <Modal.Header closeButton>
-                    <Modal.Title
-                        autoFocus
-                        id="raise-issue-modal-title"
-                        tabIndex={1}
-                    >
+                    <Modal.Title id="review-conflicts-modal-title">
                         {`Reviewing ${conflicts.length} Conflicts`}
                     </Modal.Title>
                 </Modal.Header>
