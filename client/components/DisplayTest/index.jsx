@@ -302,7 +302,8 @@ class DisplayTest extends Component {
             handleConflictsModalClick,
             run,
             test,
-            testIndex
+            testIndex,
+            testerId
         };
 
         let testContent = null;
