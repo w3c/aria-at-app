@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import { Col, Container, Row } from 'react-bootstrap';
-import nextId from 'react-id-generator';
 import queryString from 'query-string';
 import {
     getTestCycles,
@@ -59,7 +58,7 @@ class TestRun extends Component {
         });
     }
 
-    saveResultFromTest(result) {
+    async saveResultFromTest({ results, serializedForm }) {
         const {
             dispatch,
             cycleId,
@@ -69,19 +68,20 @@ class TestRun extends Component {
             openAsUser
         } = this.props;
         const test = tests[this.state.currentTestIndex - 1];
-        dispatch(
+        await dispatch(
             saveResult({
                 test_id: test.id,
                 run_id: run.id,
                 cycle_id: cycleId,
                 user_id: openAsUser || userId,
-                result
+                result: results,
+                serialized_form: serializedForm
             })
         );
         return true;
     }
 
-    deleteResultFromTest() {
+    async deleteResultFromTest() {
         const {
             dispatch,
             cycleId,
@@ -91,7 +91,7 @@ class TestRun extends Component {
             openAsUser
         } = this.props;
         const test = tests[this.state.currentTestIndex - 1];
-        dispatch(
+        await dispatch(
             saveResult({
                 test_id: test.id,
                 run_id: run.id,
@@ -167,7 +167,7 @@ class TestRun extends Component {
             if (!this.state.runComplete) {
                 testContent = (
                     <DisplayTest
-                        key={nextId()}
+                        key={`${test.id}/${this.state.currentTestIndex}`}
                         run={run}
                         test={test}
                         testIndex={this.state.currentTestIndex}

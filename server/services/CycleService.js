@@ -298,7 +298,13 @@ async function getAllTestVersions() {
  */
 async function saveTestResults(testResult) {
     try {
-        const { test_id, run_id, user_id, result } = testResult;
+        const {
+            test_id,
+            run_id,
+            user_id,
+            result,
+            serialized_form
+        } = testResult;
         let statusId, testResultId;
 
         let resultRows = await db.sequelize.query(`
@@ -333,13 +339,17 @@ async function saveTestResults(testResult) {
                 ? `'${JSON.stringify(result).replace(/'/g, "''")}'`
                 : 'NULL';
 
+            const stringifiedSerializedForm = result
+                ? `'${JSON.stringify(serialized_form).replace(/'/g, "''")}'`
+                : 'NULL';
+
             if (!testResultId) {
                 testResultId = (
                     await db.sequelize.query(`
                       INSERT INTO
-                        test_result(test_id, run_id, user_id, status_id, result)
+                        test_result(test_id, run_id, user_id, status_id, result, serialized_form)
                       VALUES
-                        (${test_id}, ${run_id}, ${user_id}, ${statusId}, ${stringifiedResult})
+                        (${test_id}, ${run_id}, ${user_id}, ${statusId}, ${stringifiedResult}, ${stringifiedSerializedForm})
                       RETURNING ID
                      `)
                 )[0];
@@ -348,7 +358,9 @@ async function saveTestResults(testResult) {
                    UPDATE
                      test_result
                    SET
-                     result = ${stringifiedResult}
+                     result = ${stringifiedResult},
+                     serialized_form = ${stringifiedSerializedForm},
+                     status_id = ${statusId}
                    WHERE
                      id = ${testResultId}
                 `);
@@ -384,6 +396,7 @@ async function saveTestResults(testResult) {
                      test_result
                    SET
                      result = NULL,
+                     serialized_form = NULL,
                      status_id = ${statusId}
                    WHERE
                      id = ${testResultId}
@@ -482,6 +495,7 @@ async function getTestsForRunsForCycle(cycleId) {
               select
                 test_result.id as id,
                 test_result.result as result,
+                test_result.serialized_form as serialized_form,
                 test_result.test_id as test_id,
                 test_result.user_id as user_id,
                 test_status.name as status

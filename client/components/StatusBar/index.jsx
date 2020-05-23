@@ -28,10 +28,10 @@ class StatusBar extends Component {
     }
 
     async componentDidMount() {
-        const { dispatch, test, tests, user } = this.props;
+        const { dispatch, test, tests, testerId } = this.props;
         let { statuses } = this.state;
 
-        await dispatch(getConflictsByTestResults(test, user.id));
+        await dispatch(getConflictsByTestResults(test, testerId));
         await dispatch(getIssuesByTestId(test.id));
 
         const { conflicts, issues } = this.props;
@@ -82,7 +82,7 @@ class StatusBar extends Component {
             test.results &&
             Object.values(test.results).find(
                 ({ test_id, user_id }) =>
-                    test_id === test.id && user_id === user.id
+                    test_id === test.id && user_id === testerId
             );
 
         if (result && result.status === 'complete') {
@@ -152,7 +152,7 @@ StatusBar.propTypes = {
     test: PropTypes.object,
     testIndex: PropTypes.number,
     tests: PropTypes.array,
-    user: PropTypes.object,
+    testerId: PropTypes.number,
     handleCloseRunClick: PropTypes.func,
     handleNextTestClick: PropTypes.func,
     handlePreviousTestClick: PropTypes.func,
@@ -163,8 +163,7 @@ StatusBar.propTypes = {
 
 const mapStateToProps = (state, ownProps) => {
     const {
-        cycles: { conflictsByTestId, issuesByTestId, testsByRunId },
-        user
+        cycles: { conflictsByTestId, issuesByTestId, testsByRunId }
     } = state;
     const conflicts = conflictsByTestId[ownProps.test.id] || [];
     const issues = (issuesByTestId[ownProps.test.id] || []).filter(
@@ -172,6 +171,6 @@ const mapStateToProps = (state, ownProps) => {
     );
 
     const tests = testsByRunId[ownProps.run.id];
-    return { conflicts, issues, tests, user };
+    return { conflicts, issues, tests };
 };
 export default connect(mapStateToProps, null)(StatusBar);

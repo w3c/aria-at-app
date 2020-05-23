@@ -2,6 +2,7 @@ import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import './DisplayTest.css';
 import { withRouter } from 'react-router-dom';
+import nextId from 'react-id-generator';
 import {
     Button,
     ButtonGroup,
@@ -14,6 +15,7 @@ import RaiseIssueModal from '@components/RaiseIssueModal';
 import ReviewConflictsModal from '@components/ReviewConflictsModal';
 import StatusBar from '@components/StatusBar';
 import TestResult from '@components/TestResult';
+import TestIframe from '@components/TestIframe';
 
 class DisplayTest extends Component {
     constructor(props) {
@@ -24,12 +26,14 @@ class DisplayTest extends Component {
             showConfirmModal: false,
             showConflictsModal: false
         };
+        this.buttonAction = null;
 
         // Test run actions
         this.handleNextTestClick = this.handleNextTestClick.bind(this);
         this.handlePreviousTestClick = this.handlePreviousTestClick.bind(this);
         this.handleCloseRunClick = this.handleCloseRunClick.bind(this);
         this.handleRedoClick = this.handleRedoClick.bind(this);
+        this.handleEditClick = this.handleEditClick.bind(this);
         this.handleRaiseIssueClick = this.handleRaiseIssueClick.bind(this);
         this.handleConflictsModalClick = this.handleConflictsModalClick.bind(
             this
@@ -42,7 +46,108 @@ class DisplayTest extends Component {
         this.handleModalCloseClick = this.handleModalCloseClick.bind(this);
         this.handleModalConfirmClick = this.handleModalConfirmClick.bind(this);
 
-        this.testIframe = React.createRef();
+        // iframe action
+        this.handleSubmit = this.handleSubmit.bind(this);
+
+        this.iframe = React.createRef();
+    }
+
+    handleModalCloseClick() {
+        this.setState({
+            showConfirmModal: false
+        });
+    }
+
+    handleModalConfirmClick() {
+        const action = this.buttonAction;
+        this.buttonAction = null;
+        this.setState({
+            showConfirmModal: false
+        });
+        this.performButtonAction(action);
+    }
+
+    async performButtonAction(action) {
+        const {
+            test,
+            testerId,
+            cycleId,
+            history,
+            displayNextTest,
+            displayPreviousTest,
+            deleteResultFromTest
+        } = this.props;
+
+        switch (action) {
+            case 'closeTest': {
+                history.push(`/test-queue/${cycleId}`);
+                break;
+            }
+            case 'goToNextTest': {
+                displayNextTest();
+                break;
+            }
+            case 'goToPreviousTest': {
+                displayPreviousTest();
+                break;
+            }
+            case 'redoTest': {
+                if (!this.testHasResult) {
+                    this.iframe.current.reloadAndClear();
+                } else {
+                    await deleteResultFromTest();
+                }
+                break;
+            }
+            case 'editTest': {
+                // save serialized form state, since it will be
+                // gone from state after results are deleted
+                const serializedForm = test.results[testerId].serialized_form;
+                await deleteResultFromTest();
+                // hydrate form with serialized state
+                this.iframe.current.reloadAndHydrate(serializedForm);
+                break;
+            }
+        }
+    }
+
+    confirm(action) {
+        this.buttonAction = action;
+        this.setState({
+            showConfirmModal: true
+        });
+    }
+
+    handleNextTestClick() {
+        if (this.testHasResult) {
+            this.performButtonAction('goToNextTest');
+        } else {
+            this.confirm('goToNextTest');
+        }
+    }
+
+    handlePreviousTestClick() {
+        if (this.testHasResult) {
+            this.performButtonAction('goToPreviousTest');
+        } else {
+            this.confirm('goToPreviousTest');
+        }
+    }
+
+    handleRedoClick() {
+        this.confirm('redoTest');
+    }
+
+    handleCloseRunClick() {
+        if (this.testHasResult) {
+            this.performButtonAction('closeTest');
+        } else {
+            this.confirm('closeTest');
+        }
+    }
+
+    handleEditClick() {
+        this.performButtonAction('editTest');
     }
 
     handleRaiseIssueClick() {
@@ -65,101 +170,9 @@ class DisplayTest extends Component {
         });
     }
 
-    handleModalCloseClick() {
-        this.setState({
-            showConfirmModal: false
-        });
-    }
-
-    handleModalConfirmClick() {
-        this.setState({
-            showConfirmModal: false
-        });
-        this.performButtonAction();
-    }
-
-    handleRedoClick() {
-        this.buttonAction = 'redoTest';
-        this.setState({
-            showConfirmModal: true
-        });
-    }
-
-    performButtonAction() {
-        const {
-            cycleId,
-            history,
-            displayNextTest,
-            displayPreviousTest,
-            deleteResultFromTest
-        } = this.props;
-
-        if (this.buttonAction === 'exitAfterConfirm') {
-            history.push(`/test-queue/${cycleId}`);
-        }
-        if (this.buttonAction === 'goToNextTest') {
-            displayNextTest();
-        }
-        if (this.buttonAction === 'goToPreviousTest') {
-            displayPreviousTest();
-        }
-        if (this.buttonAction === 'redoTest') {
-            if (!this.testHasResult) {
-                document
-                    .getElementById('test-iframe')
-                    .contentWindow.location.reload();
-                return;
-            }
-            deleteResultFromTest();
-        }
-    }
-
-    handleNextTestClick() {
-        this.buttonAction = 'goToNextTest';
-        this.trySaving();
-    }
-
-    handlePreviousTestClick() {
-        this.buttonAction = 'goToPreviousTest';
-        this.trySaving();
-    }
-
-    handleCloseRunClick() {
-        this.buttonAction = 'exitAfterConfirm';
-        this.trySaving();
-    }
-
-    trySaving() {
+    handleSubmit(data) {
         const { saveResultFromTest } = this.props;
-
-        // Only to to save if results don't exist
-        if (!this.testHasResult) {
-            let resultsEl = this.testIframe.current.contentDocument.querySelector(
-                '#__ariaatharness__results__'
-            );
-
-            if (!resultsEl) {
-                this.setState({
-                    showConfirmModal: true
-                });
-                return;
-            }
-
-            let result;
-            try {
-                result = JSON.parse(resultsEl.innerText);
-            } catch (error) {
-                console.error(
-                    'Cannot save tests do to malformed information from test file.'
-                );
-                throw error;
-            }
-
-            saveResultFromTest(result);
-        }
-
-        // Save was successful
-        this.performButtonAction();
+        saveResultFromTest(data);
     }
 
     renderModal() {
@@ -177,7 +190,7 @@ class DisplayTest extends Component {
         let modalTitle, action;
         let cannotSave = `Test ${testIndex} has not been completed in full and your progress on this test won’t be saved.`;
 
-        if (this.buttonAction === 'exitAfterConfirm') {
+        if (this.buttonAction === 'closeTest') {
             modalTitle = 'Save and Close';
             action = `You are about to leave this test run. ${cannotSave}`;
         }
@@ -254,7 +267,8 @@ class DisplayTest extends Component {
             handlePreviousTestClick,
             handleRaiseIssueClick,
             handleRedoClick,
-            handleConflictsModalClick
+            handleConflictsModalClick,
+            handleEditClick
         } = this;
 
         const {
@@ -288,12 +302,19 @@ class DisplayTest extends Component {
             handleConflictsModalClick,
             run,
             test,
-            testIndex
+            testIndex,
+            testerId
         };
 
         let testContent = null;
         let menuUnderContent = null;
         let menuRightOContent = null;
+
+        let menuEditButton = this.testHasResult ? (
+            <Button variant="primary" onClick={handleEditClick}>
+                Edit
+            </Button>
+        ) : null;
 
         menuUnderContent = (
             <ButtonToolbar className="testrun__button-toolbar--margin">
@@ -322,6 +343,7 @@ class DisplayTest extends Component {
                 <Button variant="primary" onClick={handleCloseRunClick}>
                     {this.testHasResult ? 'Close' : 'Save and close'}
                 </Button>
+                {menuEditButton}
             </ButtonGroup>
         );
 
@@ -329,11 +351,13 @@ class DisplayTest extends Component {
             testContent = <TestResult testResult={test.results[testerId]} />;
         } else {
             testContent = (
-                <iframe
-                    src={`/aria-at/${git_hash}/${test.file}?at=${at_key}`}
-                    id="test-iframe"
-                    ref={this.testIframe}
-                ></iframe>
+                <TestIframe
+                    git_hash={git_hash}
+                    file={test.file}
+                    at_key={at_key}
+                    onSubmit={this.handleSubmit}
+                    ref={this.iframe}
+                ></TestIframe>
             );
         }
 
@@ -354,7 +378,7 @@ class DisplayTest extends Component {
                 </Row>
                 <Row>
                     <Col>
-                        <StatusBar {...statusProps} />
+                        <StatusBar key={nextId()} {...statusProps} />
                     </Col>
                 </Row>
 

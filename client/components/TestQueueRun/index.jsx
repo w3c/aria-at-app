@@ -166,18 +166,18 @@ class TestQueueRow extends Component {
                     <Dropdown.Toggle
                         id={nextId()}
                         aria-label={`Open run ${testrun} as tester`}
-                        disabled={testersWithResults.length ? false : true}
+                        disabled={testers.length ? false : true}
                     >
                         Open run as...
                     </Dropdown.Toggle>
                     <Dropdown.Menu>
-                        {testersWithResults.map(t => {
+                        {testers.map(t => {
                             return (
                                 <Dropdown.Item
-                                    href={`/cycles/${cycleId}/run/${runId}?user=${t.id}`}
+                                    href={`/cycles/${cycleId}/run/${runId}?user=${t}`}
                                     key={nextId()}
                                 >
-                                    {t.username}
+                                    {usersById[t].username}
                                 </Dropdown.Item>
                             );
                         })}
@@ -287,12 +287,12 @@ class TestQueueRow extends Component {
             }
         }
         if (testsWithResults > 0 && totalConflicts > 0) {
-            status = `In progress with ${totalConflicts} conflicting test${totalConflicts === 1 ? '' : 's'}`;
-        }
-        else if (testsWithResults > 0) {
+            status = `In progress with ${totalConflicts} conflicting test${
+                totalConflicts === 1 ? '' : 's'
+            }`;
+        } else if (testsWithResults > 0) {
             status = 'In progress';
-        }
-        else if (testsWithResults === testsForRun.length) {
+        } else if (testsWithResults === testsForRun.length) {
             status = 'Tests complete with no conflicts';
         }
 
