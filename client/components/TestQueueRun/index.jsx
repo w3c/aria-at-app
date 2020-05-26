@@ -66,10 +66,14 @@ class TestQueueRow extends Component {
             // You can only unassign if no tests results have been saved
             if (
                 testers.includes(tester.id) &&
-                this.testsCompletedByUser[tester.id]
+                ! this.testsCompletedByUser[tester.id]
             ) {
                 canUnassignTesters.push(tester);
-            } else if (
+            }
+
+            // You can only assign if the tester is not assigned already
+            if (
+                ! testers.includes(tester.id) &&
                 tester.configured_ats.find(ua => ua.at_name_id === atNameId)
             ) {
                 canAssignTesters.push(tester);
