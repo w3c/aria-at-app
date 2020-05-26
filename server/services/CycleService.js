@@ -172,6 +172,12 @@ async function deleteCycle(id) {
             await db.sequelize.query(
                 `delete from tester_to_run where run_id=${run.id}`
             );
+            await db.sequelize.query(
+                `delete from test_result where run_id=${run.id}`
+            );
+            await db.sequelize.query(
+                `delete from test_issue where run_id=${run.id}`
+            );
         }
 
         await db.sequelize.query(`delete from run where test_cycle_id=${id}`);
