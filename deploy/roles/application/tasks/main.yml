@@ -61,17 +61,6 @@
   args:
     chdir: '{{source_dir}}'
 
-- name: Create directory to store aria-at repository
-  file:
-    path: '{{source_dir}}/../aria-at-report'
-    state: directory
-
-- name: Clone the aria-at repository
-  git:
-    repo: https://github.com/w3c/aria-at.git
-    version: '{{aria_at_test_revision}}'
-    dest: '{{source_dir}}/../aria-at-tests/{{aria_at_test_revision}}'
-
 - name: Install authbind
   apt:
     name: authbind

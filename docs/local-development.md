@@ -25,32 +25,6 @@ yarn install
 
 Follow the instructions provided in [database.md](database.md).
 
-### Set up aria-at-tests folder (workaround)
-The application does not dynamically load the ARIA-AT tests onto the application's machine for iframe rendering. The following is a workaround solution until dynamic importing is implemented.
-
-1. Create `aria-at-tests` folder
-Make a directory called `aria-at-tests` next to the `aria-at-app` repository, and `cd` into it.
-```
-# Assuming in aria-at-app folder
-cd ../
-mkdir aria-at-tests
-cd aria-at-tests
-```
-
-2. Clone the ARIA-AT repo into a folder with the SHA
-If the latest SHA is `fd04dbd11c30d11f811232afa0c9efdded395c5c`, then do the following (as an example)
-```
-cd aria-at-tests
-git clone git@github.com:w3c/aria-at.git fd04dbd11c30d11f811232afa0c9efdded395c5c
-cd fd04dbd11c30d11f811232afa0c9efdded395c5c
-git reset --hard fd04dbd11c30d11f811232afa0c9efdded395c5c
-```
-
-3. Run the app as usual
-
-4. Repeat the above steps every time the latest tests are imported.
-
-
 ### Local Environment
 ```
 yarn dev  // Runs dev server
