@@ -56,7 +56,7 @@ class TestIframe extends Component {
     // message since DOMContentLoaded is called
     // before the harness dynamically sets up the
     // test html
-    async waitForTestHarnessReload() {
+    async waitForTestHarness() {
         return new Promise(resolve => {
             const handleLoadMessage = message => {
                 if (!this.validateMessage(message, 'loaded')) return;
@@ -64,17 +64,25 @@ class TestIframe extends Component {
                 resolve();
             };
             window.addEventListener('message', handleLoadMessage);
-            // trigger reload
-            this.iframeEl.current.src = this.iframeEl.current.src; // eslint-disable-line no-self-assign
         });
     }
 
+    patchButtonName() {
+        const documentEl = this.iframeEl.current.contentDocument;
+        const buttonEl = documentEl.querySelector('#review-results');
+        buttonEl.innerText = 'Submit Results';
+    }
+
     async reloadAndClear() {
-        await this.waitForTestHarnessReload();
+        this.iframeEl.current.src = this.iframeEl.current.src; // eslint-disable-line no-self-assign
+        await this.waitForTestHarness();
+        this.patchButtonName();
     }
 
     async reloadAndHydrate(serialized) {
-        await this.waitForTestHarnessReload();
+        this.iframeEl.current.src = this.iframeEl.current.src; // eslint-disable-line no-self-assign
+        await this.waitForTestHarness();
+        this.patchButtonName();
 
         // perform the hydration from serialized form state
         const documentEl = this.iframeEl.current.contentDocument;
@@ -82,7 +90,10 @@ class TestIframe extends Component {
         hydrate(serialized, resultsEl);
     }
 
-    componentDidMount() {
+    async componentDidMount() {
+        await this.waitForTestHarness();
+        this.patchButtonName();
+
         // listen for 'results' postMessage from child iframe
         // which is sent when the "Review Results" button is clicked
         // inside the iframe

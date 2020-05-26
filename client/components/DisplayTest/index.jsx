@@ -195,7 +195,7 @@ class DisplayTest extends Component {
             action = `You are about to leave this test run. ${cannotSave}`;
         }
         if (this.buttonAction === 'goToNextTest') {
-            modalTitle = 'Next Test';
+            modalTitle = 'Skip Test';
             action = `You are about to move to the next test. ${cannotSave}`;
         }
         if (this.buttonAction === 'goToPreviousTest') {
@@ -328,7 +328,7 @@ class DisplayTest extends Component {
                     variant="primary"
                     onClick={handleNextTestClick}
                 >
-                    Next test
+                    {this.testHasResult ? 'Next' : 'Skip'} test
                 </Button>
             </ButtonToolbar>
         );
