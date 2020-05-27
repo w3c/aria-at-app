@@ -16,7 +16,7 @@ export default function(results, userId) {
     }
 
     // If you are checking for conflicts, but the user hasn't submitted results
-    if (userId && (!results[userId] || !results[userId].results)) {
+    if (userId && (!results[userId] || !results[userId].result)) {
         return [];
     }
 
