@@ -3,13 +3,7 @@ import PropTypes from 'prop-types';
 import './DisplayTest.css';
 import { withRouter } from 'react-router-dom';
 import nextId from 'react-id-generator';
-import {
-    Button,
-    ButtonToolbar,
-    Col,
-    Modal,
-    Row
-} from 'react-bootstrap';
+import { Button, ButtonToolbar, Col, Modal, Row } from 'react-bootstrap';
 import RaiseIssueModal from '@components/RaiseIssueModal';
 import ReviewConflictsModal from '@components/ReviewConflictsModal';
 import StatusBar from '@components/StatusBar';

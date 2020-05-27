@@ -142,7 +142,7 @@ ReviewConflictsModal.propTypes = {
     testerId: PropTypes.number
 };
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
     const { usersById } = state.users;
     return { usersById };
 };

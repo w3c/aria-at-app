@@ -217,7 +217,11 @@ class RaiseIssueModal extends Component {
         return [
             'Issue created',
             <p key="create-issue-result-body">
-                <a href={`${REPO_LINK}/issues/${issue.number}`} target="_blank" rel="noopener noreferrer">
+                <a
+                    href={`${REPO_LINK}/issues/${issue.number}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
                     Issue #{issue.number} created
                 </a>
             </p>,
