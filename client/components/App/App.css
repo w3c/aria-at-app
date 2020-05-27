@@ -66,11 +66,26 @@ nav .logo.navbar-brand {
 }
 
 a {
-    color: #2d73c7;
+    color: #0b60ab;
 }
 
 a:hover {
     color: #214e86;
+}
+
+.btn-primary {
+  background: #0b60ab;
+  border: 1px solid #095190;
+}
+
+.btn-primary:hover {
+  background: #214e86;
+}
+
+.btn-primary:focus, .btn-primary.focus {
+  background: #214e86;
+  border: 1px solid #095190;
+  box-shadow: 0 0 0 0.2rem rgba(103, 171, 197, 0.5);
 }
 
 h1 {
@@ -96,6 +111,161 @@ h4 {
     font-weight: 600;
 }
 
+h5 {
+  margin: 1em 0 0.5em;
+  font-size: 1em;
+  font-weight: 600;
+}
+
 button {
     margin: 0.25em 0;
 }
+
+.init-box {
+  background: #F6F8FA;
+  border: 1px solid #D2D5D9;
+  border-radius: 3px;
+}
+
+.table thead th {
+  border-bottom: 0;
+}
+
+table thead th {
+  background: #F6F8FA;
+  white-space: nowrap;
+}
+
+table tbody tr {
+  background-color: #FAFBFC;
+}
+
+table tbody tr:nth-of-type(odd), .table-striped tbody tr:nth-of-type(odd) {
+  background-color: #FFF;
+}
+
+.table-bordered th, .table-bordered td {
+  border: 1px solid #D2D5D9;
+}
+
+table.table-hover tbody tr:hover, table tbody tr:hover {
+  background-color: #F6F8FA;
+}
+
+table .form-control {
+  width: auto;
+  border: 1px solid #D2D5D9;
+}
+
+table label {
+  margin-bottom: 0;
+}
+
+table label input {
+  margin-right: .5em;
+}
+
+table tbody tr.assign-testers {
+  background-color: #F6F8FA;
+}
+
+.commit-message {
+  background: #ecf6ff;
+  border: 1px solid #c4d1e2;
+  padding: 1em;
+  border-radius: 3px;
+}
+
+/* Actions */
+
+.actions {
+  white-space: nowrap;
+}
+
+.dropdown .btn-primary {
+  position: relative;
+  padding-right: 1.5em;
+}
+
+.dropdown-toggle::after {
+  right: .5em;
+  position: absolute;
+  top: 1em;
+}
+
+.assign-testers.dropdown,
+.unassign-testers.dropdown,
+.delete-results.dropdown,
+.mark-as-draft.dropdown {
+  display: inline-block;
+}
+
+.assign-testers.dropdown {
+  margin-right: .5em;
+}
+
+.open-run-as button.btn-primary {
+  width: 100%;
+  text-align: left;
+}
+
+.assign-testers button.btn-primary,
+.unassign-testers button.btn-primary,
+.open-run-as button.btn-primary {
+  background: white;
+  border: 1px solid #D2D5D9;
+  color: inherit;
+}
+
+.assign-testers button:hover,
+.unassign-testers button:hover {
+  background: white;
+  border: 1px solid #D2D5D9;
+  color: inherit;
+}
+
+.assign-testers button.btn-primary.disabled,
+.assign-testers button.btn-primary:disabled,
+.unassign-testers button.btn-primary.disabled,
+.unassign-testers button.btn-primary:disabled,
+.open-run-as button.btn-primary.disabled,
+.open-run-as button.btn-primary:disabled,
+.assign-testers button.btn-primary:focus,
+.unassign-testers button.btn-primary:focus,
+.open-run-as button.btn-primary:focus  {
+  background: white;
+  border: 1px solid #D2D5D9;
+  color: #A1A3A4;
+  opacity: 1;
+}
+
+.assign-testers button.btn-primary.active,
+.assign-testers button.btn-primary:active,
+.unassign-testers button.btn-primary.active,
+.unassign-testers button.btn-primary:active,
+.open-run-as button.btn-primary.active,
+.open-run-as button.btn-primary:active  {
+  background: #F6F8FA;
+}
+
+.delete-results .btn-primary:disabled,
+.delete-results .btn-primary:disabled {
+  opacity: 1;
+  background: white;
+  border: 1px solid #D2D5D9;
+}
+
+.delete-results button.btn-primary {
+  background: white;
+  border: 1px solid #D2D5D9;
+  color: #BB3638;
+  margin-right: .5em;
+}
+
+.mark-as-draft {
+  width: 50%;
+}
+
+/* .delete-my-results {
+
+} */
