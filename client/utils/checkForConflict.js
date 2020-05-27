@@ -15,6 +15,11 @@ export default function(results, userId) {
         return [];
     }
 
+    // If you are checking for conflicts, but the user hasn't submitted results
+    if (userId && (!results[userId] || !results[userId].results)) {
+        return [];
+    }
+
     let baseResult = userId ? results[userId] : allResults[0];
     let baseUserId = baseResult.user_id;
     let otherResults = allResults.filter(r => r.user_id !== baseUserId);
