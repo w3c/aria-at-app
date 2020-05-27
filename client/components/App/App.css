@@ -66,11 +66,20 @@ nav .logo.navbar-brand {
 }
 
 a {
-    color: #2d73c7;
+    color: #2B689D;
 }
 
 a:hover {
     color: #214e86;
+}
+
+.btn-primary {
+  background: #2B689D;
+  border: none;
+}
+
+.btn-primary:hover {
+  background: #214e86;
 }
 
 h1 {
