@@ -105,6 +105,13 @@ h4 {
     font-weight: 600;
 }
 
+
+h5 {
+  margin: 1em 0 0.5em;
+  font-size: 1em;
+  font-weight: 600;
+}
+
 button {
     margin: 0.25em 0;
 }
@@ -134,4 +141,19 @@ table.table-hover tbody tr:hover, table tbody tr:hover {
   background-color: #e6f0f9;
 }
 
+table .form-control {
+  width: auto;
+  border: 1px solid #a2b5c7;
+}
 
+table label {
+  margin-bottom: 0;
+}
+
+table label input {
+  margin-right: .5em;
+}
+
+table tbody tr.assign-testers {
+  background-color: #DFEAF7;
+}
