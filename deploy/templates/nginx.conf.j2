@@ -1,0 +1,32 @@
+server {
+  server_name  aria-at-staging.w3.org;
+
+  listen       443 ssl;
+  ssl_certificate /etc/letsencrypt/live/aria-at-staging.w3.org/fullchain.pem;
+  ssl_certificate_key /etc/letsencrypt/live/aria-at-staging.w3.org/privkey.pem;
+
+  location /.well-known/ {
+    root /home/t262-user;
+  }
+
+  location / {
+    proxy_pass http://localhost:3000;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection 'upgrade';
+    proxy_set_header Host $host;
+    proxy_cache_bypass $http_upgrade;
+  }
+}
+
+server {
+  server_name aria-at-staging.w3.org;
+
+  listen 80;
+
+  location /.well-known/ {
+    root /home/t262-user;
+  }
+
+  return 301 https://$server_name$request_uri;
+}
