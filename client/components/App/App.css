@@ -108,3 +108,30 @@ h4 {
 button {
     margin: 0.25em 0;
 }
+
+.table thead th {
+  border-bottom: 0;
+  color: #0f375a;
+}
+
+table thead th {
+  background: #ddeaf7;
+}
+
+table tbody tr {
+  background-color: #f4faff;
+}
+
+table tbody tr:nth-of-type(odd), .table-striped tbody tr:nth-of-type(odd) {
+  background-color: #FFF;
+}
+
+.table-bordered th, .table-bordered td {
+  border: 1px solid #a3b5c7;
+}
+
+table.table-hover tbody tr:hover, table tbody tr:hover {
+  background-color: #e6f0f9;
+}
+
+
