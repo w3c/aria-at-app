@@ -149,14 +149,14 @@ class ConfigureRunsForExample extends Component {
                                     </tr>
                                 );
                             })}
-                            <tr>
+                            <tr className="assign-testers">
                                 <td colSpan={2}>
                                     <h5>Assign Testers</h5>
-                                    <div>
+                                    <p>
                                         Choose a test from the dropdown menu to
                                         be assigned to the tests you have
                                         selected.
-                                    </div>
+                                    </p>
                                     <Form.Control
                                         value={this.state.userDropdownSelection}
                                         onChange={this.updateTesters}
