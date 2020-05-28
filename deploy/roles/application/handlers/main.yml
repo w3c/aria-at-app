@@ -1,14 +1,4 @@
 ---
-- name: Reload systemd daemon
-  become: yes
-  systemd:
-    daemon_reload: True
-
-- name: Restart journald daemon
-  systemd:
-    name: systemd-journald
-    state: restarted
-
 - name: Restart server
   become: yes
   systemd:

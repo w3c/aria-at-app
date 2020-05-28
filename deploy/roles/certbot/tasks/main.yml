@@ -1,0 +1,57 @@
+---
+- name: Install certbot
+  become: yes
+  apt:
+    name: certbot
+    state: present
+
+- name: Create "well-known" directory
+  become: yes
+  file:
+    path: /home/{{application_user}}/.well-known
+    state: directory
+
+- name: Test if certbot has been initialized
+  become: yes
+  stat:
+    path: /etc/letsencrypt/live/{{fqdn}}/fullchain.pem
+  register: cert_file
+
+- name: Initialize certbot
+  become: yes
+  command: >
+    certbot certonly
+      --webroot
+      --agree-tos
+      --non-interactive
+      --email {{letsencrypt_email}}
+      --webroot-path /home/{{application_user}}
+      --domain {{fqdn}}
+  when: cert_file.stat.exists == false
+
+# This is from https://github.com/bocoup/test262-report/blob/master/deploy/ansible/playbooks/tasks/certbot.yml
+- name: Remove built-in certificate renewal task
+  become: yes
+  file:
+    path: /etc/cron.d/certbot
+    state: absent
+
+- name: Define a service and timer to renew certificate
+  become: yes
+  template:
+    src: '{{item.src}}'
+    dest: '{{item.dest}}'
+  with_items:
+    - src: ../templates/aria-at-app-cert.service.j2
+      dest: /etc/systemd/system/aria-at-app-cert.service
+    - src: ../templates/aria-at-app-cert.timer.j2
+      dest: /etc/systemd/system/aria-at-app-cert.timer
+  notify:
+    - Reload systemd daemon
+
+- name: Enable system timer
+  become: yes
+  systemd:
+    name: aria-at-app-cert.timer
+    enabled: true
+    state: started
