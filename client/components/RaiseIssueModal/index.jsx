@@ -177,16 +177,14 @@ class RaiseIssueModal extends Component {
                 <Form.Group controlId="create-an-issue-title">
                     <Form.Control
                         autoFocus
-                        tabindex={2}
                         as="input"
                         name="title"
                         onChange={onIssueChange}
                         defaultValue={title}
                     />
                 </Form.Group>
-                <Form.Group tabindex={3} controlId="create-an-issue-body">
+                <Form.Group controlId="create-an-issue-body">
                     <MarkdownEditor
-                        tabindex={4}
                         name="body"
                         onChange={onIssueChange}
                         defaultValue={body}
@@ -196,7 +194,6 @@ class RaiseIssueModal extends Component {
             <Fragment key="create-issue-form-buttons">
                 {issues.length ? (
                     <Button
-                        tabindex={5}
                         variant="secondary"
                         className="float-left"
                         onClick={onBackClick}
@@ -204,11 +201,10 @@ class RaiseIssueModal extends Component {
                         Back to issues list
                     </Button>
                 ) : null}
-                <Button tabindex={6} variant="secondary" onClick={onHide}>
+                <Button variant="secondary" onClick={onHide}>
                     Cancel
                 </Button>
                 <Button
-                    tabindex={7}
                     variant="primary"
                     onClick={onCreateNewIssueSubmit}
                 >
@@ -225,9 +221,9 @@ class RaiseIssueModal extends Component {
         return [
             'Issue created',
             <p key="create-issue-result-body">
-                <Link to={`${REPO_LINK}/issues/${issue.number}`}>
+                <a href={`${REPO_LINK}/issues/${issue.number}`} target="_blank">
                     Issue #{issue.number} created
-                </Link>
+                </a>
             </p>,
             <Button
                 key="create-issue-result-button"
@@ -247,10 +243,15 @@ class RaiseIssueModal extends Component {
 
     render() {
         const { onHide } = this;
-        const { show } = this.props;
+        const { issues, show } = this.props;
         const { isReady, showCreateIssue } = this.state;
 
         if (!isReady || !show) {
+            return null;
+        }
+
+        if (!showCreateIssue && !issues.length) {
+            this.setState({ showCreateIssue: true });
             return null;
         }
 
@@ -269,7 +270,7 @@ class RaiseIssueModal extends Component {
                 onHide={onHide}
                 role={role}
                 show={show}
-                tabindex={-1}
+                tabIndex={-1}
             >
                 <Modal.Header closeButton>
                     <Modal.Title id="raise-issue-modal-title">
