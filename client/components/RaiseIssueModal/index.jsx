@@ -1,7 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
 import { Button, Form, Modal } from 'react-bootstrap';
 import {
     getConflictsByTestResults,
@@ -204,10 +203,7 @@ class RaiseIssueModal extends Component {
                 <Button variant="secondary" onClick={onHide}>
                     Cancel
                 </Button>
-                <Button
-                    variant="primary"
-                    onClick={onCreateNewIssueSubmit}
-                >
+                <Button variant="primary" onClick={onCreateNewIssueSubmit}>
                     Submit new issue
                 </Button>
             </Fragment>
@@ -221,7 +217,7 @@ class RaiseIssueModal extends Component {
         return [
             'Issue created',
             <p key="create-issue-result-body">
-                <a href={`${REPO_LINK}/issues/${issue.number}`} target="_blank">
+                <a href={`${REPO_LINK}/issues/${issue.number}`} target="_blank" rel="noopener noreferrer">
                     Issue #{issue.number} created
                 </a>
             </p>,
