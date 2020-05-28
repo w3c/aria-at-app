@@ -5,6 +5,7 @@
     - permissions
     - database
     - nodejs
+    - proxy
     - application
   vars_files:
     - vars/main.yml

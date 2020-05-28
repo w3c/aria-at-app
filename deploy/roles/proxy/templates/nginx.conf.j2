@@ -1,0 +1,39 @@
+server {
+  server_name  {{fqdn}};
+
+  {% if cert_file.stat.exists %}
+  listen       443 ssl;
+  ssl_certificate /etc/letsencrypt/live/{{fqdn}}/fullchain.pem;
+  ssl_certificate_key /etc/letsencrypt/live/{{fqdn}}/privkey.pem;
+  {% else %}
+  listen       80;
+  {% endif %}
+
+  location /.well-known/ {
+    root /home/{{application_user}};
+  }
+
+  location / {
+    proxy_pass http://localhost:5000;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection 'upgrade';
+    proxy_set_header Host $host;
+    proxy_cache_bypass $http_upgrade;
+  }
+}
+
+{% if cert_file.stat.exists %}
+# Force HTTPS for all connections.
+server {
+  server_name {{fqdn}};
+
+  listen 80;
+
+  location /.well-known/ {
+    root /home/{{application_user}};
+  }
+
+  return 301 https://$server_name$request_uri;
+}
+{% endif %}

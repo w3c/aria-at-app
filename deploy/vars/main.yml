@@ -2,3 +2,5 @@
 application_user: aria-bot
 application_group: aria-group
 aria_at_test_revision: 2a3c46f1cbd20e7f2f0a706052d2d82aaf207a29
+letsencrypt_email: infrastructure@bocoup.com
+

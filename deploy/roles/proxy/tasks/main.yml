@@ -1,0 +1,32 @@
+---
+- name: Install Nginx
+  become: yes
+  apt:
+    name: nginx
+    state: present
+
+# For the initial deployment of the application, no certificates will be
+# available, so the server must be configured serve only HTTP traffic. This
+# allows for the initial retrieval of valid SSL certificates; subsequent
+# deployments will configure the server to use the certificates to serve HTTPS
+# traffic.
+- name: Test if certbot has been initialized
+  become: yes
+  stat:
+    path: /etc/letsencrypt/live/{{fqdn}}/fullchain.pem
+  register: cert_file
+
+- name: Configure Nginx
+  become: yes
+  template:
+    src: ../templates/nginx.conf.j2
+    dest: /etc/nginx/sites-available/aria-at-app.conf
+  notify: Restart Nginx
+
+- name: Enable Nginx configuration
+  become: yes
+  file:
+    src: /etc/nginx/sites-available/aria-at-app.conf
+    dest: /etc/nginx/sites-enabled/aria-at-app.conf
+    state: link
+  notify: Restart Nginx
