@@ -47,6 +47,14 @@ module.exports = function(sequelize, DataTypes) {
                     model: 'apg_example',
                     key: 'id'
                 }
+            },
+            run_status_id: {
+                type: DataTypes.INTEGER,
+                allowNull: true,
+                references: {
+                    model: 'run_status',
+                    key: 'id'
+                }
             }
         },
         {
