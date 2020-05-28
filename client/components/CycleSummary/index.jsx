@@ -90,7 +90,7 @@ class CycleSummary extends Component {
                 </Helmet>
                 <h2>{cycle.name} - Status</h2>
                 <h3>Git commit of tests</h3>
-                <p>{`${
+                <p className="commit-message">{`${
                     testSuiteVersionData.git_commit_msg
                 } - ${testSuiteVersionData.git_hash.slice(0, 8)}`}</p>
                 <h3 id={tableId}>

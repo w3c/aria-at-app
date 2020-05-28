@@ -167,3 +167,11 @@ table label input {
 table tbody tr.assign-testers {
   background-color: #F6F8FA;
 }
+
+.commit-message {
+  background: #ecf6ff;
+  border: 1px solid #c4d1e2;
+  padding: 1em;
+  border-radius: 3px;
+}
+
