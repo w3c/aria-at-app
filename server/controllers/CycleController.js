@@ -64,7 +64,6 @@ async function getTestsForRunsForCycle(req, res) {
 async function saveRunStatus(req, res) {
     try {
         const run = req.body.data;
-        console.log(req.body.data);
         const savedRun = await CycleService.saveRunStatus(run);
         res.status(201).json(savedRun);
     } catch (error) {
@@ -73,7 +72,6 @@ async function saveRunStatus(req, res) {
         console.error(`Error caught in CycleController: ${error}`);
     }
 }
-
 
 async function getAllTestVersions(req, res) {
     try {

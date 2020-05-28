@@ -448,11 +448,14 @@ async function saveRunStatus(run) {
             throw new Error(`Status "${run_status}" is not a valid status.`);
         }
 
-        await db.Run.update({run_status_id: status.dataValues.id}, {
-            where: {
-                id
+        await db.Run.update(
+            { run_status_id: status.dataValues.id },
+            {
+                where: {
+                    id
+                }
             }
-        });
+        );
 
         run.run_status_id = status.dataValues.id;
         return run;
@@ -461,7 +464,6 @@ async function saveRunStatus(run) {
         throw error;
     }
 }
-
 
 /**
  * Gets all the runs for a cycle

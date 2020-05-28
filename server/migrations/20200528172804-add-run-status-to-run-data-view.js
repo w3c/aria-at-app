@@ -47,7 +47,7 @@ WHERE
   AND r.at_version_id = at_version.id
   AND r.apg_example_id = apg_example.id
 ;
-`
+`;
 let originalViewQuery = `
 CREATE OR REPLACE VIEW run_data AS
 SELECT
@@ -80,17 +80,18 @@ WHERE
   AND run.at_version_id = at_version.id
   AND run.apg_example_id = apg_example.id
 ;
-`
+`;
 
 module.exports = {
-    up: (queryInterface) => {
-        return queryInterface.sequelize.query(updateViewQuery)
-
+    up: queryInterface => {
+        return queryInterface.sequelize.query(updateViewQuery);
     },
     async down(queryInterface) {
         const transaction = await queryInterface.sequelize.transaction();
         try {
-            await queryInterface.sequelize.query(`DROP VIEW IF EXISTS run_data`);
+            await queryInterface.sequelize.query(
+                `DROP VIEW IF EXISTS run_data`
+            );
             await queryInterface.sequelize.query(originalViewQuery);
             await transaction.commit();
         } catch (err) {
