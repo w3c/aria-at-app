@@ -5,3 +5,4 @@ all:
       ansible_user: root
   vars:
     deployment_mode: staging
+    fqdn: aria-at-staging.w3.org

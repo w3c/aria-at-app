@@ -6,3 +6,4 @@ all:
     ansible_become: yes
     deployment_mode: development
     ansible_connection: local
+    fqdn: aria-at-app.loc

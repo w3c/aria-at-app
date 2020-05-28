@@ -1,1 +1,0 @@
-fqdn: aria-at-staging.w3.org
