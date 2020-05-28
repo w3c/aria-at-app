@@ -61,6 +61,20 @@ async function getTestsForRunsForCycle(req, res) {
     }
 }
 
+async function saveRunStatus(req, res) {
+    try {
+        const run = req.body.data;
+        console.log(req.body.data);
+        const savedRun = await CycleService.saveRunStatus(run);
+        res.status(201).json(savedRun);
+    } catch (error) {
+        res.status(400);
+        res.end();
+        console.error(`Error caught in CycleController: ${error}`);
+    }
+}
+
+
 async function getAllTestVersions(req, res) {
     try {
         const testVersions = await CycleService.getAllTestVersions();
@@ -113,6 +127,7 @@ module.exports = {
     deleteCycle,
     saveTestResults,
     getTestsForRunsForCycle,
+    saveRunStatus,
     getAllTestVersions,
     getIssuesByTestId,
     createIssue
