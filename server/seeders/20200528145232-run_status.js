@@ -4,7 +4,7 @@ module.exports = {
     up: queryInterface => {
         return queryInterface.bulkInsert(
             'run_status',
-            [{ name: 'incomplete' }, { name: 'draft' }, { name: 'final' }],
+            [{ name: 'raw' }, { name: 'draft' }, { name: 'final' }],
             {}
         );
     },
