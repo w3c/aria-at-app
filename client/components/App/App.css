@@ -66,7 +66,7 @@ nav .logo.navbar-brand {
 }
 
 a {
-    color: #2B689D;
+    color: #0b60ab;
 }
 
 a:hover {
@@ -74,12 +74,18 @@ a:hover {
 }
 
 .btn-primary {
-  background: #2B689D;
-  border: none;
+  background: #0b60ab;
+  border: 1px solid #095190;
 }
 
 .btn-primary:hover {
   background: #214e86;
+}
+
+.btn-primary:focus, .btn-primary.focus {
+  background: #214e86;
+  border: 1px solid #095190;
+  box-shadow: 0 0 0 0.2rem rgba(103, 171, 197, 0.5);
 }
 
 h1 {
@@ -105,7 +111,6 @@ h4 {
     font-weight: 600;
 }
 
-
 h5 {
   margin: 1em 0 0.5em;
   font-size: 1em;
@@ -116,17 +121,22 @@ button {
     margin: 0.25em 0;
 }
 
+.init-box {
+  background: #F6F8FA;
+  border: 1px solid #D2D5D9;
+  border-radius: 3px;
+}
+
 .table thead th {
   border-bottom: 0;
-  color: #0f375a;
 }
 
 table thead th {
-  background: #ddeaf7;
+  background: #F6F8FA;
 }
 
 table tbody tr {
-  background-color: #f4faff;
+  background-color: #FAFBFC;
 }
 
 table tbody tr:nth-of-type(odd), .table-striped tbody tr:nth-of-type(odd) {
@@ -134,16 +144,16 @@ table tbody tr:nth-of-type(odd), .table-striped tbody tr:nth-of-type(odd) {
 }
 
 .table-bordered th, .table-bordered td {
-  border: 1px solid #a3b5c7;
+  border: 1px solid #D2D5D9;
 }
 
 table.table-hover tbody tr:hover, table tbody tr:hover {
-  background-color: #e6f0f9;
+  background-color: #F6F8FA;
 }
 
 table .form-control {
   width: auto;
-  border: 1px solid #a2b5c7;
+  border: 1px solid #D2D5D9;
 }
 
 table label {
@@ -155,5 +165,5 @@ table label input {
 }
 
 table tbody tr.assign-testers {
-  background-color: #DFEAF7;
+  background-color: #F6F8FA;
 }
