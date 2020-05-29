@@ -80,8 +80,8 @@ class TestQueueRow extends Component {
             }
         }
         return (
-            <Fragment>
-                <Dropdown>
+            <Fragment className="actions">
+                <Dropdown className="assign-testers">
                     <Dropdown.Toggle
                         id={nextId()}
                         aria-label={`Assign Testers to ${testrun}`}
@@ -104,7 +104,7 @@ class TestQueueRow extends Component {
                         })}
                     </Dropdown.Menu>
                 </Dropdown>
-                <Dropdown>
+                <Dropdown className="unassign-testers">
                     <Dropdown.Toggle
                         id={nextId()}
                         aria-label={`Unassign Testers from ${testrun}`}
@@ -154,7 +154,28 @@ class TestQueueRow extends Component {
 
         return (
             <Fragment>
-                <Dropdown>
+                <Dropdown className="open-run-as">
+                    <Dropdown.Toggle
+                        id={nextId()}
+                        aria-label={`Open run ${testrun} as tester`}
+                        disabled={testers.length ? false : true}
+                    >
+                        Open run as...
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu>
+                        {testers.map(t => {
+                            return (
+                                <Dropdown.Item
+                                    href={`/cycles/${cycleId}/run/${runId}?user=${t}`}
+                                    key={nextId()}
+                                >
+                                    {usersById[t].username}
+                                </Dropdown.Item>
+                            );
+                        })}
+                    </Dropdown.Menu>
+                </Dropdown>
+                <Dropdown className="delete-results">
                     <Dropdown.Toggle
                         id={nextId()}
                         aria-label={`Delete results for ${testrun}`}
@@ -171,27 +192,6 @@ class TestQueueRow extends Component {
                                     value={t.id}
                                 >
                                     {t.username}
-                                </Dropdown.Item>
-                            );
-                        })}
-                    </Dropdown.Menu>
-                </Dropdown>
-                <Dropdown>
-                    <Dropdown.Toggle
-                        id={nextId()}
-                        aria-label={`Open run ${testrun} as tester`}
-                        disabled={testers.length ? false : true}
-                    >
-                        Open run as...
-                    </Dropdown.Toggle>
-                    <Dropdown.Menu>
-                        {testers.map(t => {
-                            return (
-                                <Dropdown.Item
-                                    href={`/cycles/${cycleId}/run/${runId}?user=${t}`}
-                                    key={nextId()}
-                                >
-                                    {usersById[t].username}
                                 </Dropdown.Item>
                             );
                         })}
@@ -321,7 +321,7 @@ class TestQueueRow extends Component {
                 <Fragment>
                     {this.renderAssignDropdowns()}
                     {this.renderAdminOptions()}
-                    <Button>Mark As Draft</Button>
+                    <Button className="mark-as-draft">Mark As Draft</Button>
                 </Fragment>
             );
         } else {
@@ -329,7 +329,7 @@ class TestQueueRow extends Component {
                 <Fragment>
                     {this.renderAssignSelfButton(currentUserAssigned)}
                     {this.testsCompletedByUser[userId] ? (
-                        <Button disabled={true}>Delete My Results</Button>
+                        <Button className="delete-my-results" disabled={true}>Delete My Results</Button>
                     ) : (
                         undefined
                     )}
@@ -350,7 +350,7 @@ class TestQueueRow extends Component {
                     </ul>
                 </td>
                 <td>{status}</td>
-                <td>{actions}</td>
+                <td className="actions">{actions}</td>
             </tr>
         );
     }
