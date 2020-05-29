@@ -81,43 +81,40 @@ class UserSettings extends Component {
         const { ats, isSignedIn, username, email, loadedUserData } = this.props;
         const content =
             loadedUserData && isSignedIn ? (
-                <Row data-test="user-settings-authorized">
-                    <Col>
-                        <h2>User Details</h2>
-                        <p>{username}</p>
-                        <p>{email}</p>
-                    </Col>
-                    <Col>
-                        <h2>Assistive Technology</h2>
-                        <p>Add the assistive technologies that you can use</p>
-                        <Form onSubmit={this.onSubmit}>
-                            <Form.Group controlId="formBasicCheckbox">
-                                {ats &&
-                                    ats.map(at => {
-                                        return (
-                                            <Form.Check
-                                                id={at.name}
-                                                key={at.id}
-                                                label={at.name}
-                                                onChange={
-                                                    this.onCheckboxClicked
-                                                }
-                                                checked={
-                                                    this.state[at.name]
-                                                        ? this.state[at.name]
-                                                              .checked
-                                                        : false
-                                                }
-                                            />
-                                        );
-                                    })}
-                            </Form.Group>
-                            <Button variant="primary" type="submit">
-                                Save
-                            </Button>
-                        </Form>
-                    </Col>
-                </Row>
+                <Fragment data-test="user-settings-authorized">
+                    <h2>User Details</h2>
+                    <p>{username}</p>
+                    <p>{email}</p>
+
+                    <h2>Assistive Technology</h2>
+                    <p>Add the assistive technologies that you can use</p>
+                    <Form onSubmit={this.onSubmit}>
+                        <Form.Group controlId="formBasicCheckbox">
+                            {ats &&
+                                ats.map(at => {
+                                    return (
+                                        <Form.Check
+                                            id={at.name}
+                                            key={at.id}
+                                            label={at.name}
+                                            onChange={
+                                                this.onCheckboxClicked
+                                            }
+                                            checked={
+                                                this.state[at.name]
+                                                    ? this.state[at.name]
+                                                          .checked
+                                                    : false
+                                            }
+                                        />
+                                    );
+                                })}
+                        </Form.Group>
+                        <Button variant="primary" type="submit">
+                            Save
+                        </Button>
+                    </Form>
+                </Fragment>
             ) : (
                 <p data-test="user-settings-unauthorized">Unauthorized</p>
             );
