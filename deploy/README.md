@@ -13,18 +13,20 @@ repository in encrypted form.
 
 To support local development and functional testing, a
 [Vagrant](https://www.vagrantup.com/)-mediated
-[VirtualBox](https://www.virtualbox.org/) virtual machine is also available.
+[VirtualBox](https://www.virtualbox.org/) virtual machine is also available. On Vagrant up and destroy, sudo access is required.
 
 1. Install [Vagrant](https://www.vagrantup.com/) (version 2) and
    [VirtualBox](https://www.virtualbox.org/) (version 5.2)
-2. Open a terminal and navigate to the directory containing this text file
-3. Run the following command:
+2. Install vagrant-hostsupdater
+   ```
+   vagrant plugin install vagrant-hostsupdater
+   ```
+3. Open a terminal and navigate to the directory containing this text file
+4. Run the following command:
 
        vagrant up
 
-This will initiate the creation of a virtual machine. Further documentation on
-using Vagrant can be found in [the "Getting Started" guide by the maintainers
-of that project](https://www.vagrantup.com/intro/getting-started/index.html).
+This will initiate the creation of a virtual machine. You will be prompted for your sudo password. Further documentation on using Vagrant can be found in [the "Getting Started" guide by the maintainers of that project](https://www.vagrantup.com/intro/getting-started/index.html).
 
 This does not rely on any private infrastructure, so any contributor may follow
 these instructions. This will require some manual modification of the

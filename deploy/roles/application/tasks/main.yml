@@ -61,15 +61,4 @@
   args:
     chdir: '{{source_dir}}'
 
-- name: Install authbind
-  apt:
-    name: authbind
-
-# https://superuser.com/questions/710253/allow-non-root-process-to-bind-to-port-80-and-443#892391
-- name: Allow non-root process to bind to port 80
-  file:
-    path: /etc/authbind/byport/80
-    state: touch
-    mode: '0777'
-
 - include: service.yml

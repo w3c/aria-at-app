@@ -5,6 +5,18 @@
     - permissions
     - database
     - nodejs
+    - role: certbot
+      when: deployment_mode != 'development'
+    - proxy
     - application
+  handlers:
+    - name: Reload systemd daemon
+      become: yes
+      systemd:
+        daemon_reload: True
+    - name: Restart journald daemon
+      systemd:
+        name: systemd-journald
+        state: restarted
   vars_files:
     - vars/main.yml

@@ -1,0 +1,11 @@
+[Unit]
+Description=ARIA-AT SSL Certificate Renewal Service
+After=nginx.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/certbot renew --no-self-upgrade --deploy-hook "/bin/systemctl restart nginx"
+KillMode=control-group
+
+[Install]
+WantedBy=multi-user.target

@@ -13,7 +13,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # conflict with that of another project.
   config.vm.network :private_network, ip: '192.168.10.40'
 
-  config.vm.post_up_message = 'The app is now running at http://192.168.10.40/'
+  config.vm.post_up_message = 'The app is now running at http://aria-at-app.loc/'
+
+  # Automatically add an entry to /etc/hosts for this Vagrant box (requires
+  # sudo). This should match the Ansible host_vars/vagrant site_fqdn value.
+  config.hostsupdater.aliases = ['aria-at-app.loc']
 
   # A specific name looks much better than "default" in ansible output.
   config.vm.define 'vagrant'

@@ -1,0 +1,9 @@
+[Unit]
+Description=Attempt to renew SSL certificate once every day
+
+[Timer]
+OnBootSec=0 seconds
+OnUnitActiveSec=1 day
+
+[Install]
+WantedBy=timers.target

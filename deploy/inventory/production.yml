@@ -5,3 +5,4 @@ all:
       ansible_user: root
   vars:
     deployment_mode: production
+    fqdn: aria-at.w3.org
