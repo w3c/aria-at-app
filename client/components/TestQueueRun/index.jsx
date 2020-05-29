@@ -5,7 +5,11 @@ import { Button, Dropdown } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import checkForConflict from '../../utils/checkForConflict';
-import { deleteUsersFromRun, saveUsersToRuns, saveRunStatus } from '../../actions/cycles';
+import {
+    deleteUsersFromRun,
+    saveUsersToRuns,
+    saveRunStatus
+} from '../../actions/cycles';
 
 class TestQueueRow extends Component {
     constructor(props) {
@@ -336,30 +340,35 @@ class TestQueueRow extends Component {
         let updateRunStatusButton = null;
 
         if (this.state.totalConflicts > 0) {
-            status = `In progress with ${this.state.totalConflicts} conflicting test${
-                this.state.totalConflicts === 1 ? '' : 's'
-            }`;
-        } else if (this.state.testsWithResults > 0 && this.state.testsWithResults !== testsForRun.length) {
+            status = `In progress with ${
+                this.state.totalConflicts
+            } conflicting test${this.state.totalConflicts === 1 ? '' : 's'}`;
+        } else if (
+            this.state.testsWithResults > 0 &&
+            this.state.testsWithResults !== testsForRun.length
+        ) {
             status = 'In progress';
         } else if (this.state.testsWithResults === testsForRun.length) {
             status = 'Tests complete with no conflicts';
 
             updateRunStatusButton = (
-                <Button onClick={() => this.updateRunStatus('draft')}>Mark as draft</Button>
+                <Button onClick={() => this.updateRunStatus('draft')}>
+                    Mark as draft
+                </Button>
             );
 
             if (runStatus === 'draft') {
                 // To do: make this a link to draft results
                 status = 'DRAFT RESULTS';
                 updateRunStatusButton = (
-                    <Button onClick={() => this.updateRunStatus('final')}>Mark as final</Button>
+                    <Button onClick={() => this.updateRunStatus('final')}>
+                        Mark as final
+                    </Button>
                 );
-            }
-            else if (runStatus === 'final') {
+            } else if (runStatus === 'final') {
                 // To do: make this a link to published results
                 status = 'PUBLISHED RESULTS';
             }
-
         }
 
         let actions;

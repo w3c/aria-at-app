@@ -25,7 +25,6 @@ export default (state = initialState, action) => {
     let cycleId = action.payload ? action.payload.cycleId : undefined;
     let runId = action.payload ? action.payload.runId : undefined;
 
-
     switch (action.type) {
         case TEST_SUITE_VERSIONS: {
             const testSuiteVersions = action.payload;
@@ -106,8 +105,12 @@ export default (state = initialState, action) => {
                 }
             });
 
-            newState.cyclesById[cycleId].runsById[runId].run_status = run_status;
-            newState.cyclesById[cycleId].runsById[runId].run_status_id = run_status_id;
+            newState.cyclesById[cycleId].runsById[
+                runId
+            ].run_status = run_status;
+            newState.cyclesById[cycleId].runsById[
+                runId
+            ].run_status_id = run_status_id;
 
             return newState;
         }
