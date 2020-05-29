@@ -14,19 +14,8 @@ import {
 class TestQueueRow extends Component {
     constructor(props) {
         super(props);
-        const { testsForRun } = this.props;
 
-        let totalConflicts = 0;
-        let testsWithResults = 0;
-        for (let test of testsForRun) {
-            if (test.results && Object.keys(test.results).length) {
-                testsWithResults++;
-                if (checkForConflict(test.results).length) {
-                    totalConflicts++;
-                }
-            }
-        }
-
+        const { totalConflicts, testsWithResults } = this.countCompleteTestsAndConflicts();
         this.state = {
             totalConflicts,
             testsWithResults
@@ -39,6 +28,26 @@ class TestQueueRow extends Component {
         this.updateRunStatus = this.updateRunStatus.bind(this);
 
         this.testerList = React.createRef();
+    }
+
+    countCompleteTestsAndConflicts() {
+        const { testsForRun } = this.props;
+
+        let totalConflicts = 0;
+        let testsWithResults = 0;
+        for (let test of testsForRun) {
+            if (
+                test.results &&
+                Object.values(test.results).filter(r => r.status === 'complete')
+                    .length
+            ) {
+                testsWithResults++;
+                if (checkForConflict(test.results).length) {
+                    totalConflicts++;
+                }
+            }
+        }
+        return { totalConflicts, testsWithResults };
     }
 
     handleUnassignSelfClick() {
@@ -75,16 +84,8 @@ class TestQueueRow extends Component {
         }
 
         if (this.props.testsForRun.length !== prevProps.testsForRun.length) {
-            let totalConflicts = 0;
-            let testsWithResults = 0;
-            for (let test of this.props.testsForRun) {
-                if (test.results && Object.keys(test.results).length) {
-                    testsWithResults++;
-                    if (checkForConflict(test.results).length) {
-                        totalConflicts++;
-                    }
-                }
-            }
+
+            const { totalConflicts, testsWithResults } = this.countCompleteTestsAndConflicts();
 
             this.setState({
                 totalConflicts,
@@ -177,7 +178,7 @@ class TestQueueRow extends Component {
     }
 
     renderAdminOptions() {
-        const { cycleId, runId, testers, usersById } = this.props;
+        const { cycleId, runId, testers, usersById, runStatus } = this.props;
 
         let testrun = this.testRun();
 
@@ -196,6 +197,31 @@ class TestQueueRow extends Component {
         // there are results that can be deleted
         // let disableDelete = testersWithResults.length ? false : true;
         let disableDelete = true;
+
+        // If there are no conflicts OR the test has been marked as "final",
+        // and admin can mark a test run as "draft"
+        let updateRunStatusButton = null;
+        if (
+            (runStatus !== 'draft' &&
+                this.state.totalConflicts === 0 &&
+                this.state.testsWithResults > 0) ||
+            runStatus === 'final'
+        ) {
+            updateRunStatusButton = (
+                <Button onClick={() => this.updateRunStatus('draft')}>
+                    Mark as draft
+                </Button>
+            );
+        }
+        // If the results have been marked as draft and there is no conflict,
+        // they can be marked as "final"
+        else if (runStatus === 'draft' && this.state.totalConflicts === 0) {
+            updateRunStatusButton = (
+                <Button onClick={() => this.updateRunStatus('final')}>
+                    Mark as final
+                </Button>
+            );
+        }
 
         return (
             <Fragment>
@@ -242,6 +268,7 @@ class TestQueueRow extends Component {
                         })}
                     </Dropdown.Menu>
                 </Dropdown>
+                {updateRunStatusButton}
             </Fragment>
         );
     }
@@ -337,7 +364,7 @@ class TestQueueRow extends Component {
         let testerList = this.renderTesterList(currentUserAssigned);
 
         let status = 'Not started';
-        let updateRunStatusButton = null;
+        let results = null;
 
         if (this.state.totalConflicts > 0) {
             status = `In progress with ${
@@ -347,28 +374,17 @@ class TestQueueRow extends Component {
             this.state.testsWithResults > 0 &&
             this.state.testsWithResults !== testsForRun.length
         ) {
-            status = 'In progress';
+            status = 'In progress with no conflicts';
         } else if (this.state.testsWithResults === testsForRun.length) {
             status = 'Tests complete with no conflicts';
+        }
 
-            updateRunStatusButton = (
-                <Button onClick={() => this.updateRunStatus('draft')}>
-                    Mark as draft
-                </Button>
-            );
-
-            if (runStatus === 'draft') {
-                // To do: make this a link to draft results
-                status = 'DRAFT RESULTS';
-                updateRunStatusButton = (
-                    <Button onClick={() => this.updateRunStatus('final')}>
-                        Mark as final
-                    </Button>
-                );
-            } else if (runStatus === 'final') {
-                // To do: make this a link to published results
-                status = 'PUBLISHED RESULTS';
-            }
+        if (runStatus === 'draft') {
+            // To do: make this a link to draft results
+            results = 'DRAFT RESULTS';
+        } else if (runStatus === 'final') {
+            // To do: make this a link to published results
+            results = 'PUBLISHED RESULTS';
         }
 
         let actions;
@@ -377,7 +393,6 @@ class TestQueueRow extends Component {
                 <Fragment>
                     {this.renderAssignDropdowns()}
                     {this.renderAdminOptions()}
-                    {updateRunStatusButton}
                 </Fragment>
             );
         } else {
@@ -405,7 +420,7 @@ class TestQueueRow extends Component {
                         )}
                     </ul>
                 </td>
-                <td>{status}</td>
+                <td><div>{status}</div>{results && <div>{results}</div>}</td>
                 <td>{actions}</td>
             </tr>
         );
