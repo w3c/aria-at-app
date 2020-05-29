@@ -5,16 +5,34 @@ import { Button, Dropdown } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import checkForConflict from '../../utils/checkForConflict';
-import { deleteUsersFromRun, saveUsersToRuns } from '../../actions/cycles';
+import { deleteUsersFromRun, saveUsersToRuns, saveRunStatus } from '../../actions/cycles';
 
 class TestQueueRow extends Component {
     constructor(props) {
         super(props);
+        const { testsForRun } = this.props;
+
+        let totalConflicts = 0;
+        let testsWithResults = 0;
+        for (let test of testsForRun) {
+            if (test.results && Object.keys(test.results).length) {
+                testsWithResults++;
+                if (checkForConflict(test.results).length) {
+                    totalConflicts++;
+                }
+            }
+        }
+
+        this.state = {
+            totalConflicts,
+            testsWithResults
+        };
 
         this.handleUnassignSelfClick = this.handleUnassignSelfClick.bind(this);
         this.handleAssignSelfClick = this.handleAssignSelfClick.bind(this);
         this.assignTesterSelect = this.assignTesterSelect.bind(this);
         this.unassignTesterSelect = this.unassignTesterSelect.bind(this);
+        this.updateRunStatus = this.updateRunStatus.bind(this);
 
         this.testerList = React.createRef();
     }
@@ -41,10 +59,33 @@ class TestQueueRow extends Component {
         dispatch(deleteUsersFromRun([uid], runId, cycleId));
     }
 
+    updateRunStatus(status) {
+        const { dispatch, cycleId, runId } = this.props;
+        dispatch(saveRunStatus(status, runId, cycleId));
+    }
+
     componentDidUpdate(prevProps) {
         // Focus on the user list after editing the user list
         if (this.props.testers.length !== prevProps.testers.length) {
             this.testerList.current.focus();
+        }
+
+        if (this.props.testsForRun.length !== prevProps.testsForRun.length) {
+            let totalConflicts = 0;
+            let testsWithResults = 0;
+            for (let test of this.props.testsForRun) {
+                if (test.results && Object.keys(test.results).length) {
+                    testsWithResults++;
+                    if (checkForConflict(test.results).length) {
+                        totalConflicts++;
+                    }
+                }
+            }
+
+            this.setState({
+                totalConflicts,
+                testsWithResults
+            });
         }
     }
 
@@ -66,14 +107,14 @@ class TestQueueRow extends Component {
             // You can only unassign if no tests results have been saved
             if (
                 testers.includes(tester.id) &&
-                ! this.testsCompletedByUser[tester.id]
+                !this.testsCompletedByUser[tester.id]
             ) {
                 canUnassignTesters.push(tester);
             }
 
             // You can only assign if the tester is not assigned already
             if (
-                ! testers.includes(tester.id) &&
+                !testers.includes(tester.id) &&
                 tester.configured_ats.find(ua => ua.at_name_id === atNameId)
             ) {
                 canAssignTesters.push(tester);
@@ -201,10 +242,6 @@ class TestQueueRow extends Component {
         );
     }
 
-    renderDraftOptions() {
-        return;
-    }
-
     renderAssignSelfButton(currentUserAssigned) {
         const { userId } = this.props;
         let testrun = this.testRun;
@@ -264,6 +301,7 @@ class TestQueueRow extends Component {
             cycleId,
             userId,
             runId,
+            runStatus,
             testers,
             testsForRun,
             apgExampleName
@@ -295,24 +333,33 @@ class TestQueueRow extends Component {
         let testerList = this.renderTesterList(currentUserAssigned);
 
         let status = 'Not started';
-        let totalConflicts = 0;
-        let testsWithResults = 0;
-        for (let test of testsForRun) {
-            if (test.results && Object.keys(test.results).length) {
-                testsWithResults++;
-                if (checkForConflict(test.results).length) {
-                    totalConflicts++;
-                }
-            }
-        }
-        if (testsWithResults > 0 && totalConflicts > 0) {
-            status = `In progress with ${totalConflicts} conflicting test${
-                totalConflicts === 1 ? '' : 's'
+        let updateRunStatusButton = null;
+
+        if (this.state.totalConflicts > 0) {
+            status = `In progress with ${this.state.totalConflicts} conflicting test${
+                this.state.totalConflicts === 1 ? '' : 's'
             }`;
-        } else if (testsWithResults > 0) {
+        } else if (this.state.testsWithResults > 0 && this.state.testsWithResults !== testsForRun.length) {
             status = 'In progress';
-        } else if (testsWithResults === testsForRun.length) {
+        } else if (this.state.testsWithResults === testsForRun.length) {
             status = 'Tests complete with no conflicts';
+
+            updateRunStatusButton = (
+                <Button onClick={() => this.updateRunStatus('draft')}>Mark as draft</Button>
+            );
+
+            if (runStatus === 'draft') {
+                // To do: make this a link to draft results
+                status = 'DRAFT RESULTS';
+                updateRunStatusButton = (
+                    <Button onClick={() => this.updateRunStatus('final')}>Mark as final</Button>
+                );
+            }
+            else if (runStatus === 'final') {
+                // To do: make this a link to published results
+                status = 'PUBLISHED RESULTS';
+            }
+
         }
 
         let actions;
@@ -321,7 +368,7 @@ class TestQueueRow extends Component {
                 <Fragment>
                     {this.renderAssignDropdowns()}
                     {this.renderAdminOptions()}
-                    <Button>Mark As Draft</Button>
+                    {updateRunStatusButton}
                 </Fragment>
             );
         } else {
@@ -360,6 +407,7 @@ TestQueueRow.propTypes = {
     admin: PropTypes.bool,
     cycleId: PropTypes.number,
     runId: PropTypes.number,
+    runStatus: PropTypes.string,
     apgExampleName: PropTypes.string,
     testers: PropTypes.array,
     usersById: PropTypes.object,
