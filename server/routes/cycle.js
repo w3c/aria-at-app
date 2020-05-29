@@ -22,6 +22,9 @@ router.post('/result', CycleController.saveTestResults);
 // Gets all runs for a given cycle
 router.get('/runs', CycleController.getTestsForRunsForCycle);
 
+// Saves new status for run
+router.post('/run/status', CycleController.saveRunStatus);
+
 // Gets test version information necessary to initiate cycle
 router.get('/testversions', CycleController.getAllTestVersions);
 
