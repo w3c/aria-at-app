@@ -14,6 +14,23 @@ import {
 class TestQueueRow extends Component {
     constructor(props) {
         super(props);
+
+        const { totalConflicts, testsWithResults } = this.countCompleteTestsAndConflicts();
+        this.state = {
+            totalConflicts,
+            testsWithResults
+        };
+
+        this.handleUnassignSelfClick = this.handleUnassignSelfClick.bind(this);
+        this.handleAssignSelfClick = this.handleAssignSelfClick.bind(this);
+        this.assignTesterSelect = this.assignTesterSelect.bind(this);
+        this.unassignTesterSelect = this.unassignTesterSelect.bind(this);
+        this.updateRunStatus = this.updateRunStatus.bind(this);
+
+        this.testerList = React.createRef();
+    }
+
+    countCompleteTestsAndConflicts() {
         const { testsForRun } = this.props;
 
         let totalConflicts = 0;
@@ -30,19 +47,7 @@ class TestQueueRow extends Component {
                 }
             }
         }
-
-        this.state = {
-            totalConflicts,
-            testsWithResults
-        };
-
-        this.handleUnassignSelfClick = this.handleUnassignSelfClick.bind(this);
-        this.handleAssignSelfClick = this.handleAssignSelfClick.bind(this);
-        this.assignTesterSelect = this.assignTesterSelect.bind(this);
-        this.unassignTesterSelect = this.unassignTesterSelect.bind(this);
-        this.updateRunStatus = this.updateRunStatus.bind(this);
-
-        this.testerList = React.createRef();
+        return { totalConflicts, testsWithResults };
     }
 
     handleUnassignSelfClick() {
@@ -79,16 +84,8 @@ class TestQueueRow extends Component {
         }
 
         if (this.props.testsForRun.length !== prevProps.testsForRun.length) {
-            let totalConflicts = 0;
-            let testsWithResults = 0;
-            for (let test of this.props.testsForRun) {
-                if (test.results && Object.keys(test.results).length) {
-                    testsWithResults++;
-                    if (checkForConflict(test.results).length) {
-                        totalConflicts++;
-                    }
-                }
-            }
+
+            const { totalConflicts, testsWithResults } = this.countCompleteTestsAndConflicts();
 
             this.setState({
                 totalConflicts,
@@ -367,6 +364,7 @@ class TestQueueRow extends Component {
         let testerList = this.renderTesterList(currentUserAssigned);
 
         let status = 'Not started';
+        let results = null;
 
         if (this.state.totalConflicts > 0) {
             status = `In progress with ${
@@ -376,16 +374,17 @@ class TestQueueRow extends Component {
             this.state.testsWithResults > 0 &&
             this.state.testsWithResults !== testsForRun.length
         ) {
-            status = 'In progress';
+            status = 'In progress with no conflicts';
         } else if (this.state.testsWithResults === testsForRun.length) {
             status = 'Tests complete with no conflicts';
-            if (runStatus === 'draft') {
-                // To do: make this a link to draft results
-                status = 'DRAFT RESULTS';
-            } else if (runStatus === 'final') {
-                // To do: make this a link to published results
-                status = 'PUBLISHED RESULTS';
-            }
+        }
+
+        if (runStatus === 'draft') {
+            // To do: make this a link to draft results
+            results = 'DRAFT RESULTS';
+        } else if (runStatus === 'final') {
+            // To do: make this a link to published results
+            results = 'PUBLISHED RESULTS';
         }
 
         let actions;
@@ -421,7 +420,7 @@ class TestQueueRow extends Component {
                         )}
                     </ul>
                 </td>
-                <td>{status}</td>
+                <td><div>{status}</div>{results && <div>{results}</div>}</td>
                 <td>{actions}</td>
             </tr>
         );
