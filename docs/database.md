@@ -19,13 +19,13 @@ sudo -u postgres yarn db-init:dev
 ### Run database migrations
 Every time a new migration file is added it must be run again to apply the migration.
 ```
-yarn run sequelize -- db:migrate
+yarn sequelize db:migrate
 ```
 
 ### Import seed data
 To import seed data into the local database
 ```
-yarn run sequelize -- db:seed:all
+yarn sequelize db:seed:all
 ```
 
 ### Import test results
