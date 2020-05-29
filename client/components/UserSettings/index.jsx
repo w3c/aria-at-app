@@ -2,7 +2,7 @@ import React, { Fragment, Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
-import { Button, Col, Container, Form, Row } from 'react-bootstrap';
+import { Button, Container, Form } from 'react-bootstrap';
 import { handleSetUserAts } from '../../actions/users';
 
 class UserSettings extends Component {
