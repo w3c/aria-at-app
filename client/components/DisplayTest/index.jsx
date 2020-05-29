@@ -227,7 +227,7 @@ class DisplayTest extends Component {
                             Cancel
                         </Button>
                         <Button
-                            variant="secondary"
+                            variant="primary"
                             onClick={this.handleModalConfirmClick}
                         >
                             Continue
