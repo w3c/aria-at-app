@@ -5,7 +5,6 @@ import { withRouter } from 'react-router-dom';
 import nextId from 'react-id-generator';
 import {
     Button,
-    ButtonGroup,
     ButtonToolbar,
     Col,
     Modal,
@@ -307,16 +306,7 @@ class DisplayTest extends Component {
         };
 
         let testContent = null;
-        let menuUnderContent = null;
-        let menuRightOContent = null;
-
-        let menuEditButton = this.testHasResult ? (
-            <Button variant="primary" onClick={handleEditClick}>
-                Edit
-            </Button>
-        ) : null;
-
-        menuUnderContent = (
+        let menuUnderContent = (
             <ButtonToolbar className="testrun__button-toolbar--margin">
                 {testIndex !== 1 && (
                     <Button variant="primary" onClick={handlePreviousTestClick}>
@@ -332,19 +322,39 @@ class DisplayTest extends Component {
                 </Button>
             </ButtonToolbar>
         );
-        menuRightOContent = (
-            <ButtonGroup vertical>
-                <Button variant="primary" onClick={handleRaiseIssueClick}>
+        let menuRightOContent = (
+            <>
+                <Button
+                    className="btn-block"
+                    variant="primary"
+                    onClick={handleRaiseIssueClick}
+                >
                     Raise an issue
                 </Button>
-                <Button variant="primary" onClick={handleRedoClick}>
+                <Button
+                    className="btn-block"
+                    variant="primary"
+                    onClick={handleRedoClick}
+                >
                     Re-do test
                 </Button>
-                <Button variant="primary" onClick={handleCloseRunClick}>
+                <Button
+                    className="btn-block"
+                    variant="primary"
+                    onClick={handleCloseRunClick}
+                >
                     {this.testHasResult ? 'Close' : 'Save and close'}
                 </Button>
-                {menuEditButton}
-            </ButtonGroup>
+                {this.testHasResult ? (
+                    <Button
+                        className="btn-block"
+                        variant="primary"
+                        onClick={handleEditClick}
+                    >
+                        Edit
+                    </Button>
+                ) : null}
+            </>
         );
 
         if (this.testHasResult) {

@@ -98,7 +98,6 @@ class StatusBar extends Component {
                         </Button>
                     ) : null}
                     <Button
-                        className="ml-2"
                         variant={variant}
                         onClick={this.props.handleCloseRunClick}
                     >
