@@ -19,7 +19,11 @@ class TestQueueRow extends Component {
         let totalConflicts = 0;
         let testsWithResults = 0;
         for (let test of testsForRun) {
-            if (test.results && Object.keys(test.results).length) {
+            if (
+                test.results &&
+                Object.values(test.results).filter(r => r.status === 'complete')
+                    .length
+            ) {
                 testsWithResults++;
                 if (checkForConflict(test.results).length) {
                     totalConflicts++;
@@ -177,7 +181,7 @@ class TestQueueRow extends Component {
     }
 
     renderAdminOptions() {
-        const { cycleId, runId, testers, usersById } = this.props;
+        const { cycleId, runId, testers, usersById, runStatus } = this.props;
 
         let testrun = this.testRun();
 
@@ -196,6 +200,31 @@ class TestQueueRow extends Component {
         // there are results that can be deleted
         // let disableDelete = testersWithResults.length ? false : true;
         let disableDelete = true;
+
+        // If there are no conflicts OR the test has been marked as "final",
+        // and admin can mark a test run as "draft"
+        let updateRunStatusButton = null;
+        if (
+            (runStatus !== 'draft' &&
+                this.state.totalConflicts === 0 &&
+                this.state.testsWithResults > 0) ||
+            runStatus === 'final'
+        ) {
+            updateRunStatusButton = (
+                <Button onClick={() => this.updateRunStatus('draft')}>
+                    Mark as draft
+                </Button>
+            );
+        }
+        // If the results have been marked as draft and there is no conflict,
+        // they can be marked as "final"
+        else if (runStatus === 'draft' && this.state.totalConflicts === 0) {
+            updateRunStatusButton = (
+                <Button onClick={() => this.updateRunStatus('final')}>
+                    Mark as final
+                </Button>
+            );
+        }
 
         return (
             <Fragment>
@@ -242,6 +271,7 @@ class TestQueueRow extends Component {
                         })}
                     </Dropdown.Menu>
                 </Dropdown>
+                {updateRunStatusButton}
             </Fragment>
         );
     }
@@ -337,7 +367,6 @@ class TestQueueRow extends Component {
         let testerList = this.renderTesterList(currentUserAssigned);
 
         let status = 'Not started';
-        let updateRunStatusButton = null;
 
         if (this.state.totalConflicts > 0) {
             status = `In progress with ${
@@ -350,21 +379,9 @@ class TestQueueRow extends Component {
             status = 'In progress';
         } else if (this.state.testsWithResults === testsForRun.length) {
             status = 'Tests complete with no conflicts';
-
-            updateRunStatusButton = (
-                <Button onClick={() => this.updateRunStatus('draft')}>
-                    Mark as draft
-                </Button>
-            );
-
             if (runStatus === 'draft') {
                 // To do: make this a link to draft results
                 status = 'DRAFT RESULTS';
-                updateRunStatusButton = (
-                    <Button onClick={() => this.updateRunStatus('final')}>
-                        Mark as final
-                    </Button>
-                );
             } else if (runStatus === 'final') {
                 // To do: make this a link to published results
                 status = 'PUBLISHED RESULTS';
@@ -377,7 +394,6 @@ class TestQueueRow extends Component {
                 <Fragment>
                     {this.renderAssignDropdowns()}
                     {this.renderAdminOptions()}
-                    {updateRunStatusButton}
                 </Fragment>
             );
         } else {
