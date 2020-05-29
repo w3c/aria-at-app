@@ -58,12 +58,14 @@ class TestQueue extends Component {
                             const {
                                 apg_example_name: apgExampleName,
                                 testers,
-                                at_name_id
+                                at_name_id,
+                                run_status
                             } = cycle.runsById[runId];
                             return (
                                 <TestQueueRun
                                     key={runId}
                                     runId={runId}
+                                    runStatus={run_status}
                                     apgExampleName={apgExampleName}
                                     testers={testers}
                                     cycleId={cycle.id}
