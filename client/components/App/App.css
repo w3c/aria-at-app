@@ -133,6 +133,7 @@ button {
 
 table thead th {
   background: #F6F8FA;
+  white-space: nowrap;
 }
 
 table tbody tr {
@@ -175,3 +176,96 @@ table tbody tr.assign-testers {
   border-radius: 3px;
 }
 
+/* Actions */
+
+.actions {
+  white-space: nowrap;
+}
+
+.dropdown .btn-primary {
+  position: relative;
+  padding-right: 1.5em;
+}
+
+.dropdown-toggle::after {
+  right: .5em;
+  position: absolute;
+  top: 1em;
+}
+
+.assign-testers.dropdown, 
+.unassign-testers.dropdown,
+.delete-results.dropdown, 
+.mark-as-draft.dropdown {
+  display: inline-block;
+}
+
+.assign-testers.dropdown {
+  margin-right: .5em;
+}
+
+.open-run-as button.btn-primary {
+  width: 100%;
+  text-align: left;;
+}
+
+.assign-testers button.btn-primary, 
+.unassign-testers button.btn-primary,
+.open-run-as button.btn-primary {
+  background: white;
+  border: 1px solid #D2D5D9;
+  color: inherit;
+}
+
+.assign-testers button:hover, 
+.unassign-testers button:hover {
+  background: white;
+  border: 1px solid #D2D5D9;
+  color: inherit;
+}
+
+.assign-testers button.btn-primary.disabled,
+.assign-testers button.btn-primary:disabled, 
+.unassign-testers button.btn-primary.disabled,
+.unassign-testers button.btn-primary:disabled
+.open-run-as button.btn-primary.disabled,
+.open-run-as button.btn-primary:disabled,
+.assign-testers button.btn-primary:focus, 
+.unassign-testers button.btn-primary:focus
+.open-run-as button.btn-primary:focus  {
+  background: white;
+  border: 1px solid #D2D5D9;
+  color: #A1A3A4;
+  opacity: 1;
+}
+
+.assign-testers button.btn-primary.active, 
+.unassign-testers button.btn-primary.active
+.open-run-as button.btn-primary.active,
+.assign-testers button.btn-primary:active, 
+.unassign-testers button.btn-primary:active
+.open-run-as button.btn-primary:active  {
+  background: #F6F8FA;
+}
+
+.delete-results .btn-primary.disabled, 
+.delete-results .btn-primary:disabled {
+  opacity: 1;
+  background: white;
+  border: 1px solid #D2D5D9;
+}
+
+.delete-results button.btn-primary {
+  background: white;
+  border: 1px solid #D2D5D9;
+  color: #BB3638;
+  margin-right: .5em;
+}
+
+.mark-as-draft {    
+  width: 50%;
+}
+
+/* .delete-my-results {
+
+} */
