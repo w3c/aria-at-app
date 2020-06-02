@@ -146,9 +146,10 @@ class TestQueueRow extends Component {
         }
         return (
             <Fragment>
-                <Dropdown className="assign-testers">
+                <Dropdown className="assign-test">
                     <Dropdown.Toggle
                         id={nextId()}
+                        variant="secondary"
                         aria-label={`Assign Testers to ${testrun}`}
                         disabled={canAssignTesters.length ? false : true}
                     >
@@ -158,6 +159,7 @@ class TestQueueRow extends Component {
                         {canAssignTesters.map(t => {
                             return (
                                 <Dropdown.Item
+                                    variant="secondary"
                                     as="button"
                                     key={nextId()}
                                     value={t.id}
@@ -169,9 +171,10 @@ class TestQueueRow extends Component {
                         })}
                     </Dropdown.Menu>
                 </Dropdown>
-                <Dropdown className="unassign-testers">
+                <Dropdown className="unassign-test">
                     <Dropdown.Toggle
                         id={nextId()}
+                        variant="secondary"
                         aria-label={`Unassign Testers from ${testrun}`}
                         disabled={canUnassignTesters.length ? false : true}
                     >
@@ -247,8 +250,9 @@ class TestQueueRow extends Component {
                 <Dropdown className="open-run-as">
                     <Dropdown.Toggle
                         id={nextId()}
+                        variant="secondary"
                         aria-label={`Open run ${testrun} as tester`}
-                        disabled={testers.length ? false : true}
+                        // disabled={testers.length ? false : true}
                     >
                         Open run as...
                     </Dropdown.Toggle>
@@ -268,6 +272,7 @@ class TestQueueRow extends Component {
                 <Dropdown className="delete-results">
                     <Dropdown.Toggle
                         id={nextId()}
+                        variant="danger"
                         aria-label={`Delete results for ${testrun}`}
                         disabled={disableDelete}
                     >
@@ -302,6 +307,7 @@ class TestQueueRow extends Component {
         if (currentUserAssigned) {
             return (
                 <Button
+                    variant="secondary"
                     onClick={this.handleUnassignSelfClick}
                     aria-label={`Unassign me from the test run ${testrun}`}
                     disabled={disabled}
@@ -312,6 +318,7 @@ class TestQueueRow extends Component {
         } else {
             return (
                 <Button
+                    variant="secondary"
                     onClick={this.handleAssignSelfClick}
                     aria-label={`Assign me to the test run ${testrun}`}
                 >
@@ -398,14 +405,18 @@ class TestQueueRow extends Component {
             status = 'Tests complete with no conflicts';
 
             updateRunStatusButton = (
-                <Button onClick={() => this.updateRunStatus('draft')}>Mark as draft</Button>
+                <Button variant="primary" onClick={() => this.updateRunStatus('draft')}>
+                    Mark as draft
+                </Button>
             );
 
             if (runStatus === 'draft') {
                 // To do: make this a link to draft results
                 status = 'DRAFT RESULTS';
                 updateRunStatusButton = (
-                    <Button onClick={() => this.updateRunStatus('final')}>Mark as final</Button>
+                    <Button variant="success" onClick={() => this.updateRunStatus('final')}>
+                        Mark as final
+                    </Button>
                 );
             }
             else if (runStatus === 'final') {
@@ -436,9 +447,7 @@ class TestQueueRow extends Component {
                 <Fragment>
                     {this.renderAssignSelfButton(currentUserAssigned)}
                     {this.testsCompletedByUser[userId] ? (
-                        <Button className="delete-my-results" disabled={true}>
-                            Delete My Results
-                        </Button>
+                        <Button variant="danger" disabled={true}>Delete My Results</Button>
                     ) : (
                         undefined
                     )}

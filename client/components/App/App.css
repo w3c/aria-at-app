@@ -111,6 +111,13 @@ h4 {
     font-weight: 600;
 }
 
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+
+>>>>>>> 1ba3ac6... Style "Assign Testers" table row
+=======
+>>>>>>> 8c71220... Tweak to colors of tables
 h5 {
   margin: 1em 0 0.5em;
   font-size: 1em;
@@ -121,12 +128,17 @@ button {
     margin: 0.25em 0;
 }
 
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 8c71220... Tweak to colors of tables
 .init-box {
   background: #F6F8FA;
   border: 1px solid #D2D5D9;
   border-radius: 3px;
 }
 
+<<<<<<< HEAD
 .table thead th {
   border-bottom: 0;
 }
@@ -138,6 +150,25 @@ table thead th {
 
 table tbody tr {
   background-color: #FAFBFC;
+=======
+=======
+>>>>>>> 8c71220... Tweak to colors of tables
+.table thead th {
+  border-bottom: 0;
+}
+
+table thead th {
+  background: #F6F8FA;
+  white-space: nowrap;
+}
+
+table tbody tr {
+<<<<<<< HEAD
+  background-color: #f4faff;
+>>>>>>> 828241c... Change tables colors
+=======
+  background-color: #FAFBFC;
+>>>>>>> 8c71220... Tweak to colors of tables
 }
 
 table tbody tr:nth-of-type(odd), .table-striped tbody tr:nth-of-type(odd) {
@@ -145,6 +176,8 @@ table tbody tr:nth-of-type(odd), .table-striped tbody tr:nth-of-type(odd) {
 }
 
 .table-bordered th, .table-bordered td {
+<<<<<<< HEAD
+<<<<<<< HEAD
   border: 1px solid #D2D5D9;
 }
 
@@ -176,12 +209,16 @@ table tbody tr.assign-testers {
   border-radius: 3px;
 }
 
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 6a0af4d... Style action buttons
 /* Actions */
-
 .actions {
   white-space: nowrap;
 }
 
+<<<<<<< HEAD
 .dropdown .btn-primary {
   position: relative;
   padding-right: 1.5em;
@@ -193,9 +230,21 @@ table tbody tr.assign-testers {
   top: 1em;
 }
 
+<<<<<<< HEAD
 .assign-testers.dropdown,
 .unassign-testers.dropdown,
 .delete-results.dropdown,
+=======
+<<<<<<< HEAD
+.assign-testers.dropdown,
+.unassign-testers.dropdown,
+.delete-results.dropdown,
+=======
+.assign-testers.dropdown, 
+.unassign-testers.dropdown,
+.delete-results.dropdown, 
+>>>>>>> 6a0af4d... Style action buttons
+>>>>>>> Change links and buttons color
 .mark-as-draft.dropdown {
   display: inline-block;
 }
@@ -209,7 +258,15 @@ table tbody tr.assign-testers {
   text-align: left;
 }
 
+<<<<<<< HEAD
 .assign-testers button.btn-primary,
+=======
+<<<<<<< HEAD
+.assign-testers button.btn-primary,
+=======
+.assign-testers button.btn-primary, 
+>>>>>>> 6a0af4d... Style action buttons
+>>>>>>> Change links and buttons color
 .unassign-testers button.btn-primary,
 .open-run-as button.btn-primary {
   background: white;
@@ -217,7 +274,15 @@ table tbody tr.assign-testers {
   color: inherit;
 }
 
+<<<<<<< HEAD
 .assign-testers button:hover,
+=======
+<<<<<<< HEAD
+.assign-testers button:hover,
+=======
+.assign-testers button:hover, 
+>>>>>>> 6a0af4d... Style action buttons
+>>>>>>> Change links and buttons color
 .unassign-testers button:hover {
   background: white;
   border: 1px solid #D2D5D9;
@@ -225,13 +290,30 @@ table tbody tr.assign-testers {
 }
 
 .assign-testers button.btn-primary.disabled,
+<<<<<<< HEAD
 .assign-testers button.btn-primary:disabled,
+=======
+<<<<<<< HEAD
+.assign-testers button.btn-primary:disabled,
+=======
+.assign-testers button.btn-primary:disabled, 
+>>>>>>> 6a0af4d... Style action buttons
+>>>>>>> Change links and buttons color
 .unassign-testers button.btn-primary.disabled,
 .unassign-testers button.btn-primary:disabled,
 .open-run-as button.btn-primary.disabled,
 .open-run-as button.btn-primary:disabled,
+<<<<<<< HEAD
 .assign-testers button.btn-primary:focus,
 .unassign-testers button.btn-primary:focus,
+=======
+<<<<<<< HEAD
+.assign-testers button.btn-primary:focus,
+=======
+.assign-testers button.btn-primary:focus, 
+>>>>>>> 6a0af4d... Style action buttons
+.unassign-testers button.btn-primary:focus
+>>>>>>> Change links and buttons color
 .open-run-as button.btn-primary:focus  {
   background: white;
   border: 1px solid #D2D5D9;
@@ -239,33 +321,126 @@ table tbody tr.assign-testers {
   opacity: 1;
 }
 
+<<<<<<< HEAD
 .assign-testers button.btn-primary.active,
 .assign-testers button.btn-primary:active,
 .unassign-testers button.btn-primary.active,
 .unassign-testers button.btn-primary:active,
 .open-run-as button.btn-primary.active,
+=======
+<<<<<<< HEAD
+.assign-testers button.btn-primary.active,
+.unassign-testers button.btn-primary.active
+.open-run-as button.btn-primary.active,
+.assign-testers button.btn-primary:active,
+=======
+.assign-testers button.btn-primary.active, 
+.unassign-testers button.btn-primary.active
+.open-run-as button.btn-primary.active,
+.assign-testers button.btn-primary:active, 
+>>>>>>> 6a0af4d... Style action buttons
+.unassign-testers button.btn-primary:active
+>>>>>>> Change links and buttons color
 .open-run-as button.btn-primary:active  {
   background: #F6F8FA;
 }
 
+<<<<<<< HEAD
 .delete-results .btn-primary:disabled,
+=======
+<<<<<<< HEAD
+.delete-results .btn-primary.disabled,
+=======
+.delete-results .btn-primary.disabled, 
+>>>>>>> 6a0af4d... Style action buttons
+>>>>>>> Change links and buttons color
 .delete-results .btn-primary:disabled {
   opacity: 1;
   background: white;
   border: 1px solid #D2D5D9;
+=======
+.actions button {
+  width: 100%;
 }
 
-.delete-results button.btn-primary {
-  background: white;
-  border: 1px solid #D2D5D9;
-  color: #BB3638;
-  margin-right: .5em;
+.assign-test.dropdown,
+.unassign-test.dropdown {
+  display: inline-block;
+  width: 50%;
+>>>>>>> cde4675... Use Bootstrap's buttons styles
 }
 
+.assign-test.dropdown {
+  padding-right: .5em;
+}
+
+<<<<<<< HEAD
 .mark-as-draft {
+=======
+<<<<<<< HEAD
+<<<<<<< HEAD
+.mark-as-draft {
+=======
+.mark-as-draft {    
+>>>>>>> 6a0af4d... Style action buttons
+>>>>>>> Change links and buttons color
   width: 50%;
 }
 
 /* .delete-my-results {
 
 } */
+<<<<<<< HEAD
+=======
+  border: 1px solid #a3b5c7;
+=======
+  border: 1px solid #D2D5D9;
+>>>>>>> 8c71220... Tweak to colors of tables
+}
+
+table.table-hover tbody tr:hover, table tbody tr:hover {
+  background-color: #F6F8FA;
+}
+
+table .form-control {
+  width: auto;
+  border: 1px solid #D2D5D9;
+}
+
+table label {
+  margin-bottom: 0;
+}
+
+table label input {
+  margin-right: .5em;
+}
+
+<<<<<<< HEAD
+>>>>>>> 828241c... Change tables colors
+=======
+table tbody tr.assign-testers {
+<<<<<<< HEAD
+  background-color: #DFEAF7;
+}
+>>>>>>> 1ba3ac6... Style "Assign Testers" table row
+=======
+  background-color: #F6F8FA;
+}
+>>>>>>> 8c71220... Tweak to colors of tables
+=======
+>>>>>>> a750d17... Style commit message
+=======
+>>>>>>> 6a0af4d... Style action buttons
+=======
+.actions .dropdown button {
+  text-align: left;
+  position: relative;
+  padding-right: 1.75em;
+}
+
+.dropdown-toggle::after {
+  position: absolute;
+  right: .5em;
+  top: 50%;
+}
+>>>>>>> cde4675... Use Bootstrap's buttons styles
