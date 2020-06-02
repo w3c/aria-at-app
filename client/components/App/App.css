@@ -74,18 +74,19 @@ a:hover {
 }
 
 .btn-primary {
-  background: #0b60ab;
-  border: 1px solid #095190;
+    background: #0b60ab;
+    border: 1px solid #095190;
 }
 
 .btn-primary:hover {
-  background: #214e86;
+    background: #214e86;
 }
 
-.btn-primary:focus, .btn-primary.focus {
-  background: #214e86;
-  border: 1px solid #095190;
-  box-shadow: 0 0 0 0.2rem rgba(103, 171, 197, 0.5);
+.btn-primary:focus,
+.btn-primary.focus {
+    background: #214e86;
+    border: 1px solid #095190;
+    box-shadow: 0 0 0 0.2rem rgba(103, 171, 197, 0.5);
 }
 
 h1 {
@@ -112,9 +113,9 @@ h4 {
 }
 
 h5 {
-  margin: 1em 0 0.5em;
-  font-size: 1em;
-  font-weight: 600;
+    margin: 1em 0 0.5em;
+    font-size: 1em;
+    font-weight: 600;
 }
 
 button {
@@ -122,87 +123,90 @@ button {
 }
 
 .init-box {
-  background: #F6F8FA;
-  border: 1px solid #D2D5D9;
-  border-radius: 3px;
+    background: #f6f8fa;
+    border: 1px solid #d2d5d9;
+    border-radius: 3px;
 }
 
 .table thead th {
-  border-bottom: 0;
+    border-bottom: 0;
 }
 
 table thead th {
-  background: #F6F8FA;
-  white-space: nowrap;
+    background: #f6f8fa;
+    white-space: nowrap;
 }
 
 table tbody tr {
-  background-color: #FAFBFC;
+    background-color: #fafbfc;
 }
 
-table tbody tr:nth-of-type(odd), .table-striped tbody tr:nth-of-type(odd) {
-  background-color: #FFF;
+table tbody tr:nth-of-type(odd),
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: #fff;
 }
 
-.table-bordered th, .table-bordered td {
-  border: 1px solid #D2D5D9;
+.table-bordered th,
+.table-bordered td {
+    border: 1px solid #d2d5d9;
 }
 
-table.table-hover tbody tr:hover, table tbody tr:hover {
-  background-color: #F6F8FA;
+table.table-hover tbody tr:hover,
+table tbody tr:hover {
+    background-color: #f6f8fa;
 }
 
 table .form-control {
-  width: auto;
-  border: 1px solid #D2D5D9;
+    width: auto;
+    border: 1px solid #d2d5d9;
 }
 
 table label {
-  margin-bottom: 0;
+    margin-bottom: 0;
 }
 
 table label input {
-  margin-right: .5em;
+    margin-right: 0.5em;
 }
 
 table tbody tr.assign-testers {
-  background-color: #F6F8FA;
+    background-color: #f6f8fa;
 }
 
 .commit-message {
-  background: #ecf6ff;
-  border: 1px solid #c4d1e2;
-  padding: 1em;
-  border-radius: 3px;
+    background: #ecf6ff;
+    border: 1px solid #c4d1e2;
+    padding: 1em;
+    border-radius: 3px;
 }
 
 /* Actions */
 .actions {
-  white-space: nowrap;
+    white-space: nowrap;
 }
 
 .actions button {
-  width: 100%;
+    width: 100%;
 }
 
 .assign-test.dropdown,
 .unassign-test.dropdown {
-  display: inline-block;
-  width: 50%;
+    display: inline-block;
+    width: 50%;
 }
 
 .assign-test.dropdown {
-  padding-right: .5em;
+    padding-right: 0.5em;
 }
 
 .actions .dropdown button {
-  text-align: left;
-  position: relative;
-  padding-right: 1.75em;
+    text-align: left;
+    position: relative;
+    padding-right: 1.75em;
 }
 
 .dropdown-toggle::after {
-  position: absolute;
-  right: .5em;
-  top: 50%;
+    position: absolute;
+    right: 0.5em;
+    top: 50%;
 }

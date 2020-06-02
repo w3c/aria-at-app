@@ -26,7 +26,9 @@ class ManageCycleRow extends Component {
                 <td>{date}</td>
                 <td>In Progress</td>
                 <td>
-                    <Button variant="danger" onClick={this.deleteCycle}>Delete</Button>
+                    <Button variant="danger" onClick={this.deleteCycle}>
+                        Delete
+                    </Button>
                 </td>
             </tr>
         );

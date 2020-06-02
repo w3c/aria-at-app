@@ -126,7 +126,6 @@ class TestQueueRow extends Component {
         }
         return (
             <Fragment>
-
                 <Dropdown className="assign-test">
                     <Dropdown.Toggle
                         id={nextId()}
@@ -360,7 +359,10 @@ class TestQueueRow extends Component {
             status = 'Tests complete with no conflicts';
 
             updateRunStatusButton = (
-                <Button variant="primary" onClick={() => this.updateRunStatus('draft')}>
+                <Button
+                    variant="primary"
+                    onClick={() => this.updateRunStatus('draft')}
+                >
                     Mark as draft
                 </Button>
             );
@@ -369,7 +371,10 @@ class TestQueueRow extends Component {
                 // To do: make this a link to draft results
                 status = 'DRAFT RESULTS';
                 updateRunStatusButton = (
-                    <Button variant="success" onClick={() => this.updateRunStatus('final')}>
+                    <Button
+                        variant="success"
+                        onClick={() => this.updateRunStatus('final')}
+                    >
                         Mark as final
                     </Button>
                 );
@@ -393,7 +398,9 @@ class TestQueueRow extends Component {
                 <Fragment>
                     {this.renderAssignSelfButton(currentUserAssigned)}
                     {this.testsCompletedByUser[userId] ? (
-                        <Button variant="danger" disabled={true}>Delete My Results</Button>
+                        <Button variant="danger" disabled={true}>
+                            Delete My Results
+                        </Button>
                     ) : (
                         undefined
                     )}

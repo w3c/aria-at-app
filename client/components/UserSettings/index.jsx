@@ -97,9 +97,7 @@ class UserSettings extends Component {
                                             id={at.name}
                                             key={at.id}
                                             label={at.name}
-                                            onChange={
-                                                this.onCheckboxClicked
-                                            }
+                                            onChange={this.onCheckboxClicked}
                                             checked={
                                                 this.state[at.name]
                                                     ? this.state[at.name]
@@ -114,7 +112,7 @@ class UserSettings extends Component {
                             Save
                         </Button>
                     </Form>
-                  </section>
+                </section>
             ) : (
                 <p data-test="user-settings-unauthorized">Unauthorized</p>
             );
