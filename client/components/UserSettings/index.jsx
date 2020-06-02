@@ -81,7 +81,7 @@ class UserSettings extends Component {
         const { ats, isSignedIn, username, email, loadedUserData } = this.props;
         const content =
             loadedUserData && isSignedIn ? (
-                <Fragment data-test="user-settings-authorized">
+                <section data-test="user-settings-authorized">
                     <h2>User Details</h2>
                     <p>{username}</p>
                     <p>{email}</p>
@@ -114,7 +114,7 @@ class UserSettings extends Component {
                             Save
                         </Button>
                     </Form>
-                </Fragment>
+                  </section>
             ) : (
                 <p data-test="user-settings-unauthorized">Unauthorized</p>
             );
