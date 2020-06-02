@@ -74,18 +74,19 @@ a:hover {
 }
 
 .btn-primary {
-  background: #0b60ab;
-  border: 1px solid #095190;
+    background: #0b60ab;
+    border: 1px solid #095190;
 }
 
 .btn-primary:hover {
-  background: #214e86;
+    background: #214e86;
 }
 
-.btn-primary:focus, .btn-primary.focus {
-  background: #214e86;
-  border: 1px solid #095190;
-  box-shadow: 0 0 0 0.2rem rgba(103, 171, 197, 0.5);
+.btn-primary:focus,
+.btn-primary.focus {
+    background: #214e86;
+    border: 1px solid #095190;
+    box-shadow: 0 0 0 0.2rem rgba(103, 171, 197, 0.5);
 }
 
 h1 {
@@ -119,9 +120,9 @@ h4 {
 =======
 >>>>>>> 8c71220... Tweak to colors of tables
 h5 {
-  margin: 1em 0 0.5em;
-  font-size: 1em;
-  font-weight: 600;
+    margin: 1em 0 0.5em;
+    font-size: 1em;
+    font-weight: 600;
 }
 
 button {
@@ -133,22 +134,23 @@ button {
 =======
 >>>>>>> 8c71220... Tweak to colors of tables
 .init-box {
-  background: #F6F8FA;
-  border: 1px solid #D2D5D9;
-  border-radius: 3px;
+    background: #f6f8fa;
+    border: 1px solid #d2d5d9;
+    border-radius: 3px;
 }
 
 <<<<<<< HEAD
 .table thead th {
-  border-bottom: 0;
+    border-bottom: 0;
 }
 
 table thead th {
-  background: #F6F8FA;
-  white-space: nowrap;
+    background: #f6f8fa;
+    white-space: nowrap;
 }
 
 table tbody tr {
+<<<<<<< HEAD
   background-color: #FAFBFC;
 =======
 =======
@@ -169,44 +171,55 @@ table tbody tr {
 =======
   background-color: #FAFBFC;
 >>>>>>> 8c71220... Tweak to colors of tables
+=======
+    background-color: #fafbfc;
+>>>>>>> ff51364... Satisfy linter
 }
 
-table tbody tr:nth-of-type(odd), .table-striped tbody tr:nth-of-type(odd) {
-  background-color: #FFF;
+table tbody tr:nth-of-type(odd),
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: #fff;
 }
 
+<<<<<<< HEAD
 .table-bordered th, .table-bordered td {
 <<<<<<< HEAD
 <<<<<<< HEAD
   border: 1px solid #D2D5D9;
+=======
+.table-bordered th,
+.table-bordered td {
+    border: 1px solid #d2d5d9;
+>>>>>>> ff51364... Satisfy linter
 }
 
-table.table-hover tbody tr:hover, table tbody tr:hover {
-  background-color: #F6F8FA;
+table.table-hover tbody tr:hover,
+table tbody tr:hover {
+    background-color: #f6f8fa;
 }
 
 table .form-control {
-  width: auto;
-  border: 1px solid #D2D5D9;
+    width: auto;
+    border: 1px solid #d2d5d9;
 }
 
 table label {
-  margin-bottom: 0;
+    margin-bottom: 0;
 }
 
 table label input {
-  margin-right: .5em;
+    margin-right: 0.5em;
 }
 
 table tbody tr.assign-testers {
-  background-color: #F6F8FA;
+    background-color: #f6f8fa;
 }
 
 .commit-message {
-  background: #ecf6ff;
-  border: 1px solid #c4d1e2;
-  padding: 1em;
-  border-radius: 3px;
+    background: #ecf6ff;
+    border: 1px solid #c4d1e2;
+    padding: 1em;
+    border-radius: 3px;
 }
 
 <<<<<<< HEAD
@@ -215,7 +228,7 @@ table tbody tr.assign-testers {
 >>>>>>> 6a0af4d... Style action buttons
 /* Actions */
 .actions {
-  white-space: nowrap;
+    white-space: nowrap;
 }
 
 <<<<<<< HEAD
@@ -360,18 +373,23 @@ table tbody tr.assign-testers {
   border: 1px solid #D2D5D9;
 =======
 .actions button {
-  width: 100%;
+    width: 100%;
 }
 
 .assign-test.dropdown,
 .unassign-test.dropdown {
+<<<<<<< HEAD
   display: inline-block;
   width: 50%;
 >>>>>>> cde4675... Use Bootstrap's buttons styles
+=======
+    display: inline-block;
+    width: 50%;
+>>>>>>> ff51364... Satisfy linter
 }
 
 .assign-test.dropdown {
-  padding-right: .5em;
+    padding-right: 0.5em;
 }
 
 <<<<<<< HEAD
@@ -433,14 +451,21 @@ table tbody tr.assign-testers {
 >>>>>>> 6a0af4d... Style action buttons
 =======
 .actions .dropdown button {
-  text-align: left;
-  position: relative;
-  padding-right: 1.75em;
+    text-align: left;
+    position: relative;
+    padding-right: 1.75em;
 }
 
 .dropdown-toggle::after {
+<<<<<<< HEAD
   position: absolute;
   right: .5em;
   top: 50%;
 }
 >>>>>>> cde4675... Use Bootstrap's buttons styles
+=======
+    position: absolute;
+    right: 0.5em;
+    top: 50%;
+}
+>>>>>>> ff51364... Satisfy linter
