@@ -112,13 +112,6 @@ h4 {
     font-weight: 600;
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-
->>>>>>> 1ba3ac6... Style "Assign Testers" table row
-=======
->>>>>>> 8c71220... Tweak to colors of tables
 h5 {
     margin: 1em 0 0.5em;
     font-size: 1em;
@@ -129,17 +122,12 @@ button {
     margin: 0.25em 0;
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 8c71220... Tweak to colors of tables
 .init-box {
     background: #f6f8fa;
     border: 1px solid #d2d5d9;
     border-radius: 3px;
 }
 
-<<<<<<< HEAD
 .table thead th {
     border-bottom: 0;
 }
@@ -150,30 +138,7 @@ table thead th {
 }
 
 table tbody tr {
-<<<<<<< HEAD
-  background-color: #FAFBFC;
-=======
-=======
->>>>>>> 8c71220... Tweak to colors of tables
-.table thead th {
-  border-bottom: 0;
-}
-
-table thead th {
-  background: #F6F8FA;
-  white-space: nowrap;
-}
-
-table tbody tr {
-<<<<<<< HEAD
-  background-color: #f4faff;
->>>>>>> 828241c... Change tables colors
-=======
-  background-color: #FAFBFC;
->>>>>>> 8c71220... Tweak to colors of tables
-=======
     background-color: #fafbfc;
->>>>>>> ff51364... Satisfy linter
 }
 
 table tbody tr:nth-of-type(odd),
@@ -181,16 +146,9 @@ table tbody tr:nth-of-type(odd),
     background-color: #fff;
 }
 
-<<<<<<< HEAD
-.table-bordered th, .table-bordered td {
-<<<<<<< HEAD
-<<<<<<< HEAD
-  border: 1px solid #D2D5D9;
-=======
 .table-bordered th,
 .table-bordered td {
     border: 1px solid #d2d5d9;
->>>>>>> ff51364... Satisfy linter
 }
 
 table.table-hover tbody tr:hover,
@@ -222,15 +180,12 @@ table tbody tr.assign-testers {
     border-radius: 3px;
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 6a0af4d... Style action buttons
 /* Actions */
 .actions {
     white-space: nowrap;
 }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 .dropdown .btn-primary {
   position: relative;
@@ -372,26 +327,24 @@ table tbody tr.assign-testers {
   background: white;
   border: 1px solid #D2D5D9;
 =======
+=======
+>>>>>>> Fix Visual bug
 .actions button {
     width: 100%;
+    display: block;
 }
 
 .assign-test.dropdown,
 .unassign-test.dropdown {
-<<<<<<< HEAD
-  display: inline-block;
-  width: 50%;
->>>>>>> cde4675... Use Bootstrap's buttons styles
-=======
     display: inline-block;
     width: 50%;
->>>>>>> ff51364... Satisfy linter
 }
 
 .assign-test.dropdown {
     padding-right: 0.5em;
 }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 .mark-as-draft {
 =======
@@ -450,6 +403,8 @@ table tbody tr.assign-testers {
 =======
 >>>>>>> 6a0af4d... Style action buttons
 =======
+=======
+>>>>>>> Fix Visual bug
 .actions .dropdown button {
     text-align: left;
     position: relative;
@@ -457,15 +412,7 @@ table tbody tr.assign-testers {
 }
 
 .dropdown-toggle::after {
-<<<<<<< HEAD
-  position: absolute;
-  right: .5em;
-  top: 50%;
-}
->>>>>>> cde4675... Use Bootstrap's buttons styles
-=======
     position: absolute;
     right: 0.5em;
     top: 50%;
 }
->>>>>>> ff51364... Satisfy linter
