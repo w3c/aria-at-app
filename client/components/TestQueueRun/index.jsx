@@ -5,15 +5,29 @@ import { Button, Dropdown } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import checkForConflict from '../../utils/checkForConflict';
-import {
-    deleteUsersFromRun,
-    saveUsersToRuns,
-    saveRunStatus
-} from '../../actions/cycles';
+import { deleteUsersFromRun, saveUsersToRuns, saveRunStatus } from '../../actions/cycles';
+
 
 class TestQueueRow extends Component {
     constructor(props) {
         super(props);
+        const { testsForRun } = this.props;
+
+        let totalConflicts = 0;
+        let testsWithResults = 0;
+        for (let test of testsForRun) {
+            if (test.results && Object.keys(test.results).length) {
+                testsWithResults++;
+                if (checkForConflict(test.results).length) {
+                    totalConflicts++;
+                }
+            }
+        }
+
+        this.state = {
+            totalConflicts,
+            testsWithResults
+        };
 
         const {
             totalConflicts,
@@ -382,6 +396,23 @@ class TestQueueRow extends Component {
             status = 'In progress with no conflicts';
         } else if (this.state.testsWithResults === testsForRun.length) {
             status = 'Tests complete with no conflicts';
+
+            updateRunStatusButton = (
+                <Button onClick={() => this.updateRunStatus('draft')}>Mark as draft</Button>
+            );
+
+            if (runStatus === 'draft') {
+                // To do: make this a link to draft results
+                status = 'DRAFT RESULTS';
+                updateRunStatusButton = (
+                    <Button onClick={() => this.updateRunStatus('final')}>Mark as final</Button>
+                );
+            }
+            else if (runStatus === 'final') {
+                // To do: make this a link to published results
+                status = 'PUBLISHED RESULTS';
+            }
+
         }
 
         if (runStatus === 'draft') {
