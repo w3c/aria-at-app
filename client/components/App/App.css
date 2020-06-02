@@ -187,6 +187,7 @@ table tbody tr.assign-testers {
 
 .actions button {
     width: 100%;
+    display: block;
 }
 
 .assign-test.dropdown,
