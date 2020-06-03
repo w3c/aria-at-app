@@ -36,6 +36,10 @@ nav.navbar {
     padding: 0.5rem 1rem;
 }
 
+.nav-link[aria-current="true"] {
+    color: #000;
+}
+
 main.container-fluid .row {
     padding: 0.5rem 1rem;
 }
