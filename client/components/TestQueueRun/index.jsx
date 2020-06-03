@@ -15,7 +15,10 @@ class TestQueueRow extends Component {
     constructor(props) {
         super(props);
 
-        const { totalConflicts, testsWithResults } = this.countCompleteTestsAndConflicts();
+        const {
+            totalConflicts,
+            testsWithResults
+        } = this.countCompleteTestsAndConflicts();
         this.state = {
             totalConflicts,
             testsWithResults
@@ -84,8 +87,10 @@ class TestQueueRow extends Component {
         }
 
         if (this.props.testsForRun.length !== prevProps.testsForRun.length) {
-
-            const { totalConflicts, testsWithResults } = this.countCompleteTestsAndConflicts();
+            const {
+                totalConflicts,
+                testsWithResults
+            } = this.countCompleteTestsAndConflicts();
 
             this.setState({
                 totalConflicts,
