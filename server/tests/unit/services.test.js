@@ -7,6 +7,7 @@ const moxios = require('moxios');
 const UsersService = require('../../services/UsersService');
 const GithubService = require('../../services/GithubService');
 const ATService = require('../../services/ATService');
+const TestService = require('../../services/TestService');
 
 const newUser = require('../mock-data/newUser.json');
 const newUserToRole = require('../mock-data/newUserToRole.json');
@@ -187,6 +188,18 @@ describe('ATService', () => {
         it('should return a list of AT names', async () => {
             const expected = listOfATs.atsDB;
             await expect(ATService.getATs()).resolves.toEqual(expected);
+        });
+    });
+});
+
+describe('TestService', () => {
+    describe('TestService.importTests', () => {
+        it('should have an importTests function', () => {
+            expect(typeof TestService.importTests).toBe('function');
+        });
+        it('should return a sha when complete', () => {
+            const expected = { gitHash: 1234 };
+            expect(TestService.importTests(1234)).toEqual(expected);
         });
     });
 });

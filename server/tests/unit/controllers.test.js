@@ -2,6 +2,7 @@ const UsersController = require('../../controllers/UsersController');
 const AuthController = require('../../controllers/AuthController');
 const ATController = require('../../controllers/ATController');
 const UsersService = require('../../services/UsersService');
+const TestController = require('../../controllers/TestController');
 const httpMocks = require('node-mocks-http');
 
 const newUser = require('../mock-data/newUser.json');
@@ -158,4 +159,19 @@ describe('ATController', () => {
             expect(res._getJSONData()).toStrictEqual(listOfATNames.atsDB);
         });
     });
+});
+
+describe('TestController', () => {
+    beforeEach(() => {
+        req.body = { gitHash: 1234 };
+    });
+    it('should have an importTests function', () => {
+        expect(typeof TestController.importTests).toBe('function');
+    });
+
+    it('should return 200 response with an object', () => {
+        TestController.importTests(req, res);
+        expect(res.statusCode).toBe(200);
+        expect(res._getJSONData()).toEqual({ gitHash: 1234 });
+    })
 });
