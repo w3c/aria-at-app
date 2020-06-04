@@ -1,9 +1,16 @@
 const TestService = require('../services/TestService');
 
 module.exports = {
-    importTests(req, res) {
-        const { gitHash } = req.body;
-        const response = TestService.importTests(gitHash);
-        res.status(200).json(response);
+    async importTests(req, res, next) {
+        const { git_hash } = req.body;
+        try {
+            await TestService.importTests(git_hash);
+            res.sendStatus(200);
+        } catch(error) {
+            console.log(error)
+            // This is when the script fails because the git hash is invalid
+            // Sending semantic error.
+            res.sendStatus(422);
+        }  
     }
 }

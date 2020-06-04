@@ -197,9 +197,9 @@ describe('TestService', () => {
         it('should have an importTests function', () => {
             expect(typeof TestService.importTests).toBe('function');
         });
-        it('should return a sha when complete', () => {
-            const expected = { gitHash: 1234 };
-            expect(TestService.importTests(1234)).toEqual(expected);
+        it('should return a boolean when complete', async () => {
+            // this sha value is mocked
+            await expect(TestService.importTests(1234)).resolves.toEqual(true);
         });
     });
 });

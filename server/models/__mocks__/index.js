@@ -52,6 +52,17 @@ db.AtName = {
     }
 };
 
+db.TestVersion = {
+    versions: [1234],
+    findAll({ where: { git_hash } }) {
+        return this.versions.includes(git_hash) ?  [
+            {
+                dataValues: { git_hash: 1234 }
+            }
+        ] : [];
+    }
+}
+
 db.sequelize = {
     define: obj => obj,
     query: () => [[{ at_name_id: 1, at_name: 'Foo', active: true }]]

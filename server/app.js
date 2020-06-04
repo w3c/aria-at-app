@@ -7,6 +7,7 @@ const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/users');
 const cycleRoutes = require('./routes/cycle');
 const atRoutes = require('./routes/at');
+const testRoutes = require('./routes/test');
 const path = require('path');
 
 const app = express();
@@ -18,6 +19,7 @@ app.use('/auth', authRoutes);
 app.use('/user', userRoutes);
 app.use('/cycle', cycleRoutes);
 app.use('/at', atRoutes);
+app.use('/test',testRoutes);
 
 const listener = express();
 listener.use('/api', app);
