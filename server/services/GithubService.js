@@ -93,9 +93,13 @@ module.exports = {
                 headers: { Authorization: `bearer ${options.accessToken}` }
             }
         );
-        const userTeams = response.data.data.organization.teams.edges.map(
-            ({ node: { name } }) => name
-        );
+
+        // The query may return more teams than "admin" or "tester". Therefore,
+        //  we should filter out any teams that aren't in teamToRole
+        const userTeams = response.data.data.organization.teams.edges
+            .map(({ node: { name } }) => name)
+            .filter(teamName => teamName in this.teamToRole);
+
         return userTeams;
     },
     async getIssues(options) {
@@ -128,8 +132,6 @@ module.exports = {
             `.trim();
         }
 
-        // const owner = 'w3c';
-        // const name = 'aria-at';
         const owner = process.env.GITHUB_REPO_OWNER;
         const name = process.env.GITHUB_REPO_NAME;
         const query = `
