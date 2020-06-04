@@ -139,10 +139,6 @@ describe('render', () => {
             expect(component.text()).toContain(
                 'ff1ed8a - Checkbox: Test navigating thro...'
             );
-
-            component = findByTestAttr(wrapper, 'initiate-cycle-run-1');
-            expect(component.length).toBe(1);
-            expect(component.text()).toContain('<ConfigureRunsForExample />');
         });
     });
 });
