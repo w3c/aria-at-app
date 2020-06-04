@@ -3,21 +3,16 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Button } from 'react-bootstrap';
-import { deleteCycle } from '../../actions/cycles';
 
 class ManageCycleRow extends Component {
     constructor(props) {
         super(props);
-        this.deleteCycle = this.deleteCycle.bind(this);
-    }
-
-    deleteCycle() {
-        const { cycle, dispatch } = this.props;
-        dispatch(deleteCycle(cycle.id));
     }
 
     render() {
         const { name, date, id } = this.props.cycle;
+        const handleDeleteClick = this.props.handleDeleteClick;
+
         return (
             <tr>
                 <td>
@@ -26,7 +21,10 @@ class ManageCycleRow extends Component {
                 <td>{date}</td>
                 <td>In Progress</td>
                 <td>
-                    <Button variant="danger" onClick={this.deleteCycle}>
+                    <Button
+                        variant="danger"
+                        onClick={() => handleDeleteClick(id)}
+                    >
                         Delete
                     </Button>
                 </td>
@@ -37,6 +35,7 @@ class ManageCycleRow extends Component {
 
 ManageCycleRow.propTypes = {
     cycle: PropTypes.object,
+    handleDeleteClick: PropTypes.func,
     dispatch: PropTypes.func
 };
 
