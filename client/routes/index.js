@@ -9,6 +9,7 @@ import InitiateCycle from '@components/InitiateCycle';
 import ManageCycles from '@components/ManageCycles';
 import NotFound from '@components/NotFound';
 import RunResultsPage from '@components/RunResultsPage';
+import ResultsPage from '@components/ResultsPage';
 import SignupInstructions from '@components/SignupInstructions';
 import TesterHome from '@components/TesterHome';
 import TestQueue from '@components/TestQueue';
@@ -53,6 +54,11 @@ export default [
                 path: '/test-queue',
                 exact: true,
                 component: TesterHome
+            },
+            {
+                path: '/results',
+                exact: true,
+                component: ResultsPage
             },
             {
                 path: '/cycles/:cycleId(\\d+)',
