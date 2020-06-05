@@ -3,7 +3,11 @@ const db = require('../models/index');
 
 async function runImportScript(git_hash) {
     return new Promise((resolve, reject) => {
-        const command = `../deploy/scripts/export-and-exec.sh ${process.env.IMPORT_CONFIG} node ./scripts/import-tests/index.js -c ${git_hash}`
+        // local dev environments run in the 'server' directory
+        let isDevelopmentProcess = process.cwd().includes('server');
+        let deployDirectoryPrefix = isDevelopmentProcess ? '..' : '.'
+        let importScriptDirectoryPrefix = isDevelopmentProcess ? '.' : './server'
+        const command = `${deployDirectoryPrefix}/deploy/scripts/export-and-exec.sh ${process.env.IMPORT_CONFIG} node ${importScriptDirectoryPrefix}/scripts/import-tests/index.js -c ${git_hash}`
         exec(
             command,
             (error, stdout, stderr) => {
