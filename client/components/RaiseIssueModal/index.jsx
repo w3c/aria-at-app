@@ -19,7 +19,9 @@ function createIssueDefaults(test, cycle, run, sha) {
     let body = `
 ### Test file at exact commit
 
-[${test.file}](https://github.com/w3c/aria-at/blob/${sha}/${test.file})
+
+
+[${test.file}](https://aria-at.w3.org/aria-at/${sha}/${test.file}?at=${run.at_key})
 
 ### Cycle:
 
