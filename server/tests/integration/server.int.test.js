@@ -6,6 +6,7 @@ const endpointUrl = '/api';
 const userEndpoint = `${endpointUrl}/user`;
 const authEndpoint = `${endpointUrl}/auth`;
 const atEndpoint = `${endpointUrl}/at`;
+const testEndpoint = `${endpointUrl}/test`
 const newUser = require('../mock-data/newUser.json');
 const newUserToRole = require('../mock-data/newUserToRole.json');
 const listOfATs = require('../mock-data/listOfATs.json');
@@ -144,5 +145,12 @@ describe(atEndpoint, () => {
         const response = await request(listener).get(`${atEndpoint}`);
         expect(response.statusCode).toBe(200);
         expect(response.body).toEqual(listOfATs.atsDB);
+    });
+});
+
+describe(`${testEndpoint}/import`, () => {
+    it(`POST ${testEndpoint}/import`, async () => {
+        const response = await request(listener).post(`${testEndpoint}/import`).send({git_hash: 1234});
+        expect(response.statusCode).toBe(200);
     });
 });
