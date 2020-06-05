@@ -498,7 +498,7 @@ class InitiateCycle extends Component {
                             example.name || example.directory;
 
                         return (
-                            <>
+                            <Fragment key={`test-plan-${example.id}`}>
                                 <h3 id={tableId}>
                                     <input
                                         type="checkbox"
@@ -526,7 +526,7 @@ class InitiateCycle extends Component {
                                     }
                                     tableId={tableId}
                                 />
-                            </>
+                            </Fragment>
                         );
                     })}
                 {!displayExamples && (
