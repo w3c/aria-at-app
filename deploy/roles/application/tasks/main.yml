@@ -16,17 +16,21 @@
       - '--filter=:- .gitignore'
   when: deployment_mode != 'development'
 
+# TODO: this can be removed when the import tests feature is fully complete
+# This is a workaround solution for shelling out to the import script
 - name: Make server folder writable for import tests API endpoint
   file:
-    path: '{{source_dir}}/server'
+    path: '{{source_dir}}/server/scripts'
     mode: '0777'
     recurse: yes
   when: deployment_mode != 'development'
   notify: "restart server"
 
+# TODO: this can be removed when the import tests feature is fully complete
+# This is a workaround solution for shelling out to the import script
 - name: Make vagrant folder writable
   file:
-    path: /vagrant/server
+    path: /vagrant/server/scripts
     mode: '0777'
     recurse: yes
   when: deployment_mode == 'development'
