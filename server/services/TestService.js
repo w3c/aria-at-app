@@ -2,17 +2,24 @@ const { exec } = require('child_process');
 const db = require('../models/index');
 
 async function runImportScript(git_hash) {
-    return new Promise(async(resolve, reject) => {
-        exec(`yarn db-import-tests:dev -c ${git_hash}`, (error, stdout, stderr) => {
-            if (error) {
-                reject(error)
+    return new Promise((resolve, reject) => {
+        exec(
+            `yarn db-import-tests:dev -c ${git_hash}`,
+            (error, stdout, stderr) => {
+                if (error) {
+                    reject(error);
+                }
+                resolve({ stdout, stderr });
             }
-            resolve({stdout, stderr})
-        });
+        );
     });
 }
 
 module.exports = {
+    /**
+     * Functions that use importTests should be wrapped
+     * in a try/catch in case the import script fails
+     */
     async importTests(git_hash) {
         // check if version exists
         let results = await db.TestVersion.findAll({ where: { git_hash } });
@@ -20,14 +27,8 @@ module.exports = {
         if (versionExists) {
             return versionExists;
         } else {
-            try { 
-                const {stdout, stderr} = await runImportScript(git_hash);
-                return stdout.includes('no errors') && stderr === '';
-            } catch(error) {
-                // This error happens when the script fails
-                //  because the git hash is invalid;
-                throw(error);
-            }
+            const { stdout, stderr } = await runImportScript(git_hash);
+            return stdout.includes('no errors') && stderr === '';
         }
     }
-}
+};

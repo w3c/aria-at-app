@@ -173,5 +173,5 @@ describe('TestController', () => {
     it('should return 200 response with an object', () => {
         TestController.importTests(req, res);
         expect(res.statusCode).toBe(200);
-    })
+    });
 });

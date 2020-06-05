@@ -19,7 +19,7 @@ app.use('/auth', authRoutes);
 app.use('/user', userRoutes);
 app.use('/cycle', cycleRoutes);
 app.use('/at', atRoutes);
-app.use('/test',testRoutes);
+app.use('/test', testRoutes);
 
 const listener = express();
 listener.use('/api', app);

@@ -1,5 +1,5 @@
 module.exports = {
-    importTests(git_hash) {
+    importTests() {
         return true;
     }
-}
+};
