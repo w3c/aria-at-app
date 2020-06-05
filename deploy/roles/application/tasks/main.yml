@@ -15,11 +15,18 @@
     rsync_opts:
       - '--filter=:- .gitignore'
   when: deployment_mode != 'development'
+
+- name: Make server folder writable for import tests API endpoint
+  file:
+    path: '{{source_dir}}/server'
+    mode: '0777'
+    recurse: yes
+  when: deployment_mode != 'development'
   notify: "restart server"
 
 - name: Make vagrant folder writable
   file:
-    path: /vagrant
+    path: /vagrant/server
     mode: '0777'
     recurse: yes
   when: deployment_mode == 'development'
