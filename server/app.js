@@ -7,7 +7,7 @@ const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/users');
 const cycleRoutes = require('./routes/cycle');
 const atRoutes = require('./routes/at');
-const testRoutes = require('./routes/test');
+const testRoutes = require('./routes/tests');
 const path = require('path');
 
 const app = express();

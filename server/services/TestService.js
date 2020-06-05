@@ -5,18 +5,17 @@ async function runImportScript(git_hash) {
     return new Promise((resolve, reject) => {
         // local dev environments run in the 'server' directory
         let isDevelopmentProcess = process.cwd().includes('server');
-        let deployDirectoryPrefix = isDevelopmentProcess ? '..' : '.'
-        let importScriptDirectoryPrefix = isDevelopmentProcess ? '.' : './server'
-        const command = `${deployDirectoryPrefix}/deploy/scripts/export-and-exec.sh ${process.env.IMPORT_CONFIG} node ${importScriptDirectoryPrefix}/scripts/import-tests/index.js -c ${git_hash}`
-        exec(
-            command,
-            (error, stdout, stderr) => {
-                if (error) {
-                    reject(error);
-                }
-                resolve({ stdout, stderr });
+        let deployDirectoryPrefix = isDevelopmentProcess ? '..' : '.';
+        let importScriptDirectoryPrefix = isDevelopmentProcess
+            ? '.'
+            : './server';
+        const command = `${deployDirectoryPrefix}/deploy/scripts/export-and-exec.sh ${process.env.IMPORT_CONFIG} node ${importScriptDirectoryPrefix}/scripts/import-tests/index.js -c ${git_hash}`;
+        exec(command, (error, stdout, stderr) => {
+            if (error) {
+                reject(error);
             }
-        );
+            resolve({ stdout, stderr });
+        });
     });
 }
 
