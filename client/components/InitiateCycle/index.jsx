@@ -1,33 +1,76 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Form, Button, Row, Col } from 'react-bootstrap';
+import { Table, Form, Button, Row, Col } from 'react-bootstrap';
 import { getTestSuiteVersions, saveCycle } from '../../actions/cycles';
 import { getAllUsers } from '../../actions/users';
 import ConfigureTechnologyRow from '@components/ConfigureTechnologyRow';
 import ConfigureRunsForExample from '@components/ConfigureRunsForExample';
+import nextId from 'react-id-generator';
+
+// This is a temporary solution. Eventually this data will come from an admin page.
+function getDefaultsTechCombinations(versionData) {
+    let combos = [
+        ['JAWS', 'Chrome'],
+        ['JAWS', 'Firefox'],
+        ['NVDA', 'Chrome'],
+        ['NVDA', 'Firefox'],
+        ['VoiceOver for macOS', 'Chrome'],
+        ['VoiceOver for macOS', 'Safari']
+    ];
+
+    let initialRunRows = [];
+    for (let combo of combos) {
+        let at = versionData.supported_ats.find(at => at.at_name === combo[0]);
+        let at_id = at ? at.at_id : undefined;
+
+        let browser = versionData.browsers.find(b => b.name === combo[1]);
+        let browser_id = browser ? browser.id : undefined;
+
+        if (at_id && browser_id) {
+            initialRunRows.push({
+                at_id,
+                browser_id
+            });
+        }
+    }
+
+    return initialRunRows.length ? initialRunRows : [{}];
+}
 
 class InitiateCycle extends Component {
     constructor(props) {
         super(props);
         const { testSuiteVersions } = props;
+
+        let testSuiteVersionId = testSuiteVersions.length
+            ? testSuiteVersions[0].id
+            : undefined;
         this.state = {
-            selectedVersion: testSuiteVersions.length
-                ? testSuiteVersions[0].id
-                : undefined,
+            selectedVersion: testSuiteVersionId,
             name: '',
-            runTechnologyRows: [{}],
-            runTestersByExample: {} // example_id: runTechnolgiesIndex: [userlist]
+            runTechnologyRows: [{}], // list of {at_id, at_version, browser_id, browser_version}
+            assignedTesters: [], // list of {at_id, browser_id, example_id, tester_id}
+            exampleSelected: this.selectAllExamples(testSuiteVersionId)
         };
+
+        // This is a temporary fix until we have an admin page to control the defaults
+        if (testSuiteVersions.length) {
+            this.state.runTechnologyRows = getDefaultsTechCombinations(
+                testSuiteVersions[0]
+            );
+        }
 
         this.handleVersionChange = this.handleVersionChange.bind(this);
         this.handleNameChange = this.handleNameChange.bind(this);
         this.handleTechnologyRowChange = this.handleTechnologyRowChange.bind(
             this
         );
+        this.deleteTechnologyRow = this.deleteTechnologyRow.bind(this);
         this.addTechnologyRow = this.addTechnologyRow.bind(this);
         this.assignTesters = this.assignTesters.bind(this);
         this.removeAllTestersFromRun = this.removeAllTestersFromRun.bind(this);
+        this.selectExample = this.selectExample.bind(this);
         this.initiateCycle = this.initiateCycle.bind(this);
     }
 
@@ -49,11 +92,44 @@ class InitiateCycle extends Component {
             prevState.selectedVersion === undefined &&
             nextProps.testSuiteVersions.length > 0
         ) {
+            let versionId = nextProps.testSuiteVersions[0].id;
+            let version = nextProps.testSuiteVersions[0];
+            let exampleSelected = {};
+            for (let example of version.apg_examples) {
+                exampleSelected[example.id] = true;
+            }
+
             return {
-                selectedVersion: nextProps.testSuiteVersions[0].id
+                selectedVersion: versionId,
+                exampleSelected,
+                runTechnologyRows: getDefaultsTechCombinations(version)
             };
         }
         return null;
+    }
+
+    selectAllExamples(testSuiteVersionId) {
+        const { testSuiteVersions } = this.props;
+        if (!testSuiteVersions.length) {
+            return {};
+        }
+        let version = testSuiteVersions.find(v => v.id === testSuiteVersionId);
+        let exampleSelected = {};
+        for (let example of version.apg_examples) {
+            exampleSelected[example.id] = true;
+        }
+        return exampleSelected;
+    }
+
+    selectExample(event) {
+        const value = event.target.checked;
+        const apgExampleId = parseInt(event.target.name);
+        this.setState({
+            exampleSelected: {
+                ...this.state.exampleSelected,
+                [apgExampleId]: value
+            }
+        });
     }
 
     initiateCycle() {
@@ -94,17 +170,24 @@ class InitiateCycle extends Component {
             }
 
             for (let example of versionData.apg_examples) {
-                let runTestersByTechIndex = this.state.runTestersByExample[
-                    example.id
-                ];
+                if (!this.state.exampleSelected[example.id]) {
+                    continue;
+                }
+
+                let testers = this.state.assignedTesters
+                    .filter(t => {
+                        return (
+                            t.example_id === example.id &&
+                            t.at_id === runTechnologyPair.at_id &&
+                            t.browser_id === runTechnologyPair.browser_id
+                        );
+                    })
+                    .map(t => t.tester_id);
 
                 runs.push({
                     ...runTechnologyPair,
                     apg_example_id: example.id,
-                    users:
-                        runTestersByTechIndex && runTestersByTechIndex[index]
-                            ? runTestersByTechIndex[index]
-                            : []
+                    users: testers
                 });
             }
         }
@@ -123,38 +206,39 @@ class InitiateCycle extends Component {
     }
 
     assignTesters(exampleId, runTechnologyIndexes, userId) {
-        let testersByTechIndex = {
-            ...this.state.runTestersByExample[exampleId]
-        };
+        let newAssignedTesters = [...this.state.assignedTesters];
 
-        for (let technologyIndex of runTechnologyIndexes) {
-            if (
-                testersByTechIndex[technologyIndex] &&
-                testersByTechIndex[technologyIndex].indexOf(userId) < 0
-            ) {
-                testersByTechIndex[technologyIndex].push(userId);
-            } else {
-                testersByTechIndex[technologyIndex] = [userId];
-            }
+        for (let techIndex of runTechnologyIndexes) {
+            let techs = this.state.runTechnologyRows[techIndex];
+            newAssignedTesters.push({
+                at_id: techs.at_id,
+                browser_id: techs.browser_id,
+                example_id: exampleId,
+                tester_id: userId
+            });
         }
-        let newRunTestersByExample = { ...this.state.runTestersByExample };
-        newRunTestersByExample[exampleId] = testersByTechIndex;
-        this.setState({ runTestersByExample: newRunTestersByExample });
+
+        this.setState({
+            assignedTesters: newAssignedTesters
+        });
     }
 
     removeAllTestersFromRun(exampleId, runTechnologyIndexes) {
-        let newRunTestersByExample = { ...this.state.runTestersByExample };
-        let newRunTestersByTechIndex = {
-            ...this.state.runTestersByExample[exampleId]
-        };
+        let newAssignedTesters = [...this.state.assignedTesters];
 
-        for (let technologyIndex of runTechnologyIndexes) {
-            newRunTestersByTechIndex[technologyIndex] = [];
+        for (let techIndex of runTechnologyIndexes) {
+            let techs = this.state.runTechnologyRows[techIndex];
+            newAssignedTesters = newAssignedTesters.filter(t => {
+                return !(
+                    t.at_id === techs.at_id &&
+                    t.browser_id === techs.browser_id &&
+                    t.example_id === exampleId
+                );
+            });
         }
-        newRunTestersByExample[exampleId] = newRunTestersByTechIndex;
 
         this.setState({
-            runTestersByExample: newRunTestersByExample
+            assignedTesters: newAssignedTesters
         });
     }
 
@@ -167,8 +251,9 @@ class InitiateCycle extends Component {
 
         this.setState({
             selectedVersion: versionData.id,
-            runTechnologyRows: [{}],
-            runTestersByExample: {}
+            assignedTesters: [],
+            exampleSelected: this.selectAllExamples(versionData.id),
+            runTechnologyRows: getDefaultsTechCombinations(versionData)
         });
     }
 
@@ -195,6 +280,14 @@ class InitiateCycle extends Component {
     addTechnologyRow() {
         let newRunTechnologies = [...this.state.runTechnologyRows];
         newRunTechnologies.push({});
+        this.setState({
+            runTechnologyRows: newRunTechnologies
+        });
+    }
+
+    deleteTechnologyRow(index) {
+        let newRunTechnologies = [...this.state.runTechnologyRows];
+        newRunTechnologies.splice(index, 1);
         this.setState({
             runTechnologyRows: newRunTechnologies
         });
@@ -266,6 +359,41 @@ class InitiateCycle extends Component {
             }
         }
 
+        let displayExamples = false;
+        if (
+            this.state.runTechnologyRows.filter(run => {
+                return run.at_id && run.browser_id;
+            }).length
+        ) {
+            displayExamples = true;
+        }
+
+        let selectedPatterns = versionData.apg_examples
+            .filter(e => {
+                return this.state.exampleSelected[e.id];
+            })
+            .map(e => {
+                return e.name || e.directory;
+            });
+        let disableInitiateButton =
+            selectedPatterns.length === 0 || !displayExamples;
+
+        let listSelectedPatterns = null;
+        if (displayExamples) {
+            if (selectedPatterns.length) {
+                listSelectedPatterns = (
+                    <div>
+                        The following patterns have been selected for testing:{' '}
+                        {`${selectedPatterns.join(', ')}`}
+                    </div>
+                );
+            } else {
+                listSelectedPatterns = (
+                    <div>No patterns have been selected for testing.</div>
+                );
+            }
+        }
+
         return (
             <Fragment>
                 <h1 data-test="initiate-cycle-h2">Initiate a Test Cycle</h1>
@@ -297,26 +425,50 @@ class InitiateCycle extends Component {
                         </Col>
                     </Row>
                     <Row>
-                        <Col>Assistive Technology</Col>
-                        <Col>Version</Col>
-                        <Col>Browser</Col>
-                        <Col>Version</Col>
+                        <Table
+                            aria-label="Configure at/browser combinations for cycle"
+                            striped
+                            bordered
+                            hover
+                        >
+                            <thead>
+                                <tr>
+                                    <th>Assistive Technology</th>
+                                    <th>AT Version</th>
+                                    <th>Browser</th>
+                                    <th>Browser Version</th>
+                                    <th>Delete</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {versionData &&
+                                    this.state.runTechnologyRows.map(
+                                        (runTech, index) => {
+                                            return (
+                                                <ConfigureTechnologyRow
+                                                    key={index}
+                                                    runTechnologies={runTech}
+                                                    index={index}
+                                                    availableAts={
+                                                        versionData.supported_ats
+                                                    }
+                                                    availableBrowsers={
+                                                        versionData.browsers
+                                                    }
+                                                    handleTechnologyRowChange={
+                                                        this
+                                                            .handleTechnologyRowChange
+                                                    }
+                                                    deleteTechnologyRow={
+                                                        this.deleteTechnologyRow
+                                                    }
+                                                />
+                                            );
+                                        }
+                                    )}
+                            </tbody>
+                        </Table>
                     </Row>
-                    {versionData &&
-                        this.state.runTechnologyRows.map((runTech, index) => {
-                            return (
-                                <ConfigureTechnologyRow
-                                    key={index}
-                                    runTechnologies={runTech}
-                                    index={index}
-                                    availableAts={versionData.supported_ats}
-                                    availableBrowsers={versionData.browsers}
-                                    handleTechnologyRowChange={
-                                        this.handleTechnologyRowChange
-                                    }
-                                />
-                            );
-                        })}
                     <Row>
                         <Col>
                             <Button onClick={this.addTechnologyRow}>
@@ -326,28 +478,72 @@ class InitiateCycle extends Component {
                     </Row>
                 </Form>
                 <h2 data-test="initiate-cycle-test-plans">Test Plans</h2>
-                {versionData &&
+                {displayExamples &&
                     versionData.apg_examples.map(example => {
+                        let exampleRuns = runs.map(run => {
+                            let exampleRun = { ...run };
+                            exampleRun.testers = this.state.assignedTesters
+                                .filter(t => {
+                                    return (
+                                        t.example_id === example.id &&
+                                        t.at_id === run.at_id &&
+                                        t.browser_id === run.browser_id
+                                    );
+                                })
+                                .map(t => t.tester_id);
+                            return exampleRun;
+                        });
+                        let tableId = nextId('table_name_');
+                        let exampleTableTitle =
+                            example.name || example.directory;
+
                         return (
-                            <ConfigureRunsForExample
-                                data-test={`initiate-cycle-run-${example.id}`}
-                                newRun={true}
-                                runs={runs}
-                                key={example.id}
-                                example={example}
-                                usersById={usersById}
-                                assignTesters={this.assignTesters}
-                                removeAllTestersFromRun={
-                                    this.removeAllTestersFromRun
-                                }
-                                testersByRunId={
-                                    this.state.runTestersByExample[example.id]
-                                }
-                            />
+                            <Fragment key={`test-plan-${example.id}`}>
+                                <h3 id={tableId}>
+                                    <input
+                                        type="checkbox"
+                                        id={`designpattern-${example.id}`}
+                                        name={example.id}
+                                        checked={
+                                            this.state.exampleSelected[
+                                                example.id
+                                            ]
+                                        }
+                                        onChange={this.selectExample}
+                                    ></input>
+                                    {exampleTableTitle}
+                                </h3>
+                                <ConfigureRunsForExample
+                                    data-test={`initiate-cycle-run-${example.id}`}
+                                    newRun={true}
+                                    runs={exampleRuns}
+                                    key={example.id}
+                                    example={example}
+                                    usersById={usersById}
+                                    assignTesters={this.assignTesters}
+                                    removeAllTestersFromRun={
+                                        this.removeAllTestersFromRun
+                                    }
+                                    tableId={tableId}
+                                />
+                            </Fragment>
                         );
                     })}
+                {!displayExamples && (
+                    <div>
+                        You must have at least one AT/Browser combination
+                        configured to review the test plans and initiate the
+                        cycle.
+                    </div>
+                )}
+                {listSelectedPatterns}
                 <div>
-                    <Button onClick={this.initiateCycle}>Initiate Cycle</Button>
+                    <Button
+                        disabled={disableInitiateButton}
+                        onClick={this.initiateCycle}
+                    >
+                        Initiate Cycle
+                    </Button>
                 </div>
             </Fragment>
         );

@@ -1,7 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { Form, Table } from 'react-bootstrap';
-import nextId from 'react-id-generator';
 
 class ConfigureRunsForExample extends Component {
     constructor(props) {
@@ -20,7 +19,6 @@ class ConfigureRunsForExample extends Component {
         const {
             assignTesters,
             removeAllTestersFromRun,
-            testersByRunId,
             example,
             usersById,
             runs
@@ -51,17 +49,14 @@ class ConfigureRunsForExample extends Component {
         let runIds = [];
         for (let runId of Object.keys(this.state.runSelected)) {
             if (this.state.runSelected[runId]) {
+                runId = parseInt(runId);
+                const run = runs.find(r => r.id === runId);
+
                 // Do not add to run if tester already assigned to run
-                if (
-                    testersByRunId &&
-                    testersByRunId[runId] &&
-                    testersByRunId[runId].includes(value)
-                )
-                    continue;
+                if (run.testers && run.testers.includes(value)) continue;
 
                 // Make sure the user can be assigned to this run
-                runId = parseInt(runId);
-                const atNameId = runs.find(r => r.id === runId).at_name_id;
+                const atNameId = run.at_name_id;
                 const userAts = usersById[value].configured_ats;
                 if (userAts.find(ua => ua.at_name_id === atNameId)) {
                     runIds.push(runId);
@@ -86,7 +81,7 @@ class ConfigureRunsForExample extends Component {
     }
 
     render() {
-        const { example, usersById, testersByRunId, runs = [] } = this.props;
+        const { usersById, runs = [], tableId } = this.props;
 
         runs.sort(function(a, b) {
             if (a.at_id === b.at_id) {
@@ -95,12 +90,13 @@ class ConfigureRunsForExample extends Component {
             return b.at_id - a.at_id;
         });
 
-        let exampleTableTitle = example.name || example.directory;
-        let tableId = nextId('table_name_');
+        // If no runs are selected, disabled the assign drop down
+        let disableAssignDropdown = !Object.values(this.state.runSelected).find(
+            v => v
+        );
 
         return (
             <Fragment>
-                <h3 id={tableId}>{exampleTableTitle}</h3>
                 {runs.length !== 0 && (
                     <Table aria-labelledby={tableId} bordered>
                         <thead>
@@ -115,15 +111,12 @@ class ConfigureRunsForExample extends Component {
                                     ? true
                                     : false;
 
-                                let names = undefined;
-                                if (testersByRunId && testersByRunId[run.id]) {
-                                    names = testersByRunId[run.id].map(
-                                        testerId => {
-                                            let user = usersById[testerId];
-                                            return user.username;
-                                        }
-                                    );
-                                }
+                                let names = run.testers
+                                    ? run.testers.map(t => {
+                                          let user = usersById[t];
+                                          return user.username;
+                                      })
+                                    : undefined;
 
                                 return (
                                     <tr key={run.id}>
@@ -161,6 +154,7 @@ class ConfigureRunsForExample extends Component {
                                         value={this.state.userDropdownSelection}
                                         onChange={this.updateTesters}
                                         as="select"
+                                        disabled={disableAssignDropdown}
                                     >
                                         <option key={-2} value={-2}>
                                             Assignees
@@ -200,7 +194,8 @@ ConfigureRunsForExample.propTypes = {
     assignTesters: PropTypes.func,
     removeAllTestersFromRun: PropTypes.func,
     testersByRunId: PropTypes.object,
-    runs: PropTypes.array
+    runs: PropTypes.array,
+    tableId: PropTypes.string
 };
 
 export default ConfigureRunsForExample;

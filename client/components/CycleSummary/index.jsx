@@ -54,8 +54,6 @@ class CycleSummary extends Component {
         }
 
         let runsByExample = {};
-        let testerByRunId = {};
-
         let technologySetTest = {};
         let technologySets = [];
 
@@ -66,7 +64,6 @@ class CycleSummary extends Component {
             } else {
                 runsByExample[run.apg_example_id] = [run];
             }
-            testerByRunId[runId] = run.testers;
 
             if (!technologySetTest[`${run.browser_name}${run.at_name}`]) {
                 technologySetTest[`${run.browser_name}${run.at_name}`] = true;
@@ -99,7 +96,7 @@ class CycleSummary extends Component {
                 <Table aria-labelledby={tableId} striped bordered hover>
                     <thead>
                         <tr>
-                            <th>Assisitve Technology</th>
+                            <th>Assistive Technology</th>
                             <th>AT Version</th>
                             <th>Browser</th>
                             <th>Browser Version</th>
@@ -121,18 +118,28 @@ class CycleSummary extends Component {
                 <h3>Test Plans</h3>
                 {testSuiteVersionData &&
                     testSuiteVersionData.apg_examples.map(example => {
+                        if (!runsByExample[example.id]) {
+                            return null;
+                        }
+
+                        let exampleTableId = nextId('table_name_');
+                        let exampleTableTitle =
+                            example.name || example.directory;
                         return (
-                            <ConfigureRunsForExample
-                                runs={runsByExample[example.id]}
-                                key={example.id}
-                                example={example}
-                                usersById={usersById}
-                                assignTesters={this.assignTesters}
-                                removeAllTestersFromRun={
-                                    this.removeAllTestersFromRun
-                                }
-                                testersByRunId={testerByRunId}
-                            />
+                            <>
+                                <h4 id={exampleTableId}>{exampleTableTitle}</h4>
+                                <ConfigureRunsForExample
+                                    runs={runsByExample[example.id]}
+                                    key={example.id}
+                                    example={example}
+                                    usersById={usersById}
+                                    assignTesters={this.assignTesters}
+                                    removeAllTestersFromRun={
+                                        this.removeAllTestersFromRun
+                                    }
+                                    tableId={exampleTableId}
+                                />
+                            </>
                         );
                     })}
             </Fragment>

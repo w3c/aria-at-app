@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Form, Row, Col } from 'react-bootstrap';
+import { Button, Form } from 'react-bootstrap';
 
 class ConfigureTechnologyRow extends Component {
     constructor(props) {
@@ -12,6 +12,7 @@ class ConfigureTechnologyRow extends Component {
         this.handleAtVersionChange = this.handleAtVersionChange.bind(this);
         this.handleBrowserChange = this.handleBrowserChange.bind(this);
         this.handleAtChange = this.handleAtChange.bind(this);
+        this.deleteRun = this.deleteRun.bind(this);
     }
 
     handleBrowserVersionChange(event) {
@@ -71,6 +72,12 @@ class ConfigureTechnologyRow extends Component {
         handleTechnologyRowChange(newRunTechnologies, index);
     }
 
+    deleteRun() {
+        const { index, deleteTechnologyRow } = this.props;
+
+        deleteTechnologyRow(index);
+    }
+
     render() {
         const {
             availableBrowsers,
@@ -80,10 +87,10 @@ class ConfigureTechnologyRow extends Component {
         } = this.props;
 
         return (
-            <Row>
-                <Col>
+            <tr>
+                <td>
                     <Form.Control
-                        aria-label={`Assistive Technology, configuration ${index}`}
+                        aria-label={`AT ${index + 1}`}
                         value={
                             runTechnologies.at_id ? runTechnologies.at_id : -1
                         }
@@ -99,17 +106,17 @@ class ConfigureTechnologyRow extends Component {
                             );
                         })}
                     </Form.Control>
-                </Col>
-                <Col>
+                </td>
+                <td>
                     <Form.Control
-                        aria-label={`Assistive Technology Version, configuration ${index}`}
+                        aria-label={`AT ${index + 1} Version`}
                         value={runTechnologies.at_version || ''}
                         onChange={this.handleAtVersionChange}
                     />
-                </Col>
-                <Col>
+                </td>
+                <td>
                     <Form.Control
-                        aria-label={`Browser, configuration ${index}`}
+                        aria-label={`Browser ${index + 1}`}
                         value={
                             runTechnologies.browser_id
                                 ? runTechnologies.browser_id
@@ -127,15 +134,25 @@ class ConfigureTechnologyRow extends Component {
                             );
                         })}
                     </Form.Control>
-                </Col>
-                <Col>
+                </td>
+                <td>
                     <Form.Control
-                        aria-label={`Browser version, configuration ${index}`}
+                        aria-label={`Browser ${index + 1} version`}
                         value={runTechnologies.browser_version || ''}
                         onChange={this.handleBrowserVersionChange}
                     />
-                </Col>
-            </Row>
+                </td>
+                <td>
+                    <Button
+                        variant="danger"
+                        aria-label={`Delete at/browser combination ${index +
+                            1}`}
+                        onClick={this.deleteRun}
+                    >
+                        Delete
+                    </Button>
+                </td>
+            </tr>
         );
     }
 }
@@ -145,7 +162,8 @@ ConfigureTechnologyRow.propTypes = {
     index: PropTypes.number,
     availableAts: PropTypes.array,
     availableBrowsers: PropTypes.array,
-    handleTechnologyRowChange: PropTypes.func
+    handleTechnologyRowChange: PropTypes.func,
+    deleteTechnologyRow: PropTypes.func
 };
 
 export default ConfigureTechnologyRow;
