@@ -3,8 +3,9 @@ const db = require('../models/index');
 
 async function runImportScript(git_hash) {
     return new Promise((resolve, reject) => {
+        const command = `../deploy/scripts/export-and-exec.sh ${process.env.IMPORT_CONFIG} node ./scripts/import-tests/index.js -c ${git_hash}`
         exec(
-            `yarn db-import-tests:dev -c ${git_hash}`,
+            command,
             (error, stdout, stderr) => {
                 if (error) {
                     reject(error);
