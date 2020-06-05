@@ -3,12 +3,27 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
-import { Button, Table } from 'react-bootstrap';
+import { Button, Table, Modal } from 'react-bootstrap';
 import ManageCycleRow from '@components/ManageCycleRow';
-import { getTestCycles } from '../../actions/cycles';
+import { getTestCycles, deleteCycle } from '../../actions/cycles';
 import nextId from 'react-id-generator';
 
 class ManageCycles extends Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            showConfirmModal: false,
+            deleteCycleId: undefined
+        };
+
+        this.handleDeleteClick = this.handleDeleteClick.bind(this);
+        this.handleModalCloseClick = this.handleModalCloseClick.bind(this);
+        this.handleConfirmDeleteClick = this.handleConfirmDeleteClick.bind(
+            this
+        );
+    }
+
     componentDidMount() {
         const { dispatch, cyclesById } = this.props;
         if (Object.keys(cyclesById).length === 0) {
@@ -16,10 +31,49 @@ class ManageCycles extends Component {
         }
     }
 
+    handleModalCloseClick() {
+        this.setState({
+            showConfirmModal: false
+        });
+    }
+
+    handleDeleteClick(cycleId) {
+        this.setState({
+            showConfirmModal: true,
+            deleteCycleId: cycleId
+        });
+    }
+
+    handleConfirmDeleteClick() {
+        const { dispatch } = this.props;
+        dispatch(deleteCycle(this.state.deleteCycleId));
+        this.setState({
+            showConfirmModal: false,
+            deleteCycleId: undefined
+        });
+    }
+
     render() {
         const { cyclesById } = this.props;
 
         let tableId = nextId('table_name_');
+
+        let modalBody, modalTitle;
+        if (this.state.deleteCycleId) {
+            let cycle = cyclesById[this.state.deleteCycleId];
+            modalTitle = (
+                <>
+                    Delete Cycle: <b>{cycle.name}</b>
+                </>
+            );
+            modalBody = (
+                <>
+                    Deleting cycle <b>{cycle.name}</b> will delete all associate
+                    runs and test results. You will not be able to undo this
+                    delete.
+                </>
+            );
+        }
 
         return (
             <Fragment>
@@ -49,10 +103,36 @@ class ManageCycles extends Component {
                             <ManageCycleRow
                                 key={cycleId}
                                 cycle={cyclesById[cycleId]}
+                                handleDeleteClick={this.handleDeleteClick}
                             />
                         ))}
                     </tbody>
                 </Table>
+                <Modal
+                    show={this.state.showConfirmModal}
+                    onHide={this.handleModalCloseClick}
+                    centered
+                    animation={false}
+                >
+                    <Modal.Header closeButton>
+                        <Modal.Title>{modalTitle}</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>{modalBody}</Modal.Body>
+                    <Modal.Footer>
+                        <Button
+                            variant="secondary"
+                            onClick={this.handleModalCloseClick}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            variant="primary"
+                            onClick={this.handleConfirmDeleteClick}
+                        >
+                            Delete Cycle
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
             </Fragment>
         );
     }
