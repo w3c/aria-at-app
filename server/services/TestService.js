@@ -1,18 +1,15 @@
-const util = require('util');
-const exec = util.promisify(require('child_process').exec);
+const { exec } = require('child_process');
 const db = require('../models/index');
 
 async function runImportScript(git_hash) {
     return new Promise(async(resolve, reject) => {
-        try {
-            const output = await exec(`yarn db-import-tests:dev -c ${git_hash}`);
-            resolve(output)
-        } catch (err) {
-            reject(err)
-        }
-    }).catch(error => {
-        throw error;
-    })
+        exec(`yarn db-import-tests:dev -c ${git_hash}`, (error, stdout, stderr) => {
+            if (error) {
+                reject(error)
+            }
+            resolve({stdout, stderr})
+        });
+    });
 }
 
 module.exports = {
@@ -23,10 +20,9 @@ module.exports = {
         if (versionExists) {
             return versionExists;
         } else {
-            let importResult;
             try { 
-                importResult = await runImportScript(git_hash);
-                return importResult;
+                const {stdout, stderr} = await runImportScript(git_hash);
+                return stdout.includes('no errors') && stderr === '';
             } catch(error) {
                 // This error happens when the script fails
                 //  because the git hash is invalid;
