@@ -80,3 +80,5 @@
     chdir: '{{source_dir}}'
 
 - include: service.yml
+
+- include: cron.yml

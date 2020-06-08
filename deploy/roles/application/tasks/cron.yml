@@ -1,0 +1,7 @@
+---
+# Create a cron to import the most recent tests from aria-at
+- name: Set a cron job to build test results
+  cron:
+    name: "import latest aria-at tests"
+    minute: "15"
+    job: "curl -X POST https://{{fqdn}}/api/test/import"
