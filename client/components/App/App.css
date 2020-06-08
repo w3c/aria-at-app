@@ -36,7 +36,7 @@ nav.navbar {
     padding: 0.5rem 1rem;
 }
 
-.nav-link[aria-current="true"] {
+.nav-link[aria-current='true'] {
     color: #000;
 }
 
@@ -217,30 +217,31 @@ table tbody tr.assign-testers {
 }
 
 .app-screenshots {
-  margin-top: 3em;
-  border-top: 1px solid gainsboro;
-  padding-top: 3em;
+    margin-top: 3em;
+    border-top: 1px solid gainsboro;
+    padding-top: 3em;
 }
 
 .app-screenshots .container {
-  padding: 0;
-  margin-bottom: 5em;
+    padding: 0;
+    margin-bottom: 5em;
 }
 
 .app-screenshots .container > div {
-  padding-right: 2em;
+    padding-right: 2em;
 }
 
-.app-screenshots .description, .app-screenshots .screenshot {
-  width: 50%;
-  display: inline-block;
-  vertical-align: top;
+.app-screenshots .description,
+.app-screenshots .screenshot {
+    width: 50%;
+    display: inline-block;
+    vertical-align: top;
 }
 
 .app-screenshots .description h2 {
-  margin-top: 0;
+    margin-top: 0;
 }
 
 img {
-  max-width: 100%;
+    max-width: 100%;
 }
