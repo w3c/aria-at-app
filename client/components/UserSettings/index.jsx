@@ -9,10 +9,13 @@ class UserSettings extends Component {
     constructor(props) {
         super(props);
 
-        this.state = {};
+        this.state = {
+            editView: false
+        };
 
         this.onCheckboxClicked = this.onCheckboxClicked.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
+        this.onEdit = this.onEdit.bind(this);
         this.hydrateSelectedUserAts = this.hydrateSelectedUserAts.bind(this);
     }
 
@@ -67,33 +70,62 @@ class UserSettings extends Component {
         }
     }
 
+    onEdit() {
+        this.setState({
+            editView: true
+        });
+    }
+
     onSubmit(event) {
         const { dispatch, ats, userId } = this.props;
-        const selectedAts = Object.entries(this.state)
-            .filter(atEntry => atEntry[1].checked)
-            .map(atEntry => atEntry[0])
-            .map(atName => ats.filter(at => at.name === atName).shift());
-        dispatch(handleSetUserAts(userId, selectedAts));
+        if (this.state.editView) {
+            const selectedAts = Object.entries(this.state)
+                .filter(atEntry => atEntry[1].checked)
+                .map(atEntry => atEntry[0])
+                .map(atName => ats.filter(at => at.name === atName).shift());
+            dispatch(handleSetUserAts(userId, selectedAts));
+
+            this.setState({
+                editView: false
+            });
+        }
         event.preventDefault();
     }
 
     render() {
         const { ats, isSignedIn, username, email, loadedUserData } = this.props;
+
+        const disabled = this.state.editView ? {} : { disabled: 'disabled' };
+
+        const desc = this.state.editView
+            ? 'Select the assistive technologies you can test:'
+            : 'You can test the following assitive technologies:';
+
+        const actionButton = this.state.editView ? (
+            <Button variant="primary" onClick={this.onSubmit}>
+                Save
+            </Button>
+        ) : (
+            <Button variant="primary" onClick={this.onEdit}>
+                Edit
+            </Button>
+        );
+
         const content =
             loadedUserData && isSignedIn ? (
                 <section data-test="user-settings-authorized">
                     <h2>User Details</h2>
                     <p>{username}</p>
                     <p>{email}</p>
-
                     <h2>Assistive Technology</h2>
-                    <p>Add the assistive technologies that you can use</p>
+                    <p>{desc}</p>
                     <Form onSubmit={this.onSubmit}>
                         <Form.Group controlId="formBasicCheckbox">
                             {ats &&
                                 ats.map(at => {
                                     return (
                                         <Form.Check
+                                            {...disabled}
                                             id={at.name}
                                             key={at.id}
                                             label={at.name}
@@ -108,9 +140,7 @@ class UserSettings extends Component {
                                     );
                                 })}
                         </Form.Group>
-                        <Button variant="primary" type="submit">
-                            Save
-                        </Button>
+                        {actionButton}
                     </Form>
                 </section>
             ) : (
