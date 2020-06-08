@@ -60,7 +60,3 @@ Change the following variables (at minimum) to create a new configuration:
    - A new GitHub OAuth application must be created for a new environment. Instructions TBD.
 - GITHUB_CLIENT_SECRET
 - SESSION_SECRET
-
-## Deploying a new ARIA-AT test revision (workaround)
- - Change the revision string of the variable `aria_at_test_revision` in `vars/main.yml`
- - Deploy to environment of choice
