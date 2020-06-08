@@ -92,7 +92,7 @@ export default function(results, userId) {
             // unexpected behaviors
             else {
                 for (let ub of baseCommand.unexpected_behaviors) {
-                    if (!otherCommand.unexpected_behaviors.find(ub)) {
+                    if (otherCommand.unexpected_behaviors.indexOf(ub) >= 0) {
                         differentAnswers.push({
                             output: otherCommand.output,
                             answer: otherCommand.unexpected_behaviors.length
