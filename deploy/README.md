@@ -15,6 +15,12 @@ To support local development and functional testing, a
 [Vagrant](https://www.vagrantup.com/)-mediated
 [VirtualBox](https://www.virtualbox.org/) virtual machine is also available. On Vagrant up and destroy, sudo access is required.
 
+This does not rely on any private infrastructure, so any contributor may follow
+these instructions. This will require some manual modification of the
+configuration files. Those unfamiliar with Ansible may contact the project
+maintainers for more detailed instructions. Note that the resulting virtual
+machine will not have all the capabilities of the production system.
+
 1. Install [Vagrant](https://www.vagrantup.com/) (version 2) and
    [VirtualBox](https://www.virtualbox.org/) (version 5.2)
 2. Install vagrant-hostsupdater
@@ -28,11 +34,14 @@ To support local development and functional testing, a
 
 This will initiate the creation of a virtual machine. You will be prompted for your sudo password. Further documentation on using Vagrant can be found in [the "Getting Started" guide by the maintainers of that project](https://www.vagrantup.com/intro/getting-started/index.html).
 
-This does not rely on any private infrastructure, so any contributor may follow
-these instructions. This will require some manual modification of the
-configuration files. Those unfamiliar with Ansible may contact the project
-maintainers for more detailed instructions. Note that the resulting virtual
-machine will not have all the capabilities of the production system.
+Once the vagrant box is up you can test by running by going to the ip configured
+in the `Vagrantfile` [192.168.10.40](192.168.10.40).
+
+If you make any changes locally and want to run them again `vagrant rsync &&
+vagrant up --provision`.
+
+If you want to debug you can run `vagrant ssh` to ssh into the vagrant box. You
+can view logging from ansible with `sudo -i cat /var/log/messages`.
 
 ## Deployment
 
