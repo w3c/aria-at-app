@@ -69,14 +69,11 @@
   args:
     chdir: '{{source_dir}}'
 
-- name: Import tests into database
-  command: ./deploy/scripts/export-and-exec.sh {{environment_config.dest}} node ./server/scripts/import-tests/index.js -c {{aria_at_test_revision}}
-  args:
-    chdir: '{{source_dir}}'
-
 - name: Build front end package
   command: ./deploy/scripts/export-and-exec.sh {{environment_config.dest}} yarn workspace client build
   args:
     chdir: '{{source_dir}}'
 
 - include: service.yml
+
+- include: cron.yml
