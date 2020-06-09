@@ -1,37 +1,45 @@
 # Local Database
 
-## 1. Initialize the database
+The database migrations are managed by [Sequelize](https://sequelize.org/). To read and understand the schema, see the sequelize models that represent the data in `server/models`. Each model represents a table in the database.
 
-### Mac
+## Setting up a local database for development
 
-    createdb # run this if the PostgreSQL installation is freshly installed
-    yarn db-init:dev
+1. Initialize the database
+    - Mac
 
-### Linux
+           createdb # run this if the PostgreSQL installation is freshly installed
+           yarn db-init:dev
 
-    sudo -u postgres yarn db-init:dev
+    - Linux
 
-## 2. Run database migrations
+           sudo -u postgres yarn db-init:dev
 
-Every time a new migration file is added it must be run again to apply the migration.
+2. Run database migrations
 
-    yarn sequelize db:migrate
+       yarn sequelize db:migrate
 
-## 3. Import seed data
+3. Import seed data
 
-To import seed data into the local database
+       yarn sequelize db:seed:all
 
-    yarn sequelize db:seed:all
+4. Import the most recent tests from the [aria-at repository](https://github.com/w3c/aria-at):
 
-## 4. Import test results
+       yarn db-import-tests:dev
 
-To import test data into the local database, run:
-
-    yarn db-import-tests:dev
-
-## Inspecting the database
+### Inspecting the database
 
 To connect to the Postgres table locally:
-```
-yarn run dotenv -e config/dev.env psql
-```
+
+    yarn run dotenv -e config/dev.env psql
+
+## Application development: modifications to the schema
+
+1. Write a migration. Migrations files should be saved to `server/migrations/`. To make a migration file with the appropraite file name, run:
+
+       yarn sequelize-cli migration:generate <name>
+
+2. Write a seed file to add data to a table if appropriate. Seed files should be saved to `server/seeder/`. To make a seeder file with the appropraite file name, run:
+
+       yarn sequelize-cli seed:generate <name>
+
+3. Modify the appropriate models under `server/models/` so that the model accurate represents the database.
