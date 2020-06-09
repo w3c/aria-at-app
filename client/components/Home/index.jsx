@@ -43,12 +43,6 @@ class Home extends Component {
                                 )
                             </li>
                             <li>
-                                <a href="https://github.com/w3c/aria-at/issues/162">
-                                    Sign up as a tester
-                                </a>
-                                {' for the Pilot Test (May 27 - June 2)'}
-                            </li>
-                            <li>
                                 <a href="https://github.com/w3c/aria-at/wiki/How-to-contribute-tests">
                                     Write more tests
                                 </a>
