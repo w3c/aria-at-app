@@ -231,13 +231,6 @@ table tbody tr.assign-testers {
     padding-right: 2em;
 }
 
-.app-screenshots .description,
-.app-screenshots .screenshot {
-    width: 50%;
-    display: inline-block;
-    vertical-align: top;
-}
-
 .app-screenshots .description h2 {
     margin-top: 0;
 }
@@ -248,4 +241,13 @@ table tbody tr.assign-testers {
 
 img {
     max-width: 100%;
+}
+
+@media (min-width: 800px) {
+  .app-screenshots .description,
+  .app-screenshots .screenshot {
+      width: 50%;
+      display: inline-block;
+      vertical-align: top;
+  }
 }
