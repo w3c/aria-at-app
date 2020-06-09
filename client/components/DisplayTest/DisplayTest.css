@@ -3,11 +3,19 @@
     height: 65vh;
 }
 
-.testrun__button--right {
-    position: absolute;
-    right: 0;
+.testrun__button-toolbar {
+    margin: 1em 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row-reverse;
 }
 
-.testrun__button-toolbar--margin {
-    margin: 1em 0;
+.testrun__button-toolbar-group {
+    display: flex;
+    flex-direction: row-reverse;
+}
+
+.testrun__button-toolbar .btn {
+    margin-right: 0.5rem;
 }

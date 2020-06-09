@@ -22,6 +22,7 @@ class DisplayTest extends Component {
         this.buttonAction = null;
 
         // Test run actions
+        this.handleSaveClick = this.handleSaveClick.bind(this);
         this.handleNextTestClick = this.handleNextTestClick.bind(this);
         this.handlePreviousTestClick = this.handlePreviousTestClick.bind(this);
         this.handleCloseRunClick = this.handleCloseRunClick.bind(this);
@@ -40,7 +41,7 @@ class DisplayTest extends Component {
         this.handleModalConfirmClick = this.handleModalConfirmClick.bind(this);
 
         // iframe action
-        this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleResults = this.handleResults.bind(this);
 
         this.iframe = React.createRef();
     }
@@ -72,6 +73,10 @@ class DisplayTest extends Component {
         } = this.props;
 
         switch (action) {
+            case 'saveTest': {
+                this.iframe.current.triggerSubmit();
+                break;
+            }
             case 'closeTest': {
                 history.push(`/test-queue/${cycleId}`);
                 break;
@@ -109,6 +114,10 @@ class DisplayTest extends Component {
         this.setState({
             showConfirmModal: true
         });
+    }
+
+    handleSaveClick() {
+        this.performButtonAction('saveTest');
     }
 
     handleNextTestClick() {
@@ -163,7 +172,7 @@ class DisplayTest extends Component {
         });
     }
 
-    handleSubmit(data) {
+    handleResults(data) {
         const { saveResultFromTest } = this.props;
         saveResultFromTest(data);
     }
@@ -184,7 +193,7 @@ class DisplayTest extends Component {
         let cannotSave = `Test ${testIndex} has not been completed in full and your progress on this test won’t be saved.`;
 
         if (this.buttonAction === 'closeTest') {
-            modalTitle = 'Save and Close';
+            modalTitle = 'Close';
             action = `You are about to leave this test run. ${cannotSave}`;
         }
         if (this.buttonAction === 'goToNextTest') {
@@ -196,8 +205,8 @@ class DisplayTest extends Component {
             action = `You are about to move to the previous test. ${cannotSave}`;
         }
         if (this.buttonAction === 'redoTest') {
-            modalTitle = 'Re-Do';
-            action = `Are you sure you want to re-do test ${testIndex}. Your progress (if any) will be lost.`;
+            modalTitle = 'Start Over';
+            action = `Are you sure you want to start over test ${testIndex}. Your progress (if any) will be lost.`;
         }
 
         return (
@@ -255,6 +264,7 @@ class DisplayTest extends Component {
 
     render() {
         const {
+            handleSaveClick,
             handleCloseRunClick,
             handleNextTestClick,
             handlePreviousTestClick,
@@ -300,20 +310,47 @@ class DisplayTest extends Component {
         };
 
         let testContent = null;
+
+        let primaryButtonGroup;
+
+        if (this.testHasResult) {
+            primaryButtonGroup = (
+                <div className="testrun__button-toolbar-group">
+                    <Button variant="primary" onClick={handleNextTestClick}>
+                        Next test
+                    </Button>
+                    <Button variant="secondary" onClick={handleEditClick}>
+                        Edit results
+                    </Button>
+                </div>
+            );
+        } else {
+            primaryButtonGroup = (
+                <div className="testrun__button-toolbar-group">
+                    <Button variant="primary" onClick={handleSaveClick}>
+                        Save results
+                    </Button>
+                    <Button variant="secondary" onClick={handleNextTestClick}>
+                        Skip test
+                    </Button>
+                </div>
+            );
+        }
+
+        // note ButtonToolbar children are in row-reverse flex
+        // direction to align right when there is only one child
+        // and create a more logical tab order
         let menuUnderContent = (
-            <ButtonToolbar className="testrun__button-toolbar--margin">
+            <ButtonToolbar className="testrun__button-toolbar">
+                {primaryButtonGroup}
                 {testIndex !== 1 && (
-                    <Button variant="primary" onClick={handlePreviousTestClick}>
+                    <Button
+                        variant="secondary"
+                        onClick={handlePreviousTestClick}
+                    >
                         Previous test
                     </Button>
                 )}
-                <Button
-                    className="testrun__button--right"
-                    variant="primary"
-                    onClick={handleNextTestClick}
-                >
-                    {this.testHasResult ? 'Next' : 'Skip'} test
-                </Button>
             </ButtonToolbar>
         );
         let menuRightOContent = (
@@ -330,24 +367,15 @@ class DisplayTest extends Component {
                     variant="primary"
                     onClick={handleRedoClick}
                 >
-                    Re-do test
+                    Start over
                 </Button>
                 <Button
                     className="btn-block"
                     variant="primary"
                     onClick={handleCloseRunClick}
                 >
-                    {this.testHasResult ? 'Close' : 'Save and close'}
+                    Close
                 </Button>
-                {this.testHasResult ? (
-                    <Button
-                        className="btn-block"
-                        variant="primary"
-                        onClick={handleEditClick}
-                    >
-                        Edit
-                    </Button>
-                ) : null}
             </>
         );
 
@@ -359,7 +387,7 @@ class DisplayTest extends Component {
                     git_hash={git_hash}
                     file={test.file}
                     at_key={at_key}
-                    onSubmit={this.handleSubmit}
+                    onResults={this.handleResults}
                     ref={this.iframe}
                 ></TestIframe>
             );

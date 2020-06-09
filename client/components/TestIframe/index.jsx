@@ -31,10 +31,10 @@ class TestIframe extends Component {
         if (!this.validateMessage(message, 'results')) return;
 
         const { data } = message.data;
-        this.serializeAndSubmit(data);
+        this.processResults(data);
     }
 
-    serializeAndSubmit(results) {
+    processResults(results) {
         // stop listening for additional results
         window.removeEventListener('message', this.handleResultsMessage);
 
@@ -43,11 +43,20 @@ class TestIframe extends Component {
         const resultsEl = documentEl.querySelector('#record-results');
         const serializedForm = serialize(resultsEl);
 
-        const { onSubmit } = this.props;
-        onSubmit({
+        const { onResults } = this.props;
+        onResults({
             results,
             serializedForm
         });
+    }
+
+    triggerSubmit() {
+        this.iframeEl.current.contentWindow.postMessage(
+            {
+                type: 'submit'
+            },
+            window.location.origin
+        );
     }
 
     // if aria-at test harness has not loaded
@@ -56,7 +65,7 @@ class TestIframe extends Component {
     // message since DOMContentLoaded is called
     // before the harness dynamically sets up the
     // test html
-    async waitForTestHarness() {
+    async waitForTestHarnessReload() {
         return new Promise(resolve => {
             const handleLoadMessage = message => {
                 if (!this.validateMessage(message, 'loaded')) return;
@@ -64,25 +73,17 @@ class TestIframe extends Component {
                 resolve();
             };
             window.addEventListener('message', handleLoadMessage);
+            // trigger reload
+            this.iframeEl.current.src = this.iframeEl.current.src; // eslint-disable-line no-self-assign
         });
     }
 
-    patchButtonName() {
-        const documentEl = this.iframeEl.current.contentDocument;
-        const buttonEl = documentEl.querySelector('#review-results');
-        buttonEl.innerText = 'Submit Results';
-    }
-
     async reloadAndClear() {
-        this.iframeEl.current.src = this.iframeEl.current.src; // eslint-disable-line no-self-assign
-        await this.waitForTestHarness();
-        this.patchButtonName();
+        await this.waitForTestHarnessReload();
     }
 
     async reloadAndHydrate(serialized) {
-        this.iframeEl.current.src = this.iframeEl.current.src; // eslint-disable-line no-self-assign
-        await this.waitForTestHarness();
-        this.patchButtonName();
+        await this.waitForTestHarnessReload();
 
         // perform the hydration from serialized form state
         const documentEl = this.iframeEl.current.contentDocument;
@@ -91,9 +92,6 @@ class TestIframe extends Component {
     }
 
     async componentDidMount() {
-        await this.waitForTestHarness();
-        this.patchButtonName();
-
         // listen for 'results' postMessage from child iframe
         // which is sent when the "Review Results" button is clicked
         // inside the iframe
@@ -110,7 +108,7 @@ class TestIframe extends Component {
 
         return (
             <iframe
-                src={`/aria-at/${git_hash}/${file}?at=${at_key}&showResults=false`}
+                src={`/aria-at/${git_hash}/${file}?at=${at_key}&showResults=false&showSubmitButton=false`}
                 id="test-iframe"
                 ref={this.iframeEl}
             ></iframe>
@@ -121,7 +119,7 @@ class TestIframe extends Component {
 export default TestIframe;
 
 TestIframe.propTypes = {
-    onSubmit: PropTypes.func,
+    onResults: PropTypes.func,
     git_hash: PropTypes.string,
     file: PropTypes.string,
     at_key: PropTypes.string
