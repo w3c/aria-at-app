@@ -242,6 +242,10 @@ table tbody tr.assign-testers {
     margin-top: 0;
 }
 
+.right {
+  float: right;
+}
+
 img {
     max-width: 100%;
 }

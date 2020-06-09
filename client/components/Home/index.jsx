@@ -90,19 +90,19 @@ class Home extends Component {
                             </div>
                         </div>
                         <div className="container">
-                            <div className="screenshot">
-                                <img
-                                    src={testQueueScreenshot}
-                                    alt="Screenshot of the test queue page. This queue displays test plans to be executed with JAWS in Chrome"
-                                />
-                            </div>
-                            <div className="description">
+                            <div className="description right">
                                 <h2>Test Queue</h2>
                                 <p>
                                     Users can view in-progress Test Cycles and
                                     assign themselves to help test a particular
                                     Test Plan for a given AT and browser combo.
                                 </p>
+                            </div>
+                            <div className="screenshot">
+                                <img
+                                    src={testQueueScreenshot}
+                                    alt="Screenshot of the test queue page. This queue displays test plans to be executed with JAWS in Chrome"
+                                />
                             </div>
                         </div>
                         <div className="container">
@@ -124,13 +124,7 @@ class Home extends Component {
                             </div>
                         </div>
                         <div className="container">
-                            <div className="screenshot">
-                                <img
-                                    src={testReviewScreenshot}
-                                    alt="Screenshot of the test review page. This view shows the results of a test plan that has been completed"
-                                />
-                            </div>
-                            <div className="description">
+                            <div className="description right">
                                 <h2>Test Review</h2>
                                 <p>
                                     After multiple runs have been recorded for a
@@ -138,6 +132,12 @@ class Home extends Component {
                                     summary of results and publish them to the
                                     public Reports page.
                                 </p>
+                            </div>
+                            <div className="screenshot">
+                                <img
+                                    src={testReviewScreenshot}
+                                    alt="Screenshot of the test review page. This view shows the results of a test plan that has been completed"
+                                />
                             </div>
                         </div>
                     </section>
