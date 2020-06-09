@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Alert, Button, ButtonGroup } from 'react-bootstrap';
+import { Alert, Button } from 'react-bootstrap';
 import { Octicon, Octicons } from 'octicons-react';
 import nextId from 'react-id-generator';
 import {
@@ -28,7 +28,7 @@ class StatusBar extends Component {
     }
 
     async componentDidMount() {
-        const { dispatch, test, tests, testerId } = this.props;
+        const { dispatch, test, testerId } = this.props;
         let { statuses } = this.state;
 
         await dispatch(getConflictsByTestResults(test, testerId));
@@ -88,30 +88,13 @@ class StatusBar extends Component {
         if (result && result.status === 'complete') {
             let variant = 'info';
             let action = (
-                <ButtonGroup className="ml-2">
-                    {this.props.testIndex > 1 ? (
-                        <Button
-                            variant={variant}
-                            onClick={this.props.handlePreviousTestClick}
-                        >
-                            Previous
-                        </Button>
-                    ) : null}
-                    <Button
-                        variant={variant}
-                        onClick={this.props.handleCloseRunClick}
-                    >
-                        Close
-                    </Button>
-                    {this.props.testIndex < tests.length ? (
-                        <Button
-                            variant={variant}
-                            onClick={this.props.handleNextTestClick}
-                        >
-                            Next test
-                        </Button>
-                    ) : null}
-                </ButtonGroup>
+                <Button
+                    className="ml-2"
+                    variant={variant}
+                    onClick={this.props.handleNextTestClick}
+                >
+                    Next test
+                </Button>
             );
             let icon = 'info';
             let message = 'This test is complete.';
