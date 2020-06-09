@@ -85,7 +85,7 @@ class Home extends Component {
                             <div className="screenshot">
                                 <img
                                     src={testManagementScreenshot}
-                                    alt="Screenshot of the test management page, where a user is configuring a new Test Cycle"
+                                    alt="This page has two main sections: test cycle configuration and test plans. From the “test cycle configuration” section, the user can define the name of the cycle, select a git commit of tests and define the assistive technology and browser combinations they want the testers to use for the test cycle. In the ”test plans” section, the user is presented with all the test plans available in the system where he can assign testers to specific test plans or assistive technology and browser combinations."
                                 />
                             </div>
                         </div>
@@ -101,7 +101,7 @@ class Home extends Component {
                             <div className="screenshot">
                                 <img
                                     src={testQueueScreenshot}
-                                    alt="Screenshot of the test queue page. This queue displays test plans to be executed with JAWS in Chrome"
+                                    alt="This page displays all the test plans available to be tested grouped by assistive technology and browser. Each assistive technology and browser combination as a table with the following columns: test plan,  assigned testers, report status and actions."
                                 />
                             </div>
                         </div>
@@ -119,7 +119,7 @@ class Home extends Component {
                             <div className="screenshot">
                                 <img
                                     src={testViewScreenshot}
-                                    alt="Screenshot of the test view page. This view displayes instructions for how to execute a test"
+                                    alt="This page displays a test plan being ran, it has instructions for how to execute the test and record results. As part of the actions in this page, the user can: raise an issue, re-do the test, save and close, navigate to the previous and next test as well as skip it without necessarily having to record results."
                                 />
                             </div>
                         </div>
@@ -136,7 +136,7 @@ class Home extends Component {
                             <div className="screenshot">
                                 <img
                                     src={testReviewScreenshot}
-                                    alt="Screenshot of the test review page. This view shows the results of a test plan that has been completed"
+                                    alt="This page displays a table with a summary of the results recorded for a test plan. As part of the actions in this page, the user can: raise an issue, re-do the test, close, and edit."
                                 />
                             </div>
                         </div>
