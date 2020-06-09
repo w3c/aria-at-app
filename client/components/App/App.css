@@ -236,7 +236,7 @@ table tbody tr.assign-testers {
 }
 
 .right {
-  float: right;
+    float: right;
 }
 
 img {
@@ -244,10 +244,10 @@ img {
 }
 
 @media (min-width: 800px) {
-  .app-screenshots .description,
-  .app-screenshots .screenshot {
-      width: 50%;
-      display: inline-block;
-      vertical-align: top;
-  }
+    .app-screenshots .description,
+    .app-screenshots .screenshot {
+        width: 50%;
+        display: inline-block;
+        vertical-align: top;
+    }
 }
