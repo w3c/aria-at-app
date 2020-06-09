@@ -69,7 +69,7 @@ module.exports = {
         if (typeof options === 'undefined' || !('accessToken' in options)) {
             throw new AuthorizationError('Not authorized.');
         }
-        const organization = process.env.GITHUB_ORGANIZATION;
+        const organization = process.env.GITHUB_TEAM_ORGANIZATION;
         const userLogin = options.userLogin;
         const teamQuery = process.env.GITHUB_TEAM_QUERY;
         const query = `{
