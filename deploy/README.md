@@ -24,9 +24,9 @@ machine will not have all the capabilities of the production system.
 1. Install [Vagrant](https://www.vagrantup.com/) (version 2) and
    [VirtualBox](https://www.virtualbox.org/) (version 5.2)
 2. Install vagrant-hostsupdater
-   ```
-   vagrant plugin install vagrant-hostsupdater
-   ```
+
+       vagrant plugin install vagrant-hostsupdater
+
 3. Open a terminal and navigate to the directory containing this text file
 4. Run the following command:
 
