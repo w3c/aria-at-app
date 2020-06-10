@@ -113,6 +113,12 @@ class App extends Component {
                                     )}
                                     <Nav.Link
                                         as={Link}
+                                        {...this.navProps('/results')}
+                                    >
+                                        Test Reports
+                                    </Nav.Link>
+                                    <Nav.Link
+                                        as={Link}
                                         {...this.navProps('/account/settings')}
                                     >
                                         Settings
