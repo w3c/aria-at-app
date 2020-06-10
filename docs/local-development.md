@@ -12,14 +12,14 @@
 ## Running the application locally
 
 1. Install Dependencies with Yarn
-
-       yarn install
-
+    ```
+    yarn install
+    ```
 2. Set up local database using the instructions provided in [database.md](database.md).
 3. Run the server
-
-       yarn dev
-
+    ```
+    yarn dev
+    ```
 Now you can navigate your browser to: http://0.0.0.0:3000/
 
 ## Debugging
@@ -40,20 +40,21 @@ dedicated dev tools for node.
 ### Running all tests
 
 The following command encompasses running the linter, formatter, Jest tests, and Lighthouse accessibility checks only once.
-
+    ```
     yarn test
-
+    ```
 
 ### Linting and formatting
 
 Code linting is performed by **ESLint**. To manually run ESLint:
-
+    ```
     yarn lint
+    ```
 
 Code formatting is performed by **Prettier**. To manually run Prettier:
-
+    ```
     yarn prettier
-
+    ```
 
 ### Unit tests
 
@@ -64,24 +65,27 @@ Code formatting is performed by **Prettier**. To manually run Prettier:
     * The server side, additionally, user **Supertest** to test HTTP integration
 
 The following command will run all unit tests.
-
+    ```
     yarn jest
+    ```
 
 If running the tests on demand, in a hot-loaded way, run the following for each workspace with the --watchAll command. The downside to this approach is that separate terminals have to be used to run each command.
 
+    ```
     # Run all client tests and watch for changes
     yarn workspace client jest --watchAll
 
     # Run all server tests and watch from changes
     yarn workspace server jest --watchAll
+    ```
 
 
 ### Accessibility tests
 
 [Lighthouse CI](https://github.com/GoogleChrome/lighthouse-ci) is used for automated accessibility testing of the React application. It has also been integrated into the CI workflow To run the Lighthouse tests, run:
-```
-yarn a11y
-```
+    ```
+    yarn a11y
+    ```
 
 ## Best Practices
 

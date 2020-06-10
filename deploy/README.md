@@ -24,21 +24,23 @@ machine will not have all the capabilities of the production system.
 1. Install [Vagrant](https://www.vagrantup.com/) (version 2) and
    [VirtualBox](https://www.virtualbox.org/) (version 5.2)
 2. Install vagrant-hostsupdater
-
-       vagrant plugin install vagrant-hostsupdater
-
+    ```
+    vagrant plugin install vagrant-hostsupdater
+    ```
 3. Open a terminal and navigate to the directory containing this text file
 4. Run the following command:
-
-       vagrant up
-
+    ```
+    vagrant up
+    ```
 This will initiate the creation of a virtual machine. You will be prompted for your sudo password. Further documentation on using Vagrant can be found in [the "Getting Started" guide by the maintainers of that project](https://www.vagrantup.com/intro/getting-started/index.html).
 
 Once the vagrant box is up you can test by running by going to the ip configured
 in the `Vagrantfile` [192.168.10.40](192.168.10.40).
 
-If you make any changes locally and want to run them again `vagrant rsync &&
-vagrant up --provision`.
+If you make any changes locally and want to run them again:
+    ```
+    vagrant rsync && vagrant up --provision
+    ```
 
 If you want to debug you can run `vagrant ssh` to ssh into the vagrant box. You
 can view logging from ansible with `sudo -i cat /var/log/messages`.
@@ -52,12 +54,13 @@ To deploy this project to  server:
 2. Install [Ansible](https://www.ansible.com/)
 3. Execute the following command:
    - Staging:
-
-      `ansible-playbook provision.yml --inventory inventory/staging.yml`
-
+    ```
+    ansible-playbook provision.yml --inventory inventory/staging.yml
+    ```
    - Production:
-
-      `ansible-playbook provision.yml --inventory inventory/production.yml`
+    ```
+    ansible-playbook provision.yml --inventory inventory/production.yml
+    ```
 
 ## Creating new environment configuration
 
