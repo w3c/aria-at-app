@@ -31,12 +31,14 @@
     "react-copy-to-clipboard": "^5.0.2",
     "react-helmet": "^6.0.0",
     "react-id-generator": "^3.0.0",
-    "sass-loader": "^8.0.2"
+    "sass-loader": "^8.0.2",
+    "react-data-sort": "^1.2.1"
   },
   "devDependencies": {
     "@babel/code-frame": "^7.8.3",
     "@babel/core": "^7.8.7",
     "@babel/plugin-transform-runtime": "^7.9.0",
+    "@babel/plugin-proposal-class-properties": "^7.10.1",
     "@babel/preset-env": "^7.8.7",
     "@babel/preset-react": "^7.8.3",
     "@lhci/cli": "^0.3.12",
