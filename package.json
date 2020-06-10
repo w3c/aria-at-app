@@ -16,7 +16,6 @@
     "lint": "yarn workspaces run lint",
     "test": "set -e; yarn prettier; yarn lint; yarn jest; yarn workspace client lighthouse",
     "db-init:dev": "bash db/scripts/db_init.sh config/dev.env",
-    "db-migrate:dev": "bash db/scripts/db_migrate.sh config/dev.env",
     "db-import-tests:dev": "yarn workspace server db-import-tests:dev",
     "storybook": "yarn workspaces run storybook",
     "sequelize": "dotenv -e config/dev.env npx sequelize-cli"

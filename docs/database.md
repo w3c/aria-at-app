@@ -1,81 +1,62 @@
-# Database setup
+# Local Database
 
-## Local database setup
+The database migrations are managed by [Sequelize](https://sequelize.org/). To read and understand the schema, see the sequelize models that represent the data in `server/models`. Each model represents a table in the database.
 
-### Initialize the database
+## Setting up a local database for development
 
-#### Mac
-```
-createdb # run this if the PostgreSQL installation is freshly installed
-yarn db-init:dev
-```
+1. Initialize the database
+    - Mac
+    ```
+    createdb # run this if the PostgreSQL installation is freshly installed
+    yarn db-init:dev
+    ```
+    - Linux
+    ```
+    sudo -u postgres yarn db-init:dev
+    ```
+2. Run database migrations
+    ```
+    yarn sequelize db:migrate
+    ```
+3. Import seed data
+    ```
+    yarn sequelize db:seed:all
+    ```
+4. Import the most recent tests from the [aria-at repository](https://github.com/w3c/aria-at):
+    ```
+    yarn db-import-tests:dev
+    ```
 
-#### Linux
-```
-sudo -u postgres yarn db-init:dev
+All at once:
 
 ```
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    createdb # run this if the PostgreSQL installation is freshly installed
+    yarn db-init:dev;
+else
+    sudo -u postgres yarn db-init:dev;
+fi;
 
-### Run database migrations
-Every time a new migration file is added it must be run again to apply the migration.
-```
-yarn sequelize db:migrate
-```
-
-### Import seed data
-To import seed data into the local database
-```
-yarn sequelize db:seed:all
-```
-
-### Import test results
-To import test data into the local database, run:
-```
-yarn db-import-tests:dev
+yarn sequelize db:migrate;
+yarn sequelize db:seed:all;
+yarn db-import-tests:dev;
 ```
 
 ### Inspecting the database
 
 To connect to the Postgres table locally:
-```
-yarn run dotenv -e config/dev.env psql
-```
+    ```
+    yarn run dotenv -e config/dev.env psql
+    ```
 
-### Destroying Flyway Managed Database and Migrating to Sequelize
-**Note: These instructions were performed on a Mac. Other OS users, please update these docs in a separate PR.**
+## Application development: modifications to the schema
 
-This section is for users who were previously managing their database using Flyway. The application has moved away from using Flyway for database management in favor of Sequelize. To change the database management to Sequelize, follow these instructions:
-
-#### 0. Open a new terminal and set environment
-- These instructions should not be performed in the same terminal as the terminal where the app is being run.
-- Export dev Postgres variables:
-  - `export $(cat config/dev.env | xargs)`
-- Go to the `aria-at-app` server folder
-  - `cd server`
-
-#### 1. Destroy Database
-- Flyway clear out the database by undoing the migrations:
-```
-flyway clean -user=$PGUSER -password=$PGPASSWORD -url=jdbc:postgresql://$PGHOST:$PGPORT/$PGDATABASE -locations=filesystem:$(pwd)/db/migrations -baselineVersion=0 -baselineOnMigrate=true
-```
-- Unset PostgreSQL variables
-```
-unset PGDATABASE
-unset PGUSER
-unset PGPASSWORD
-unset PGHOST
-unset PGPORT
-```
-
-- Drop the database
-  - `psql -c "DROP DATABASE aria_at_report;"`
-
-- Go to the root application folder
-  - `cd ../`
-
-#### 2. Initialize a new database
-
-- Follow the **Local database setup** instructions above, starting with **Initialize the database**
-- Follow the **Import test results** instructions above.
-- Run app as usual.
-
+1. Write a migration. Migrations files should be saved to `server/migrations/`. To make a migration file with the appropraite file name, run:
+    ```
+    yarn sequelize-cli migration:generate <name>
+    ```
+2. Write a seed file to add data to a table if appropriate. Seed files should be saved to `server/seeder/`. To make a seeder file with the appropraite file name, run:
+    ```
+    yarn sequelize-cli seed:generate <name>
+    ```
+3. Modify the appropriate models under `server/models/` so that the model accurate represents the database.
