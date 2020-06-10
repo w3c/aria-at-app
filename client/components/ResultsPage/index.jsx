@@ -72,6 +72,10 @@ class ResultsPage extends Component {
             activePage,
         } = this.props;
 
+        if (!Object.keys(cyclesById).length) {
+            return <div>Loading</div>;
+        }
+
         // eslint-disable-next-line no-console
         console.log('cyclesById', cyclesById);
         // eslint-disable-next-line no-console
@@ -97,7 +101,7 @@ class ResultsPage extends Component {
                 console.log('Test results data: ', testsByRunId[run.id]);
             }
         }
-        let data = this.state.cycles;
+        let data = Object.values(cyclesById);
 
         return (
             <Fragment>
