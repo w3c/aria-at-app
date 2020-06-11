@@ -392,9 +392,17 @@ class TestQueueRow extends Component {
         }
 
         if (runStatus === 'draft') {
-            results = <Link to={`/results/cycles/${cycleId}/run/${runId}`}>DRAFT RESULTS</Link>;
+            results = (
+                <Link to={`/results/cycles/${cycleId}/run/${runId}`}>
+                    DRAFT RESULTS
+                </Link>
+            );
         } else if (runStatus === 'final') {
-            results = <Link to={`/results/cycles/${cycleId}/run/${runId}`}>PUBLISHED RESULTS</Link>;
+            results = (
+                <Link to={`/results/cycles/${cycleId}/run/${runId}`}>
+                    PUBLISHED RESULTS
+                </Link>
+            );
         }
 
         let actions;
