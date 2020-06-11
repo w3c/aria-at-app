@@ -1,46 +1,21 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
+import { Table } from 'react-bootstrap';
 import { Helmet } from 'react-helmet';
 import { connect } from 'react-redux';
-import Datasort from 'react-data-sort';
 import { getTestCycles, getTestsForRunsCycle } from '../../actions/cycles';
+import nextId from 'react-id-generator';
 
 class ResultsPage extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-            sortBy: "name",
-            direction: "asc",
-            activePage: 0
-        };
-    };
-
-    setSortBy = sortBy => {
-        this.setState({ sortBy });
-    };
-    toggleDirection = () => {
-        this.setState({
-            direction: this.state.direction === "asc" ? "desc" : "asc"
-        });
-    };
-    goToPage = activePage => {
-        this.setState({ activePage });
-    };
-    prevPage = () => {
-        this.setState(({ activePage }) => ({
-            activePage: activePage - 1
-        }));
-    };
-    nextPage = () => {
-        this.setState(({ activePage }) => ({
-            activePage: activePage + 1
-        }));
-    };
+    }
 
     componentDidMount() {
-        const { dispatch, cycleById, fetchCycleResults } = this.props;
+        const { dispatch, cyclesById, fetchCycleResults } = this.props;
 
-        if (!cycleById) {
+        if (!Object.keys(cyclesById).length) {
             dispatch(getTestCycles());
         }
 
@@ -51,7 +26,7 @@ class ResultsPage extends Component {
         }
     }
 
-    componentDidUpdate(prevProps, prevState, snapshot) {
+    componentDidUpdate(prevProps) {
         const { dispatch, fetchCycleResults } = this.props;
 
         // If we now know which cycle's results to fetch, fetch them
@@ -63,181 +38,79 @@ class ResultsPage extends Component {
         return null;
     }
 
+    renderRow(row) {
+        return (
+            <tr key={nextId()}>
+                <td>{row.cycle}</td>
+                <td>{`${row.at} ${row.at_version}`}</td>
+                <td>{`${row.browser} ${row.browser_version}`}</td>
+                <td>
+                    <Link
+                        to={`/results/cycles/${row.cycleId}/run/${row.runId}`}
+                    >
+                        {row.plan}
+                    </Link>
+                </td>
+                <td>{row.status}</td>
+            </tr>
+        );
+    }
+
     render() {
-        const {
-            cyclesById,
-            testsByRunId,
-            sortBy,
-            direction,
-            activePage,
-        } = this.props;
+        const { cyclesById } = this.props;
 
         if (!Object.keys(cyclesById).length) {
             return <div>Loading</div>;
         }
 
-        const runs = [];
+        const rowsData = [];
 
-        for (let cycle of Object.values(cyclesById)) {
+        let cyclesByNewest = Object.keys(cyclesById).sort(function(a, b) {
+            return parseInt(b) - parseInt(a);
+        });
+
+        for (let cycleId of cyclesByNewest) {
+            let cycle = cyclesById[cycleId];
             for (let run of Object.values(cycle.runsById)) {
-                runs.push({
-                    cycle: cycle.name,
-                    at: run.at_name,
-                    browser: run.browser_name,
-                    plan: run.apg_example_name,
-                    status: run.status
-                });
+                if (run.run_status === 'final' || run.run_status === 'draft') {
+                    rowsData.push({
+                        cycle: cycle.name,
+                        cycleId: cycle.id,
+                        runId: run.id,
+                        at: run.at_name,
+                        at_version: run.at_version,
+                        browser: run.browser_name,
+                        browser_version: run.browser_version,
+                        plan: run.apg_example_name,
+                        status: run.run_status
+                    });
+                }
             }
         }
 
-        console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        console.log(runs.length);
-
-
+        let tableId = nextId('table_name_');
         return (
             <Fragment>
                 <Helmet>
                     <title>{`ARIA-AT Results`}</title>
                 </Helmet>
-                <h1>Test Reports</h1>
+                <h1 id={tableId}>Test Reports</h1>
+                <Table aria-labelledby={tableId} striped bordered hover>
+                    <thead>
+                        <tr>
+                            <th>Test Cycle</th>
+                            <th>Assistive Technology</th>
+                            <th>Browser</th>
+                            <th>Test Plan</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>{rowsData.map(row => this.renderRow(row))}</tbody>
+                </Table>
             </Fragment>
-        ),
-            <Datasort
-                data={runs}
-                sortBy={sortBy}
-                direction={direction}
-                render={({ data, pages }) => {
-                    return (
-                        <div style={{ minWidth: 500 }}>
-                            <table border={1} cellPadding={2} style={{ width: "100%" }}>
-                                <TableHead
-                                    setSortBy={this.setSortBy}
-                                    sortBy={this.state.sortBy}
-                                    direction={direction}
-                                    toggleDirection={this.toggleDirection}
-                                />
-                              <TableBody data={data}/>
-                            </table>
-                        </div>
-                    );
-                }}
-            />
-    }
-}
-
-
-function TableHead({ setSortBy, sortBy, direction, toggleDirection }) {
-    const columns = [
-        { key: "cycle", title: "Test Cycle" },
-        { key: "at", title: "Assistive Technology" },
-        { key: "browser", title: "Browser" },
-        { key: "plan", title: "Test Plan" },
-        { key: "status", title: "Status (pass/fail)"}
-    ];
-    const items = columns.map(({ key, title }) => {
-        const active = key === sortBy;
-        return (
-            <HeadToggle
-                key={key}
-                active={active}
-                onClick={() => {
-                    if (active) {
-                        toggleDirection();
-                    }
-                    setSortBy(key);
-                }}
-            >
-                <span>{title} {active ? direction === "asc" ? "▲" : "▼" : null}</span>
-            </HeadToggle>
         );
-    });
-    return (
-        <thead>
-        <tr>{items}</tr>
-        </thead>
-    );
-}
-
-function HeadToggle({ children, active, onClick }) {
-    return (
-        <th
-            tabIndex={-1}
-            onClick={onClick}
-            style={{ fontWeight: active ? "bold" : "normal", cursor: "pointer" }}
-        >
-            {children}
-        </th>
-    );
-}
-
-function TableBody({ data }) {
-    return <tbody>
-             {data.map(d => {
-                   return (
-                       <tr>
-                         <td>{d.cycle}</td>
-                         <td>{d.at}</td>
-                         <td>{d.browser}</td>
-                         <td>{d.plan}</td>
-                         <td>{d.status}</td>
-                       </tr>
-                   );
-               })}
-           </tbody>;
-}
-
-function Flex({ children, style }) {
-    return <div style={{ display: "flex", ...style }}>{children}</div>;
-}
-
-function GoToPage({ goToPage, pages }) {
-    const options = [];
-    for (let i = 0; i < pages; i++) {
-        options.push(<option value={i}>{i + 1}</option>);
     }
-    return (
-        <div>
-            Go to page{" "}
-            <select onChange={e => goToPage(parseInt(e.target.value))}>
-                {options}
-            </select>
-        </div>
-    );
 }
-
-function Navigation({ activePage, goToPage, nextPage, prevPage, pages }) {
-    return (
-        <Flex>
-            <button disabled={activePage === 0} onClick={() => goToPage(0)}>
-                {"<<"}
-            </button>
-            <button disabled={activePage === 0} onClick={prevPage}>
-                {"<"}
-            </button>
-
-            <button disabled={activePage === pages - 1} onClick={nextPage}>
-                {">"}
-            </button>
-            <button
-                disabled={activePage === pages - 1}
-                onClick={() => goToPage(pages - 1)}
-            >
-                {">>"}
-            </button>
-        </Flex>
-    );
-}
-
-function PageIndicator({ pages, activePage }) {
-    return (
-        <div>
-            <b>{activePage + 1}</b> / {pages}
-        </div>
-    );
-}
-
-
-
 
 ResultsPage.propTypes = {
     cyclesById: PropTypes.object,
@@ -246,11 +119,10 @@ ResultsPage.propTypes = {
     dispatch: PropTypes.func
 };
 
-const mapStateToProps = (state, ownProps) => {
+const mapStateToProps = state => {
     const { cyclesById, testsByRunId } = state.cycles;
 
     let fetchCycleResults = Object.keys(cyclesById);
-
 
     return {
         cyclesById,
