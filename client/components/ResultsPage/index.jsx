@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import PropTypes, { object } from 'prop-types';
+import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
 import { connect } from 'react-redux';
 import Datasort from 'react-data-sort';
@@ -193,13 +193,12 @@ function HeadToggle({ children, active, onClick }) {
 
 function TableBody({ data }) {
     return <tbody>
-    {data.map(({ test_cycle_id, at_name, browser_name, apg_example_name, run_status }) => <tr key={test_cycle_id}>
-            <td>{test_cycle_id}</td>
-            <td>{at_name}</td>
-            <td>{browser_name}</td>
-            <td>{apg_example_name}</td>
-            <td>{run_status}</td>
-        </tr>)}
+            <td>{data.cycle.name}</td>
+            <td>{data.cycle.at_name}</td>
+            <td>{data.cycle.browser_name}</td>
+            <td>{data.cycle.apg_example_name}</td>
+            <td>{data.cycle.run_status}</td>
+        )}
     </tbody>;
 }
 
