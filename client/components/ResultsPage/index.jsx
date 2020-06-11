@@ -76,32 +76,23 @@ class ResultsPage extends Component {
             return <div>Loading</div>;
         }
 
-        // eslint-disable-next-line no-console
-        console.log('cyclesById', cyclesById);
-        // eslint-disable-next-line no-console
-        console.log('testsByRunId', testsByRunId);
-
+        const runs = [];
 
         for (let cycle of Object.values(cyclesById)) {
-            // eslint-disable-next-line no-console
-            console.log('Cycle: ', cycle.name);
-
             for (let run of Object.values(cycle.runsById)) {
-                // The run object has:
-                //    run.run_status   -- set to "null" (which is inprogress) or "draft" or "final"
-                //    run.at_name      -- the name of the at
-                //    run.browser_name -- the name of the browser
-                //    etc
-                // eslint-disable-next-line no-console
-                console.log('Run data: ', run);
-
-                // The tests are a list of tests, with meta data about the test and:
-                //     test.results     -- an object of test results keyed by user_id of the tester who produced the results
-                // eslint-disable-next-line no-console
-                console.log('Test results data: ', testsByRunId[run.id]);
+                runs.push({
+                    cycle: cycle.name,
+                    at: run.at_name,
+                    browser: run.browser_name,
+                    plan: run.apg_example_name,
+                    status: run.status
+                });
             }
         }
-        let data = Object.values(cyclesById);
+
+        console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        console.log(runs.length);
+
 
         return (
             <Fragment>
@@ -112,34 +103,21 @@ class ResultsPage extends Component {
             </Fragment>
         ),
             <Datasort
-                data={data}
+                data={runs}
                 sortBy={sortBy}
                 direction={direction}
-                activePage={activePage}
-                paginate
                 render={({ data, pages }) => {
                     return (
                         <div style={{ minWidth: 500 }}>
                             <table border={1} cellPadding={2} style={{ width: "100%" }}>
                                 <TableHead
                                     setSortBy={this.setSortBy}
-                                    sortBy={sortBy}
+                                    sortBy={this.state.sortBy}
                                     direction={direction}
                                     toggleDirection={this.toggleDirection}
                                 />
-                                <TableBody data={data}/>
+                              <TableBody data={data}/>
                             </table>
-                            <Flex style={{ justifyContent: "space-between" }}>
-                                <GoToPage goToPage={this.goToPage} pages={pages}/>
-                                <PageIndicator pages={pages} activePage={activePage}/>
-                                <Navigation
-                                    activePage={activePage}
-                                    goToPage={this.goToPage}
-                                    nextPage={this.nextPage}
-                                    prevPage={this.prevPage}
-                                    pages={pages}
-                                />
-                            </Flex>
                         </div>
                     );
                 }}
@@ -169,7 +147,7 @@ function TableHead({ setSortBy, sortBy, direction, toggleDirection }) {
                     setSortBy(key);
                 }}
             >
-                {title} {active ? direction === "asc" ? "▲" : "▼" : null}
+                <span>{title} {active ? direction === "asc" ? "▲" : "▼" : null}</span>
             </HeadToggle>
         );
     });
@@ -182,24 +160,30 @@ function TableHead({ setSortBy, sortBy, direction, toggleDirection }) {
 
 function HeadToggle({ children, active, onClick }) {
     return (
-        <td
+        <th
+            tabIndex={-1}
             onClick={onClick}
             style={{ fontWeight: active ? "bold" : "normal", cursor: "pointer" }}
         >
             {children}
-        </td>
+        </th>
     );
 }
 
 function TableBody({ data }) {
     return <tbody>
-            <td>{data.cycle.name}</td>
-            <td>{data.cycle.at_name}</td>
-            <td>{data.cycle.browser_name}</td>
-            <td>{data.cycle.apg_example_name}</td>
-            <td>{data.cycle.run_status}</td>
-        )}
-    </tbody>;
+             {data.map(d => {
+                   return (
+                       <tr>
+                         <td>{d.cycle}</td>
+                         <td>{d.at}</td>
+                         <td>{d.browser}</td>
+                         <td>{d.plan}</td>
+                         <td>{d.status}</td>
+                       </tr>
+                   );
+               })}
+           </tbody>;
 }
 
 function Flex({ children, style }) {
