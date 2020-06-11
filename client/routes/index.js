@@ -8,6 +8,7 @@ import Home from '@components/Home';
 import InitiateCycle from '@components/InitiateCycle';
 import ManageCycles from '@components/ManageCycles';
 import NotFound from '@components/NotFound';
+import RunResultsPage from '@components/RunResultsPage';
 import SignupInstructions from '@components/SignupInstructions';
 import TesterHome from '@components/TesterHome';
 import TestQueue from '@components/TestQueue';
@@ -74,6 +75,10 @@ export default [
                         </ConfirmAuth>
                     );
                 }
+            },
+            {
+                path: '/results/cycles/:cycleId(\\d+)/run/:runId(\\d+)',
+                component: RunResultsPage
             },
             {
                 path: '/cycles/:cycleId(\\d+)/run/:runId(\\d+)',
