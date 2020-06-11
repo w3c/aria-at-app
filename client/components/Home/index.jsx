@@ -12,17 +12,17 @@ class Home extends Component {
                     <section className="about">
                         <h1>About this project</h1>
                         <p>
-                            ARIA AT aims to improve interoperability between
-                            different Assistive Technologies (ATs) in how they
-                            render ARIA patterns. This is achieved through
-                            running manual tests and presenting test results to
-                            AT vendors. The tests are based
-                            {' on examples from '}
+                            This project aims to improve how well assistive
+                            technologies render web experiences. It defines and
+                            runs manual tests of assistive technologies to
+                            measure their support of accessibility semantics
+                            using the example web components in
+                            {' the '}
                             <a href="https://w3c.github.io/aria-practices/">
                                 WAI-ARIA Authoring Practices
                             </a>
                             {
-                                ', and are vetted with stakeholders following the '
+                                ". The tests and test results are vetted with assistive technology vendors and other stakeholders following the project's "
                             }
                             <a href="https://github.com/w3c/aria-at/wiki/Working-Mode">
                                 Working Mode
@@ -69,11 +69,11 @@ class Home extends Component {
                             <div className="description">
                                 <h2>Test Management</h2>
                                 <p>
-                                    This app allows users to create Test Cycles
-                                    which assign ARIA AT tests at a specific
-                                    version to testers who will run the tests
-                                    with different AT and browser combinations
-                                    and record the results.
+                                    This app allows project administrators to
+                                    create Test Cycles for managing execution of
+                                    tests of a collection of ARIA patterns with
+                                    a specified set of assistive technology and
+                                    browser combinations.
                                 </p>
                             </div>
                             <div className="screenshot">
@@ -87,9 +87,10 @@ class Home extends Component {
                             <div className="description right">
                                 <h2>Test Queue</h2>
                                 <p>
-                                    Users can view in-progress Test Cycles and
-                                    assign themselves to help test a particular
-                                    Test Plan for a given AT and browser combo.
+                                    Testers can view in-progress Test Cycles and
+                                    assign themselves to run a specific test
+                                    plan using a given assistive technology and
+                                    browser.
                                 </p>
                             </div>
                             <div className="screenshot">
@@ -123,7 +124,8 @@ class Home extends Component {
                                 <p>
                                     After multiple runs have been recorded for a
                                     particular Test Plan, users can view a
-                                    summary of results and publish them to the
+                                    summary of results, and project
+                                    administrators can publish them to the
                                     public Reports page.
                                 </p>
                             </div>
