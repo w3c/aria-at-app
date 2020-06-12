@@ -89,12 +89,9 @@ class ResultsPage extends Component {
         }
 
         let tableId = nextId('table_name_');
-        return (
-            <Fragment>
-                <Helmet>
-                    <title>{`ARIA-AT Results`}</title>
-                </Helmet>
-                <h1 id={tableId}>Test Reports</h1>
+        let content;
+        if (rowsData.length) {
+            content = (
                 <Table aria-labelledby={tableId} striped bordered hover>
                     <thead>
                         <tr>
@@ -107,6 +104,18 @@ class ResultsPage extends Component {
                     </thead>
                     <tbody>{rowsData.map(row => this.renderRow(row))}</tbody>
                 </Table>
+            );
+        } else {
+            content = <p>There are no results in a draft or final state.</p>;
+        }
+
+        return (
+            <Fragment>
+                <Helmet>
+                    <title>{`ARIA-AT Results`}</title>
+                </Helmet>
+                <h1 id={tableId}>Test Reports</h1>
+                {content}
             </Fragment>
         );
     }
