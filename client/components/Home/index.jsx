@@ -53,9 +53,9 @@ class Home extends Component {
                                 </a>
                             </li>
                             <li>
-                                <a href="https://w3c.github.io/aria-at/results/">
+                                <Link to="/results">
                                     Review test results
-                                </a>
+                                </Link>
                             </li>
                             <li>
                                 <a href="https://github.com/w3c/aria-at/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22">
