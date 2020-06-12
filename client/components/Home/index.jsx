@@ -1,4 +1,5 @@
 import React, { Component, Fragment } from 'react';
+import { Link } from 'react-router-dom';
 import testManagementScreenshot from '../../assets/test-management.jpg';
 import testQueueScreenshot from '../../assets/test-queue.jpg';
 import testViewScreenshot from '../../assets/test-view.jpg';
@@ -53,9 +54,7 @@ class Home extends Component {
                                 </a>
                             </li>
                             <li>
-                                <Link to="/results">
-                                    Review test results
-                                </Link>
+                                <Link to="/results">Review test results</Link>
                             </li>
                             <li>
                                 <a href="https://github.com/w3c/aria-at/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22">
