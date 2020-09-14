@@ -20,7 +20,7 @@
     ```
     yarn dev
     ```
-Now you can navigate your browser to: http://0.0.0.0:3000/
+Now you can navigate your browser to: [http://localhost:3000/](http://localhost:3000/). You need to use localhost instead of `0.0.0.0` because the cookie needs to be treated as secure.
 
 ## Debugging
 
