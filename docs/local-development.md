@@ -32,7 +32,7 @@ to information about routes, middleware and the request responce cycle.
 Additionally it adds the the ability for you use chrome dev tools and a
 `debbuger` to step through code via node's build in
 [inspector](https://nodejs.org/en/docs/guides/debugging-getting-started/). Just
-navigate to (chrome://inspect/#devices)[chrome://inspect/#devices] and open the
+navigate to [chrome://inspect/#devices](chrome://inspect/#devices) and open the
 dedicated dev tools for node.
 
 ## Testing
