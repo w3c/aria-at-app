@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet';
 import testManagementScreenshot from '../../assets/test-management.jpg';
 import testQueueScreenshot from '../../assets/test-queue.jpg';
 import testViewScreenshot from '../../assets/test-view.jpg';
@@ -9,6 +10,9 @@ class Home extends Component {
     render() {
         return (
             <Fragment>
+                <Helmet>
+                    <title>ARIA-AT App</title>
+                </Helmet>
                 <main>
                     <section className="about">
                         <h1>About this project</h1>
