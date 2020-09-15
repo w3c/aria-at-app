@@ -15,7 +15,8 @@ class Home extends Component {
                 </Helmet>
                 <main>
                     <section className="about">
-                        <h1>About this project</h1>
+                        <h1>ARIA-AT Home</h1>
+                        <h2>About this project</h2>
                         <p>
                             This project aims to improve how well assistive
                             technologies render web experiences. It defines and
@@ -35,7 +36,7 @@ class Home extends Component {
                             {' process.'}
                         </p>
 
-                        <h2>Get involved</h2>
+                        <h3>Get involved</h3>
                         <ul>
                             <li>
                                 <a href="https://www.w3.org/community/aria-at/">
@@ -70,7 +71,7 @@ class Home extends Component {
                     <section className="app-screenshots">
                         <div className="container">
                             <div className="description">
-                                <h2>Test Management</h2>
+                                <h3>Test Management</h3>
                                 <p>
                                     This app allows project administrators to
                                     create Test Cycles for managing execution of
@@ -88,7 +89,7 @@ class Home extends Component {
                         </div>
                         <div className="container">
                             <div className="description right">
-                                <h2>Test Queue</h2>
+                                <h3>Test Queue</h3>
                                 <p>
                                     Testers can view in-progress Test Cycles and
                                     assign themselves to run a specific test
@@ -105,7 +106,7 @@ class Home extends Component {
                         </div>
                         <div className="container">
                             <div className="description">
-                                <h2>Running Tests</h2>
+                                <h3>Running Tests</h3>
                                 <p>
                                     When running a Test Plan, the app loads the
                                     ARIA AT tests and displays instructions for
@@ -123,7 +124,7 @@ class Home extends Component {
                         </div>
                         <div className="container">
                             <div className="description right">
-                                <h2>Test Review</h2>
+                                <h3>Test Review</h3>
                                 <p>
                                     After multiple runs have been recorded for a
                                     particular Test Plan, users can view a
