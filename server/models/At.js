@@ -27,6 +27,11 @@ module.exports = function(sequelize, DataTypes) {
                     model: 'test_version',
                     key: 'id'
                 }
+            },
+            active: {
+                type: DataTypes.BOOLEAN,
+                allowNull: false,
+                defaultValue: false
             }
         },
         {
