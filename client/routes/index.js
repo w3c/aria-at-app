@@ -33,7 +33,13 @@ export default [
             {
                 path: '/account/settings',
                 exact: true,
-                component: UserSettings
+                component: () => {
+                    return (
+                        <ConfirmAuth requiredPermission="tester">
+                            <Route component={UserSettings} />
+                        </ConfirmAuth>
+                    );
+                }
             },
             {
                 path: '/cycles',
@@ -48,12 +54,24 @@ export default [
             },
             {
                 path: '/test-queue/:cycleId(\\d+)',
-                component: TestQueue
+                component: () => {
+                    return (
+                        <ConfirmAuth requiredPermission="tester">
+                            <Route component={TestQueue} />
+                        </ConfirmAuth>
+                    );
+                }
             },
             {
                 path: '/test-queue',
                 exact: true,
-                component: TesterHome
+                component: () => {
+                    return (
+                        <ConfirmAuth requiredPermission="tester">
+                            <Route component={TesterHome} />
+                        </ConfirmAuth>
+                    );
+                }
             },
             {
                 path: '/results',
