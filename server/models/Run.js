@@ -48,6 +48,20 @@ module.exports = function(sequelize, DataTypes) {
                     key: 'id'
                 }
             },
+            test_version_id: {
+                type: DataTypes.INTEGER,
+                references: {
+                    model: 'test_version',
+                    key: 'id'
+                }
+            },
+            browser_version_to_at_and_at_versions_id: {
+                type: DataTypes.INTEGER,
+                references: {
+                    model: 'browser_version_to_at_and_at_version',
+                    key: 'id'
+                }
+            },
             run_status_id: {
                 type: DataTypes.INTEGER,
                 allowNull: true,
@@ -63,7 +77,6 @@ module.exports = function(sequelize, DataTypes) {
             }
         },
         {
-            timestamps: false,
             tableName: 'run'
         }
     );
