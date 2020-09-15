@@ -5,6 +5,7 @@ process.env = {
 };
 const moxios = require('moxios');
 const UsersService = require('../../services/UsersService');
+const RunService = require('../../services/RunService');
 const GithubService = require('../../services/GithubService');
 const ATService = require('../../services/ATService');
 const TestService = require('../../services/TestService');
@@ -15,6 +16,21 @@ const listOfATs = require('../mock-data/listOfATs.json');
 const users = require('../mock-data/users.json');
 
 jest.mock('../../models/index.js');
+
+describe('RunService', () => {
+    describe('RunService.configureRuns', () => {
+        it('should create all possible runs if no previous runs exist', async () => {
+			const data = { test_version_id: 1, apg_example_ids: 1, at_browser_pairs: []};
+            await expect(RunService.configureRuns(data)).resolves.toEqual({});
+        });
+    });
+
+    describe('RunService.getActionableRuns', () => {
+        it('should create all possible runs if no previous runs exist', async () => {
+            await expect(RunService.getActionableRuns()).resolves.toEqual({});
+        });
+    });
+});
 
 describe('UsersService', () => {
     describe('UsersService.getUser', () => {
