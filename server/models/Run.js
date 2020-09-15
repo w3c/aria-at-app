@@ -55,6 +55,11 @@ module.exports = function(sequelize, DataTypes) {
                     model: 'run_status',
                     key: 'id'
                 }
+            },
+            active: {
+                type: DataTypes.BOOLEAN,
+                allowNull: false,
+                defaultValue: false
             }
         },
         {
