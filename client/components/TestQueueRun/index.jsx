@@ -141,10 +141,11 @@ class TestQueueRow extends Component {
                     >
                         Assign Testers
                     </Dropdown.Toggle>
-                    <Dropdown.Menu>
+                    <Dropdown.Menu role="menu">
                         {canAssignTesters.map(t => {
                             return (
                                 <Dropdown.Item
+                                    role="menuitem"
                                     variant="secondary"
                                     as="button"
                                     key={nextId()}
@@ -166,10 +167,11 @@ class TestQueueRow extends Component {
                     >
                         Unassign Testers
                     </Dropdown.Toggle>
-                    <Dropdown.Menu>
+                    <Dropdown.Menu role="menu">
                         {canUnassignTesters.map(t => {
                             return (
                                 <Dropdown.Item
+                                    role="menuitem"
                                     as="button"
                                     key={nextId()}
                                     value={t.id}
@@ -242,10 +244,11 @@ class TestQueueRow extends Component {
                     >
                         Open run as...
                     </Dropdown.Toggle>
-                    <Dropdown.Menu>
+                    <Dropdown.Menu role="menu">
                         {testers.map(t => {
                             return (
                                 <Dropdown.Item
+                                    role="menuitem"
                                     href={`/cycles/${cycleId}/run/${runId}?user=${t}`}
                                     key={nextId()}
                                 >
@@ -264,10 +267,11 @@ class TestQueueRow extends Component {
                     >
                         Delete Results
                     </Dropdown.Toggle>
-                    <Dropdown.Menu>
+                    <Dropdown.Menu role="menu">
                         {testersWithResults.map(t => {
                             return (
                                 <Dropdown.Item
+                                    role="menuitem"
                                     as="button"
                                     key={nextId()}
                                     value={t.id}
