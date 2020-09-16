@@ -80,7 +80,34 @@ If running the tests on demand, in a hot-loaded way, run the following for each 
     ```
 
 
-### Accessibility tests
+### Accessibility testing
+
+#### Manual accessibilty testings
+
+There are some automatable accessibility checks, but the only real way to know whether a webpage is accessible is to access it with a screen reader.
+
+If you have a linux computer, you will have to download a Windows VM in order to test the application with NVDA or JAWS. Here are the basic instructions:
+* Download VirtualBox
+* Download a [Windows VM](https://developer.microsoft.com/en-us/windows/downloads/virtual-machines)
+* Import the downloaded VM with the default settings.
+* Start the virtual machine and download JAWS or NVDA.
+* Click the windows button and type "notepad" and click "Run Notepad as administrator"
+    * Click "File > Open" and open the file: `Windows\system32\drivers\etc\hosts`
+    * Add the following lines to the end of the file:
+    ```
+    10.0.2.2       localhost
+    10.0.2.2       127.0.0.1
+    ```
+* Click the windows button and type "command" and click "Run Command Prompt as administrator"
+    * Then write the following commands:
+    ```
+    netsh interface portproxy add v4tov4 listenaddress=127.0.0.1 listenport=3000 connectaddress=10.0.2.2 connectport=3000
+    netsh interface portproxy add v4tov4 listenaddress=127.0.0.1 listenport=5000 connectaddress=10.0.2.2 connectport=5000
+    ```
+* Now open your browser, and navigate to: `localhost:3000` and log in, and turn on the screen reader.
+
+
+#### Automated accessibility tests
 
 [Lighthouse CI](https://github.com/GoogleChrome/lighthouse-ci) is used for automated accessibility testing of the React application. It has also been integrated into the CI workflow To run the Lighthouse tests, run:
     ```
