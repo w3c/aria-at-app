@@ -34,8 +34,18 @@ module.exports = (sequelize, DataTypes) => {
         },
         {}
     );
-    BrowserVersionToAtAndAtVersion.associate = function() {
-        // associations can be defined here
+
+    BrowserVersionToAtAndAtVersion.associate = function(models) {
+        models.BrowserVersionToAtAndAtVersion.belongsTo(models.BrowserVersion, {
+            foreignKey: 'browser_version_id'
+        });
+        models.BrowserVersionToAtAndAtVersion.belongsTo(models.AtVersion, {
+            foreignKey: 'at_version_id'
+        });
+        models.BrowserVersionToAtAndAtVersion.belongsTo(models.At, {
+            foreignKey: 'at_id'
+        });
     };
+
     return BrowserVersionToAtAndAtVersion;
 };

@@ -1,5 +1,5 @@
 module.exports = function(sequelize, DataTypes) {
-    return sequelize.define(
+    const Run = sequelize.define(
         'Run',
         {
             id: {
@@ -80,4 +80,21 @@ module.exports = function(sequelize, DataTypes) {
             tableName: 'run'
         }
     );
+
+    Run.associate = function(models) {
+        models.Run.belongsTo(models.RunStatus, {
+            foreignKey: 'run_status_id',
+            targetKey: 'id'
+        });
+        models.Run.belongsTo(models.ApgExample, {
+            foreignKey: 'apg_example_id',
+            targetKey: 'id'
+        });
+        models.Run.belongsTo(models.BrowserVersionToAtAndAtVersion, {
+            foreignKey: 'browser_version_to_at_and_at_versions_id',
+            targetKey: 'id'
+        });
+    };
+
+    return Run;
 };
