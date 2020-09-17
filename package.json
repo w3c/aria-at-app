@@ -16,9 +16,11 @@
     "lint": "yarn workspaces run lint",
     "test": "set -e; yarn prettier; yarn lint; yarn jest; yarn workspace client lighthouse",
     "db-init:dev": "bash db/scripts/db_init.sh config/dev.env",
+    "db-init:test": "bash db/scripts/db_init.sh config/test.env",
     "db-import-tests:dev": "yarn workspace server db-import-tests:dev",
     "storybook": "yarn workspaces run storybook",
-    "sequelize": "dotenv -e config/dev.env npx sequelize-cli"
+    "sequelize": "dotenv -e config/dev.env npx sequelize-cli",
+    "sequelize:test": "dotenv -e config/test.env npx sequelize-cli"
   },
   "repository": {
     "type": "git",

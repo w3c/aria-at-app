@@ -3,27 +3,22 @@
 // https://github.com/sequelize/sequelize/issues/11408
 const db = require('../../models/index');
 
-
 function dbCleaner(fn) {
-	return new Promise((resolve, reject) => {
-		jest.unmock('../../models/index.js');
-		console.log('HELP', db);
-		console.log('HELP', db.sequelize);
-		db.sequelize.transaction(() => {
-			return fn().then(() => {
-				resolve();
-			}).catch(err => {
-				reject(err);
-			}).finally(() => {
-				throw "Rollback";
-			});
-		}).catch(err => {
-			if (err === "Rollback") return;
-			reject(err);
-		});
-	});
+    return new Promise((resolve, reject) => {
+        db.sequelize.query('BEGIN;').then(() => {
+            fn()
+                .then(() => {
+                    db.sequelize.query('ROLLBACK;').then(resolve);
+                })
+                .catch(err => {
+                    db.sequelize.query('ROLLBACK;').then(() => {
+                        reject(err);
+                    });
+                });
+        });
+    });
 }
 
 module.exports = {
-	dbCleaner
+    dbCleaner
 };

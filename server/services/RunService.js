@@ -58,7 +58,7 @@ async function configureRuns({
 /* eslint-disable no-unreachable */
 async function getActiveRuns() {
     try {
-        return {};
+        return db.Run.findAll();
     } catch (error) {
         console.error(`Error: ${error}`);
         throw error;

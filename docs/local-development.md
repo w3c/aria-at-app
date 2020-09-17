@@ -39,6 +39,13 @@ dedicated dev tools for node.
 
 ### Running all tests
 
+Setup the test database by running the following commands:
+    ```
+    yarn db-init:test
+    yarn sequelize:test db:migrate
+    yarn sequelize:test db:seed
+    ```
+
 The following command encompasses running the linter, formatter, Jest tests, and Lighthouse accessibility checks only once.
     ```
     yarn test
