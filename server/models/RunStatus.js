@@ -1,5 +1,5 @@
-module.exports = function(sequelize, DataTypes) {
-    return sequelize.define(
+const RunStatus = function(sequelize, DataTypes) {
+    const model = sequelize.define(
         'RunStatus',
         {
             id: {
@@ -18,4 +18,12 @@ module.exports = function(sequelize, DataTypes) {
             tableName: 'run_status'
         }
     );
+
+    model.RAW = 'raw';
+    model.DRAFT = 'draft';
+    model.FINAL = 'final';
+
+    return model;
 };
+
+module.exports = RunStatus;

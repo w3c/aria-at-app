@@ -1,3 +1,4 @@
+const db = require('../models/index');
 /**
  * @typedef AtBrowserPairing
  * @type {object}
@@ -9,8 +10,10 @@
  * @typedef Run
  * @type {object}
  * @property {number} id
+ * @property {string} browser_id
  * @property {string} browser_version
  * @property {string} browser_name
+ * @property {string} at_id
  * @property {string} at_key
  * @property {string} at_name
  * @property {string} at_version
@@ -58,7 +61,48 @@ async function configureRuns({
 /* eslint-disable no-unreachable */
 async function getActiveRuns() {
     try {
-        return {};
+        const activeRuns = await db.Run.findAll({
+            where: { active: true },
+            include: [
+                db.RunStatus,
+                db.ApgExample,
+                {
+                    model: db.BrowserVersionToAtAndAtVersion,
+                    include: [
+                        { model: db.At, include: [db.AtName] },
+                        db.AtVersion,
+                        { model: db.BrowserVersion, include: [db.Browser] }
+                    ]
+                }
+            ]
+        });
+        return activeRuns.reduce((acc, activeRun) => {
+            acc[activeRun.id] = {
+                id: activeRun.id,
+                browser_id:
+                    activeRun.BrowserVersionToAtAndAtVersion.BrowserVersion
+                        .browser_id,
+                browser_version:
+                    activeRun.BrowserVersionToAtAndAtVersion.BrowserVersion
+                        .version,
+                browser_name:
+                    activeRun.BrowserVersionToAtAndAtVersion.BrowserVersion
+                        .Browser.name,
+                at_id: activeRun.BrowserVersionToAtAndAtVersion.at_id,
+                at_key: activeRun.BrowserVersionToAtAndAtVersion.At.key,
+                at_name:
+                    activeRun.BrowserVersionToAtAndAtVersion.At.AtName.name,
+                at_version:
+                    activeRun.BrowserVersionToAtAndAtVersion.AtVersion.version,
+                apg_example_directory: activeRun.ApgExample.directory,
+                apg_example_name: activeRun.ApgExample.name,
+                apg_example_id: activeRun.apg_example_id,
+                run_status_id: activeRun.run_status_id,
+                run_status: activeRun.RunStatus.name,
+                test_version_id: activeRun.test_version_id
+            };
+            return acc;
+        }, {});
     } catch (error) {
         console.error(`Error: ${error}`);
         throw error;

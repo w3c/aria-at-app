@@ -1,5 +1,5 @@
 module.exports = function(sequelize, DataTypes) {
-    return sequelize.define(
+    const Browser = sequelize.define(
         'Browser',
         {
             id: {
@@ -19,4 +19,10 @@ module.exports = function(sequelize, DataTypes) {
             tableName: 'browser'
         }
     );
+
+    Browser.CHROME = 'Chrome';
+    Browser.FIREFOX = 'Firefox';
+    Browser.SAFARI = 'Safari';
+
+    return Browser;
 };
