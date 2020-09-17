@@ -34,7 +34,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         {}
     );
-    BrowserVersionToAtAndAtVersion.associate = function(models) {
+    BrowserVersionToAtAndAtVersion.associate = function() {
         // associations can be defined here
     };
     return BrowserVersionToAtAndAtVersion;

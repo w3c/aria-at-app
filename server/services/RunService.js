@@ -1,5 +1,3 @@
-const db = require('../models/index');
-
 /**
  * @typedef AtBrowserPairing
  * @type {object}
@@ -36,6 +34,8 @@ const db = require('../models/index');
  * @return {Object.<number, Run>} - the actionable runs @see {@link getActionableRuns}
  *
  */
+
+/* eslint-disable no-unused-vars */
 async function configureRuns({
     test_version_id,
     apg_example_ids,
@@ -54,6 +54,8 @@ async function configureRuns({
  *
  * @return {Object.<number, Run>} - A mapping from run_id to Run
  */
+
+/* eslint-disable no-unreachable */
 async function getActiveRuns() {
     try {
         return {};
@@ -68,6 +70,8 @@ async function getActiveRuns() {
  *
  * @return {Object.<number, Run>} - A mapping from run_id to Run
  */
+
+/* eslint-disable no-unreachable */
 async function getPublishedRuns() {
     try {
         return {};
