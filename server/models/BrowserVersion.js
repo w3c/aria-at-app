@@ -1,5 +1,5 @@
 module.exports = function(sequelize, DataTypes) {
-    return sequelize.define(
+    const BrowserVersion = sequelize.define(
         'BrowserVersion',
         {
             id: {
@@ -32,4 +32,12 @@ module.exports = function(sequelize, DataTypes) {
             tableName: 'browser_version'
         }
     );
+
+    BrowserVersion.associate = function(models) {
+        models.BrowserVersion.belongsTo(models.Browser, {
+            foreignKey: 'browser_id'
+        });
+    };
+
+    return BrowserVersion;
 };
