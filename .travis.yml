@@ -2,8 +2,16 @@ language: node_js
 node_js:
   - 10
 
+services:
+  - postgresql
+
 before_install:
   - npm install -g @lhci/cli@0.3.x
+
+before_script:
+  - yarn db-init:test
+  - yarn sequelize:test db:migrate
+  - yarn sequelize:test db:seed
 
 script:
   - yarn test
