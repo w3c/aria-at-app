@@ -11,8 +11,8 @@ const newUser = require('../mock-data/newUser.json');
 const newUserToRole = require('../mock-data/newUserToRole.json');
 const listOfATs = require('../mock-data/listOfATs.json');
 
-// mock the models to circumvent the actual database
-jest.mock('../../models/index.js');
+const { dbCleaner } = require('../util/db-cleaner');
+const db = require('../../models/index');
 
 // mocking the middleware used by the express app
 const { session } = require('../../middleware/session.js');
@@ -142,17 +142,40 @@ describe(authEndpoint, () => {
 
 describe(atEndpoint, () => {
     it(`GET ${atEndpoint}`, async () => {
-        const response = await request(listener).get(`${atEndpoint}`);
-        expect(response.statusCode).toBe(200);
-        expect(response.body).toEqual(listOfATs.atsDB);
+        await dbCleaner(async () => {
+            const testVersion = await db.TestVersion.create();
+            const atName = await db.AtName.create({name: "at"});
+            const atVersion = await db.AtVersion.create({
+                at_name_id: atName.id,
+                version: "1"
+            });
+
+            const at = await db.At.create({
+                at_name_id: atName.id,
+                test_version_id: testVersion.id,
+                key: "at"
+            });
+
+            const response = await request(listener).get(`${atEndpoint}`);
+            expect(response.statusCode).toBe(200);
+            expect(response.body).toEqual([{
+                id: atName.id,
+                name: 'at'
+            }]);
+        });
     });
 });
 
 describe(`${testEndpoint}/import`, () => {
     it(`POST ${testEndpoint}/import`, async () => {
-        const response = await request(listener)
-            .post(`${testEndpoint}/import`)
-            .send({ git_hash: 1234 });
-        expect(response.statusCode).toBe(200);
+        await dbCleaner(async () => {
+            let testVersionRow = await db.TestVersion.create({
+                git_hash: "1234"
+            });
+            const response = await request(listener)
+                  .post(`${testEndpoint}/import`)
+                  .send({ git_hash: "1234" });
+            expect(response.statusCode).toBe(200);
+        });
     });
 });
