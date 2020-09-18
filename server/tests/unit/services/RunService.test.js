@@ -4,13 +4,66 @@ const RunService = require('../../../services/RunService');
 
 describe('RunService', () => {
     describe('RunService.configureRuns', () => {
-        it('should create all possible runs if no previous runs exist', async () => {
-            const data = {
-                test_version_id: 1,
-                apg_example_ids: 1,
-                at_browser_pairs: []
-            };
-            await expect(RunService.configureRuns(data)).resolves.toEqual({});
+        it.skip('should create all possible runs if no previous runs exist', async () => {
+            await dbCleaner(async () => {
+                const testVersion = await db.TestVersion.create();
+                const apgExampleDirectory = 'checkbox';
+                const apgExampleName = 'Checkbox Example (Two State)';
+                const apgExample = await db.ApgExample.create({
+                    test_version_id: testVersion.id,
+                    directory: apgExampleDirectory,
+                    name: apgExampleName
+                });
+                const atNameString = 'NVDA';
+                const atName = await db.AtName.create({
+                    name: atNameString
+                });
+                const atKey = 'nvda';
+                const at = await db.At.create({
+                    at_name_id: atName.id,
+                    test_version_id: testVersion.id,
+                    key: atKey
+                });
+                const browser = await db.Browser.findOne({
+                    where: { name: db.Browser.CHROME }
+                });
+                const browserVersionNumber = '1.2.3';
+                const atVersionNumber = '3.2.1';
+                const data = {
+                    test_version_id: testVersion.id,
+                    apg_example_ids: apgExample.id,
+                    at_browser_pairs: [
+                        {
+                            at_id: at.id,
+                            at_version: atVersionNumber,
+                            browser_id: browser.id,
+                            browser_version: browserVersionNumber
+                        }
+                    ]
+                };
+
+                const activeRuns = await RunService.configureRuns(data);
+                const keys = Object.keys(activeRuns);
+                const runId = keys[0];
+                expect(keys.length).toEqual(1);
+                expect(activeRuns[runId]).toEqual({
+                    id: runId,
+                    browser_id: browser.id,
+                    browser_version: browserVersionNumber,
+                    browser_name: db.Browser.CHROME,
+                    at_id: at.id,
+                    at_key: atKey,
+                    at_name: atNameString,
+                    at_version: atVersionNumber,
+                    apg_example_directory: apgExampleDirectory,
+                    apg_example_name: apgExampleName,
+                    apg_example_id: apgExample.id,
+                    run_status_id: null,
+                    run_status: null,
+                    test_version_id: testVersion.id,
+                    testers: []
+                });
+            });
         });
     });
 
@@ -129,9 +182,18 @@ describe('RunService', () => {
                     apg_example_id: apgExample.id,
                     run_status_id: runStatus.id,
                     run_status: db.RunStatus.FINAL,
-                    test_version_id: testVersion.id
+                    test_version_id: testVersion.id,
+                    testers: []
                 });
             });
+        });
+    });
+
+    describe('RunService.getPublishedRuns', () => {
+        it.skip('should return an empty object if there are no published runs', async () => {
+        });
+
+        it.skip('should return the data from a published run', async () => {
         });
     });
 });
