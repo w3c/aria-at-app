@@ -9,12 +9,11 @@ const GithubService = require('../../services/GithubService');
 const ATService = require('../../services/ATService');
 const TestService = require('../../services/TestService');
 
-const newUser = require('../mock-data/newUser.json');
-const newUserToRole = require('../mock-data/newUserToRole.json');
-const listOfATs = require('../mock-data/listOfATs.json');
-const users = require('../mock-data/users.json');
+const { dbCleaner } = require('../util/db-cleaner');
+const db = require('../../models/index');
 
-jest.mock('../../models/index.js');
+const newUser = require('../mock-data/newUser.json');
+const users = require('../mock-data/users.json');
 
 describe('UsersService', () => {
     describe('UsersService.getUser', () => {
@@ -22,13 +21,24 @@ describe('UsersService', () => {
             expect(typeof UsersService.getUser).toBe('function');
         });
         it('should return a user', async () => {
-            await expect(UsersService.getUser({ ...newUser })).resolves.toEqual(
-                {
-                    id: 1,
-                    ...newUser,
-                    roles: ['admin', 'tester']
-                }
-            );
+            await dbCleaner(async () => {
+                let newUserRow = await db.Users.create(newUser);
+                let newUserToRoleRows = (await db.Role.findAll()).map(role => {
+                    return {
+                        user_id: newUserRow.dataValues.id,
+                        role_id: role.dataValues.id
+                    }
+                });
+                await db.UserToRole.bulkCreate(newUserToRoleRows);
+
+                await expect(UsersService.getUser({ ...newUser })).resolves.toEqual(
+                    {
+                        ...newUser,
+                        id: newUserRow.dataValues.id,
+                        roles: ['admin', 'tester']
+                    }
+                );
+            });
         });
     });
     describe('UsersService.addUser', () => {
@@ -36,19 +46,47 @@ describe('UsersService', () => {
             expect(typeof UsersService.addUser).toBe('function');
         });
         it('should return newUser', async () => {
-            await expect(UsersService.addUser(newUser)).resolves.toEqual(
-                newUser
-            );
+            await dbCleaner(async () => {
+                let returnedValue = await UsersService.addUser(newUser);
+
+                // TODO: maybe all Services should return simple objects
+                // instead of Sequalize objects.
+                await expect(returnedValue.dataValues).toEqual(
+                    {
+                        ...newUser,
+                        id: returnedValue.id
+                    }
+                );
+            });
         });
     });
+
     describe('UsersService.addUserToRole', () => {
         it('should have a addUserToRole function', () => {
             expect(typeof UsersService.addUserToRole).toBe('function');
         });
         it('should return userToRole', async () => {
-            await expect(
-                UsersService.addUserToRole(newUserToRole)
-            ).resolves.toEqual(newUserToRole);
+            await dbCleaner(async () => {
+                let newUserRow = await db.Users.create(newUser);
+                let role = await db.Role.findOne({
+                    attributes: ['id'],
+                    where: {
+                        name: "tester"
+                    }
+                });
+                let returnedValue = await UsersService.addUserToRole({
+                    user_id: newUserRow.dataValues.id,
+                    role_id: role.dataValues.id
+                });
+
+                // TODO: maybe all Services should return simple objects
+                // instead of Sequalize objects.
+                await expect(returnedValue.dataValues).toEqual({
+                    user_id: newUserRow.dataValues.id,
+                    role_id: role.dataValues.id,
+                    id: returnedValue.dataValues.id
+                });
+            });
         });
     });
     describe('UsersService.getAllTesters', () => {
@@ -56,10 +94,15 @@ describe('UsersService', () => {
             expect(typeof UsersService.getAllTesters).toBe('function');
         });
         it('return a list of users', async () => {
-            const testers = await UsersService.getAllTesters();
-            expect(testers[0]).toEqual({
-                ...users[0],
-                configured_ats: [{ at_name_id: 1 }]
+            await dbCleaner(async () => {
+                let addedUser = await UsersService.addUser(newUser);
+                let returnedValue = await UsersService.getAllTesters();
+
+                expect(returnedValue[0]).toEqual({
+                    ...newUser,
+                    id: addedUser.dataValues.id,
+                    configured_ats: []
+                });
             });
         });
     });
@@ -141,53 +184,65 @@ describe('GithubService', () => {
         });
 
         it('should save a user and role if the user is new', async () => {
-            moxios.wait(() => {
-                const request = moxios.requests.mostRecent();
-                request.respondWith({
-                    status: 200,
-                    response: {
-                        data: {
-                            organization: {
-                                teams: {
-                                    edges: [
-                                        {
-                                            node: {
-                                                name: 'Team 1'
+            await dbCleaner(async () => {
+                moxios.wait(() => {
+                    const request = moxios.requests.mostRecent();
+                    request.respondWith({
+                        status: 200,
+                        response: {
+                            data: {
+                                organization: {
+                                    teams: {
+                                        edges: [
+                                            {
+                                                node: {
+                                                    name: 'Team 1'
+                                                }
+                                            },
+                                            {
+                                                node: {
+                                                    name: 'Team 2'
+                                                }
                                             }
-                                        },
-                                        {
-                                            node: {
-                                                name: 'Team 2'
-                                            }
-                                        }
-                                    ]
+                                        ]
+                                    }
                                 }
                             }
                         }
-                    }
+                    });
                 });
-            });
-            const userSaved = await UsersService.signupUser({ user: newUser });
-            expect(userSaved).toEqual({
-                email: 'foo@bar.com',
-                fullname: 'Foo Bar',
-                id: 1,
-                roles: ['admin', 'tester'],
-                username: 'foobar'
+                const userSaved = await UsersService.signupUser(
+                    {
+                        user: { ...newUser, name: newUser.fullname }
+                    }
+                );
+
+                expect(userSaved).toEqual({
+                    email: 'foo@bar.com',
+                    fullname: 'Foo Bar',
+                    id: userSaved.id,
+                    username: 'foobar'
+                });
             });
         });
     });
 });
 
-jest.mock('../../models/index.js');
 describe('ATService', () => {
     describe('ATService.getATs', () => {
         it('should have a getATs function', () => {
             expect(typeof ATService.getATs).toBe('function');
         });
         it('should return a list of AT names', async () => {
-            const expected = listOfATs.atsDB;
-            await expect(ATService.getATs()).resolves.toEqual(expected);
+            await dbCleaner(async () => {
+                const expected = [
+                    { name: "assitiveTech1" },
+                    { name: "assitiveTech2" }
+                ];
+                const atName = await db.AtName.bulkCreate(expected);
+                returnedAts = (await ATService.getATs()).map(at => ({name: at.dataValues.name}));
+                expect(returnedAts).toEqual(expected);
+            });
         });
     });
 });
@@ -197,9 +252,16 @@ describe('TestService', () => {
         it('should have an importTests function', () => {
             expect(typeof TestService.importTests).toBe('function');
         });
-        it('should return a boolean when complete', async () => {
-            // this sha value is mocked
-            await expect(TestService.importTests(1234)).resolves.toEqual(true);
+        it('should return true when has exists', async () => {
+            await dbCleaner(async () => {
+                const testVersionHash = "1234abcd";
+                await db.TestVersion.create({
+                    git_hash: testVersionHash
+
+                });
+                await expect(await TestService.importTests(testVersionHash)).toEqual(true);
+            });
+
         });
     });
 });
