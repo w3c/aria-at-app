@@ -14,6 +14,12 @@ const db = require('../../models/index');
 
 const newUser = require('../mock-data/newUser.json');
 
+afterAll(async done => {
+    // Closing the DB connection allows Jest to exit successfully.
+    await db.sequelize.close();
+    done();
+});
+
 describe('UsersService', () => {
     describe('UsersService.getUser', () => {
         it('should have a getUser function', () => {

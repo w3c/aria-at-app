@@ -13,6 +13,12 @@ const newUserToRole = require('../mock-data/newUserToRole.json');
 const { dbCleaner } = require('../util/db-cleaner');
 const db = require('../../models/index');
 
+afterAll(async done => {
+    // Closing the DB connection allows Jest to exit successfully.
+    await db.sequelize.close();
+    done();
+});
+
 // mocking the middleware used by the express app
 const { session } = require('../../middleware/session.js');
 jest.mock('../../middleware/session.js', () => ({
