@@ -43,7 +43,7 @@ Setup the test database by running the following commands:
     ```
     yarn db-init:test
     yarn sequelize:test db:migrate
-    yarn sequelize:test db:seed
+    yarn sequelize:test db:seed:all
     ```
 
 The following command encompasses running the linter, formatter, Jest tests, and Lighthouse accessibility checks only once.
