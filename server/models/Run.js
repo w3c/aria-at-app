@@ -94,6 +94,16 @@ module.exports = function(sequelize, DataTypes) {
             foreignKey: 'browser_version_to_at_and_at_versions_id',
             targetKey: 'id'
         });
+        models.Run.belongsToMany(models.Users, {
+            through: 'tester_to_run',
+            timestamps: false,
+            foreignKey: {
+                name: 'run_id'
+            },
+            otherKey: {
+                name: 'user_id'
+            }
+        });
     };
 
     return Run;
