@@ -13,7 +13,6 @@ const { dbCleaner } = require('../util/db-cleaner');
 const db = require('../../models/index');
 
 const newUser = require('../mock-data/newUser.json');
-const users = require('../mock-data/users.json');
 
 describe('UsersService', () => {
     describe('UsersService.getUser', () => {
@@ -27,17 +26,17 @@ describe('UsersService', () => {
                     return {
                         user_id: newUserRow.dataValues.id,
                         role_id: role.dataValues.id
-                    }
+                    };
                 });
                 await db.UserToRole.bulkCreate(newUserToRoleRows);
 
-                await expect(UsersService.getUser({ ...newUser })).resolves.toEqual(
-                    {
-                        ...newUser,
-                        id: newUserRow.dataValues.id,
-                        roles: ['admin', 'tester']
-                    }
-                );
+                await expect(
+                    UsersService.getUser({ ...newUser })
+                ).resolves.toEqual({
+                    ...newUser,
+                    id: newUserRow.dataValues.id,
+                    roles: ['admin', 'tester']
+                });
             });
         });
     });
@@ -51,12 +50,10 @@ describe('UsersService', () => {
 
                 // TODO: maybe all Services should return simple objects
                 // instead of Sequalize objects.
-                await expect(returnedValue.dataValues).toEqual(
-                    {
-                        ...newUser,
-                        id: returnedValue.id
-                    }
-                );
+                await expect(returnedValue.dataValues).toEqual({
+                    ...newUser,
+                    id: returnedValue.id
+                });
             });
         });
     });
@@ -71,7 +68,7 @@ describe('UsersService', () => {
                 let role = await db.Role.findOne({
                     attributes: ['id'],
                     where: {
-                        name: "tester"
+                        name: 'tester'
                     }
                 });
                 let returnedValue = await UsersService.addUserToRole({
@@ -211,11 +208,9 @@ describe('GithubService', () => {
                         }
                     });
                 });
-                const userSaved = await UsersService.signupUser(
-                    {
-                        user: { ...newUser, name: newUser.fullname }
-                    }
-                );
+                const userSaved = await UsersService.signupUser({
+                    user: { ...newUser, name: newUser.fullname }
+                });
 
                 expect(userSaved).toEqual({
                     email: 'foo@bar.com',
@@ -236,11 +231,13 @@ describe('ATService', () => {
         it('should return a list of AT names', async () => {
             await dbCleaner(async () => {
                 const expected = [
-                    { name: "assitiveTech1" },
-                    { name: "assitiveTech2" }
+                    { name: 'assitiveTech1' },
+                    { name: 'assitiveTech2' }
                 ];
-                const atName = await db.AtName.bulkCreate(expected);
-                returnedAts = (await ATService.getATs()).map(at => ({name: at.dataValues.name}));
+                await db.AtName.bulkCreate(expected);
+                const returnedAts = (await ATService.getATs()).map(at => ({
+                    name: at.dataValues.name
+                }));
                 expect(returnedAts).toEqual(expected);
             });
         });
@@ -254,14 +251,14 @@ describe('TestService', () => {
         });
         it('should return true when has exists', async () => {
             await dbCleaner(async () => {
-                const testVersionHash = "1234abcd";
+                const testVersionHash = '1234abcd';
                 await db.TestVersion.create({
                     git_hash: testVersionHash
-
                 });
-                await expect(await TestService.importTests(testVersionHash)).toEqual(true);
+                await expect(
+                    await TestService.importTests(testVersionHash)
+                ).toEqual(true);
             });
-
         });
     });
 });

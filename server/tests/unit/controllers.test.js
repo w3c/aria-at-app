@@ -164,7 +164,7 @@ describe('ATController', () => {
 jest.mock('../../services/TestService');
 describe('TestController', () => {
     beforeEach(() => {
-        req.body = { git_hash: "1234" };
+        req.body = { git_hash: '1234' };
     });
     it('should have an importTests function', () => {
         expect(typeof TestController.importTests).toBe('function');

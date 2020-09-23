@@ -9,7 +9,6 @@ const atEndpoint = `${endpointUrl}/at`;
 const testEndpoint = `${endpointUrl}/test`;
 const newUser = require('../mock-data/newUser.json');
 const newUserToRole = require('../mock-data/newUserToRole.json');
-const listOfATs = require('../mock-data/listOfATs.json');
 
 const { dbCleaner } = require('../util/db-cleaner');
 const db = require('../../models/index');
@@ -144,24 +143,26 @@ describe(atEndpoint, () => {
     it(`GET ${atEndpoint}`, async () => {
         await dbCleaner(async () => {
             const testVersion = await db.TestVersion.create();
-            const atName = await db.AtName.create({name: "at"});
-            const atVersion = await db.AtVersion.create({
+            const atName = await db.AtName.create({ name: 'at' });
+            await db.AtVersion.create({
                 at_name_id: atName.id,
-                version: "1"
+                version: '1'
             });
 
-            const at = await db.At.create({
+            await db.At.create({
                 at_name_id: atName.id,
                 test_version_id: testVersion.id,
-                key: "at"
+                key: 'at'
             });
 
             const response = await request(listener).get(`${atEndpoint}`);
             expect(response.statusCode).toBe(200);
-            expect(response.body).toEqual([{
-                id: atName.id,
-                name: 'at'
-            }]);
+            expect(response.body).toEqual([
+                {
+                    id: atName.id,
+                    name: 'at'
+                }
+            ]);
         });
     });
 });
@@ -169,12 +170,12 @@ describe(atEndpoint, () => {
 describe(`${testEndpoint}/import`, () => {
     it(`POST ${testEndpoint}/import`, async () => {
         await dbCleaner(async () => {
-            let testVersionRow = await db.TestVersion.create({
-                git_hash: "1234"
+            await db.TestVersion.create({
+                git_hash: '1234'
             });
             const response = await request(listener)
-                  .post(`${testEndpoint}/import`)
-                  .send({ git_hash: "1234" });
+                .post(`${testEndpoint}/import`)
+                .send({ git_hash: '1234' });
             expect(response.statusCode).toBe(200);
         });
     });
