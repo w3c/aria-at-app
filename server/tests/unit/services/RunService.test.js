@@ -196,10 +196,8 @@ describe('RunService', () => {
     });
 
     describe('RunService.getPublishedRuns', () => {
-        it.skip('should return an empty object if there are no published runs', async () => {
-        });
+        it.skip('should return an empty object if there are no published runs', async () => {});
 
-        it.skip('should return the data from a published run', async () => {
-        });
+        it.skip('should return the data from a published run', async () => {});
     });
 });
