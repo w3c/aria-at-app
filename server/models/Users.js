@@ -41,6 +41,16 @@ module.exports = function(sequelize, DataTypes) {
                 name: 'role_id'
             }
         });
+        models.Users.belongsToMany(models.Run, {
+            through: 'tester_to_run',
+            timestamps: false,
+            foreignKey: {
+                name: 'user_id'
+            },
+            otherKey: {
+                name: 'run_id'
+            }
+        });
     };
     return Users;
 };

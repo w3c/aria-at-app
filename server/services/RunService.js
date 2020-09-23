@@ -73,7 +73,8 @@ async function getActiveRuns() {
                         db.AtVersion,
                         { model: db.BrowserVersion, include: [db.Browser] }
                     ]
-                }
+                },
+                db.Users
             ]
         });
         return activeRuns.reduce((acc, activeRun) => {
@@ -99,7 +100,8 @@ async function getActiveRuns() {
                 apg_example_id: activeRun.apg_example_id,
                 run_status_id: activeRun.run_status_id,
                 run_status: activeRun.RunStatus.name,
-                test_version_id: activeRun.test_version_id
+                test_version_id: activeRun.test_version_id,
+                testers: activeRun.Users.map(u => Users.id)
             };
             return acc;
         }, {});
