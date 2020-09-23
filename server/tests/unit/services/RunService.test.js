@@ -2,6 +2,12 @@ const { dbCleaner } = require('../../util/db-cleaner');
 const db = require('../../../models/index');
 const RunService = require('../../../services/RunService');
 
+afterAll(async done => {
+    // Closing the DB connection allows Jest to exit successfully.
+    await db.sequelize.close();
+    done();
+});
+
 describe('RunService', () => {
     describe('RunService.configureRuns', () => {
         it.skip('should create all possible runs if no previous runs exist', async () => {
