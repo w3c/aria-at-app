@@ -101,7 +101,7 @@ async function getActiveRuns() {
                 run_status_id: activeRun.run_status_id,
                 run_status: activeRun.RunStatus.name,
                 test_version_id: activeRun.test_version_id,
-                testers: activeRun.Users.map(u => Users.id)
+                testers: activeRun.Users.map(u => u.id)
             };
             return acc;
         }, {});
