@@ -19,7 +19,7 @@ before_script:
   - sudo -u postgres psql -c "CREATE ROLE ${PGUSER} WITH LOGIN PASSWORD '${PGPASSWORD}'"
   - sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE ${PGDATABASE} to ${PGUSER};"
   - yarn sequelize:test db:migrate
-  - yarn sequelize:test db:seed
+  - yarn sequelize:test db:seed:all
 
 script:
   - yarn test
