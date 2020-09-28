@@ -154,7 +154,7 @@ describe('RunService', () => {
                     {
                         browser_version_id: browserVersion.id, // eventually will remove columns
                         at_version_id: atVersion.id, // eventually will remove column
-                        at_id: at.id, // eventually will remove this column
+                        at_id: at.id, // eventually will remove this column maybe
                         test_cycle_id: testCycle.id, // eventually will remove column
                         browser_version_to_at_versions_id: tech.id,
                         apg_example_id: apgExample.id,
@@ -165,7 +165,7 @@ describe('RunService', () => {
                     {
                         browser_version_id: browserVersion.id, // eventually will remove columns
                         at_version_id: atVersion2.id, // eventually will remove column
-                        at_id: at2.id, // eventually will remove this column
+                        at_id: at2.id, // eventually will remove this column maybe
                         test_cycle_id: testCycle.id, // eventually will remove column
                         browser_version_to_at_versions_id: tech2.id,
                         apg_example_id: apgExample2.id,
@@ -178,7 +178,7 @@ describe('RunService', () => {
                 // No change in activeRuns
                 const data = {
                     test_version_id: testVersion.id,
-                    apg_example_ids: apgExample.id,
+                    apg_example_ids: [apgExample.id],
                     at_browser_pairs: [
                         {
                             at_name_id: at.at_name_id,
