@@ -9,7 +9,8 @@
     "jest": "dotenv -e ../config/test.env -- jest",
     "prettier": "prettier --write \"**/*.{js,jsx,css}\"",
     "lint": "eslint --ext js,jsx .",
-    "db-import-tests:dev": "DOTENV_CONFIG_PATH=../config/dev.env node -r dotenv/config ./scripts/import-tests/index.js"
+    "db-import-tests:dev": "DOTENV_CONFIG_PATH=../config/dev.env node -r dotenv/config ./scripts/import-tests/index.js",
+    "db-import-tests:test": "DOTENV_CONFIG_PATH=../config/test.env node -r dotenv/config ./scripts/import-tests/index.js"
   },
   "repository": {
     "type": "git",
