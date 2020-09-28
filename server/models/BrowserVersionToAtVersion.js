@@ -1,12 +1,12 @@
 module.exports = (sequelize, DataTypes) => {
-    const BrowserVersionToAtAndAtVersion = sequelize.define(
-        'BrowserVersionToAtAndAtVersion',
+    const BrowserVersionToAtVersion = sequelize.define(
+        'BrowserVersionToAtVersion',
         {
             browser_version_id: {
                 type: DataTypes.INTEGER,
                 allowNull: false,
                 references: {
-                    model: 'broswer_version',
+                    model: 'browser_version',
                     key: 'id'
                 }
             },
@@ -18,34 +18,25 @@ module.exports = (sequelize, DataTypes) => {
                     key: 'id'
                 }
             },
-            at_id: {
-                type: DataTypes.INTEGER,
-                allowNull: false,
-                references: {
-                    model: 'at',
-                    key: 'id'
-                }
-            },
             active: {
                 type: DataTypes.BOOLEAN,
                 allowNull: false,
                 defaultValue: false
             }
         },
-        {}
+        {
+            tableName: 'browser_version_to_at_version'
+        }
     );
 
-    BrowserVersionToAtAndAtVersion.associate = function(models) {
-        models.BrowserVersionToAtAndAtVersion.belongsTo(models.BrowserVersion, {
+    BrowserVersionToAtVersion.associate = function(models) {
+        models.BrowserVersionToAtVersion.belongsTo(models.BrowserVersion, {
             foreignKey: 'browser_version_id'
         });
-        models.BrowserVersionToAtAndAtVersion.belongsTo(models.AtVersion, {
+        models.BrowserVersionToAtVersion.belongsTo(models.AtVersion, {
             foreignKey: 'at_version_id'
-        });
-        models.BrowserVersionToAtAndAtVersion.belongsTo(models.At, {
-            foreignKey: 'at_id'
         });
     };
 
-    return BrowserVersionToAtAndAtVersion;
+    return BrowserVersionToAtVersion;
 };

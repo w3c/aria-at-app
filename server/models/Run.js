@@ -55,10 +55,10 @@ module.exports = function(sequelize, DataTypes) {
                     key: 'id'
                 }
             },
-            browser_version_to_at_and_at_versions_id: {
+            browser_version_to_at_versions_id: {
                 type: DataTypes.INTEGER,
                 references: {
-                    model: 'browser_version_to_at_and_at_version',
+                    model: 'browser_version_to_at_version',
                     key: 'id'
                 }
             },
@@ -90,8 +90,8 @@ module.exports = function(sequelize, DataTypes) {
             foreignKey: 'apg_example_id',
             targetKey: 'id'
         });
-        models.Run.belongsTo(models.BrowserVersionToAtAndAtVersion, {
-            foreignKey: 'browser_version_to_at_and_at_versions_id',
+        models.Run.belongsTo(models.BrowserVersionToAtVersion, {
+            foreignKey: 'browser_version_to_at_versions_id',
             targetKey: 'id'
         });
         models.Run.belongsToMany(models.Users, {
