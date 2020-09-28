@@ -55,7 +55,7 @@ async function configureRuns({
 
         // Activate/deactive APGExample rows
 
-        const apgExamples = db.ApgExample.findAll({
+        const apgExamples = await db.ApgExample.findAll({
             where: {
                 test_version_id
             }
@@ -81,6 +81,10 @@ async function configureRuns({
         // Add at or browser versions to database if new versions are found
 
         for (let techPair of at_browser_pairs) {
+            console.log({
+                browser_id: techPair.browser_id,
+                version: techPair.browser_version
+            });
             const browserVersionRow = await db.BrowserVersion.findOrCreate({
                 where: {
                     browser_id: techPair.browser_id,
@@ -89,7 +93,10 @@ async function configureRuns({
             });
             techPair.browser_version_id = browserVersionRow[0].id;
 
-
+            console.log({
+                version: techPair.at_version,
+                at_name_id: techPair.at_name_id
+            });
             const atVersionRow = await db.AtVersion.findOrCreate({
                 where: {
                     version: techPair.at_version,
@@ -101,7 +108,7 @@ async function configureRuns({
 
         // Add/Activate/Deactivate BrowserVersionToAtVersion rows
 
-        const techPairs = db.BrowserVersionToAtVersion.findAll({
+        const techPairs = await db.BrowserVersionToAtVersion.findAll({
             include: [
                 { model: db.AtVersion, include: [db.AtNAme] },
                 { model: db.BrowserVersion, include: [db.Browser] }
@@ -136,6 +143,11 @@ async function configureRuns({
                 updateInactiveTechPairs.push(techPair);
             }
         }
+
+        console.log("updateActiveTechPairs", updateActiveTechPairs);
+        console.log("updateInactiveTechPairs", updateInactiveTechPairs);
+        console.log("addTechPairs", addTechPairs);
+
 
         let allActiveTechPairs = []; // techPairs ids in order to create the runs.
         if (updateActiveTechPairs.length) {
