@@ -73,8 +73,8 @@ describe('RunService', () => {
     //     });
     // });
 
-    describe('VAL TEST RunService.configureRuns', () => {
-        it('runs exist, no change', async () => {
+    describe('RunService.configureRuns', () => {
+        it('Activate deactived run', async () => {
             await dbCleaner(async () => {
                 const browserVersionNumber = '1.2.3';
                 const atVersionNumber = '3.2.1';
@@ -93,9 +93,8 @@ describe('RunService', () => {
                 });
                 let atVersion = await db.AtVersion.create({
                     at_name_id: at.AtName.id,
-                    version: at.VersionNumber
+                    version: atVersionNumber
                 })
-
 
                 // Get information to add run under different test version
 
@@ -109,12 +108,6 @@ describe('RunService', () => {
                     where: { test_version_id: testVersion2.id },
                     include: [ db.AtName ]
                 });
-                let atVersion2 = await db.AtVersion.create({
-                    at_name_id: at2.AtName.id,
-                    version: at.VersionNumber
-                })
-
-
 
                 // ADD RUNS FOR TESTING
 
@@ -128,16 +121,14 @@ describe('RunService', () => {
                     where: { name: 'raw' }
                 });
 
-                console.log(runStatus.dataValues);
-
                 let tech = await db.BrowserVersionToAtVersion.create({
-                    at_version_id: atVersion2.id,
+                    at_version_id: atVersion.id,
                     browser_version_id: browserVersion.id,
                     active: false,
                     run_status_id: runStatus.id
                 });
                 let tech2 = await db.BrowserVersionToAtVersion.create({
-                    at_version_id: atVersion2.id,
+                    at_version_id: atVersion.id,
                     browser_version_id: browserVersion.id,
                     active: false,
                     run_status_id: runStatus.id
@@ -164,7 +155,7 @@ describe('RunService', () => {
                     },
                     {
                         browser_version_id: browserVersion.id, // eventually will remove columns
-                        at_version_id: atVersion2.id, // eventually will remove column
+                        at_version_id: atVersion.id, // eventually will remove column
                         at_id: at2.id, // eventually will remove this column maybe
                         test_cycle_id: testCycle.id, // eventually will remove column
                         browser_version_to_at_versions_id: tech2.id,
@@ -191,22 +182,22 @@ describe('RunService', () => {
 
                 const activeRuns = await RunService.configureRuns(data);
                 const keys = Object.keys(activeRuns);
-                const runId = keys[0];
+                const runId = parseInt(keys[0]);
                 expect(keys.length).toEqual(1);
                 expect(activeRuns[runId]).toEqual({
                     id: runId,
                     browser_id: browser.id,
                     browser_version: browserVersionNumber,
-                    browser_name: db.Browser.CHROME,
+                    browser_name: browser.name,
                     at_id: at.id,
-                    at_key: atKey,
+                    at_key: at.key,
                     at_name: at.AtName.name,
                     at_version: atVersionNumber,
-                    apg_example_directory: apgExampleDirectory,
-                    apg_example_name: apgExampleName,
+                    apg_example_directory: apgExample.directory,
+                    apg_example_name: apgExample.name,
                     apg_example_id: apgExample.id,
-                    run_status_id: null,
-                    run_status: null,
+                    run_status_id: runStatus.id,
+                    run_status: runStatus.name,
                     test_version_id: testVersion.id,
                     testers: []
                 });
