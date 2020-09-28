@@ -39,6 +39,7 @@ const { Op } = require("sequelize");
  *
  */
 
+
 /* eslint-disable no-unused-vars */
 async function configureRuns({
     test_version_id,
@@ -46,6 +47,7 @@ async function configureRuns({
     at_browser_pairs
 }) {
     try {
+        // TODO: add active to TestVersions model
         // TODO: Get the active test version. if the test version has changed:
         //         mark all the runs from the old test version as inactive
         //         mark all the old apg_examples as inactive
@@ -61,21 +63,20 @@ async function configureRuns({
 
         let updateActiveApgExample = [];
         let updateInactiveApgExample = [];
-        foreach (let agpExample of apgExamples) {
+        for (let apgExample of apgExamples) {
             if (
-                apg_example_id.includes(apgExample.id)
+                apg_example_ids.includes(apgExample.id)
                 && apgExample.active !== true
             ) {
-                updateActiveApgExample.push(apgExample.id)
+                updateActiveApgExample.push(apgExample.id);
             }
             else if (
-                !apg_example_id.includes(apgExample.id)
+                !apg_example_ids.includes(apgExample.id)
                 && apgExample.active === true
             ) {
-                updateInactiveApgExample.push(apgExample.id)
+                updateInactiveApgExample.push(apgExample.id);
             }
         }
-
 
         // Add at or browser versions to database if new versions are found
 
@@ -102,38 +103,81 @@ async function configureRuns({
 
         const techPairs = db.BrowserVersionToAtVersion.findAll({
             include: [
-                { model: db.AtVersion, include: [db.AtNAme] }
+                { model: db.AtVersion, include: [db.AtNAme] },
                 { model: db.BrowserVersion, include: [db.Browser] }
             ]
         });
 
-        let updateActiveTechPair = [];
-        let updateInactiveTechPair = [];
-        let addTechPair = [...at_browser_pairs]; // delete from this as you find in the database
-        foreach (let techPair of techPairs) {
+        let updateActiveTechPairs = [];
+        let updateInactiveTechPairs = [];
+        let addTechPairs = [...at_browser_pairs]; // delete from this as you find in the database
+        for (let techPair of techPairs) {
 
             // Find whether or the database techpairs match the
             // configuration
-            let matchIndex = addTechPair.findIndex(t => {
+            let matchIndex = addTechPairs.findIndex(t => {
                 return (
                     t.at_name_id === techPair.atVersion.AtName.id
                     && t.at_version_id === techPair.atVersion.id
                     && t.browser_id === techPair.BrowserVersion.Browser.id
                     && t.browser_version_id === techPair.BrowserVersion.id
-                )
+                );
             });
 
             // Remove the element because you don't need ot add just add/updare
             if (matchIndex) {
-                addTechPair.splice(matchIndex, 1);
+                addTechPairs.splice(matchIndex, 1);
 
                 if (!techPair.active) {
-                    updateActiveTechPair.push(techPair);
+                    updateActiveTechPairs.push(techPair);
                 }
             }
             else if (techPair.active) {
-                updateInactiveTechPair.push(techPair);
+                updateInactiveTechPairs.push(techPair);
             }
+        }
+
+        let allActiveTechPairs = []; // techPairs ids in order to create the runs.
+        if (updateActiveTechPairs.length) {
+            let ids = updateActiveTechPairs.map(t => t.id);
+            await db.BrowserVersionToAtVersion.update(
+                { active: true },
+                { where: { id: ids } }
+            );
+            allActiveTechPairs.push(updateActiveTechPairs.map(t => {
+                return {
+                    id: t.id,
+                    at_version_id: t.AtVersion.id,
+                    browser_version_id: t.BrowserVersion.id
+                };
+            }));
+        }
+
+        if (updateInactiveTechPairs.length) {
+            let ids = updateInactiveTechPairs.map(t => t.id);
+            await db.BrowserVersionToAtVersion.update(
+                { active: false },
+                { where: { id: ids } }
+            );
+        }
+
+        if (addTechPairs.length) {
+            let dbTechPairs = addTechPairs.map(t => {
+                return {
+                    browser_version_id: t.browser_version_id,
+                    at_version_id: t.at_version_id,
+                    active: true
+                };
+            });
+            let newRows = await db.BrowserVersionToAtVersion.bulkCreate(dbTechPairs);
+            allActiveTechPairs.push(newRows.map(t => {
+                return {
+                    id: t.id,
+                    at_version_id: t.at_version_id,
+                    browser_version_id: t.browser_version_id
+                };
+            }));
+
         }
 
         // Add/Activate/Deactivate runs
@@ -147,7 +191,7 @@ async function configureRuns({
                 {
                     model: db.BrowserVersionToAtVersion,
                     include: [
-                        { mode: db.AtVersion, include [db.AtName] }
+                        { model: db.AtVersion, include: [db.AtName] },
                         { model: db.BrowserVersion, include: [db.Browser] }
                     ]
                 },
@@ -156,34 +200,101 @@ async function configureRuns({
         });
         console.log("existingRuns:", existingRuns.map(e => e.dataValues));
 
-
-        // TODO: create this basted on all possible at/browser/apgexample pairs
+        // Creating all possible at/browser/apgexample trios to figure out which
+        // runs need to be added to teh database
         const addRuns = [];
+        for (let apg_example_id of apg_example_ids) {
+            for (let techPair of allActiveTechPairs) {
+                addRuns.append([
+                    apg_example_id,
+                    techPair.at_version_id,
+                    techPair.browser_version_id,
+                    techPair.id
+                ]);
+            }
+        }
+
         const updateActiveRuns = [];
         const updateInactiveRuns = [];
         for (let existingRun of existingRuns) {
             let matchIndex = addRuns.findIndex(r => {
                 return (
-                    r.apg_example_id: existingRun.ApgExample.id,
-                    r.browser_version_to_at_version: existingRun.BrowserVersionToAtVersion.id
-                )
+                    r.apg_example_id === existingRun.ApgExample.id
+                    && r.browser_version_to_at_version === existingRun.BrowserVersionToAtVersion.id
+                );
             });
 
             // Remove the element because you don't need ot add just add/update
             if (matchIndex) {
-                addRruns.splice(matchIndex, 1);
+                addRuns.splice(matchIndex, 1);
 
                 if (!existingRun.active) {
-                    updateActiveRuns.push(techPair);
+                    updateActiveRuns.push(existingRun);
                 }
             }
             else if (existingRun.active) {
-                updateInactiveRun.push(techPair);
+                updateInactiveRuns.push(existingRun);
             }
         }
 
-        // TODO:
-        // - [ ] add active to TestVersions model
+        if (updateActiveRuns.length) {
+            let ids = updateActiveRuns.map(t => t.id);
+            await db.Run.update(
+                { active: true },
+                { where: { id: ids } }
+            );
+        }
+
+        if (updateInactiveRuns.length) {
+            let ids = updateInactiveRuns.map(t => t.id);
+            await db.Run.update(
+                { active: false },
+                { where: { id: ids } }
+            );
+        }
+
+
+        let runStatus = await db.RunStatus.findOne({
+            where: { name: 'raw' }
+        });
+
+        // TODO, not sure if we should remove this
+        let ats = await db.At.findAll({
+            where: { test_version_id }
+        });
+        let atNameToAt = ats.reduce((acc, curr) => {
+            acc[curr.at_name_id] = curr.id;
+        }, {});
+
+        // TODO, remove this:
+        let user = await db.User.findOne();
+        if (!user) {
+            let user = await db.Users.create();
+        }
+        const testCycle = await db.TestCycle.findOrCreate({
+            where: {
+                test_version_id,
+                created_user_id: user.id
+            }
+        });
+
+        if (addRuns.length) {
+            let dbRuns = addRuns.map(r => {
+                let at_id = atNameToAt[r.at_name_id];
+                return {
+                    browser_version_id: r.browser_version_id, // eventually will remove column
+                    at_version_id: r.at_version_id,           // eventually will remove column
+                    test_cycle_id: testCycle.id,              // eventually will remove column
+                    at_id,                                    // maybe eventually will remove column
+                    browser_version_to_at_versions_id: r.browser_version_to_at_versions_id,
+                    apg_example_id: r.apg_example_id,
+                    test_version_id,
+                    active: true,
+                    run_status_id: runStatus.id
+                };
+            });
+            await db.Run.bulkCreate(dbRuns);
+        }
 
         return await this.getActiveRuns();
     } catch (error) {
@@ -209,7 +320,7 @@ async function getActiveRuns() {
                 {
                     model: db.BrowserVersionToAtVersion,
                     include: [
-                        { mode: db.AtVersion, include [db.AtName] }
+                        { mode: db.AtVersion, include: [db.AtName] },
                         { model: db.BrowserVersion, include: [db.Browser] }
                     ]
                 },
