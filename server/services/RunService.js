@@ -46,43 +46,12 @@ async function configureRuns({
     at_browser_pairs
 }) {
     try {
-        // CODE: Get the active test version. if the test version has changed:
+        // TODO: Get the active test version. if the test version has changed:
         //         mark all the runs from the old test version as inactive
         //         mark all the old apg_examples as inactive
-        //         mark all the at_browser_pairs as inactive
-
-        // TODO: There is probably a way to get this is a subquery in db.Run.findAll
-        let statusesNotFinal = await db.RunStatus.findAll({
-            attributes: ['id'],
-            where: {
-                [Op.not]: {
-                    name: 'final'
-                }
-            }
-        }).map(r => r.id);
 
 
-        // CODE: get all the runs with the new test_version_id
-        const existingRuns = await db.Run.findAll({
-            where: {
-                test_version_id,
-                run_status_id: statusesNotFinal
-            },
-            include: [
-                db.RunStatus,
-                db.ApgExample,
-                {
-                    model: db.BrowserVersionToAtAndAtVersion,
-                    include: [
-                        { model: db.At, include: [db.AtName] },
-                        db.AtVersion,
-                        { model: db.BrowserVersion, include: [db.Browser] }
-                    ]
-                },
-                db.Users
-            ]
-        });
-        console.log("existingRuns:", existingRuns.map(e => e.dataValues));
+        // Activate/deactive APGExample rows
 
         const apgExamples = db.ApgExample.findAll({
             where: {
@@ -107,26 +76,36 @@ async function configureRuns({
             }
         }
 
-        // TODO: there might be a way to combine the following two queries
-        const atIds = ab.At.findAll({
-            where: { test_version_id }
-        }).map(a => a.id);
-        const techPairs = db.BrowserVersionToAtAndAtVersion.findAll({
-            where: {
-                test_version_id,
-                at_id: atIds
-            },
+
+        // Add at or browser versions to database if new versions are found
+
+        for (let techPair of at_browser_pairs) {
+            const browserVersionRow = await db.BrowserVersion.findOrCreate({
+                where: {
+                    browser_id: techPair.browser_id,
+                    version: techPair.browser_version
+                }
+            });
+            techPair.browser_version_id = browserVersionRow[0].id;
+
+
+            const atVersionRow = await db.AtVersion.findOrCreate({
+                where: {
+                    version: techPair.at_version,
+                    at_name_id: techPair.at_name_id
+                }
+            });
+            techPair.at_version_id = atVersionRow[0].id;
+        }
+
+        // Add/Activate/Deactivate BrowserVersionToAtVersion rows
+
+        const techPairs = db.BrowserVersionToAtVersion.findAll({
             include: [
-                { model: db.At, include: [db.AtName] },
-                db.AtVersion,
+                { model: db.AtVersion, include: [db.AtNAme] }
                 { model: db.BrowserVersion, include: [db.Browser] }
             ]
         });
-
-        // TODO: is there all the appropriate entries in at_version?
-        // TODO: is there all the appropriate entries in browser_version?
-        //let atVersionsString = 
-
 
         let updateActiveTechPair = [];
         let updateInactiveTechPair = [];
@@ -137,10 +116,10 @@ async function configureRuns({
             // configuration
             let matchIndex = addTechPair.findIndex(t => {
                 return (
-                    t.at_id === techPair.at_id
-                    && t.at_version === techPair.atVersion.version
+                    t.at_name_id === techPair.atVersion.AtName.id
+                    && t.at_version_id === techPair.atVersion.id
                     && t.browser_id === techPair.BrowserVersion.Browser.id
-                    && t.browser_version === techPair.BrowserVersion.version
+                    && t.browser_version_id === techPair.BrowserVersion.id
                 )
             });
 
@@ -157,30 +136,53 @@ async function configureRuns({
             }
         }
 
-        // THEN go through all the runs and somehow mark as active or inactive
-        // and make new runs for new pairs??
+        // Add/Activate/Deactivate runs
+
+        const existingRuns = await db.Run.findAll({
+            where: {
+                test_version_id
+            },
+            include: [
+                db.ApgExample,
+                {
+                    model: db.BrowserVersionToAtVersion,
+                    include: [
+                        { mode: db.AtVersion, include [db.AtName] }
+                        { model: db.BrowserVersion, include: [db.Browser] }
+                    ]
+                },
+                db.Users
+            ]
+        });
+        console.log("existingRuns:", existingRuns.map(e => e.dataValues));
 
 
-        // ----------------------
-        // We need to go through all the apg examples
-        //   If apg examples removed
-        //     remove "active" from runs with apg example
-        //   If apg example added
-        //     add "active" to all runs with apg example
+        // TODO: create this basted on all possible at/browser/apgexample pairs
+        const addRuns = [];
+        const updateActiveRuns = [];
+        const updateInactiveRuns = [];
+        for (let existingRun of existingRuns) {
+            let matchIndex = addRuns.findIndex(r => {
+                return (
+                    r.apg_example_id: existingRun.ApgExample.id,
+                    r.browser_version_to_at_version: existingRun.BrowserVersionToAtVersion.id
+                )
+            });
 
-        // We need to go through all the at_browser_pairs
-        //   If at_browser_pair removed
-        //     remove "active" from runs with at_browser_pair
-        //   If at_browser_pair added
-        //      add "active" as long as it's not an of a deactived apg_example
+            // Remove the element because you don't need ot add just add/update
+            if (matchIndex) {
+                addRruns.splice(matchIndex, 1);
 
-
-        // ^ instead, go through each run and update it's active or invactive status based on above?
+                if (!existingRun.active) {
+                    updateActiveRuns.push(techPair);
+                }
+            }
+            else if (existingRun.active) {
+                updateInactiveRun.push(techPair);
+            }
+        }
 
         // TODO:
-        // - [X] double check this aligns with the notes
-        // - [X] put tests into the test db
-        // - [ ] implement this part
         // - [ ] add active to TestVersions model
 
         return await this.getActiveRuns();
@@ -205,10 +207,9 @@ async function getActiveRuns() {
                 db.RunStatus,
                 db.ApgExample,
                 {
-                    model: db.BrowserVersionToAtAndAtVersion,
+                    model: db.BrowserVersionToAtVersion,
                     include: [
-                        { model: db.At, include: [db.AtName] },
-                        db.AtVersion,
+                        { mode: db.AtVersion, include [db.AtName] }
                         { model: db.BrowserVersion, include: [db.Browser] }
                     ]
                 },
@@ -219,20 +220,19 @@ async function getActiveRuns() {
             acc[activeRun.id] = {
                 id: activeRun.id,
                 browser_id:
-                    activeRun.BrowserVersionToAtAndAtVersion.BrowserVersion
+                    activeRun.BrowserVersionToAtVersion.BrowserVersion
                         .browser_id,
                 browser_version:
-                    activeRun.BrowserVersionToAtAndAtVersion.BrowserVersion
+                    activeRun.BrowserVersionToAtVersion.BrowserVersion
                         .version,
                 browser_name:
-                    activeRun.BrowserVersionToAtAndAtVersion.BrowserVersion
+                    activeRun.BrowserVersionToAtVersion.BrowserVersion
                         .Browser.name,
-                at_id: activeRun.BrowserVersionToAtAndAtVersion.at_id,
-                at_key: activeRun.BrowserVersionToAtAndAtVersion.At.key,
+                // TODO: We might have to add AT Name back another way?
                 at_name:
-                    activeRun.BrowserVersionToAtAndAtVersion.At.AtName.name,
+                    activeRun.BrowserVersionToAtVersion.AtVersion.AtName.name,
                 at_version:
-                    activeRun.BrowserVersionToAtAndAtVersion.AtVersion.version,
+                    activeRun.BrowserVersionToAtVersion.AtVersion.version,
                 apg_example_directory: activeRun.ApgExample.directory,
                 apg_example_name: activeRun.ApgExample.name,
                 apg_example_id: activeRun.apg_example_id,

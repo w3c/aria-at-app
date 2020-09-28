@@ -130,15 +130,13 @@ describe('RunService', () => {
 
                 console.log(runStatus.dataValues);
 
-                let tech = await db.BrowserVersionToAtAndAtVersion.create({
-                    at_id: at2.id,
+                let tech = await db.BrowserVersionToAtVersion.create({
                     at_version_id: atVersion2.id,
                     browser_version_id: browserVersion.id,
                     active: false,
                     run_status_id: runStatus.id
                 });
-                let tech2 = await db.BrowserVersionToAtAndAtVersion.create({
-                    at_id: at2.id,
+                let tech2 = await db.BrowserVersionToAtVersion.create({
                     at_version_id: atVersion2.id,
                     browser_version_id: browserVersion.id,
                     active: false,
@@ -158,7 +156,7 @@ describe('RunService', () => {
                         at_version_id: atVersion.id, // eventually will remove column
                         at_id: at.id, // eventually will remove this column
                         test_cycle_id: testCycle.id, // eventually will remove column
-                        browser_version_to_at_and_at_versions_id: tech.id,
+                        browser_version_to_at_versions_id: tech.id,
                         apg_example_id: apgExample.id,
                         test_version_id: testVersion.id,
                         active: false,
@@ -169,7 +167,7 @@ describe('RunService', () => {
                         at_version_id: atVersion2.id, // eventually will remove column
                         at_id: at2.id, // eventually will remove this column
                         test_cycle_id: testCycle.id, // eventually will remove column
-                        browser_version_to_at_and_at_versions_id: tech2.id,
+                        browser_version_to_at_versions_id: tech2.id,
                         apg_example_id: apgExample2.id,
                         test_version_id: testVersion2.id,
                         active: false,
@@ -183,7 +181,7 @@ describe('RunService', () => {
                     apg_example_ids: apgExample.id,
                     at_browser_pairs: [
                         {
-                            at_id: at.id,
+                            at_name_id: at.at_name_id,
                             at_version: atVersionNumber,
                             browser_id: browser.id,
                             browser_version: browserVersionNumber
@@ -293,10 +291,9 @@ describe('RunService', () => {
     //                 browser_id: browser.id,
     //                 version: browserVersionNumber
     //             });
-    //             const browserVersionToAtAndAtVersion = await db.BrowserVersionToAtAndAtVersion.create(
+    //             const browserVersionToAtVersion = await db.BrowserVersionToAtVersion.create(
     //                 {
     //                     browser_version_id: browserVersion.id,
-    //                     at_id: at.id,
     //                     at_version_id: atVersion.id
     //                 }
     //             );
@@ -309,8 +306,8 @@ describe('RunService', () => {
     //                 at_version_id: atVersion.id,
     //                 at_id: at.id,
     //                 browser_version_id: browserVersion.id,
-    //                 browser_version_to_at_and_at_versions_id:
-    //                     browserVersionToAtAndAtVersion.id,
+    //                 browser_version_to_at_versions_id:
+    //                     browserVersionToAtVersion.id,
     //                 apg_example_id: apgExample.id,
     //                 run_status_id: runStatus.id,
     //                 test_version_id: testVersion.id
