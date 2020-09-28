@@ -45,6 +45,9 @@ async function configureRuns({
     apg_example_ids,
     at_browser_pairs
 }) {
+    // if (!t) {
+    //     t = await db.sequelize.transaction();
+    // }
     try {
         // TODO: add active to TestVersions model
         // TODO: Get the active test version. if the test version has changed:
@@ -57,7 +60,7 @@ async function configureRuns({
         const apgExamples = await db.ApgExample.findAll({
             where: {
                 test_version_id
-            }
+            },
         });
 
         let updateActiveApgExample = [];
@@ -80,7 +83,7 @@ async function configureRuns({
         // Add at or browser versions to database if new versions are found
 
         for (let techPair of at_browser_pairs) {
-            const browserVersionRow = await db.BrowserVersion.findOrCreate({
+            const browserVersionRow = await db.BrowserVersion.findCreateFind({
                 where: {
                     browser_id: techPair.browser_id,
                     version: techPair.browser_version
@@ -88,7 +91,7 @@ async function configureRuns({
             });
             techPair.browser_version_id = browserVersionRow[0].id;
 
-            const atVersionRow = await db.AtVersion.findOrCreate({
+            const atVersionRow = await db.AtVersion.findCreateFind({
                 where: {
                     version: techPair.at_version,
                     at_name_id: techPair.at_name_id
@@ -268,9 +271,9 @@ async function configureRuns({
         // TODO, remove this:
         let user = await db.Users.findOne();
         if (!user) {
-            let user = await db.Users.create();
+            let user = await db.Users.create({});
         }
-        const testCycle = await db.TestCycle.findOrCreate({
+        const testCycle = await db.TestCycle.findCreateFind({
             where: {
                 test_version_id,
                 created_user_id: user.id
