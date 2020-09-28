@@ -3,7 +3,6 @@ const { Op } = require("sequelize");
 /**
  * @typedef AtBrowserPairing
  * @type {object}
- * @property at_id
  * @property at_version
  * @property browser_id
  * @property browser_version
@@ -81,10 +80,6 @@ async function configureRuns({
         // Add at or browser versions to database if new versions are found
 
         for (let techPair of at_browser_pairs) {
-            console.log({
-                browser_id: techPair.browser_id,
-                version: techPair.browser_version
-            });
             const browserVersionRow = await db.BrowserVersion.findOrCreate({
                 where: {
                     browser_id: techPair.browser_id,
@@ -93,16 +88,13 @@ async function configureRuns({
             });
             techPair.browser_version_id = browserVersionRow[0].id;
 
-            console.log({
-                version: techPair.at_version,
-                at_name_id: techPair.at_name_id
-            });
             const atVersionRow = await db.AtVersion.findOrCreate({
                 where: {
                     version: techPair.at_version,
                     at_name_id: techPair.at_name_id
                 }
             });
+
             techPair.at_version_id = atVersionRow[0].id;
         }
 
@@ -110,7 +102,7 @@ async function configureRuns({
 
         const techPairs = await db.BrowserVersionToAtVersion.findAll({
             include: [
-                { model: db.AtVersion, include: [db.AtNAme] },
+                { model: db.AtVersion, include: [db.AtName] },
                 { model: db.BrowserVersion, include: [db.Browser] }
             ]
         });
@@ -124,8 +116,8 @@ async function configureRuns({
             // configuration
             let matchIndex = addTechPairs.findIndex(t => {
                 return (
-                    t.at_name_id === techPair.atVersion.AtName.id
-                    && t.at_version_id === techPair.atVersion.id
+                    t.at_name_id === techPair.AtVersion.AtName.id
+                    && t.at_version_id === techPair.AtVersion.id
                     && t.browser_id === techPair.BrowserVersion.Browser.id
                     && t.browser_version_id === techPair.BrowserVersion.id
                 );
@@ -143,11 +135,6 @@ async function configureRuns({
                 updateInactiveTechPairs.push(techPair);
             }
         }
-
-        console.log("updateActiveTechPairs", updateActiveTechPairs);
-        console.log("updateInactiveTechPairs", updateInactiveTechPairs);
-        console.log("addTechPairs", addTechPairs);
-
 
         let allActiveTechPairs = []; // techPairs ids in order to create the runs.
         if (updateActiveTechPairs.length) {
@@ -210,14 +197,13 @@ async function configureRuns({
                 db.Users
             ]
         });
-        console.log("existingRuns:", existingRuns.map(e => e.dataValues));
 
         // Creating all possible at/browser/apgexample trios to figure out which
         // runs need to be added to teh database
         const addRuns = [];
         for (let apg_example_id of apg_example_ids) {
             for (let techPair of allActiveTechPairs) {
-                addRuns.append([
+                addRuns.push([
                     apg_example_id,
                     techPair.at_version_id,
                     techPair.browser_version_id,
@@ -276,10 +262,11 @@ async function configureRuns({
         });
         let atNameToAt = ats.reduce((acc, curr) => {
             acc[curr.at_name_id] = curr.id;
+            return acc;
         }, {});
 
         // TODO, remove this:
-        let user = await db.User.findOne();
+        let user = await db.Users.findOne();
         if (!user) {
             let user = await db.Users.create();
         }
@@ -332,14 +319,28 @@ async function getActiveRuns() {
                 {
                     model: db.BrowserVersionToAtVersion,
                     include: [
-                        { mode: db.AtVersion, include: [db.AtName] },
+                        { model: db.AtVersion, include: [db.AtName] },
                         { model: db.BrowserVersion, include: [db.Browser] }
                     ]
                 },
                 db.Users
             ]
         });
+
+        const ats = await db.At.findAll({
+            where: {
+                test_version_id: activeRuns[0].test_version_id
+            }
+        });
+
+        let atNameIdToAt = ats.reduce((acc, at) => {
+            acc[at.at_name_id] = at;
+            return acc;
+        }, {});
+
         return activeRuns.reduce((acc, activeRun) => {
+            let atNameId = activeRun.BrowserVersionToAtVersion.AtVersion.AtName.id;
+
             acc[activeRun.id] = {
                 id: activeRun.id,
                 browser_id:
@@ -351,9 +352,9 @@ async function getActiveRuns() {
                 browser_name:
                     activeRun.BrowserVersionToAtVersion.BrowserVersion
                         .Browser.name,
-                // TODO: We might have to add AT Name back another way?
-                at_name:
-                    activeRun.BrowserVersionToAtVersion.AtVersion.AtName.name,
+                at_id: atNameIdToAt[atNameId].id,
+                at_key: atNameIdToAt[atNameId].key,
+                at_name: activeRun.BrowserVersionToAtVersion.AtVersion.AtName.name,
                 at_version:
                     activeRun.BrowserVersionToAtVersion.AtVersion.version,
                 apg_example_directory: activeRun.ApgExample.directory,
