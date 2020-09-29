@@ -29,41 +29,11 @@ describe('RunService', () => {
                     where: { test_version_id: testVersion.id },
                     include: [db.AtName]
                 });
-                let atVersion = await db.AtVersion.create({
-                    at_name_id: at.AtName.id,
-                    version: atVersionNumber
-                });
-
-                // Get information to add run under different test version
-
-                const testVersion2 = await db.TestVersion.findOne({
-                    where: {
-                        git_hash: process.env.IMPORT_ARIA_AT_TESTS_COMMIT_2
-                    }
-                });
-                const apgExample2 = await db.ApgExample.findOne({
-                    where: { test_version_id: testVersion2.id }
-                });
-                const at2 = await db.At.findOne({
-                    where: { test_version_id: testVersion2.id },
-                    include: [db.AtName]
-                });
 
                 const browser = await db.Browser.findOne();
-                let browserVersion = await db.BrowserVersion.create({
-                    browser_id: browser.id,
-                    version: browserVersionNumber
-                });
 
                 let runStatus = await db.RunStatus.findOne({
                     where: { name: 'raw' }
-                });
-
-                // We will need to remove this column!!
-                const user = await db.Users.create();
-                const testCycle = await db.TestCycle.create({
-                    test_version_id: testVersion.id,
-                    created_user_id: user.id
                 });
 
                 // Create

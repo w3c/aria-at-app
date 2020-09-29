@@ -277,7 +277,7 @@ async function configureRuns({
         // TODO, remove this:
         let user = await db.Users.findOne();
         if (!user) {
-            let user = await db.Users.create({});
+            user = await db.Users.create({});
         }
         const testCycles = await db.TestCycle.findCreateFind({
             where: {
