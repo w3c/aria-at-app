@@ -73,10 +73,9 @@ module.exports = {
                 'browser_version_to_at_versions_id',
                 { transaction: t }
             );
-            await queryInterface.dropTable(
-                'browser_version_to_at_version',
-                { transaction: t }
-            );
+            await queryInterface.dropTable('browser_version_to_at_version', {
+                transaction: t
+            });
             await queryInterface.createTable(
                 'BrowserVersionToAtAndAtVersions',
                 {

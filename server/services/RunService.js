@@ -1,5 +1,4 @@
 const db = require('../models/index');
-const { Op } = require("sequelize");
 /**
  * @typedef AtBrowserPairing
  * @type {object}
@@ -38,7 +37,6 @@ const { Op } = require("sequelize");
  *
  */
 
-
 /* eslint-disable no-unused-vars */
 async function configureRuns({
     test_version_id,
@@ -54,27 +52,25 @@ async function configureRuns({
         //         mark all the runs from the old test version as inactive
         //         mark all the old apg_examples as inactive
 
-
         // Activate/deactive APGExample rows
 
         const apgExamples = await db.ApgExample.findAll({
             where: {
                 test_version_id
-            },
+            }
         });
 
         let updateActiveApgExample = [];
         let updateInactiveApgExample = [];
         for (let apgExample of apgExamples) {
             if (
-                apg_example_ids.includes(apgExample.id)
-                && apgExample.active !== true
+                apg_example_ids.includes(apgExample.id) &&
+                apgExample.active !== true
             ) {
                 updateActiveApgExample.push(apgExample.id);
-            }
-            else if (
-                !apg_example_ids.includes(apgExample.id)
-                && apgExample.active === true
+            } else if (
+                !apg_example_ids.includes(apgExample.id) &&
+                apgExample.active === true
             ) {
                 updateInactiveApgExample.push(apgExample.id);
             }
@@ -114,15 +110,14 @@ async function configureRuns({
         let updateInactiveTechPairs = [];
         let addTechPairs = [...at_browser_pairs]; // delete from this as you find in the database
         for (let techPair of techPairs) {
-
             // Find whether or the database techpairs match the
             // configuration
             let matchIndex = addTechPairs.findIndex(t => {
                 return (
-                    t.at_name_id === techPair.AtVersion.AtName.id
-                    && t.at_version_id === techPair.AtVersion.id
-                    && t.browser_id === techPair.BrowserVersion.Browser.id
-                    && t.browser_version_id === techPair.BrowserVersion.id
+                    t.at_name_id === techPair.AtVersion.AtName.id &&
+                    t.at_version_id === techPair.AtVersion.id &&
+                    t.browser_id === techPair.BrowserVersion.Browser.id &&
+                    t.browser_version_id === techPair.BrowserVersion.id
                 );
             });
 
@@ -133,8 +128,7 @@ async function configureRuns({
                 if (!techPair.active) {
                     updateActiveTechPairs.push(techPair);
                 }
-            }
-            else if (techPair.active) {
+            } else if (techPair.active) {
                 updateInactiveTechPairs.push(techPair);
             }
         }
@@ -146,14 +140,16 @@ async function configureRuns({
                 { active: true },
                 { where: { id: ids } }
             );
-            allActiveTechPairs = allActiveTechPairs.concat(updateActiveTechPairs.map(t => {
-                return {
-                    id: t.id,
-                    at_version_id: t.AtVersion.id,
-                    browser_version_id: t.BrowserVersion.id,
-                    at_name_id: t.AtVersion.at_name_id
-                };
-            }));
+            allActiveTechPairs = allActiveTechPairs.concat(
+                updateActiveTechPairs.map(t => {
+                    return {
+                        id: t.id,
+                        at_version_id: t.AtVersion.id,
+                        browser_version_id: t.BrowserVersion.id,
+                        at_name_id: t.AtVersion.at_name_id
+                    };
+                })
+            );
         }
 
         if (updateInactiveTechPairs.length) {
@@ -184,16 +180,19 @@ async function configureRuns({
                 return acc;
             }, {});
 
-            let newRows = await db.BrowserVersionToAtVersion.bulkCreate(dbTechPairs);
-            allActiveTechPairs = allActiveTechPairs.concat(newRows.map(t => {
-                return {
-                    id: t.id,
-                    at_version_id: t.at_version_id,
-                    browser_version_id: t.browser_version_id,
-                    at_name_id: atVersionToAtName[t.at_version_id]
-                };
-            }));
-
+            let newRows = await db.BrowserVersionToAtVersion.bulkCreate(
+                dbTechPairs
+            );
+            allActiveTechPairs = allActiveTechPairs.concat(
+                newRows.map(t => {
+                    return {
+                        id: t.id,
+                        at_version_id: t.at_version_id,
+                        browser_version_id: t.browser_version_id,
+                        at_name_id: atVersionToAtName[t.at_version_id]
+                    };
+                })
+            );
         }
 
         // Add/Activate/Deactivate runs
@@ -234,8 +233,9 @@ async function configureRuns({
         for (let existingRun of existingRuns) {
             let matchIndex = addRuns.findIndex(r => {
                 return (
-                    r.apg_example_id === existingRun.ApgExample.id
-                    && r.browser_version_to_at_version === existingRun.BrowserVersionToAtVersion.id
+                    r.apg_example_id === existingRun.ApgExample.id &&
+                    r.browser_version_to_at_version ===
+                        existingRun.BrowserVersionToAtVersion.id
                 );
             });
 
@@ -246,28 +246,20 @@ async function configureRuns({
                 if (!existingRun.active) {
                     updateActiveRuns.push(existingRun);
                 }
-            }
-            else if (existingRun.active) {
+            } else if (existingRun.active) {
                 updateInactiveRuns.push(existingRun);
             }
         }
 
         if (updateActiveRuns.length) {
             let ids = updateActiveRuns.map(t => t.id);
-            await db.Run.update(
-                { active: true },
-                { where: { id: ids } }
-            );
+            await db.Run.update({ active: true }, { where: { id: ids } });
         }
 
         if (updateInactiveRuns.length) {
             let ids = updateInactiveRuns.map(t => t.id);
-            await db.Run.update(
-                { active: false },
-                { where: { id: ids } }
-            );
+            await db.Run.update({ active: false }, { where: { id: ids } });
         }
-
 
         let runStatus = await db.RunStatus.findOne({
             where: { name: 'raw' }
@@ -299,10 +291,11 @@ async function configureRuns({
                 let at_id = atNameToAt[r.at_name_id];
                 return {
                     browser_version_id: r.browser_version_id, // eventually will remove column
-                    at_version_id: r.at_version_id,           // eventually will remove column
-                    test_cycle_id: testCycles[0].id,              // eventually will remove column
-                    at_id,                                    // maybe eventually will remove column
-                    browser_version_to_at_versions_id: r.browser_version_to_at_version_id,
+                    at_version_id: r.at_version_id, // eventually will remove column
+                    test_cycle_id: testCycles[0].id, // eventually will remove column
+                    at_id, // maybe eventually will remove column
+                    browser_version_to_at_versions_id:
+                        r.browser_version_to_at_version_id,
                     apg_example_id: r.apg_example_id,
                     test_version_id,
                     active: true,
@@ -356,7 +349,8 @@ async function getActiveRuns() {
         }, {});
 
         return activeRuns.reduce((acc, activeRun) => {
-            let atNameId = activeRun.BrowserVersionToAtVersion.AtVersion.AtName.id;
+            let atNameId =
+                activeRun.BrowserVersionToAtVersion.AtVersion.AtName.id;
 
             acc[activeRun.id] = {
                 id: activeRun.id,
@@ -364,14 +358,14 @@ async function getActiveRuns() {
                     activeRun.BrowserVersionToAtVersion.BrowserVersion
                         .browser_id,
                 browser_version:
-                    activeRun.BrowserVersionToAtVersion.BrowserVersion
-                        .version,
+                    activeRun.BrowserVersionToAtVersion.BrowserVersion.version,
                 browser_name:
-                    activeRun.BrowserVersionToAtVersion.BrowserVersion
-                        .Browser.name,
+                    activeRun.BrowserVersionToAtVersion.BrowserVersion.Browser
+                        .name,
                 at_id: atNameIdToAt[atNameId].id,
                 at_key: atNameIdToAt[atNameId].key,
-                at_name: activeRun.BrowserVersionToAtVersion.AtVersion.AtName.name,
+                at_name:
+                    activeRun.BrowserVersionToAtVersion.AtVersion.AtName.name,
                 at_version:
                     activeRun.BrowserVersionToAtVersion.AtVersion.version,
                 apg_example_directory: activeRun.ApgExample.directory,
