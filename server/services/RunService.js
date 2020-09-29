@@ -83,22 +83,22 @@ async function configureRuns({
         // Add at or browser versions to database if new versions are found
 
         for (let techPair of at_browser_pairs) {
-            const browserVersionRow = await db.BrowserVersion.findCreateFind({
+            const browserVersionRows = await db.BrowserVersion.findCreateFind({
                 where: {
                     browser_id: techPair.browser_id,
                     version: techPair.browser_version
                 }
             });
-            techPair.browser_version_id = browserVersionRow[0].id;
+            techPair.browser_version_id = browserVersionRows[0].id;
 
-            const atVersionRow = await db.AtVersion.findCreateFind({
+            const atVersionRows = await db.AtVersion.findCreateFind({
                 where: {
                     version: techPair.at_version,
                     at_name_id: techPair.at_name_id
                 }
             });
 
-            techPair.at_version_id = atVersionRow[0].id;
+            techPair.at_version_id = atVersionRows[0].id;
         }
 
         // Add/Activate/Deactivate BrowserVersionToAtVersion rows
@@ -146,11 +146,12 @@ async function configureRuns({
                 { active: true },
                 { where: { id: ids } }
             );
-            allActiveTechPairs.push(updateActiveTechPairs.map(t => {
+            allActiveTechPairs = allActiveTechPairs.concat(updateActiveTechPairs.map(t => {
                 return {
                     id: t.id,
                     at_version_id: t.AtVersion.id,
-                    browser_version_id: t.BrowserVersion.id
+                    browser_version_id: t.BrowserVersion.id,
+                    at_name_id: t.AtVersion.at_name_id
                 };
             }));
         }
@@ -171,12 +172,25 @@ async function configureRuns({
                     active: true
                 };
             });
+
+            // WE CAN DELETE THIS LINE WHEN REMOVING "at_name_id" from "run" table
+            let atVersion = await db.AtVersion.findAll({
+                where: {
+                    id: dbTechPairs.map(t => t.at_version_id)
+                }
+            });
+            let atVersionToAtName = atVersion.reduce((acc, atv) => {
+                acc[atv.id] = atv.at_name_id;
+                return acc;
+            }, {});
+
             let newRows = await db.BrowserVersionToAtVersion.bulkCreate(dbTechPairs);
-            allActiveTechPairs.push(newRows.map(t => {
+            allActiveTechPairs = allActiveTechPairs.concat(newRows.map(t => {
                 return {
                     id: t.id,
                     at_version_id: t.at_version_id,
-                    browser_version_id: t.browser_version_id
+                    browser_version_id: t.browser_version_id,
+                    at_name_id: atVersionToAtName[t.at_version_id]
                 };
             }));
 
@@ -206,15 +220,15 @@ async function configureRuns({
         const addRuns = [];
         for (let apg_example_id of apg_example_ids) {
             for (let techPair of allActiveTechPairs) {
-                addRuns.push([
+                addRuns.push({
                     apg_example_id,
-                    techPair.at_version_id,
-                    techPair.browser_version_id,
-                    techPair.id
-                ]);
+                    at_version_id: techPair.at_version_id,
+                    browser_version_id: techPair.browser_version_id,
+                    browser_version_to_at_version_id: techPair.id,
+                    at_name_id: techPair.at_name_id
+                });
             }
         }
-
         const updateActiveRuns = [];
         const updateInactiveRuns = [];
         for (let existingRun of existingRuns) {
@@ -273,7 +287,7 @@ async function configureRuns({
         if (!user) {
             let user = await db.Users.create({});
         }
-        const testCycle = await db.TestCycle.findCreateFind({
+        const testCycles = await db.TestCycle.findCreateFind({
             where: {
                 test_version_id,
                 created_user_id: user.id
@@ -286,15 +300,16 @@ async function configureRuns({
                 return {
                     browser_version_id: r.browser_version_id, // eventually will remove column
                     at_version_id: r.at_version_id,           // eventually will remove column
-                    test_cycle_id: testCycle.id,              // eventually will remove column
+                    test_cycle_id: testCycles[0].id,              // eventually will remove column
                     at_id,                                    // maybe eventually will remove column
-                    browser_version_to_at_versions_id: r.browser_version_to_at_versions_id,
+                    browser_version_to_at_versions_id: r.browser_version_to_at_version_id,
                     apg_example_id: r.apg_example_id,
                     test_version_id,
                     active: true,
                     run_status_id: runStatus.id
                 };
             });
+
             await db.Run.bulkCreate(dbRuns);
         }
 
@@ -335,7 +350,6 @@ async function getActiveRuns() {
                 test_version_id: activeRuns[0].test_version_id
             }
         });
-
         let atNameIdToAt = ats.reduce((acc, at) => {
             acc[at.at_name_id] = at;
             return acc;
