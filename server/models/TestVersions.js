@@ -24,6 +24,11 @@ module.exports = function(sequelize, DataTypes) {
                 type: DataTypes.TEXT,
                 allowNull: true
             },
+            active: {
+                type: DataTypes.BOOLEAN,
+                allowNull: false,
+                defaultValue: false
+            },
             datetime: {
                 type: DataTypes.DATE,
                 allowNull: true
