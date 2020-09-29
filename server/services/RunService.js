@@ -43,11 +43,9 @@ async function configureRuns({
     apg_example_ids,
     at_browser_pairs
 }) {
-    // if (!t) {
-    //     t = await db.sequelize.transaction();
-    // }
     try {
         // TODO: add active to TestVersions model
+
         // TODO: Get the active test version. if the test version has changed:
         //         mark all the runs from the old test version as inactive
         //         mark all the old apg_examples as inactive
@@ -74,6 +72,22 @@ async function configureRuns({
             ) {
                 updateInactiveApgExample.push(apgExample.id);
             }
+        }
+
+        if (updateActiveApgExample.length) {
+            let ids = updateActiveApgExample.map(t => t.id);
+            await db.ApgExample.update(
+                { active: false },
+                { where: { id: ids } }
+            );
+        }
+
+        if (updateInactiveApgExample.length) {
+            let ids = updateInactiveApgExample.map(t => t.id);
+            await db.updateInactiveApgExample.update(
+                { active: false },
+                { where: { id: ids } }
+            );
         }
 
         // Add at or browser versions to database if new versions are found
