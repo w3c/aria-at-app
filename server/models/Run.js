@@ -74,10 +74,21 @@ module.exports = function(sequelize, DataTypes) {
                 type: DataTypes.BOOLEAN,
                 allowNull: false,
                 defaultValue: false
+            },
+            createdAt: {
+                type: DataTypes.DATE,
+                allowNull: false,
+                defaultValue: Number.NEGATIVE_INFINITY
+            },
+            updatedAt: {
+                type: DataTypes.DATE,
+                allowNull: false,
+                defaultValue: Number.NEGATIVE_INFINITY
             }
         },
         {
-            tableName: 'run'
+            tableName: 'run',
+            underscored: true
         }
     );
 
