@@ -352,19 +352,18 @@ async function getActiveRuns() {
             ]
         });
 
-        const ats = await db.At.findAll({
-            where: {
-                test_version_id: activeRuns[0].test_version_id
-            }
-        });
-        let atNameIdToAt = ats.reduce((acc, at) => {
-            acc[at.at_name_id] = at;
-            return acc;
-        }, {});
+        let ats = {};
+        if (activeRuns.length > 0) {
+            ats = await db.At.findAll({ where: {
+                    test_version_id: activeRuns[0].test_version_id
+                }
+            });
+        }
 
         return activeRuns.reduce((acc, activeRun) => {
             let atNameId =
                 activeRun.BrowserVersionToAtVersion.AtVersion.AtName.id;
+            let at = ats.find(at => at.at_name_id == atNameId);
 
             acc[activeRun.id] = {
                 id: activeRun.id,
@@ -376,8 +375,8 @@ async function getActiveRuns() {
                 browser_name:
                     activeRun.BrowserVersionToAtVersion.BrowserVersion.Browser
                         .name,
-                at_id: atNameIdToAt[atNameId].id,
-                at_key: atNameIdToAt[atNameId].key,
+                at_id: at.id,
+                at_key: at.key,
                 at_name:
                     activeRun.BrowserVersionToAtVersion.AtVersion.AtName.name,
                 at_version:
