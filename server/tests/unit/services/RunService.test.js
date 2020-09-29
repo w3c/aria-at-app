@@ -18,7 +18,7 @@ describe('RunService', () => {
                 // Get information to add run under one test version
 
                 const testVersion = await db.TestVersion.findOne({
-                    where: { git_hash: '413183a5f6909940f163a433931bd17ab6b48886' }
+                    where: { git_hash: process.env.IMPORT_ARIA_AT_TESTS_COMMIT_1 }
                 });
                 const apgExample = await db.ApgExample.findOne({
                     where: { test_version_id: testVersion.id }
@@ -35,7 +35,7 @@ describe('RunService', () => {
                 // Get information to add run under different test version
 
                 const testVersion2 = await db.TestVersion.findOne({
-                    where: { git_hash: '826d2c2a6a9c5b9c7045d6fa7e1b575ce4fb9762' }
+                    where: { git_hash: process.env.IMPORT_ARIA_AT_TESTS_COMMIT_2 }
                 });
                 const apgExample2 = await db.ApgExample.findOne({
                     where: { test_version_id: testVersion2.id }
@@ -107,7 +107,7 @@ describe('RunService', () => {
                 // Get information to add run under one test version
 
                 const testVersion = await db.TestVersion.findOne({
-                    where: { git_hash: '413183a5f6909940f163a433931bd17ab6b48886' }
+                    where: { git_hash: process.env.IMPORT_ARIA_AT_TESTS_COMMIT_1 }
                 });
                 const apgExample = await db.ApgExample.findOne({
                     where: { test_version_id: testVersion.id }
@@ -124,7 +124,7 @@ describe('RunService', () => {
                 // Get information to add run under different test version
 
                 const testVersion2 = await db.TestVersion.findOne({
-                    where: { git_hash: '826d2c2a6a9c5b9c7045d6fa7e1b575ce4fb9762' }
+                    where: { git_hash: process.env.IMPORT_ARIA_AT_TESTS_COMMIT_2 }
                 });
                 const apgExample2 = await db.ApgExample.findOne({
                     where: { test_version_id: testVersion2.id }

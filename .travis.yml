@@ -20,6 +20,8 @@ before_script:
   - sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE ${PGDATABASE} to ${PGUSER};"
   - yarn sequelize:test db:migrate
   - yarn sequelize:test db:seed:all
+  - yarn workspace server db-import-tests:test -c ${IMPORT_ARIA_AT_TESTS_COMMIT_1}
+  - yarn db-import-tests:test -c ${IMPORT_ARIA_AT_TESTS_COMMIT_2}
 
 script:
   - yarn test
