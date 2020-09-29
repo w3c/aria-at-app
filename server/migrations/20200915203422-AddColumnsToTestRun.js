@@ -26,19 +26,21 @@ module.exports = {
                 ),
                 queryInterface.addColumn(
                     'run',
-                    'createdAt',
+                    'created_at',
                     {
                         type: Sequelize.DATE,
-                        allowNull: false
+                        allowNull: false,
+                        defaultValue: Number.NEGATIVE_INFINITY
                     },
                     { transaction: t }
                 ),
                 queryInterface.addColumn(
                     'run',
-                    'updatedAt',
+                    'updated_at',
                     {
                         type: Sequelize.DATE,
-                        allowNull: false
+                        allowNull: false,
+                        defaultValue: Number.NEGATIVE_INFINITY
                     },
                     { transaction: t }
                 )
@@ -58,10 +60,10 @@ module.exports = {
                 queryInterface.removeColumn('run', 'test_version_id', {
                     transaction: t
                 }),
-                queryInterface.removeColumn('run', 'createdAt', {
+                queryInterface.removeColumn('run', 'created_at', {
                     transaction: t
                 }),
-                queryInterface.removeColumn('run', 'updatedAt', {
+                queryInterface.removeColumn('run', 'updated_at', {
                     transaction: t
                 })
             ]);
