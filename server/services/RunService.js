@@ -2,9 +2,10 @@ const db = require('../models/index');
 /**
  * @typedef AtBrowserPairing
  * @type {object}
- * @property at_version
- * @property browser_id
- * @property browser_version
+ * @property {number} at_name_id
+ * @property {string} at_version
+ * @property {number} browser_id
+ * @property {string} browser_version
  *
  * @typedef Run
  * @type {object}
@@ -23,6 +24,43 @@ const db = require('../models/index');
  * @property {string} run_status
  * @property {number} test_version_id
  * @property {Array.<number>} testers - user_id of assigned testers
+ *
+ * @typedef TestSuiteVersion
+ * @type {object}
+ * @property {number} id
+ * @property {string} git_repo
+ * @property {string} git_tag
+ * @property {string} git_hash
+ * @property {string} git_commit_msg
+ * @property {Object.Date} date
+ * @property {Array.<At>}          supported_ats
+ * @property {Array.<ApgExamples>} apg_examples
+ *
+ * @typedef At
+ * @type {object}
+ * @property {number} at_name_id
+ * @property {string} at_name
+ * @property {string} at_key
+ * @property {number} at_id
+ *
+ * @typedef Browser
+ * @type {object}
+ * @property {number} id
+ * @property {string} name
+ *
+ * @typedef ApgExample
+ * @type {object}
+ * @property {number} id
+ * @property {string} directory
+ * @property {string} name
+ *
+ * @typedef RunConfigration
+ * @type {object}
+ * @property {TestSuiteVersion}         active_test_version
+ * @property {Array.<AtBrowserPairing>} active_at_browser_pairs
+ * @property {Array.<number>}           active_apg_examples
+ * @property {Array.<Browser>}          browsers
+ *
  */
 
 /**
@@ -408,6 +446,41 @@ async function getPublishedRuns() {
         throw error;
     }
 }
+
+/**
+ * Gets the currently active test version, apg examples and browser version to AT version pairs
+ *
+ * @return {Object.<RunConfiguration>}
+ *
+ */
+
+/* eslint-disable no-unused-vars */
+async function getRunConfiguration() {
+    try {
+        return {};
+    } catch (error) {
+        console.error(`Error: ${error}`);
+        throw error;
+    }
+}
+
+/**
+ * Gets all more recent versions of the ARIA-AT test repository in order of there release.
+ *
+ * @return {Array.<TestSuiteVersion>}
+ *
+ */
+
+/* eslint-disable no-unused-vars */
+async function getNewTestVersions() {
+    try {
+        return [];
+    } catch (error) {
+        console.error(`Error: ${error}`);
+        throw error;
+    }
+}
+
 module.exports = {
     configureRuns,
     getActiveRuns,
