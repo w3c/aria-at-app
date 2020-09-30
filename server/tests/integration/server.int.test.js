@@ -165,6 +165,18 @@ describe(atEndpoint, () => {
             expect(response.statusCode).toBe(200);
             expect(response.body).toEqual([
                 {
+                    id: 1,
+                    name: "JAWS"
+                },
+                {
+                    id: 2,
+                    name: "NVDA",
+                },
+                {
+                    id: 3,
+                    name: "VoiceOver for macOS"
+                },
+                {   
                     id: atName.id,
                     name: 'at'
                 }
