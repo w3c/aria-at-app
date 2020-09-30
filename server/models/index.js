@@ -17,7 +17,7 @@ sequelize = new Sequelize(
             ssl: true,
             native: true
         },
-        logging: console.log
+        logging: console.log // eslint-disable-line
     }
 );
 
