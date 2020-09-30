@@ -44,51 +44,19 @@ async function configureRuns({
     at_browser_pairs
 }) {
     try {
-        // TODO: add active to TestVersions model
-
-        // TODO: Get the active test version. if the test version has changed:
-        //         mark all the runs from the old test version as inactive
-        //         mark all the old apg_examples as inactive
-
-        // Activate/deactive APGExample rows
-
-        const apgExamples = await db.ApgExample.findAll({
-            where: {
-                test_version_id
-            }
-        });
-
-        let updateActiveApgExample = [];
-        let updateInactiveApgExample = [];
-        for (let apgExample of apgExamples) {
-            if (
-                apg_example_ids.includes(apgExample.id) &&
-                apgExample.active !== true
-            ) {
-                updateActiveApgExample.push(apgExample.id);
-            } else if (
-                !apg_example_ids.includes(apgExample.id) &&
-                apgExample.active === true
-            ) {
-                updateInactiveApgExample.push(apgExample.id);
-            }
-        }
-
-        if (updateActiveApgExample.length) {
-            let ids = updateActiveApgExample.map(t => t.id);
-            await db.ApgExample.update(
-                { active: false },
-                { where: { id: ids } }
-            );
-        }
-
-        if (updateInactiveApgExample.length) {
-            let ids = updateInactiveApgExample.map(t => t.id);
-            await db.updateInactiveApgExample.update(
-                { active: false },
-                { where: { id: ids } }
-            );
-        }
+        // (De)activate TestVersion
+        await db.TestVersion.update({ active: false }, { where: {}});
+        await db.TestVersion.update({ active: true }, { where: { id: test_version_id }});
+        // (De)activate/deactive ApgExamples
+        await db.ApgExample.update({ active: false }, { where: {}});
+        await db.ApgExample.update(
+            { active: true },
+            {
+                where: {
+                    ...test_version_id,
+                    id: apg_example_ids
+                }
+            });
 
         // Add at or browser versions to database if new versions are found
 
@@ -112,7 +80,18 @@ async function configureRuns({
         }
 
         // Add/Activate/Deactivate BrowserVersionToAtVersion rows
+        //
+        // TODO MAYBE: Rebecca's Idea for how to rewrite this code to solve the
+        // bug
+        // Deactive all BrowserVersionToAtVersions
+        // Bulk find/create all matching pairs
+        //   insert into BrowserVersionToAtVersions with data from
+        //   at_browser_pairs and active=true, relying on the uniqueness constraint
+        // Bulk active those
+        //   UPDATE BrowserVersionToAtVersions active=true where hassame values
+        //   as at_browser_pairs
 
+        /// all the browser_version_To_At_version
         const techPairs = await db.BrowserVersionToAtVersion.findAll({
             include: [
                 { model: db.AtVersion, include: [db.AtName] },
@@ -126,6 +105,7 @@ async function configureRuns({
         for (let techPair of techPairs) {
             // Find whether or the database techpairs match the
             // configuration
+            /// where bowser_verseion_\to_at_version has the save values as at_browser_pairs
             let matchIndex = addTechPairs.findIndex(t => {
                 return (
                     t.at_name_id === techPair.AtVersion.AtName.id &&
@@ -227,6 +207,17 @@ async function configureRuns({
                 db.Users
             ]
         });
+
+        await db.Run.update(
+            { active: false },
+            {
+            where: {
+                test_version_id: {
+                    [db.Sequelize.Op.not]: test_version_id
+                }
+            }
+            }
+        );
 
         // Creating all possible at/browser/apgexample trios to figure out which
         // runs need to be added to teh database
