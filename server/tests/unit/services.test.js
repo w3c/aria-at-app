@@ -236,11 +236,18 @@ describe('ATService', () => {
         });
         it('should return a list of AT names', async () => {
             await dbCleaner(async () => {
-                const expected = [
+                let expected = [
                     { name: 'assitiveTech1' },
                     { name: 'assitiveTech2' }
                 ];
                 await db.AtName.bulkCreate(expected);
+                // Add the extra entries from the import script
+                expected = [
+                    { name: 'JAWS' },
+                    { name: 'NVDA' },
+                    { name: 'VoiceOver for macOS' },
+                    ...expected
+                ]
                 const returnedAts = (await ATService.getATs()).map(at => ({
                     name: at.dataValues.name
                 }));
