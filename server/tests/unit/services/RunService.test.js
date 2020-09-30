@@ -73,7 +73,9 @@ describe('RunService', () => {
                 expect(testVersion.active).toBe(true);
                 await apgExample.reload();
                 expect(apgExample.active).toBe(true);
-                const activeBrowserVersionToAtVersions = await db.BrowserVersionToAtVersion.findAll({ where: { active: true }});
+                const activeBrowserVersionToAtVersions = await db.BrowserVersionToAtVersion.findAll(
+                    { where: { active: true } }
+                );
                 expect(activeBrowserVersionToAtVersions.length).toBe(1);
                 // TODO: Check that the correct browser version and at version
                 // is active
@@ -83,26 +85,32 @@ describe('RunService', () => {
         it('should create all possible runs and deactive all old runs if only new runs are created', async () => {
             await dbCleaner(async () => {
                 // New test version with previously active test versions
-                   // Change the test_version but don't change the active tech
+                // Change the test_version but don't change the active tech
                 // (Should right another test were to you change the test)
 
-                   //
-                   // Should deactive old test version
-                   // Should deactive old apg_examples
-                   // Should deactive old runs
-                   // Should deactive old tech pairs
+                //
+                // Should deactive old test version
+                // Should deactive old apg_examples
+                // Should deactive old runs
+                // Should deactive old tech pairs
 
                 let testVersion = await db.TestVersion.findOne({
                     where: {
                         git_hash: process.env.IMPORT_ARIA_AT_TESTS_COMMIT_1
                     }
                 });
-                await db.TestVersion.update({ active: true }, { where: { id: testVersion.id }});
+                await db.TestVersion.update(
+                    { active: true },
+                    { where: { id: testVersion.id } }
+                );
 
                 let apgExample = await db.ApgExample.findOne({
                     where: { test_version_id: testVersion.id }
                 });
-                await db.ApgExample.update({ active: true }, { where: { id: apgExample.id }});
+                await db.ApgExample.update(
+                    { active: true },
+                    { where: { id: apgExample.id } }
+                );
 
                 const browserVersionNumber = '1.2.3';
                 const atVersionNumber = '3.2.1';
@@ -139,20 +147,17 @@ describe('RunService', () => {
                     created_user_id: user.id
                 });
 
-                await db.Run.create(
-                    {
-                        browser_version_id: browserVersion.id, // eventually will remove columns
-                        at_version_id: atVersion.id, // eventually will remove column
-                        at_id: at.id, // eventually will remove this column maybe
-                        test_cycle_id: testCycle.id, // eventually will remove column
-                        browser_version_to_at_versions_id: tech.id,
-                        apg_example_id: apgExample.id,
-                        test_version_id: testVersion.id,
-                        active: true,
-                        run_status_id: runStatus.id
-                    },
-
-                );
+                await db.Run.create({
+                    browser_version_id: browserVersion.id, // eventually will remove columns
+                    at_version_id: atVersion.id, // eventually will remove column
+                    at_id: at.id, // eventually will remove this column maybe
+                    test_cycle_id: testCycle.id, // eventually will remove column
+                    browser_version_to_at_versions_id: tech.id,
+                    apg_example_id: apgExample.id,
+                    test_version_id: testVersion.id,
+                    active: true,
+                    run_status_id: runStatus.id
+                });
 
                 // Get information to add run under different test version
 
@@ -166,9 +171,9 @@ describe('RunService', () => {
                 });
 
                 const at2 = await db.At.findOne({
-                        where: { test_version_id: testVersion2.id },
-                        include: [db.AtName]
-                    });
+                    where: { test_version_id: testVersion2.id },
+                    include: [db.AtName]
+                });
 
                 const data = {
                     test_version_id: testVersion2.id,
@@ -214,8 +219,9 @@ describe('RunService', () => {
                 await apgExample2.reload();
                 expect(apgExample2.active).toBe(true);
 
-
-                const activeBrowserVersionToAtVersions = await db.BrowserVersionToAtVersion.findAll({ where: { active: true }});
+                const activeBrowserVersionToAtVersions = await db.BrowserVersionToAtVersion.findAll(
+                    { where: { active: true } }
+                );
                 expect(activeBrowserVersionToAtVersions.length).toBe(1);
 
                 // This test should not change the active tech only the run
@@ -253,18 +259,22 @@ describe('RunService', () => {
                     created_user_id: user.id
                 });
                 const atNameString = 'NVDA';
-                const atName = await db.AtName.findOne({ where: {
-                    name: atNameString
-                }});
+                const atName = await db.AtName.findOne({
+                    where: {
+                        name: atNameString
+                    }
+                });
                 const atVersionNumber = '3.2.1';
                 const atVersion = await db.AtVersion.create({
                     at_name_id: atName.id,
                     version: atVersionNumber
                 });
-                const at = await db.At.findOne({where: {
-                    at_name_id: atName.id,
-                    test_version_id: testVersion.id
-                }});
+                const at = await db.At.findOne({
+                    where: {
+                        at_name_id: atName.id,
+                        test_version_id: testVersion.id
+                    }
+                });
                 const browser = await db.Browser.findOne({
                     where: { name: db.Browser.CHROME }
                 });
@@ -320,18 +330,22 @@ describe('RunService', () => {
                     created_user_id: user.id
                 });
                 const atNameString = 'NVDA';
-                const atName = await db.AtName.findOne({ where: {
-                    name: atNameString
-                }});
+                const atName = await db.AtName.findOne({
+                    where: {
+                        name: atNameString
+                    }
+                });
                 const atVersionNumber = '3.2.1';
                 const atVersion = await db.AtVersion.create({
                     at_name_id: atName.id,
                     version: atVersionNumber
                 });
-                const at = await db.At.findOne({where: {
-                    at_name_id: atName.id,
-                    test_version_id: testVersion.id
-                }});
+                const at = await db.At.findOne({
+                    where: {
+                        at_name_id: atName.id,
+                        test_version_id: testVersion.id
+                    }
+                });
                 const browser = await db.Browser.findOne({
                     where: { name: db.Browser.CHROME }
                 });
