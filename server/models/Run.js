@@ -77,13 +77,13 @@ module.exports = function(sequelize, DataTypes) {
             },
             createdAt: {
                 type: DataTypes.DATE,
-                allowNull: false,
-                defaultValue: Number.NEGATIVE_INFINITY
+                allowNull: true,
+                defaultValue: sequelize.NOW
             },
             updatedAt: {
                 type: DataTypes.DATE,
-                allowNull: false,
-                defaultValue: Number.NEGATIVE_INFINITY
+                allowNull: true,
+                defaultValue: sequelize.NOW
             }
         },
         {

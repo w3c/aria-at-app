@@ -29,8 +29,7 @@ module.exports = {
                     'created_at',
                     {
                         type: Sequelize.DATE,
-                        allowNull: false,
-                        defaultValue: Number.NEGATIVE_INFINITY
+                        defaultValue: Sequelize.NOW
                     },
                     { transaction: t }
                 ),
@@ -39,8 +38,7 @@ module.exports = {
                     'updated_at',
                     {
                         type: Sequelize.DATE,
-                        allowNull: false,
-                        defaultValue: Number.NEGATIVE_INFINITY
+                        defaultValue: Sequelize.NOW
                     },
                     { transaction: t }
                 )
