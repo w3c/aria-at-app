@@ -25,6 +25,12 @@ const db = require('../models/index');
  * @property {number} test_version_id
  * @property {Array.<number>} testers - user_id of assigned testers
  *
+ * @typedef ApgExample
+ * @type {object}
+ * @property {number} id
+ * @property {name} directory
+ * @property {string} directory
+ *
  * @typedef TestSuiteVersion
  * @type {object}
  * @property {number} id
@@ -34,7 +40,7 @@ const db = require('../models/index');
  * @property {string} git_commit_msg
  * @property {Object.Date} date
  * @property {Array.<At>}          supported_ats
- * @property {Array.<ApgExamples>} apg_examples
+ * @property {Array.<ApgExample>} apg_examples
  *
  * @typedef At
  * @type {object}
@@ -57,9 +63,14 @@ const db = require('../models/index');
  * @typedef RunConfigration
  * @type {object}
  * @property {TestSuiteVersion}         active_test_version
+ *                                      TestVersion where active: true
  * @property {Array.<AtBrowserPairing>} active_at_browser_pairs
+ *                                      browser_version_to_at_version where
+ *                                      active true
  * @property {Array.<number>}           active_apg_examples
+ *                                      ApgExample where: active true
  * @property {Array.<Browser>}          browsers
+ *                                      All Browsers;
  *
  */
 
@@ -453,11 +464,72 @@ async function getPublishedRuns() {
  * @return {Object.<RunConfiguration>}
  *
  */
-
-/* eslint-disable no-unused-vars */
-async function getRunConfiguration() {
+async function getActiveRunsConfiguration() {
     try {
-        return {};
+        const activeTestVersion = await db.TestVersion.findOne({
+            where: { active: true },
+            include: [db.ApgExample, { model: db.At, include: db.AtName }]
+        });
+        const supportedAts = activeTestVersion.Ats.reduce((acc, at) => {
+            acc.push({
+                at_name_id: at.at_name_id,
+                at_name: at.AtName.name,
+                at_key: at.key,
+                at_id: at.id
+            });
+            return acc;
+        }, []);
+        const apgExamples = activeTestVersion.ApgExamples.reduce(
+            (acc, apgExample) => {
+                acc.push({
+                    id: apgExample.id,
+                    name: apgExample.name,
+                    directory: apgExample.directory
+                });
+                return acc;
+            },
+            []
+        );
+        const activeApgExampleIds = activeTestVersion.ApgExamples.filter(
+            apgExample => apgExample.active
+        ).map(apgExample => apgExample.id);
+
+        const activeAtBrowserPairs = await db.BrowserVersionToAtVersion.findAll(
+            {
+                where: { active: true },
+                include: [db.AtVersion, db.BrowserVersion]
+            }
+        ).reduce((acc, tech) => {
+            acc.push({
+                at_name_id: tech.AtVersion.at_name_id,
+                at_version: tech.AtVersion.version,
+                browser_id: tech.BrowserVersion.browser_id,
+                browser_version: tech.BrowserVersion.version
+            });
+            return acc;
+        }, []);
+        const browsers = await db.Browser.findAll().reduce((acc, browser) => {
+            acc.push({
+                id: browser.id,
+                name: browser.name
+            });
+            return acc;
+        }, []);
+        return {
+            active_test_version: {
+                id: activeTestVersion.id,
+                git_repo: activeTestVersion.git_repo,
+                git_tag: activeTestVersion.git_tag,
+                git_hash: activeTestVersion.git_hash,
+                git_commit_msg: activeTestVersion.git_commit_msg,
+                date: activeTestVersion.date,
+                supported_ats: supportedAts,
+                apg_examples: apgExamples
+            },
+            active_apg_examples: activeApgExampleIds,
+            active_at_browser_pairs: activeAtBrowserPairs,
+            browsers: browsers
+        };
     } catch (error) {
         console.error(`Error: ${error}`);
         throw error;
@@ -484,5 +556,6 @@ async function getNewTestVersions() {
 module.exports = {
     configureRuns,
     getActiveRuns,
-    getPublishedRuns
+    getPublishedRuns,
+    getActiveRunsConfiguration
 };

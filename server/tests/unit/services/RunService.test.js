@@ -590,4 +590,120 @@ describe('RunService', () => {
             });
         });
     });
+
+    describe('RunService.getActiveRunsConfiguration', () => {
+        it('should return the active config', async () => {
+            await dbCleaner(async () => {
+                const testVersion = await db.TestVersion.findOne({
+                    where: {
+                        git_hash: process.env.IMPORT_ARIA_AT_TESTS_COMMIT_2
+                    },
+                    include: [db.ApgExample]
+                });
+                await testVersion.update({ active: true });
+
+                const apgExample1 = testVersion.ApgExamples[0];
+                await apgExample1.update({ active: true });
+
+                const atNameString = 'NVDA';
+                const atName = await db.AtName.findOne({
+                    where: {
+                        name: atNameString
+                    }
+                });
+                const atVersionNumber = '3.2.1';
+                const atVersion = await db.AtVersion.create({
+                    at_name_id: atName.id,
+                    version: atVersionNumber
+                });
+
+                const inactiveAtVersion = await db.AtVersion.create({
+                    at_name_id: atName.id,
+                    version: '1.1.1'
+                });
+                const browser = await db.Browser.findOne({
+                    where: { name: db.Browser.CHROME }
+                });
+                const browserVersionNumber = '1.2.3';
+                const browserVersion = await db.BrowserVersion.create({
+                    browser_id: browser.id,
+                    version: browserVersionNumber
+                });
+                await db.BrowserVersionToAtVersion.create({
+                    browser_version_id: browserVersion.id,
+                    at_version_id: atVersion.id,
+                    active: true
+                });
+                await db.BrowserVersionToAtVersion.create({
+                    browser_version_id: browserVersion.id,
+                    at_version_id: inactiveAtVersion.id,
+                    active: false
+                });
+
+                const config = await RunService.getActiveRunsConfiguration();
+                expect(config).toEqual({
+                    active_test_version: {
+                        id: testVersion.id,
+                        git_repo: testVersion.git_repo,
+                        git_tag: testVersion.git_tag,
+                        git_hash: testVersion.git_hash,
+                        git_commit_msg: testVersion.git_commit_msg,
+                        date: testVersion.date,
+                        supported_ats: [
+                            {
+                                at_id: expect.any(Number),
+                                at_key: 'voiceover_macos',
+                                at_name: 'VoiceOver for macOS',
+                                at_name_id: expect.any(Number)
+                            },
+                            {
+                                at_id: expect.any(Number),
+                                at_key: 'nvda',
+                                at_name: 'NVDA',
+                                at_name_id: expect.any(Number)
+                            },
+                            {
+                                at_id: expect.any(Number),
+                                at_key: 'jaws',
+                                at_name: 'JAWS',
+                                at_name_id: expect.any(Number)
+                            }
+                        ],
+                        apg_examples: [
+                            {
+                                id: expect.any(Number),
+                                directory: 'combobox-autocomplete-both',
+                                name:
+                                    '(NOT READY! DO NOT TEST!) Editable Combobox With Both List and Inline Autocomplete Example'
+                            },
+                            {
+                                id: expect.any(Number),
+                                directory: 'menubar-editor',
+                                name: 'Editor Menubar Example'
+                            },
+                            {
+                                id: apgExample1.id,
+                                directory: apgExample1.directory,
+                                name: apgExample1.name
+                            }
+                        ]
+                    },
+                    active_at_browser_pairs: [
+                        {
+                            browser_id: browser.id,
+                            browser_version: browserVersionNumber,
+                            at_name_id: atName.id,
+                            at_version: atVersionNumber
+                        }
+                    ],
+                    active_apg_examples: [apgExample1.id],
+                    browsers: [
+                        { id: expect.any(Number), name: db.Browser.FIREFOX },
+                        { id: expect.any(Number), name: db.Browser.CHROME },
+                        { id: expect.any(Number), name: db.Browser.SAFARI }
+                    ]
+                });
+            });
+        });
+    });
 });
