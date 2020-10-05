@@ -38,7 +38,7 @@ function getDefaultsTechCombinations(versionData) {
     return initialRunRows.length ? initialRunRows : [{}];
 }
 
-class InitiateCycle extends Component {
+class ConfigureActiveRuns extends Component {
     constructor(props) {
         super(props);
         const { testSuiteVersions } = props;
@@ -71,7 +71,7 @@ class InitiateCycle extends Component {
         this.assignTesters = this.assignTesters.bind(this);
         this.removeAllTestersFromRun = this.removeAllTestersFromRun.bind(this);
         this.selectExample = this.selectExample.bind(this);
-        this.initiateCycle = this.initiateCycle.bind(this);
+        this.configureActiveRuns = this.configureActiveRuns.bind(this);
     }
 
     componentDidMount() {
@@ -132,7 +132,7 @@ class InitiateCycle extends Component {
         });
     }
 
-    initiateCycle() {
+    configureActiveRuns() {
         const { dispatch, testSuiteVersions, history, user } = this.props;
         let versionData = testSuiteVersions.filter(
             version => version.id === this.state.selectedVersion
@@ -201,6 +201,8 @@ class InitiateCycle extends Component {
 
         cycle.runs = runs;
         dispatch(saveCycle(cycle));
+
+        
 
         history.push('/cycles');
     }
@@ -540,7 +542,7 @@ class InitiateCycle extends Component {
                 <div>
                     <Button
                         disabled={disableInitiateButton}
-                        onClick={this.initiateCycle}
+                        onClick={this.configureActiveRuns}
                     >
                         Initiate Cycle
                     </Button>
@@ -550,7 +552,7 @@ class InitiateCycle extends Component {
     }
 }
 
-InitiateCycle.propTypes = {
+ConfigureActiveRuns.propTypes = {
     testSuiteVersions: PropTypes.array,
     dispatch: PropTypes.func,
     history: PropTypes.object,
@@ -565,4 +567,4 @@ const mapStateToProps = state => {
     return { testSuiteVersions, usersById, user };
 };
 
-export default connect(mapStateToProps)(InitiateCycle);
+export default connect(mapStateToProps)(ConfigureActiveRuns);
