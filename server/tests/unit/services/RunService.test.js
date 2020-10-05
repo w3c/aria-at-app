@@ -148,6 +148,7 @@ describe('RunService', () => {
                     created_user_id: user.id
                 });
 
+                // Populate the database with the data to change
                 await db.Run.create({
                     browser_version_id: browserVersion.id, // eventually will remove columns
                     at_version_id: atVersion.id, // eventually will remove column
@@ -237,6 +238,18 @@ describe('RunService', () => {
                 await tech.reload();
                 expect(tech.active).toBe(true);
             });
+        });
+        it('creates several runs from a list of apg examples', async () => {
+            //TODO
+        });
+        it('creates several runs from a list of tech pairs', async () => {
+            //TODO
+        });
+        it('creates several runs from a list of apg examples and a list of tech pairs', async () => {
+            //TODO
+        });
+        it('creates several runs from a list of apg examples when there are existing apg examples in the database', async () => {
+            //TODO
         });
     });
 
