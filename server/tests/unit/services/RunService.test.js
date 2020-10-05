@@ -239,17 +239,96 @@ describe('RunService', () => {
                 expect(tech.active).toBe(true);
             });
         });
-        it('creates several runs from a list of apg examples', async () => {
-            //TODO
-        });
-        it('creates several runs from a list of tech pairs', async () => {
-            //TODO
-        });
-        it('creates several runs from a list of apg examples and a list of tech pairs', async () => {
-            //TODO
-        });
-        it('creates several runs from a list of apg examples when there are existing apg examples in the database', async () => {
-            //TODO
+        it('update active tech pairs when there is existing tech pair data', async () => {
+            await dbCleaner(async () => {
+            
+                const browserVersionNumber = '1.2.3';
+                const atVersionNumber = '3.2.1';
+
+                const browserVersionNumber2 = '3.4.5';
+                const atVersionNumber2 = '5.4.3';
+
+                let testVersion = await db.TestVersion.findOne({
+                    where: {
+                        git_hash: process.env.IMPORT_ARIA_AT_TESTS_COMMIT_1
+                    }
+                });
+                const apgExample = await db.ApgExample.findOne({
+                    where: { test_version_id: testVersion.id }
+                });
+
+                const at = await db.At.findOne({
+                    where: { test_version_id: testVersion.id },
+                    include: [db.AtName]
+                });
+
+                const browser = await db.Browser.findOne();
+
+                const runStatus = await db.RunStatus.findOne({
+                    where: { name: db.RunStatus.RAW }
+                });
+
+                // Create tech pair to deactivate
+                let atVersion = await db.AtVersion.create({
+                    at_name_id: at.AtName.id,
+                    version: atVersionNumber
+                });
+
+                let browserVersion = await db.BrowserVersion.create({
+                    browser_id: browser.id,
+                    version: browserVersionNumber
+                });
+
+                let techPairDeactivate = await db.BrowserVersionToAtVersion.create({
+                    at_version_id: atVersion.id,
+                    browser_version_id: browserVersion.id,
+                    active: true,
+                    run_status_id: runStatus.id
+                });
+
+                const activeRuns = await RunService.configureRuns({
+                    test_version_id: testVersion.id,
+                    apg_example_ids: [apgExample.id],
+                    at_browser_pairs: [
+                        {
+                            at_name_id: at.at_name_id,
+                            at_version: atVersionNumber2,
+                            browser_id: browser.id,
+                            browser_version: browserVersionNumber2
+                        }
+                    ],
+                    run_status_id: runStatus.id
+                });
+
+                const keys = Object.keys(activeRuns);
+                const runId = parseInt(keys[0]);
+                expect(keys.length).toEqual(1);
+                expect(activeRuns[runId]).toEqual({
+                    id: runId,
+                    browser_id: browser.id,
+                    browser_version: browserVersionNumber2,
+                    browser_name: browser.name,
+                    at_id: at.id,
+                    at_key: at.key,
+                    at_name: at.AtName.name,
+                    at_version: atVersionNumber2,
+                    apg_example_directory: apgExample.directory,
+                    apg_example_name: apgExample.name,
+                    apg_example_id: apgExample.id,
+                    run_status_id: runStatus.id,
+                    run_status: db.RunStatus.RAW,
+                    test_version_id: testVersion.id,
+                    testers: []
+                });
+
+                await techPairDeactivate.reload();
+                expect(techPairDeactivate.active).toBe(false);
+
+                const activeBrowserVersionToAtVersions = await db.BrowserVersionToAtVersion.findAll(
+                    { where: { active: true } }
+                );
+                expect(activeBrowserVersionToAtVersions.length).toBe(1);
+            });
         });
     });
 
