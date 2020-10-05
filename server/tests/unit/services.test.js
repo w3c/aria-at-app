@@ -247,7 +247,7 @@ describe('ATService', () => {
                     { name: 'NVDA' },
                     { name: 'VoiceOver for macOS' },
                     ...expected
-                ]
+                ];
                 const returnedAts = (await ATService.getATs()).map(at => ({
                     name: at.dataValues.name
                 }));
