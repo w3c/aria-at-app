@@ -1,5 +1,5 @@
 module.exports = function(sequelize, DataTypes) {
-    return sequelize.define(
+    let TestVersion = sequelize.define(
         'TestVersion',
         {
             id: {
@@ -39,4 +39,17 @@ module.exports = function(sequelize, DataTypes) {
             tableName: 'test_version'
         }
     );
+
+    TestVersion.associate = function(models) {
+        models.TestVersion.hasMany(models.ApgExample, {
+            foreignKey: 'test_version_id',
+            sourceKey: 'id'
+        });
+        models.TestVersion.hasMany(models.At, {
+            foreignKey: 'test_version_id',
+            sourceKey: 'id'
+        });
+    };
+
+    return TestVersion;
 };
