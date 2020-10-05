@@ -166,17 +166,17 @@ describe(atEndpoint, () => {
             expect(response.body).toEqual([
                 {
                     id: 1,
-                    name: "JAWS"
+                    name: 'JAWS'
                 },
                 {
                     id: 2,
-                    name: "NVDA",
+                    name: 'NVDA'
                 },
                 {
                     id: 3,
-                    name: "VoiceOver for macOS"
+                    name: 'VoiceOver for macOS'
                 },
-                {   
+                {
                     id: atName.id,
                     name: 'at'
                 }
