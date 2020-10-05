@@ -2,8 +2,9 @@ import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Table, Form, Button, Row, Col } from 'react-bootstrap';
-import { getTestSuiteVersions, saveCycle } from '../../actions/cycles';
+import { getTestSuiteVersions } from '../../actions/cycles';
 import { getAllUsers } from '../../actions/users';
+import { saveRunConfiguration } from '../../actions/runs';
 import ConfigureTechnologyRow from '@components/ConfigureTechnologyRow';
 import ConfigureRunsForExample from '@components/ConfigureRunsForExample';
 import nextId from 'react-id-generator';
@@ -150,6 +151,17 @@ class ConfigureActiveRuns extends Component {
             return;
         }
 
+        // Temporary change until this whole page is reconsidered
+        const atBrowserPairs = [];
+        const atIdToAtNameId = versionData.supported_ats.reduce(
+            (acc, at) => {
+                acc[at.at_id] = at.at_name_id;
+                return acc;
+            }, {}
+        );
+
+
+
         const runs = [];
         for (
             let index = 0;
@@ -168,6 +180,13 @@ class ConfigureActiveRuns extends Component {
                 // TODO: if ALL of these fields are blank, ignore it
                 continue;
             }
+
+            atBrowserPairs.push({
+                at_name_id: atIdToAtNameId[runTechnologyPair.at_id],
+                at_version: runTechnologyPair.at_version,
+                browser_id: runTechnologyPair.browser_id,
+                browser_version: runTechnologyPair.browser_version
+            });
 
             for (let example of versionData.apg_examples) {
                 if (!this.state.exampleSelected[example.id]) {
@@ -200,11 +219,16 @@ class ConfigureActiveRuns extends Component {
         }
 
         cycle.runs = runs;
-        dispatch(saveCycle(cycle));
 
-        
+        const config = {
+            test_version_id: this.state.selectedVersion,
+            apg_example_ids: versionData.apg_examples.map(a => a.id),
+            at_browser_pairs: atBrowserPairs
+        };
 
-        history.push('/cycles');
+        dispatch(saveRunConfiguration(config));
+
+        history.push('/test-queue');
     }
 
     assignTesters(exampleId, runTechnologyIndexes, userId) {
