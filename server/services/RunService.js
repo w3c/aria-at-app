@@ -312,13 +312,48 @@ async function configureRuns({
     }
 }
 
+async function sequelizeRunsToJsonRuns(sequelizeRuns) {
+    let ats = {};
+    if (sequelizeRuns.length > 0) {
+        ats = await db.At.findAll({
+            where: {
+                test_version_id: sequelizeRuns[0].test_version_id
+            }
+        });
+    }
+
+    return sequelizeRuns.reduce((acc, run) => {
+        let atNameId = run.BrowserVersionToAtVersion.AtVersion.AtName.id;
+        let at = ats.find(at => at.at_name_id == atNameId);
+
+        acc[run.id] = {
+            id: run.id,
+            browser_id: run.BrowserVersionToAtVersion.BrowserVersion.browser_id,
+            browser_version:
+                run.BrowserVersionToAtVersion.BrowserVersion.version,
+            browser_name:
+                run.BrowserVersionToAtVersion.BrowserVersion.Browser.name,
+            at_id: at.id,
+            at_key: at.key,
+            at_name: run.BrowserVersionToAtVersion.AtVersion.AtName.name,
+            at_version: run.BrowserVersionToAtVersion.AtVersion.version,
+            apg_example_directory: run.ApgExample.directory,
+            apg_example_name: run.ApgExample.name,
+            apg_example_id: run.apg_example_id,
+            run_status_id: run.run_status_id,
+            run_status: run.RunStatus.name,
+            test_version_id: run.test_version_id,
+            testers: run.Users.map(u => u.id)
+        };
+        return acc;
+    }, {});
+}
+
 /**
  * Gets all active runs
  *
  * @return {Object.<number, Run>} - A mapping from run_id to Run
  */
-
-/* eslint-disable no-unreachable */
 async function getActiveRuns() {
     try {
         const activeRuns = await db.Run.findAll({
@@ -337,46 +372,7 @@ async function getActiveRuns() {
             ]
         });
 
-        let ats = {};
-        if (activeRuns.length > 0) {
-            ats = await db.At.findAll({
-                where: {
-                    test_version_id: activeRuns[0].test_version_id
-                }
-            });
-        }
-
-        return activeRuns.reduce((acc, activeRun) => {
-            let atNameId =
-                activeRun.BrowserVersionToAtVersion.AtVersion.AtName.id;
-            let at = ats.find(at => at.at_name_id == atNameId);
-
-            acc[activeRun.id] = {
-                id: activeRun.id,
-                browser_id:
-                    activeRun.BrowserVersionToAtVersion.BrowserVersion
-                        .browser_id,
-                browser_version:
-                    activeRun.BrowserVersionToAtVersion.BrowserVersion.version,
-                browser_name:
-                    activeRun.BrowserVersionToAtVersion.BrowserVersion.Browser
-                        .name,
-                at_id: at.id,
-                at_key: at.key,
-                at_name:
-                    activeRun.BrowserVersionToAtVersion.AtVersion.AtName.name,
-                at_version:
-                    activeRun.BrowserVersionToAtVersion.AtVersion.version,
-                apg_example_directory: activeRun.ApgExample.directory,
-                apg_example_name: activeRun.ApgExample.name,
-                apg_example_id: activeRun.apg_example_id,
-                run_status_id: activeRun.run_status_id,
-                run_status: activeRun.RunStatus.name,
-                test_version_id: activeRun.test_version_id,
-                testers: activeRun.Users.map(u => u.id)
-            };
-            return acc;
-        }, {});
+        return await sequelizeRunsToJsonRuns(activeRuns);
     } catch (error) {
         console.error(`Error: ${error}`);
         throw error;
@@ -388,17 +384,30 @@ async function getActiveRuns() {
  *
  * @return {Object.<number, Run>} - A mapping from run_id to Run
  */
-
-/* eslint-disable no-unreachable */
 async function getPublishedRuns() {
     try {
-        return {};
+        const publishedRuns = await db.Run.findAll({
+            where: {},
+            include: [
+                { model: db.RunStatus, where: { name: db.RunStatus.FINAL } },
+                db.ApgExample,
+                {
+                    model: db.BrowserVersionToAtVersion,
+                    include: [
+                        { model: db.AtVersion, include: [db.AtName] },
+                        { model: db.BrowserVersion, include: [db.Browser] }
+                    ]
+                },
+                db.Users
+            ]
+        });
+
+        return await sequelizeRunsToJsonRuns(publishedRuns);
     } catch (error) {
         console.error(`Error: ${error}`);
         throw error;
     }
 }
-
 module.exports = {
     configureRuns,
     getActiveRuns,

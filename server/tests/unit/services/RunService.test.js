@@ -400,8 +400,194 @@ describe('RunService', () => {
     });
 
     describe('RunService.getPublishedRuns', () => {
-        it.skip('should return an empty object if there are no published runs', async () => {});
+        it('should return an empty object if there are no published runs', async () => {
+            await dbCleaner(async () => {
+                const testVersion = await db.TestVersion.findOne({
+                    where: {
+                        git_hash: process.env.IMPORT_ARIA_AT_TESTS_COMMIT_1
+                    }
+                });
+                const apgExampleDirectory = 'checkbox';
+                const apgExampleName = 'Checkbox Example (Two State)';
+                const apgExample = await db.ApgExample.create({
+                    test_version_id: testVersion.id,
+                    directory: apgExampleDirectory,
+                    name: apgExampleName
+                });
+                const user = await db.Users.create();
+                const testCycle = await db.TestCycle.create({
+                    test_version_id: testVersion.id,
+                    created_user_id: user.id
+                });
+                const atNameString = 'NVDA';
+                const atName = await db.AtName.findOne({
+                    where: {
+                        name: atNameString
+                    }
+                });
+                const atVersionNumber = '3.2.1';
+                const atVersion = await db.AtVersion.create({
+                    at_name_id: atName.id,
+                    version: atVersionNumber
+                });
+                const at = await db.At.findOne({
+                    where: {
+                        at_name_id: atName.id,
+                        test_version_id: testVersion.id
+                    }
+                });
+                const browser = await db.Browser.findOne({
+                    where: { name: db.Browser.CHROME }
+                });
+                const browserVersionNumber = '1.2.3';
+                const browserVersion = await db.BrowserVersion.create({
+                    browser_id: browser.id,
+                    version: browserVersionNumber
+                });
+                const browserVersionToAtVersion = await db.BrowserVersionToAtVersion.create(
+                    {
+                        browser_version_id: browserVersion.id,
+                        at_version_id: atVersion.id
+                    }
+                );
+                const rawRunStatus = await db.RunStatus.findOne({
+                    where: { name: db.RunStatus.RAW }
+                });
 
-        it.skip('should return the data from a published run', async () => {});
+                // Raw Run
+                await db.Run.create({
+                    test_cycle_id: testCycle.id,
+                    at_version_id: atVersion.id,
+                    at_id: at.id,
+                    browser_version_id: browserVersion.id,
+                    browser_version_to_at_versions_id:
+                        browserVersionToAtVersion.id,
+                    apg_example_id: apgExample.id,
+                    run_status_id: rawRunStatus.id,
+                    test_version_id: testVersion.id
+                });
+
+                const draftRunStatus = await db.RunStatus.findOne({
+                    where: { name: db.RunStatus.DRAFT }
+                });
+
+                // Draft run
+                await db.Run.create({
+                    test_cycle_id: testCycle.id,
+                    at_version_id: atVersion.id,
+                    at_id: at.id,
+                    browser_version_id: browserVersion.id,
+                    browser_version_to_at_versions_id:
+                        browserVersionToAtVersion.id,
+                    apg_example_id: apgExample.id,
+                    run_status_id: draftRunStatus.id,
+                    test_version_id: testVersion.id
+                });
+
+                // Run without any status
+                await db.Run.create({
+                    test_cycle_id: testCycle.id,
+                    at_version_id: atVersion.id,
+                    at_id: at.id,
+                    browser_version_id: browserVersion.id,
+                    browser_version_to_at_versions_id:
+                        browserVersionToAtVersion.id,
+                    apg_example_id: apgExample.id,
+                    test_version_id: testVersion.id
+                });
+
+                const publishedRuns = await RunService.getPublishedRuns();
+                expect(publishedRuns).toEqual({});
+            });
+        });
+
+        it('should return the data from an active run', async () => {
+            await dbCleaner(async () => {
+                const testVersion = await db.TestVersion.findOne({
+                    where: {
+                        git_hash: process.env.IMPORT_ARIA_AT_TESTS_COMMIT_1
+                    }
+                });
+                const apgExampleDirectory = 'checkbox';
+                const apgExampleName = 'Checkbox Example (Two State)';
+                const apgExample = await db.ApgExample.create({
+                    test_version_id: testVersion.id,
+                    directory: apgExampleDirectory,
+                    name: apgExampleName
+                });
+                const user = await db.Users.create();
+                const testCycle = await db.TestCycle.create({
+                    test_version_id: testVersion.id,
+                    created_user_id: user.id
+                });
+                const atNameString = 'NVDA';
+                const atName = await db.AtName.findOne({
+                    where: {
+                        name: atNameString
+                    }
+                });
+                const atVersionNumber = '3.2.1';
+                const atVersion = await db.AtVersion.create({
+                    at_name_id: atName.id,
+                    version: atVersionNumber
+                });
+                const at = await db.At.findOne({
+                    where: {
+                        at_name_id: atName.id,
+                        test_version_id: testVersion.id
+                    }
+                });
+                const browser = await db.Browser.findOne({
+                    where: { name: db.Browser.CHROME }
+                });
+                const browserVersionNumber = '1.2.3';
+                const browserVersion = await db.BrowserVersion.create({
+                    browser_id: browser.id,
+                    version: browserVersionNumber
+                });
+                const browserVersionToAtVersion = await db.BrowserVersionToAtVersion.create(
+                    {
+                        browser_version_id: browserVersion.id,
+                        at_version_id: atVersion.id
+                    }
+                );
+                const runStatus = await db.RunStatus.findOne({
+                    where: { name: db.RunStatus.FINAL }
+                });
+
+                // Published/Final run
+                const run = await db.Run.create({
+                    test_cycle_id: testCycle.id,
+                    at_version_id: atVersion.id,
+                    at_id: at.id,
+                    browser_version_id: browserVersion.id,
+                    browser_version_to_at_versions_id:
+                        browserVersionToAtVersion.id,
+                    apg_example_id: apgExample.id,
+                    run_status_id: runStatus.id,
+                    test_version_id: testVersion.id
+                });
+
+                const publishedRuns = await RunService.getPublishedRuns();
+                expect(Object.keys(publishedRuns).length).toEqual(1);
+                expect(publishedRuns[run.id]).toEqual({
+                    id: run.id,
+                    browser_id: browser.id,
+                    browser_version: browserVersionNumber,
+                    browser_name: db.Browser.CHROME,
+                    at_id: at.id,
+                    at_key: at.key,
+                    at_name: atNameString,
+                    at_version: atVersionNumber,
+                    apg_example_directory: apgExampleDirectory,
+                    apg_example_name: apgExampleName,
+                    apg_example_id: apgExample.id,
+                    run_status_id: runStatus.id,
+                    run_status: db.RunStatus.FINAL,
+                    test_version_id: testVersion.id,
+                    testers: []
+                });
+            });
+        });
     });
 });
