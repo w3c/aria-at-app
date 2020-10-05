@@ -3,10 +3,9 @@ import { Route, Redirect } from 'react-router-dom';
 
 import App from '@components/App';
 import CycleSummary from '@components/CycleSummary';
+import ConfigureActiveRuns from '@components/ConfigureActiveRuns';
 import ConfirmAuth from '@components/ConfirmAuth';
 import Home from '@components/Home';
-import InitiateCycle from '@components/InitiateCycle';
-import ManageCycles from '@components/ManageCycles';
 import NotFound from '@components/NotFound';
 import RunResultsPage from '@components/RunResultsPage';
 import ResultsPage from '@components/ResultsPage';
@@ -37,17 +36,6 @@ export default [
                     return (
                         <ConfirmAuth requiredPermission="tester">
                             <Route component={UserSettings} />
-                        </ConfirmAuth>
-                    );
-                }
-            },
-            {
-                path: '/cycles',
-                exact: true,
-                component: () => {
-                    return (
-                        <ConfirmAuth requiredPermission="admin">
-                            <Route component={ManageCycles} />
                         </ConfirmAuth>
                     );
                 }
@@ -90,12 +78,12 @@ export default [
                 }
             },
             {
-                path: '/cycles/new',
+                path: '/admin/configure-runs',
                 exact: true,
                 component: () => {
                     return (
                         <ConfirmAuth requiredPermission="admin">
-                            <Route component={InitiateCycle} />
+                            <Route component={ConfigureActiveRuns} />
                         </ConfirmAuth>
                     );
                 }

@@ -98,9 +98,9 @@ class App extends Component {
                                     {isAdmin && (
                                         <Nav.Link
                                             as={Link}
-                                            {...this.navProps('/cycles')}
+                                            {...this.navProps('/admin/configure-runs')}
                                         >
-                                            Test Management
+                                            Configure Active Runs
                                         </Nav.Link>
                                     )}
                                     {isTester && (
