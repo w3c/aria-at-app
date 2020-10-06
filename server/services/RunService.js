@@ -486,7 +486,7 @@ function sequelizeTestVersionToJsonTestSuiteVersion(sequelizeTestVersion) {
             git_tag: sequelizeTestVersion.git_tag,
             git_hash: sequelizeTestVersion.git_hash,
             git_commit_msg: sequelizeTestVersion.git_commit_msg,
-            date: sequelizeTestVersion.date,
+            date: sequelizeTestVersion.datetime,
             supported_ats: supportedAts,
             apg_examples: apgExamples
         };
@@ -555,11 +555,25 @@ async function getActiveRunsConfiguration() {
  * @return {Array.<TestSuiteVersion>}
  *
  */
-
-/* eslint-disable no-unused-vars */
 async function getNewTestVersions() {
     try {
-        return [];
+        const activeTestVersion = await db.TestVersion.findOne({
+            where: { active: true },
+            attributes: ['datetime']
+        });
+        let where = {};
+        if (activeTestVersion) {
+            where = {
+                datetime: { [db.Sequelize.Op.gte]: activeTestVersion.datetime }
+            };
+        }
+        return await db.TestVersion.findAll({
+            where: where,
+            include: [db.ApgExample, { model: db.At, include: db.AtName }]
+        }).reduce((acc, testVersion) => {
+            acc.push(sequelizeTestVersionToJsonTestSuiteVersion(testVersion));
+            return acc;
+        }, []);
     } catch (error) {
         console.error(`Error: ${error}`);
         throw error;
@@ -570,5 +584,6 @@ module.exports = {
     configureRuns,
     getActiveRuns,
     getPublishedRuns,
-    getActiveRunsConfiguration
+    getActiveRunsConfiguration,
+    getNewTestVersions
 };

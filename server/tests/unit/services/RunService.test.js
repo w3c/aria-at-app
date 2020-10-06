@@ -664,7 +664,7 @@ describe('RunService', () => {
                         git_tag: testVersion.git_tag,
                         git_hash: testVersion.git_hash,
                         git_commit_msg: testVersion.git_commit_msg,
-                        date: testVersion.date,
+                        date: testVersion.datetime,
                         supported_ats: [
                             {
                                 at_id: expect.any(Number),
@@ -719,6 +719,201 @@ describe('RunService', () => {
                         { id: expect.any(Number), name: db.Browser.SAFARI }
                     ]
                 });
+            });
+        });
+    });
+
+    describe('RunService.getNewTestVersions', () => {
+        it('should return all test versions if there are no active versions', async () => {
+            await dbCleaner(async () => {
+                const testVersion1 = await db.TestVersion.findOne({
+                    where: {
+                        git_hash: process.env.IMPORT_ARIA_AT_TESTS_COMMIT_1
+                    },
+                    include: [db.ApgExample]
+                });
+                const testVersion2 = await db.TestVersion.findOne({
+                    where: {
+                        git_hash: process.env.IMPORT_ARIA_AT_TESTS_COMMIT_2
+                    },
+                    include: [db.ApgExample]
+                });
+
+                const testVersions = await RunService.getNewTestVersions();
+                expect(testVersions).toEqual([
+                    {
+                        id: testVersion1.id,
+                        git_repo: testVersion1.git_repo,
+                        git_tag: testVersion1.git_tag,
+                        git_hash: testVersion1.git_hash,
+                        git_commit_msg: testVersion1.git_commit_msg,
+                        date: testVersion1.datetime,
+                        supported_ats: [
+                            {
+                                at_id: expect.any(Number),
+                                at_key: 'jaws',
+                                at_name: 'JAWS',
+                                at_name_id: expect.any(Number)
+                            },
+                            {
+                                at_id: expect.any(Number),
+                                at_key: 'nvda',
+                                at_name: 'NVDA',
+                                at_name_id: expect.any(Number)
+                            },
+                            {
+                                at_id: expect.any(Number),
+                                at_key: 'voiceover_macos',
+                                at_name: 'VoiceOver for macOS',
+                                at_name_id: expect.any(Number)
+                            }
+                        ],
+                        apg_examples: [
+                            {
+                                id: expect.any(Number),
+                                directory: 'menubar-editor',
+                                name: 'Editor Menubar Example'
+                            },
+                            {
+                                id: expect.any(Number),
+                                directory: 'combobox-autocomplete-both',
+                                name:
+                                    '(NOT READY! DO NOT TEST!) Editable Combobox With Both List and Inline Autocomplete Example'
+                            },
+                            {
+                                id: expect.any(Number),
+                                directory: 'checkbox',
+                                name: 'Checkbox Example (Two State)'
+                            }
+                        ]
+                    },
+                    {
+                        id: testVersion2.id,
+                        git_repo: testVersion2.git_repo,
+                        git_tag: testVersion2.git_tag,
+                        git_hash: testVersion2.git_hash,
+                        git_commit_msg: testVersion2.git_commit_msg,
+                        date: testVersion2.datetime,
+                        supported_ats: [
+                            {
+                                at_id: expect.any(Number),
+                                at_key: 'jaws',
+                                at_name: 'JAWS',
+                                at_name_id: expect.any(Number)
+                            },
+                            {
+                                at_id: expect.any(Number),
+                                at_key: 'nvda',
+                                at_name: 'NVDA',
+                                at_name_id: expect.any(Number)
+                            },
+                            {
+                                at_id: expect.any(Number),
+                                at_key: 'voiceover_macos',
+                                at_name: 'VoiceOver for macOS',
+                                at_name_id: expect.any(Number)
+                            }
+                        ],
+                        apg_examples: [
+                            {
+                                id: expect.any(Number),
+                                directory: 'menubar-editor',
+                                name: 'Editor Menubar Example'
+                            },
+                            {
+                                id: expect.any(Number),
+                                directory: 'combobox-autocomplete-both',
+                                name:
+                                    '(NOT READY! DO NOT TEST!) Editable Combobox With Both List and Inline Autocomplete Example'
+                            },
+                            {
+                                id: expect.any(Number),
+                                directory: 'checkbox',
+                                name: 'Checkbox Example (Two State)'
+                            }
+                        ]
+                    }
+                ]);
+            });
+        });
+
+        it('should return only the newest test versions if there are old versions', async () => {
+            await dbCleaner(async () => {
+                const testVersion2 = await db.TestVersion.findOne({
+                    where: {
+                        git_hash: process.env.IMPORT_ARIA_AT_TESTS_COMMIT_2
+                    },
+                    include: [db.ApgExample]
+                });
+                await testVersion2.update({ active: true });
+
+                const testVersion3 = await db.TestVersion.create({
+                    git_repo: 'git@git.com',
+                    git_tag: '1.1.1',
+                    git_hash: 'asda123ads2',
+                    git_commit_msg: 'Add new test',
+                    datetime: Date.now()
+                });
+
+                const testVersions = await RunService.getNewTestVersions();
+                expect(testVersions).toEqual([
+                    {
+                        id: testVersion2.id,
+                        git_repo: testVersion2.git_repo,
+                        git_tag: testVersion2.git_tag,
+                        git_hash: testVersion2.git_hash,
+                        git_commit_msg: testVersion2.git_commit_msg,
+                        date: testVersion2.datetime,
+                        supported_ats: [
+                            {
+                                at_id: expect.any(Number),
+                                at_key: 'jaws',
+                                at_name: 'JAWS',
+                                at_name_id: expect.any(Number)
+                            },
+                            {
+                                at_id: expect.any(Number),
+                                at_key: 'nvda',
+                                at_name: 'NVDA',
+                                at_name_id: expect.any(Number)
+                            },
+                            {
+                                at_id: expect.any(Number),
+                                at_key: 'voiceover_macos',
+                                at_name: 'VoiceOver for macOS',
+                                at_name_id: expect.any(Number)
+                            }
+                        ],
+                        apg_examples: [
+                            {
+                                id: expect.any(Number),
+                                directory: 'menubar-editor',
+                                name: 'Editor Menubar Example'
+                            },
+                            {
+                                id: expect.any(Number),
+                                directory: 'combobox-autocomplete-both',
+                                name:
+                                    '(NOT READY! DO NOT TEST!) Editable Combobox With Both List and Inline Autocomplete Example'
+                            },
+                            {
+                                id: expect.any(Number),
+                                directory: 'checkbox',
+                                name: 'Checkbox Example (Two State)'
+                            }
+                        ]
+                    },
+                    {
+                        id: testVersion3.id,
+                        git_repo: testVersion3.git_repo,
+                        git_tag: testVersion3.git_tag,
+                        git_hash: testVersion3.git_hash,
+                        git_commit_msg: testVersion3.git_commit_msg,
+                        date: testVersion3.datetime,
+                        supported_ats: [],
+                        apg_examples: []
+                    }
+                ]);
             });
         });
     });
