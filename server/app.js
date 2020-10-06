@@ -9,6 +9,7 @@ const cycleRoutes = require('./routes/cycle');
 const atRoutes = require('./routes/at');
 const runRoutes = require('./routes/run');
 const testRoutes = require('./routes/tests');
+const testVersionRoutes = require('./routes/test-version');
 const path = require('path');
 
 const app = express();
@@ -22,6 +23,7 @@ app.use('/cycle', cycleRoutes);
 app.use('/at', atRoutes);
 app.use('/run', runRoutes);
 app.use('/test', testRoutes);
+app.use('/test-versions', testVersionRoutes);
 
 const listener = express();
 listener.use('/api', app);
