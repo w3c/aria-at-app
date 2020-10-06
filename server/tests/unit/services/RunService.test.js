@@ -230,9 +230,8 @@ describe('RunService', () => {
                 expect(tech.active).toBe(true);
             });
         });
-        it('update active tech pairs when there is existing tech pair data', async () => {
+        it('should deactivate tech pairs when there is existing tech pair data to deactivate', async () => {
             await dbCleaner(async () => {
-            
                 const browserVersionNumber = '1.2.3';
                 const atVersionNumber = '3.2.1';
 
@@ -244,9 +243,6 @@ describe('RunService', () => {
                         git_hash: process.env.IMPORT_ARIA_AT_TESTS_COMMIT_1
                     }
                 });
-                const apgExample = await db.ApgExample.findOne({
-                    where: { test_version_id: testVersion.id }
-                });
 
                 const at = await db.At.findOne({
                     where: { test_version_id: testVersion.id },
@@ -254,10 +250,6 @@ describe('RunService', () => {
                 });
 
                 const browser = await db.Browser.findOne();
-
-                const runStatus = await db.RunStatus.findOne({
-                    where: { name: db.RunStatus.RAW }
-                });
 
                 // Create tech pair to deactivate
                 let atVersion = await db.AtVersion.create({
@@ -270,14 +262,24 @@ describe('RunService', () => {
                     version: browserVersionNumber
                 });
 
-                let techPairDeactivate = await db.BrowserVersionToAtVersion.create({
-                    at_version_id: atVersion.id,
-                    browser_version_id: browserVersion.id,
-                    active: true,
-                    run_status_id: runStatus.id
+                const runStatus = await db.RunStatus.findOne({
+                    where: { name: db.RunStatus.RAW }
                 });
 
+                let techPairDeactivate = await db.BrowserVersionToAtVersion.create(
+                    {
+                        at_version_id: atVersion.id,
+                        browser_version_id: browserVersion.id,
+                        active: true,
+                        run_status_id: runStatus.id
+                    }
+                );
+
                 // Configure the runs with new tech pair
+                const apgExample = await db.ApgExample.findOne({
+                    where: { test_version_id: testVersion.id }
+                });
+
                 const activeRuns = await RunService.configureRuns({
                     test_version_id: testVersion.id,
                     apg_example_ids: [apgExample.id],
@@ -314,7 +316,7 @@ describe('RunService', () => {
                     testers: []
                 });
 
-                // Check that previously deactivated pair is now active
+                // Check that previously activated pair is now inactive
                 await techPairDeactivate.reload();
                 expect(techPairDeactivate.active).toBe(false);
 
@@ -325,17 +327,101 @@ describe('RunService', () => {
 
                 // Verify that new browser/at pair was created
                 const activeCreatedBrowserVersion = await db.BrowserVersion.findAll(
-                    { where: { id: activeBrowserVersionToAtVersions[0].browser_version_id }}
+                    {
+                        where: {
+                            id:
+                                activeBrowserVersionToAtVersions[0]
+                                    .browser_version_id
+                        }
+                    }
                 );
-                expect(activeCreatedBrowserVersion[0].version).toBe(browserVersionNumber2);
+                expect(activeCreatedBrowserVersion[0].version).toBe(
+                    browserVersionNumber2
+                );
 
-                const activeCreatedAtVersion = await db.AtVersion.findAll(
-                    { where: { id: activeBrowserVersionToAtVersions[0].at_version_id }}
+                const activeCreatedAtVersion = await db.AtVersion.findAll({
+                    where: {
+                        id: activeBrowserVersionToAtVersions[0].at_version_id
+                    }
+                });
+                expect(activeCreatedAtVersion[0].version).toBe(
+                    atVersionNumber2
                 );
-                expect(activeCreatedAtVersion[0].version).toBe(atVersionNumber2);
             });
         });
-        it('sets an existing inactive run to active', async () => {
+        it('should activate a deactived tech pair when the tech pair is passed', async () => {
+            await dbCleaner(async () => {
+                const browserVersionNumber = '1.2.3';
+                const atVersionNumber = '3.2.1';
+
+                let testVersion = await db.TestVersion.findOne({
+                    where: {
+                        git_hash: process.env.IMPORT_ARIA_AT_TESTS_COMMIT_1
+                    }
+                });
+
+                const at = await db.At.findOne({
+                    where: { test_version_id: testVersion.id },
+                    include: [db.AtName]
+                });
+
+                const browser = await db.Browser.findOne();
+
+                // Create tech pair to activate
+                let atVersion = await db.AtVersion.create({
+                    at_name_id: at.AtName.id,
+                    version: atVersionNumber
+                });
+
+                let browserVersion = await db.BrowserVersion.create({
+                    browser_id: browser.id,
+                    version: browserVersionNumber
+                });
+
+                const runStatus = await db.RunStatus.findOne({
+                    where: { name: db.RunStatus.RAW }
+                });
+
+                let techPairActivate = await db.BrowserVersionToAtVersion.create(
+                    {
+                        at_version_id: atVersion.id,
+                        browser_version_id: browserVersion.id,
+                        active: false,
+                        run_status_id: runStatus.id
+                    }
+                );
+
+                // Configure the runs with new tech pair
+                const apgExample = await db.ApgExample.findOne({
+                    where: { test_version_id: testVersion.id }
+                });
+
+                const activeRuns = await RunService.configureRuns({
+                    test_version_id: testVersion.id,
+                    apg_example_ids: [apgExample.id],
+                    at_browser_pairs: [
+                        {
+                            at_name_id: at.at_name_id,
+                            at_version: atVersionNumber,
+                            browser_id: browser.id,
+                            browser_version: browserVersionNumber
+                        }
+                    ],
+                    run_status_id: runStatus.id
+                });
+
+                // Check that previously deactivated pair is now active
+                await techPairActivate.reload();
+                expect(techPairActivate.active).toBe(true);
+
+                const activeBrowserVersionToAtVersions = await db.BrowserVersionToAtVersion.findAll();
+                expect(activeBrowserVersionToAtVersions.length).toBe(1);
+
+                let runInDb = await db.Run.findAll({where: {id: Object.values(activeRuns)[0].id}});
+                expect(runInDb.pop().browser_version_to_at_versions_id).toBe(activeBrowserVersionToAtVersions[0].id);
+            });
+        });
+        it('should set an existing inactive run to active', async () => {
             await dbCleaner(async () => {
                 // Data setup for inactive run
                 const browserVersionNumber = '1.2.3';
@@ -396,7 +482,9 @@ describe('RunService', () => {
                     run_status_id: runStatus.id
                 });
 
-                let previouslyInactiveRun = await db.Run.findOne({where:{ id: previouslyInactiveRunEntry.id }});
+                let previouslyInactiveRun = await db.Run.findOne({
+                    where: { id: previouslyInactiveRunEntry.id }
+                });
 
                 const activeRuns = await RunService.configureRuns({
                     test_version_id: testVersion.id,
@@ -440,7 +528,7 @@ describe('RunService', () => {
                 expect(previouslyInactiveRun.active).toBe(true);
             });
         });
-        it('sets one run inactive, one run active, and creates a new run when the apg examples change', async () => {
+        it('should set one run inactive, one run active, and creates a new run when the apg examples change', async () => {
             await dbCleaner(async () => {
                 // Data setup for one active run and one inactive run
                 const browserVersionNumber = '1.2.3';
@@ -516,12 +604,18 @@ describe('RunService', () => {
                     run_status_id: runStatus.id
                 });
 
-                let previouslyActiveRun = await db.Run.findOne({where:{ id: previouslyActiveRunEntry.id }});
-                let previouslyInactiveRun = await db.Run.findOne({where:{ id: previouslyInactiveRunEntry.id }});
+                let previouslyActiveRun = await db.Run.findOne({
+                    where: { id: previouslyActiveRunEntry.id }
+                });
+                let previouslyInactiveRun = await db.Run.findOne({
+                    where: { id: previouslyInactiveRunEntry.id }
+                });
 
                 const activeRuns = await RunService.configureRuns({
                     test_version_id: testVersion.id,
-                    apg_example_ids: apgExamples.map(example => example.id).slice(1), // remove the first element of examples
+                    apg_example_ids: apgExamples
+                        .map(example => example.id)
+                        .slice(1), // remove the first element of examples
                     at_browser_pairs: [
                         {
                             at_name_id: at.at_name_id,
@@ -537,9 +631,13 @@ describe('RunService', () => {
                 expect(previouslyActiveRun.active).toBe(false);
 
                 await previouslyInactiveRun.reload();
-                expect(previouslyInactiveRun.active).toBe(true)
+                expect(previouslyInactiveRun.active).toBe(true);
 
-                const newlyCreatedRun = Object.values(activeRuns).filter(run => run.id !== previouslyActiveRun.id && run.id !== previouslyInactiveRun.id);
+                const newlyCreatedRun = Object.values(activeRuns).filter(
+                    run =>
+                        run.id !== previouslyActiveRun.id &&
+                        run.id !== previouslyInactiveRun.id
+                );
                 expect(newlyCreatedRun.length).toBe(1);
             });
         });
