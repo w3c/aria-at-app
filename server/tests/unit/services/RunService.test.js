@@ -293,6 +293,7 @@ describe('RunService', () => {
                     run_status_id: runStatus.id
                 });
 
+                // Check the returned data
                 const keys = Object.keys(activeRuns);
                 const runId = parseInt(keys[0]);
                 expect(keys.length).toEqual(1);
@@ -314,6 +315,7 @@ describe('RunService', () => {
                     testers: []
                 });
 
+                // Check that previously deactivated pair is now active
                 await techPairDeactivate.reload();
                 expect(techPairDeactivate.active).toBe(false);
 
@@ -321,6 +323,17 @@ describe('RunService', () => {
                     { where: { active: true } }
                 );
                 expect(activeBrowserVersionToAtVersions.length).toBe(1);
+
+                // Verify that new browser/at pair was created
+                const activeCreatedBrowserVersion = await db.BrowserVersion.findAll(
+                    { where: { id: activeBrowserVersionToAtVersions[0].browser_version_id }}
+                );
+                expect(activeCreatedBrowserVersion[0].version).toBe(browserVersionNumber2);
+
+                const activeCreatedAtVersion = await db.AtVersion.findAll(
+                    { where: { id: activeBrowserVersionToAtVersions[0].at_version_id }}
+                );
+                expect(activeCreatedAtVersion[0].version).toBe(atVersionNumber2);
             });
         });
         it('sets an existing inactive run to active', async () => {
