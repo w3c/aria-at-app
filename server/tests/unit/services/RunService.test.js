@@ -592,6 +592,22 @@ describe('RunService', () => {
     });
 
     describe('RunService.getActiveRunsConfiguration', () => {
+        it('should return the active config without anything active', async () => {
+            await dbCleaner(async () => {
+                const config = await RunService.getActiveRunsConfiguration();
+                expect(config).toEqual({
+                    active_test_version: {},
+                    active_at_browser_pairs: [],
+                    active_apg_examples: [],
+                    browsers: [
+                        { id: expect.any(Number), name: db.Browser.FIREFOX },
+                        { id: expect.any(Number), name: db.Browser.CHROME },
+                        { id: expect.any(Number), name: db.Browser.SAFARI }
+                    ]
+                });
+            });
+        });
+
         it('should return the active config', async () => {
             await dbCleaner(async () => {
                 const testVersion = await db.TestVersion.findOne({

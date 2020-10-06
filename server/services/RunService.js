@@ -458,6 +458,43 @@ async function getPublishedRuns() {
     }
 }
 
+function sequelizeTestVersionToJsonTestSuiteVersion(sequelizeTestVersion) {
+    if (sequelizeTestVersion) {
+        const supportedAts = sequelizeTestVersion.Ats.reduce((acc, at) => {
+            acc.push({
+                at_name_id: at.at_name_id,
+                at_name: at.AtName.name,
+                at_key: at.key,
+                at_id: at.id
+            });
+            return acc;
+        }, []);
+        const apgExamples = sequelizeTestVersion.ApgExamples.reduce(
+            (acc, apgExample) => {
+                acc.push({
+                    id: apgExample.id,
+                    name: apgExample.name,
+                    directory: apgExample.directory
+                });
+                return acc;
+            },
+            []
+        );
+        return {
+            id: sequelizeTestVersion.id,
+            git_repo: sequelizeTestVersion.git_repo,
+            git_tag: sequelizeTestVersion.git_tag,
+            git_hash: sequelizeTestVersion.git_hash,
+            git_commit_msg: sequelizeTestVersion.git_commit_msg,
+            date: sequelizeTestVersion.date,
+            supported_ats: supportedAts,
+            apg_examples: apgExamples
+        };
+    } else {
+        return {};
+    }
+}
+
 /**
  * Gets the currently active test version, apg examples and browser version to AT version pairs
  *
@@ -470,30 +507,15 @@ async function getActiveRunsConfiguration() {
             where: { active: true },
             include: [db.ApgExample, { model: db.At, include: db.AtName }]
         });
-        const supportedAts = activeTestVersion.Ats.reduce((acc, at) => {
-            acc.push({
-                at_name_id: at.at_name_id,
-                at_name: at.AtName.name,
-                at_key: at.key,
-                at_id: at.id
-            });
-            return acc;
-        }, []);
-        const apgExamples = activeTestVersion.ApgExamples.reduce(
-            (acc, apgExample) => {
-                acc.push({
-                    id: apgExample.id,
-                    name: apgExample.name,
-                    directory: apgExample.directory
-                });
-                return acc;
-            },
-            []
+        const activeTestVersionJson = sequelizeTestVersionToJsonTestSuiteVersion(
+            activeTestVersion
         );
-        const activeApgExampleIds = activeTestVersion.ApgExamples.filter(
-            apgExample => apgExample.active
-        ).map(apgExample => apgExample.id);
-
+        let activeApgExampleIds = [];
+        if (activeTestVersion) {
+            activeApgExampleIds = activeTestVersion.ApgExamples.filter(
+                apgExample => apgExample.active
+            ).map(apgExample => apgExample.id);
+        }
         const activeAtBrowserPairs = await db.BrowserVersionToAtVersion.findAll(
             {
                 where: { active: true },
@@ -516,16 +538,7 @@ async function getActiveRunsConfiguration() {
             return acc;
         }, []);
         return {
-            active_test_version: {
-                id: activeTestVersion.id,
-                git_repo: activeTestVersion.git_repo,
-                git_tag: activeTestVersion.git_tag,
-                git_hash: activeTestVersion.git_hash,
-                git_commit_msg: activeTestVersion.git_commit_msg,
-                date: activeTestVersion.date,
-                supported_ats: supportedAts,
-                apg_examples: apgExamples
-            },
+            active_test_version: activeTestVersionJson,
             active_apg_examples: activeApgExampleIds,
             active_at_browser_pairs: activeAtBrowserPairs,
             browsers: browsers
