@@ -9,7 +9,7 @@ import {
     deleteUsersFromRun,
     saveUsersToRuns,
     saveRunStatus
-} from '../../actions/cycles';
+} from '../../actions/runs';
 
 class TestQueueRow extends Component {
     constructor(props) {
@@ -54,30 +54,30 @@ class TestQueueRow extends Component {
     }
 
     handleUnassignSelfClick() {
-        const { dispatch, cycleId, userId, runId } = this.props;
-        dispatch(deleteUsersFromRun([userId], runId, cycleId));
+        const { dispatch, userId, runId } = this.props;
+        dispatch(deleteUsersFromRun([userId], runId));
     }
 
     handleAssignSelfClick() {
-        const { dispatch, cycleId, userId, runId } = this.props;
-        dispatch(saveUsersToRuns([userId], [runId], cycleId));
+        const { dispatch, userId, runId } = this.props;
+        dispatch(saveUsersToRuns([userId], [runId]));
     }
 
     assignTesterSelect(event) {
-        const { dispatch, cycleId, runId } = this.props;
+        const { dispatch, runId } = this.props;
         let uid = parseInt(event.target.value);
-        dispatch(saveUsersToRuns([uid], [runId], cycleId));
+        dispatch(saveUsersToRuns([uid], [runId]));
     }
 
     unassignTesterSelect(event) {
-        const { dispatch, cycleId, runId } = this.props;
+        const { dispatch, runId } = this.props;
         let uid = parseInt(event.target.value);
-        dispatch(deleteUsersFromRun([uid], runId, cycleId));
+        dispatch(deleteUsersFromRun([uid], runId));
     }
 
     updateRunStatus(status) {
-        const { dispatch, cycleId, runId } = this.props;
-        dispatch(saveRunStatus(status, runId, cycleId));
+        const { dispatch, runId } = this.props;
+        dispatch(saveRunStatus(status, runId));
     }
 
     componentDidUpdate(prevProps) {
@@ -188,7 +188,7 @@ class TestQueueRow extends Component {
     }
 
     renderAdminOptions() {
-        const { cycleId, runId, testers, usersById, runStatus } = this.props;
+        const { runId, testers, usersById, runStatus } = this.props;
 
         let testrun = this.testRun();
 
@@ -249,7 +249,7 @@ class TestQueueRow extends Component {
                             return (
                                 <Dropdown.Item
                                     role="menuitem"
-                                    href={`/cycles/${cycleId}/run/${runId}?user=${t}`}
+                                    href={`/run/${runId}?user=${t}`}
                                     key={nextId()}
                                 >
                                     {usersById[t].username}
@@ -345,7 +345,6 @@ class TestQueueRow extends Component {
     render() {
         const {
             admin,
-            cycleId,
             userId,
             runId,
             runStatus,
@@ -359,9 +358,7 @@ class TestQueueRow extends Component {
         let designPatternLinkOrName;
         if (currentUserAssigned) {
             designPatternLinkOrName = (
-                <Link to={`/cycles/${cycleId}/run/${runId}`}>
-                    {apgExampleName}
-                </Link>
+                <Link to={`/run/${runId}`}>{apgExampleName}</Link>
             );
         } else {
             designPatternLinkOrName = apgExampleName;
@@ -396,16 +393,10 @@ class TestQueueRow extends Component {
         }
 
         if (runStatus === 'draft') {
-            results = (
-                <Link to={`/results/cycles/${cycleId}/run/${runId}`}>
-                    DRAFT RESULTS
-                </Link>
-            );
+            results = <Link to={`/results/run/${runId}`}>DRAFT RESULTS</Link>;
         } else if (runStatus === 'final') {
             results = (
-                <Link to={`/results/cycles/${cycleId}/run/${runId}`}>
-                    PUBLISHED RESULTS
-                </Link>
+                <Link to={`/results/run/${runId}`}>PUBLISHED RESULTS</Link>
             );
         }
 
@@ -456,7 +447,6 @@ class TestQueueRow extends Component {
 
 TestQueueRow.propTypes = {
     admin: PropTypes.bool,
-    cycleId: PropTypes.number,
     runId: PropTypes.number,
     runStatus: PropTypes.string,
     apgExampleName: PropTypes.string,

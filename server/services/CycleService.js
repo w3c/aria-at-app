@@ -500,17 +500,30 @@ async function getTestsForRunsForCycle(cycleId) {
     try {
         // We need to get all the runs for which the user has been configured
         // or for which there is an AT that the user can test
-        let runs = (
-            await db.sequelize.query(`
-              select
-                *
-              from
-                run_data
-              where
-                run_data.test_cycle_id = ${cycleId}
-        `)
-        )[0];
 
+        // Temporary until we move this out of cycle, stoping using "run_data" and change API to accept list of run_ids
+        let runs;
+        if (!cycleId) {
+            runs = (
+                await db.sequelize.query(`
+                  select
+                    *
+                  from
+                    run_data
+               `)
+            )[0];
+        } else {
+            runs = (
+                await db.sequelize.query(`
+                  select
+                    *
+                  from
+                    run_data
+                  where
+                    run_data.test_cycle_id = ${cycleId}
+               `)
+            )[0];
+        }
         let testsForRun = {};
 
         for (let run of runs) {

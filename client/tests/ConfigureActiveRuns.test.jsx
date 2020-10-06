@@ -3,12 +3,12 @@ import Enzyme, { shallow } from 'enzyme';
 import EnzymeAdapter from 'enzyme-adapter-react-16';
 Enzyme.configure({ adapter: new EnzymeAdapter() });
 import { findByTestAttr, storeFactory } from './util';
-import InitiateCycle from '../components/InitiateCycle';
+import ConfigureActiveRuns from '../components/ConfigureActiveRuns';
 
 const setup = (initialState = {}) => {
     const store = storeFactory(initialState);
     const wrapper = shallow(
-        <InitiateCycle
+        <ConfigureActiveRuns
             store={store}
             match={{ params: { cycleId: 1, runId: 1 } }}
         />

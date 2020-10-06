@@ -3,11 +3,8 @@ import {
     DELETE_CYCLE,
     SAVE_CYCLE,
     SAVE_RESULT,
-    SAVE_RUN_STATUS,
     TEST_SUITE_VERSIONS,
     TESTS_BY_RUN_ID,
-    SAVE_USERS_TO_RUNS,
-    DELETE_USERS_FROM_RUN,
     CREATE_ISSUE_SUCCESS,
     ISSUES_BY_TEST_ID,
     CONFLICTS_BY_TEST_RESULTS
@@ -23,7 +20,6 @@ const initialState = {
 
 export default (state = initialState, action) => {
     let cycleId = action.payload ? action.payload.cycleId : undefined;
-    let runId = action.payload ? action.payload.runId : undefined;
 
     switch (action.type) {
         case TEST_SUITE_VERSIONS: {
@@ -85,75 +81,6 @@ export default (state = initialState, action) => {
                 testsByRunId: {
                     ...state.testsByRunId,
                     ...action.payload.testsByRunId
-                }
-            });
-        }
-        case SAVE_RUN_STATUS: {
-            let { run_status, run_status_id } = action.payload;
-            runId = action.payload.id;
-
-            let currentCycle = state.cyclesById[cycleId];
-            let newState = Object.assign({}, state, {
-                cyclesById: {
-                    ...state.cyclesById,
-                    [cycleId]: {
-                        ...currentCycle,
-                        runsById: {
-                            ...currentCycle.runsById
-                        }
-                    }
-                }
-            });
-
-            newState.cyclesById[cycleId].runsById[
-                runId
-            ].run_status = run_status;
-            newState.cyclesById[cycleId].runsById[
-                runId
-            ].run_status_id = run_status_id;
-
-            return newState;
-        }
-
-        case SAVE_USERS_TO_RUNS: {
-            let savedUsersForRuns = action.payload.savedRuns;
-
-            let currentCycle = state.cyclesById[cycleId];
-            let newState = Object.assign({}, state, {
-                cyclesById: {
-                    ...state.cyclesById,
-                    [cycleId]: {
-                        ...currentCycle,
-                        runsById: {
-                            ...currentCycle.runsById
-                        }
-                    }
-                }
-            });
-
-            for (let runId in savedUsersForRuns) {
-                newState.cyclesById[cycleId].runsById[runId].testers =
-                    savedUsersForRuns[runId];
-            }
-            return newState;
-        }
-        case DELETE_USERS_FROM_RUN: {
-            let users = action.payload.usersForRun;
-
-            let currentCycle = state.cyclesById[cycleId];
-            return Object.assign({}, state, {
-                cyclesById: {
-                    ...state.cyclesById,
-                    [cycleId]: {
-                        ...currentCycle,
-                        runsById: {
-                            ...currentCycle.runsById,
-                            [runId]: {
-                                ...currentCycle.runsById[runId],
-                                testers: users
-                            }
-                        }
-                    }
                 }
             });
         }

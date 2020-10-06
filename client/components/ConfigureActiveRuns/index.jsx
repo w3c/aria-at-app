@@ -153,14 +153,10 @@ class ConfigureActiveRuns extends Component {
 
         // Temporary change until this whole page is reconsidered
         const atBrowserPairs = [];
-        const atIdToAtNameId = versionData.supported_ats.reduce(
-            (acc, at) => {
-                acc[at.at_id] = at.at_name_id;
-                return acc;
-            }, {}
-        );
-
-
+        const atIdToAtNameId = versionData.supported_ats.reduce((acc, at) => {
+            acc[at.at_id] = at.at_name_id;
+            return acc;
+        }, {});
 
         const runs = [];
         for (
@@ -568,7 +564,7 @@ class ConfigureActiveRuns extends Component {
                         disabled={disableInitiateButton}
                         onClick={this.configureActiveRuns}
                     >
-                        Initiate Cycle
+                        Update Active Run Configuration
                     </Button>
                 </div>
             </Fragment>

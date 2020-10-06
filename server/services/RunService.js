@@ -385,6 +385,7 @@ async function sequelizeRunsToJsonRuns(sequelizeRuns) {
             at_id: at.id,
             at_key: at.key,
             at_name: run.BrowserVersionToAtVersion.AtVersion.AtName.name,
+            at_name_id: run.BrowserVersionToAtVersion.AtVersion.AtName.id,
             at_version: run.BrowserVersionToAtVersion.AtVersion.version,
             apg_example_directory: run.ApgExample.directory,
             apg_example_name: run.ApgExample.name,

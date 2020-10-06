@@ -4,18 +4,19 @@ import { Link } from 'react-router-dom';
 import { Table } from 'react-bootstrap';
 import { Helmet } from 'react-helmet';
 import { connect } from 'react-redux';
-import { getTestCycles, getTestsForRunsCycle } from '../../actions/cycles';
+import { getTestsForRunsCycle } from '../../actions/cycles';
 import { getAllUsers } from '../../actions/users';
+import { getActiveRuns } from '../../actions/runs';
 import nextId from 'react-id-generator';
 
 import TestQueueRun from '@components/TestQueueRun';
 
 class TestQueue extends Component {
     componentDidMount() {
-        const { dispatch, cycle, cycleId, usersById } = this.props;
+        const { dispatch, activeRunsById, usersById } = this.props;
 
-        if (!cycle) {
-            dispatch(getTestCycles());
+        if (!activeRunsById) {
+            dispatch(getActiveRuns());
         }
 
         if (!Object.keys(usersById).length) {
@@ -25,17 +26,23 @@ class TestQueue extends Component {
         // TODO: Add better caching/cache invalidation.
         // Right now, everytime we go to the test queue page, we will fetch
         // the test results.
-        dispatch(getTestsForRunsCycle(cycleId));
+        dispatch(getTestsForRunsCycle());
     }
 
     renderAtBrowserList(runIds) {
-        const { userId, usersById, cycle, testsByRunId, admin } = this.props;
+        const {
+            userId,
+            usersById,
+            testsByRunId,
+            admin,
+            activeRunsById
+        } = this.props;
         const {
             at_name: atName,
             at_version: atVersion,
             browser_name: browserName,
             browser_version: browserVersion
-        } = cycle.runsById[runIds[0]];
+        } = activeRunsById[runIds[0]];
 
         let tableId = nextId('table_name_');
 
@@ -55,26 +62,27 @@ class TestQueue extends Component {
                     </thead>
                     <tbody>
                         {runIds.map(runId => {
+                            const run = activeRunsById[runId];
                             const {
-                                apg_example_name: apgExampleName,
+                                apg_example_name,
                                 testers,
                                 at_name_id,
-                                run_status
-                            } = cycle.runsById[runId];
+                                run_status,
+                                id
+                            } = run;
                             return (
                                 <TestQueueRun
-                                    key={runId}
-                                    runId={runId}
+                                    key={id}
+                                    runId={id}
                                     runStatus={run_status}
-                                    apgExampleName={apgExampleName}
+                                    apgExampleName={apg_example_name}
                                     testers={testers}
-                                    cycleId={cycle.id}
                                     usersById={usersById}
                                     userId={userId}
                                     atName={atName}
                                     atNameId={at_name_id}
                                     browserName={browserName}
-                                    testsForRun={testsByRunId[runId]}
+                                    testsForRun={testsByRunId[id]}
                                     admin={admin}
                                 />
                             );
@@ -87,17 +95,20 @@ class TestQueue extends Component {
 
     render() {
         const {
-            cycle,
-            cycleId,
             testsFetched,
             usersById,
             userId,
-            admin
+            admin,
+            activeRunsById
         } = this.props;
 
         const loading = <div data-test="test-queue-loading">Loading</div>;
 
-        if (!testsFetched || !cycle || !Object.keys(usersById).length) {
+        if (
+            !testsFetched ||
+            !activeRunsById ||
+            !Object.keys(usersById).length
+        ) {
             return loading;
         }
 
@@ -129,40 +140,36 @@ class TestQueue extends Component {
         }
 
         const atBrowserRunSets = [];
-        if (cycle) {
-            for (let runId in cycle.runsById) {
-                const run = cycle.runsById[runId];
-                const { at_name_id, at_name, browser_name } = run;
+        for (let runId of Object.keys(activeRunsById)) {
+            const run = activeRunsById[runId];
+            const { at_name_id, at_name, browser_name } = run;
 
-                // If you are not an admin, you cannot see runs you cannot perform
-                if (!admin) {
-                    if (!configuredAtNameIds.includes(at_name_id)) {
-                        continue;
-                    }
+            // If you are not an admin, you cannot see runs you cannot perform
+            if (!admin) {
+                if (!configuredAtNameIds.includes(at_name_id)) {
+                    continue;
                 }
+            }
 
-                let atBrowserRun = atBrowserRunSets.filter(r => {
-                    return (
-                        r.at_name === at_name && r.browser_name === browser_name
-                    );
+            let atBrowserRun = atBrowserRunSets.filter(r => {
+                return r.at_name === at_name && r.browser_name === browser_name;
+            });
+
+            if (atBrowserRun.length === 1) {
+                atBrowserRun[0].runs.push(run.id);
+            } else {
+                atBrowserRunSets.push({
+                    at_name,
+                    browser_name,
+                    runs: [run.id]
                 });
-
-                if (atBrowserRun.length === 1) {
-                    atBrowserRun[0].runIds.push(parseInt(runId));
-                } else {
-                    atBrowserRunSets.push({
-                        at_name,
-                        browser_name,
-                        runIds: [parseInt(runId)]
-                    });
-                }
             }
         }
 
         return (
             <Fragment>
                 <Helmet>
-                    <title>{`Test queue (for cycle: ${cycle.name}) | ARIA-AT`}</title>
+                    <title>{`Test queue | ARIA-AT`}</title>
                 </Helmet>
                 <h1>Test Queue</h1>
                 <p>
@@ -172,9 +179,8 @@ class TestQueue extends Component {
                     `Assign yourself a test plan or start executing one that it's
                         already assigned to you.`}
                 </p>
-                <h2>{cycle ? cycle.name : cycleId}</h2>
                 {atBrowserRunSets.map(abr =>
-                    this.renderAtBrowserList(abr.runIds)
+                    this.renderAtBrowserList(abr.runs)
                 )}
             </Fragment>
         );
@@ -182,9 +188,8 @@ class TestQueue extends Component {
 }
 
 TestQueue.propTypes = {
+    activeRunsById: PropTypes.object,
     admin: PropTypes.bool,
-    cycle: PropTypes.object,
-    cycleId: PropTypes.number,
     testsByRunId: PropTypes.object,
     usersById: PropTypes.object,
     userId: PropTypes.number,
@@ -192,19 +197,18 @@ TestQueue.propTypes = {
     dispatch: PropTypes.func
 };
 
-const mapStateToProps = (state, ownProps) => {
-    const { cyclesById, testsByRunId } = state.cycles;
+const mapStateToProps = state => {
+    const { activeRunsById } = state.runs;
+    const { testsByRunId } = state.cycles;
     const { usersById } = state.users;
     const userId = state.user.id;
     const roles = state.user.roles;
-    const cycleId = parseInt(ownProps.match.params.cycleId);
-
-    let cycle = cyclesById[cycleId];
     let testsFetched = true;
-    if (!cycle) {
+
+    if (!activeRunsById) {
         testsFetched = false;
     } else {
-        for (let runId of Object.keys(cycle.runsById)) {
+        for (let runId of Object.keys(activeRunsById)) {
             if (!testsByRunId[runId]) {
                 testsFetched = false;
                 break;
@@ -215,8 +219,7 @@ const mapStateToProps = (state, ownProps) => {
     let admin = (roles || []).includes('admin');
 
     return {
-        cycle,
-        cycleId,
+        activeRunsById,
         testsByRunId,
         testsFetched,
         usersById,
