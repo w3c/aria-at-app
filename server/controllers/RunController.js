@@ -1,9 +1,8 @@
 const RunService = require('../services/RunService');
 
 async function configureRuns(req, res) {
-    const cycle = req.body.data;
     try {
-        const savedRun = await RunService.configureRuns(cycle);
+        const savedRun = await RunService.configureRuns(req.body.data);
         res.status(201).json(savedRun);
     } catch (error) {
         res.status(400);
@@ -14,8 +13,8 @@ async function configureRuns(req, res) {
 
 async function getActiveRuns(req, res) {
     try {
-        const cycles = await RunService.getActiveRuns();
-        res.status(201).json(cycles);
+        const runs = await RunService.getActiveRuns();
+        res.status(201).json(runs);
     } catch (error) {
         res.status(400);
         res.end();
@@ -25,8 +24,19 @@ async function getActiveRuns(req, res) {
 
 async function getPublishedRuns(req, res) {
     try {
-        const cycles = await RunService.getPublishedRuns();
-        res.status(201).json(cycles);
+        const runs = await RunService.getPublishedRuns();
+        res.status(201).json(runs);
+    } catch (error) {
+        res.status(400);
+        res.end();
+        console.error(`Error caught in RunController: ${error}`);
+    }
+}
+
+async function getActiveRunsConfiguration(req, res) {
+    try {
+        const config = await RunService.getActiveRunsConfiguration();
+        res.status(201).json(config);
     } catch (error) {
         res.status(400);
         res.end();
@@ -37,5 +47,6 @@ async function getPublishedRuns(req, res) {
 module.exports = {
     configureRuns,
     getActiveRuns,
-    getPublishedRuns
+    getPublishedRuns,
+    getActiveRunsConfiguration
 };
