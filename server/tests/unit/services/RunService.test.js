@@ -82,7 +82,6 @@ describe('RunService', () => {
                 // is active
             });
         });
-
         it('should create all possible runs and deactive all old runs if only new runs are created', async () => {
             await dbCleaner(async () => {
                 // New test version with previously active test versions
@@ -439,6 +438,109 @@ describe('RunService', () => {
                 // Verify that pre-existing run is now active
                 await previouslyInactiveRun.reload();
                 expect(previouslyInactiveRun.active).toBe(true);
+            });
+        });
+        it('sets one run inactive, one run active, and creates a new run when the apg examples change', async () => {
+            await dbCleaner(async () => {
+                // Data setup for one active run and one inactive run
+                const browserVersionNumber = '1.2.3';
+                const atVersionNumber = '3.2.1';
+
+                const testVersion = await db.TestVersion.findOne({
+                    where: {
+                        git_hash: process.env.IMPORT_ARIA_AT_TESTS_COMMIT_1
+                    }
+                });
+
+                // Use all available APG Examples for this test
+                const apgExamples = await db.ApgExample.findAll({
+                    where: { test_version_id: testVersion.id }
+                });
+
+                const at = await db.At.findOne({
+                    where: { test_version_id: testVersion.id },
+                    include: [db.AtName]
+                });
+
+                const atVersion = await db.AtVersion.create({
+                    at_name_id: at.AtName.id,
+                    version: atVersionNumber
+                });
+
+                const browser = await db.Browser.findOne();
+                const browserVersion = await db.BrowserVersion.create({
+                    browser_id: browser.id,
+                    version: browserVersionNumber
+                });
+
+                const runStatus = await db.RunStatus.findOne({
+                    where: { name: db.RunStatus.RAW }
+                });
+
+                const user = await db.Users.create();
+                const testCycle = await db.TestCycle.create({
+                    test_version_id: testVersion.id,
+                    created_user_id: user.id
+                });
+
+                let tech = await db.BrowserVersionToAtVersion.create({
+                    at_version_id: atVersion.id,
+                    browser_version_id: browserVersion.id,
+                    active: true,
+                    run_status_id: runStatus.id
+                });
+
+                // Create an active run
+                const previouslyActiveRunEntry = await db.Run.create({
+                    browser_version_id: browserVersion.id,
+                    at_version_id: atVersion.id,
+                    at_id: at.id,
+                    test_cycle_id: testCycle.id,
+                    browser_version_to_at_versions_id: tech.id,
+                    apg_example_id: apgExamples[0].id,
+                    test_version_id: testVersion.id,
+                    active: true,
+                    run_status_id: runStatus.id
+                });
+
+                // Create an inactive run
+                const previouslyInactiveRunEntry = await db.Run.create({
+                    browser_version_id: browserVersion.id,
+                    at_version_id: atVersion.id,
+                    at_id: at.id,
+                    test_cycle_id: testCycle.id,
+                    browser_version_to_at_versions_id: tech.id,
+                    apg_example_id: apgExamples[1].id,
+                    test_version_id: testVersion.id,
+                    active: false,
+                    run_status_id: runStatus.id
+                });
+
+                let previouslyActiveRun = await db.Run.findOne({where:{ id: previouslyActiveRunEntry.id }});
+                let previouslyInactiveRun = await db.Run.findOne({where:{ id: previouslyInactiveRunEntry.id }});
+
+                const activeRuns = await RunService.configureRuns({
+                    test_version_id: testVersion.id,
+                    apg_example_ids: apgExamples.map(example => example.id).slice(1), // remove the first element of examples
+                    at_browser_pairs: [
+                        {
+                            at_name_id: at.at_name_id,
+                            at_version: atVersionNumber,
+                            browser_id: browser.id,
+                            browser_version: browserVersionNumber
+                        }
+                    ],
+                    run_status_id: runStatus.id
+                });
+
+                await previouslyActiveRun.reload();
+                expect(previouslyActiveRun.active).toBe(false);
+
+                await previouslyInactiveRun.reload();
+                expect(previouslyInactiveRun.active).toBe(true)
+
+                const newlyCreatedRun = Object.values(activeRuns).filter(run => run.id !== previouslyActiveRun.id && run.id !== previouslyInactiveRun.id);
+                expect(newlyCreatedRun.length).toBe(1);
             });
         });
     });
