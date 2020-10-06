@@ -2,7 +2,6 @@ import React from 'react';
 import { Route, Redirect } from 'react-router-dom';
 
 import App from '@components/App';
-import CycleSummary from '@components/CycleSummary';
 import ConfigureActiveRuns from '@components/ConfigureActiveRuns';
 import ConfirmAuth from '@components/ConfirmAuth';
 import Home from '@components/Home';
@@ -10,7 +9,6 @@ import NotFound from '@components/NotFound';
 import RunResultsPage from '@components/RunResultsPage';
 import ResultsPage from '@components/ResultsPage';
 import SignupInstructions from '@components/SignupInstructions';
-import TesterHome from '@components/TesterHome';
 import TestQueue from '@components/TestQueue';
 import TestRun from '@components/TestRun';
 import UserSettings from '@components/UserSettings';
@@ -41,7 +39,8 @@ export default [
                 }
             },
             {
-                path: '/test-queue/:cycleId(\\d+)',
+                path: '/test-queue',
+                exact: true,
                 component: () => {
                     return (
                         <ConfirmAuth requiredPermission="tester">
@@ -51,31 +50,9 @@ export default [
                 }
             },
             {
-                path: '/test-queue',
-                exact: true,
-                component: () => {
-                    return (
-                        <ConfirmAuth requiredPermission="tester">
-                            <Route component={TesterHome} />
-                        </ConfirmAuth>
-                    );
-                }
-            },
-            {
                 path: '/results',
                 exact: true,
                 component: ResultsPage
-            },
-            {
-                path: '/cycles/:cycleId(\\d+)',
-                exact: true,
-                component: () => {
-                    return (
-                        <ConfirmAuth requiredPermission="admin">
-                            <Route component={CycleSummary} />
-                        </ConfirmAuth>
-                    );
-                }
             },
             {
                 path: '/admin/configure-runs',
@@ -89,11 +66,11 @@ export default [
                 }
             },
             {
-                path: '/results/cycles/:cycleId(\\d+)/run/:runId(\\d+)',
+                path: '/results/run/:runId(\\d+)',
                 component: RunResultsPage
             },
             {
-                path: '/cycles/:cycleId(\\d+)/run/:runId(\\d+)',
+                path: '/run/:runId(\\d+)',
                 component: TestRun
             },
             {

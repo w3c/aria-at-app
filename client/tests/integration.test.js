@@ -32,6 +32,11 @@ describe('sign in actions dispatchers', () => {
                 testSuiteVersions: [],
                 conflictsByTestId: {}
             },
+            runs: {
+                activeRunsById: undefined,
+                publishedRunsById: undefined,
+                activeRunConfiguration: undefined
+            },
             ats: [],
             users: {
                 usersById: {}
@@ -68,6 +73,11 @@ describe('sign in actions dispatchers', () => {
                 testsByRunId: {},
                 testSuiteVersions: [],
                 conflictsByTestId: {}
+            },
+            runs: {
+                activeRunsById: undefined,
+                publishedRunsById: undefined,
+                activeRunConfiguration: undefined
             },
             ats: [],
             users: {
@@ -110,6 +120,11 @@ describe('ats action dispatchers', () => {
                 testSuiteVersions: [],
                 conflictsByTestId: {}
             },
+            runs: {
+                activeRunsById: undefined,
+                publishedRunsById: undefined,
+                activeRunConfiguration: undefined
+            },
             ats: {
                 names: ['JAWS', 'NVDA', 'VoiceOver']
             },
@@ -148,6 +163,11 @@ describe('users action dispatchers', () => {
                 testsByRunId: {},
                 testSuiteVersions: [],
                 conflictsByTestId: {}
+            },
+            runs: {
+                activeRunsById: undefined,
+                publishedRunsById: undefined,
+                activeRunConfiguration: undefined
             },
             ats: [],
             users: {

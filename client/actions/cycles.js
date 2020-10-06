@@ -5,11 +5,8 @@ import {
     DELETE_CYCLE,
     SAVE_CYCLE,
     SAVE_RESULT,
-    SAVE_RUN_STATUS,
     TEST_SUITE_VERSIONS,
     TESTS_BY_RUN_ID,
-    SAVE_USERS_TO_RUNS,
-    DELETE_USERS_FROM_RUN,
     CREATE_ISSUE_SUCCESS,
     ISSUES_BY_TEST_ID,
     CONFLICTS_BY_TEST_RESULTS
@@ -22,11 +19,6 @@ export const saveResultDispatch = payload => ({
 
 export const saveCycleDispatch = payload => ({
     type: SAVE_CYCLE,
-    payload
-});
-
-export const saveRunStatusDispatch = payload => ({
-    type: SAVE_RUN_STATUS,
     payload
 });
 
@@ -47,16 +39,6 @@ export const testSuiteVersionsDispatch = payload => ({
 
 export const testsByRunIdDispatch = payload => ({
     type: TESTS_BY_RUN_ID,
-    payload
-});
-
-export const saveUsersToRunsDispatch = payload => ({
-    type: SAVE_USERS_TO_RUNS,
-    payload
-});
-
-export const deleteUsersFromRunDispatch = payload => ({
-    type: DELETE_USERS_FROM_RUN,
     payload
 });
 
@@ -120,36 +102,6 @@ export function getTestSuiteVersions() {
     return async function(dispatch) {
         const response = await axios.get('/api/cycle/testversions');
         return dispatch(testSuiteVersionsDispatch(response.data));
-    };
-}
-
-export function saveRunStatus(status, runId, cycleId) {
-    return async function(dispatch) {
-        const response = await axios.post('/api/cycle/run/status', {
-            data: { run_status: status, id: runId }
-        });
-        return dispatch(saveRunStatusDispatch({ ...response.data, cycleId }));
-    };
-}
-
-export function saveUsersToRuns(users, runs, cycleId) {
-    return async function(dispatch) {
-        const response = await axios.post('/api/user/run', {
-            users,
-            runs
-        });
-        return dispatch(saveUsersToRunsDispatch({ ...response.data, cycleId }));
-    };
-}
-
-export function deleteUsersFromRun(users, runId, cycleId) {
-    return async function(dispatch) {
-        const response = await axios.delete('/api/user/run', {
-            data: { users, runId }
-        });
-        return dispatch(
-            deleteUsersFromRunDispatch({ ...response.data, cycleId })
-        );
     };
 }
 
