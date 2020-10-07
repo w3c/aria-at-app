@@ -486,7 +486,16 @@ async function getPublishedRuns() {
             where: {},
             include: [
                 { model: db.RunStatus, where: { name: db.RunStatus.FINAL } },
-                db.ApgExample,
+                {
+                    model: db.ApgExample,
+                    include: {
+                        model: db.Test,
+                        include: {
+                            model: db.TestResult,
+                            include: db.TestStatus
+                        }
+                    }
+                },
                 {
                     model: db.BrowserVersionToAtVersion,
                     include: [

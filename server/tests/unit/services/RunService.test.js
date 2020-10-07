@@ -1111,7 +1111,7 @@ describe('RunService', () => {
             });
         });
 
-        it('should return the data from an active run', async () => {
+        it('should return the data from an published run', async () => {
             await dbCleaner(async () => {
                 const testVersion = await db.TestVersion.findOne({
                     where: {
@@ -1124,6 +1124,13 @@ describe('RunService', () => {
                     test_version_id: testVersion.id,
                     directory: apgExampleDirectory,
                     name: apgExampleName
+                });
+                const test = await db.Test.create({
+                    name: 'Operate a checkbox',
+                    file: 'tests/checkbox/test-01-operate',
+                    execution_order: 1,
+                    apg_example_id: apgExample.id,
+                    test_version_id: testVersion.id
                 });
                 const user = await db.Users.create();
                 const testCycle = await db.TestCycle.create({
@@ -1189,18 +1196,14 @@ describe('RunService', () => {
                     run_status_id: runStatus.id,
                     test_version_id: testVersion.id
                 });
-
                 await db.TesterToRun.create({
                     run_id: run.id,
                     user_id: user.id
                 });
-
                 const testStatus = await db.TestStatus.findOne({
                     where: { name: db.TestStatus.COMPLETE }
                 });
-
                 const result = '{ result: "It worked" }';
-
                 const testResult = await db.TestResult.create({
                     test_id: test.id,
                     run_id: run.id,
@@ -1208,7 +1211,6 @@ describe('RunService', () => {
                     status_id: testStatus.id,
                     result: result
                 });
-
                 // TestResult for different Run should not be included
                 await db.TestResult.create({
                     run_id: inactiveRun.id,
@@ -1427,6 +1429,44 @@ describe('RunService', () => {
                     test_version_id: testVersion.id
                 });
 
+                const draftRunStatus = await db.RunStatus.findOne({
+                    where: { name: db.RunStatus.DRAFT }
+                });
+                const draftRun = await db.Run.create({
+                    test_cycle_id: testCycle.id,
+                    at_version_id: atVersion.id,
+                    at_id: at.id,
+                    browser_version_id: browserVersion.id,
+                    browser_version_to_at_versions_id:
+                        browserVersionToAtVersion.id,
+                    apg_example_id: apgExample.id,
+                    run_status_id: draftRunStatus.id,
+                    test_version_id: testVersion.id
+                });
+                await db.TesterToRun.create({
+                    run_id: run.id,
+                    user_id: user.id
+                });
+                const testStatus = await db.TestStatus.findOne({
+                    where: { name: db.TestStatus.COMPLETE }
+                });
+                const result = '{ result: "It worked" }';
+                const testResult = await db.TestResult.create({
+                    test_id: test.id,
+                    run_id: run.id,
+                    user_id: user.id,
+                    status_id: testStatus.id,
+                    result: result
+                });
+                // TestResult for different Run should not be included
+                await db.TestResult.create({
+                    run_id: draftRun.id,
+                    test_id: test.id,
+                    user_id: user.id,
+                    status_id: testStatus.id,
+                    result: result
+                });
+
                 const publishedRuns = await RunService.getPublishedRuns();
                 expect(Object.keys(publishedRuns).length).toEqual(1);
                 expect(publishedRuns[run.id]).toEqual({
@@ -1445,7 +1485,23 @@ describe('RunService', () => {
                     run_status_id: runStatus.id,
                     run_status: db.RunStatus.FINAL,
                     test_version_id: testVersion.id,
-                    testers: []
+                    testers: [user.id],
+                    tests: [
+                        {
+                            id: test.id,
+                            file: test.file,
+                            name: test.name,
+                            execution_order: test.execution_order,
+                            results: {
+                                [user.id]: {
+                                    id: testResult.id,
+                                    user_id: user.id,
+                                    status: db.TestStatus.COMPLETE,
+                                    result: result
+                                }
+                            }
+                        }
+                    ]
                 });
             });
         });
