@@ -24,6 +24,24 @@ const db = require('../models/index');
  * @property {string} run_status
  * @property {number} test_version_id
  * @property {Array.<number>} testers - user_id of assigned testers
+ * @property {Array.<Test>} tests
+ *
+ * @typedef Test
+ * @type {object}
+ * @property {number} id
+ * @property {string} name
+ * @property {string} file
+ * @property {number} execution_order
+ * @property {Object.<number, TestResult>} results - a mapping from user_id to
+ *                                                   test results
+ *
+ *
+ * @typedef TestResult
+ * @type {object}
+ * @property {number} id
+ * @property {number} user_id
+ * @property {string} status (test_status.name)
+ * @property {string} result (jsonb)
  *
  * @typedef ApgExample
  * @type {object}
@@ -374,7 +392,6 @@ async function sequelizeRunsToJsonRuns(sequelizeRuns) {
     return sequelizeRuns.reduce((acc, run) => {
         let atNameId = run.BrowserVersionToAtVersion.AtVersion.AtName.id;
         let at = ats.find(at => at.at_name_id == atNameId);
-
         acc[run.id] = {
             id: run.id,
             browser_id: run.BrowserVersionToAtVersion.BrowserVersion.browser_id,
@@ -393,7 +410,27 @@ async function sequelizeRunsToJsonRuns(sequelizeRuns) {
             run_status_id: run.run_status_id,
             run_status: run.RunStatus.name,
             test_version_id: run.test_version_id,
-            testers: run.Users.map(u => u.id)
+            testers: run.Users.map(u => u.id),
+            tests: run.ApgExample.Tests.reduce((acc, test) => {
+                acc.push({
+                    id: test.id,
+                    file: test.file,
+                    name: test.name,
+                    execution_order: test.execution_order,
+                    results: test.TestResults.filter(
+                        testResult => testResult.run_id == run.id
+                    ).reduce((acc, testResult) => {
+                        acc[testResult.user_id] = {
+                            id: testResult.id,
+                            user_id: testResult.user_id,
+                            status: testResult.TestStatus.name,
+                            result: testResult.result
+                        };
+                        return acc;
+                    }, {})
+                });
+                return acc;
+            }, [])
         };
         return acc;
     }, {});
@@ -410,7 +447,16 @@ async function getActiveRuns() {
             where: { active: true },
             include: [
                 db.RunStatus,
-                db.ApgExample,
+                {
+                    model: db.ApgExample,
+                    include: {
+                        model: db.Test,
+                        include: {
+                            model: db.TestResult,
+                            include: db.TestStatus
+                        }
+                    }
+                },
                 {
                     model: db.BrowserVersionToAtVersion,
                     include: [

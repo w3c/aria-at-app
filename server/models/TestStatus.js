@@ -1,5 +1,5 @@
 module.exports = function(sequelize, DataTypes) {
-    return sequelize.define(
+    const model = sequelize.define(
         'TestStatus',
         {
             id: {
@@ -18,4 +18,10 @@ module.exports = function(sequelize, DataTypes) {
             tableName: 'test_status'
         }
     );
+
+    model.SKIPPED = 'skipped';
+    model.INCOMPLETE = 'incomplete';
+    model.COMPLETE = 'complete';
+
+    return model;
 };

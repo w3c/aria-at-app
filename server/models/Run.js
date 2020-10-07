@@ -115,6 +115,10 @@ module.exports = function(sequelize, DataTypes) {
                 name: 'user_id'
             }
         });
+        models.Run.belongsToMany(models.Test, {
+            through: 'apg_example',
+            scope: { method: 'byRun' }
+        });
     };
 
     return Run;

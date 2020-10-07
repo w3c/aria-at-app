@@ -1,5 +1,5 @@
 module.exports = function(sequelize, DataTypes) {
-    return sequelize.define(
+    const Test = sequelize.define(
         'Test',
         {
             id: {
@@ -42,4 +42,13 @@ module.exports = function(sequelize, DataTypes) {
             tableName: 'test'
         }
     );
+
+    Test.associate = function(models) {
+        models.Test.hasMany(models.TestResult, {
+            foreignKey: 'test_id',
+            sourceKey: 'id'
+        });
+    };
+
+    return Test;
 };
