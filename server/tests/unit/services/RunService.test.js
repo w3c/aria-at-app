@@ -65,7 +65,8 @@ describe('RunService', () => {
                     run_status_id: runStatus.id,
                     run_status: db.RunStatus.RAW,
                     test_version_id: testVersion.id,
-                    testers: []
+                    testers: [],
+                    tests: expect.any(Array)
                 });
 
                 await testVersion.reload();
@@ -207,7 +208,8 @@ describe('RunService', () => {
                     run_status_id: runStatus.id,
                     run_status: db.RunStatus.RAW,
                     test_version_id: testVersion2.id,
-                    testers: []
+                    testers: [],
+                    tests: expect.any(Array)
                 });
                 await testVersion.reload();
                 expect(testVersion.active).toBe(false);
@@ -1534,7 +1536,10 @@ describe('RunService', () => {
                 });
                 await testVersion.update({ active: true });
 
-                const apgExample1 = testVersion.ApgExamples[0];
+                const apgExampleDir = 'checkbox';
+                const apgExample1 = testVersion.ApgExamples.find(
+                    apgExample => apgExample.directory == apgExampleDir
+                );
                 await apgExample1.update({ active: true });
 
                 const atNameString = 'NVDA';
@@ -1581,7 +1586,7 @@ describe('RunService', () => {
                         git_hash: testVersion.git_hash,
                         git_commit_msg: testVersion.git_commit_msg,
                         date: testVersion.datetime,
-                        supported_ats: [
+                        supported_ats: expect.arrayContaining([
                             {
                                 at_id: expect.any(Number),
                                 at_key: 'voiceover_macos',
@@ -1600,8 +1605,8 @@ describe('RunService', () => {
                                 at_name: 'JAWS',
                                 at_name_id: expect.any(Number)
                             }
-                        ],
-                        apg_examples: [
+                        ]),
+                        apg_examples: expect.arrayContaining([
                             {
                                 id: expect.any(Number),
                                 directory: 'combobox-autocomplete-both',
@@ -1615,10 +1620,10 @@ describe('RunService', () => {
                             },
                             {
                                 id: apgExample1.id,
-                                directory: apgExample1.directory,
+                                directory: apgExampleDir,
                                 name: apgExample1.name
                             }
-                        ]
+                        ])
                     },
                     active_at_browser_pairs: [
                         {
