@@ -911,6 +911,123 @@ describe('RunService', () => {
                 });
             });
         });
+        it('should create new test run for a different test version and same apg exmaple, AT, and browser', async () => {
+            await dbCleaner(async () => {
+                const browserVersionNumber = '1.2.3';
+                const atVersionNumber = '3.2.1';
+
+                const testVersion = await db.TestVersion.findOne({
+                    where: {
+                        git_hash: process.env.IMPORT_ARIA_AT_TESTS_COMMIT_1
+                    }
+                });
+
+                const testVersion2 = await db.TestVersion.findOne({
+                    where: {
+                        git_hash: process.env.IMPORT_ARIA_AT_TESTS_COMMIT_2
+                    }
+                });
+
+                const at = await db.At.findOne({
+                    where: { test_version_id: testVersion.id },
+                    include: [db.AtName]
+                });
+
+                const at2 = await db.At.findOne({
+                    where: { test_version_id: testVersion2.id },
+                    include: [db.AtName]
+                });
+
+                const atVersion = await db.AtVersion.create({
+                    at_name_id: at.AtName.id,
+                    version: atVersionNumber
+                });
+                
+
+                const apgExample = await db.ApgExample.findOne({
+                    where: { test_version_id: testVersion.id }
+                });
+
+                const browser = await db.Browser.findOne();
+                const browserVersion = await db.BrowserVersion.create({
+                    browser_id: browser.id,
+                    version: browserVersionNumber
+                });
+
+                const runStatus = await db.RunStatus.findOne({
+                    where: { name: db.RunStatus.RAW }
+                });
+
+                const user = await db.Users.create();
+                const testCycle = await db.TestCycle.create({
+                    test_version_id: testVersion.id,
+                    created_user_id: user.id
+                });
+
+                let tech = await db.BrowserVersionToAtVersion.create({
+                    at_version_id: atVersion.id,
+                    browser_version_id: browserVersion.id,
+                    active: true,
+                    run_status_id: runStatus.id
+                });
+
+                // Create an inactive run with the older test version
+                const activeRunOlderTestVersion = await db.Run.create({
+                    browser_version_id: browserVersion.id,
+                    at_version_id: atVersion.id,
+                    at_id: at.id,
+                    test_cycle_id: testCycle.id,
+                    browser_version_to_at_versions_id: tech.id,
+                    apg_example_id: apgExample.id,
+                    test_version_id: testVersion.id,
+                    active: true,
+                    run_status_id: runStatus.id
+                });
+
+                const activeRuns = await RunService.configureRuns({
+                    test_version_id: testVersion2.id,
+                    apg_example_ids: [apgExample.id],
+                    at_browser_pairs: [
+                        {
+                            at_name_id: at.at_name_id,
+                            at_version: atVersionNumber,
+                            browser_id: browser.id,
+                            browser_version: browserVersionNumber
+                        }
+                    ],
+                    run_status_id: runStatus.id
+                });
+
+                // Ensure there is only one run
+                const keys = Object.keys(activeRuns);
+                expect(keys.length).toEqual(1);
+
+                // Verify that the run with older test version is deactivated
+                await activeRunOlderTestVersion.reload();
+                expect(activeRunOlderTestVersion.active).toBe(false);
+
+                // Verify that the only run has the newer test version
+                const runId = parseInt(keys[0]);
+                expect(activeRuns[runId]).toEqual({
+                    id: runId,
+                    browser_id: browser.id,
+                    browser_version: browserVersionNumber,
+                    browser_name: browser.name,
+                    at_id: at2.id,
+                    at_key: at2.key,
+                    at_name: at2.AtName.name,
+                    at_name_id: at2.AtName.id,
+                    at_version: atVersionNumber,
+                    apg_example_directory: apgExample.directory,
+                    apg_example_name: apgExample.name,
+                    apg_example_id: apgExample.id,
+                    run_status_id: runStatus.id,
+                    run_status: db.RunStatus.RAW,
+                    test_version_id: testVersion2.id,
+                    testers: []
+                });
+            });
+        });
     });
 
     describe('RunService.getActiveRuns', () => {
