@@ -33,20 +33,6 @@ describe('render', () => {
             const initialState = {
                 ats: [],
                 cycles: {
-                    cyclesById: {
-                        1: {
-                            runsById: {
-                                1: {
-                                    apg_example_name: 'apg_example_name',
-                                    at_name: 'at_name',
-                                    at_version: 'at_version',
-                                    browser_name: 'browser_name',
-                                    browser_version: 'browser_version'
-                                }
-                            },
-                            test_version_id: 1
-                        }
-                    },
                     testsByRunId: {
                         1: {
                             tests: [{ name: 'Test 1' }]
@@ -85,6 +71,17 @@ describe('render', () => {
                             ]
                         }
                     ]
+                },
+                runs: {
+                    activeRunsById: {
+                        1: {
+                            apg_example_name: 'apg_example_name',
+                            at_name: 'at_name',
+                            at_version: 'at_version',
+                            browser_name: 'browser_name',
+                            browser_version: 'browser_version'
+                        }
+                    }
                 },
                 user: {
                     email: 'jane@maine.com',
