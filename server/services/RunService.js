@@ -105,17 +105,24 @@ const db = require('../models/index');
  */
 
 /* eslint-disable no-unused-vars */
-async function configureRuns({
-    test_version_id,
-    apg_example_ids,
-    at_browser_pairs
-}) {
+async function configureRuns(
+    { test_version_id, apg_example_ids, at_browser_pairs },
+    commit = true
+) {
     try {
+        await db.sequelize.query('BEGIN;');
         // (De)activate TestVersion
-        await db.TestVersion.update({ active: false }, { where: {} });
+        await db.TestVersion.update(
+            { active: false },
+            {
+                where: {}
+            }
+        );
         await db.TestVersion.update(
             { active: true },
-            { where: { id: test_version_id } }
+            {
+                where: { id: test_version_id }
+            }
         );
         // (De)activate/deactive ApgExamples
         await db.ApgExample.update({ active: false }, { where: {} });
@@ -370,10 +377,13 @@ async function configureRuns({
             });
 
             await db.Run.bulkCreate(dbRuns);
+            if (commit) {
+                await db.sequelize.query('COMMIT;');
+            }
         }
-
         return await this.getActiveRuns();
     } catch (error) {
+        await db.sequelize.query('ROLLBACK;');
         console.error(`Error: ${error}`);
         throw error;
     }

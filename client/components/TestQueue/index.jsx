@@ -142,7 +142,13 @@ class TestQueue extends Component {
         const atBrowserRunSets = [];
         for (let runId of Object.keys(activeRunsById)) {
             const run = activeRunsById[runId];
-            const { at_name_id, at_name, browser_name, browser_version, at_version } = run;
+            const {
+                at_name_id,
+                at_name,
+                browser_name,
+                browser_version,
+                at_version
+            } = run;
 
             // If you are not an admin, you cannot see runs you cannot perform
             if (!admin) {
@@ -153,10 +159,10 @@ class TestQueue extends Component {
 
             let atBrowserRun = atBrowserRunSets.filter(r => {
                 return (
-                    r.at_name === at_name
-                    && r.at_version === at_version
-                    && r.browser_name === browser_name
-                    && r.browser_version === browser_version
+                    r.at_name === at_name &&
+                    r.at_version === at_version &&
+                    r.browser_name === browser_name &&
+                    r.browser_version === browser_version
                 );
             });
 
