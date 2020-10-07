@@ -1,15 +1,18 @@
 import {
     ACTIVE_RUNS,
     DELETE_USERS_FROM_RUN,
+    RUN_CONFIGURATION,
     SAVE_RUN_CONFIGURATION,
     SAVE_RUN_STATUS,
-    SAVE_USERS_TO_RUNS
+    SAVE_USERS_TO_RUNS,
+    TEST_VERSIONS
 } from '../actions/types';
 
 const initialState = {
     activeRunConfiguration: undefined,
     activeRunsById: undefined,
-    publishedRunsById: undefined
+    publishedRunsById: undefined,
+    testVersions: undefined
 };
 
 export default (state = initialState, action) => {
@@ -21,12 +24,24 @@ export default (state = initialState, action) => {
                 activeRunsById: runs
             };
         }
+        case RUN_CONFIGURATION: {
+            const config = action.payload;
+            return {
+                ...state,
+                activeRunConfiguration: config
+            };
+        }
         case SAVE_RUN_CONFIGURATION: {
             const { runs, config } = action.payload;
             return {
                 ...state,
                 activeRunsById: runs,
-                activeRunConfiguration: config
+                activeRunConfiguration: {
+                    active_test_version: state.testVersions.find(v => v.id === config.test_version_id),
+                    active_at_browser_pairs: config.at_browser_pairs,
+                    active_apg_examples: config.apg_example_ids,
+                    browsers: state.activeRunConfiguration.browsers
+                }
             };
         }
         case DELETE_USERS_FROM_RUN: {
@@ -111,6 +126,13 @@ export default (state = initialState, action) => {
             return {
                 ...state,
                 activeRunsById: updatedActiveRunsById
+            };
+        }
+        case TEST_VERSIONS: {
+            const runs = action.payload;
+            return {
+                ...state,
+                testVersions: runs
             };
         }
         default:

@@ -2,36 +2,40 @@ import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Table, Form, Button, Row, Col } from 'react-bootstrap';
-import { getTestSuiteVersions } from '../../actions/cycles';
-import { getAllUsers } from '../../actions/users';
-import { saveRunConfiguration } from '../../actions/runs';
+import { saveRunConfiguration, getActiveRunConfiguration, getTestVersions } from '../../actions/runs';
 import ConfigureTechnologyRow from '@components/ConfigureTechnologyRow';
-import ConfigureRunsForExample from '@components/ConfigureRunsForExample';
 import nextId from 'react-id-generator';
 
-// This is a temporary solution. Eventually this data will come from an admin page.
-function getDefaultsTechCombinations(versionData) {
-    let combos = [
-        ['JAWS', 'Chrome'],
-        ['JAWS', 'Firefox'],
-        ['NVDA', 'Chrome'],
-        ['NVDA', 'Firefox'],
-        ['VoiceOver for macOS', 'Chrome'],
-        ['VoiceOver for macOS', 'Safari']
-    ];
 
+function selectExamples(testVersion, activeRunConfiguration) {
+    let exampleSelected = {};
+    for (let example of testVersion.apg_examples) {
+        let selected = true;
+        // If we are looking at the currently configured test version, select
+        // only the currently configured apg examples, otherwise select all by default.
+        if (
+            testVersion.id === activeRunConfiguration.active_test_version.id
+            && activeRunConfiguration.active_apg_examples.indexOf(example.id) === -1
+        ) {
+            selected = false;
+        }
+        exampleSelected[example.id] = selected;
+    }
+    return exampleSelected;
+}
+
+function getDefaultsTechCombinations(testVersion, activeRunConfiguration) {
     let initialRunRows = [];
-    for (let combo of combos) {
-        let at = versionData.supported_ats.find(at => at.at_name === combo[0]);
+    for (let combo of activeRunConfiguration.active_at_browser_pairs) {
+        let at = testVersion.supported_ats.find(at => at.at_name_id === combo.at_name_id);
         let at_id = at ? at.at_id : undefined;
 
-        let browser = versionData.browsers.find(b => b.name === combo[1]);
-        let browser_id = browser ? browser.id : undefined;
-
-        if (at_id && browser_id) {
+        if (at_id) {
             initialRunRows.push({
                 at_id,
-                browser_id
+                at_version: combo.at_version,
+                browser_id: combo.browser_id,
+                browser_version: combo.browser_version,
             });
         }
     }
@@ -42,47 +46,46 @@ function getDefaultsTechCombinations(versionData) {
 class ConfigureActiveRuns extends Component {
     constructor(props) {
         super(props);
-        const { testSuiteVersions } = props;
+        const { testVersions, activeRunConfiguration } = props;
 
-        let testSuiteVersionId = testSuiteVersions.length
-            ? testSuiteVersions[0].id
+        let testVersionId = testVersions && testVersions.length
+            ? testVersions[0].id
             : undefined;
         this.state = {
-            selectedVersion: testSuiteVersionId,
+            selectedVersion: testVersionId,
             name: '',
             runTechnologyRows: [{}], // list of {at_id, at_version, browser_id, browser_version}
-            assignedTesters: [], // list of {at_id, browser_id, example_id, tester_id}
-            exampleSelected: this.selectAllExamples(testSuiteVersionId)
+            exampleSelected: {}
         };
 
-        // This is a temporary fix until we have an admin page to control the defaults
-        if (testSuiteVersions.length) {
+        if (activeRunConfiguration && testVersionId) {
             this.state.runTechnologyRows = getDefaultsTechCombinations(
-                testSuiteVersions[0]
+                testVersions[0],
+                activeRunConfiguration
+            );
+            this.state.exampleSelected = selectExamples(
+                testVersions[0],
+                activeRunConfiguration
             );
         }
 
         this.handleVersionChange = this.handleVersionChange.bind(this);
-        this.handleNameChange = this.handleNameChange.bind(this);
         this.handleTechnologyRowChange = this.handleTechnologyRowChange.bind(
             this
         );
         this.deleteTechnologyRow = this.deleteTechnologyRow.bind(this);
         this.addTechnologyRow = this.addTechnologyRow.bind(this);
-        this.assignTesters = this.assignTesters.bind(this);
-        this.removeAllTestersFromRun = this.removeAllTestersFromRun.bind(this);
         this.selectExample = this.selectExample.bind(this);
         this.configureActiveRuns = this.configureActiveRuns.bind(this);
     }
 
     componentDidMount() {
-        const { dispatch, testSuiteVersions, usersById } = this.props;
-
-        if (!testSuiteVersions.length) {
-            dispatch(getTestSuiteVersions());
+        const { dispatch, testVersions, activeRunConfiguration } = this.props;
+        if (!testVersions) {
+            dispatch(getTestVersions());
         }
-        if (!Object.keys(usersById).length) {
-            dispatch(getAllUsers());
+        if (!activeRunConfiguration) {
+            dispatch(getActiveRunConfiguration());
         }
     }
 
@@ -90,36 +93,28 @@ class ConfigureActiveRuns extends Component {
         // When we get the testSuiteVersions list for the first time, the application automatically
         // selected the most recent version
         if (
-            prevState.selectedVersion === undefined &&
-            nextProps.testSuiteVersions.length > 0
+            prevState.selectedVersion === undefined
+            && nextProps.activeRunConfiguration
+            && nextProps.testVersions
         ) {
-            let versionId = nextProps.testSuiteVersions[0].id;
-            let version = nextProps.testSuiteVersions[0];
-            let exampleSelected = {};
-            for (let example of version.apg_examples) {
-                exampleSelected[example.id] = true;
-            }
+            let testVersionId = nextProps.testVersions[0].id;
+            let testVersion = nextProps.testVersions[0];
 
+            let exampleSelected = selectExamples(
+                testVersion,
+                nextProps.activeRunConfiguration,
+            );
+            let runTechnologyRows = getDefaultsTechCombinations(
+                testVersion,
+                nextProps.activeRunConfiguration,
+            );
             return {
-                selectedVersion: versionId,
+                selectedVersion: testVersionId,
                 exampleSelected,
-                runTechnologyRows: getDefaultsTechCombinations(version)
+                runTechnologyRows
             };
         }
         return null;
-    }
-
-    selectAllExamples(testSuiteVersionId) {
-        const { testSuiteVersions } = this.props;
-        if (!testSuiteVersions.length) {
-            return {};
-        }
-        let version = testSuiteVersions.find(v => v.id === testSuiteVersionId);
-        let exampleSelected = {};
-        for (let example of version.apg_examples) {
-            exampleSelected[example.id] = true;
-        }
-        return exampleSelected;
     }
 
     selectExample(event) {
@@ -134,31 +129,17 @@ class ConfigureActiveRuns extends Component {
     }
 
     configureActiveRuns() {
-        const { dispatch, testSuiteVersions, history, user } = this.props;
-        let versionData = testSuiteVersions.filter(
+        const { dispatch, testVersions, history } = this.props;
+        let versionData = testVersions.filter(
             version => version.id === this.state.selectedVersion
         )[0];
 
-        let cycle = {
-            name: this.state.name,
-            test_version_id: this.state.selectedVersion,
-            created_user_id: user.id
-        };
-
-        // Do not allow saving of cycle without a name. Put focus on name field
-        if (!this.state.name || this.state.name === '') {
-            this.nameInput.focus();
-            return;
-        }
-
-        // Temporary change until this whole page is reconsidered
         const atBrowserPairs = [];
         const atIdToAtNameId = versionData.supported_ats.reduce((acc, at) => {
             acc[at.at_id] = at.at_name_id;
             return acc;
         }, {});
 
-        const runs = [];
         for (
             let index = 0;
             index < this.state.runTechnologyRows.length;
@@ -183,38 +164,7 @@ class ConfigureActiveRuns extends Component {
                 browser_id: runTechnologyPair.browser_id,
                 browser_version: runTechnologyPair.browser_version
             });
-
-            for (let example of versionData.apg_examples) {
-                if (!this.state.exampleSelected[example.id]) {
-                    continue;
-                }
-
-                let testers = this.state.assignedTesters
-                    .filter(t => {
-                        return (
-                            t.example_id === example.id &&
-                            t.at_id === runTechnologyPair.at_id &&
-                            t.browser_id === runTechnologyPair.browser_id
-                        );
-                    })
-                    .map(t => t.tester_id);
-
-                runs.push({
-                    ...runTechnologyPair,
-                    apg_example_id: example.id,
-                    users: testers
-                });
-            }
         }
-
-        if (runs.length === 0) {
-            window.alert(
-                "TODO: Make sure it's clear to user you need to fill in the AT/Browser fields all the way"
-            );
-            return;
-        }
-
-        cycle.runs = runs;
 
         const config = {
             test_version_id: this.state.selectedVersion,
@@ -224,64 +174,27 @@ class ConfigureActiveRuns extends Component {
 
         dispatch(saveRunConfiguration(config));
 
-        history.push('/test-queue');
-    }
-
-    assignTesters(exampleId, runTechnologyIndexes, userId) {
-        let newAssignedTesters = [...this.state.assignedTesters];
-
-        for (let techIndex of runTechnologyIndexes) {
-            let techs = this.state.runTechnologyRows[techIndex];
-            newAssignedTesters.push({
-                at_id: techs.at_id,
-                browser_id: techs.browser_id,
-                example_id: exampleId,
-                tester_id: userId
-            });
-        }
-
-        this.setState({
-            assignedTesters: newAssignedTesters
-        });
-    }
-
-    removeAllTestersFromRun(exampleId, runTechnologyIndexes) {
-        let newAssignedTesters = [...this.state.assignedTesters];
-
-        for (let techIndex of runTechnologyIndexes) {
-            let techs = this.state.runTechnologyRows[techIndex];
-            newAssignedTesters = newAssignedTesters.filter(t => {
-                return !(
-                    t.at_id === techs.at_id &&
-                    t.browser_id === techs.browser_id &&
-                    t.example_id === exampleId
-                );
-            });
-        }
-
-        this.setState({
-            assignedTesters: newAssignedTesters
-        });
+        alert("You saved results! (...what should we do after saving?)");
     }
 
     handleVersionChange(event) {
-        const { testSuiteVersions } = this.props;
+        const { testVersions, activeRunConfiguration } = this.props;
 
-        let versionData = testSuiteVersions.filter(
+        let versionData = testVersions.filter(
             version => version.id === parseInt(event.currentTarget.value)
         )[0];
 
         this.setState({
             selectedVersion: versionData.id,
             assignedTesters: [],
-            exampleSelected: this.selectAllExamples(versionData.id),
-            runTechnologyRows: getDefaultsTechCombinations(versionData)
-        });
-    }
-
-    handleNameChange(event) {
-        this.setState({
-            name: event.currentTarget.value
+            exampleSelected: selectExamples(
+                versionData,
+                activeRunConfiguration
+            ),
+            runTechnologyRows: getDefaultsTechCombinations(
+                versionData,
+                activeRunConfiguration
+            )
         });
     }
 
@@ -316,7 +229,7 @@ class ConfigureActiveRuns extends Component {
     }
 
     renderTestVersionSelect() {
-        const { testSuiteVersions } = this.props;
+        const { testVersions } = this.props;
 
         return (
             <Form.Control
@@ -325,7 +238,7 @@ class ConfigureActiveRuns extends Component {
                 onChange={this.handleVersionChange}
                 as="select"
             >
-                {testSuiteVersions.map(version => {
+                {testVersions.map(version => {
                     return (
                         <option key={version.id} value={version.id}>
                             {version.git_hash.slice(0, 7) +
@@ -340,13 +253,13 @@ class ConfigureActiveRuns extends Component {
     }
 
     render() {
-        const { testSuiteVersions, usersById } = this.props;
+        const { testVersions, activeRunConfiguration } = this.props;
 
-        if (!testSuiteVersions.length) {
+        if (!testVersions || !activeRunConfiguration) {
             return <div data-test="initiate-cycle-loading">Loading</div>;
         }
 
-        let versionData = testSuiteVersions.filter(
+        let versionData = testVersions.filter(
             version => version.id === this.state.selectedVersion
         )[0];
 
@@ -366,7 +279,7 @@ class ConfigureActiveRuns extends Component {
                     }
                 );
 
-                let browser_name = versionData.browsers.find(b => {
+                let browser_name = activeRunConfiguration.browsers.find(b => {
                     return row.browser_id === b.id;
                 }).name;
 
@@ -381,62 +294,29 @@ class ConfigureActiveRuns extends Component {
             }
         }
 
-        let displayExamples = false;
+        let enableSaveButton = true;
         if (
             this.state.runTechnologyRows.filter(run => {
                 return run.at_id && run.browser_id;
-            }).length
+            }).length === 0
         ) {
-            displayExamples = true;
+            enableSaveButton = false;
         }
 
-        let selectedPatterns = versionData.apg_examples
-            .filter(e => {
+        if (
+            versionData.apg_examples.filter(e => {
                 return this.state.exampleSelected[e.id];
-            })
-            .map(e => {
-                return e.name || e.directory;
-            });
-        let disableInitiateButton =
-            selectedPatterns.length === 0 || !displayExamples;
-
-        let listSelectedPatterns = null;
-        if (displayExamples) {
-            if (selectedPatterns.length) {
-                listSelectedPatterns = (
-                    <div>
-                        The following patterns have been selected for testing:{' '}
-                        {`${selectedPatterns.join(', ')}`}
-                    </div>
-                );
-            } else {
-                listSelectedPatterns = (
-                    <div>No patterns have been selected for testing.</div>
-                );
-            }
+            }).length === 0
+        ) {
+            enableSaveButton = false;
         }
 
         return (
             <Fragment>
-                <h1 data-test="initiate-cycle-h2">Initiate a Test Cycle</h1>
-                <h2 data-test="initiate-cycle-h3">Test Cycle Configuration</h2>
+                <h1 data-test="initiate-cycle-h2">Configure Active Runs</h1>
+                <h2 data-test="initiate-cycle-h3">Update Versions</h2>
                 <Form className="init-box">
                     <Row>
-                        <Col>
-                            <Form.Group controlId="cycleName">
-                                <Form.Label data-test="initiate-cycle-name-label">
-                                    Test Cycle Name
-                                </Form.Label>
-                                <Form.Control
-                                    data-test="initiate-cycle-name-input"
-                                    value={this.state.name}
-                                    onChange={this.handleNameChange}
-                                    ref={input => {
-                                        this.nameInput = input;
-                                    }}
-                                />
-                            </Form.Group>
-                        </Col>
                         <Col>
                             <Form.Group controlId="testVersion">
                                 <Form.Label data-test="initiate-cycle-commit-label">
@@ -475,7 +355,7 @@ class ConfigureActiveRuns extends Component {
                                                         versionData.supported_ats
                                                     }
                                                     availableBrowsers={
-                                                        versionData.browsers
+                                                        activeRunConfiguration.browsers
                                                     }
                                                     handleTechnologyRowChange={
                                                         this
@@ -500,68 +380,39 @@ class ConfigureActiveRuns extends Component {
                     </Row>
                 </Form>
                 <h2 data-test="initiate-cycle-test-plans">Test Plans</h2>
-                {displayExamples &&
-                    versionData.apg_examples.map(example => {
-                        let exampleRuns = runs.map(run => {
-                            let exampleRun = { ...run };
-                            exampleRun.testers = this.state.assignedTesters
-                                .filter(t => {
-                                    return (
-                                        t.example_id === example.id &&
-                                        t.at_id === run.at_id &&
-                                        t.browser_id === run.browser_id
-                                    );
-                                })
-                                .map(t => t.tester_id);
-                            return exampleRun;
-                        });
-                        let tableId = nextId('table_name_');
-                        let exampleTableTitle =
-                            example.name || example.directory;
-
-                        return (
-                            <Fragment key={`test-plan-${example.id}`}>
-                                <h3 id={tableId}>
-                                    <input
-                                        type="checkbox"
-                                        id={`designpattern-${example.id}`}
-                                        name={example.id}
-                                        checked={
-                                            this.state.exampleSelected[
-                                                example.id
-                                            ]
-                                        }
-                                        onChange={this.selectExample}
-                                    ></input>
-                                    {exampleTableTitle}
-                                </h3>
-                                <ConfigureRunsForExample
-                                    data-test={`initiate-cycle-run-${example.id}`}
-                                    newRun={true}
-                                    runs={exampleRuns}
-                                    key={example.id}
-                                    example={example}
-                                    usersById={usersById}
-                                    assignTesters={this.assignTesters}
-                                    removeAllTestersFromRun={
-                                        this.removeAllTestersFromRun
+                <div>Select test plans to include in testing:</div>
+                <ul>
+                {versionData.apg_examples.map(example => {
+                    let exampleTableTitle =
+                        example.name || example.directory;
+                    let id =`designpattern-${example.id}`;
+                    return (
+                            <li key={`key-${id}`}>
+                                <input
+                                    type="checkbox"
+                                    id={id}
+                                    name={example.id}
+                                    checked={
+                                        this.state.exampleSelected[
+                                            example.id
+                                        ]
                                     }
-                                    tableId={tableId}
-                                />
-                            </Fragment>
+                                    onChange={this.selectExample}
+                                ></input>
+                                {exampleTableTitle}
+                            </li>
                         );
                     })}
-                {!displayExamples && (
+                </ul>
+                {!enableSaveButton && (
                     <div>
                         You must have at least one AT/Browser combination
-                        configured to review the test plans and initiate the
-                        cycle.
+                        configured and at least on APG Example selected to update the Test Runs.
                     </div>
                 )}
-                {listSelectedPatterns}
                 <div>
                     <Button
-                        disabled={disableInitiateButton}
+                        disabled={!enableSaveButton}
                         onClick={this.configureActiveRuns}
                     >
                         Update Active Run Configuration
@@ -573,18 +424,15 @@ class ConfigureActiveRuns extends Component {
 }
 
 ConfigureActiveRuns.propTypes = {
-    testSuiteVersions: PropTypes.array,
+    activeRunConfiguration: PropTypes.object,
+    testVersions: PropTypes.array,
     dispatch: PropTypes.func,
-    history: PropTypes.object,
-    usersById: PropTypes.object,
-    user: PropTypes.object
+    history: PropTypes.object
 };
 
 const mapStateToProps = state => {
-    const { testSuiteVersions } = state.cycles;
-    const { usersById } = state.users;
-    const { user } = state;
-    return { testSuiteVersions, usersById, user };
+    const { activeRunConfiguration, testVersions } = state.runs;
+    return { testVersions, activeRunConfiguration };
 };
 
 export default connect(mapStateToProps)(ConfigureActiveRuns);

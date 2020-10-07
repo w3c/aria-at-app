@@ -2,9 +2,11 @@ import axios from 'axios';
 import {
     ACTIVE_RUNS,
     DELETE_USERS_FROM_RUN,
+    RUN_CONFIGURATION,
     SAVE_RUN_CONFIGURATION,
     SAVE_RUN_STATUS,
-    SAVE_USERS_TO_RUNS
+    SAVE_USERS_TO_RUNS,
+    TEST_VERSIONS
 } from './types';
 
 export const activeRunsDispatch = payload => ({
@@ -14,6 +16,11 @@ export const activeRunsDispatch = payload => ({
 
 export const deleteUsersFromRunDispatch = payload => ({
     type: DELETE_USERS_FROM_RUN,
+    payload
+});
+
+export const runConfigurationDispatch = payload => ({
+    type: RUN_CONFIGURATION,
     payload
 });
 
@@ -32,10 +39,22 @@ export const saveUsersToRunsDispatch = payload => ({
     payload
 });
 
+export const testVersionsDispatch = payload => ({
+    type: TEST_VERSIONS,
+    payload
+});
+
 export function getActiveRuns() {
     return async function(dispatch) {
         const response = await axios.get('/api/run/active');
         return dispatch(activeRunsDispatch(response.data));
+    };
+}
+
+export function getActiveRunConfiguration() {
+    return async function(dispatch) {
+        const response = await axios.get('/api/run/config');
+        return dispatch(runConfigurationDispatch(response.data));
     };
 }
 
@@ -89,5 +108,12 @@ export function saveUsersToRuns(users, runs) {
             runs
         });
         return dispatch(saveUsersToRunsDispatch({ ...response.data }));
+    };
+}
+
+export function getTestVersions() {
+    return async function(dispatch) {
+        const response = await axios.get('/api/test-versions');
+        return dispatch(testVersionsDispatch(response.data));
     };
 }
