@@ -37,7 +37,9 @@ export default (state = initialState, action) => {
                 ...state,
                 activeRunsById: runs,
                 activeRunConfiguration: {
-                    active_test_version: state.testVersions.find(v => v.id === config.test_version_id),
+                    active_test_version: state.testVersions.find(
+                        v => v.id === config.test_version_id
+                    ),
                     active_at_browser_pairs: config.at_browser_pairs,
                     active_apg_examples: config.apg_example_ids,
                     browsers: state.activeRunConfiguration.browsers

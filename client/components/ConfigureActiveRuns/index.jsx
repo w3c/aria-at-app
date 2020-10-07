@@ -2,10 +2,13 @@ import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Table, Form, Button, Row, Col } from 'react-bootstrap';
-import { saveRunConfiguration, getActiveRunConfiguration, getTestVersions } from '../../actions/runs';
+import {
+    saveRunConfiguration,
+    getActiveRunConfiguration,
+    getTestVersions
+} from '../../actions/runs';
 import ConfigureTechnologyRow from '@components/ConfigureTechnologyRow';
 import nextId from 'react-id-generator';
-
 
 function selectExamples(testVersion, activeRunConfiguration) {
     let exampleSelected = {};
@@ -14,8 +17,9 @@ function selectExamples(testVersion, activeRunConfiguration) {
         // If we are looking at the currently configured test version, select
         // only the currently configured apg examples, otherwise select all by default.
         if (
-            testVersion.id === activeRunConfiguration.active_test_version.id
-            && activeRunConfiguration.active_apg_examples.indexOf(example.id) === -1
+            testVersion.id === activeRunConfiguration.active_test_version.id &&
+            activeRunConfiguration.active_apg_examples.indexOf(example.id) ===
+                -1
         ) {
             selected = false;
         }
@@ -27,7 +31,9 @@ function selectExamples(testVersion, activeRunConfiguration) {
 function getDefaultsTechCombinations(testVersion, activeRunConfiguration) {
     let initialRunRows = [];
     for (let combo of activeRunConfiguration.active_at_browser_pairs) {
-        let at = testVersion.supported_ats.find(at => at.at_name_id === combo.at_name_id);
+        let at = testVersion.supported_ats.find(
+            at => at.at_name_id === combo.at_name_id
+        );
         let at_id = at ? at.at_id : undefined;
 
         if (at_id) {
@@ -35,7 +41,7 @@ function getDefaultsTechCombinations(testVersion, activeRunConfiguration) {
                 at_id,
                 at_version: combo.at_version,
                 browser_id: combo.browser_id,
-                browser_version: combo.browser_version,
+                browser_version: combo.browser_version
             });
         }
     }
@@ -48,9 +54,10 @@ class ConfigureActiveRuns extends Component {
         super(props);
         const { testVersions, activeRunConfiguration } = props;
 
-        let testVersionId = testVersions && testVersions.length
-            ? testVersions[0].id
-            : undefined;
+        let testVersionId =
+            testVersions && testVersions.length
+                ? testVersions[0].id
+                : undefined;
         this.state = {
             selectedVersion: testVersionId,
             name: '',
@@ -93,20 +100,20 @@ class ConfigureActiveRuns extends Component {
         // When we get the testSuiteVersions list for the first time, the application automatically
         // selected the most recent version
         if (
-            prevState.selectedVersion === undefined
-            && nextProps.activeRunConfiguration
-            && nextProps.testVersions
+            prevState.selectedVersion === undefined &&
+            nextProps.activeRunConfiguration &&
+            nextProps.testVersions
         ) {
             let testVersionId = nextProps.testVersions[0].id;
             let testVersion = nextProps.testVersions[0];
 
             let exampleSelected = selectExamples(
                 testVersion,
-                nextProps.activeRunConfiguration,
+                nextProps.activeRunConfiguration
             );
             let runTechnologyRows = getDefaultsTechCombinations(
                 testVersion,
-                nextProps.activeRunConfiguration,
+                nextProps.activeRunConfiguration
             );
             return {
                 selectedVersion: testVersionId,
@@ -174,7 +181,7 @@ class ConfigureActiveRuns extends Component {
 
         dispatch(saveRunConfiguration(config));
 
-        alert("You saved results! (...what should we do after saving?)");
+        alert('You saved results! (...what should we do after saving?)');
     }
 
     handleVersionChange(event) {
@@ -382,20 +389,18 @@ class ConfigureActiveRuns extends Component {
                 <h2 data-test="initiate-cycle-test-plans">Test Plans</h2>
                 <div>Select test plans to include in testing:</div>
                 <ul>
-                {versionData.apg_examples.map(example => {
-                    let exampleTableTitle =
-                        example.name || example.directory;
-                    let id =`designpattern-${example.id}`;
-                    return (
+                    {versionData.apg_examples.map(example => {
+                        let exampleTableTitle =
+                            example.name || example.directory;
+                        let id = `designpattern-${example.id}`;
+                        return (
                             <li key={`key-${id}`}>
                                 <input
                                     type="checkbox"
                                     id={id}
                                     name={example.id}
                                     checked={
-                                        this.state.exampleSelected[
-                                            example.id
-                                        ]
+                                        this.state.exampleSelected[example.id]
                                     }
                                     onChange={this.selectExample}
                                 ></input>
@@ -407,7 +412,8 @@ class ConfigureActiveRuns extends Component {
                 {!enableSaveButton && (
                     <div>
                         You must have at least one AT/Browser combination
-                        configured and at least on APG Example selected to update the Test Runs.
+                        configured and at least on APG Example selected to
+                        update the Test Runs.
                     </div>
                 )}
                 <div>
