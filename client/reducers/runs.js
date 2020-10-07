@@ -97,6 +97,8 @@ export default (state = initialState, action) => {
                     activeRunsById: updatedActiveRunsById,
                     publishedRunsById: updatedPublishedRunsById
                 };
+            } else {
+                return { ...state };
             }
         }
         // falls through
