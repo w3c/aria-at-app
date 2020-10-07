@@ -8,7 +8,6 @@ import {
     getTestVersions
 } from '../../actions/runs';
 import ConfigureTechnologyRow from '@components/ConfigureTechnologyRow';
-import nextId from 'react-id-generator';
 
 function selectExamples(testVersion, activeRunConfiguration) {
     let exampleSelected = {};
@@ -136,7 +135,7 @@ class ConfigureActiveRuns extends Component {
     }
 
     configureActiveRuns() {
-        const { dispatch, testVersions, history } = this.props;
+        const { dispatch, testVersions } = this.props;
         let versionData = testVersions.filter(
             version => version.id === this.state.selectedVersion
         )[0];
@@ -240,7 +239,7 @@ class ConfigureActiveRuns extends Component {
 
         return (
             <Form.Control
-                data-test="initiate-cycle-commit-select"
+                data-test="configure-run-commit-select"
                 value={this.state.selectedVersion}
                 onChange={this.handleVersionChange}
                 as="select"
@@ -263,7 +262,7 @@ class ConfigureActiveRuns extends Component {
         const { testVersions, activeRunConfiguration } = this.props;
 
         if (!testVersions || !activeRunConfiguration) {
-            return <div data-test="initiate-cycle-loading">Loading</div>;
+            return <div data-test="configure-run-loading">Loading</div>;
         }
 
         let versionData = testVersions.filter(
@@ -320,13 +319,13 @@ class ConfigureActiveRuns extends Component {
 
         return (
             <Fragment>
-                <h1 data-test="initiate-cycle-h2">Configure Active Runs</h1>
-                <h2 data-test="initiate-cycle-h3">Update Versions</h2>
+                <h1 data-test="configure-run-h2">Configure Active Runs</h1>
+                <h2 data-test="configure-run-h3">Update Versions</h2>
                 <Form className="init-box">
                     <Row>
                         <Col>
                             <Form.Group controlId="testVersion">
-                                <Form.Label data-test="initiate-cycle-commit-label">
+                                <Form.Label data-test="configure-run-commit-label">
                                     Git Commit of Tests
                                 </Form.Label>
                                 {this.renderTestVersionSelect()}
@@ -386,7 +385,7 @@ class ConfigureActiveRuns extends Component {
                         </Col>
                     </Row>
                 </Form>
-                <h2 data-test="initiate-cycle-test-plans">Test Plans</h2>
+                <h2 data-test="configure-run-test-plans">Test Plans</h2>
                 <div>Select test plans to include in testing:</div>
                 <ul>
                     {versionData.apg_examples.map(example => {
@@ -432,8 +431,7 @@ class ConfigureActiveRuns extends Component {
 ConfigureActiveRuns.propTypes = {
     activeRunConfiguration: PropTypes.object,
     testVersions: PropTypes.array,
-    dispatch: PropTypes.func,
-    history: PropTypes.object
+    dispatch: PropTypes.func
 };
 
 const mapStateToProps = state => {
