@@ -10,8 +10,6 @@ afterAll(async done => {
 
 describe('RunService', () => {
     describe('RunService.configureRuns', () => {
-        // Same test version with new tech pairs and preserving old tech pairs
-
         it('should create all possible runs if no previous runs exist', async () => {
             await dbCleaner(async () => {
                 const browserVersionNumber = '1.2.3';
@@ -228,6 +226,139 @@ describe('RunService', () => {
 
                 await tech.reload();
                 expect(tech.active).toBe(true);
+            });
+        });
+        it('should create a new test run for a new AT version when there are existing runs for an older version of the same AT', async () => {
+            await dbCleaner(async () => {
+                // This test preserves browser version, AT name, test version, and APG example
+                // It also simulates an active test run for the older AT version
+                const browserVersionNumber = '1.2.3';
+                const atVersionNumber = '3.2.1';
+                const atVersionNumber2 = '3.2.2';
+
+                let testVersion = await db.TestVersion.findOne({
+                    where: {
+                        git_hash: process.env.IMPORT_ARIA_AT_TESTS_COMMIT_1
+                    }
+                });
+
+                const at = await db.At.findOne({
+                    where: { test_version_id: testVersion.id },
+                    include: [db.AtName]
+                });
+
+                // Create tech pair with older version
+                const atVersion = await db.AtVersion.create({
+                    at_name_id: at.AtName.id,
+                    version: atVersionNumber
+                });
+
+                const apgExample = await db.ApgExample.findOne({
+                    where: { test_version_id: testVersion.id }
+                });
+
+                const browser = await db.Browser.findOne();
+                const browserVersion = await db.BrowserVersion.create({
+                    browser_id: browser.id,
+                    version: browserVersionNumber
+                });
+
+                const runStatus = await db.RunStatus.findOne({
+                    where: { name: db.RunStatus.RAW }
+                });
+
+                const user = await db.Users.create();
+                const testCycle = await db.TestCycle.create({
+                    test_version_id: testVersion.id,
+                    created_user_id: user.id
+                });
+
+                let tech = await db.BrowserVersionToAtVersion.create({
+                    at_version_id: atVersion.id,
+                    browser_version_id: browserVersion.id,
+                    active: true,
+                    run_status_id: runStatus.id
+                });
+
+                // Create an inactive run with the older AT version
+                const runWithOlderAt = await db.Run.create({
+                    browser_version_id: browserVersion.id,
+                    at_version_id: atVersion.id,
+                    at_id: at.id,
+                    test_cycle_id: testCycle.id,
+                    browser_version_to_at_versions_id: tech.id,
+                    apg_example_id: apgExample.id,
+                    test_version_id: testVersion.id,
+                    active: false,
+                    run_status_id: runStatus.id
+                });
+
+                const activeRuns = await RunService.configureRuns({
+                    test_version_id: testVersion.id,
+                    apg_example_ids: [apgExample.id],
+                    at_browser_pairs: [
+                        {
+                            at_name_id: at.at_name_id,
+                            at_version: atVersionNumber,
+                            browser_id: browser.id,
+                            browser_version: browserVersionNumber
+                        },
+                        {
+                            at_name_id: at.at_name_id,
+                            at_version: atVersionNumber2,
+                            browser_id: browser.id,
+                            browser_version: browserVersionNumber
+                        }
+                    ],
+                    run_status_id: runStatus.id
+                });
+
+                // Ensure there are two runs differing on AT version only
+                const keys = Object.keys(activeRuns);
+                expect(keys.length).toEqual(2);
+
+                // Verify that one run has the older AT version
+                const activeRunIdOlderAtId = parseInt(keys[0]);
+                expect(activeRunIdOlderAtId).toEqual(runWithOlderAt.id);
+                expect(activeRuns[activeRunIdOlderAtId]).toEqual({
+                    id: runWithOlderAt.id,
+                    browser_id: browser.id,
+                    browser_version: browserVersionNumber,
+                    browser_name: browser.name,
+                    at_id: at.id,
+                    at_key: at.key,
+                    at_name: at.AtName.name,
+                    at_name_id: at.AtName.id,
+                    at_version: atVersionNumber,
+                    apg_example_directory: apgExample.directory,
+                    apg_example_name: apgExample.name,
+                    apg_example_id: apgExample.id,
+                    run_status_id: runStatus.id,
+                    run_status: db.RunStatus.RAW,
+                    test_version_id: testVersion.id,
+                    testers: []
+                });
+
+                // Verify that the second run has the new AT version
+                const activeRunNewerAtId = parseInt(keys[1]);
+                expect(activeRuns[activeRunNewerAtId]).toEqual({
+                    id: activeRunNewerAtId,
+                    browser_id: browser.id,
+                    browser_version: browserVersionNumber,
+                    browser_name: browser.name,
+                    at_id: at.id,
+                    at_key: at.key,
+                    at_name: at.AtName.name,
+                    at_name_id: at.AtName.id,
+                    at_version: atVersionNumber2,
+                    apg_example_directory: apgExample.directory,
+                    apg_example_name: apgExample.name,
+                    apg_example_id: apgExample.id,
+                    run_status_id: runStatus.id,
+                    run_status: db.RunStatus.RAW,
+                    test_version_id: testVersion.id,
+                    testers: []
+                });
             });
         });
         it('should deactivate tech pairs when there is existing tech pair data to deactivate', async () => {
