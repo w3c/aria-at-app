@@ -1045,6 +1045,15 @@ describe('RunService', () => {
                     directory: apgExampleDirectory,
                     name: apgExampleName
                 });
+
+                const test = await db.Test.create({
+                    name: 'Operate a checkbox',
+                    file: 'tests/checkbox/test-01-operate',
+                    execution_order: 1,
+                    apg_example_id: apgExample.id,
+                    test_version_id: testVersion.id
+                });
+
                 const user = await db.Users.create();
                 const testCycle = await db.TestCycle.create({
                     test_version_id: testVersion.id,
@@ -1168,6 +1177,47 @@ describe('RunService', () => {
                     test_version_id: testVersion.id
                 });
 
+                const inactiveRun = await db.Run.create({
+                    active: false,
+                    test_cycle_id: testCycle.id,
+                    at_version_id: atVersion.id,
+                    at_id: at.id,
+                    browser_version_id: browserVersion.id,
+                    browser_version_to_at_versions_id:
+                        browserVersionToAtVersion.id,
+                    apg_example_id: apgExample.id,
+                    run_status_id: runStatus.id,
+                    test_version_id: testVersion.id
+                });
+
+                await db.TesterToRun.create({
+                    run_id: run.id,
+                    user_id: user.id
+                });
+
+                const testStatus = await db.TestStatus.findOne({
+                    where: { name: db.TestStatus.COMPLETE }
+                });
+
+                const result = '{ result: "It worked" }';
+
+                const testResult = await db.TestResult.create({
+                    test_id: test.id,
+                    run_id: run.id,
+                    user_id: user.id,
+                    status_id: testStatus.id,
+                    result: result
+                });
+
+                // TestResult for different Run should not be included
+                await db.TestResult.create({
+                    run_id: inactiveRun.id,
+                    test_id: test.id,
+                    user_id: user.id,
+                    status_id: testStatus.id,
+                    result: result
+                });
+
                 const activeRuns = await RunService.getActiveRuns();
                 expect(Object.keys(activeRuns).length).toEqual(1);
                 expect(activeRuns[run.id]).toEqual({
@@ -1186,7 +1236,23 @@ describe('RunService', () => {
                     run_status_id: runStatus.id,
                     run_status: db.RunStatus.FINAL,
                     test_version_id: testVersion.id,
-                    testers: []
+                    testers: [user.id],
+                    tests: [
+                        {
+                            id: test.id,
+                            file: test.file,
+                            name: test.name,
+                            execution_order: test.execution_order,
+                            results: {
+                                [user.id]: {
+                                    id: testResult.id,
+                                    user_id: user.id,
+                                    status: db.TestStatus.COMPLETE,
+                                    result: result
+                                }
+                            }
+                        }
+                    ]
                 });
             });
         });

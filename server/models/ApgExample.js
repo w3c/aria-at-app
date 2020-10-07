@@ -1,5 +1,5 @@
 module.exports = function(sequelize, DataTypes) {
-    return sequelize.define(
+    const ApgExample = sequelize.define(
         'ApgExample',
         {
             id: {
@@ -35,4 +35,13 @@ module.exports = function(sequelize, DataTypes) {
             tableName: 'apg_example'
         }
     );
+
+    ApgExample.associate = function(models) {
+        models.ApgExample.hasMany(models.Test, {
+            foreignKey: 'apg_example_id',
+            sourceKey: 'id'
+        });
+    };
+
+    return ApgExample;
 };

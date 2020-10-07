@@ -1,5 +1,5 @@
 module.exports = function(sequelize, DataTypes) {
-    return sequelize.define(
+    const TestResult = sequelize.define(
         'TestResult',
         {
             id: {
@@ -50,4 +50,13 @@ module.exports = function(sequelize, DataTypes) {
             tableName: 'test_result'
         }
     );
+
+    TestResult.associate = function(models) {
+        models.TestResult.belongsTo(models.TestStatus, {
+            foreignKey: 'status_id',
+            sourceKey: 'id'
+        });
+    };
+
+    return TestResult;
 };
