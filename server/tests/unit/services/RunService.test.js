@@ -270,8 +270,7 @@ describe('RunService', () => {
                     {
                         at_version_id: atVersion.id,
                         browser_version_id: browserVersion.id,
-                        active: true,
-                        run_status_id: runStatus.id
+                        active: true
                     }
                 );
 
@@ -306,6 +305,7 @@ describe('RunService', () => {
                     at_id: at.id,
                     at_key: at.key,
                     at_name: at.AtName.name,
+                    at_name_id: at.AtName.id,
                     at_version: atVersionNumber2,
                     apg_example_directory: apgExample.directory,
                     apg_example_name: apgExample.name,
@@ -326,25 +326,18 @@ describe('RunService', () => {
                 expect(activeBrowserVersionToAtVersions.length).toBe(1);
 
                 // Verify that new browser/at pair was created
-                const activeCreatedBrowserVersion = await db.BrowserVersion.findAll(
-                    {
-                        where: {
-                            id:
-                                activeBrowserVersionToAtVersions[0]
-                                    .browser_version_id
-                        }
+                const activeCreatedBrowserVersions = await db.BrowserVersionToAtVersion.findAll(
+                    { 
+                        where: { active: true },
+                        include: [db.AtVersion, db.BrowserVersion] 
                     }
-                );
-                expect(activeCreatedBrowserVersion[0].version).toBe(
-                    browserVersionNumber2
                 );
 
-                const activeCreatedAtVersion = await db.AtVersion.findAll({
-                    where: {
-                        id: activeBrowserVersionToAtVersions[0].at_version_id
-                    }
-                });
-                expect(activeCreatedAtVersion[0].version).toBe(
+                expect(activeCreatedBrowserVersions.length).toBe(1);
+                expect(activeCreatedBrowserVersions[0].BrowserVersion.version).toBe(
+                    browserVersionNumber2
+                );
+                expect(activeCreatedBrowserVersions[0].AtVersion.version).toBe(
                     atVersionNumber2
                 );
             });
@@ -470,7 +463,7 @@ describe('RunService', () => {
                 });
 
                 // Create an inactive run
-                const previouslyInactiveRunEntry = await db.Run.create({
+                const previouslyInactiveRun = await db.Run.create({
                     browser_version_id: browserVersion.id,
                     at_version_id: atVersion.id,
                     at_id: at.id,
@@ -482,9 +475,6 @@ describe('RunService', () => {
                     run_status_id: runStatus.id
                 });
 
-                let previouslyInactiveRun = await db.Run.findOne({
-                    where: { id: previouslyInactiveRunEntry.id }
-                });
 
                 const activeRuns = await RunService.configureRuns({
                     test_version_id: testVersion.id,
@@ -504,7 +494,7 @@ describe('RunService', () => {
                 const runId = parseInt(keys[0]);
                 expect(keys.length).toEqual(1);
                 // Verify that the run is the one previously populated
-                expect(runId).toEqual(previouslyInactiveRunEntry.id);
+                expect(runId).toEqual(previouslyInactiveRun.id);
                 expect(activeRuns[runId]).toEqual({
                     id: runId,
                     browser_id: browser.id,
@@ -513,6 +503,7 @@ describe('RunService', () => {
                     at_id: at.id,
                     at_key: at.key,
                     at_name: at.AtName.name,
+                    at_name_id: at.AtName.id,
                     at_version: atVersionNumber,
                     apg_example_directory: apgExample.directory,
                     apg_example_name: apgExample.name,
@@ -579,7 +570,7 @@ describe('RunService', () => {
                 });
 
                 // Create an active run
-                const previouslyActiveRunEntry = await db.Run.create({
+                const previouslyActiveRun = await db.Run.create({
                     browser_version_id: browserVersion.id,
                     at_version_id: atVersion.id,
                     at_id: at.id,
@@ -592,7 +583,7 @@ describe('RunService', () => {
                 });
 
                 // Create an inactive run
-                const previouslyInactiveRunEntry = await db.Run.create({
+                const previouslyInactiveRun = await db.Run.create({
                     browser_version_id: browserVersion.id,
                     at_version_id: atVersion.id,
                     at_id: at.id,
@@ -602,13 +593,6 @@ describe('RunService', () => {
                     test_version_id: testVersion.id,
                     active: false,
                     run_status_id: runStatus.id
-                });
-
-                let previouslyActiveRun = await db.Run.findOne({
-                    where: { id: previouslyActiveRunEntry.id }
-                });
-                let previouslyInactiveRun = await db.Run.findOne({
-                    where: { id: previouslyInactiveRunEntry.id }
                 });
 
                 const activeRuns = await RunService.configureRuns({
@@ -639,6 +623,24 @@ describe('RunService', () => {
                         run.id !== previouslyInactiveRun.id
                 );
                 expect(newlyCreatedRun.length).toBe(1);
+                expect(activeRuns[newlyCreatedRun[0].id]).toEqual({
+                    id: newlyCreatedRun[0].id,
+                    browser_id: browser.id,
+                    browser_version: browserVersionNumber,
+                    browser_name: browser.name,
+                    at_id: at.id,
+                    at_key: at.key,
+                    at_name: at.AtName.name,
+                    at_name_id: at.AtName.id,
+                    at_version: atVersionNumber,
+                    apg_example_directory: apgExamples[2].directory,
+                    apg_example_name: apgExamples[2].name,
+                    apg_example_id: apgExamples[2].id,
+                    run_status_id: runStatus.id,
+                    run_status: db.RunStatus.RAW,
+                    test_version_id: testVersion.id,
+                    testers: []
+                });
             });
         });
     });
