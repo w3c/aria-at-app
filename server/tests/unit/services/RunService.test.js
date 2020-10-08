@@ -1,4 +1,5 @@
 const { dbCleaner } = require('../../util/db-cleaner');
+const ArrayContainingExactly = require('../../util/array-containing-exactly');
 const db = require('../../../models/index');
 const RunService = require('../../../services/RunService');
 
@@ -1586,7 +1587,7 @@ describe('RunService', () => {
                         git_hash: testVersion.git_hash,
                         git_commit_msg: testVersion.git_commit_msg,
                         date: testVersion.datetime,
-                        supported_ats: expect.arrayContaining([
+                        supported_ats: new ArrayContainingExactly([
                             {
                                 at_id: expect.any(Number),
                                 at_key: 'voiceover_macos',
@@ -1606,7 +1607,7 @@ describe('RunService', () => {
                                 at_name_id: expect.any(Number)
                             }
                         ]),
-                        apg_examples: expect.arrayContaining([
+                        apg_examples: new ArrayContainingExactly([
                             {
                                 id: expect.any(Number),
                                 directory: 'combobox-autocomplete-both',
