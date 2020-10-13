@@ -42,8 +42,28 @@ async function getIssuesByTestId(req, res) {
     }
 }
 
+async function createIssue(req, res) {
+    const { run_id, test_id, title, body } = req.body.data;
+    const { accessToken } = req.session;
+    try {
+        const result = await TestService.createIssue({
+            accessToken,
+            run_id,
+            test_id,
+            title,
+            body
+        });
+        res.status(201).json(result);
+    } catch (error) {
+        res.status(400);
+        res.end();
+        console.error(`Error caught in TestController: ${error}`);
+    }
+}
+
 module.exports = {
     importTests,
     saveTestResults,
-    getIssuesByTestId
+    getIssuesByTestId,
+    createIssue
 };
