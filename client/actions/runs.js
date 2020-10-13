@@ -3,6 +3,7 @@ import axios from 'axios';
 import {
     ACTIVE_RUNS,
     CONFLICTS_BY_TEST_RESULTS,
+    PUBLISHED_RUNS,
     DELETE_USERS_FROM_RUN,
     RUN_CONFIGURATION,
     SAVE_RESULT,
@@ -14,6 +15,11 @@ import {
 
 export const activeRunsDispatch = payload => ({
     type: ACTIVE_RUNS,
+    payload
+});
+
+export const publishedRunsDispatch = payload => ({
+    type: PUBLISHED_RUNS,
     payload
 });
 
@@ -61,6 +67,13 @@ export function getActiveRuns() {
     return async function(dispatch) {
         const response = await axios.get('/api/run/active');
         return dispatch(activeRunsDispatch(response.data));
+    };
+}
+
+export function getPublishedRuns() {
+    return async function(dispatch) {
+        const response = await axios.get('/api/run/published');
+        return dispatch(publishedRunsDispatch(response.data));
     };
 }
 

@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { Table } from 'react-bootstrap';
 import { Helmet } from 'react-helmet';
 import { connect } from 'react-redux';
-import { getTestCycles, getTestsForRunsCycle } from '../../actions/cycles';
+import { getPublishedRuns } from '../../actions/runs';
 import nextId from 'react-id-generator';
 
 class ResultsPage extends Component {
@@ -13,40 +13,21 @@ class ResultsPage extends Component {
     }
 
     componentDidMount() {
-        const { dispatch, cyclesById, fetchCycleResults } = this.props;
+        const { dispatch, publishedRunsById } = this.props;
 
-        if (!Object.keys(cyclesById).length) {
-            dispatch(getTestCycles());
+        if (!publishedRunsById) {
+            dispatch(getPublishedRuns());
         }
-
-        if (fetchCycleResults.length) {
-            for (let cycleId of fetchCycleResults) {
-                dispatch(getTestsForRunsCycle(cycleId));
-            }
-        }
-    }
-
-    componentDidUpdate(prevProps) {
-        const { dispatch, fetchCycleResults } = this.props;
-
-        // If we now know which cycle's results to fetch, fetch them
-        if (fetchCycleResults.length !== prevProps.fetchCycleResults.length) {
-            for (let cycleId of this.props.fetchCycleResults) {
-                dispatch(getTestsForRunsCycle(cycleId));
-            }
-        }
-        return null;
     }
 
     renderRow(row) {
         return (
             <tr key={nextId()}>
-                <td>{row.cycle}</td>
                 <td>{`${row.at} ${row.at_version}`}</td>
                 <td>{`${row.browser} ${row.browser_version}`}</td>
                 <td>
                     <Link
-                        to={`/results/cycles/${row.cycleId}/run/${row.runId}`}
+                        to={`/results/run/${row.runId}`}
                     >
                         {row.plan}
                     </Link>
@@ -57,36 +38,25 @@ class ResultsPage extends Component {
     }
 
     render() {
-        const { cyclesById } = this.props;
+        const { publishedRunsById } = this.props;
 
-        if (!Object.keys(cyclesById).length) {
+        if (!publishedRunsById || !Object.keys(publishedRunsById).length) {
             return <div>Loading</div>;
         }
 
         const rowsData = [];
 
-        let cyclesByNewest = Object.keys(cyclesById).sort(function(a, b) {
-            return parseInt(b) - parseInt(a);
+      for (let run of Object.values(publishedRunsById)) {
+        rowsData.push({
+          runId: run.id,
+          at: run.at_name,
+          at_version: run.at_version,
+          browser: run.browser_name,
+          browser_version: run.browser_version,
+          plan: run.apg_example_name,
+          status: run.run_status
         });
-
-        for (let cycleId of cyclesByNewest) {
-            let cycle = cyclesById[cycleId];
-            for (let run of Object.values(cycle.runsById)) {
-                if (run.run_status === 'final' || run.run_status === 'draft') {
-                    rowsData.push({
-                        cycle: cycle.name,
-                        cycleId: cycle.id,
-                        runId: run.id,
-                        at: run.at_name,
-                        at_version: run.at_version,
-                        browser: run.browser_name,
-                        browser_version: run.browser_version,
-                        plan: run.apg_example_name,
-                        status: run.run_status
-                    });
-                }
-            }
-        }
+      }
 
         let tableId = nextId('table_name_');
         let content;
@@ -95,7 +65,6 @@ class ResultsPage extends Component {
                 <Table aria-labelledby={tableId} striped bordered hover>
                     <thead>
                         <tr>
-                            <th>Test Cycle</th>
                             <th>Assistive Technology</th>
                             <th>Browser</th>
                             <th>Test Plan</th>
@@ -122,21 +91,15 @@ class ResultsPage extends Component {
 }
 
 ResultsPage.propTypes = {
-    cyclesById: PropTypes.object,
-    testsByRunId: PropTypes.object,
-    fetchCycleResults: PropTypes.array,
+    publishedRunsById: PropTypes.object,
     dispatch: PropTypes.func
 };
 
 const mapStateToProps = state => {
-    const { cyclesById, testsByRunId } = state.cycles;
-
-    let fetchCycleResults = Object.keys(cyclesById);
+    const { publishedRunsById } = state.runs;
 
     return {
-        cyclesById,
-        testsByRunId,
-        fetchCycleResults
+        publishedRunsById,
     };
 };
 
