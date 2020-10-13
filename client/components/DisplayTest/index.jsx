@@ -65,7 +65,6 @@ class DisplayTest extends Component {
         const {
             test,
             testerId,
-            cycleId,
             history,
             displayNextTest,
             displayPreviousTest,
@@ -78,7 +77,7 @@ class DisplayTest extends Component {
                 break;
             }
             case 'closeTest': {
-                history.push(`/test-queue/${cycleId}`);
+                history.push(`/test-queue`);
                 break;
             }
             case 'goToNextTest': {
@@ -180,7 +179,6 @@ class DisplayTest extends Component {
     renderModal() {
         let {
             at_key,
-            cycleId,
             git_hash,
             run,
             test,
@@ -248,7 +246,6 @@ class DisplayTest extends Component {
 
                 <RaiseIssueModal
                     at_key={at_key}
-                    cycleId={cycleId}
                     git_hash={git_hash}
                     onHide={this.handleRaiseIssueClick}
                     run={run}
@@ -275,7 +272,6 @@ class DisplayTest extends Component {
         } = this;
 
         const {
-            cycleId,
             run,
             test,
             git_hash,
@@ -295,7 +291,6 @@ class DisplayTest extends Component {
 
         const statusProps = {
             conflicts,
-            cycleId,
             git_hash,
             handleCloseRunClick,
             handleNextTestClick,
@@ -434,7 +429,6 @@ DisplayTest.propTypes = {
     testIndex: PropTypes.number,
     git_hash: PropTypes.string,
     at_key: PropTypes.string,
-    cycleId: PropTypes.number,
     userId: PropTypes.number,
     testerId: PropTypes.number,
     history: PropTypes.object,
