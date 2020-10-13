@@ -4,10 +4,7 @@ import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import { Col, Container, Row } from 'react-bootstrap';
 import queryString from 'query-string';
-import {
-    saveResult
-} from '../../actions/cycles';
-import { getActiveRunConfiguration, getActiveRuns } from '../../actions/runs';
+import { getActiveRunConfiguration, getActiveRuns, saveResult } from '../../actions/runs';
 import DisplayTest from '@components/DisplayTest';
 
 class TestRun extends Component {

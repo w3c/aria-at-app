@@ -3,6 +3,7 @@ import {
     ACTIVE_RUNS,
     DELETE_USERS_FROM_RUN,
     RUN_CONFIGURATION,
+    SAVE_RESULT,
     SAVE_RUN_CONFIGURATION,
     SAVE_RUN_STATUS,
     SAVE_USERS_TO_RUNS,
@@ -21,6 +22,11 @@ export const deleteUsersFromRunDispatch = payload => ({
 
 export const runConfigurationDispatch = payload => ({
     type: RUN_CONFIGURATION,
+    payload
+});
+
+export const saveResultDispatch = payload => ({
+    type: SAVE_RESULT,
     payload
 });
 
@@ -71,6 +77,16 @@ export function deleteUsersFromRun(users, runId) {
         );
     };
 }
+
+export function saveResult(result) {
+    return async function(dispatch) {
+        const response = await axios.post('/api/test/result', {
+            data: result
+        });
+        return dispatch(saveResultDispatch(response.data));
+    };
+}
+
 
 export function saveRunConfiguration(config) {
     return async function(dispatch) {

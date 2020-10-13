@@ -40,7 +40,7 @@ class TestQueue extends Component {
         let tableId = nextId('table_name_');
 
         return (
-            <div key={`${atName}${browserName}`}>
+            <div key={`${nextId('at_browser_pair')}`}>
                 <h3
                     id={tableId}
                 >{`${atName} ${atVersion} with ${browserName} ${browserVersion}`}</h3>

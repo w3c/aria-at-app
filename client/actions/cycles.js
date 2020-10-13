@@ -4,18 +4,10 @@ import {
     CYCLES,
     DELETE_CYCLE,
     SAVE_CYCLE,
-    SAVE_RESULT,
     TEST_SUITE_VERSIONS,
     TESTS_BY_RUN_ID,
-    CREATE_ISSUE_SUCCESS,
-    ISSUES_BY_TEST_ID,
     CONFLICTS_BY_TEST_RESULTS
 } from './types';
-
-export const saveResultDispatch = payload => ({
-    type: SAVE_RESULT,
-    payload
-});
 
 export const saveCycleDispatch = payload => ({
     type: SAVE_CYCLE,
@@ -57,15 +49,6 @@ export const getConflictsByTestResultsDispatch = payload => ({
     payload
 });
 
-export function saveResult(result) {
-    return async function(dispatch) {
-        const response = await axios.post('/api/cycle/result', {
-            data: result
-        });
-        return dispatch(saveResultDispatch(response.data));
-    };
-}
-
 export function saveCycle(cycle) {
     return async function(dispatch) {
         const response = await axios.post('/api/cycle', {
@@ -105,34 +88,6 @@ export function getTestSuiteVersions() {
     };
 }
 
-/**
- * getIssuesByTestId        Retrieve all issues known to ARIA-AT and
- *                          their corresponding Github Issue object
- * @param  {Number} test_id The test_id that corresponds to a given Issue
- * @return {Array}          An array of Github Issue objects.
- */
-export function getIssuesByTestId(test_id) {
-    return async function(dispatch) {
-        const response = await axios.get(
-            `/api/cycle/issues?test_id=${test_id}`
-        );
-        return dispatch(getIssuesByTestIdDispatch(response.data));
-    };
-}
-
-/**
- * createIssue           Create a new issue via Github API
- * @param  {Object} data Title, body, run, test
- * @return {Issue}       The Issue object returned by Github
- */
-export function createIssue(data) {
-    return async function(dispatch) {
-        const response = await axios.post('/api/cycle/issue', {
-            data
-        });
-        return dispatch(createIssueSuccessDispatch(response.data));
-    };
-}
 
 //
 // TODO: These are intentionally unimplemented and will

@@ -2,11 +2,8 @@ import {
     CYCLES,
     DELETE_CYCLE,
     SAVE_CYCLE,
-    SAVE_RESULT,
     TEST_SUITE_VERSIONS,
     TESTS_BY_RUN_ID,
-    CREATE_ISSUE_SUCCESS,
-    ISSUES_BY_TEST_ID,
     CONFLICTS_BY_TEST_RESULTS
 } from '../actions/types';
 
@@ -54,28 +51,6 @@ export default (state = initialState, action) => {
                 }
             });
         }
-        case SAVE_RESULT: {
-            const result = action.payload;
-
-            const tests = state.testsByRunId[result.run_id];
-            const testIndex = tests.findIndex(t => t.id === result.test_id);
-            const newTests = [...tests];
-            const newTest = {
-                ...tests[testIndex],
-                results: {
-                    ...tests[testIndex].results,
-                    [result.user_id]: result
-                }
-            };
-            newTests[testIndex] = newTest;
-
-            return Object.assign({}, state, {
-                testsByRunId: {
-                    ...state.testsByRunId,
-                    [result.run_id]: newTests
-                }
-            });
-        }
         case TESTS_BY_RUN_ID: {
             return Object.assign({}, state, {
                 testsByRunId: {
@@ -83,17 +58,6 @@ export default (state = initialState, action) => {
                     ...action.payload.testsByRunId
                 }
             });
-        }
-        case ISSUES_BY_TEST_ID: {
-            const { test_id, issues } = action.payload;
-            const issuesByTestId = test_id ? { [test_id]: issues } : {};
-            return {
-                ...state,
-                issuesByTestId: {
-                    ...state.issuesByTestId,
-                    ...issuesByTestId
-                }
-            };
         }
         case CONFLICTS_BY_TEST_RESULTS: {
             const { test_id, conflicts } = action.payload;
@@ -104,22 +68,6 @@ export default (state = initialState, action) => {
                     ...state.conflictsByTestId,
                     ...conflictsByTestId
                 }
-            };
-        }
-        case CREATE_ISSUE_SUCCESS: {
-            const { issuesByTestId } = state;
-
-            const { test_id, issues } = action.payload;
-
-            if (!issuesByTestId[test_id]) {
-                issuesByTestId[test_id] = [];
-            }
-
-            issuesByTestId[test_id].push(...issues);
-
-            return {
-                ...state,
-                issuesByTestId
             };
         }
         default:

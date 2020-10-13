@@ -2,6 +2,7 @@ import {
     ACTIVE_RUNS,
     DELETE_USERS_FROM_RUN,
     RUN_CONFIGURATION,
+    SAVE_RESULT,
     SAVE_RUN_CONFIGURATION,
     SAVE_RUN_STATUS,
     SAVE_USERS_TO_RUNS,
@@ -29,6 +30,31 @@ export default (state = initialState, action) => {
             return {
                 ...state,
                 activeRunConfiguration: config
+            };
+        }
+        case SAVE_RESULT: {
+            const result = action.payload;
+            const tests = state.activeRunsById[result.run_id].tests;
+            const testIndex = tests.findIndex(t => t.id === result.test_id);
+            const newTests = [...tests];
+            const newTest = {
+                ...tests[testIndex],
+                results: {
+                    ...tests[testIndex].results,
+                    [result.user_id]: result
+                }
+            };
+            newTests[testIndex] = newTest;
+
+            return {
+                ...state,
+                activeRunsById: {
+                    ...state.activeRunsById,
+                    [result.run_id]: {
+                        ...state.activeRunsById[result.run_id],
+                        tests: newTests
+                    }
+                }
             };
         }
         case SAVE_RUN_CONFIGURATION: {
