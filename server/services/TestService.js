@@ -202,8 +202,45 @@ async function getIssuesByTestId({ accessToken, test_id }) {
     }
 }
 
+async function createIssue({ accessToken, run_id, test_id, title, body }) {
+    try {
+        const issue = await GithubService.createIssue({
+            accessToken,
+            issue: {
+                title,
+                body
+            }
+        });
+
+        if (issue) {
+            const issue_number = issue.number;
+            const record = {
+                run_id,
+                test_id,
+                title,
+                body,
+                issue_number
+            };
+
+            const created = await db.TestIssue.create(record);
+
+            if (created && created.dataValues) {
+                return {
+                    test_id,
+                    issues: [issue]
+                };
+            }
+            throw new Error(`TestIssue was not created, ${created}`);
+        }
+    } catch (error) {
+        console.error(`Error: ${error}`);
+        throw error;
+    }
+}
+
 module.exports = {
     importTests,
     saveTestResults,
-    getIssuesByTestId
+    getIssuesByTestId,
+    createIssue
 };
