@@ -282,7 +282,7 @@ async function configureRuns({
             let matchIndex = addRuns.findIndex(r => {
                 return (
                     r.apg_example_id === existingRun.ApgExample.id &&
-                    r.browser_version_to_at_version ===
+                    r.browser_version_to_at_version_id ===
                         existingRun.BrowserVersionToAtVersion.id
                 );
             });
