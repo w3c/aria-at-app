@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { Alert, Button } from 'react-bootstrap';
 import { Octicon, Octicons } from 'octicons-react';
 import nextId from 'react-id-generator';
-import { getConflictsByTestResults } from '../../actions/cycles';
+import { getConflictsByTestResults } from '../../actions/runs';
 import { getIssuesByTestId } from '../../actions/issues';
 
 class StatusBar extends Component {
@@ -141,7 +141,7 @@ StatusBar.propTypes = {
 
 const mapStateToProps = (state, ownProps) => {
     const {
-        cycles: { conflictsByTestId, testsByRunId },
+        runs: { conflictsByTestId, activeRunsById },
         issues: { issuesByTestId }
     } = state;
     const conflicts = conflictsByTestId[ownProps.test.id] || [];
@@ -149,7 +149,7 @@ const mapStateToProps = (state, ownProps) => {
         ({ closed }) => !closed
     );
 
-    const tests = testsByRunId[ownProps.run.id];
+    const tests = activeRunsById[ownProps.run.id].tests;
     return { conflicts, issues, tests };
 };
 export default connect(mapStateToProps, null)(StatusBar);

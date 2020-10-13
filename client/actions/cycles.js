@@ -1,12 +1,10 @@
-import checkForConflict from '../utils/checkForConflict';
 import axios from 'axios';
 import {
     CYCLES,
     DELETE_CYCLE,
     SAVE_CYCLE,
     TEST_SUITE_VERSIONS,
-    TESTS_BY_RUN_ID,
-    CONFLICTS_BY_TEST_RESULTS
+    TESTS_BY_RUN_ID
 } from './types';
 
 export const saveCycleDispatch = payload => ({
@@ -41,11 +39,6 @@ export const getIssuesByTestIdDispatch = payload => ({
 
 export const createIssueSuccessDispatch = payload => ({
     type: CREATE_ISSUE_SUCCESS,
-    payload
-});
-
-export const getConflictsByTestResultsDispatch = payload => ({
-    type: CONFLICTS_BY_TEST_RESULTS,
     payload
 });
 
@@ -88,34 +81,3 @@ export function getTestSuiteVersions() {
     };
 }
 
-
-//
-// TODO: These are intentionally unimplemented and will
-//       be completed in a follow up changeset.
-//
-
-/**
- * getConflictsByTestResults    Returns an array of conflicts for a
- *                              test in a given test results set.
- * @param  {Test} test          The test object
- * @param  {Number} userId      This user's id
- *
- * @return {Object { test_id, conflicts }}
- */
-export function getConflictsByTestResults(test, userId) {
-    return async function(dispatch) {
-        // const response = await axios.get(
-        //     `/api/cycle/conflicts?cycle_id=${cycle_id}`
-        // );
-        // dispatch(getConflictsByTestResultsDispatch(response.data));
-        const conflicts = test.results
-            ? checkForConflict(test.results, userId)
-            : [];
-        return dispatch(
-            getConflictsByTestResultsDispatch({
-                test_id: test.id,
-                conflicts
-            })
-        );
-    };
-}

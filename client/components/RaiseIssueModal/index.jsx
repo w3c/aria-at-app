@@ -2,9 +2,7 @@ import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Button, Form, Modal } from 'react-bootstrap';
-import {
-    getConflictsByTestResults
-} from '../../actions/cycles';
+import { getConflictsByTestResults } from '../../actions/runs';
 import { getIssuesByTestId, createIssue } from '../../actions/issues';
 import IssueCards from './IssueCards';
 import MarkdownEditor from './MarkdownEditor';
@@ -319,7 +317,7 @@ RaiseIssueModal.propTypes = {
 
 const mapStateToProps = (state, ownProps) => {
     const {
-        cycles: { conflictsByTestId },
+        runs: { conflictsByTestId },
         issues: { issuesByTestId },
     } = state;
 

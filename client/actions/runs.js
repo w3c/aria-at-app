@@ -1,6 +1,8 @@
+import checkForConflict from '../utils/checkForConflict';
 import axios from 'axios';
 import {
     ACTIVE_RUNS,
+    CONFLICTS_BY_TEST_RESULTS,
     DELETE_USERS_FROM_RUN,
     RUN_CONFIGURATION,
     SAVE_RESULT,
@@ -17,6 +19,12 @@ export const activeRunsDispatch = payload => ({
 
 export const deleteUsersFromRunDispatch = payload => ({
     type: DELETE_USERS_FROM_RUN,
+    payload
+});
+
+
+export const getConflictsByTestResultsDispatch = payload => ({
+    type: CONFLICTS_BY_TEST_RESULTS,
     payload
 });
 
@@ -61,6 +69,38 @@ export function getActiveRunConfiguration() {
     return async function(dispatch) {
         const response = await axios.get('/api/run/config');
         return dispatch(runConfigurationDispatch(response.data));
+    };
+}
+
+
+//
+// TODO: These are intentionally unimplemented and will
+//       be completed in a follow up changeset.
+//
+
+/**
+ * getConflictsByTestResults    Returns an array of conflicts for a
+ *                              test in a given test results set.
+ * @param  {Test} test          The test object
+ * @param  {Number} userId      This user's id
+ *
+ * @return {Object { test_id, conflicts }}
+ */
+export function getConflictsByTestResults(test, userId) {
+    return async function(dispatch) {
+        // const response = await axios.get(
+        //     `/api/cycle/conflicts?cycle_id=${cycle_id}`
+        // );
+        // dispatch(getConflictsByTestResultsDispatch(response.data));
+        const conflicts = test.results
+            ? checkForConflict(test.results, userId)
+            : [];
+        return dispatch(
+            getConflictsByTestResultsDispatch({
+                test_id: test.id,
+                conflicts
+            })
+        );
     };
 }
 

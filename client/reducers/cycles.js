@@ -3,12 +3,10 @@ import {
     DELETE_CYCLE,
     SAVE_CYCLE,
     TEST_SUITE_VERSIONS,
-    TESTS_BY_RUN_ID,
-    CONFLICTS_BY_TEST_RESULTS
+    TESTS_BY_RUN_ID
 } from '../actions/types';
 
 const initialState = {
-    conflictsByTestId: {},
     cyclesById: {},
     issuesByTestId: {},
     testSuiteVersions: [],
@@ -58,17 +56,6 @@ export default (state = initialState, action) => {
                     ...action.payload.testsByRunId
                 }
             });
-        }
-        case CONFLICTS_BY_TEST_RESULTS: {
-            const { test_id, conflicts } = action.payload;
-            const conflictsByTestId = test_id ? { [test_id]: conflicts } : {};
-            return {
-                ...state,
-                conflictsByTestId: {
-                    ...state.conflictsByTestId,
-                    ...conflictsByTestId
-                }
-            };
         }
         default:
             return state;

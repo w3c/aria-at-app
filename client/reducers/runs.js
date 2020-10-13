@@ -1,5 +1,6 @@
 import {
     ACTIVE_RUNS,
+    CONFLICTS_BY_TEST_RESULTS,
     DELETE_USERS_FROM_RUN,
     RUN_CONFIGURATION,
     SAVE_RESULT,
@@ -10,6 +11,7 @@ import {
 } from '../actions/types';
 
 const initialState = {
+    conflictsByTestId: {},
     activeRunConfiguration: undefined,
     activeRunsById: undefined,
     publishedRunsById: undefined,
@@ -23,6 +25,17 @@ export default (state = initialState, action) => {
             return {
                 ...state,
                 activeRunsById: runs
+            };
+        }
+        case CONFLICTS_BY_TEST_RESULTS: {
+            const { test_id, conflicts } = action.payload;
+            const conflictsByTestId = test_id ? { [test_id]: conflicts } : {};
+            return {
+                ...state,
+                conflictsByTestId: {
+                    ...state.conflictsByTestId,
+                    ...conflictsByTestId
+                }
             };
         }
         case RUN_CONFIGURATION: {
