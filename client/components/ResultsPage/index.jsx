@@ -26,7 +26,11 @@ class ResultsPage extends Component {
                 <td>{`${row.at} ${row.at_version}`}</td>
                 <td>{`${row.browser} ${row.browser_version}`}</td>
                 <td>
-                    <Link to={`/results/run/${row.runId}`}>{row.plan}</Link>
+                    <Link
+                        to={`/results/run/${row.runId}`}
+                    >
+                        {row.plan}
+                    </Link>
                 </td>
                 <td>{row.status}</td>
             </tr>
@@ -42,17 +46,17 @@ class ResultsPage extends Component {
 
         const rowsData = [];
 
-        for (let run of Object.values(publishedRunsById)) {
-            rowsData.push({
-                runId: run.id,
-                at: run.at_name,
-                at_version: run.at_version,
-                browser: run.browser_name,
-                browser_version: run.browser_version,
-                plan: run.apg_example_name,
-                status: run.run_status
-            });
-        }
+      for (let run of Object.values(publishedRunsById)) {
+        rowsData.push({
+          runId: run.id,
+          at: run.at_name,
+          at_version: run.at_version,
+          browser: run.browser_name,
+          browser_version: run.browser_version,
+          plan: run.apg_example_name,
+          status: run.run_status
+        });
+      }
 
         let tableId = nextId('table_name_');
         let content;
