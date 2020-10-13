@@ -1,5 +1,6 @@
 const { exec } = require('child_process');
 const db = require('../models/index');
+const GithubService = require('./GithubService');
 
 async function runImportScript(git_hash) {
     return new Promise((resolve, reject) => {
@@ -172,7 +173,37 @@ async function saveTestResults(testResult) {
     }
 }
 
+async function getIssuesByTestId({ accessToken, test_id }) {
+    try {
+        const issues = await db.TestIssue.findAll({
+            where: {
+                test_id
+            }
+        });
+
+        const results = await GithubService.getIssues({
+            accessToken,
+            issues
+        });
+
+        const response = {
+            test_id,
+            issues: []
+        };
+
+        for (let result of results) {
+            response.issues.push(result);
+        }
+
+        return response;
+    } catch (error) {
+        console.error(`Error: ${error}`);
+        throw error;
+    }
+}
+
 module.exports = {
     importTests,
-    saveTestResults
+    saveTestResults,
+    getIssuesByTestId
 };

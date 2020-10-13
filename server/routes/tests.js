@@ -7,4 +7,6 @@ router.post('/import', TestController.importTests);
 
 router.post('/result', TestController.saveTestResults);
 
+router.get('/issues', TestController.getIssuesByTestId);
+
 module.exports = router;

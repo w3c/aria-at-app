@@ -26,7 +26,24 @@ async function saveTestResults(req, res) {
     }
 }
 
+async function getIssuesByTestId(req, res) {
+    const test_id = parseInt(req.query.test_id);
+    const { accessToken } = req.session;
+    try {
+        const issues = await TestService.getIssuesByTestId({
+            accessToken,
+            test_id
+        });
+        res.status(200).json(issues);
+    } catch (error) {
+        res.status(400);
+        res.end();
+        console.error(`Error caught in TestController: ${error}`);
+    }
+}
+
 module.exports = {
     importTests,
-    saveTestResults
+    saveTestResults,
+    getIssuesByTestId
 };
