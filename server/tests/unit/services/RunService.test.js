@@ -1049,14 +1049,6 @@ describe('RunService', () => {
                     name: apgExampleName
                 });
 
-                const test = await db.Test.create({
-                    name: 'Operate a checkbox',
-                    file: 'tests/checkbox/test-01-operate',
-                    execution_order: 1,
-                    apg_example_id: apgExample.id,
-                    test_version_id: testVersion.id
-                });
-
                 const user = await db.Users.create();
                 const testCycle = await db.TestCycle.create({
                     test_version_id: testVersion.id,
@@ -1128,13 +1120,6 @@ describe('RunService', () => {
                     directory: apgExampleDirectory,
                     name: apgExampleName
                 });
-                const test = await db.Test.create({
-                    name: 'Operate a checkbox',
-                    file: 'tests/checkbox/test-01-operate',
-                    execution_order: 1,
-                    apg_example_id: apgExample.id,
-                    test_version_id: testVersion.id
-                });
                 const user = await db.Users.create();
                 const testCycle = await db.TestCycle.create({
                     test_version_id: testVersion.id,
@@ -1203,6 +1188,29 @@ describe('RunService', () => {
                     run_id: run.id,
                     user_id: user.id
                 });
+
+                const test = await db.Test.create({
+                    name: 'Operate a checkbox',
+                    file: 'tests/checkbox/test-01-operate',
+                    execution_order: 1,
+                    apg_example_id: apgExample.id,
+                    test_version_id: testVersion.id
+                });
+
+                await db.TestToAt.create({
+                    test_id: test.id,
+                    at_id: at.id
+                });
+
+                // Test for another At only shouldn't be included
+                await db.Test.create({
+                    name: 'Operate a checkbox',
+                    file: 'tests/checkbox/test-01-operate',
+                    execution_order: 1,
+                    apg_example_id: apgExample.id,
+                    test_version_id: testVersion.id
+                });
+
                 const testStatus = await db.TestStatus.findOne({
                     where: { name: db.TestStatus.COMPLETE }
                 });
@@ -1450,6 +1458,29 @@ describe('RunService', () => {
                     run_id: run.id,
                     user_id: user.id
                 });
+
+                const test = await db.Test.create({
+                    name: 'Operate a checkbox',
+                    file: 'tests/checkbox/test-01-operate',
+                    execution_order: 1,
+                    apg_example_id: apgExample.id,
+                    test_version_id: testVersion.id
+                });
+
+                await db.TestToAt.create({
+                    test_id: test.id,
+                    at_id: at.id
+                });
+
+                // Test for another At only shouldn't be included
+                await db.Test.create({
+                    name: 'Operate a checkbox',
+                    file: 'tests/checkbox/test-01-operate',
+                    execution_order: 1,
+                    apg_example_id: apgExample.id,
+                    test_version_id: testVersion.id
+                });
+
                 const testStatus = await db.TestStatus.findOne({
                     where: { name: db.TestStatus.COMPLETE }
                 });
