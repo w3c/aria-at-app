@@ -411,7 +411,11 @@ async function sequelizeRunsToJsonRuns(sequelizeRuns) {
             run_status: run.RunStatus.name,
             test_version_id: run.test_version_id,
             testers: run.Users.map(u => u.id),
-            tests: run.ApgExample.Tests.reduce((acc, test) => {
+            tests: run.ApgExample.Tests.filter(test =>
+                (test.TestToAts || []).some(
+                    testToAt => testToAt.at_id == run.at_id
+                )
+            ).reduce((acc, test) => {
                 acc.push({
                     id: test.id,
                     file: test.file,
@@ -451,10 +455,13 @@ async function getActiveRuns() {
                     model: db.ApgExample,
                     include: {
                         model: db.Test,
-                        include: {
-                            model: db.TestResult,
-                            include: db.TestStatus
-                        }
+                        include: [
+                            db.TestToAt,
+                            {
+                                model: db.TestResult,
+                                include: db.TestStatus
+                            }
+                        ]
                     }
                 },
                 {
@@ -490,10 +497,13 @@ async function getPublishedRuns() {
                     model: db.ApgExample,
                     include: {
                         model: db.Test,
-                        include: {
-                            model: db.TestResult,
-                            include: db.TestStatus
-                        }
+                        include: [
+                            db.TestToAt,
+                            {
+                                model: db.TestResult,
+                                include: db.TestStatus
+                            }
+                        ]
                     }
                 },
                 {

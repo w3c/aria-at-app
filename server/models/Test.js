@@ -48,6 +48,10 @@ module.exports = function(sequelize, DataTypes) {
             foreignKey: 'test_id',
             sourceKey: 'id'
         });
+        models.Test.hasMany(models.TestToAt, {
+            foreignKey: 'test_id',
+            sourceKey: 'id'
+        });
     };
 
     return Test;
