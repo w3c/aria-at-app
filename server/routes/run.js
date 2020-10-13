@@ -8,4 +8,6 @@ router.get('/active', RunController.getActiveRuns);
 router.get('/published', RunController.getPublishedRuns);
 router.get('/config', RunController.getActiveRunsConfiguration);
 
+router.post('/status', RunController.saveRunStatus);
+
 module.exports = router;

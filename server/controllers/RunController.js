@@ -44,9 +44,22 @@ async function getActiveRunsConfiguration(req, res) {
     }
 }
 
+async function saveRunStatus(req, res) {
+    try {
+        const run = req.body.data;
+        const savedRun = await RunService.saveRunStatus(run);
+        res.status(201).json(savedRun);
+    } catch (error) {
+        res.status(400);
+        res.end();
+        console.error(`Error caught in RunController: ${error}`);
+    }
+}
+
 module.exports = {
     configureRuns,
     getActiveRuns,
     getPublishedRuns,
-    getActiveRunsConfiguration
+    getActiveRunsConfiguration,
+    saveRunStatus
 };
