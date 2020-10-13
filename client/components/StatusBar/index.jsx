@@ -4,10 +4,8 @@ import { connect } from 'react-redux';
 import { Alert, Button } from 'react-bootstrap';
 import { Octicon, Octicons } from 'octicons-react';
 import nextId from 'react-id-generator';
-import {
-    getConflictsByTestResults,
-    getIssuesByTestId
-} from '../../actions/cycles';
+import { getConflictsByTestResults } from '../../actions/cycles';
+import { getIssuesByTestId } from '../../actions/issues';
 
 class StatusBar extends Component {
     constructor(props) {
@@ -126,8 +124,6 @@ class StatusBar extends Component {
 
 StatusBar.propTypes = {
     conflicts: PropTypes.array,
-    cycle: PropTypes.object,
-    cycleId: PropTypes.number,
     dispatch: PropTypes.func,
     issues: PropTypes.array,
     run: PropTypes.object,
@@ -145,7 +141,8 @@ StatusBar.propTypes = {
 
 const mapStateToProps = (state, ownProps) => {
     const {
-        cycles: { conflictsByTestId, issuesByTestId, testsByRunId }
+        cycles: { conflictsByTestId, testsByRunId },
+        issues: { issuesByTestId }
     } = state;
     const conflicts = conflictsByTestId[ownProps.test.id] || [];
     const issues = (issuesByTestId[ownProps.test.id] || []).filter(
