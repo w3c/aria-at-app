@@ -5,7 +5,6 @@ import { Helmet } from 'react-helmet';
 import { Col, Container, Row } from 'react-bootstrap';
 import queryString from 'query-string';
 import {
-    getTestsForRunsCycle,
     saveResult
 } from '../../actions/cycles';
 import { getActiveRunConfiguration, getActiveRuns } from '../../actions/runs';
@@ -27,10 +26,7 @@ class TestRun extends Component {
     }
 
     async componentDidMount() {
-        const { dispatch, tests, run, activeRunConfiguration } = this.props;
-        if (!tests) {
-            dispatch(getTestsForRunsCycle());
-        }
+        const { dispatch, run, activeRunConfiguration } = this.props;
         if (!activeRunConfiguration) {
             dispatch(getActiveRunConfiguration());
         }
@@ -40,9 +36,9 @@ class TestRun extends Component {
     }
 
     displayNextTest() {
-        const { tests } = this.props;
+        const { run } = this.props;
         let newIndex = this.state.currentTestIndex + 1;
-        if (newIndex > tests.length) {
+        if (newIndex > run.tests.length) {
             this.setState({
                 runComplete: true
             });
@@ -62,12 +58,11 @@ class TestRun extends Component {
     async saveResultFromTest({ results, serializedForm }) {
         const {
             dispatch,
-            tests,
             run,
             userId,
             openAsUser
         } = this.props;
-        const test = tests[this.state.currentTestIndex - 1];
+        const test = run.tests[this.state.currentTestIndex - 1];
         await dispatch(
             saveResult({
                 test_id: test.id,
@@ -83,12 +78,11 @@ class TestRun extends Component {
     async deleteResultFromTest() {
         const {
             dispatch,
-            tests,
             run,
             userId,
             openAsUser
         } = this.props;
-        const test = tests[this.state.currentTestIndex - 1];
+        const test = run.tests[this.state.currentTestIndex - 1];
         await dispatch(
             saveResult({
                 test_id: test.id,
@@ -103,14 +97,13 @@ class TestRun extends Component {
     render() {
         const {
             run,
-            tests,
             activeRunConfiguration,
             userId,
             usersById,
             openAsUser
         } = this.props;
 
-        if (!run || !tests || !activeRunConfiguration) {
+        if (!run || !activeRunConfiguration) {
             return <div data-test="test-run-loading">Loading</div>;
         }
         const { git_hash } = activeRunConfiguration.active_test_version;
@@ -126,8 +119,8 @@ class TestRun extends Component {
 
         let test,
             testsToRun = false;
-        if (tests.length > 0) {
-            test = tests[this.state.currentTestIndex - 1];
+        if (run.tests.length > 0) {
+            test = run.tests[this.state.currentTestIndex - 1];
             testsToRun = true;
         }
 
@@ -154,7 +147,7 @@ class TestRun extends Component {
                     {runningAsUserHeader}
                     <h2 data-test="test-run-h2">
                         {' '}
-                        {`${apg_example_name} (${this.state.currentTestIndex} of ${tests.length})`}
+                        {`${apg_example_name} (${this.state.currentTestIndex} of ${run.tests.length})`}
                     </h2>
                     <h3 data-test="test-run-h3">{`${at_name} ${at_version} with ${browser_name} ${browser_version}`}</h3>
                 </Fragment>
@@ -226,7 +219,6 @@ TestRun.propTypes = {
     dispatch: PropTypes.func,
     userId: PropTypes.number,
     openAsUser: PropTypes.number,
-    tests: PropTypes.array,
     run: PropTypes.object,
     testSuiteVersionData: PropTypes.object,
     usersById: PropTypes.object
@@ -234,7 +226,6 @@ TestRun.propTypes = {
 
 const mapStateToProps = (state, ownProps) => {
     const { activeRunConfiguration, activeRunsById } = state.runs;
-    const { testsByRunId } = state.cycles;
     const { usersById } = state.users;
     let userId = state.user.id;
     const isAdmin = state.user.roles && state.user.roles.includes('admin');
@@ -253,15 +244,9 @@ const mapStateToProps = (state, ownProps) => {
         openAsUser = openAsUserQuery;
     }
 
-    let tests = undefined;
-    if (testsByRunId[runId]) {
-        tests = testsByRunId[runId];
-    }
-
     return {
         activeRunConfiguration,
         run,
-        tests,
         usersById,
         openAsUser,
         userId
