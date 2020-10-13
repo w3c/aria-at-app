@@ -339,7 +339,8 @@ describe('RunService', () => {
                     run_status_id: runStatus.id,
                     run_status: db.RunStatus.RAW,
                     test_version_id: testVersion.id,
-                    testers: []
+                    testers: [],
+                    tests: expect.any(Array)
                 });
                 await runWithOlderAt.reload();
                 expect(runWithOlderAt.active).toBe(true);
@@ -362,7 +363,8 @@ describe('RunService', () => {
                     run_status_id: runStatus.id,
                     run_status: db.RunStatus.RAW,
                     test_version_id: testVersion.id,
-                    testers: []
+                    testers: [],
+                    tests: expect.any(Array)
                 });
             });
         });
@@ -474,7 +476,8 @@ describe('RunService', () => {
                     run_status_id: runStatus.id,
                     run_status: db.RunStatus.RAW,
                     test_version_id: testVersion.id,
-                    testers: []
+                    testers: [],
+                    tests: expect.any(Array)
                 });
                 await runWithOlderBrowser.reload();
                 expect(runWithOlderBrowser.active).toBe(true);
@@ -497,7 +500,8 @@ describe('RunService', () => {
                     run_status_id: runStatus.id,
                     run_status: db.RunStatus.RAW,
                     test_version_id: testVersion.id,
-                    testers: []
+                    testers: [],
+                    tests: expect.any(Array)
                 });
             });
         });
@@ -584,7 +588,8 @@ describe('RunService', () => {
                     run_status_id: runStatus.id,
                     run_status: db.RunStatus.RAW,
                     test_version_id: testVersion.id,
-                    testers: []
+                    testers: [],
+                    tests: expect.any(Array)
                 });
 
                 // Check that previously activated pair is now inactive
@@ -782,7 +787,8 @@ describe('RunService', () => {
                     run_status_id: runStatus.id,
                     run_status: db.RunStatus.RAW,
                     test_version_id: testVersion.id,
-                    testers: []
+                    testers: [],
+                    tests: expect.any(Array)
                 });
 
                 // Verify that pre-existing run is now active
@@ -910,7 +916,8 @@ describe('RunService', () => {
                     run_status_id: runStatus.id,
                     run_status: db.RunStatus.RAW,
                     test_version_id: testVersion.id,
-                    testers: []
+                    testers: [],
+                    tests: expect.any(Array)
                 });
             });
         });
@@ -1027,7 +1034,8 @@ describe('RunService', () => {
                     run_status_id: runStatus.id,
                     run_status: db.RunStatus.RAW,
                     test_version_id: testVersion2.id,
-                    testers: []
+                    testers: [],
+                    tests: []
                 });
             });
         });
