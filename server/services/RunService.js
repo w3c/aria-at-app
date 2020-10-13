@@ -581,10 +581,52 @@ async function getNewTestVersions() {
     }
 }
 
+/**
+ * Saves a test result and marks the test as "complete"
+ *
+ * @param {object} run
+ * @param {string} run.run_status
+ * @param {number} run.id
+ * @return {object} - run with saved_status_id
+ *
+ */
+async function saveRunStatus(run) {
+    try {
+        let { run_status, id } = run;
+
+        const status = await db.RunStatus.findOne({
+            attributes: ['id'],
+            where: {
+                name: run_status
+            }
+        });
+
+        if (!status) {
+            throw new Error(`Status "${run_status}" is not a valid status.`);
+        }
+
+        await db.Run.update(
+            { run_status_id: status.dataValues.id },
+            {
+                where: {
+                    id
+                }
+            }
+        );
+
+        run.run_status_id = status.dataValues.id;
+        return run;
+    } catch (error) {
+        console.error(`Error: ${error}`);
+        throw error;
+    }
+}
+
 module.exports = {
     configureRuns,
     getActiveRuns,
     getPublishedRuns,
     getActiveRunsConfiguration,
-    getNewTestVersions
+    getNewTestVersions,
+    saveRunStatus
 };
