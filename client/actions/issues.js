@@ -23,7 +23,7 @@ export const createIssueSuccessDispatch = payload => ({
 export function getIssuesByTestId(test_id) {
     return async function(dispatch) {
         const response = await axios.get(
-            `/api/cycle/issues?test_id=${test_id}`
+            `/api/tests/issues?test_id=${test_id}`
         );
         return dispatch(getIssuesByTestIdDispatch(response.data));
     };
@@ -36,7 +36,7 @@ export function getIssuesByTestId(test_id) {
  */
 export function createIssue(data) {
     return async function(dispatch) {
-        const response = await axios.post('/api/cycle/issue', {
+        const response = await axios.post('/api/tests/issue', {
             data
         });
         return dispatch(createIssueSuccessDispatch(response.data));
