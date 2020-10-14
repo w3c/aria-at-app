@@ -89,7 +89,7 @@ export function getActiveRunConfiguration() {
 export function getConflictsByTestResults(test, userId) {
     return async function(dispatch) {
         // const response = await axios.get(
-        //     `/api/cycle/conflicts?cycle_id=${cycle_id}`
+        //     `/api/test/conflicts`
         // );
         // dispatch(getConflictsByTestResultsDispatch(response.data));
         const conflicts = test.results
@@ -144,7 +144,7 @@ export function saveRunConfiguration(config) {
 
 export function saveRunStatus(status, runId) {
     return async function(dispatch) {
-        const response = await axios.post('/api/cycle/run/status', {
+        const response = await axios.post('/api/run/status', {
             data: { run_status: status, id: runId }
         });
         return dispatch(
