@@ -271,14 +271,7 @@ class DisplayTest extends Component {
             handleEditClick
         } = this;
 
-        const {
-            run,
-            test,
-            git_hash,
-            at_key,
-            testIndex,
-            testerId
-        } = this.props;
+        const { run, test, git_hash, at_key, testIndex, testerId } = this.props;
 
         const { conflicts } = this.state;
 

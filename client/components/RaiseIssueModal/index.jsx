@@ -95,20 +95,8 @@ class RaiseIssueModal extends Component {
 
     onHide() {
         // Reset the issue template when closing the issue modal
-        const {
-            test,
-            run,
-            git_hash,
-            userId,
-            testerId,
-            conflicts
-        } = this.props;
-        let { title, body } = createIssueDefaults(
-            test,
-            run,
-            git_hash,
-            userId
-        );
+        const { test, run, git_hash, userId, testerId, conflicts } = this.props;
+        let { title, body } = createIssueDefaults(test, run, git_hash, userId);
         if (conflicts.length) {
             body = appendConflicts(body, conflicts, testerId);
         }
@@ -318,7 +306,7 @@ RaiseIssueModal.propTypes = {
 const mapStateToProps = (state, ownProps) => {
     const {
         runs: { conflictsByTestId },
-        issues: { issuesByTestId },
+        issues: { issuesByTestId }
     } = state;
 
     const conflicts = conflictsByTestId[ownProps.test.id];

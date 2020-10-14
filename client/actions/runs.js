@@ -22,7 +22,6 @@ export const deleteUsersFromRunDispatch = payload => ({
     payload
 });
 
-
 export const getConflictsByTestResultsDispatch = payload => ({
     type: CONFLICTS_BY_TEST_RESULTS,
     payload
@@ -71,7 +70,6 @@ export function getActiveRunConfiguration() {
         return dispatch(runConfigurationDispatch(response.data));
     };
 }
-
 
 //
 // TODO: These are intentionally unimplemented and will
@@ -126,7 +124,6 @@ export function saveResult(result) {
         return dispatch(saveResultDispatch(response.data));
     };
 }
-
 
 export function saveRunConfiguration(config) {
     return async function(dispatch) {

@@ -1,8 +1,5 @@
 import axios from 'axios';
-import {
-    CREATE_ISSUE_SUCCESS,
-    ISSUES_BY_TEST_ID
-} from './types';
+import { CREATE_ISSUE_SUCCESS, ISSUES_BY_TEST_ID } from './types';
 
 export const getIssuesByTestIdDispatch = payload => ({
     type: ISSUES_BY_TEST_ID,
@@ -22,9 +19,7 @@ export const createIssueSuccessDispatch = payload => ({
  */
 export function getIssuesByTestId(test_id) {
     return async function(dispatch) {
-        const response = await axios.get(
-            `/api/test/issues?test_id=${test_id}`
-        );
+        const response = await axios.get(`/api/test/issues?test_id=${test_id}`);
         return dispatch(getIssuesByTestIdDispatch(response.data));
     };
 }

@@ -32,16 +32,6 @@ export const testsByRunIdDispatch = payload => ({
     payload
 });
 
-export const getIssuesByTestIdDispatch = payload => ({
-    type: ISSUES_BY_TEST_ID,
-    payload
-});
-
-export const createIssueSuccessDispatch = payload => ({
-    type: CREATE_ISSUE_SUCCESS,
-    payload
-});
-
 export function saveCycle(cycle) {
     return async function(dispatch) {
         const response = await axios.post('/api/cycle', {
@@ -80,4 +70,3 @@ export function getTestSuiteVersions() {
         return dispatch(testSuiteVersionsDispatch(response.data));
     };
 }
-

@@ -1,7 +1,4 @@
-import {
-    CREATE_ISSUE_SUCCESS,
-    ISSUES_BY_TEST_ID
-} from '../actions/types';
+import { CREATE_ISSUE_SUCCESS, ISSUES_BY_TEST_ID } from '../actions/types';
 
 const initialState = {
     issuesByTestId: {}

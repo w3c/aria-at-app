@@ -4,7 +4,11 @@ import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import { Col, Container, Row } from 'react-bootstrap';
 import queryString from 'query-string';
-import { getActiveRunConfiguration, getActiveRuns, saveResult } from '../../actions/runs';
+import {
+    getActiveRunConfiguration,
+    getActiveRuns,
+    saveResult
+} from '../../actions/runs';
 import DisplayTest from '@components/DisplayTest';
 
 class TestRun extends Component {
@@ -53,12 +57,7 @@ class TestRun extends Component {
     }
 
     async saveResultFromTest({ results, serializedForm }) {
-        const {
-            dispatch,
-            run,
-            userId,
-            openAsUser
-        } = this.props;
+        const { dispatch, run, userId, openAsUser } = this.props;
         const test = run.tests[this.state.currentTestIndex - 1];
         await dispatch(
             saveResult({
@@ -73,12 +72,7 @@ class TestRun extends Component {
     }
 
     async deleteResultFromTest() {
-        const {
-            dispatch,
-            run,
-            userId,
-            openAsUser
-        } = this.props;
+        const { dispatch, run, userId, openAsUser } = this.props;
         const test = run.tests[this.state.currentTestIndex - 1];
         await dispatch(
             saveResult({
@@ -213,6 +207,7 @@ class TestRun extends Component {
 }
 
 TestRun.propTypes = {
+    activeRunConfiguration: PropTypes.object,
     dispatch: PropTypes.func,
     userId: PropTypes.number,
     openAsUser: PropTypes.number,
