@@ -4,10 +4,9 @@ import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import { Col, Container, Row, Table } from 'react-bootstrap';
 import {
-    getTestsForRunsCycle,
     getTestSuiteVersions,
-    getTestCycles
 } from '../../actions/cycles';
+import { getPublishedRuns } from '../../actions/runs';
 import checkForConflict from '../../utils/checkForConflict';
 import TestResult from '@components/TestResult';
 import nextId from 'react-id-generator';
@@ -16,13 +15,11 @@ class RunResultsPage extends Component {
     async componentDidMount() {
         const {
             dispatch,
-            allTests,
-            cycleId,
+            run,
             testSuiteVersionData
         } = this.props;
-        if (!allTests) {
-            dispatch(getTestCycles());
-            dispatch(getTestsForRunsCycle(cycleId));
+        if (!run) {
+            dispatch(getPublishedRuns());
         }
         if (!testSuiteVersionData) {
             dispatch(getTestSuiteVersions());
@@ -56,7 +53,7 @@ class RunResultsPage extends Component {
     }
 
     render() {
-        const { run, allTests, cycle, testSuiteVersionData } = this.props;
+        const { run, allTests, testSuiteVersionData } = this.props;
 
         if (!run || !allTests || !testSuiteVersionData) {
             return <div>Loading</div>;
@@ -86,7 +83,7 @@ class RunResultsPage extends Component {
                             <Col>
                                 <Fragment>
                                     <h1>{title}</h1>
-                                    <p>{`No results have been marked as DRAFT or FINAL for this run in test cycle: ${cycle.name}`}</p>
+                                    <p>{`No results have been marked as DRAFT or FINAL for this run.`}</p>
                                 </Fragment>
                             </Col>
                         </Row>
@@ -155,7 +152,6 @@ class RunResultsPage extends Component {
                         <Col>
                             <Fragment>
                                 <h1>{title}</h1>
-                                <p>{`As performed in test cycle: ${cycle.name}`}</p>
                             </Fragment>
                         </Col>
                     </Row>
@@ -216,7 +212,7 @@ class RunResultsPage extends Component {
                             <h2>Skipped Tests</h2>
                             <p>
                                 The following tests have been skipped in this
-                                test cycle:
+                                test run:
                             </p>
                             <ul>
                                 {skippedTests.map(s => {
@@ -260,36 +256,29 @@ class RunResultsPage extends Component {
 
 RunResultsPage.propTypes = {
     dispatch: PropTypes.func,
-    cycle: PropTypes.object,
-    cycleId: PropTypes.number,
     allTests: PropTypes.array,
     run: PropTypes.object,
     testSuiteVersionData: PropTypes.object
 };
 
 const mapStateToProps = (state, ownProps) => {
-    const { cyclesById, testsByRunId, testSuiteVersions } = state.cycles;
+    const { testSuiteVersions } = state.cycles; // TODO
+    const { publishedRunsById } = state.runs;
 
-    const cycleId = parseInt(ownProps.match.params.cycleId);
     const runId = parseInt(ownProps.match.params.runId);
 
-    let cycle = cyclesById[cycleId];
-    let run, testSuiteVersionData;
-    if (cycle) {
-        run = cycle.runsById[runId];
-        testSuiteVersionData = testSuiteVersions.find(
-            v => v.id === cycle.test_version_id
-        );
+    let run, testSuiteVersionData, allTests;
+    if (publishedRunsById) {
+        run = publishedRunsById[runId];
     }
-
-    let allTests = undefined;
-    if (testsByRunId[runId]) {
-        allTests = testsByRunId[runId];
+    if (run) {
+        testSuiteVersionData = testSuiteVersions.find(
+          v => v.id === run.test_version_id
+        );
+        allTests = run.tests;
     }
 
     return {
-        cycle,
-        cycleId,
         run,
         allTests,
         testSuiteVersionData
