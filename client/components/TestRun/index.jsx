@@ -5,11 +5,10 @@ import { Helmet } from 'react-helmet';
 import { Col, Container, Row } from 'react-bootstrap';
 import queryString from 'query-string';
 import {
-    getTestCycles,
-    getTestsForRunsCycle,
-    getTestSuiteVersions,
+    getActiveRunConfiguration,
+    getActiveRuns,
     saveResult
-} from '../../actions/cycles';
+} from '../../actions/runs';
 import DisplayTest from '@components/DisplayTest';
 
 class TestRun extends Component {
@@ -28,20 +27,19 @@ class TestRun extends Component {
     }
 
     async componentDidMount() {
-        const { dispatch, cycleId, tests, testSuiteVersionData } = this.props;
-        if (!tests) {
-            dispatch(getTestCycles());
-            dispatch(getTestsForRunsCycle(cycleId));
+        const { dispatch, run, activeRunConfiguration } = this.props;
+        if (!activeRunConfiguration) {
+            dispatch(getActiveRunConfiguration());
         }
-        if (!testSuiteVersionData) {
-            dispatch(getTestSuiteVersions());
+        if (!run) {
+            dispatch(getActiveRuns());
         }
     }
 
     displayNextTest() {
-        const { tests } = this.props;
+        const { run } = this.props;
         let newIndex = this.state.currentTestIndex + 1;
-        if (newIndex > tests.length) {
+        if (newIndex > run.tests.length) {
             this.setState({
                 runComplete: true
             });
@@ -59,20 +57,12 @@ class TestRun extends Component {
     }
 
     async saveResultFromTest({ results, serializedForm }) {
-        const {
-            dispatch,
-            cycleId,
-            tests,
-            run,
-            userId,
-            openAsUser
-        } = this.props;
-        const test = tests[this.state.currentTestIndex - 1];
+        const { dispatch, run, userId, openAsUser } = this.props;
+        const test = run.tests[this.state.currentTestIndex - 1];
         await dispatch(
             saveResult({
                 test_id: test.id,
                 run_id: run.id,
-                cycle_id: cycleId,
                 user_id: openAsUser || userId,
                 result: results,
                 serialized_form: serializedForm
@@ -82,20 +72,12 @@ class TestRun extends Component {
     }
 
     async deleteResultFromTest() {
-        const {
-            dispatch,
-            cycleId,
-            tests,
-            run,
-            userId,
-            openAsUser
-        } = this.props;
-        const test = tests[this.state.currentTestIndex - 1];
+        const { dispatch, run, userId, openAsUser } = this.props;
+        const test = run.tests[this.state.currentTestIndex - 1];
         await dispatch(
             saveResult({
                 test_id: test.id,
                 run_id: run.id,
-                cycle_id: cycleId,
                 user_id: openAsUser || userId,
                 skip: true
             })
@@ -106,18 +88,16 @@ class TestRun extends Component {
     render() {
         const {
             run,
-            tests,
-            cycleId,
-            testSuiteVersionData,
+            activeRunConfiguration,
             userId,
             usersById,
             openAsUser
         } = this.props;
 
-        if (!run || !tests || !testSuiteVersionData) {
+        if (!run || !activeRunConfiguration) {
             return <div data-test="test-run-loading">Loading</div>;
         }
-        const { git_hash } = testSuiteVersionData;
+        const { git_hash } = activeRunConfiguration.active_test_version;
 
         const {
             apg_example_name,
@@ -130,8 +110,8 @@ class TestRun extends Component {
 
         let test,
             testsToRun = false;
-        if (tests.length > 0) {
-            test = tests[this.state.currentTestIndex - 1];
+        if (run.tests.length > 0) {
+            test = run.tests[this.state.currentTestIndex - 1];
             testsToRun = true;
         }
 
@@ -158,7 +138,7 @@ class TestRun extends Component {
                     {runningAsUserHeader}
                     <h2 data-test="test-run-h2">
                         {' '}
-                        {`${apg_example_name} (${this.state.currentTestIndex} of ${tests.length})`}
+                        {`${apg_example_name} (${this.state.currentTestIndex} of ${run.tests.length})`}
                     </h2>
                     <h3 data-test="test-run-h3">{`${at_name} ${at_version} with ${browser_name} ${browser_version}`}</h3>
                 </Fragment>
@@ -177,7 +157,6 @@ class TestRun extends Component {
                         displayPreviousTest={this.displayPreviousTest}
                         saveResultFromTest={this.saveResultFromTest}
                         deleteResultFromTest={this.deleteResultFromTest}
-                        cycleId={cycleId}
                         userId={userId}
                         testerId={openAsUser || userId}
                     />
@@ -228,24 +207,26 @@ class TestRun extends Component {
 }
 
 TestRun.propTypes = {
+    activeRunConfiguration: PropTypes.object,
     dispatch: PropTypes.func,
-    cycleId: PropTypes.number,
     userId: PropTypes.number,
     openAsUser: PropTypes.number,
-    tests: PropTypes.array,
     run: PropTypes.object,
     testSuiteVersionData: PropTypes.object,
     usersById: PropTypes.object
 };
 
 const mapStateToProps = (state, ownProps) => {
-    const { cyclesById, testsByRunId, testSuiteVersions } = state.cycles;
+    const { activeRunConfiguration, activeRunsById } = state.runs;
     const { usersById } = state.users;
     let userId = state.user.id;
     const isAdmin = state.user.roles && state.user.roles.includes('admin');
 
-    const cycleId = parseInt(ownProps.match.params.cycleId);
     const runId = parseInt(ownProps.match.params.runId);
+    let run;
+    if (activeRunsById) {
+        run = activeRunsById[runId];
+    }
 
     let openAsUser;
     const openAsUserQuery = parseInt(
@@ -255,26 +236,9 @@ const mapStateToProps = (state, ownProps) => {
         openAsUser = openAsUserQuery;
     }
 
-    let cycle = cyclesById[cycleId];
-    let run, testSuiteVersionData;
-    if (cycle) {
-        run = cycle.runsById[runId];
-        testSuiteVersionData = testSuiteVersions.find(
-            v => v.id === cycle.test_version_id
-        );
-    }
-
-    let tests = undefined;
-    if (testsByRunId[runId]) {
-        tests = testsByRunId[runId];
-    }
-
     return {
-        cycle,
-        cycleId,
+        activeRunConfiguration,
         run,
-        tests,
-        testSuiteVersionData,
         usersById,
         openAsUser,
         userId

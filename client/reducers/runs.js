@@ -1,7 +1,9 @@
 import {
     ACTIVE_RUNS,
+    CONFLICTS_BY_TEST_RESULTS,
     DELETE_USERS_FROM_RUN,
     RUN_CONFIGURATION,
+    SAVE_RESULT,
     SAVE_RUN_CONFIGURATION,
     SAVE_RUN_STATUS,
     SAVE_USERS_TO_RUNS,
@@ -9,6 +11,7 @@ import {
 } from '../actions/types';
 
 const initialState = {
+    conflictsByTestId: {},
     activeRunConfiguration: undefined,
     activeRunsById: undefined,
     publishedRunsById: undefined,
@@ -24,11 +27,47 @@ export default (state = initialState, action) => {
                 activeRunsById: runs
             };
         }
+        case CONFLICTS_BY_TEST_RESULTS: {
+            const { test_id, conflicts } = action.payload;
+            const conflictsByTestId = test_id ? { [test_id]: conflicts } : {};
+            return {
+                ...state,
+                conflictsByTestId: {
+                    ...state.conflictsByTestId,
+                    ...conflictsByTestId
+                }
+            };
+        }
         case RUN_CONFIGURATION: {
             const config = action.payload;
             return {
                 ...state,
                 activeRunConfiguration: config
+            };
+        }
+        case SAVE_RESULT: {
+            const result = action.payload;
+            const tests = state.activeRunsById[result.run_id].tests;
+            const testIndex = tests.findIndex(t => t.id === result.test_id);
+            const newTests = [...tests];
+            const newTest = {
+                ...tests[testIndex],
+                results: {
+                    ...tests[testIndex].results,
+                    [result.user_id]: result
+                }
+            };
+            newTests[testIndex] = newTest;
+
+            return {
+                ...state,
+                activeRunsById: {
+                    ...state.activeRunsById,
+                    [result.run_id]: {
+                        ...state.activeRunsById[result.run_id],
+                        tests: newTests
+                    }
+                }
             };
         }
         case SAVE_RUN_CONFIGURATION: {

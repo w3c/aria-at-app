@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom';
 import { Table } from 'react-bootstrap';
 import { Helmet } from 'react-helmet';
 import { connect } from 'react-redux';
-import { getTestsForRunsCycle } from '../../actions/cycles';
 import { getAllUsers } from '../../actions/users';
 import { getActiveRuns } from '../../actions/runs';
 import nextId from 'react-id-generator';
@@ -22,21 +21,10 @@ class TestQueue extends Component {
         if (!Object.keys(usersById).length) {
             dispatch(getAllUsers());
         }
-
-        // TODO: Add better caching/cache invalidation.
-        // Right now, everytime we go to the test queue page, we will fetch
-        // the test results.
-        dispatch(getTestsForRunsCycle());
     }
 
     renderAtBrowserList(runIds) {
-        const {
-            userId,
-            usersById,
-            testsByRunId,
-            admin,
-            activeRunsById
-        } = this.props;
+        const { userId, usersById, admin, activeRunsById } = this.props;
         const {
             at_name: atName,
             at_version: atVersion,
@@ -47,7 +35,7 @@ class TestQueue extends Component {
         let tableId = nextId('table_name_');
 
         return (
-            <div key={`${atName}${browserName}`}>
+            <div key={`${nextId('at_browser_pair')}`}>
                 <h3
                     id={tableId}
                 >{`${atName} ${atVersion} with ${browserName} ${browserVersion}`}</h3>
@@ -68,7 +56,8 @@ class TestQueue extends Component {
                                 testers,
                                 at_name_id,
                                 run_status,
-                                id
+                                id,
+                                tests
                             } = run;
                             return (
                                 <TestQueueRun
@@ -82,7 +71,7 @@ class TestQueue extends Component {
                                     atName={atName}
                                     atNameId={at_name_id}
                                     browserName={browserName}
-                                    testsForRun={testsByRunId[id]}
+                                    testsForRun={tests}
                                     admin={admin}
                                 />
                             );
@@ -203,7 +192,6 @@ class TestQueue extends Component {
 TestQueue.propTypes = {
     activeRunsById: PropTypes.object,
     admin: PropTypes.bool,
-    testsByRunId: PropTypes.object,
     usersById: PropTypes.object,
     userId: PropTypes.number,
     testsFetched: PropTypes.bool,
@@ -212,28 +200,15 @@ TestQueue.propTypes = {
 
 const mapStateToProps = state => {
     const { activeRunsById } = state.runs;
-    const { testsByRunId } = state.cycles;
     const { usersById } = state.users;
     const userId = state.user.id;
     const roles = state.user.roles;
     let testsFetched = true;
 
-    if (!activeRunsById) {
-        testsFetched = false;
-    } else {
-        for (let runId of Object.keys(activeRunsById)) {
-            if (!testsByRunId[runId]) {
-                testsFetched = false;
-                break;
-            }
-        }
-    }
-
     let admin = (roles || []).includes('admin');
 
     return {
         activeRunsById,
-        testsByRunId,
         testsFetched,
         usersById,
         userId,

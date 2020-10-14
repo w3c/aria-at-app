@@ -27,15 +27,19 @@ describe('sign in actions dispatchers', () => {
             },
             cycles: {
                 cyclesById: {},
-                issuesByTestId: {},
                 testsByRunId: {},
                 testSuiteVersions: [],
-                conflictsByTestId: {}
+                issuesByTestId: {}
             },
             runs: {
                 activeRunsById: undefined,
                 publishedRunsById: undefined,
-                activeRunConfiguration: undefined
+                activeRunConfiguration: undefined,
+                conflictsByTestId: {},
+                testVersions: undefined
+            },
+            issues: {
+                issuesByTestId: {}
             },
             ats: [],
             users: {
@@ -69,15 +73,19 @@ describe('sign in actions dispatchers', () => {
             },
             cycles: {
                 cyclesById: {},
-                issuesByTestId: {},
                 testsByRunId: {},
                 testSuiteVersions: [],
-                conflictsByTestId: {}
+                issuesByTestId: {}
             },
             runs: {
                 activeRunsById: undefined,
                 publishedRunsById: undefined,
-                activeRunConfiguration: undefined
+                activeRunConfiguration: undefined,
+                conflictsByTestId: {},
+                testVersions: undefined
+            },
+            issues: {
+                issuesByTestId: {}
             },
             ats: [],
             users: {
@@ -115,15 +123,19 @@ describe('ats action dispatchers', () => {
             },
             cycles: {
                 cyclesById: {},
-                issuesByTestId: {},
                 testsByRunId: {},
                 testSuiteVersions: [],
-                conflictsByTestId: {}
+                issuesByTestId: {}
             },
             runs: {
                 activeRunsById: undefined,
                 publishedRunsById: undefined,
-                activeRunConfiguration: undefined
+                activeRunConfiguration: undefined,
+                conflictsByTestId: {},
+                testVersions: undefined
+            },
+            issues: {
+                issuesByTestId: {}
             },
             ats: {
                 names: ['JAWS', 'NVDA', 'VoiceOver']
@@ -159,15 +171,19 @@ describe('users action dispatchers', () => {
             },
             cycles: {
                 cyclesById: {},
-                issuesByTestId: {},
                 testsByRunId: {},
                 testSuiteVersions: [],
-                conflictsByTestId: {}
+                issuesByTestId: {}
             },
             runs: {
                 activeRunsById: undefined,
                 publishedRunsById: undefined,
-                activeRunConfiguration: undefined
+                activeRunConfiguration: undefined,
+                conflictsByTestId: {},
+                testVersions: undefined
+            },
+            issues: {
+                issuesByTestId: {}
             },
             ats: [],
             users: {

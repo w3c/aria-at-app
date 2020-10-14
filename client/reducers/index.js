@@ -1,14 +1,16 @@
 import { combineReducers } from 'redux';
-import cycles from './cycles';
 import ats from './ats';
+import cycles from './cycles';
+import issues from './issues';
+import runs from './runs';
 import user from './user';
 import users from './users';
-import runs from './runs';
 
 export default combineReducers({
-    user,
-    cycles,
     ats,
-    users,
-    runs
+    cycles,
+    issues,
+    runs,
+    user,
+    users
 });

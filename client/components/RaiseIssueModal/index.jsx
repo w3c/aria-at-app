@@ -2,11 +2,8 @@ import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Button, Form, Modal } from 'react-bootstrap';
-import {
-    getConflictsByTestResults,
-    getIssuesByTestId,
-    createIssue
-} from '../../actions/cycles';
+import { getConflictsByTestResults } from '../../actions/runs';
+import { getIssuesByTestId, createIssue } from '../../actions/issues';
 import IssueCards from './IssueCards';
 import MarkdownEditor from './MarkdownEditor';
 import formatConflictsAsText from '../../utils/formatConflictsAsText';
@@ -14,7 +11,7 @@ import './RaiseIssueModal.css';
 
 const REPO_LINK = `https://github.com/${process.env.GITHUB_REPO_OWNER}/${process.env.GITHUB_REPO_NAME}`;
 
-function createIssueDefaults(test, cycle, run, sha) {
+function createIssueDefaults(test, run, sha) {
     const title = `Tester issue report for: "${test.name}"`;
     let body = `
 ### Test file at exact commit
@@ -22,10 +19,6 @@ function createIssueDefaults(test, cycle, run, sha) {
 
 
 [${test.file}](https://aria-at.w3.org/aria-at/${sha}/${test.file}?at=${run.at_key})
-
-### Cycle:
-
-${cycle.name} (${cycle.date})
 
 ### AT:
 
@@ -60,10 +53,9 @@ class RaiseIssueModal extends Component {
     constructor(props) {
         super(props);
 
-        const { test, cycle, run, git_hash, userId } = this.props;
+        const { test, run, git_hash, userId } = this.props;
         const { title, body } = createIssueDefaults(
             test,
-            cycle,
             run,
             git_hash,
             userId
@@ -103,22 +95,8 @@ class RaiseIssueModal extends Component {
 
     onHide() {
         // Reset the issue template when closing the issue modal
-        const {
-            test,
-            cycle,
-            run,
-            git_hash,
-            userId,
-            testerId,
-            conflicts
-        } = this.props;
-        let { title, body } = createIssueDefaults(
-            test,
-            cycle,
-            run,
-            git_hash,
-            userId
-        );
+        const { test, run, git_hash, userId, testerId, conflicts } = this.props;
+        let { title, body } = createIssueDefaults(test, run, git_hash, userId);
         if (conflicts.length) {
             body = appendConflicts(body, conflicts, testerId);
         }
@@ -312,8 +290,6 @@ class RaiseIssueModal extends Component {
 RaiseIssueModal.propTypes = {
     at_key: PropTypes.string,
     conflicts: PropTypes.array,
-    cycle: PropTypes.object,
-    cycleId: PropTypes.number,
     dispatch: PropTypes.func,
     git_hash: PropTypes.string,
     issues: PropTypes.array,
@@ -329,14 +305,14 @@ RaiseIssueModal.propTypes = {
 
 const mapStateToProps = (state, ownProps) => {
     const {
-        cycles: { conflictsByTestId, cyclesById, issuesByTestId }
+        runs: { conflictsByTestId },
+        issues: { issuesByTestId }
     } = state;
 
     const conflicts = conflictsByTestId[ownProps.test.id];
-    const cycle = cyclesById[ownProps.cycleId] || {};
     const issues = (issuesByTestId[ownProps.test.id] || []).filter(
         ({ closed }) => !closed
     );
-    return { conflicts, cycle, issues, issuesByTestId };
+    return { conflicts, issues, issuesByTestId };
 };
 export default connect(mapStateToProps, null)(RaiseIssueModal);

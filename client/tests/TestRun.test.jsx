@@ -36,32 +36,25 @@ describe('render', () => {
         let wrapper;
         beforeEach(() => {
             const initialState = {
-                cycles: {
-                    cyclesById: {
+                runs: {
+                    activeRunsById: {
                         1: {
-                            runsById: {
-                                1: {
-                                    apg_example_name: 'apg_example_name',
-                                    at_name: 'at_name',
-                                    at_version: 'at_version',
-                                    browser_name: 'browser_name',
-                                    browser_version: 'browser_version'
-                                }
-                            },
-                            test_version_id: 1
+                            apg_example_name: 'apg_example_name',
+                            at_name: 'at_name',
+                            at_version: 'at_version',
+                            browser_name: 'browser_name',
+                            browser_version: 'browser_version',
+                            tests: [{ name: 'Test 1' }]
                         }
                     },
-                    testsByRunId: {
-                        1: [{ name: 'Test 1' }]
-                    },
-                    testSuiteVersions: [
-                        {
+                    activeRunConfiguration: {
+                        active_test_version: {
                             git_commit_msg: 'commit message',
                             git_hash: '123412345',
                             git_repo: 'https://github.com/foo/foo.git',
                             id: 1
                         }
-                    ]
+                    }
                 }
             };
             wrapper = setup(initialState);
