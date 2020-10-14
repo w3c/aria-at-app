@@ -11,6 +11,7 @@ afterAll(async done => {
 
 describe('RunService', () => {
     describe('RunService.configureRuns', () => {
+        const commit = false; // variable passed to configureRuns() to allow for SQL rollback
         it('should create all possible runs if no previous runs exist', async () => {
             await dbCleaner(async () => {
                 const browserVersionNumber = '1.2.3';
@@ -35,18 +36,21 @@ describe('RunService', () => {
                     where: { name: db.RunStatus.RAW }
                 });
 
-                const activeRuns = await RunService.configureRuns({
-                    test_version_id: testVersion.id,
-                    apg_example_ids: [apgExample.id],
-                    at_browser_pairs: [
-                        {
-                            at_name_id: at.at_name_id,
-                            at_version: atVersionNumber,
-                            browser_id: browser.id,
-                            browser_version: browserVersionNumber
-                        }
-                    ]
-                });
+                const activeRuns = await RunService.configureRuns(
+                    {
+                        test_version_id: testVersion.id,
+                        apg_example_ids: [apgExample.id],
+                        at_browser_pairs: [
+                            {
+                                at_name_id: at.at_name_id,
+                                at_version: atVersionNumber,
+                                browser_id: browser.id,
+                                browser_version: browserVersionNumber
+                            }
+                        ]
+                    },
+                    commit
+                );
                 const keys = Object.keys(activeRuns);
                 const runId = keys[0];
                 expect(keys.length).toEqual(1);
@@ -189,7 +193,7 @@ describe('RunService', () => {
                     ]
                 };
 
-                const activeRuns = await RunService.configureRuns(data);
+                const activeRuns = await RunService.configureRuns(data, commit);
                 const keys = Object.keys(activeRuns);
                 const runId = parseInt(keys[0]);
                 expect(keys.length).toEqual(1);
@@ -296,25 +300,28 @@ describe('RunService', () => {
                     run_status_id: runStatus.id
                 });
 
-                const activeRuns = await RunService.configureRuns({
-                    test_version_id: testVersion.id,
-                    apg_example_ids: [apgExample.id],
-                    at_browser_pairs: [
-                        {
-                            at_name_id: at.at_name_id,
-                            at_version: atVersionNumber,
-                            browser_id: browser.id,
-                            browser_version: browserVersionNumber
-                        },
-                        {
-                            at_name_id: at.at_name_id,
-                            at_version: atVersionNumber2,
-                            browser_id: browser.id,
-                            browser_version: browserVersionNumber
-                        }
-                    ],
-                    run_status_id: runStatus.id
-                });
+                const activeRuns = await RunService.configureRuns(
+                    {
+                        test_version_id: testVersion.id,
+                        apg_example_ids: [apgExample.id],
+                        at_browser_pairs: [
+                            {
+                                at_name_id: at.at_name_id,
+                                at_version: atVersionNumber,
+                                browser_id: browser.id,
+                                browser_version: browserVersionNumber
+                            },
+                            {
+                                at_name_id: at.at_name_id,
+                                at_version: atVersionNumber2,
+                                browser_id: browser.id,
+                                browser_version: browserVersionNumber
+                            }
+                        ],
+                        run_status_id: runStatus.id
+                    },
+                    commit
+                );
 
                 // Ensure there are two runs differing on AT version only
                 const keys = Object.keys(activeRuns);
@@ -368,7 +375,7 @@ describe('RunService', () => {
                 });
             });
         });
-        it('should create a new test run for a new browser version when there are existing runs for an older version of the same browser', async() => {
+        it('should create a new test run for a new browser version when there are existing runs for an older version of the same browser', async () => {
             await dbCleaner(async () => {
                 // This test preserves AT version, test version, and APG example
                 // It also simulates an inactive test run for the older browser version
@@ -433,25 +440,28 @@ describe('RunService', () => {
                     run_status_id: runStatus.id
                 });
 
-                const activeRuns = await RunService.configureRuns({
-                    test_version_id: testVersion.id,
-                    apg_example_ids: [apgExample.id],
-                    at_browser_pairs: [
-                        {
-                            at_name_id: at.at_name_id,
-                            at_version: atVersionNumber,
-                            browser_id: browser.id,
-                            browser_version: browserVersionNumber
-                        },
-                        {
-                            at_name_id: at.at_name_id,
-                            at_version: atVersionNumber,
-                            browser_id: browser.id,
-                            browser_version: browserVersionNumber2
-                        }
-                    ],
-                    run_status_id: runStatus.id
-                });
+                const activeRuns = await RunService.configureRuns(
+                    {
+                        test_version_id: testVersion.id,
+                        apg_example_ids: [apgExample.id],
+                        at_browser_pairs: [
+                            {
+                                at_name_id: at.at_name_id,
+                                at_version: atVersionNumber,
+                                browser_id: browser.id,
+                                browser_version: browserVersionNumber
+                            },
+                            {
+                                at_name_id: at.at_name_id,
+                                at_version: atVersionNumber,
+                                browser_id: browser.id,
+                                browser_version: browserVersionNumber2
+                            }
+                        ],
+                        run_status_id: runStatus.id
+                    },
+                    commit
+                );
 
                 // Ensure there are two runs differing on AT version only
                 const keys = Object.keys(activeRuns);
@@ -459,7 +469,9 @@ describe('RunService', () => {
 
                 // Verify that one run has the older AT version and is active
                 const activeRunIdOlderBrowserId = parseInt(keys[0]);
-                expect(activeRunIdOlderBrowserId).toEqual(runWithOlderBrowser.id);
+                expect(activeRunIdOlderBrowserId).toEqual(
+                    runWithOlderBrowser.id
+                );
                 expect(activeRuns[activeRunIdOlderBrowserId]).toEqual({
                     id: runWithOlderBrowser.id,
                     browser_id: browser.id,
@@ -554,19 +566,22 @@ describe('RunService', () => {
                     where: { test_version_id: testVersion.id }
                 });
 
-                const activeRuns = await RunService.configureRuns({
-                    test_version_id: testVersion.id,
-                    apg_example_ids: [apgExample.id],
-                    at_browser_pairs: [
-                        {
-                            at_name_id: at.at_name_id,
-                            at_version: atVersionNumber2,
-                            browser_id: browser.id,
-                            browser_version: browserVersionNumber2
-                        }
-                    ],
-                    run_status_id: runStatus.id
-                });
+                const activeRuns = await RunService.configureRuns(
+                    {
+                        test_version_id: testVersion.id,
+                        apg_example_ids: [apgExample.id],
+                        at_browser_pairs: [
+                            {
+                                at_name_id: at.at_name_id,
+                                at_version: atVersionNumber2,
+                                browser_id: browser.id,
+                                browser_version: browserVersionNumber2
+                            }
+                        ],
+                        run_status_id: runStatus.id
+                    },
+                    commit
+                );
 
                 // Check the returned data
                 const keys = Object.keys(activeRuns);
@@ -603,16 +618,16 @@ describe('RunService', () => {
 
                 // Verify that new browser/at pair was created
                 const activeCreatedBrowserVersions = await db.BrowserVersionToAtVersion.findAll(
-                    { 
+                    {
                         where: { active: true },
-                        include: [db.AtVersion, db.BrowserVersion] 
+                        include: [db.AtVersion, db.BrowserVersion]
                     }
                 );
 
                 expect(activeCreatedBrowserVersions.length).toBe(1);
-                expect(activeCreatedBrowserVersions[0].BrowserVersion.version).toBe(
-                    browserVersionNumber2
-                );
+                expect(
+                    activeCreatedBrowserVersions[0].BrowserVersion.version
+                ).toBe(browserVersionNumber2);
                 expect(activeCreatedBrowserVersions[0].AtVersion.version).toBe(
                     atVersionNumber2
                 );
@@ -665,19 +680,22 @@ describe('RunService', () => {
                     where: { test_version_id: testVersion.id }
                 });
 
-                const activeRuns = await RunService.configureRuns({
-                    test_version_id: testVersion.id,
-                    apg_example_ids: [apgExample.id],
-                    at_browser_pairs: [
-                        {
-                            at_name_id: at.at_name_id,
-                            at_version: atVersionNumber,
-                            browser_id: browser.id,
-                            browser_version: browserVersionNumber
-                        }
-                    ],
-                    run_status_id: runStatus.id
-                });
+                const activeRuns = await RunService.configureRuns(
+                    {
+                        test_version_id: testVersion.id,
+                        apg_example_ids: [apgExample.id],
+                        at_browser_pairs: [
+                            {
+                                at_name_id: at.at_name_id,
+                                at_version: atVersionNumber,
+                                browser_id: browser.id,
+                                browser_version: browserVersionNumber
+                            }
+                        ],
+                        run_status_id: runStatus.id
+                    },
+                    commit
+                );
 
                 // Check that previously deactivated pair is now active
                 await techPairActivate.reload();
@@ -686,8 +704,12 @@ describe('RunService', () => {
                 const activeBrowserVersionToAtVersions = await db.BrowserVersionToAtVersion.findAll();
                 expect(activeBrowserVersionToAtVersions.length).toBe(1);
 
-                let runInDb = await db.Run.findAll({where: {id: Object.values(activeRuns)[0].id}});
-                expect(runInDb.pop().browser_version_to_at_versions_id).toBe(activeBrowserVersionToAtVersions[0].id);
+                let runInDb = await db.Run.findAll({
+                    where: { id: Object.values(activeRuns)[0].id }
+                });
+                expect(runInDb.pop().browser_version_to_at_versions_id).toBe(
+                    activeBrowserVersionToAtVersions[0].id
+                );
             });
         });
         it('should set an existing inactive run to active', async () => {
@@ -751,20 +773,22 @@ describe('RunService', () => {
                     run_status_id: runStatus.id
                 });
 
-
-                const activeRuns = await RunService.configureRuns({
-                    test_version_id: testVersion.id,
-                    apg_example_ids: [apgExample.id],
-                    at_browser_pairs: [
-                        {
-                            at_name_id: at.at_name_id,
-                            at_version: atVersionNumber,
-                            browser_id: browser.id,
-                            browser_version: browserVersionNumber
-                        }
-                    ],
-                    run_status_id: runStatus.id
-                });
+                const activeRuns = await RunService.configureRuns(
+                    {
+                        test_version_id: testVersion.id,
+                        apg_example_ids: [apgExample.id],
+                        at_browser_pairs: [
+                            {
+                                at_name_id: at.at_name_id,
+                                at_version: atVersionNumber,
+                                browser_id: browser.id,
+                                browser_version: browserVersionNumber
+                            }
+                        ],
+                        run_status_id: runStatus.id
+                    },
+                    commit
+                );
 
                 const keys = Object.keys(activeRuns);
                 const runId = parseInt(keys[0]);
@@ -872,21 +896,24 @@ describe('RunService', () => {
                     run_status_id: runStatus.id
                 });
 
-                const activeRuns = await RunService.configureRuns({
-                    test_version_id: testVersion.id,
-                    apg_example_ids: apgExamples
-                        .map(example => example.id)
-                        .slice(1), // remove the first element of examples
-                    at_browser_pairs: [
-                        {
-                            at_name_id: at.at_name_id,
-                            at_version: atVersionNumber,
-                            browser_id: browser.id,
-                            browser_version: browserVersionNumber
-                        }
-                    ],
-                    run_status_id: runStatus.id
-                });
+                const activeRuns = await RunService.configureRuns(
+                    {
+                        test_version_id: testVersion.id,
+                        apg_example_ids: apgExamples
+                            .map(example => example.id)
+                            .slice(1), // remove the first element of examples
+                        at_browser_pairs: [
+                            {
+                                at_name_id: at.at_name_id,
+                                at_version: atVersionNumber,
+                                browser_id: browser.id,
+                                browser_version: browserVersionNumber
+                            }
+                        ],
+                        run_status_id: runStatus.id
+                    },
+                    commit
+                );
 
                 await previouslyActiveRun.reload();
                 expect(previouslyActiveRun.active).toBe(false);
@@ -952,7 +979,6 @@ describe('RunService', () => {
                     at_name_id: at.AtName.id,
                     version: atVersionNumber
                 });
-                
 
                 const apgExample = await db.ApgExample.findOne({
                     where: { test_version_id: testVersion.id }
@@ -994,19 +1020,22 @@ describe('RunService', () => {
                     run_status_id: runStatus.id
                 });
 
-                const activeRuns = await RunService.configureRuns({
-                    test_version_id: testVersion2.id,
-                    apg_example_ids: [apgExample.id],
-                    at_browser_pairs: [
-                        {
-                            at_name_id: at.at_name_id,
-                            at_version: atVersionNumber,
-                            browser_id: browser.id,
-                            browser_version: browserVersionNumber
-                        }
-                    ],
-                    run_status_id: runStatus.id
-                });
+                const activeRuns = await RunService.configureRuns(
+                    {
+                        test_version_id: testVersion2.id,
+                        apg_example_ids: [apgExample.id],
+                        at_browser_pairs: [
+                            {
+                                at_name_id: at.at_name_id,
+                                at_version: atVersionNumber,
+                                browser_id: browser.id,
+                                browser_version: browserVersionNumber
+                            }
+                        ],
+                        run_status_id: runStatus.id
+                    },
+                    commit
+                );
 
                 // Ensure there is only one run
                 const keys = Object.keys(activeRuns);
