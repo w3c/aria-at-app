@@ -3,10 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import { Col, Container, Row, Table } from 'react-bootstrap';
-import {
-    getTestSuiteVersions,
-} from '../../actions/cycles';
-import { getPublishedRuns } from '../../actions/runs';
+import { getPublishedRuns, getTestVersions } from '../../actions/runs';
 import checkForConflict from '../../utils/checkForConflict';
 import TestResult from '@components/TestResult';
 import nextId from 'react-id-generator';
@@ -16,13 +13,13 @@ class RunResultsPage extends Component {
         const {
             dispatch,
             run,
-            testSuiteVersionData
+            testVersion
         } = this.props;
         if (!run) {
             dispatch(getPublishedRuns());
         }
-        if (!testSuiteVersionData) {
-            dispatch(getTestSuiteVersions());
+        if (!testVersion) {
+            dispatch(getTestVersions());
         }
     }
 
@@ -53,9 +50,9 @@ class RunResultsPage extends Component {
     }
 
     render() {
-        const { run, allTests, testSuiteVersionData } = this.props;
+        const { run, allTests, testVersion } = this.props;
 
-        if (!run || !allTests || !testSuiteVersionData) {
+        if (!run || !allTests || !testVersion) {
             return <div>Loading</div>;
         }
 
@@ -69,7 +66,7 @@ class RunResultsPage extends Component {
             run_status
         } = run;
 
-        const { git_hash } = testSuiteVersionData;
+       const { git_hash } = testVersion;
 
         let title = `Results for ${apg_example_name} tested with ${at_name} ${at_version} on ${browser_name} ${browser_version}`;
         if (!run_status) {
@@ -258,21 +255,20 @@ RunResultsPage.propTypes = {
     dispatch: PropTypes.func,
     allTests: PropTypes.array,
     run: PropTypes.object,
-    testSuiteVersionData: PropTypes.object
+    testVersions: PropTypes.array,
 };
 
 const mapStateToProps = (state, ownProps) => {
-    const { testSuiteVersions } = state.cycles; // TODO
-    const { publishedRunsById } = state.runs;
+    const { publishedRunsById, testVersions } = state.runs;
 
     const runId = parseInt(ownProps.match.params.runId);
 
-    let run, testSuiteVersionData, allTests;
+    let run, testVersion, allTests;
     if (publishedRunsById) {
         run = publishedRunsById[runId];
     }
     if (run) {
-        testSuiteVersionData = testSuiteVersions.find(
+        testVersion = testVersions.find(
           v => v.id === run.test_version_id
         );
         allTests = run.tests;
@@ -281,7 +277,7 @@ const mapStateToProps = (state, ownProps) => {
     return {
         run,
         allTests,
-        testSuiteVersionData
+        testVersion
     };
 };
 
