@@ -244,19 +244,22 @@ class ConfigureActiveRuns extends Component {
                 onChange={this.handleVersionChange}
                 as="select"
             >
-              {testVersions.filter(version =>
-                version.date >= activeRunConfiguration.active_test_version.date
-              )
-                .map(version => {
-                    return (
-                        <option key={version.id} value={version.id}>
-                            {version.git_hash.slice(0, 7) +
-                                ' - ' +
-                                version.git_commit_msg.slice(0, 80) +
-                                '...'}
-                        </option>
-                    );
-                })}
+                {testVersions
+                    .filter(
+                        version =>
+                            version.date >=
+                            activeRunConfiguration.active_test_version.date
+                    )
+                    .map(version => {
+                        return (
+                            <option key={version.id} value={version.id}>
+                                {version.git_hash.slice(0, 7) +
+                                    ' - ' +
+                                    version.git_commit_msg.slice(0, 80) +
+                                    '...'}
+                            </option>
+                        );
+                    })}
             </Form.Control>
         );
     }

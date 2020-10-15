@@ -10,11 +10,7 @@ import nextId from 'react-id-generator';
 
 class RunResultsPage extends Component {
     async componentDidMount() {
-        const {
-            dispatch,
-            run,
-            testVersion
-        } = this.props;
+        const { dispatch, run, testVersion } = this.props;
         if (!run) {
             dispatch(getPublishedRuns());
         }
@@ -66,7 +62,7 @@ class RunResultsPage extends Component {
             run_status
         } = run;
 
-       const { git_hash } = testVersion;
+        const { git_hash } = testVersion;
 
         let title = `Results for ${apg_example_name} tested with ${at_name} ${at_version} on ${browser_name} ${browser_version}`;
         if (!run_status) {
@@ -255,7 +251,7 @@ RunResultsPage.propTypes = {
     dispatch: PropTypes.func,
     allTests: PropTypes.array,
     run: PropTypes.object,
-    testVersions: PropTypes.array,
+    testVersion: PropTypes.array
 };
 
 const mapStateToProps = (state, ownProps) => {
@@ -268,9 +264,7 @@ const mapStateToProps = (state, ownProps) => {
         run = publishedRunsById[runId];
     }
     if (run) {
-        testVersion = testVersions.find(
-          v => v.id === run.test_version_id
-        );
+        testVersion = testVersions.find(v => v.id === run.test_version_id);
         allTests = run.tests;
     }
 

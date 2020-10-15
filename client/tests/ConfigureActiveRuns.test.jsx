@@ -33,7 +33,7 @@ describe('render', () => {
     describe('tests are loaded', () => {
         let wrapper;
         let testVersion = {
-            datetime: '2020-05-06T04:00:00.000Z',
+            date: '2020-05-06T04:00:00.000Z',
             git_commit_msg:
                 'Checkbox: Test navigating through group with arrows',
             git_hash: 'ff1ed8a347dfc5ca7be47fa8620cfac681af0439',
@@ -93,7 +93,7 @@ describe('render', () => {
             component = findByTestAttr(wrapper, 'configure-run-commit-select');
             expect(component.length).toBe(1);
             expect(component.text()).toContain(
-                'ff1ed8a - Checkbox: Test navigating thro...'
+                'ff1ed8a - Checkbox: Test navigating'
             );
         });
     });
