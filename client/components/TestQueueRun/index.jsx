@@ -323,9 +323,16 @@ class TestQueueRow extends Component {
         let totalTests = testsForRun.length;
         let testsCompleted = this.testsCompletedByUser[uid];
         return (
-            <li
-                key={nextId()}
-            >{`${usersById[uid].username} ${testsCompleted} of ${totalTests} tests complete`}</li>
+            <li key={nextId()}>
+                <a
+                    href={`https://github.com/${usersById[uid].username}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    {usersById[uid].username}
+                </a>
+                {` ${testsCompleted} of ${totalTests} tests complete`}
+            </li>
         );
     }
 
