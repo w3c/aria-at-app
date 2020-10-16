@@ -8,10 +8,7 @@ import ConfigureActiveRuns from '../components/ConfigureActiveRuns';
 const setup = (initialState = {}) => {
     const store = storeFactory(initialState);
     const wrapper = shallow(
-        <ConfigureActiveRuns
-            store={store}
-            match={{ params: { cycleId: 1, runId: 1 } }}
-        />
+        <ConfigureActiveRuns store={store} match={{ params: { runId: 1 } }} />
     )
         .dive()
         .dive();

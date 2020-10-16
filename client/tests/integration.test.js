@@ -25,12 +25,6 @@ describe('sign in actions dispatchers', () => {
                 id: undefined,
                 roles: undefined
             },
-            cycles: {
-                cyclesById: {},
-                testsByRunId: {},
-                testSuiteVersions: [],
-                issuesByTestId: {}
-            },
             runs: {
                 activeRunsById: undefined,
                 publishedRunsById: undefined,
@@ -70,12 +64,6 @@ describe('sign in actions dispatchers', () => {
             user: {
                 isSignedIn: false,
                 loadedUserData: false
-            },
-            cycles: {
-                cyclesById: {},
-                testsByRunId: {},
-                testSuiteVersions: [],
-                issuesByTestId: {}
             },
             runs: {
                 activeRunsById: undefined,
@@ -121,12 +109,6 @@ describe('ats action dispatchers', () => {
                 isSignedIn: false,
                 loadedUserData: false
             },
-            cycles: {
-                cyclesById: {},
-                testsByRunId: {},
-                testSuiteVersions: [],
-                issuesByTestId: {}
-            },
             runs: {
                 activeRunsById: undefined,
                 publishedRunsById: undefined,
@@ -168,12 +150,6 @@ describe('users action dispatchers', () => {
             user: {
                 isSignedIn: false,
                 loadedUserData: false
-            },
-            cycles: {
-                cyclesById: {},
-                testsByRunId: {},
-                testSuiteVersions: [],
-                issuesByTestId: {}
             },
             runs: {
                 activeRunsById: undefined,
