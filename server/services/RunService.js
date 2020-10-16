@@ -275,6 +275,12 @@ async function configureRuns(
             ]
         });
 
+        // Capture value of currently active runs for copying testers
+        const currentActiveRuns = await db.Run.findAll({
+            where: { active: true },
+            include: [db.Users, db.ApgExample]
+        });
+
         await db.Run.update(
             { active: false },
             {
@@ -376,7 +382,40 @@ async function configureRuns(
                 };
             });
 
-            await db.Run.bulkCreate(dbRuns);
+            const newRuns = await db.Run.bulkCreate(dbRuns);
+
+            // Copy over testers on test version change
+            if (currentActiveRuns.length > 0 &&  currentActiveRuns[0].test_version_id !== test_version_id) {
+                // Add tester to the runs that match on ApgExample, ATVersion, and BrowserVersion
+                let testerToRuns = [];
+                let runStatusFinal = await db.RunStatus.findOne({
+                    where: { name: db.RunStatus.FINAL }
+                });
+                for (let run of newRuns) {
+                    let runWithApgExample = await db.Run.findByPk(run.id, {
+                        include: db.ApgExample
+                    });
+                    let matchIndex = currentActiveRuns.findIndex(
+                        r =>
+                            r.browser_version_to_at_versions_id ===
+                                run.browser_version_to_at_versions_id &&
+                            r.ApgExample.name === runWithApgExample.ApgExample.name
+                    );
+                    if (
+                        matchIndex > -1 &&
+                        currentActiveRuns[matchIndex].run_status_id !==
+                            runStatusFinal.id
+                    ) {
+                        const testers = currentActiveRuns[matchIndex].Users;
+                        testers.reduce((acc, tester) => {
+                            acc.push({ run_id: run.id, user_id: tester.id });
+                            return acc;
+                        }, testerToRuns);
+                    }
+                }
+                await db.TesterToRun.bulkCreate(testerToRuns);
+            }
+
             if (commit) {
                 await db.sequelize.query('COMMIT;');
             }
