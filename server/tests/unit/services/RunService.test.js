@@ -144,19 +144,8 @@ describe('RunService', () => {
                     run_status_id: runStatus.id
                 });
 
-                // We will need to remove this column!!
-                const user = await db.Users.create();
-                const testCycle = await db.TestCycle.create({
-                    test_version_id: testVersion.id,
-                    created_user_id: user.id
-                });
-
                 // Populate the database with the data to change
                 await db.Run.create({
-                    browser_version_id: browserVersion.id, // eventually will remove columns
-                    at_version_id: atVersion.id, // eventually will remove column
-                    at_id: at.id, // eventually will remove this column maybe
-                    test_cycle_id: testCycle.id, // eventually will remove column
                     browser_version_to_at_versions_id: tech.id,
                     apg_example_id: apgExample.id,
                     test_version_id: testVersion.id,
@@ -274,12 +263,6 @@ describe('RunService', () => {
                     where: { name: db.RunStatus.RAW }
                 });
 
-                const user = await db.Users.create();
-                const testCycle = await db.TestCycle.create({
-                    test_version_id: testVersion.id,
-                    created_user_id: user.id
-                });
-
                 let tech = await db.BrowserVersionToAtVersion.create({
                     at_version_id: atVersion.id,
                     browser_version_id: browserVersion.id,
@@ -289,10 +272,6 @@ describe('RunService', () => {
 
                 // Create an inactive run with the older AT version
                 const runWithOlderAt = await db.Run.create({
-                    browser_version_id: browserVersion.id,
-                    at_version_id: atVersion.id,
-                    at_id: at.id,
-                    test_cycle_id: testCycle.id,
                     browser_version_to_at_versions_id: tech.id,
                     apg_example_id: apgExample.id,
                     test_version_id: testVersion.id,
@@ -414,12 +393,6 @@ describe('RunService', () => {
                     where: { name: db.RunStatus.RAW }
                 });
 
-                const user = await db.Users.create();
-                const testCycle = await db.TestCycle.create({
-                    test_version_id: testVersion.id,
-                    created_user_id: user.id
-                });
-
                 let tech = await db.BrowserVersionToAtVersion.create({
                     at_version_id: atVersion.id,
                     browser_version_id: browserVersion.id,
@@ -429,10 +402,6 @@ describe('RunService', () => {
 
                 // Create an inactive run with the older browser version
                 const runWithOlderBrowser = await db.Run.create({
-                    browser_version_id: browserVersion.id,
-                    at_version_id: atVersion.id,
-                    at_id: at.id,
-                    test_cycle_id: testCycle.id,
                     browser_version_to_at_versions_id: tech.id,
                     apg_example_id: apgExample.id,
                     test_version_id: testVersion.id,
@@ -747,12 +716,6 @@ describe('RunService', () => {
                     where: { name: db.RunStatus.RAW }
                 });
 
-                const user = await db.Users.create();
-                const testCycle = await db.TestCycle.create({
-                    test_version_id: testVersion.id,
-                    created_user_id: user.id
-                });
-
                 let tech = await db.BrowserVersionToAtVersion.create({
                     at_version_id: atVersion.id,
                     browser_version_id: browserVersion.id,
@@ -762,10 +725,6 @@ describe('RunService', () => {
 
                 // Create an inactive run
                 const previouslyInactiveRun = await db.Run.create({
-                    browser_version_id: browserVersion.id,
-                    at_version_id: atVersion.id,
-                    at_id: at.id,
-                    test_cycle_id: testCycle.id,
                     browser_version_to_at_versions_id: tech.id,
                     apg_example_id: apgExample.id,
                     test_version_id: testVersion.id,
@@ -857,12 +816,6 @@ describe('RunService', () => {
                     where: { name: db.RunStatus.RAW }
                 });
 
-                const user = await db.Users.create();
-                const testCycle = await db.TestCycle.create({
-                    test_version_id: testVersion.id,
-                    created_user_id: user.id
-                });
-
                 let tech = await db.BrowserVersionToAtVersion.create({
                     at_version_id: atVersion.id,
                     browser_version_id: browserVersion.id,
@@ -872,10 +825,6 @@ describe('RunService', () => {
 
                 // Create an active run
                 const previouslyActiveRun = await db.Run.create({
-                    browser_version_id: browserVersion.id,
-                    at_version_id: atVersion.id,
-                    at_id: at.id,
-                    test_cycle_id: testCycle.id,
                     browser_version_to_at_versions_id: tech.id,
                     apg_example_id: apgExamples[0].id,
                     test_version_id: testVersion.id,
@@ -885,10 +834,6 @@ describe('RunService', () => {
 
                 // Create an inactive run
                 const previouslyInactiveRun = await db.Run.create({
-                    browser_version_id: browserVersion.id,
-                    at_version_id: atVersion.id,
-                    at_id: at.id,
-                    test_cycle_id: testCycle.id,
                     browser_version_to_at_versions_id: tech.id,
                     apg_example_id: apgExamples[1].id,
                     test_version_id: testVersion.id,
@@ -994,12 +939,6 @@ describe('RunService', () => {
                     where: { name: db.RunStatus.RAW }
                 });
 
-                const user = await db.Users.create();
-                const testCycle = await db.TestCycle.create({
-                    test_version_id: testVersion.id,
-                    created_user_id: user.id
-                });
-
                 let tech = await db.BrowserVersionToAtVersion.create({
                     at_version_id: atVersion.id,
                     browser_version_id: browserVersion.id,
@@ -1009,10 +948,6 @@ describe('RunService', () => {
 
                 // Create an inactive run with the older test version
                 const activeRunOlderTestVersion = await db.Run.create({
-                    browser_version_id: browserVersion.id,
-                    at_version_id: atVersion.id,
-                    at_id: at.id,
-                    test_cycle_id: testCycle.id,
                     browser_version_to_at_versions_id: tech.id,
                     apg_example_id: apgExample.id,
                     test_version_id: testVersion.id,
@@ -1086,11 +1021,6 @@ describe('RunService', () => {
                     name: apgExampleName
                 });
 
-                const user = await db.Users.create();
-                const testCycle = await db.TestCycle.create({
-                    test_version_id: testVersion.id,
-                    created_user_id: user.id
-                });
                 const atNameString = 'NVDA';
                 const atName = await db.AtName.findOne({
                     where: {
@@ -1101,12 +1031,6 @@ describe('RunService', () => {
                 const atVersion = await db.AtVersion.create({
                     at_name_id: atName.id,
                     version: atVersionNumber
-                });
-                const at = await db.At.findOne({
-                    where: {
-                        at_name_id: atName.id,
-                        test_version_id: testVersion.id
-                    }
                 });
                 const browser = await db.Browser.findOne({
                     where: { name: db.Browser.CHROME }
@@ -1127,10 +1051,6 @@ describe('RunService', () => {
                 });
                 await db.Run.create({
                     active: false,
-                    test_cycle_id: testCycle.id,
-                    at_version_id: atVersion.id,
-                    at_id: at.id,
-                    browser_version_id: browserVersion.id,
                     browser_version_to_at_versions_id:
                         browserVersionToAtVersion.id,
                     apg_example_id: apgExample.id,
@@ -1158,10 +1078,6 @@ describe('RunService', () => {
                     name: apgExampleName
                 });
                 const user = await db.Users.create();
-                const testCycle = await db.TestCycle.create({
-                    test_version_id: testVersion.id,
-                    created_user_id: user.id
-                });
                 const atNameString = 'NVDA';
                 const atName = await db.AtName.findOne({
                     where: {
@@ -1198,10 +1114,6 @@ describe('RunService', () => {
                 });
                 const run = await db.Run.create({
                     active: true,
-                    test_cycle_id: testCycle.id,
-                    at_version_id: atVersion.id,
-                    at_id: at.id,
-                    browser_version_id: browserVersion.id,
                     browser_version_to_at_versions_id:
                         browserVersionToAtVersion.id,
                     apg_example_id: apgExample.id,
@@ -1211,10 +1123,6 @@ describe('RunService', () => {
 
                 const inactiveRun = await db.Run.create({
                     active: false,
-                    test_cycle_id: testCycle.id,
-                    at_version_id: atVersion.id,
-                    at_id: at.id,
-                    browser_version_id: browserVersion.id,
                     browser_version_to_at_versions_id:
                         browserVersionToAtVersion.id,
                     apg_example_id: apgExample.id,
@@ -1323,11 +1231,6 @@ describe('RunService', () => {
                     directory: apgExampleDirectory,
                     name: apgExampleName
                 });
-                const user = await db.Users.create();
-                const testCycle = await db.TestCycle.create({
-                    test_version_id: testVersion.id,
-                    created_user_id: user.id
-                });
                 const atNameString = 'NVDA';
                 const atName = await db.AtName.findOne({
                     where: {
@@ -1338,12 +1241,6 @@ describe('RunService', () => {
                 const atVersion = await db.AtVersion.create({
                     at_name_id: atName.id,
                     version: atVersionNumber
-                });
-                const at = await db.At.findOne({
-                    where: {
-                        at_name_id: atName.id,
-                        test_version_id: testVersion.id
-                    }
                 });
                 const browser = await db.Browser.findOne({
                     where: { name: db.Browser.CHROME }
@@ -1365,10 +1262,6 @@ describe('RunService', () => {
 
                 // Raw Run
                 await db.Run.create({
-                    test_cycle_id: testCycle.id,
-                    at_version_id: atVersion.id,
-                    at_id: at.id,
-                    browser_version_id: browserVersion.id,
                     browser_version_to_at_versions_id:
                         browserVersionToAtVersion.id,
                     apg_example_id: apgExample.id,
@@ -1382,10 +1275,6 @@ describe('RunService', () => {
 
                 // Draft run
                 await db.Run.create({
-                    test_cycle_id: testCycle.id,
-                    at_version_id: atVersion.id,
-                    at_id: at.id,
-                    browser_version_id: browserVersion.id,
                     browser_version_to_at_versions_id:
                         browserVersionToAtVersion.id,
                     apg_example_id: apgExample.id,
@@ -1395,10 +1284,6 @@ describe('RunService', () => {
 
                 // Run without any status
                 await db.Run.create({
-                    test_cycle_id: testCycle.id,
-                    at_version_id: atVersion.id,
-                    at_id: at.id,
-                    browser_version_id: browserVersion.id,
                     browser_version_to_at_versions_id:
                         browserVersionToAtVersion.id,
                     apg_example_id: apgExample.id,
@@ -1425,10 +1310,6 @@ describe('RunService', () => {
                     name: apgExampleName
                 });
                 const user = await db.Users.create();
-                const testCycle = await db.TestCycle.create({
-                    test_version_id: testVersion.id,
-                    created_user_id: user.id
-                });
                 const atNameString = 'NVDA';
                 const atName = await db.AtName.findOne({
                     where: {
@@ -1466,10 +1347,6 @@ describe('RunService', () => {
 
                 // Published/Final run
                 const run = await db.Run.create({
-                    test_cycle_id: testCycle.id,
-                    at_version_id: atVersion.id,
-                    at_id: at.id,
-                    browser_version_id: browserVersion.id,
                     browser_version_to_at_versions_id:
                         browserVersionToAtVersion.id,
                     apg_example_id: apgExample.id,
@@ -1481,10 +1358,6 @@ describe('RunService', () => {
                     where: { name: db.RunStatus.DRAFT }
                 });
                 const draftRun = await db.Run.create({
-                    test_cycle_id: testCycle.id,
-                    at_version_id: atVersion.id,
-                    at_id: at.id,
-                    browser_version_id: browserVersion.id,
                     browser_version_to_at_versions_id:
                         browserVersionToAtVersion.id,
                     apg_example_id: apgExample.id,
