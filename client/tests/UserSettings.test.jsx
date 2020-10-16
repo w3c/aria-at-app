@@ -57,6 +57,12 @@ describe('render', () => {
             );
             expect(component.length).toBe(1);
             expect(component.text()).toContain('User Details');
+            expect(
+                component
+                    .find('a')
+                    .at(0)
+                    .props().href
+            ).toContain('https://github.com');
         });
     });
 });

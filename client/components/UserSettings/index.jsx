@@ -115,7 +115,15 @@ class UserSettings extends Component {
             loadedUserData && isSignedIn ? (
                 <section data-test="user-settings-authorized">
                     <h2>User Details</h2>
-                    <p>{username}</p>
+                    <p>
+                        <a
+                            href={`https://github.com/${username}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            {username}
+                        </a>
+                    </p>
                     <p>{email}</p>
                     <h2>Assistive Technology</h2>
                     <p>{desc}</p>
