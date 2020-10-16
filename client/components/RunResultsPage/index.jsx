@@ -264,7 +264,7 @@ const mapStateToProps = (state, ownProps) => {
         run = publishedRunsById[runId];
     }
     if (run) {
-        testVersion = testVersions.find(v => v.id === run.test_version_id);
+        testVersion = (testVersions || []).find(v => v.id === run.test_version_id);
         allTests = run.tests;
     }
 
