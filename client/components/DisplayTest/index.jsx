@@ -342,7 +342,7 @@ class DisplayTest extends Component {
             </ButtonToolbar>
         );
         let menuRightOContent = (
-            <>
+            <nav>
                 <Button
                     className="btn-block"
                     variant="primary"
@@ -364,7 +364,7 @@ class DisplayTest extends Component {
                 >
                     Close
                 </Button>
-            </>
+            </nav>
         );
 
         if (this.testHasResult) {
