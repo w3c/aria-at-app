@@ -631,20 +631,10 @@ async function getActiveRunsConfiguration() {
  * @return {Array.<TestSuiteVersion>}
  *
  */
-async function getNewTestVersions() {
+async function getTestVersions() {
     try {
-        const activeTestVersion = await db.TestVersion.findOne({
-            where: { active: true },
-            attributes: ['datetime']
-        });
-        let where = {};
-        if (activeTestVersion) {
-            where = {
-                datetime: { [db.Sequelize.Op.gte]: activeTestVersion.datetime }
-            };
-        }
         return await db.TestVersion.findAll({
-            where: where,
+            where: {},
             include: [db.ApgExample, { model: db.At, include: db.AtName }]
         }).reduce((acc, testVersion) => {
             acc.push(sequelizeTestVersionToJsonTestSuiteVersion(testVersion));
@@ -702,6 +692,6 @@ module.exports = {
     getActiveRuns,
     getPublishedRuns,
     getActiveRunsConfiguration,
-    getNewTestVersions,
+    getTestVersions,
     saveRunStatus
 };

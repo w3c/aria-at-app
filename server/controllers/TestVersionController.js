@@ -1,8 +1,8 @@
 const RunService = require('../services/RunService');
 
-async function getNewTestVersions(req, res) {
+async function getTestVersions(req, res) {
     try {
-        const testVersions = await RunService.getNewTestVersions();
+        const testVersions = await RunService.getTestVersions();
         res.status(201).json(testVersions);
     } catch (error) {
         res.status(400);
@@ -12,5 +12,5 @@ async function getNewTestVersions(req, res) {
 }
 
 module.exports = {
-    getNewTestVersions
+    getTestVersions
 };

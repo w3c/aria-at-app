@@ -3,6 +3,6 @@ const TestVersionController = require('../controllers/TestVersionController');
 
 const router = Router();
 
-router.get('/', TestVersionController.getNewTestVersions);
+router.get('/', TestVersionController.getTestVersions);
 
 module.exports = router;

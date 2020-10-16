@@ -40,7 +40,7 @@ describe('render', () => {
                     },
                     testSuiteVersions: [
                         {
-                            datetime: '2020-05-06T04:00:00.000Z',
+                            date: '2020-05-06T04:00:00.000Z',
                             git_commit_msg:
                                 'Checkbox: Test navigating through group with arrows',
                             git_hash:
