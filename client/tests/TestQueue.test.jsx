@@ -8,7 +8,7 @@ import TestQueue from '../components/TestQueue';
 const setup = (initialState = {}) => {
     const store = storeFactory(initialState);
     const wrapper = shallow(
-        <TestQueue store={store} match={{ params: { cycleId: 1, runId: 1 } }} />
+        <TestQueue store={store} match={{ params: { runId: 1 } }} />
     )
         .dive()
         .dive();
@@ -32,46 +32,6 @@ describe('render', () => {
         beforeEach(() => {
             const initialState = {
                 ats: [],
-                cycles: {
-                    testsByRunId: {
-                        1: {
-                            tests: [{ name: 'Test 1' }]
-                        }
-                    },
-                    testSuiteVersions: [
-                        {
-                            date: '2020-05-06T04:00:00.000Z',
-                            git_commit_msg:
-                                'Checkbox: Test navigating through group with arrows',
-                            git_hash:
-                                'ff1ed8a347dfc5ca7be47fa8620cfac681af0439',
-                            git_repo: 'https://github.com/w3c/aria-at.git',
-                            git_tag: null,
-                            id: 1,
-                            supported_ats: [
-                                {
-                                    at_id: 1,
-                                    at_key: 'vader-voice',
-                                    at_name: 'Vader Voice',
-                                    at_name_id: 1
-                                }
-                            ],
-                            apg_examples: [
-                                {
-                                    directory: 'checkbox',
-                                    id: 1,
-                                    name: 'Checkbox Example (Two State)'
-                                }
-                            ],
-                            browsers: [
-                                {
-                                    id: 1,
-                                    name: 'Firefox'
-                                }
-                            ]
-                        }
-                    ]
-                },
                 runs: {
                     activeRunsById: {
                         1: {

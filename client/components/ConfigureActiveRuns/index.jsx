@@ -340,7 +340,7 @@ class ConfigureActiveRuns extends Component {
                     </Row>
                     <Row>
                         <Table
-                            aria-label="Configure at/browser combinations for cycle"
+                            aria-label="Configure at/browser combinations for test run"
                             striped
                             bordered
                             hover

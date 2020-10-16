@@ -74,7 +74,7 @@ class Home extends Component {
                                 <h3>Test Management</h3>
                                 <p>
                                     This app allows project administrators to
-                                    create Test Cycles for managing execution of
+                                    create Test Runs for managing execution of
                                     tests of a collection of ARIA patterns with
                                     a specified set of assistive technology and
                                     browser combinations.
@@ -83,7 +83,7 @@ class Home extends Component {
                             <div className="screenshot">
                                 <img
                                     src={testManagementScreenshot}
-                                    alt="This page has two main sections: test cycle configuration and test plans. From the “test cycle configuration” section, the user can define the name of the cycle, select a git commit of tests and define the assistive technology and browser combinations they want the testers to use for the test cycle. In the ”test plans” section, the user is presented with all the test plans available in the system where he can assign testers to specific test plans or assistive technology and browser combinations."
+                                    alt="This page has two main sections: test run configuration and test plans. From the “configure active runs” section, the user can select a git commit of tests and define the assistive technology and browser combinations they want the testers to use for the test runs. In the ”test plans” section, the user is presented with all the test plans available in the system where he can assign testers to specific test plans or assistive technology and browser combinations."
                                 />
                             </div>
                         </div>
@@ -91,7 +91,7 @@ class Home extends Component {
                             <div className="description right">
                                 <h3>Test Queue</h3>
                                 <p>
-                                    Testers can view in-progress Test Cycles and
+                                    Testers can view in-progress Test Runs and
                                     assign themselves to run a specific test
                                     plan using a given assistive technology and
                                     browser.
