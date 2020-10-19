@@ -359,7 +359,10 @@ async function configureRuns(
             const newRuns = await db.Run.bulkCreate(dbRuns);
 
             // Copy over testers on test version change
-            if (currentActiveRuns.length > 0 &&  currentActiveRuns[0].test_version_id !== test_version_id) {
+            if (
+                currentActiveRuns.length > 0 &&
+                currentActiveRuns[0].test_version_id !== test_version_id
+            ) {
                 // Add tester to the runs that match on ApgExample, ATVersion, and BrowserVersion
                 let testerToRuns = [];
                 let runStatusFinal = await db.RunStatus.findOne({
@@ -373,7 +376,8 @@ async function configureRuns(
                         r =>
                             r.browser_version_to_at_versions_id ===
                                 run.browser_version_to_at_versions_id &&
-                            r.ApgExample.name === runWithApgExample.ApgExample.name
+                            r.ApgExample.name ===
+                                runWithApgExample.ApgExample.name
                     );
                     if (
                         matchIndex > -1 &&
