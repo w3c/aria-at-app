@@ -124,6 +124,7 @@ async function configureRuns(
                 where: { id: test_version_id }
             }
         );
+
         // (De)activate/deactive ApgExamples
         await db.ApgExample.update({ active: false }, { where: {} });
         await db.ApgExample.update(
@@ -393,10 +394,9 @@ async function configureRuns(
                 }
                 await db.TesterToRun.bulkCreate(testerToRuns);
             }
-
-            if (commit) {
-                await db.sequelize.query('COMMIT;');
-            }
+        }
+        if (commit) {
+            await db.sequelize.query('COMMIT;');
         }
         return await this.getActiveRuns();
     } catch (error) {
