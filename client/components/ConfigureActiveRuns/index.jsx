@@ -237,6 +237,31 @@ class ConfigureActiveRuns extends Component {
     renderTestVersionSelect() {
         const { testVersions, activeRunConfiguration } = this.props;
 
+        const getTestVersions = function() {
+            const testVersionOption = version => (
+                <option key={version.id} value={version.id}>
+                    {version.git_hash.slice(0, 7) +
+                        ' - ' +
+                        version.git_commit_msg.slice(0, 80) +
+                        '...'}
+                </option>
+            );
+            return Object.keys(activeRunConfiguration.active_test_version)
+                .length > 0
+                ? testVersions
+                      .filter(
+                          version =>
+                              version.date >=
+                              activeRunConfiguration.active_test_version.date
+                      )
+                      .map(version => {
+                          return testVersionOption(version);
+                      })
+                : testVersions.map(version => {
+                      return testVersionOption(version);
+                  });
+        };
+
         return (
             <Form.Control
                 data-test="configure-run-commit-select"
@@ -244,22 +269,7 @@ class ConfigureActiveRuns extends Component {
                 onChange={this.handleVersionChange}
                 as="select"
             >
-                {testVersions
-                    .filter(
-                        version =>
-                            version.date >=
-                            activeRunConfiguration.active_test_version.date
-                    )
-                    .map(version => {
-                        return (
-                            <option key={version.id} value={version.id}>
-                                {version.git_hash.slice(0, 7) +
-                                    ' - ' +
-                                    version.git_commit_msg.slice(0, 80) +
-                                    '...'}
-                            </option>
-                        );
-                    })}
+                {getTestVersions()}
             </Form.Control>
         );
     }
