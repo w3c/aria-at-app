@@ -1050,10 +1050,6 @@ describe('RunService', () => {
                 });
 
                 const user = await db.Users.create();
-                const testCycle = await db.TestCycle.create({
-                    test_version_id: testVersion.id,
-                    created_user_id: user.id
-                });
 
                 let tech = await db.BrowserVersionToAtVersion.create({
                     at_version_id: atVersion.id,
@@ -1066,7 +1062,6 @@ describe('RunService', () => {
                     browser_version_id: browserVersion.id,
                     at_version_id: atVersion.id,
                     at_id: at.id,
-                    test_cycle_id: testCycle.id,
                     browser_version_to_at_versions_id: tech.id,
                     apg_example_id: apgExample.id,
                     test_version_id: testVersion.id,
@@ -1174,10 +1169,6 @@ describe('RunService', () => {
                 });
 
                 const user = await db.Users.create();
-                const testCycle = await db.TestCycle.create({
-                    test_version_id: testVersion.id,
-                    created_user_id: user.id
-                });
 
                 let tech = await db.BrowserVersionToAtVersion.create({
                     at_version_id: atVersion.id,
@@ -1190,7 +1181,6 @@ describe('RunService', () => {
                     browser_version_id: browserVersion.id,
                     at_version_id: atVersion.id,
                     at_id: at.id,
-                    test_cycle_id: testCycle.id,
                     browser_version_to_at_versions_id: tech.id,
                     apg_example_id: apgExample.id,
                     test_version_id: testVersion.id,
