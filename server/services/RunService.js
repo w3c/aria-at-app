@@ -344,35 +344,9 @@ async function configureRuns(
             where: { name: 'raw' }
         });
 
-        // TODO: we should remove this
-        let ats = await db.At.findAll({
-            where: { test_version_id }
-        });
-        let atNameToAt = ats.reduce((acc, curr) => {
-            acc[curr.at_name_id] = curr.id;
-            return acc;
-        }, {});
-
-        // TODO, remove this:
-        let user = await db.Users.findOne();
-        if (!user) {
-            user = await db.Users.create({});
-        }
-        const testCycles = await db.TestCycle.findCreateFind({
-            where: {
-                test_version_id,
-                created_user_id: user.id
-            }
-        });
-
         if (addRuns.length) {
             let dbRuns = addRuns.map(r => {
-                let at_id = atNameToAt[r.at_name_id];
                 return {
-                    browser_version_id: r.browser_version_id, // eventually will remove column
-                    at_version_id: r.at_version_id, // eventually will remove column
-                    test_cycle_id: testCycles[0].id, // eventually will remove column
-                    at_id, // eventually will remove column
                     browser_version_to_at_versions_id:
                         r.browser_version_to_at_version_id,
                     apg_example_id: r.apg_example_id,
@@ -461,9 +435,7 @@ async function sequelizeRunsToJsonRuns(sequelizeRuns) {
             test_version_id: run.test_version_id,
             testers: run.Users.map(u => u.id),
             tests: run.ApgExample.Tests.filter(test =>
-                (test.TestToAts || []).some(
-                    testToAt => testToAt.at_id == run.at_id
-                )
+                (test.TestToAts || []).some(testToAt => testToAt.at_id == at.id)
             ).reduce((acc, test) => {
                 acc.push({
                     id: test.id,
