@@ -349,6 +349,72 @@ class TestQueueRow extends Component {
         return userInfo;
     }
 
+    renderOpenAsDropdown() {
+        const { runId, testers, usersById } = this.props;
+
+        let testrun = this.testRun();
+
+        return (
+            <Dropdown className="open-run-as">
+              <Dropdown.Toggle
+                id={nextId()}
+                variant="secondary"
+                aria-label={`Open run ${testrun} as tester`}
+            // disabled={testers.length ? false : true}
+              >
+                Open run as...
+              </Dropdown.Toggle>
+              <Dropdown.Menu role="menu">
+                  {testers.map(t => {
+                      return (
+                           <Dropdown.Item
+                             role="menuitem"
+                             href={`/run/${runId}?user=${t}`}
+                             key={nextId()}
+                           >
+                             {usersById[t].username}
+                           </Dropdown.Item>
+                      );
+                })}
+              </Dropdown.Menu>
+            </Dropdown>
+        );
+    }
+
+    renderStatusAndResult() {
+        const {
+            runId,
+            runStatus,
+            testsForRun
+        } = this.props;
+
+        let status = 'Not started';
+        let results = null;
+
+        if (this.state.totalConflicts > 0) {
+            status = `In progress with ${
+                this.state.totalConflicts
+            } conflicting test${this.state.totalConflicts === 1 ? '' : 's'}`;
+        } else if (
+            this.state.testsWithResults > 0 &&
+            this.state.testsWithResults !== testsForRun.length
+        ) {
+            status = 'In progress with no conflicts';
+        } else if (this.state.testsWithResults === testsForRun.length) {
+            status = 'Tests complete with no conflicts';
+        }
+
+        if (runStatus === 'draft') {
+            results = <Link to={`/results/run/${runId}`}>DRAFT RESULTS</Link>;
+        } else if (runStatus === 'final') {
+            results = (
+                <Link to={`/results/run/${runId}`}>PUBLISHED RESULTS</Link>
+            );
+        }
+
+        return { status, results };
+    }
+
     render() {
         const {
             admin,
@@ -383,29 +449,7 @@ class TestQueueRow extends Component {
 
         let testerList = this.renderTesterList(currentUserAssigned);
 
-        let status = 'Not started';
-        let results = null;
-
-        if (this.state.totalConflicts > 0) {
-            status = `In progress with ${
-                this.state.totalConflicts
-            } conflicting test${this.state.totalConflicts === 1 ? '' : 's'}`;
-        } else if (
-            this.state.testsWithResults > 0 &&
-            this.state.testsWithResults !== testsForRun.length
-        ) {
-            status = 'In progress with no conflicts';
-        } else if (this.state.testsWithResults === testsForRun.length) {
-            status = 'Tests complete with no conflicts';
-        }
-
-        if (runStatus === 'draft') {
-            results = <Link to={`/results/run/${runId}`}>DRAFT RESULTS</Link>;
-        } else if (runStatus === 'final') {
-            results = (
-                <Link to={`/results/run/${runId}`}>PUBLISHED RESULTS</Link>
-            );
-        }
+        let { status, results } = this.renderStatusAndResult();
 
         let actions;
         if (admin) {
@@ -446,7 +490,10 @@ class TestQueueRow extends Component {
                     <div>{status}</div>
                     {results}
                 </td>
-                <td className="actions">{actions}</td>
+                <td className="actions">
+                  <Button variant="secondary" href={`/run/${runId}`} disabled={!currentUserAssigned}>Start</Button>
+                  {admin && this.renderOpenAsDropdown()}
+                </td>
             </tr>
         );
     }
