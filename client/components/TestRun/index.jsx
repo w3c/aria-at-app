@@ -10,6 +10,7 @@ import {
     saveResult
 } from '../../actions/runs';
 import DisplayTest from '@components/DisplayTest';
+import './TestRun.css';
 
 class TestRun extends Component {
     constructor(props) {
@@ -190,16 +191,54 @@ class TestRun extends Component {
                 <Helmet>
                     <title>{title}</title>
                 </Helmet>
-                <Container fluid>
+                <Container fluid>   
                     <Row>
-                        <Col>{heading}</Col>
-                    </Row>
+                        <aside className="col-md-3 test-navigator">
+                            <h3>Test Navigator</h3>
+                            <button className="test-navigator-toggle">Hide</button>
+                            <ol className="test-navigator-list">
+                                <li className="test-name-wrapper complete">
+                                    <span className="progress-indicator"></span>
+                                    <a href="#" className="test-name">Navigation to menubar switches mode from reading to interaction mode</a>
+                                </li>
+                                <li className="test-name-wrapper in-progress">
+                                    <span className="progress-indicator"></span>
+                                    <a href="#" className="test-name">Navigation to menubar using reading mode</a>
+                                </li>
+                                <li className="test-name-wrapper skipped">
+                                    <span className="progress-indicator"></span>
+                                    <a href="#" className="test-name">Navigate to menu item in menubar using reading mode</a>
+                                </li>
+                                <li className="test-name-wrapper conflicts">
+                                    <span className="progress-indicator"></span>
+                                    <a href="#" className="test-name">Navigate to menu item in menubar using interaction mode</a>
+                                </li>
+                                <li className="test-name-wrapper not-started">
+                                    <span className="progress-indicator"></span>
+                                    <a href="#" className="test-name">Navigate to menu item radio in submenu using reading mode</a>
+                                </li>
+                                <li className="test-name-wrapper not-started">
+                                    <span className="progress-indicator"></span>
+                                    <a href="#" className="test-name">Navigate to menu item radio in submenu using interaction mode</a>
+                                </li>
+                                <li className="test-name-wrapper not-started">
+                                    <span className="progress-indicator"></span>
+                                    <a href="#" className="test-name">Navigate to menu item checkbox in submenu using reading mode</a>
+                                </li>
+                            </ol>
+                        </aside>
+                        <Col md={9}>
+                            <Row>
+                                <Col>{heading}</Col>
+                            </Row>
 
-                    {testContent || (
-                        <Row>
-                            <Col>{content}</Col>
-                        </Row>
-                    )}
+                            {testContent || (
+                                <Row>
+                                    <Col>{content}</Col>
+                                </Row>
+                            )}
+                        </Col>
+                    </Row>
                 </Container>
             </Fragment>
         );
