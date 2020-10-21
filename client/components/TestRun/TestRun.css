@@ -1,5 +1,9 @@
 /* Test Navigator */
-button.test-navigator-toggle {
+.test-navigator {
+    display: none;
+}
+
+button.test-navigator-toggle.hide {
     text-decoration: none;
     color: #0b60ab;
     border: 0;
@@ -8,13 +12,46 @@ button.test-navigator-toggle {
     position: relative;
 }
 
-.test-navigator-toggle:before {
+button.test-navigator-toggle.hide:before {
     content: "<<";
     position: absolute;
     left: 0;
     font-size: .75em;
     font-weight: 700;
     top: .25em;
+}
+
+button.test-navigator-toggle.show {
+    width: 21px;
+    height: 21px;
+    border: 2px solid gray;
+    border-radius: 3px;
+    background: transparent;
+    position: relative;
+}
+
+button.test-navigator-toggle.show:before {
+    content: "";
+    position: absolute;
+    width: 13px;
+    height: 13px;
+    left: 2px;
+    top: 2px;
+    background: linear-gradient(180deg, rgba(128,128,128,1) 0%, rgba(128,128,128,1) 20%, rgba(255,255,255,1) 20%, rgba(255,255,255,1) 40%, rgba(128,128,128,1) 40%, rgba(128,128,128,1) 60%, rgba(255,255,255,1) 60%, rgba(255,255,255,1) 80%, rgba(128,128,128,1) 80%, rgba(128,128,128,1) 100%);
+}
+
+button.test-navigator-toggle.show:after {
+    content: "";
+    position: absolute;
+    width: 2px;
+    height: 15px;
+    left: 4px;
+    top: 2px;
+    background: white;
+}
+
+.show {
+    width: 2em;
 }
 
 .test-navigator-list {
