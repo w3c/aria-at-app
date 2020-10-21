@@ -229,10 +229,7 @@ class TestRun extends Component {
                         </aside>
                         <button className="test-navigator-toggle show"></button>
                         <Col md={9}>
-                            <Row>
-                                <Col>{heading}</Col>
-                            </Row>
-
+                            {heading}
                             {testContent || (
                                 <Row>
                                     <Col>{content}</Col>
