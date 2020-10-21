@@ -1440,7 +1440,8 @@ describe('RunService', () => {
                                     id: testResult.id,
                                     user_id: user.id,
                                     status: db.TestStatus.COMPLETE,
-                                    result: result
+                                    result: result,
+                                    serialized_form: null
                                 }
                             }
                         }
@@ -1675,7 +1676,8 @@ describe('RunService', () => {
                                     id: testResult.id,
                                     user_id: user.id,
                                     status: db.TestStatus.COMPLETE,
-                                    result: result
+                                    result: result,
+                                    serialized_form: null
                                 }
                             }
                         }

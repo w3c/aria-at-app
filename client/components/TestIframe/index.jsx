@@ -34,7 +34,7 @@ class TestIframe extends Component {
         this.processResults(data);
     }
 
-    processResults(results) {
+    async processResults(results) {
         // stop listening for additional results
         window.removeEventListener('message', this.handleResultsMessage);
 
@@ -44,7 +44,8 @@ class TestIframe extends Component {
         const serializedForm = serialize(resultsEl);
 
         const { onResults } = this.props;
-        onResults({
+        // Trigger saving of partial results on the parent
+        await onResults({
             results,
             serializedForm
         });
@@ -96,6 +97,12 @@ class TestIframe extends Component {
         // which is sent when the "Review Results" button is clicked
         // inside the iframe
         window.addEventListener('message', this.handleResultsMessage);
+
+        // Load partial results
+        const { serializedForm } = this.props;
+        if (serializedForm) {
+            this.reloadAndHydrate(serializedForm);
+        }
     }
 
     componentWillUnmount() {
@@ -122,5 +129,6 @@ TestIframe.propTypes = {
     onResults: PropTypes.func,
     git_hash: PropTypes.string,
     file: PropTypes.string,
-    at_key: PropTypes.string
+    at_key: PropTypes.string,
+    serializedForm: PropTypes.array
 };

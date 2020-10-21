@@ -81,6 +81,8 @@ class DisplayTest extends Component {
                 break;
             }
             case 'goToNextTest': {
+                // Save the serialized form of iframe
+                await this.iframe.current.processResults(null);
                 displayNextTest();
                 break;
             }
@@ -120,19 +122,11 @@ class DisplayTest extends Component {
     }
 
     handleNextTestClick() {
-        if (this.testHasResult) {
-            this.performButtonAction('goToNextTest');
-        } else {
-            this.confirm('goToNextTest');
-        }
+        this.performButtonAction('goToNextTest');
     }
 
     handlePreviousTestClick() {
-        if (this.testHasResult) {
-            this.performButtonAction('goToPreviousTest');
-        } else {
-            this.confirm('goToPreviousTest');
-        }
+        this.performButtonAction('goToPreviousTest');
     }
 
     handleRedoClick() {
@@ -193,14 +187,6 @@ class DisplayTest extends Component {
         if (this.buttonAction === 'closeTest') {
             modalTitle = 'Close';
             action = `You are about to leave this test run. ${cannotSave}`;
-        }
-        if (this.buttonAction === 'goToNextTest') {
-            modalTitle = 'Skip Test';
-            action = `You are about to move to the next test. ${cannotSave}`;
-        }
-        if (this.buttonAction === 'goToPreviousTest') {
-            modalTitle = 'Previous Test';
-            action = `You are about to move to the previous test. ${cannotSave}`;
         }
         if (this.buttonAction === 'redoTest') {
             modalTitle = 'Start Over';
@@ -275,12 +261,14 @@ class DisplayTest extends Component {
 
         const { conflicts } = this.state;
 
-        this.testHasResult =
-            test.results &&
-            test.results[testerId] &&
-            test.results[testerId].status === 'complete'
-                ? true
-                : false;
+        this.testHasResult = test.results && test.results[testerId];
+
+        this.testResultsCompleted =
+            this.testHasResult && test.results[testerId].status === 'complete';
+
+        this.testResultsSkipped =
+            this.testHasResult &&
+            test.results[testerId].status === 'incomplete';
 
         const statusProps = {
             conflicts,
@@ -301,7 +289,7 @@ class DisplayTest extends Component {
 
         let primaryButtonGroup;
 
-        if (this.testHasResult) {
+        if (this.testResultsCompleted) {
             primaryButtonGroup = (
                 <div className="testrun__button-toolbar-group">
                     <Button variant="primary" onClick={handleNextTestClick}>
@@ -367,8 +355,19 @@ class DisplayTest extends Component {
             </nav>
         );
 
-        if (this.testHasResult) {
+        if (this.testResultsCompleted) {
             testContent = <TestResult testResult={test.results[testerId]} />;
+        } else if (this.testResultsSkipped) {
+            testContent = (
+                <TestIframe
+                    git_hash={git_hash}
+                    file={test.file}
+                    at_key={at_key}
+                    onResults={this.handleResults}
+                    ref={this.iframe}
+                    serializedForm={test.results[testerId].serialized_form}
+                ></TestIframe>
+            );
         } else {
             testContent = (
                 <TestIframe

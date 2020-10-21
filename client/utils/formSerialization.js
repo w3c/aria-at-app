@@ -6,7 +6,6 @@ const selector = 'input, button, textarea, select, fieldset, optgroup, option';
 // state
 export function serialize(root) {
     const nodes = root.querySelectorAll(selector);
-
     // serialized element state is saved in an
     // array since element traversal order will
     // always be the same

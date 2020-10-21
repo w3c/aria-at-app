@@ -81,6 +81,12 @@ async function saveTestResults(testResult) {
             testResultId = resultRows[0][0].id;
         }
 
+        // There will always be a serialized form for a complete or partially complete test.
+        // Partially complete tests are tests that are skipped.
+        const stringifiedSerializedForm = `'${JSON.stringify(
+            serialized_form
+        ).replace(/'/g, "''")}'`;
+
         // If a result has been sent, insert or update result row
         if (result) {
             statusId = (
@@ -96,10 +102,6 @@ async function saveTestResults(testResult) {
 
             const stringifiedResult = result
                 ? `'${JSON.stringify(result).replace(/'/g, "''")}'`
-                : 'NULL';
-
-            const stringifiedSerializedForm = result
-                ? `'${JSON.stringify(serialized_form).replace(/'/g, "''")}'`
                 : 'NULL';
 
             if (!testResultId) {
@@ -126,7 +128,7 @@ async function saveTestResults(testResult) {
             }
         }
 
-        // If result is empty, add a "skipped" entry
+        // If result is empty, the test was skipped. Add an "incomplete" entry
         else {
             statusId = (
                 await db.sequelize.query(`
@@ -135,7 +137,7 @@ async function saveTestResults(testResult) {
                  FROM
                    test_status
                  WHERE
-                   test_status.name = 'skipped'
+                   test_status.name = 'incomplete'
             `)
             )[0][0].id;
 
@@ -143,9 +145,9 @@ async function saveTestResults(testResult) {
                 testResultId = (
                     await db.sequelize.query(`
                       INSERT INTO
-                        test_result(test_id, run_id, user_id, status_id)
+                        test_result(test_id, run_id, user_id, status_id, serialized_form)
                       VALUES
-                        (${test_id}, ${run_id}, ${user_id}, ${statusId})
+                        (${test_id}, ${run_id}, ${user_id}, ${statusId}, ${stringifiedSerializedForm})
                       RETURNING ID
                      `)
                 )[0];
@@ -155,7 +157,7 @@ async function saveTestResults(testResult) {
                      test_result
                    SET
                      result = NULL,
-                     serialized_form = NULL,
+                     serialized_form = ${stringifiedSerializedForm},
                      status_id = ${statusId}
                    WHERE
                      id = ${testResultId}
@@ -164,8 +166,7 @@ async function saveTestResults(testResult) {
         }
 
         testResult.id = testResultId;
-        testResult.status = result ? 'complete' : 'skipped';
-
+        testResult.status = result ? 'complete' : 'incomplete';
         return testResult;
     } catch (error) {
         console.error(`Error: ${error}`);

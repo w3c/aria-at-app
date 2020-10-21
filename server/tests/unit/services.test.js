@@ -274,4 +274,148 @@ describe('TestService', () => {
             });
         });
     });
+    describe('TestService.saveTestResults', () => {
+        it('should save completed results', async () => {
+            await dbCleaner(async () => {
+                const browserVersionNumber = '1.2.3';
+                const atVersionNumber = '3.2.1';
+
+                const test = await db.Test.findOne({ where: { id: 1 } });
+                const testVersionId = test.test_version_id;
+                const apgExampleId = test.apg_example_id;
+
+                const at = await db.At.findOne({
+                    where: { test_version_id: test.test_version_id },
+                    include: [db.AtName]
+                });
+                const atVersion = await db.AtVersion.create({
+                    at_name_id: at.AtName.id,
+                    version: atVersionNumber
+                });
+
+                const browser = await db.Browser.findOne();
+                const browserVersion = await db.BrowserVersion.create({
+                    browser_id: browser.id,
+                    version: browserVersionNumber
+                });
+
+                const runStatus = await db.RunStatus.findOne({
+                    where: { name: db.RunStatus.RAW }
+                });
+
+                let tech = await db.BrowserVersionToAtVersion.create({
+                    at_version_id: atVersion.id,
+                    browser_version_id: browserVersion.id,
+                    active: true,
+                    run_status_id: runStatus.id
+                });
+
+                const run = await db.Run.create({
+                    browser_version_to_at_versions_id: tech.id,
+                    apg_example_id: apgExampleId,
+                    test_version_id: testVersionId,
+                    active: true,
+                    run_status_id: runStatus.id
+                });
+
+                const user = await db.Users.create();
+                const result = { cmd1: 'test output' };
+                const serializedForm = [{ data: 'form' }];
+
+                const testResult = {
+                    test_id: test.id,
+                    run_id: run.id,
+                    user_id: user.id,
+                    result,
+                    serialized_form: serializedForm
+                };
+
+                const testStatus = await db.TestStatus.findOne({
+                    where: { name: 'complete' }
+                });
+                const service = await TestService.saveTestResults(testResult);
+                expect(service).toEqual({
+                    test_id: test.id,
+                    run_id: run.id,
+                    user_id: user.id,
+                    result,
+                    serialized_form: serializedForm,
+                    id: expect.any(Array),
+                    status: testStatus.name
+                });
+            });
+        });
+        it('should save partial results', async () => {
+            await dbCleaner(async () => {
+                const browserVersionNumber = '1.2.3';
+                const atVersionNumber = '3.2.1';
+
+                const test = await db.Test.findOne({ where: { id: 1 } });
+                const testVersionId = test.test_version_id;
+                const apgExampleId = test.apg_example_id;
+
+                const at = await db.At.findOne({
+                    where: { test_version_id: test.test_version_id },
+                    include: [db.AtName]
+                });
+                const atVersion = await db.AtVersion.create({
+                    at_name_id: at.AtName.id,
+                    version: atVersionNumber
+                });
+
+                const browser = await db.Browser.findOne();
+                const browserVersion = await db.BrowserVersion.create({
+                    browser_id: browser.id,
+                    version: browserVersionNumber
+                });
+
+                const runStatus = await db.RunStatus.findOne({
+                    where: { name: db.RunStatus.RAW }
+                });
+
+                let tech = await db.BrowserVersionToAtVersion.create({
+                    at_version_id: atVersion.id,
+                    browser_version_id: browserVersion.id,
+                    active: true,
+                    run_status_id: runStatus.id
+                });
+
+                const run = await db.Run.create({
+                    browser_version_to_at_versions_id: tech.id,
+                    apg_example_id: apgExampleId,
+                    test_version_id: testVersionId,
+                    active: true,
+                    run_status_id: runStatus.id
+                });
+
+                const user = await db.Users.create();
+
+                // partial results from the iframe are denoted by a null result object
+                const result = null;
+                const serializedForm = [{ data: 'form' }];
+
+                const testResult = {
+                    test_id: test.id,
+                    run_id: run.id,
+                    user_id: user.id,
+                    result,
+                    serialized_form: serializedForm
+                };
+
+                const testStatus = await db.TestStatus.findOne({
+                    where: { name: 'incomplete' }
+                });
+                const service = await TestService.saveTestResults(testResult);
+                expect(service).toEqual({
+                    test_id: test.id,
+                    run_id: run.id,
+                    user_id: user.id,
+                    result,
+                    serialized_form: serializedForm,
+                    id: expect.any(Array),
+                    status: testStatus.name
+                });
+            });
+        });
+    });
 });
