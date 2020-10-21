@@ -1,13 +1,112 @@
-#test-iframe {
-    width: 80vw;
-    height: 65vh;
+/* Test Navigator */
+button.test-navigator-toggle {
+    text-decoration: none;
+    color: #0b60ab;
+    border: 0;
+    background-color: transparent;
+    padding: 0 0 0 1.25em;
+    position: relative;
 }
 
-.testrun__button--right {
+.test-navigator-toggle:before {
+    content: "<<";
     position: absolute;
-    right: 0;
+    left: 0;
+    font-size: .75em;
+    font-weight: 700;
+    top: .25em;
 }
 
-.testrun__button-toolbar--margin {
-    margin: 1em 0;
+.test-navigator-list {
+    position: relative;
+    margin-top: 1em;
+}
+
+.test-name-wrapper {
+    position: relative;
+    margin: 0 0 .5em .25em;
+}
+
+.test-name-wrapper:before {
+    content: "";
+    height: 100%;
+    left: -2.25em;
+    position: absolute;
+    top: 1em;
+    background: #c7c7c7;
+    width: 2px;
+}
+
+.test-name-wrapper:last-child:before {
+    height: 0%;
+}
+
+.progress-indicator {
+    position: absolute;
+    left: -2.75em;
+    top: .25em;
+    width: 18px;
+    height: 18px;
+    border-radius: 50px;
+}
+
+/* Test States in Test Navigator */
+.test-name-wrapper.not-started .progress-indicator {
+    background: White;
+    border: 1px solid black;
+}
+
+.test-name-wrapper.in-progress .progress-indicator {
+    background: #1e8f37;
+    background: linear-gradient(180deg,#1e8f37 0%,#1e8f37 50%, rgba(255,255,255,1) 50%, rgba(255,255,255,1) 100%);
+    border: 1px solid #175b26;
+}
+
+.test-name-wrapper.skipped .progress-indicator {
+    background: White;
+    border: 1px dashed black;
+}
+
+.test-name-wrapper.conflicts .progress-indicator {
+    background: #ffcd00;
+    border: 1px solid #cc9719;
+}
+
+.test-name-wrapper.conflicts .progress-indicator:after {
+    content: "!";
+    position: absolute;
+    left: 38%;
+    top: -.2em;
+    font-size: .9em;
+    font-weight: 700;
+}
+
+.test-name-wrapper.complete .progress-indicator {
+    background: #1e8f37;
+    border: 1px solid #175b26;
+}
+
+.test-name-wrapper.complete 
+.progress-indicator:before,
+.test-name-wrapper.complete 
+.progress-indicator:after {
+    content: "";
+    position: absolute;
+    background:white;
+    -ms-transform: rotate(45deg); /* IE 9 */
+    -webkit-transform: rotate(45deg); /* Chrome, Safari, Opera */
+    transform: rotate(45deg);
+}
+.test-name-wrapper.complete .progress-indicator:before {
+    width: 4px;
+    height: 3px;
+    top: 7px;
+    left: 3px;
+}
+
+.test-name-wrapper.complete .progress-indicator:after {
+    width: 3px;
+    height: 9px;
+    top: 4px;
+    left: 8px;
 }
