@@ -1,6 +1,11 @@
+.test-iframe-contaner {
+    padding: 0;
+}
+
 #test-iframe {
     width: 80vw;
     height: 65vh;
+    border: 1px solid #c7c7c7;
 }
 
 .testrun__button-toolbar {

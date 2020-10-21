@@ -382,27 +382,14 @@ class DisplayTest extends Component {
 
         let modals = this.renderModal();
 
-        // Quick and lazy fix to make sure the
-        // content row lines up with everything
-        // else on the left.
-        const contentRowStyle = { marginLeft: '0px' };
         return (
             <Fragment>
+                <h4 data-test="test-run-h4">
+                    Testing task: {test.name}
+                </h4>
+                <StatusBar key={nextId()} {...statusProps} />
                 <Row>
-                    <Col>
-                        <h4 data-test="test-run-h4">
-                            Testing task: {test.name}
-                        </h4>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col>
-                        <StatusBar key={nextId()} {...statusProps} />
-                    </Col>
-                </Row>
-
-                <Row style={contentRowStyle}>
-                    <Col md={9}>
+                    <Col md={9} className="test-iframe-contaner">
                         <Row>{testContent}</Row>
                         <Row>{menuUnderContent}</Row>
                     </Col>
