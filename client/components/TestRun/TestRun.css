@@ -1,5 +1,9 @@
 /* Test Navigator */
 .test-navigator {
+    /* display: none; */
+}
+
+button.test-navigator-toggle.show {
     display: none;
 }
 
