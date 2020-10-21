@@ -195,7 +195,7 @@ class TestRun extends Component {
                     <Row>
                         <aside className="col-md-3 test-navigator">
                             <h3>Test Navigator</h3>
-                            <button className="test-navigator-toggle">Hide</button>
+                            <button className="test-navigator-toggle hide">Hide</button>
                             <ol className="test-navigator-list">
                                 <li className="test-name-wrapper complete">
                                     <span className="progress-indicator"></span>
@@ -227,6 +227,7 @@ class TestRun extends Component {
                                 </li>
                             </ol>
                         </aside>
+                        <button className="test-navigator-toggle show"></button>
                         <Col md={9}>
                             <Row>
                                 <Col>{heading}</Col>
