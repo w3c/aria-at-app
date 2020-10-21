@@ -453,7 +453,8 @@ async function sequelizeRunsToJsonRuns(sequelizeRuns) {
                             id: testResult.id,
                             user_id: testResult.user_id,
                             status: testResult.TestStatus.name,
-                            result: testResult.result
+                            result: testResult.result,
+                            serialized_form: testResult.serialized_form
                         };
                         return acc;
                     }, {})
@@ -499,7 +500,6 @@ async function getActiveRuns() {
                 db.Users
             ]
         });
-
         return await sequelizeRunsToJsonRuns(activeRuns);
     } catch (error) {
         console.error(`Error: ${error}`);

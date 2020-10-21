@@ -43,6 +43,10 @@ module.exports = function(sequelize, DataTypes) {
             result: {
                 type: DataTypes.JSONB,
                 allowNull: true
+            },
+            serialized_form: {
+                type: DataTypes.JSONB,
+                allowNull: true
             }
         },
         {
