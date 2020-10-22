@@ -82,10 +82,10 @@ class TestQueueRow extends Component {
         dispatch(saveRunStatus(status.toLowerCase(), runId));
     }
 
-    handleDeleteResultsForUser(event) {
-        const { runId } = this.props;
-        let uid = parseInt(event.target.value);
+    handleDeleteResultsForUser() {
+        // const { runId } = this.props;
         // TODO: delete results for user and run
+        return;
     }
 
     componentDidUpdate(prevProps) {
@@ -211,7 +211,6 @@ class TestQueueRow extends Component {
 
         // If there are no conflicts OR the test has been marked as "final",
         // and admin can mark a test run as "draft"
-        let updateRunStatusSection = null;
         let newStatus;
         if (
             (runStatus !== 'draft' &&
@@ -265,7 +264,6 @@ class TestQueueRow extends Component {
                     let classname = t.assigned ? 'assigned' : 'not-assigned';
                     return (
                         <Dropdown.Item
-                            role="menuitem"
                             variant="secondary"
                             as="button"
                             key={nextId()}
@@ -311,8 +309,9 @@ class TestQueueRow extends Component {
                                 variant="secondary"
                                 as="button"
                                 key={nextId()}
-                                value={t.id}
-                                onClick={this.handleDeleteResultsForUser}
+                                onClick={() =>
+                                    this.handleDeleteResultsForUser(t.id)
+                                }
                             >
                                 <FontAwesomeIcon icon={faTrashAlt} />
                                 {t.username}
@@ -334,8 +333,7 @@ class TestQueueRow extends Component {
                         variant="secondary"
                         as="button"
                         key={nextId()}
-                        value={userId}
-                        onClick={this.handleDeleteResultsForUser}
+                        onClick={() => this.handleDeleteResultsForUser(userId)}
                     >
                         <FontAwesomeIcon icon={faTrashAlt} />
                         Delete my results
@@ -361,7 +359,6 @@ class TestQueueRow extends Component {
             admin,
             userId,
             runId,
-            runStatus,
             testers,
             testsForRun,
             apgExampleName
