@@ -275,9 +275,10 @@ class TestQueueRow extends Component {
                             role="menuitemcheckbox"
                         >
                             {t.assigned && <FontAwesomeIcon icon={faCheck} />}
-                          <span className={classname}>{`${t.username} `}
-                            <span className="fullname">{t.fullname}</span>
-                          </span>
+                            <span className={classname}>
+                                {`${t.username} `}
+                                <span className="fullname">{t.fullname}</span>
+                            </span>
                         </Dropdown.Item>
                     );
                 })}
@@ -313,7 +314,8 @@ class TestQueueRow extends Component {
                                 value={t.id}
                                 onClick={this.handleDeleteResultsForUser}
                             >
-                                <FontAwesomeIcon icon={faTrashAlt} />{t.username}
+                                <FontAwesomeIcon icon={faTrashAlt} />
+                                {t.username}
                             </Dropdown.Item>
                         );
                     })}
@@ -335,7 +337,8 @@ class TestQueueRow extends Component {
                         value={userId}
                         onClick={this.handleDeleteResultsForUser}
                     >
-                        <FontAwesomeIcon icon={faTrashAlt} />Delete my results
+                        <FontAwesomeIcon icon={faTrashAlt} />
+                        Delete my results
                     </Dropdown.Item>
                 )}
                 {this.renderAssignOptions(false)}
