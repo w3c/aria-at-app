@@ -1,5 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCheck, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import nextId from 'react-id-generator';
 import { Button, Dropdown } from 'react-bootstrap';
 import { connect } from 'react-redux';
@@ -66,9 +68,8 @@ class TestQueueRow extends Component {
         dispatch(saveUsersToRuns([userId], [runId]));
     }
 
-    toggleTesterAssign(event) {
+    toggleTesterAssign(uid) {
         const { dispatch, runId, testers } = this.props;
-        let uid = parseInt(event.target.value);
         if (testers.includes(uid)) {
             dispatch(deleteUsersFromRun([uid], runId));
         } else {
@@ -261,20 +262,22 @@ class TestQueueRow extends Component {
             <Fragment>
                 <Dropdown.Header>Assign to</Dropdown.Header>
                 {canAssignTesters.map(t => {
+                    let classname = t.assigned ? 'assigned' : 'not-assigned';
                     return (
                         <Dropdown.Item
                             role="menuitem"
                             variant="secondary"
                             as="button"
                             key={nextId()}
-                            value={t.id}
-                            onClick={this.toggleTesterAssign}
+                            onClick={() => this.toggleTesterAssign(t.id)}
                             disabled={!admin && t.id !== userId}
                             aria-checked={t.assigned}
                             role="menuitemcheckbox"
                         >
-                            {t.assigned ? 'C' : ''} {t.username}{' '}
+                            {t.assigned && <FontAwesomeIcon icon={faCheck} />}
+                          <span className={classname}>{`${t.username} `}
                             <span className="fullname">{t.fullname}</span>
+                          </span>
                         </Dropdown.Item>
                     );
                 })}
@@ -310,7 +313,7 @@ class TestQueueRow extends Component {
                                 value={t.id}
                                 onClick={this.handleDeleteResultsForUser}
                             >
-                                {t.username}
+                                <FontAwesomeIcon icon={faTrashAlt} />{t.username}
                             </Dropdown.Item>
                         );
                     })}
@@ -332,7 +335,7 @@ class TestQueueRow extends Component {
                         value={userId}
                         onClick={this.handleDeleteResultsForUser}
                     >
-                        Delete my results
+                        <FontAwesomeIcon icon={faTrashAlt} />Delete my results
                     </Dropdown.Item>
                 )}
                 {this.renderAssignOptions(false)}
