@@ -17,12 +17,12 @@ button.test-navigator-toggle.hide {
 }
 
 button.test-navigator-toggle.hide:before {
-    content: "<<";
+    content: '<<';
     position: absolute;
     left: 0;
-    font-size: .75em;
+    font-size: 0.75em;
     font-weight: 700;
-    top: .25em;
+    top: 0.25em;
 }
 
 button.test-navigator-toggle.show {
@@ -35,17 +35,29 @@ button.test-navigator-toggle.show {
 }
 
 button.test-navigator-toggle.show:before {
-    content: "";
+    content: '';
     position: absolute;
     width: 13px;
     height: 13px;
     left: 2px;
     top: 2px;
-    background: linear-gradient(180deg, rgba(128,128,128,1) 0%, rgba(128,128,128,1) 20%, rgba(255,255,255,1) 20%, rgba(255,255,255,1) 40%, rgba(128,128,128,1) 40%, rgba(128,128,128,1) 60%, rgba(255,255,255,1) 60%, rgba(255,255,255,1) 80%, rgba(128,128,128,1) 80%, rgba(128,128,128,1) 100%);
+    background: linear-gradient(
+        180deg,
+        rgba(128, 128, 128, 1) 0%,
+        rgba(128, 128, 128, 1) 20%,
+        rgba(255, 255, 255, 1) 20%,
+        rgba(255, 255, 255, 1) 40%,
+        rgba(128, 128, 128, 1) 40%,
+        rgba(128, 128, 128, 1) 60%,
+        rgba(255, 255, 255, 1) 60%,
+        rgba(255, 255, 255, 1) 80%,
+        rgba(128, 128, 128, 1) 80%,
+        rgba(128, 128, 128, 1) 100%
+    );
 }
 
 button.test-navigator-toggle.show:after {
-    content: "";
+    content: '';
     position: absolute;
     width: 2px;
     height: 15px;
@@ -65,11 +77,11 @@ button.test-navigator-toggle.show:after {
 
 .test-name-wrapper {
     position: relative;
-    margin: 0 0 .5em .25em;
+    margin: 0 0 0.5em 0.25em;
 }
 
 .test-name-wrapper:before {
-    content: "";
+    content: '';
     height: 100%;
     left: -2.25em;
     position: absolute;
@@ -85,7 +97,7 @@ button.test-navigator-toggle.show:after {
 .progress-indicator {
     position: absolute;
     left: -2.75em;
-    top: .25em;
+    top: 0.25em;
     width: 18px;
     height: 18px;
     border-radius: 50px;
@@ -99,7 +111,13 @@ button.test-navigator-toggle.show:after {
 
 .test-name-wrapper.in-progress .progress-indicator {
     background: #1e8f37;
-    background: linear-gradient(180deg,#1e8f37 0%,#1e8f37 50%, rgba(255,255,255,1) 50%, rgba(255,255,255,1) 100%);
+    background: linear-gradient(
+        180deg,
+        #1e8f37 0%,
+        #1e8f37 50%,
+        rgba(255, 255, 255, 1) 50%,
+        rgba(255, 255, 255, 1) 100%
+    );
     border: 1px solid #175b26;
 }
 
@@ -114,11 +132,11 @@ button.test-navigator-toggle.show:after {
 }
 
 .test-name-wrapper.conflicts .progress-indicator:after {
-    content: "!";
+    content: '!';
     position: absolute;
     left: 38%;
-    top: -.2em;
-    font-size: .9em;
+    top: -0.2em;
+    font-size: 0.9em;
     font-weight: 700;
 }
 
@@ -127,13 +145,11 @@ button.test-navigator-toggle.show:after {
     border: 1px solid #175b26;
 }
 
-.test-name-wrapper.complete 
-.progress-indicator:before,
-.test-name-wrapper.complete 
-.progress-indicator:after {
-    content: "";
+.test-name-wrapper.complete .progress-indicator:before,
+.test-name-wrapper.complete .progress-indicator:after {
+    content: '';
     position: absolute;
-    background:white;
+    background: white;
     -ms-transform: rotate(45deg); /* IE 9 */
     -webkit-transform: rotate(45deg); /* Chrome, Safari, Opera */
     transform: rotate(45deg);

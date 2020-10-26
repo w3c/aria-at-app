@@ -384,9 +384,7 @@ class DisplayTest extends Component {
 
         return (
             <Fragment>
-                <h4 data-test="test-run-h4">
-                    Testing task: {test.name}
-                </h4>
+                <h4 data-test="test-run-h4">Testing task: {test.name}</h4>
                 <StatusBar key={nextId()} {...statusProps} />
                 <Row>
                     <Col md={9} className="test-iframe-contaner">

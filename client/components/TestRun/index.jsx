@@ -10,6 +10,7 @@ import {
     saveResult
 } from '../../actions/runs';
 import DisplayTest from '@components/DisplayTest';
+import checkForConflict from '../../utils/checkForConflict';
 import './TestRun.css';
 
 class TestRun extends Component {
@@ -23,6 +24,7 @@ class TestRun extends Component {
 
         this.displayNextTest = this.displayNextTest.bind(this);
         this.displayPreviousTest = this.displayPreviousTest.bind(this);
+        this.displayTestByIndex = this.displayTestByIndex.bind(this);
         this.saveResultFromTest = this.saveResultFromTest.bind(this);
         this.deleteResultFromTest = this.deleteResultFromTest.bind(this);
     }
@@ -49,6 +51,12 @@ class TestRun extends Component {
                 currentTestIndex: newIndex
             });
         }
+    }
+
+    displayTestByIndex(index) {
+        this.setState({
+            currentTestIndex: index
+        });
     }
 
     displayPreviousTest() {
@@ -191,40 +199,62 @@ class TestRun extends Component {
                 <Helmet>
                     <title>{title}</title>
                 </Helmet>
-                <Container fluid>   
+                <Container fluid>
                     <Row>
                         <aside className="col-md-3 test-navigator">
                             <h3>Test Navigator</h3>
-                            <button className="test-navigator-toggle hide">Hide</button>
+                            <button className="test-navigator-toggle hide">
+                                Hide
+                            </button>
                             <ol className="test-navigator-list">
-                                <li className="test-name-wrapper complete">
-                                    <span className="progress-indicator"></span>
-                                    <a href="#" className="test-name">Navigation to menubar switches mode from reading to interaction mode</a>
-                                </li>
-                                <li className="test-name-wrapper in-progress">
-                                    <span className="progress-indicator"></span>
-                                    <a href="#" className="test-name">Navigation to menubar using reading mode</a>
-                                </li>
-                                <li className="test-name-wrapper skipped">
-                                    <span className="progress-indicator"></span>
-                                    <a href="#" className="test-name">Navigate to menu item in menubar using reading mode</a>
-                                </li>
-                                <li className="test-name-wrapper conflicts">
-                                    <span className="progress-indicator"></span>
-                                    <a href="#" className="test-name">Navigate to menu item in menubar using interaction mode</a>
-                                </li>
-                                <li className="test-name-wrapper not-started">
-                                    <span className="progress-indicator"></span>
-                                    <a href="#" className="test-name">Navigate to menu item radio in submenu using reading mode</a>
-                                </li>
-                                <li className="test-name-wrapper not-started">
-                                    <span className="progress-indicator"></span>
-                                    <a href="#" className="test-name">Navigate to menu item radio in submenu using interaction mode</a>
-                                </li>
-                                <li className="test-name-wrapper not-started">
-                                    <span className="progress-indicator"></span>
-                                    <a href="#" className="test-name">Navigate to menu item checkbox in submenu using reading mode</a>
-                                </li>
+                                {run.tests.map((t, i) => {
+                                    let resultClassName = 'not-started';
+                                    const testersResult =
+                                        t.results &&
+                                        t.results[openAsUser || userId];
+                                    if (testersResult) {
+                                        if (
+                                            testersResult.status == 'incomplete'
+                                        ) {
+                                            resultClassName = 'in-progress';
+                                        } else if (
+                                            testersResult.status == 'skipped'
+                                        ) {
+                                            resultClassName = 'skipped';
+                                        } else if (
+                                            checkForConflict(t.results).length
+                                        ) {
+                                            resultClassName = 'conflicts';
+                                        } else if (
+                                            testersResult.status === 'complete'
+                                        ) {
+                                            resultClassName = 'complete';
+                                        }
+                                    } else if (
+                                        this.state.currentTestIndex - 1 >
+                                        i
+                                    ) {
+                                        resultClassName = 'skipped';
+                                    }
+                                    return (
+                                        <li
+                                            className={`test-name-wrapper ${resultClassName}`}
+                                        >
+                                            <span className="progress-indicator"></span>
+                                            <a
+                                                href="#"
+                                                onClick={e => {
+                                                    this.displayTestByIndex(
+                                                        i + 1
+                                                    );
+                                                }}
+                                                className="test-name"
+                                            >
+                                                {t.name}
+                                            </a>
+                                        </li>
+                                    );
+                                })}
                             </ol>
                         </aside>
                         <button className="test-navigator-toggle show"></button>

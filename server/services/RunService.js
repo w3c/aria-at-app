@@ -440,27 +440,31 @@ async function sequelizeRunsToJsonRuns(sequelizeRuns) {
             testers: run.Users.map(u => u.id),
             tests: run.ApgExample.Tests.filter(test =>
                 (test.TestToAts || []).some(testToAt => testToAt.at_id == at.id)
-            ).reduce((acc, test) => {
-                acc.push({
-                    id: test.id,
-                    file: test.file,
-                    name: test.name,
-                    execution_order: test.execution_order,
-                    results: test.TestResults.filter(
-                        testResult => testResult.run_id == run.id
-                    ).reduce((acc, testResult) => {
-                        acc[testResult.user_id] = {
-                            id: testResult.id,
-                            user_id: testResult.user_id,
-                            status: testResult.TestStatus.name,
-                            result: testResult.result,
-                            serialized_form: testResult.serialized_form
-                        };
-                        return acc;
-                    }, {})
-                });
-                return acc;
-            }, [])
+            )
+                .sort((a, b) =>
+                    a.execution_order > b.execution_order ? -1 : 1
+                )
+                .reduce((acc, test) => {
+                    acc.push({
+                        id: test.id,
+                        file: test.file,
+                        name: test.name,
+                        execution_order: test.execution_order,
+                        results: test.TestResults.filter(
+                            testResult => testResult.run_id == run.id
+                        ).reduce((acc, testResult) => {
+                            acc[testResult.user_id] = {
+                                id: testResult.id,
+                                user_id: testResult.user_id,
+                                status: testResult.TestStatus.name,
+                                result: testResult.result,
+                                serialized_form: testResult.serialized_form
+                            };
+                            return acc;
+                        }, {})
+                    });
+                    return acc;
+                }, [])
         };
         return acc;
     }, {});
