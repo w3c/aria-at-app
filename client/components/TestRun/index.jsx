@@ -172,6 +172,7 @@ class TestRun extends Component {
                         at_key={at_key}
                         displayNextTest={this.displayNextTest}
                         displayPreviousTest={this.displayPreviousTest}
+                        displayTestByIndex={this.displayTestByIndex}
                         saveResultFromTest={this.saveResultFromTest}
                         deleteResultFromTest={this.deleteResultFromTest}
                         userId={userId}
