@@ -233,11 +233,6 @@ class TestRun extends Component {
                                                     resultClassName =
                                                         'in-progress';
                                                 } else if (
-                                                    testersResult.status ==
-                                                    'skipped'
-                                                ) {
-                                                    resultClassName = 'skipped';
-                                                } else if (
                                                     checkForConflict(t.results)
                                                         .length
                                                 ) {
@@ -250,12 +245,6 @@ class TestRun extends Component {
                                                     resultClassName =
                                                         'complete';
                                                 }
-                                            } else if (
-                                                this.state.currentTestIndex -
-                                                    1 >
-                                                i
-                                            ) {
-                                                resultClassName = 'skipped';
                                             }
                                             return (
                                                 <li
