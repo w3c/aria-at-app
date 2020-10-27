@@ -77,25 +77,34 @@ class DisplayTest extends Component {
                 break;
             }
             case 'closeTest': {
+                // Save the serialized form of iframe
+                if (this.iframe.current) {
+                    await this.iframe.current.processResults(null);
+                }
                 history.push(`/test-queue`);
                 break;
             }
             case 'goToNextTest': {
                 // Save the serialized form of iframe
-                await this.iframe.current.processResults(null);
+                if (this.iframe.current) {
+                    await this.iframe.current.processResults(null);
+                }
                 displayNextTest();
                 break;
             }
             case 'goToPreviousTest': {
+                // Save the serialized form of iframe
+                if (this.iframe.current) {
+                    await this.iframe.current.processResults(null);
+                }
                 displayPreviousTest();
                 break;
             }
             case 'redoTest': {
-                if (!this.testHasResult) {
+                if (this.iframe.current) {
                     this.iframe.current.reloadAndClear();
-                } else {
-                    await deleteResultFromTest();
                 }
+                await deleteResultFromTest();
                 break;
             }
             case 'editTest': {
@@ -134,11 +143,7 @@ class DisplayTest extends Component {
     }
 
     handleCloseRunClick() {
-        if (this.testHasResult) {
-            this.performButtonAction('closeTest');
-        } else {
-            this.confirm('closeTest');
-        }
+        this.performButtonAction('closeTest');
     }
 
     handleEditClick() {
@@ -182,12 +187,7 @@ class DisplayTest extends Component {
         } = this.props;
 
         let modalTitle, action;
-        let cannotSave = `Test ${testIndex} has not been completed in full and your progress on this test won’t be saved.`;
 
-        if (this.buttonAction === 'closeTest') {
-            modalTitle = 'Close';
-            action = `You are about to leave this test run. ${cannotSave}`;
-        }
         if (this.buttonAction === 'redoTest') {
             modalTitle = 'Start Over';
             action = `Are you sure you want to start over test ${testIndex}. Your progress (if any) will be lost.`;
