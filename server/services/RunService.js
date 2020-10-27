@@ -442,7 +442,7 @@ async function sequelizeRunsToJsonRuns(sequelizeRuns) {
                 (test.TestToAts || []).some(testToAt => testToAt.at_id == at.id)
             )
                 .sort((a, b) =>
-                    a.execution_order > b.execution_order ? -1 : 1
+                    a.execution_order > b.execution_order ? 1 : -1
                 )
                 .reduce((acc, test) => {
                     acc.push({
