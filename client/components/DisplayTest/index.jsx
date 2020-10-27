@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import './DisplayTest.css';
 import { withRouter } from 'react-router-dom';
 import nextId from 'react-id-generator';
-import { Button, ButtonToolbar, Col, Modal, Row } from 'react-bootstrap';
+import { Button, ButtonToolbar, Col, Modal, Pagination, Row } from 'react-bootstrap';
 import RaiseIssueModal from '@components/RaiseIssueModal';
 import ReviewConflictsModal from '@components/ReviewConflictsModal';
 import StatusBar from '@components/StatusBar';
@@ -306,9 +306,6 @@ class DisplayTest extends Component {
                     <Button variant="primary" onClick={handleSaveClick}>
                         Save results
                     </Button>
-                    <Button variant="secondary" onClick={handleNextTestClick}>
-                        Skip test
-                    </Button>
                 </div>
             );
         }
@@ -319,14 +316,25 @@ class DisplayTest extends Component {
         let menuUnderContent = (
             <ButtonToolbar className="testrun__button-toolbar">
                 {primaryButtonGroup}
-                {testIndex !== 1 && (
-                    <Button
-                        variant="secondary"
-                        onClick={handlePreviousTestClick}
-                    >
-                        Previous test
-                    </Button>
-                )}
+		<Pagination>
+		  <Pagination.First onClick={() => {this.props.displayTestByIndex(1)}}/>
+		  <Pagination.Prev onClick={handlePreviousTestClick} />
+                  {
+                    run.tests.reduce((acc, t, i, arr) => {
+                      const item = (<Pagination.Item key={i} active={i + 1 === testIndex} onClick={() => {this.props.displayTestByIndex(i+1)}}>
+                        {i+1}
+                      </Pagination.Item>);
+                      if (arr.length < 10 || i < 5 || i >= arr.length - 5) {
+                        acc.push(item);
+                      } else if (arr.length > 10 && i === 6) {
+                        acc.push(<Pagination.Ellipsis/>);
+                      }
+                      return acc;
+                    }, [])
+                  }
+		  <Pagination.Next onClick={handleNextTestClick} />
+		  <Pagination.Last onClick={() => {this.props.displayTestByIndex(run.tests.length + 1)}}/>
+		</Pagination>
             </ButtonToolbar>
         );
         let menuRightOContent = (
@@ -411,6 +419,7 @@ DisplayTest.propTypes = {
     history: PropTypes.object,
     displayNextTest: PropTypes.func,
     displayPreviousTest: PropTypes.func,
+    displayTestByIndex: PropTypes.func,
     saveResultFromTest: PropTypes.func,
     deleteResultFromTest: PropTypes.func
 };
