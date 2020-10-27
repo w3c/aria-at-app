@@ -79,7 +79,7 @@ class TestRun extends Component {
                 test_id: test.id,
                 run_id: run.id,
                 user_id: openAsUser || userId,
-                skip: true
+                serializedForm: null
             })
         );
         return true;
