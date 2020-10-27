@@ -209,9 +209,8 @@ class TestRun extends Component {
                 </Helmet>
                 <Container fluid>
                     <Row>
-                        <aside className="col-md-3 test-navigator">
                             {this.state.showTestNavigator ? (
-                                <>
+                                <aside className="col-md-3 test-navigator">
                                     <h3>Test Navigator</h3>
                                     <button
                                         onClick={this.toggleTestNavigator}
@@ -267,21 +266,24 @@ class TestRun extends Component {
                                             );
                                         })}
                                     </ol>
-                                </>
-                            ) : (
-                                <button
-                                    onClick={this.toggleTestNavigator}
-                                    className="test-navigator-toggle"
-                                >
-                                    Show Test Navigator
-                                </button>
-                            )}
-                        </aside>
-                        <button
-                            onClick={this.toggleTestNavigator}
-                            className="test-navigator-toggle show"
-                        ></button>
-                        <Col md={9}>
+                                </aside>
+                            ) :
+                            (
+                              <>
+                              </>
+                            )
+                            }
+                        <Col md={this.state.showTestNavigator ? 9 : 12 }>
+                          {this.state.showTestNavigator ?
+                            <></> :
+                            <span class="test-navigator-toggle-container">
+                              <button
+                                onClick={this.toggleTestNavigator}
+                                className="test-navigator-toggle show"
+                              >
+                              </button>
+                            </span>
+                          }
                             {heading}
                             {testContent || (
                                 <Row>

@@ -1,12 +1,4 @@
 /* Test Navigator */
-.test-navigator {
-    /* display: none; */
-}
-
-button.test-navigator-toggle.show {
-    display: none;
-}
-
 button.test-navigator-toggle.hide {
     text-decoration: none;
     color: #0b60ab;
@@ -23,6 +15,11 @@ button.test-navigator-toggle.hide:before {
     font-size: 0.75em;
     font-weight: 700;
     top: 0.25em;
+}
+
+span.test-navigator-toggle-container {
+    position: absolute;
+    left: -20px;
 }
 
 button.test-navigator-toggle.show {
