@@ -19,7 +19,8 @@ class TestRun extends Component {
 
         this.state = {
             currentTestIndex: 1,
-            runComplete: false
+            runComplete: false,
+            showTestNavigator: true
         };
 
         this.displayNextTest = this.displayNextTest.bind(this);
@@ -27,6 +28,7 @@ class TestRun extends Component {
         this.displayTestByIndex = this.displayTestByIndex.bind(this);
         this.saveResultFromTest = this.saveResultFromTest.bind(this);
         this.deleteResultFromTest = this.deleteResultFromTest.bind(this);
+        this.toggleTestNavigator = this.toggleTestNavigator.bind(this);
     }
 
     async componentDidMount() {
@@ -62,6 +64,12 @@ class TestRun extends Component {
     displayPreviousTest() {
         this.setState({
             currentTestIndex: this.state.currentTestIndex - 1
+        });
+    }
+
+    toggleTestNavigator() {
+        this.setState({
+            showTestNavigator: !this.state.showTestNavigator
         });
     }
 
@@ -202,62 +210,88 @@ class TestRun extends Component {
                 <Container fluid>
                     <Row>
                         <aside className="col-md-3 test-navigator">
-                            <h3>Test Navigator</h3>
-                            <button className="test-navigator-toggle hide">
-                                Hide
-                            </button>
-                            <ol className="test-navigator-list">
-                                {run.tests.map((t, i) => {
-                                    let resultClassName = 'not-started';
-                                    const testersResult =
-                                        t.results &&
-                                        t.results[openAsUser || userId];
-                                    if (testersResult) {
-                                        if (
-                                            testersResult.status == 'incomplete'
-                                        ) {
-                                            resultClassName = 'in-progress';
-                                        } else if (
-                                            testersResult.status == 'skipped'
-                                        ) {
-                                            resultClassName = 'skipped';
-                                        } else if (
-                                            checkForConflict(t.results).length
-                                        ) {
-                                            resultClassName = 'conflicts';
-                                        } else if (
-                                            testersResult.status === 'complete'
-                                        ) {
-                                            resultClassName = 'complete';
-                                        }
-                                    } else if (
-                                        this.state.currentTestIndex - 1 >
-                                        i
-                                    ) {
-                                        resultClassName = 'skipped';
-                                    }
-                                    return (
-                                        <li
-                                            className={`test-name-wrapper ${resultClassName}`}
-                                        >
-                                            <span className="progress-indicator"></span>
-                                            <a
-                                                href="#"
-                                                onClick={e => {
-                                                    this.displayTestByIndex(
-                                                        i + 1
-                                                    );
-                                                }}
-                                                className="test-name"
-                                            >
-                                                {t.name}
-                                            </a>
-                                        </li>
-                                    );
-                                })}
-                            </ol>
+                            {this.state.showTestNavigator ? (
+                                <>
+                                    <h3>Test Navigator</h3>
+                                    <button
+                                        onClick={this.toggleTestNavigator}
+                                        className="test-navigator-toggle hide"
+                                    >
+                                        Hide
+                                    </button>
+                                    <ol className="test-navigator-list">
+                                        {run.tests.map((t, i) => {
+                                            let resultClassName = 'not-started';
+                                            const testersResult =
+                                                t.results &&
+                                                t.results[openAsUser || userId];
+                                            if (testersResult) {
+                                                if (
+                                                    testersResult.status ==
+                                                    'incomplete'
+                                                ) {
+                                                    resultClassName =
+                                                        'in-progress';
+                                                } else if (
+                                                    testersResult.status ==
+                                                    'skipped'
+                                                ) {
+                                                    resultClassName = 'skipped';
+                                                } else if (
+                                                    checkForConflict(t.results)
+                                                        .length
+                                                ) {
+                                                    resultClassName =
+                                                        'conflicts';
+                                                } else if (
+                                                    testersResult.status ===
+                                                    'complete'
+                                                ) {
+                                                    resultClassName =
+                                                        'complete';
+                                                }
+                                            } else if (
+                                                this.state.currentTestIndex -
+                                                    1 >
+                                                i
+                                            ) {
+                                                resultClassName = 'skipped';
+                                            }
+                                            return (
+                                                <li
+                                                    className={`test-name-wrapper ${resultClassName}`}
+                                                    key={i}
+                                                >
+                                                    <span className="progress-indicator"></span>
+                                                    <a
+                                                        href="#"
+                                                        onClick={() => {
+                                                            this.displayTestByIndex(
+                                                                i + 1
+                                                            );
+                                                        }}
+                                                        className="test-name"
+                                                    >
+                                                        {t.name}
+                                                    </a>
+                                                </li>
+                                            );
+                                        })}
+                                    </ol>
+                                </>
+                            ) : (
+                                <button
+                                    onClick={this.toggleTestNavigator}
+                                    className="test-navigator-toggle"
+                                >
+                                    Show Test Navigator
+                                </button>
+                            )}
                         </aside>
-                        <button className="test-navigator-toggle show"></button>
+                        <button
+                            onClick={this.toggleTestNavigator}
+                            className="test-navigator-toggle show"
+                        ></button>
                         <Col md={9}>
                             {heading}
                             {testContent || (
