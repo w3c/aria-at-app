@@ -97,9 +97,9 @@ async function saveTestResults(testResult) {
 
         // There will always be a serialized form for a complete or partially complete test.
         // Partially complete tests are tests that are skipped.
-        const stringifiedSerializedForm = serialized_form ? `'${JSON.stringify(
-            serialized_form
-        ).replace(/'/g, "''")}'` : 'NULL';
+        const stringifiedSerializedForm = serialized_form
+            ? `'${JSON.stringify(serialized_form).replace(/'/g, "''")}'`
+            : 'NULL';
 
         // If a result has been sent, insert or update result row
         if (result) {
