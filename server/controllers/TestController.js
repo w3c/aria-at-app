@@ -16,10 +16,11 @@ async function importTests(req, res) {
 
 async function deleteTestResultsForRunAndUser(req, res) {
     try {
-        const runAndUser = req.body.data;
-        const deletedCount = await TestService.deleteTestResultsForRunAndUser(
-            runAndUser
-        );
+        const { userId, runId } = req.body;
+        const deletedCount = await TestService.deleteTestResultsForRunAndUser({
+            userId,
+            runId
+        });
         res.status(201).json({ count: deletedCount });
     } catch (error) {
         res.status(400);
