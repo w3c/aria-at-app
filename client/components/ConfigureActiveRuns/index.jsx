@@ -172,9 +172,16 @@ class ConfigureActiveRuns extends Component {
             });
         }
 
+        let apgExampleIds = [];
+        for (let { id } of versionData.apg_examples) {
+            if (this.state.exampleSelected[id]) {
+                apgExampleIds.push(id);
+            }
+        }
+
         const config = {
             test_version_id: this.state.selectedVersion,
-            apg_example_ids: versionData.apg_examples.map(a => a.id),
+            apg_example_ids: apgExampleIds,
             at_browser_pairs: atBrowserPairs
         };
 
