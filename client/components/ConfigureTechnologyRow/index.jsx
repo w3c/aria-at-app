@@ -22,7 +22,7 @@ class ConfigureTechnologyRow extends Component {
             handleTechnologyRowChange
         } = this.props;
 
-        let version = event.currentTarget.value;
+        let version = event.currentTarget.value.trim();
         let newRunTechnologies = { ...runTechnologies };
         newRunTechnologies.browser_version = version;
 
@@ -36,7 +36,7 @@ class ConfigureTechnologyRow extends Component {
             handleTechnologyRowChange
         } = this.props;
 
-        let version = event.currentTarget.value;
+        let version = event.currentTarget.value.trim();
         let newRunTechnologies = { ...runTechnologies };
         newRunTechnologies.at_version = version;
 
