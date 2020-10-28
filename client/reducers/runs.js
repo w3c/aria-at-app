@@ -2,6 +2,7 @@ import {
     ACTIVE_RUNS,
     CONFLICTS_BY_TEST_RESULTS,
     PUBLISHED_RUNS,
+    DELETE_TEST_RESULTS,
     DELETE_USERS_FROM_RUN,
     RUN_CONFIGURATION,
     SAVE_RESULT,
@@ -92,6 +93,29 @@ export default (state = initialState, action) => {
                     browsers: state.activeRunConfiguration.browsers
                 }
             };
+        }
+        case DELETE_TEST_RESULTS: {
+            const { userId, runId } = action.payload;
+            const newTests = state.activeRunsById[runId].tests.map(t => {
+                let newTest = { ...t };
+                newTest.results = { ...t.results };
+                if (newTest.results[userId]) {
+                    delete newTest.results[userId]
+                }
+                return newTest;
+            });
+
+            return {
+                ...state,
+                activeRunsById: {
+                    ...state.activeRunsById,
+                    [runId]: {
+                        ...state.activeRunsById[runId],
+                        tests: newTests
+                    }
+                }
+            };
+
         }
         case DELETE_USERS_FROM_RUN: {
             const { usersForRun, runId } = action.payload;

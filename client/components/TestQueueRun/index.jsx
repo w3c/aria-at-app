@@ -8,6 +8,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import checkForConflict from '../../utils/checkForConflict';
 import {
+    deleteTestResults,
     deleteUsersFromRun,
     saveUsersToRuns,
     saveRunStatus
@@ -82,10 +83,9 @@ class TestQueueRow extends Component {
         dispatch(saveRunStatus(status.toLowerCase(), runId));
     }
 
-    handleDeleteResultsForUser() {
-        // const { runId } = this.props;
-        // TODO: delete results for user and run
-        return;
+    handleDeleteResultsForUser(userId) {
+        const { dispatch, runId } = this.props;
+        dispatch(deleteTestResults(userId, runId));
     }
 
     componentDidUpdate(prevProps) {
