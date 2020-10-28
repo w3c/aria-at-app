@@ -90,10 +90,12 @@ describe('RunService', () => {
                     }
                 ]);
 
-                let deletedCount = await TestService.deleteTestResultsForRunAndUser({
-                    user_id: user1.id,
-                    run_id: run.id
-                });
+                let deletedCount = await TestService.deleteTestResultsForRunAndUser(
+                    {
+                        user_id: user1.id,
+                        run_id: run.id
+                    }
+                );
 
                 expect(deletedCount).toBe(1);
 
