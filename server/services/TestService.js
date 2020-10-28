@@ -45,11 +45,11 @@ async function importTests(git_hash) {
  *
  * @param {object} params, 'userId' and 'runId'
  */
-async function deleteTestResultsForRunAndUser({ user_id, run_id }) {
+async function deleteTestResultsForRunAndUser({ userId, runId }) {
     return await db.TestResult.destroy({
         where: {
-            user_id,
-            run_id
+            user_id: userId,
+            run_id: runId
         }
     });
 }
