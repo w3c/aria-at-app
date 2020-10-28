@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Button, Form } from 'react-bootstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUndo } from '@fortawesome/free-solid-svg-icons';
 
 class ConfigureTechnologyRow extends Component {
     constructor(props) {
@@ -13,6 +15,7 @@ class ConfigureTechnologyRow extends Component {
         this.handleBrowserChange = this.handleBrowserChange.bind(this);
         this.handleAtChange = this.handleAtChange.bind(this);
         this.deleteRun = this.deleteRun.bind(this);
+        this.undoDelete = this.undoDelete.bind(this);
     }
 
     handleBrowserVersionChange(event) {
@@ -78,116 +81,125 @@ class ConfigureTechnologyRow extends Component {
         deleteTechnologyRow(index);
     }
 
+    undoDelete() {
+        const { undoDeleteTechnologyRow, index } = this.props;
+        undoDeleteTechnologyRow(index);
+    }
+
     render() {
         const {
             availableBrowsers,
             availableAts,
             runTechnologies,
             index,
-            editable
+            editable,
+            deleted
         } = this.props;
 
-        return (
-            !editable ? (
-                <tr>
-                    <td>
-                        {
-                            availableAts.find(
-                                at => at.at_id === runTechnologies.at_id
-                            ).at_name
+        return !editable ? (
+            <tr>
+                <td>
+                    {
+                        availableAts.find(
+                            at => at.at_id === runTechnologies.at_id
+                        ).at_name
+                    }
+                </td>
+                <td>{runTechnologies.at_version}</td>
+                <td>
+                    {
+                        availableBrowsers.find(
+                            browser => browser.id === runTechnologies.browser_id
+                        ).name
+                    }
+                </td>
+                <td>{runTechnologies.browser_version}</td>
+                <td>
+                    <Button
+                        variant="danger"
+                        aria-label={`Delete at/browser combination ${index +
+                            1}`}
+                        onClick={this.deleteRun}
+                        disabled={deleted === true}
+                    >
+                        Remove
+                    </Button>
+                    <Button
+                        disabled={deleted === false}
+                        onClick={this.undoDelete}
+                        aria-label="Undo delete"
+                    >
+                        <FontAwesomeIcon icon={faUndo}></FontAwesomeIcon>
+                    </Button>
+                </td>
+            </tr>
+        ) : (
+            <tr>
+                <td>
+                    <Form.Control
+                        aria-label={`AT ${index + 1}`}
+                        value={
+                            runTechnologies.at_id ? runTechnologies.at_id : -1
                         }
-                    </td>
-                    <td>{runTechnologies.at_version}</td>
-                    <td>
-                        {
-                            availableBrowsers.find(
-                                browser =>
-                                    browser.id === runTechnologies.browser_id
-                            ).name
+                        onChange={this.handleAtChange}
+                        as="select"
+                    >
+                        <option key={-1} value={-1}></option>;
+                        {availableAts.map((at, index) => {
+                            return (
+                                <option key={index} value={at.at_id}>
+                                    {at.at_name}
+                                </option>
+                            );
+                        })}
+                    </Form.Control>
+                </td>
+                <td>
+                    <Form.Control
+                        aria-label={`AT ${index + 1} Version`}
+                        value={runTechnologies.at_version || ''}
+                        onChange={this.handleAtVersionChange}
+                    />
+                </td>
+                <td>
+                    <Form.Control
+                        aria-label={`Browser ${index + 1}`}
+                        value={
+                            runTechnologies.browser_id
+                                ? runTechnologies.browser_id
+                                : -1
                         }
-                    </td>
-                    <td>{runTechnologies.browser_version}</td>
-                    <td>
-                        <Button
-                            variant="danger"
-                            aria-label={`Delete at/browser combination ${index +
-                                1}`}
-                            onClick={this.deleteRun}
-                        >
-                            Remove
-                        </Button>
-                    </td>
-                </tr>
-            ) : (
-                <tr>
-                    <td>
-                        <Form.Control
-                            aria-label={`AT ${index + 1}`}
-                            value={
-                                runTechnologies.at_id
-                                    ? runTechnologies.at_id
-                                    : -1
-                            }
-                            onChange={this.handleAtChange}
-                            as="select"
-                        >
-                            <option key={-1} value={-1}></option>;
-                            {availableAts.map((at, index) => {
-                                return (
-                                    <option key={index} value={at.at_id}>
-                                        {at.at_name}
-                                    </option>
-                                );
-                            })}
-                        </Form.Control>
-                    </td>
-                    <td>
-                        <Form.Control
-                            aria-label={`AT ${index + 1} Version`}
-                            value={runTechnologies.at_version || ''}
-                            onChange={this.handleAtVersionChange}
-                        />
-                    </td>
-                    <td>
-                        <Form.Control
-                            aria-label={`Browser ${index + 1}`}
-                            value={
-                                runTechnologies.browser_id
-                                    ? runTechnologies.browser_id
-                                    : -1
-                            }
-                            onChange={this.handleBrowserChange}
-                            as="select"
-                        >
-                            <option key={-1} value={-1}></option>;
-                            {availableBrowsers.map((browser, index) => {
-                                return (
-                                    <option key={index} value={browser.id}>
-                                        {browser.name}
-                                    </option>
-                                );
-                            })}
-                        </Form.Control>
-                    </td>
-                    <td>
-                        <Form.Control
-                            aria-label={`Browser ${index + 1} version`}
-                            value={runTechnologies.browser_version || ''}
-                            onChange={this.handleBrowserVersionChange}
-                        />
-                    </td>
-                    <td>
-                        <Button
-                            variant="danger"
-                            aria-label={`Delete at/browser combination ${index +
-                                1}`}
-                            onClick={this.deleteRun}
-                        >
-                            Remove
-                        </Button>
-                    </td>
-                </tr>
-            )
+                        onChange={this.handleBrowserChange}
+                        as="select"
+                    >
+                        <option key={-1} value={-1}></option>;
+                        {availableBrowsers.map((browser, index) => {
+                            return (
+                                <option key={index} value={browser.id}>
+                                    {browser.name}
+                                </option>
+                            );
+                        })}
+                    </Form.Control>
+                </td>
+                <td>
+                    <Form.Control
+                        aria-label={`Browser ${index + 1} version`}
+                        value={runTechnologies.browser_version || ''}
+                        onChange={this.handleBrowserVersionChange}
+                    />
+                </td>
+                <td>
+                    <Button
+                        variant="danger"
+                        aria-label={`Delete at/browser combination ${index +
+                            1}`}
+                        onClick={this.deleteRun}
+                    >
+                        Remove
+                    </Button>
+                </td>
+            </tr>
         );
     }
 }
@@ -199,7 +211,9 @@ ConfigureTechnologyRow.propTypes = {
     availableBrowsers: PropTypes.array,
     handleTechnologyRowChange: PropTypes.func,
     deleteTechnologyRow: PropTypes.func,
-    editable: PropTypes.bool
+    editable: PropTypes.bool,
+    deleted: PropTypes.bool,
+    undoDeleteTechnologyRow: PropTypes.func
 };
 
 export default ConfigureTechnologyRow;

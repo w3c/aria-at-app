@@ -5,9 +5,11 @@ import { Table, Form, Button, Row, Col } from 'react-bootstrap';
 import {
     saveRunConfiguration,
     getActiveRunConfiguration,
-    getTestVersions
+    getTestVersions,
+    getActiveRuns
 } from '../../actions/runs';
 import ConfigureTechnologyRow from '@components/ConfigureTechnologyRow';
+import ConfigurationModal from '@components/ConfigurationModal';
 
 function selectExamples(testVersion, activeRunConfiguration) {
     let exampleSelected = {};
@@ -41,7 +43,8 @@ function getDefaultsTechCombinations(testVersion, activeRunConfiguration) {
                 at_version: combo.at_version,
                 browser_id: combo.browser_id,
                 browser_version: combo.browser_version,
-                editable: false
+                editable: false,
+                deleted: false
             });
         }
     }
@@ -54,24 +57,32 @@ class ConfigureActiveRuns extends Component {
         super(props);
         const { testVersions, activeRunConfiguration } = props;
 
-        let testVersionId =
-            testVersions && testVersions.length
-                ? testVersions[0].id
-                : undefined;
+        let testVersionId = activeRunConfiguration
+            ? activeRunConfiguration.active_test_version.id
+            : undefined;
+
         this.state = {
             selectedVersion: testVersionId,
             name: '',
             runTechnologyRows: [{}], // list of {at_id, at_version, browser_id, browser_version}
-            exampleSelected: {}
+            exampleSelected: {},
+            showChangeModal: false,
+            configurationChanges: [],
+            newConfiguration: {},
+            resultsDeleted: false
         };
 
         if (activeRunConfiguration && testVersionId) {
             this.state.runTechnologyRows = getDefaultsTechCombinations(
-                testVersions[0],
+                testVersions.filter(
+                    version =>
+                        activeRunConfiguration.active_test_version.id ===
+                        version.id
+                )[0],
                 activeRunConfiguration
             );
             this.state.exampleSelected = selectExamples(
-                testVersions[0],
+                activeRunConfiguration.active_test_version,
                 activeRunConfiguration
             );
         }
@@ -83,16 +94,30 @@ class ConfigureActiveRuns extends Component {
         this.deleteTechnologyRow = this.deleteTechnologyRow.bind(this);
         this.addTechnologyRow = this.addTechnologyRow.bind(this);
         this.selectExample = this.selectExample.bind(this);
+        this.showChanges = this.showChanges.bind(this);
+        this.closeChanges = this.closeChanges.bind(this);
         this.configureActiveRuns = this.configureActiveRuns.bind(this);
+        this.undoDeleteTechnologyRow = this.undoDeleteTechnologyRow.bind(this);
+        this.calculateConfigChanges = this.calculateConfigChanges.bind(this);
+        this.saveNewConfiguration = this.saveNewConfiguration.bind(this);
     }
 
     componentDidMount() {
-        const { dispatch, testVersions, activeRunConfiguration } = this.props;
+        const {
+            dispatch,
+            testVersions,
+            activeRunConfiguration,
+            activeRunsById
+        } = this.props;
         if (!testVersions) {
             dispatch(getTestVersions());
         }
         if (!activeRunConfiguration) {
             dispatch(getActiveRunConfiguration());
+        }
+
+        if (!activeRunsById) {
+            dispatch(getActiveRuns());
         }
     }
 
@@ -104,8 +129,10 @@ class ConfigureActiveRuns extends Component {
             nextProps.activeRunConfiguration &&
             nextProps.testVersions
         ) {
-            let testVersionId = nextProps.testVersions[0].id;
-            let testVersion = nextProps.testVersions[0];
+            let testVersionId =
+                nextProps.activeRunConfiguration.active_test_version.id;
+            let testVersion =
+                nextProps.activeRunConfiguration.active_test_version;
 
             let exampleSelected = selectExamples(
                 testVersion,
@@ -127,6 +154,7 @@ class ConfigureActiveRuns extends Component {
     selectExample(event) {
         const value = event.target.checked;
         const apgExampleId = parseInt(event.target.name);
+
         this.setState({
             exampleSelected: {
                 ...this.state.exampleSelected,
@@ -135,8 +163,118 @@ class ConfigureActiveRuns extends Component {
         });
     }
 
+    showChanges() {
+        this.setState({
+            showChangeModal: true
+        });
+    }
+
+    closeChanges() {
+        this.setState({
+            showChangeModal: false
+        });
+    }
+
+    /**
+     * This is a naive algorithm for finding all the configuration changes.
+     * It can be vastly improved, especially with smarter logic on handling
+     * duplicate changes.
+     * */
+    calculateConfigChanges(newConfig) {
+        const { activeRunConfiguration, activeRunsById } = this.props;
+        let configurationChanges = [];
+
+        // Validate test version changes
+        const oldVersionId = activeRunConfiguration.active_test_version.id;
+        const newVersionId = newConfig.test_version_id;
+
+        if (oldVersionId !== newVersionId) {
+            configurationChanges = configurationChanges.concat(
+                Object.values(activeRunsById).filter(
+                    run => run.run_status === 'draft'
+                )
+            );
+        }
+
+        let pairsDelete = [];
+        activeRunConfiguration.active_at_browser_pairs.reduce(
+            (acc, oldPair) => {
+                let pairFound = newConfig.at_browser_pairs.find(
+                    pair =>
+                        oldPair.at_name_id === pair.at_name_id &&
+                        oldPair.at_version === pair.at_version &&
+                        oldPair.browser_version === pair.browser_version &&
+                        oldPair.browser_id === pair.browser_id
+                );
+                if (!pairFound) {
+                    acc.push(oldPair);
+                }
+                return acc;
+            },
+            pairsDelete
+        );
+
+        // Find all the runs associated with these rows
+        let runsToDeleteTechPair = [];
+        pairsDelete.reduce((acc, row) => {
+            let runFound = Object.values(activeRunsById).find(
+                run =>
+                    run.at_name_id === row.at_name_id &&
+                    run.at_version === row.at_version &&
+                    run.browser_id === row.browser_id &&
+                    run.browser_version === row.browser_version &&
+                    run.run_status === 'draft'
+            );
+            if (runFound) acc.push(runFound);
+            return acc;
+        }, runsToDeleteTechPair);
+
+        configurationChanges = configurationChanges.concat(
+            runsToDeleteTechPair
+        );
+
+        // Find all runs associated with example change
+        let examplesDelete = [];
+        activeRunConfiguration.active_apg_examples.reduce((acc, oldExample) => {
+            let exampleFound = newConfig.apg_example_ids.find(
+                example => example === oldExample
+            );
+            if (!exampleFound) {
+                acc.push(oldExample);
+            }
+            return acc;
+        }, examplesDelete);
+
+        let runsDeleteApgExamples = [];
+        examplesDelete.reduce((acc, exampleId) => {
+            let runsFound = Object.values(activeRunsById).filter(
+                run =>
+                    run.apg_example_id === exampleId &&
+                    run.run_status === 'draft'
+            );
+            if (runsFound.length > 0) acc.push(...runsFound);
+            return acc;
+        }, runsDeleteApgExamples);
+
+        configurationChanges = configurationChanges.concat(
+            runsDeleteApgExamples
+        );
+
+        // Remove duplicate changes
+        let uniqueConfigChanges = [];
+        configurationChanges.reduce((acc, run) => {
+            let runFound = uniqueConfigChanges.find(
+                duplicateRun => run.id === duplicateRun.id
+            );
+            if (!runFound) acc.push(run);
+            return acc;
+        }, uniqueConfigChanges);
+
+        return uniqueConfigChanges;
+    }
+
     configureActiveRuns() {
-        const { dispatch, testVersions } = this.props;
+        const { testVersions } = this.props;
         let versionData = testVersions.filter(
             version => version.id === this.state.selectedVersion
         )[0];
@@ -167,10 +305,10 @@ class ConfigureActiveRuns extends Component {
 
             let existingPair = atBrowserPairs.find(p => {
                 return (
-                    p.at_name_id === atIdToAtNameId[runTechnologyPair.at_id]
-                    && p.at_version === runTechnologyPair.at_version
-                    && p.browser_id === runTechnologyPair.browser_id
-                    && p.browser_version === runTechnologyPair.browser_version
+                    p.at_name_id === atIdToAtNameId[runTechnologyPair.at_id] &&
+                    p.at_version === runTechnologyPair.at_version &&
+                    p.browser_id === runTechnologyPair.browser_id &&
+                    p.browser_version === runTechnologyPair.browser_version
                 );
             });
             if (existingPair) {
@@ -179,14 +317,15 @@ class ConfigureActiveRuns extends Component {
                 this.setState({
                     runTechnologyRows: deduplicatedRows
                 });
-            }
-            else {
-                atBrowserPairs.push({
-                    at_name_id: atIdToAtNameId[runTechnologyPair.at_id],
-                    at_version: runTechnologyPair.at_version,
-                    browser_id: runTechnologyPair.browser_id,
-                    browser_version: runTechnologyPair.browser_version
-                });
+            } else {
+                if (!runTechnologyPair.deleted) {
+                    atBrowserPairs.push({
+                        at_name_id: atIdToAtNameId[runTechnologyPair.at_id],
+                        at_version: runTechnologyPair.at_version,
+                        browser_id: runTechnologyPair.browser_id,
+                        browser_version: runTechnologyPair.browser_version
+                    });
+                }
             }
         }
 
@@ -203,9 +342,29 @@ class ConfigureActiveRuns extends Component {
             at_browser_pairs: atBrowserPairs
         };
 
-        dispatch(saveRunConfiguration(config));
+        const configurationChanges = this.calculateConfigChanges(config);
 
-        alert('You saved results! (...what should we do after saving?)');
+        let stateConfiguration = {
+            newConfiguration: config
+        };
+
+        if (configurationChanges.length > 0) {
+            stateConfiguration = {
+                configurationChanges,
+                newConfiguration: config,
+                resultsDeleted: true
+            };
+        }
+
+        this.setState(stateConfiguration, () => {
+            this.showChanges();
+        });
+    }
+
+    saveNewConfiguration() {
+        this.props.dispatch(saveRunConfiguration(this.state.newConfiguration));
+
+        this.closeChanges();
     }
 
     handleVersionChange(event) {
@@ -245,7 +404,7 @@ class ConfigureActiveRuns extends Component {
 
     addTechnologyRow() {
         let newRunTechnologies = [...this.state.runTechnologyRows];
-        newRunTechnologies.push({editable: true});
+        newRunTechnologies.push({ editable: true });
         this.setState({
             runTechnologyRows: newRunTechnologies
         });
@@ -253,9 +412,26 @@ class ConfigureActiveRuns extends Component {
 
     deleteTechnologyRow(index) {
         let newRunTechnologies = [...this.state.runTechnologyRows];
-        newRunTechnologies.splice(index, 1);
+        const deletedRow = newRunTechnologies[index];
+
+        if (deletedRow.editable === false) {
+            deletedRow.deleted = true;
+        } else {
+            newRunTechnologies.splice(index, 1).pop();
+        }
+
         this.setState({
             runTechnologyRows: newRunTechnologies
+        });
+    }
+
+    undoDeleteTechnologyRow(index) {
+        this.setState(prevProps => {
+            let newRunTechnologies = [...prevProps.runTechnologyRows];
+            newRunTechnologies[index].deleted = false;
+            return {
+                runTechnologyRows: newRunTechnologies
+            };
         });
     }
 
@@ -342,10 +518,15 @@ class ConfigureActiveRuns extends Component {
         }
 
         let enableSaveButton = true;
+        const deletedExistingTechnologyRows = this.state.runTechnologyRows.filter(
+            run => run.editable === false && run.deleted === true
+        );
         if (
             this.state.runTechnologyRows.filter(run => {
                 return run.at_id && run.browser_id;
-            }).length === 0
+            }).length -
+                deletedExistingTechnologyRows.length ===
+            0
         ) {
             enableSaveButton = false;
         }
@@ -411,9 +592,12 @@ class ConfigureActiveRuns extends Component {
                                                     deleteTechnologyRow={
                                                         this.deleteTechnologyRow
                                                     }
-                                                    editable={
-                                                        runTech.editable
+                                                    undoDeleteTechnologyRow={
+                                                        this
+                                                            .undoDeleteTechnologyRow
                                                     }
+                                                    editable={runTech.editable}
+                                                    deleted={runTech.deleted}
                                                 />
                                             );
                                         }
@@ -467,6 +651,13 @@ class ConfigureActiveRuns extends Component {
                         Update Active Run Configuration
                     </Button>
                 </div>
+                <ConfigurationModal
+                    show={this.state.showChangeModal}
+                    handleClose={this.closeChanges}
+                    saveRunConfiguration={this.saveNewConfiguration}
+                    configurationChanges={this.state.configurationChanges}
+                    resultsDeleted={this.state.resultsDeleted}
+                />
             </Fragment>
         );
     }
@@ -474,13 +665,14 @@ class ConfigureActiveRuns extends Component {
 
 ConfigureActiveRuns.propTypes = {
     activeRunConfiguration: PropTypes.object,
+    activeRunsById: PropTypes.object,
     testVersions: PropTypes.array,
     dispatch: PropTypes.func
 };
 
 const mapStateToProps = state => {
-    const { activeRunConfiguration, testVersions } = state.runs;
-    return { testVersions, activeRunConfiguration };
+    const { activeRunConfiguration, testVersions, activeRunsById } = state.runs;
+    return { testVersions, activeRunConfiguration, activeRunsById };
 };
 
 export default connect(mapStateToProps)(ConfigureActiveRuns);
