@@ -123,7 +123,7 @@ export function getConflictsByTestResults(test, userId) {
 
 export function deleteTestResults(userId, runId) {
     return async function(dispatch) {
-        const response = await axios.delete('/api/test/result/delete', {
+        await axios.delete('/api/test/result/delete', {
             data: { userId, runId }
         });
         return dispatch(

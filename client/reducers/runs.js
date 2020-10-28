@@ -100,7 +100,7 @@ export default (state = initialState, action) => {
                 let newTest = { ...t };
                 newTest.results = { ...t.results };
                 if (newTest.results[userId]) {
-                    delete newTest.results[userId]
+                    delete newTest.results[userId];
                 }
                 return newTest;
             });
@@ -115,7 +115,6 @@ export default (state = initialState, action) => {
                     }
                 }
             };
-
         }
         case DELETE_USERS_FROM_RUN: {
             const { usersForRun, runId } = action.payload;
