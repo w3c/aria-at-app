@@ -14,6 +14,21 @@ async function importTests(req, res) {
     }
 }
 
+async function deleteTestResultsForRunAndUser(req, res) {
+    try {
+        const { userId, runId } = req.body;
+        const deletedCount = await TestService.deleteTestResultsForRunAndUser({
+            userId,
+            runId
+        });
+        res.status(201).json({ count: deletedCount });
+    } catch (error) {
+        res.status(400);
+        res.end();
+        console.error(`Error caught in TestController: ${error}`);
+    }
+}
+
 async function saveTestResults(req, res) {
     try {
         const testResult = req.body.data;
@@ -62,6 +77,7 @@ async function createIssue(req, res) {
 }
 
 module.exports = {
+    deleteTestResultsForRunAndUser,
     importTests,
     saveTestResults,
     getIssuesByTestId,

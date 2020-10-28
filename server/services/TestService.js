@@ -41,6 +41,20 @@ async function importTests(git_hash) {
 }
 
 /**
+ * Deletes all tests for a user and run
+ *
+ * @param {object} params, 'userId' and 'runId'
+ */
+async function deleteTestResultsForRunAndUser({ userId, runId }) {
+    return await db.TestResult.destroy({
+        where: {
+            user_id: userId,
+            run_id: runId
+        }
+    });
+}
+
+/**
  * Saves a test result and marks the test as "complete"
  *
  * @param {object} params
@@ -240,6 +254,7 @@ async function createIssue({ accessToken, run_id, test_id, title, body }) {
 }
 
 module.exports = {
+    deleteTestResultsForRunAndUser,
     importTests,
     saveTestResults,
     getIssuesByTestId,

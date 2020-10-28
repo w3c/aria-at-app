@@ -4,6 +4,7 @@ import {
     ACTIVE_RUNS,
     CONFLICTS_BY_TEST_RESULTS,
     PUBLISHED_RUNS,
+    DELETE_TEST_RESULTS,
     DELETE_USERS_FROM_RUN,
     RUN_CONFIGURATION,
     SAVE_RESULT,
@@ -20,6 +21,11 @@ export const activeRunsDispatch = payload => ({
 
 export const publishedRunsDispatch = payload => ({
     type: PUBLISHED_RUNS,
+    payload
+});
+
+export const deleteTestResultsDispatch = payload => ({
+    type: DELETE_TEST_RESULTS,
     payload
 });
 
@@ -110,6 +116,20 @@ export function getConflictsByTestResults(test, userId) {
             getConflictsByTestResultsDispatch({
                 test_id: test.id,
                 conflicts
+            })
+        );
+    };
+}
+
+export function deleteTestResults(userId, runId) {
+    return async function(dispatch) {
+        await axios.delete('/api/test/result/delete', {
+            data: { userId, runId }
+        });
+        return dispatch(
+            deleteTestResultsDispatch({
+                userId,
+                runId
             })
         );
     };
