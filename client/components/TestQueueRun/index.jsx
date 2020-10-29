@@ -422,6 +422,7 @@ class TestQueueRow extends Component {
                     {results}
                 </td>
                 <td className="actions">
+                  <div className="dropdown-buttons">
                     <Button
                         variant="secondary"
                         href={`/run/${runId}`}
@@ -429,10 +430,12 @@ class TestQueueRow extends Component {
                     >
                         Start
                     </Button>
+                    {admin && this.renderOpenAsDropdown()}
+                  </div>
                     <Dropdown>
                         <Dropdown.Toggle
                             id={nextId()}
-                            bsPrefix={'remove-format'}
+                            bsPrefix={'more-actions'}
                             aria-label={'additional actions'}
                         >
                             <FontAwesomeIcon icon={faEllipsisV} />
@@ -440,7 +443,6 @@ class TestQueueRow extends Component {
                         {admin && this.renderAdminActionMenu()}
                         {!admin && this.renderTesterActionMenu()}
                     </Dropdown>
-                    {admin && this.renderOpenAsDropdown()}
                 </td>
             </tr>
         );
