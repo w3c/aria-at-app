@@ -1,7 +1,11 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import {
+    faCheck,
+    faTrashAlt,
+    faEllipsisV
+} from '@fortawesome/free-solid-svg-icons';
 import nextId from 'react-id-generator';
 import { Button, Dropdown } from 'react-bootstrap';
 import { connect } from 'react-redux';
@@ -428,10 +432,10 @@ class TestQueueRow extends Component {
                     <Dropdown>
                         <Dropdown.Toggle
                             id={nextId()}
-                            variant="secondary"
-                            aria-label={`Actions`}
+                            bsPrefix={'remove-format'}
+                            aria-label={'additional actions'}
                         >
-                            Actions
+                            <FontAwesomeIcon icon={faEllipsisV} />
                         </Dropdown.Toggle>
                         {admin && this.renderAdminActionMenu()}
                         {!admin && this.renderTesterActionMenu()}

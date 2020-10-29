@@ -20,3 +20,12 @@ li {
 svg.svg-inline--fa {
     margin-right: 0.5em;
 }
+
+button.more-actions {
+    background: none;
+    color: inherit;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    outline: inherit;
+}
