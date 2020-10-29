@@ -21,11 +21,31 @@ svg.svg-inline--fa {
     margin-right: 0.5em;
 }
 
+button.more-actions svg {
+    color: #9FA4AA;
+}
+
 button.more-actions {
-    background: none;
+    background: transparent;
     color: inherit;
     border: none;
     padding: 0;
     cursor: pointer;
     outline: inherit;
 }
+
+button.more-actions:hover svg,
+button.more-actions:focus svg {
+    color: #6D757D;
+}
+
+button.more-actions.btn-primary:hover,
+button.more-actions.btn-primary:focus {
+    background: transparent;
+}
+
+
+button.more-actions:active {
+    background: #0053ba;
+}
+
