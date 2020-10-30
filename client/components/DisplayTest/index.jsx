@@ -3,7 +3,14 @@ import PropTypes from 'prop-types';
 import './DisplayTest.css';
 import { withRouter } from 'react-router-dom';
 import nextId from 'react-id-generator';
-import { Button, ButtonToolbar, Col, Modal, Pagination, Row } from 'react-bootstrap';
+import {
+    Button,
+    ButtonToolbar,
+    Col,
+    Modal,
+    Pagination,
+    Row
+} from 'react-bootstrap';
 import RaiseIssueModal from '@components/RaiseIssueModal';
 import ReviewConflictsModal from '@components/ReviewConflictsModal';
 import StatusBar from '@components/StatusBar';
@@ -316,25 +323,39 @@ class DisplayTest extends Component {
         let menuUnderContent = (
             <ButtonToolbar className="testrun__button-toolbar">
                 {primaryButtonGroup}
-		<Pagination>
-		  <Pagination.First onClick={() => {this.props.displayTestByIndex(1)}}/>
-		  <Pagination.Prev onClick={handlePreviousTestClick} />
-                  {
-                    run.tests.reduce((acc, t, i, arr) => {
-                      const item = (<Pagination.Item key={i} active={i + 1 === testIndex} onClick={() => {this.props.displayTestByIndex(i+1)}}>
-                        {i+1}
-                      </Pagination.Item>);
-                      if (arr.length < 10 || i < 5 || i >= arr.length - 5) {
-                        acc.push(item);
-                      } else if (arr.length > 10 && i === 6) {
-                        acc.push(<Pagination.Ellipsis/>);
-                      }
-                      return acc;
-                    }, [])
-                  }
-		  <Pagination.Next onClick={handleNextTestClick} />
-		  <Pagination.Last onClick={() => {this.props.displayTestByIndex(run.tests.length + 1)}}/>
-		</Pagination>
+                <Pagination>
+                    <Pagination.First
+                        onClick={() => {
+                            this.props.displayTestByIndex(1);
+                        }}
+                    />
+                    <Pagination.Prev onClick={handlePreviousTestClick} />
+                    {run.tests.reduce((acc, t, i, arr) => {
+                        const item = (
+                            <Pagination.Item
+                                key={i}
+                                active={i + 1 === testIndex}
+                                onClick={() => {
+                                    this.props.displayTestByIndex(i + 1);
+                                }}
+                            >
+                                {i + 1}
+                            </Pagination.Item>
+                        );
+                        if (arr.length < 10 || i < 5 || i >= arr.length - 5) {
+                            acc.push(item);
+                        } else if (arr.length > 10 && i === 6) {
+                            acc.push(<Pagination.Ellipsis />);
+                        }
+                        return acc;
+                    }, [])}
+                    <Pagination.Next onClick={handleNextTestClick} />
+                    <Pagination.Last
+                        onClick={() => {
+                            this.props.displayTestByIndex(run.tests.length + 1);
+                        }}
+                    />
+                </Pagination>
             </ButtonToolbar>
         );
         let menuRightOContent = (
