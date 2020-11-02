@@ -83,76 +83,111 @@ class ConfigureTechnologyRow extends Component {
             availableBrowsers,
             availableAts,
             runTechnologies,
-            index
+            index,
+            editable
         } = this.props;
 
         return (
-            <tr>
-                <td>
-                    <Form.Control
-                        aria-label={`AT ${index + 1}`}
-                        value={
-                            runTechnologies.at_id ? runTechnologies.at_id : -1
+            !editable ? (
+                <tr>
+                    <td>
+                        {
+                            availableAts.find(
+                                at => at.at_id === runTechnologies.at_id
+                            ).at_name
                         }
-                        onChange={this.handleAtChange}
-                        as="select"
-                    >
-                        <option key={-1} value={-1}></option>;
-                        {availableAts.map((at, index) => {
-                            return (
-                                <option key={index} value={at.at_id}>
-                                    {at.at_name}
-                                </option>
-                            );
-                        })}
-                    </Form.Control>
-                </td>
-                <td>
-                    <Form.Control
-                        aria-label={`AT ${index + 1} Version`}
-                        value={runTechnologies.at_version || ''}
-                        onChange={this.handleAtVersionChange}
-                    />
-                </td>
-                <td>
-                    <Form.Control
-                        aria-label={`Browser ${index + 1}`}
-                        value={
-                            runTechnologies.browser_id
-                                ? runTechnologies.browser_id
-                                : -1
+                    </td>
+                    <td>{runTechnologies.at_version}</td>
+                    <td>
+                        {
+                            availableBrowsers.find(
+                                browser =>
+                                    browser.id === runTechnologies.browser_id
+                            ).name
                         }
-                        onChange={this.handleBrowserChange}
-                        as="select"
-                    >
-                        <option key={-1} value={-1}></option>;
-                        {availableBrowsers.map((browser, index) => {
-                            return (
-                                <option key={index} value={browser.id}>
-                                    {browser.name}
-                                </option>
-                            );
-                        })}
-                    </Form.Control>
-                </td>
-                <td>
-                    <Form.Control
-                        aria-label={`Browser ${index + 1} version`}
-                        value={runTechnologies.browser_version || ''}
-                        onChange={this.handleBrowserVersionChange}
-                    />
-                </td>
-                <td>
-                    <Button
-                        variant="danger"
-                        aria-label={`Delete at/browser combination ${index +
-                            1}`}
-                        onClick={this.deleteRun}
-                    >
-                        Delete
-                    </Button>
-                </td>
-            </tr>
+                    </td>
+                    <td>{runTechnologies.browser_version}</td>
+                    <td>
+                        <Button
+                            variant="danger"
+                            aria-label={`Delete at/browser combination ${index +
+                                1}`}
+                            onClick={this.deleteRun}
+                        >
+                            Remove
+                        </Button>
+                    </td>
+                </tr>
+            ) : (
+                <tr>
+                    <td>
+                        <Form.Control
+                            aria-label={`AT ${index + 1}`}
+                            value={
+                                runTechnologies.at_id
+                                    ? runTechnologies.at_id
+                                    : -1
+                            }
+                            onChange={this.handleAtChange}
+                            as="select"
+                        >
+                            <option key={-1} value={-1}></option>;
+                            {availableAts.map((at, index) => {
+                                return (
+                                    <option key={index} value={at.at_id}>
+                                        {at.at_name}
+                                    </option>
+                                );
+                            })}
+                        </Form.Control>
+                    </td>
+                    <td>
+                        <Form.Control
+                            aria-label={`AT ${index + 1} Version`}
+                            value={runTechnologies.at_version || ''}
+                            onChange={this.handleAtVersionChange}
+                        />
+                    </td>
+                    <td>
+                        <Form.Control
+                            aria-label={`Browser ${index + 1}`}
+                            value={
+                                runTechnologies.browser_id
+                                    ? runTechnologies.browser_id
+                                    : -1
+                            }
+                            onChange={this.handleBrowserChange}
+                            as="select"
+                        >
+                            <option key={-1} value={-1}></option>;
+                            {availableBrowsers.map((browser, index) => {
+                                return (
+                                    <option key={index} value={browser.id}>
+                                        {browser.name}
+                                    </option>
+                                );
+                            })}
+                        </Form.Control>
+                    </td>
+                    <td>
+                        <Form.Control
+                            aria-label={`Browser ${index + 1} version`}
+                            value={runTechnologies.browser_version || ''}
+                            onChange={this.handleBrowserVersionChange}
+                        />
+                    </td>
+                    <td>
+                        <Button
+                            variant="danger"
+                            aria-label={`Delete at/browser combination ${index +
+                                1}`}
+                            onClick={this.deleteRun}
+                        >
+                            Remove
+                        </Button>
+                    </td>
+                </tr>
+            )
         );
     }
 }
@@ -163,7 +198,8 @@ ConfigureTechnologyRow.propTypes = {
     availableAts: PropTypes.array,
     availableBrowsers: PropTypes.array,
     handleTechnologyRowChange: PropTypes.func,
-    deleteTechnologyRow: PropTypes.func
+    deleteTechnologyRow: PropTypes.func,
+    editable: PropTypes.bool
 };
 
 export default ConfigureTechnologyRow;

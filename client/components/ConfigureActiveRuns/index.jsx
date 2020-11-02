@@ -40,7 +40,8 @@ function getDefaultsTechCombinations(testVersion, activeRunConfiguration) {
                 at_id,
                 at_version: combo.at_version,
                 browser_id: combo.browser_id,
-                browser_version: combo.browser_version
+                browser_version: combo.browser_version,
+                editable: false
             });
         }
     }
@@ -227,7 +228,7 @@ class ConfigureActiveRuns extends Component {
 
     addTechnologyRow() {
         let newRunTechnologies = [...this.state.runTechnologyRows];
-        newRunTechnologies.push({});
+        newRunTechnologies.push({editable: true});
         this.setState({
             runTechnologyRows: newRunTechnologies
         });
@@ -368,7 +369,7 @@ class ConfigureActiveRuns extends Component {
                                     <th>AT Version</th>
                                     <th>Browser</th>
                                     <th>Browser Version</th>
-                                    <th>Delete</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -392,6 +393,9 @@ class ConfigureActiveRuns extends Component {
                                                     }
                                                     deleteTechnologyRow={
                                                         this.deleteTechnologyRow
+                                                    }
+                                                    editable={
+                                                        runTech.editable
                                                     }
                                                 />
                                             );
