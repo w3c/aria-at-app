@@ -222,6 +222,7 @@ class TestRun extends Component {
                                 <ol className="test-navigator-list">
                                     {run.tests.map((t, i) => {
                                         let resultClassName = 'not-started';
+                                        let resultStatus = 'not started:';
                                         const testersResult =
                                             t.results &&
                                             t.results[openAsUser || userId];
@@ -231,16 +232,19 @@ class TestRun extends Component {
                                                 'incomplete'
                                             ) {
                                                 resultClassName = 'in-progress';
+                                                resultStatus = 'in progress:';
                                             } else if (
                                                 checkForConflict(t.results)
                                                     .length
                                             ) {
                                                 resultClassName = 'conflicts';
+                                                resultStatus = 'has conflicts:';
                                             } else if (
                                                 testersResult.status ===
                                                 'complete'
                                             ) {
                                                 resultClassName = 'complete';
+                                                resultStatus = 'complete test:';
                                             }
                                         }
                                         return (
@@ -257,6 +261,7 @@ class TestRun extends Component {
                                                         );
                                                     }}
                                                     className="test-name"
+                                                    aria-label={`${resultStatus} ${t.name}`}
                                                 >
                                                     {t.name}
                                                 </a>
