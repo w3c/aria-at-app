@@ -63,10 +63,6 @@ button.test-navigator-toggle.show:after {
     background: white;
 }
 
-.show {
-    width: 2em;
-}
-
 .test-navigator-list {
     position: relative;
     margin-top: 1em;
