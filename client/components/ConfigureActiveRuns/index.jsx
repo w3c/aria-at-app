@@ -165,12 +165,29 @@ class ConfigureActiveRuns extends Component {
                 continue;
             }
 
-            atBrowserPairs.push({
-                at_name_id: atIdToAtNameId[runTechnologyPair.at_id],
-                at_version: runTechnologyPair.at_version,
-                browser_id: runTechnologyPair.browser_id,
-                browser_version: runTechnologyPair.browser_version
+            let existingPair = atBrowserPairs.find(p => {
+                return (
+                    p.at_name_id === atIdToAtNameId[runTechnologyPair.at_id]
+                    && p.at_version === runTechnologyPair.at_version
+                    && p.browser_id === runTechnologyPair.browser_id
+                    && p.browser_version === runTechnologyPair.browser_version
+                );
             });
+            if (existingPair) {
+                let deduplicatedRows = [...this.state.runTechnologyRows];
+                deduplicatedRows.splice(index, 1);
+                this.setState({
+                    runTechnologyRows: deduplicatedRows
+                });
+            }
+            else {
+                atBrowserPairs.push({
+                    at_name_id: atIdToAtNameId[runTechnologyPair.at_id],
+                    at_version: runTechnologyPair.at_version,
+                    browser_id: runTechnologyPair.browser_id,
+                    browser_version: runTechnologyPair.browser_version
+                });
+            }
         }
 
         let apgExampleIds = [];
