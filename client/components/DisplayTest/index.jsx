@@ -345,7 +345,7 @@ class DisplayTest extends Component {
                         if (arr.length < 10 || i < 5 || i >= arr.length - 5) {
                             acc.push(item);
                         } else if (arr.length > 10 && i === 6) {
-                            acc.push(<Pagination.Ellipsis />);
+                            acc.push(<Pagination.Ellipsis key={i} />);
                         }
                         return acc;
                     }, [])}
