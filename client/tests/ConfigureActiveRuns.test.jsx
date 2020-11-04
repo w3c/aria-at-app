@@ -53,11 +53,35 @@ describe('render', () => {
                 }
             ]
         };
+        let testVersion2 = {
+            date: '2020-05-07T04:00:00.000Z',
+            git_commit_msg:
+                'Checkbox 2: Test navigating through group with arrows',
+            git_hash: '12345',
+            git_repo: 'https://github.com/w3c/aria-at.git',
+            git_tag: null,
+            id: 1,
+            apg_examples: [
+                {
+                    directory: 'checkbox',
+                    id: 1,
+                    name: 'Checkbox Example (Two State)'
+                }
+            ],
+            supported_ats: [
+                {
+                    at_id: 1,
+                    at_key: 'vader-voice',
+                    at_name: 'Vader Voice',
+                    at_name_id: 1
+                }
+            ]
+        };
         beforeEach(() => {
             const initialState = {
                 ats: [{ id: 1, name: 'Vader Voice' }],
                 runs: {
-                    testVersions: [testVersion],
+                    testVersions: [testVersion, testVersion2],
                     activeRunConfiguration: {
                         active_test_version: testVersion,
                         active_at_browser_pairs: [],
@@ -74,7 +98,7 @@ describe('render', () => {
             wrapper = setup(initialState);
             wrapper.setState({ currentTestIndex: 1 });
         });
-        test('renders component ui sections', () => {
+        test('renders component ui sections with an existing active test version', () => {
             let component = findByTestAttr(wrapper, 'configure-run-h2');
             expect(component.length).toBe(1);
             expect(component.text()).toContain('Configure Active Runs');
@@ -83,15 +107,18 @@ describe('render', () => {
             expect(component.length).toBe(1);
             expect(component.text()).toContain('Update Versions');
 
-            component = findByTestAttr(wrapper, 'configure-run-commit-label');
+            component = findByTestAttr(wrapper, 'configure-run-current-commit-label');
             expect(component.length).toBe(1);
-            expect(component.text()).toContain('Git Commit of Tests');
+            expect(component.text()).toContain('Current Git Commit');
 
             component = findByTestAttr(wrapper, 'configure-run-commit-select');
             expect(component.length).toBe(1);
             expect(component.text()).toContain(
-                'ff1ed8a - Checkbox: Test navigating'
+                '12345 - Checkbox 2: Test navigating'
             );
+
+            component = findByTestAttr(wrapper, 'configure-run-commit-label');
+            expect(component.text()).toContain('Select a different commit');
         });
     });
 });
