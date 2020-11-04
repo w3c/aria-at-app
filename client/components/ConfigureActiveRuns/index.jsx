@@ -454,7 +454,7 @@ class ConfigureActiveRuns extends Component {
                 ? testVersions
                       .filter(
                           version =>
-                              version.date >=
+                              version.date >
                               activeRunConfiguration.active_test_version.date
                       )
                       .map(version => {
@@ -465,16 +465,18 @@ class ConfigureActiveRuns extends Component {
                   });
         };
 
-        return (
+        const versions = getTestVersions();
+
+        return versions.length > 0 ? (
             <Form.Control
                 data-test="configure-run-commit-select"
                 value={this.state.selectedVersion}
                 onChange={this.handleVersionChange}
                 as="select"
             >
-                {getTestVersions()}
+                {versions}
             </Form.Control>
-        );
+        ) : null;
     }
     
     getTestPlanStatus(apgExampleId) {
@@ -566,6 +568,8 @@ class ConfigureActiveRuns extends Component {
             enableSaveButton = false;
         }
 
+        const renderedTestVersions = this.renderTestVersionSelect();
+
         return (
             <Fragment>
                 <h1 data-test="configure-run-h2">Configure Active Runs</h1>
@@ -573,14 +577,42 @@ class ConfigureActiveRuns extends Component {
                 <Form className="init-box">
                     <Row>
                         <Col>
-                            <Form.Group controlId="testVersion">
-                                <Form.Label data-test="configure-run-commit-label">
-                                    Git Commit of Tests
-                                </Form.Label>
-                                {this.renderTestVersionSelect()}
-                            </Form.Group>
+                            {
+                                Object.keys(activeRunConfiguration.active_test_version).length > 0 ?
+                                <Form.Group controlId="testVersion">
+                                    <Form.Label data-test="configure-run-current-commit-label">
+                                        Current Git Commit
+                                    </Form.Label>
+                                    <p>
+                                        {activeRunConfiguration.active_test_version.git_hash.slice(
+                                            0,
+                                            7
+                                        ) +
+                                            ' - ' +
+                                            activeRunConfiguration.active_test_version.git_commit_msg.slice(
+                                                0,
+                                                80
+                                            ) +
+                                            '...'}
+                                    </p>
+                                </Form.Group>
+                                :
+                                null
+                            }
                         </Col>
                     </Row>
+                    {renderedTestVersions !== null ? (
+                        <Row>
+                            <Col>
+                                <Form.Group controlId="testVersion">
+                                    <Form.Label data-test="configure-run-commit-label">
+                                        Select a different commit
+                                    </Form.Label>
+                                    {renderedTestVersions}
+                                </Form.Group>
+                            </Col>
+                        </Row>
+                    ) : null}
                     <Row>
                         <Table
                             aria-label="Configure at/browser combinations for test run"
