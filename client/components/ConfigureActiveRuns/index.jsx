@@ -100,6 +100,7 @@ class ConfigureActiveRuns extends Component {
         this.undoDeleteTechnologyRow = this.undoDeleteTechnologyRow.bind(this);
         this.calculateConfigChanges = this.calculateConfigChanges.bind(this);
         this.saveNewConfiguration = this.saveNewConfiguration.bind(this);
+        this.getTestPlanStatus = this.getTestPlanStatus.bind(this);
     }
 
     componentDidMount() {
@@ -152,13 +153,14 @@ class ConfigureActiveRuns extends Component {
     }
 
     selectExample(event) {
-        const value = event.target.checked;
-        const apgExampleId = parseInt(event.target.name);
-
+        const selected = event.target.innerText.includes('Remove');
+        const apgExampleId = parseInt(
+            event.target.parentNode.parentNode.getAttribute('name')
+        );
         this.setState({
             exampleSelected: {
                 ...this.state.exampleSelected,
-                [apgExampleId]: value
+                [apgExampleId]: !selected // Clicking remove means remove the apgExample
             }
         });
     }
@@ -474,6 +476,31 @@ class ConfigureActiveRuns extends Component {
             </Form.Control>
         );
     }
+    
+    getTestPlanStatus(apgExampleId) {
+        const { activeRunsById } = this.props;
+        let planStatus = 'Not in Queue';
+        if (!activeRunsById) return planStatus;
+
+        const runsForExample = Object.values(activeRunsById).filter(run => run.apg_example_id === apgExampleId);
+        const testsWithResults = [];
+
+        // Find any results for the runs for this test plan
+        runsForExample.reduce((acc, run) => {
+            const anyResults = run.tests.filter(test => Object.keys(test.results) > 0);
+            acc.push(...anyResults)
+            return acc;
+        }, testsWithResults)
+
+        // Find if any complete results
+        if (testsWithResults.length > 0) {
+            return "In Queue: In Progress"
+        } else if (testsWithResults.length === 0) {
+            return "In Queue: Not Started"
+        }
+
+        return planStatus;
+    }
 
     render() {
         const { testVersions, activeRunConfiguration } = this.props;
@@ -613,29 +640,47 @@ class ConfigureActiveRuns extends Component {
                         </Col>
                     </Row>
                 </Form>
+                <br />
                 <h2 data-test="configure-run-test-plans">Test Plans</h2>
-                <div>Select test plans to include in testing:</div>
-                <ul>
-                    {versionData.apg_examples.map(example => {
-                        let exampleTableTitle =
-                            example.name || example.directory;
-                        let id = `designpattern-${example.id}`;
-                        return (
-                            <li key={`key-${id}`}>
-                                <input
-                                    type="checkbox"
-                                    id={id}
-                                    name={example.id}
-                                    checked={
-                                        this.state.exampleSelected[example.id]
-                                    }
-                                    onChange={this.selectExample}
-                                ></input>
-                                {exampleTableTitle}
-                            </li>
-                        );
-                    })}
-                </ul>
+                <Table striped bordered hover>
+                    <thead>
+                        <tr>
+                            <th>Test Plan</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {versionData.apg_examples.map(example => {
+                            let exampleTableTitle =
+                                example.name || example.directory;
+                            let id = `designpattern-${example.id}`;
+                            return (
+                                <tr key={id} name={example.id}>
+                                    <td>{exampleTableTitle}</td>
+                                    <td>{this.getTestPlanStatus(example.id)}</td>
+                                    <td>
+                                        {this.state.exampleSelected[
+                                            example.id
+                                        ] ? (
+                                            <Button
+                                                onClick={this.selectExample}
+                                            >
+                                                Remove from Queue
+                                            </Button>
+                                        ) : (
+                                            <Button
+                                                onClick={this.selectExample}
+                                            >
+                                                Add to Queue
+                                            </Button>
+                                        )}
+                                    </td>
+                                </tr>
+                            );
+                        })}
+                    </tbody>
+                </Table>
                 {!enableSaveButton && (
                     <div>
                         You must have at least one AT/Browser combination
