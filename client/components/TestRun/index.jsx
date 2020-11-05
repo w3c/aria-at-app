@@ -63,6 +63,7 @@ class TestRun extends Component {
         this.handleRaiseIssueFromConflictClick = this.handleRaiseIssueFromConflictClick.bind(
             this
         );
+        this.handleTestClick = this.handleTestClick.bind(this);
 
         // Modal actions
         this.handleModalCloseClick = this.handleModalCloseClick.bind(this);
@@ -157,7 +158,7 @@ class TestRun extends Component {
         this.performButtonAction(action);
     }
 
-    async performButtonAction(action) {
+    async performButtonAction(action, index) {
         const { openAsUser, userId, history, run } = this.props;
 
         const testerId = openAsUser || userId;
@@ -190,6 +191,14 @@ class TestRun extends Component {
                     await this.iframe.current.processResults(null);
                 }
                 this.displayPreviousTest();
+                break;
+            }
+            case 'goToTestAtIndex': {
+                // Save the serialized form of iframe
+                if (this.iframe.current) {
+                    await this.iframe.current.processResults(null);
+                }
+                this.displayTestByIndex(index);
                 break;
             }
             case 'redoTest': {
@@ -260,6 +269,10 @@ class TestRun extends Component {
             showConflictsModal: false,
             showRaiseIssueModal: true
         });
+    }
+
+    handleTestClick(index) {
+        this.performButtonAction('goToTestAtIndex', index);
     }
 
     renderModal({ at_key, git_hash, run, test, testIndex, userId, testerId }) {
@@ -386,7 +399,7 @@ class TestRun extends Component {
                 <Pagination>
                     <Pagination.First
                         onClick={() => {
-                            this.displayTestByIndex(1);
+                            this.handleTestClick(1);
                         }}
                     />
                     <Pagination.Prev onClick={this.handlePreviousTestClick} />
@@ -396,7 +409,7 @@ class TestRun extends Component {
                                 key={i}
                                 active={i + 1 === testIndex}
                                 onClick={() => {
-                                    this.displayTestByIndex(i + 1);
+                                    this.handleTestClick(i + 1);
                                 }}
                             >
                                 {i + 1}
@@ -412,7 +425,7 @@ class TestRun extends Component {
                     <Pagination.Next onClick={this.handleNextTestClick} />
                     <Pagination.Last
                         onClick={() => {
-                            this.displayTestByIndex(run.tests.length + 1);
+                            this.handleTestClick(run.tests.length + 1);
                         }}
                     />
                 </Pagination>
@@ -642,7 +655,7 @@ class TestRun extends Component {
                                                 <a
                                                     href="#"
                                                     onClick={() => {
-                                                        this.displayTestByIndex(
+                                                        this.handleTestClick(
                                                             i + 1
                                                         );
                                                     }}
