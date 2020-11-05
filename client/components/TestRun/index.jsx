@@ -41,6 +41,7 @@ class TestRun extends Component {
         };
         this.buttonAction = null;
 
+        // Handle which test to display
         this.displayNextTest = this.displayNextTest.bind(this);
         this.displayPreviousTest = this.displayPreviousTest.bind(this);
         this.displayTestByIndex = this.displayTestByIndex.bind(this);
@@ -48,7 +49,7 @@ class TestRun extends Component {
         this.deleteResultFromTest = this.deleteResultFromTest.bind(this);
         this.toggleTestNavigator = this.toggleTestNavigator.bind(this);
 
-        // Test run actions
+        // Handle actions
         this.handleSaveClick = this.handleSaveClick.bind(this);
         this.handleNextTestClick = this.handleNextTestClick.bind(this);
         this.handlePreviousTestClick = this.handlePreviousTestClick.bind(this);
@@ -68,7 +69,6 @@ class TestRun extends Component {
         this.handleModalConfirmClick = this.handleModalConfirmClick.bind(this);
 
         this.iframe = React.createRef();
-
     }
 
     async componentDidMount() {
@@ -158,12 +158,7 @@ class TestRun extends Component {
     }
 
     async performButtonAction(action) {
-        const {
-            openAsUser,
-            userId,
-            history,
-            run
-        } = this.props;
+        const { openAsUser, userId, history, run } = this.props;
 
         const testerId = openAsUser || userId;
         const test = run.tests[this.state.currentTestIndex - 1];
@@ -268,7 +263,6 @@ class TestRun extends Component {
     }
 
     renderModal({ at_key, git_hash, run, test, testIndex, userId, testerId }) {
-
         let modalTitle, action;
 
         if (this.buttonAction === 'redoTest') {
@@ -362,7 +356,10 @@ class TestRun extends Component {
         if (this.testResultsCompleted) {
             primaryButtonGroup = (
                 <div className="testrun__button-toolbar-group">
-                    <Button variant="primary" onClick={this.handleNextTestClick}>
+                    <Button
+                        variant="primary"
+                        onClick={this.handleNextTestClick}
+                    >
                         Next test
                     </Button>
                     <Button variant="secondary" onClick={this.handleEditClick}>
@@ -421,7 +418,7 @@ class TestRun extends Component {
                 </Pagination>
             </ButtonToolbar>
         );
-        let menuRightOContent = (
+        let menuRightOfContent = (
             <nav>
                 <Button
                     className="btn-block"
@@ -491,7 +488,7 @@ class TestRun extends Component {
                         <Row>{testContent}</Row>
                         <Row>{menuUnderContent}</Row>
                     </Col>
-                    <Col md={3}>{menuRightOContent}</Col>
+                    <Col md={3}>{menuRightOfContent}</Col>
                 </Row>
                 {modals}
             </Fragment>
@@ -558,18 +555,16 @@ class TestRun extends Component {
             );
 
             if (!this.state.runComplete) {
-                testContent = (
-                    this.renderTest({
-                        key: `${test.id}/${this.state.currentTestIndex}`,
-                        run,
-                        test,
-                        testIndex: this.state.currentTestIndex,
-                        git_hash,
-                        at_key,
-                        userId,
-                        testerId: openAsUser || userId
-                    })
-                );
+                testContent = this.renderTest({
+                    key: `${test.id}/${this.state.currentTestIndex}`,
+                    run,
+                    test,
+                    testIndex: this.state.currentTestIndex,
+                    git_hash,
+                    at_key,
+                    userId,
+                    testerId: openAsUser || userId
+                });
             } else {
                 content = <div>Tests are complete.</div>;
             }
@@ -697,7 +692,7 @@ TestRun.propTypes = {
     run: PropTypes.object,
     testSuiteVersionData: PropTypes.object,
     usersById: PropTypes.object,
-    history: PropTypes.object,
+    history: PropTypes.object
 };
 
 const mapStateToProps = (state, ownProps) => {
