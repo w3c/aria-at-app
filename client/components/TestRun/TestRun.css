@@ -160,3 +160,30 @@ button.test-navigator-toggle.show:after {
     top: 4px;
     left: 8px;
 }
+
+.test-iframe-contaner {
+    padding: 0;
+}
+
+#test-iframe {
+    width: 80vw;
+    height: 65vh;
+    border: 1px solid #c7c7c7;
+}
+
+.testrun__button-toolbar {
+    margin: 1em 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row-reverse;
+}
+
+.testrun__button-toolbar-group {
+    display: flex;
+    flex-direction: row-reverse;
+}
+
+.testrun__button-toolbar .btn {
+    margin-right: 0.5rem;
+}
