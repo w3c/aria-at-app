@@ -144,16 +144,29 @@ async function saveTestResults(testResult) {
 
         // If result is empty, the test was skipped. Add an "incomplete" entry
         else {
-            statusId = (
-                await db.sequelize.query(`
-                 SELECT
-                   id
-                 FROM
-                   test_status
-                 WHERE
-                   test_status.name = 'incomplete'
-            `)
-            )[0][0].id;
+            if (serialized_form) {
+                statusId = (
+                    await db.sequelize.query(`
+                     SELECT
+                       id
+                     FROM
+                       test_status
+                     WHERE
+                       test_status.name = 'incomplete'
+                `)
+                )[0][0].id;
+            } else {
+                statusId = (
+                    await db.sequelize.query(`
+                     SELECT
+                       id
+                     FROM
+                       test_status
+                     WHERE
+                       test_status.name = 'skipped'
+                `)
+                )[0][0].id;
+            }
 
             if (!testResultId) {
                 testResultId = (
@@ -180,7 +193,11 @@ async function saveTestResults(testResult) {
         }
 
         testResult.id = testResultId;
-        testResult.status = result ? 'complete' : 'incomplete';
+        if (result) {
+            testResult.status = 'complete';
+        } else {
+            testResult.status = serialized_form ? 'incomplete' : 'skipped';
+        }
         return testResult;
     } catch (error) {
         console.error(`Error: ${error}`);
