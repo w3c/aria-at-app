@@ -34,21 +34,28 @@ class TestIframe extends Component {
         this.processResults(data);
     }
 
+    serializeForm() {
+        const documentEl = this.iframeEl.current.contentDocument;
+        const resultsEl = documentEl.querySelector('#record-results');
+        return serialize(resultsEl);
+    }
+
     async processResults(results) {
         // stop listening for additional results
         window.removeEventListener('message', this.handleResultsMessage);
 
         // capture serialized form state from the iframe
-        const documentEl = this.iframeEl.current.contentDocument;
-        const resultsEl = documentEl.querySelector('#record-results');
-        const serializedForm = serialize(resultsEl);
+        const serializedForm = this.serializeForm();
 
-        const { onResults } = this.props;
-        // Trigger saving of partial results on the parent
-        await onResults({
-            results,
-            serializedForm
-        });
+        // Do not save if the form is the empty form
+        if (JSON.stringify(serializedForm) !== this.emptyForm) {
+            const { onResults } = this.props;
+            // Trigger saving of partial results on the parent
+            await onResults({
+                results,
+                serializedForm
+            });
+        }
     }
 
     triggerSubmit() {
@@ -84,8 +91,6 @@ class TestIframe extends Component {
     }
 
     async reloadAndHydrate(serialized) {
-        await this.waitForTestHarnessReload();
-
         // perform the hydration from serialized form state
         const documentEl = this.iframeEl.current.contentDocument;
         const resultsEl = documentEl.querySelector('#record-results');
@@ -97,6 +102,11 @@ class TestIframe extends Component {
         // which is sent when the "Review Results" button is clicked
         // inside the iframe
         window.addEventListener('message', this.handleResultsMessage);
+
+        // Before hydrating, save local copy of serialized state with no results
+        // This is a short cut to tell whether the form has been edited
+        await this.waitForTestHarnessReload();
+        this.emptyForm = JSON.stringify(this.serializeForm());
 
         // Load partial results
         const { serializedForm } = this.props;
