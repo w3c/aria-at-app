@@ -45,7 +45,7 @@ class TestRun extends Component {
         this.displayNextTest = this.displayNextTest.bind(this);
         this.displayPreviousTest = this.displayPreviousTest.bind(this);
         this.displayTestByIndex = this.displayTestByIndex.bind(this);
-        this.saveResultFromTest = this.saveResultFromTest.bind(this);
+        this.saveTestResultOrProgress = this.saveTestResultOrProgress.bind(this);
         this.deleteResultFromTest = this.deleteResultFromTest.bind(this);
         this.toggleTestNavigator = this.toggleTestNavigator.bind(this);
 
@@ -114,7 +114,7 @@ class TestRun extends Component {
         });
     }
 
-    async saveResultFromTest({ results, serializedForm }) {
+    async saveTestResultOrProgress({ results, serializedForm }) {
         const { dispatch, run, userId, openAsUser } = this.props;
         const test = run.tests[this.state.currentTestIndex - 1];
         await dispatch(
@@ -172,7 +172,7 @@ class TestRun extends Component {
             case 'closeTest': {
                 // Save the serialized form of iframe
                 if (this.iframe.current) {
-                    await this.iframe.current.processResults(null);
+                    await this.iframe.current.saveTestProgress();
                 }
                 history.push(`/test-queue`);
                 break;
@@ -180,7 +180,7 @@ class TestRun extends Component {
             case 'goToNextTest': {
                 // Save the serialized form of iframe
                 if (this.iframe.current) {
-                    await this.iframe.current.processResults(null);
+                    await this.iframe.current.saveTestProgress();
                 }
                 this.displayNextTest();
                 break;
@@ -188,7 +188,7 @@ class TestRun extends Component {
             case 'goToPreviousTest': {
                 // Save the serialized form of iframe
                 if (this.iframe.current) {
-                    await this.iframe.current.processResults(null);
+                    await this.iframe.current.saveTestProgress();
                 }
                 this.displayPreviousTest();
                 break;
@@ -196,7 +196,7 @@ class TestRun extends Component {
             case 'goToTestAtIndex': {
                 // Save the serialized form of iframe
                 if (this.iframe.current) {
-                    await this.iframe.current.processResults(null);
+                    await this.iframe.current.saveTestProgress();
                 }
                 this.displayTestByIndex(index);
                 break;
@@ -211,7 +211,7 @@ class TestRun extends Component {
             case 'editTest': {
                 // save serialized form state, since it will be
                 // gone from state after results are deleted
-                const serializedForm = test.results[openAsUser].serialized_form;
+                const serializedForm = test.results[testerId].serialized_form;
                 await this.deleteResultFromTest();
                 // hydrate form with serialized state
                 this.iframe.current.reloadAndHydrate(serializedForm);
@@ -465,7 +465,7 @@ class TestRun extends Component {
                     git_hash={git_hash}
                     file={test.file}
                     at_key={at_key}
-                    onResults={this.saveResultFromTest}
+                    saveTestResultOrProgress={this.saveTestResultOrProgress}
                     ref={this.iframe}
                     serializedForm={test.results[testerId].serialized_form}
                 ></TestIframe>
@@ -476,7 +476,7 @@ class TestRun extends Component {
                     git_hash={git_hash}
                     file={test.file}
                     at_key={at_key}
-                    onResults={this.saveResultFromTest}
+                    saveTestResultOrProgress={this.saveTestResultOrProgress}
                     ref={this.iframe}
                 ></TestIframe>
             );
