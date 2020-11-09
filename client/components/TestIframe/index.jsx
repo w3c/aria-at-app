@@ -120,6 +120,22 @@ class TestIframe extends Component {
         window.removeEventListener('message', this.handleResultsMessage);
     }
 
+    async componentDidUpdate(prevProps) {
+        // If the test we are looking at changes
+        if (prevProps.file !== this.props.file) {
+            // Before hydrating, save local copy of serialized state with no results
+            // This is a short cut to tell whether the form has been edited
+            await this.waitForTestHarnessReload();
+            this.emptyForm = JSON.stringify(this.serializeForm());
+
+            // Load partial results
+            const { serializedForm } = this.props;
+            if (serializedForm) {
+                this.reloadAndHydrate(serializedForm);
+            }
+        }
+    }
+
     render() {
         const { git_hash, file, at_key } = this.props;
 
