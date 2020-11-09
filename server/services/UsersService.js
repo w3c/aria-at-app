@@ -248,6 +248,8 @@ async function saveUserAndRoles(options) {
                 throw error;
             }
         }
+    } else {
+        throw Error(`User ${username} does not belong to any teams.`)
     }
 
     return newUser.dataValues;

@@ -63,10 +63,15 @@ module.exports = {
 
             // ...otherwise, add them as a new user.
             if (!user) {
-                user = await UsersService.signupUser({
-                    accessToken: req.session.accessToken,
-                    user: userToAuthorize
-                });
+                try {
+                    user = await UsersService.signupUser({
+                        accessToken: req.session.accessToken,
+                        user: userToAuthorize
+                    });
+                } catch(error) {
+                    console.error(`Error: ${error}`);
+                }
+                
             }
 
             // Assuming we now have a user, assign updated roles
