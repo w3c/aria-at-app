@@ -29,42 +29,28 @@ class TestIframe extends Component {
 
     handleResultsMessage(message) {
         if (!this.validateMessage(message, 'results')) return;
-
         const { data } = message.data;
         this.processResults(data);
+    }
+
+    async processResults(results) {
+        // stop listening for additional results if we are saving results
+        window.removeEventListener('message', this.handleResultsMessage);
+
+        // capture serialized form state from the iframe
+        const serializedForm = this.serializeForm();
+
+        const { saveTestResultOrProgress } = this.props;
+        await saveTestResultOrProgress({
+            results,
+            serializedForm
+        });
     }
 
     serializeForm() {
         const documentEl = this.iframeEl.current.contentDocument;
         const resultsEl = documentEl.querySelector('#record-results');
         return serialize(resultsEl);
-    }
-
-    async processResults(results) {
-        // stop listening for additional results
-        window.removeEventListener('message', this.handleResultsMessage);
-
-        // capture serialized form state from the iframe
-        const serializedForm = this.serializeForm();
-
-        // Do not save if the form is the empty form
-        if (JSON.stringify(serializedForm) !== this.emptyForm) {
-            const { onResults } = this.props;
-            // Trigger saving of partial results on the parent
-            await onResults({
-                results,
-                serializedForm
-            });
-        }
-    }
-
-    triggerSubmit() {
-        this.iframeEl.current.contentWindow.postMessage(
-            {
-                type: 'submit'
-            },
-            window.location.origin
-        );
     }
 
     // if aria-at test harness has not loaded
@@ -86,10 +72,36 @@ class TestIframe extends Component {
         });
     }
 
+    /* Public function called by test runner when existing incomplete test */
+    async saveTestProgress() {
+        // capture serialized form state from the iframe
+        const serializedForm = this.serializeForm();
+
+        // Only save if there are partial results to save
+        if (JSON.stringify(serializedForm) !== this.emptyForm) {
+            const { saveTestResultOrProgress } = this.props;
+            await saveTestResultOrProgress({
+                serializedForm
+            });
+        }
+    }
+
+    /* Public function called by test runner when intending to save complete result */
+    triggerSubmit() {
+        this.iframeEl.current.contentWindow.postMessage(
+            {
+                type: 'submit'
+            },
+            window.location.origin
+        );
+    }
+
+    /* Public function for deleting partial or complete results */
     async reloadAndClear() {
         await this.waitForTestHarnessReload();
     }
 
+    /* Public function for changing complete results to incomplete, editable results */
     async reloadAndHydrate(serialized) {
         // perform the hydration from serialized form state
         const documentEl = this.iframeEl.current.contentDocument;
@@ -152,7 +164,7 @@ class TestIframe extends Component {
 export default TestIframe;
 
 TestIframe.propTypes = {
-    onResults: PropTypes.func,
+    saveTestResultOrProgress: PropTypes.func,
     git_hash: PropTypes.string,
     file: PropTypes.string,
     at_key: PropTypes.string,
