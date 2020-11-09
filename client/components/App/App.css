@@ -228,7 +228,7 @@ table tbody tr.assign-testers {
     margin: 0;
 }
 
-.actions .kebab-menu .assigned .fullname {
+.actions .kebab-menu .fullname {
     color: gray;
     font-size: .9em;
     margin-left: .25em;
