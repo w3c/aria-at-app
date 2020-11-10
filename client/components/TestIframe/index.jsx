@@ -72,6 +72,14 @@ class TestIframe extends Component {
         });
     }
 
+    async reloadAndHydrate(serialized) {
+        // perform the hydration from serialized form state
+        const documentEl = this.iframeEl.current.contentDocument;
+        const resultsEl = documentEl.querySelector('#record-results');
+        hydrate(serialized, resultsEl);
+    }
+
+
     /* Public function called by test runner when existing incomplete test */
     async saveTestProgress() {
         // capture serialized form state from the iframe
@@ -99,14 +107,6 @@ class TestIframe extends Component {
     /* Public function for deleting partial or complete results */
     async reloadAndClear() {
         await this.waitForTestHarnessReload();
-    }
-
-    /* Public function for changing complete results to incomplete, editable results */
-    async reloadAndHydrate(serialized) {
-        // perform the hydration from serialized form state
-        const documentEl = this.iframeEl.current.contentDocument;
-        const resultsEl = documentEl.querySelector('#record-results');
-        hydrate(serialized, resultsEl);
     }
 
     async componentDidMount() {
