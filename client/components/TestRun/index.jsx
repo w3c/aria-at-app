@@ -2,7 +2,6 @@ import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
-import { withRouter } from 'react-router-dom';
 import nextId from 'react-id-generator';
 import {
     Button,
@@ -45,7 +44,9 @@ class TestRun extends Component {
         this.displayNextTest = this.displayNextTest.bind(this);
         this.displayPreviousTest = this.displayPreviousTest.bind(this);
         this.displayTestByIndex = this.displayTestByIndex.bind(this);
-        this.saveTestResultOrProgress = this.saveTestResultOrProgress.bind(this);
+        this.saveTestResultOrProgress = this.saveTestResultOrProgress.bind(
+            this
+        );
         this.deleteResultFromTest = this.deleteResultFromTest.bind(this);
         this.toggleTestNavigator = this.toggleTestNavigator.bind(this);
 
@@ -699,7 +700,7 @@ TestRun.propTypes = {
     activeRunConfiguration: PropTypes.object,
     dispatch: PropTypes.func,
     userId: PropTypes.number,
-    openAsUsoer: PropTypes.number,
+    openAsUser: PropTypes.number,
     run: PropTypes.object,
     testSuiteVersionData: PropTypes.object,
     usersById: PropTypes.object,

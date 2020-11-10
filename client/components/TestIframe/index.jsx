@@ -79,7 +79,6 @@ class TestIframe extends Component {
         hydrate(serialized, resultsEl);
     }
 
-
     /* Public function called by test runner when existing incomplete test */
     async saveTestProgress() {
         // capture serialized form state from the iframe
