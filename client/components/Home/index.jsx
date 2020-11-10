@@ -54,7 +54,7 @@ class Home extends Component {
                                 </a>
                             </li>
                             <li>
-                                <a href="https://w3c.github.io/aria-at/review-test-plans/">
+                                <a href="https://w3c.github.io/aria-at/">
                                     Review the assertions of existing test plans
                                 </a>
                             </li>
