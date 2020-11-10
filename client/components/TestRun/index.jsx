@@ -129,7 +129,7 @@ class TestRun extends Component {
         return true;
     }
 
-    async deleteResultFromTest() {
+    async deleteResultFromTest(serializedForm) {
         const { dispatch, run, userId, openAsUser } = this.props;
         const test = run.tests[this.state.currentTestIndex - 1];
         await dispatch(
@@ -137,7 +137,7 @@ class TestRun extends Component {
                 test_id: test.id,
                 run_id: run.id,
                 user_id: openAsUser || userId,
-                serializedForm: null
+                serialized_form: serializedForm
             })
         );
         return true;
@@ -212,9 +212,7 @@ class TestRun extends Component {
                 // save serialized form state, since it will be
                 // gone from state after results are deleted
                 const serializedForm = test.results[testerId].serialized_form;
-                await this.deleteResultFromTest();
-                // hydrate form with serialized state
-                this.iframe.current.reloadAndHydrate(serializedForm);
+                await this.deleteResultFromTest(serializedForm);
                 break;
             }
         }
