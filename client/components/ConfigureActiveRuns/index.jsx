@@ -478,27 +478,31 @@ class ConfigureActiveRuns extends Component {
             </Form.Control>
         ) : null;
     }
-    
+
     getTestPlanStatus(apgExampleId) {
         const { activeRunsById } = this.props;
         let planStatus = 'Not in Queue';
         if (!activeRunsById) return planStatus;
 
-        const runsForExample = Object.values(activeRunsById).filter(run => run.apg_example_id === apgExampleId);
+        const runsForExample = Object.values(activeRunsById).filter(
+            run => run.apg_example_id === apgExampleId
+        );
         const testsWithResults = [];
 
         // Find any results for the runs for this test plan
         runsForExample.reduce((acc, run) => {
-            const anyResults = run.tests.filter(test => Object.keys(test.results) > 0);
-            acc.push(...anyResults)
+            const anyResults = run.tests.filter(
+                test => Object.keys(test.results) > 0
+            );
+            acc.push(...anyResults);
             return acc;
-        }, testsWithResults)
+        }, testsWithResults);
 
         // Find if any complete results
         if (testsWithResults.length > 0) {
-            return "In Queue: In Progress"
+            return 'In Queue: In Progress';
         } else if (testsWithResults.length === 0) {
-            return "In Queue: Not Started"
+            return 'In Queue: Not Started';
         }
 
         return planStatus;
@@ -577,8 +581,9 @@ class ConfigureActiveRuns extends Component {
                 <Form className="init-box">
                     <Row>
                         <Col>
-                            {
-                                Object.keys(activeRunConfiguration.active_test_version).length > 0 ?
+                            {Object.keys(
+                                activeRunConfiguration.active_test_version
+                            ).length > 0 ? (
                                 <Form.Group controlId="testVersion">
                                     <Form.Label data-test="configure-run-current-commit-label">
                                         Current Git Commit
@@ -596,9 +601,7 @@ class ConfigureActiveRuns extends Component {
                                             '...'}
                                     </p>
                                 </Form.Group>
-                                :
-                                null
-                            }
+                            ) : null}
                         </Col>
                     </Row>
                     {renderedTestVersions !== null ? (
@@ -690,7 +693,9 @@ class ConfigureActiveRuns extends Component {
                             return (
                                 <tr key={id} name={example.id}>
                                     <td>{exampleTableTitle}</td>
-                                    <td>{this.getTestPlanStatus(example.id)}</td>
+                                    <td>
+                                        {this.getTestPlanStatus(example.id)}
+                                    </td>
                                     <td>
                                         {this.state.exampleSelected[
                                             example.id
