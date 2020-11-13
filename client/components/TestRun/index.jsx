@@ -368,7 +368,7 @@ class TestRun extends Component {
         let primaryButtonGroup;
         const nextButton = 
                             <Button
-                                variant="primary"
+                                variant="secondary"
                                 onClick={this.handleNextTestClick}
                                 key="nextButton"
                             >
@@ -376,7 +376,7 @@ class TestRun extends Component {
                             </Button>
         const prevButton = 
                             <Button
-                                variant="primary"
+                                variant="secondary"
                                 onClick={this.handlePreviousTestClick}
                                 key="previousButton"
                                 className="testrun__button-right"
@@ -391,22 +391,25 @@ class TestRun extends Component {
                             <Button variant="secondary" onClick={this.handleEditClick}>
                                 Edit results
                             </Button>
-            primaryButtons = [...primaryButtons, editButton]
-            primaryButtonGroup = (
-                <div className="testrun__button-toolbar-group">
-                    {primaryButtons}
-                </div>
-            );
+            const continueButton =
+                            <Button variant="primary" onClick={this.handleNextTestClick}>
+                                Continue
+                            </Button>
+            primaryButtons = [...primaryButtons, editButton, continueButton];
+            
         } else {
-            primaryButtonGroup = (
-                <div className="testrun__button-toolbar-group">
-                    {primaryButtons}
+            const saveResultsButton =
                     <Button variant="primary" onClick={this.handleSaveClick}>
-                        Save results
+                        Submit Results
                     </Button>
-                </div>
-            );
+            primaryButtons = [...primaryButtons, saveResultsButton];
         }
+
+        primaryButtonGroup = (
+            <div className="testrun__button-toolbar-group">
+                {primaryButtons}
+            </div>
+        );
 
         let menuRightOfContent = (
             <nav>
@@ -476,7 +479,6 @@ class TestRun extends Component {
                 <Row>
                     <Col md={9} className="test-iframe-contaner">
                         <Row>{testContent}</Row>
-                        {/**TODO: REDO THIS */}
                         <Row>{primaryButtonGroup}</Row>
                     </Col>
                     <Col md={3}>{menuRightOfContent}</Col>
