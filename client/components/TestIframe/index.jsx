@@ -83,6 +83,7 @@ class TestIframe extends Component {
     async saveTestProgress() {
         // capture serialized form state from the iframe
         const serializedForm = this.serializeForm();
+        let saved = false;
 
         // Only save if there are partial results to save
         if (JSON.stringify(serializedForm) !== this.emptyForm) {
@@ -90,7 +91,9 @@ class TestIframe extends Component {
             await saveTestResultOrProgress({
                 serializedForm
             });
+            saved = true;
         }
+        return saved;
     }
 
     /* Public function called by test runner when intending to save complete result */

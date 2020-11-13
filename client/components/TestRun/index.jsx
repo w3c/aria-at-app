@@ -26,6 +26,8 @@ import TestIframe from '@components/TestIframe';
 import checkForConflict from '../../utils/checkForConflict';
 import './TestRun.css';
 
+const PROGRESS_SAVED = 'Progress has been saved.';
+
 class TestRun extends Component {
     constructor(props) {
         super(props);
@@ -33,6 +35,7 @@ class TestRun extends Component {
         this.state = {
             currentTestIndex: 1,
             runComplete: false,
+            resultsStatus: '',
             showTestNavigator: true,
             showRaiseIssueModal: false,
             showConfirmModal: false,
@@ -88,24 +91,28 @@ class TestRun extends Component {
         let newIndex = this.state.currentTestIndex + 1;
         if (newIndex > run.tests.length) {
             this.setState({
-                runComplete: true
+                runComplete: true,
+                resultsStatus: ''
             });
         } else {
             this.setState({
-                currentTestIndex: newIndex
+                currentTestIndex: newIndex,
+                resultsStatus: ''
             });
         }
     }
 
     displayTestByIndex(index) {
         this.setState({
-            currentTestIndex: index
+            currentTestIndex: index,
+            resultsStatus: ''
         });
     }
 
     displayPreviousTest() {
         this.setState({
-            currentTestIndex: this.state.currentTestIndex - 1
+            currentTestIndex: this.state.currentTestIndex - 1,
+            resultsStatus: ''
         });
     }
 
@@ -173,33 +180,74 @@ class TestRun extends Component {
             case 'closeTest': {
                 // Save the serialized form of iframe
                 if (this.iframe.current) {
-                    await this.iframe.current.saveTestProgress();
+                    const saved = await this.iframe.current.saveTestProgress();
+                    if (saved) {
+                        this.setState({ resultsStatus: PROGRESS_SAVED }, () => {
+                            setTimeout(() => { 
+                                history.push(`/test-queue`);
+                            }, 200)
+                        });
+                    } else {
+                        history.push(`/test-queue`);
+                    }
+                } else {
+                    history.push(`/test-queue`);
                 }
-                history.push(`/test-queue`);
                 break;
             }
             case 'goToNextTest': {
                 // Save the serialized form of iframe
                 if (this.iframe.current) {
-                    await this.iframe.current.saveTestProgress();
+                    const saved = await this.iframe.current.saveTestProgress();
+                    if(saved) {
+                        this.setState({ resultsStatus: PROGRESS_SAVED }, () => {
+                            setTimeout(() => { 
+                                this.displayNextTest();
+                            }, 200)
+                        });
+                    } else {
+                        this.displayNextTest();
+                    }
+                } else {
+                    this.displayNextTest();
                 }
-                this.displayNextTest();
+                
                 break;
             }
             case 'goToPreviousTest': {
                 // Save the serialized form of iframe
                 if (this.iframe.current) {
-                    await this.iframe.current.saveTestProgress();
+                    const saved = await this.iframe.current.saveTestProgress();
+                    if (saved) {
+                        this.setState({ resultsStatus: PROGRESS_SAVED }, () => {
+                            setTimeout(() => { 
+                                this.displayPreviousTest();
+                            }, 200)
+                        });
+                    } else {
+                        this.displayPreviousTest();
+                    }
+                } else {
+                    this.displayPreviousTest();
                 }
-                this.displayPreviousTest();
                 break;
             }
             case 'goToTestAtIndex': {
                 // Save the serialized form of iframe
                 if (this.iframe.current) {
-                    await this.iframe.current.saveTestProgress();
+                    const saved = await this.iframe.current.saveTestProgress();
+                    if (saved) {
+                        this.setState({ resultsStatus: PROGRESS_SAVED }, () => {
+                            setTimeout(() => { 
+                                this.displayTestByIndex(index);
+                            }, 200)
+                        });
+                    } else {
+                        this.displayTestByIndex(index);
+                    }
+                } else {
+                    this.displayTestByIndex(index);
                 }
-                this.displayTestByIndex(index);
                 break;
             }
             case 'redoTest': {
@@ -480,6 +528,7 @@ class TestRun extends Component {
                     <Col md={9} className="test-iframe-contaner">
                         <Row>{testContent}</Row>
                         <Row>{primaryButtonGroup}</Row>
+                        <Row>{this.state.resultsStatus}</Row>
                     </Col>
                     <Col md={3}>{menuRightOfContent}</Col>
                 </Row>
