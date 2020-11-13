@@ -210,18 +210,18 @@ table tbody tr.assign-testers {
 }
 
 .actions .kebab-menu button.more-actions {
-    margin-left: .75em;
-    padding: .25em .5em;
+    margin-left: 0.75em;
+    padding: 0.25em 0.5em;
 }
 
-.actions .kebab-menu .btn-primary:focus, 
+.actions .kebab-menu .btn-primary:focus,
 .actions .kebab-menu .btn-primary.focus {
     border: none;
 }
 
-.actions .kebab-menu .btn-primary:active, 
+.actions .kebab-menu .btn-primary:active,
 .actions .kebab-menu .btn-primary.active {
-    background: #D3D5D9;
+    background: #d3d5d9;
 }
 
 .actions .kebab-menu button.more-actions svg {
@@ -230,8 +230,8 @@ table tbody tr.assign-testers {
 
 .actions .kebab-menu .fullname {
     color: gray;
-    font-size: .9em;
-    margin-left: .25em;
+    font-size: 0.9em;
+    margin-left: 0.25em;
 }
 
 .actions .kebab-menu .assign-test.dropdown,

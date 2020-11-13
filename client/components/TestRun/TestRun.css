@@ -189,7 +189,14 @@ button.test-navigator-toggle.show:after {
     margin-right: 0.5rem;
 }
 
-
 .testrun__button-right {
     margin-right: auto;
+}
+
+.dot {
+    height: 10px;
+    width: 10px;
+    background-color: #6bda84;
+    border-radius: 50%;
+    display: inline-block;
 }

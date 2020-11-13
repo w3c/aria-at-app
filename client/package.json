@@ -26,6 +26,7 @@
     "@fortawesome/fontawesome-svg-core": "^1.2.32",
     "@fortawesome/free-solid-svg-icons": "^5.15.1",
     "@fortawesome/react-fontawesome": "^0.1.11",
+    "@primer/octicons-react": "^11.1.0",
     "bootstrap": "^4.4.1",
     "dotenv-webpack": "^1.8.0",
     "node-sass": "^4.13.1",

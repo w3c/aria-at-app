@@ -2,16 +2,9 @@ import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
+import { CheckCircleFillIcon } from '@primer/octicons-react';
 import nextId from 'react-id-generator';
-import {
-    Button,
-    ButtonToolbar,
-    Col,
-    Container,
-    Modal,
-    Pagination,
-    Row
-} from 'react-bootstrap';
+import { Alert, Button, Col, Container, Modal, Row } from 'react-bootstrap';
 import queryString from 'query-string';
 import {
     getActiveRunConfiguration,
@@ -39,7 +32,8 @@ class TestRun extends Component {
             showTestNavigator: true,
             showRaiseIssueModal: false,
             showConfirmModal: false,
-            showConflictsModal: false
+            showConflictsModal: false,
+            saveButtonClicked: false
         };
         this.buttonAction = null;
 
@@ -92,12 +86,14 @@ class TestRun extends Component {
         if (newIndex > run.tests.length) {
             this.setState({
                 runComplete: true,
-                resultsStatus: ''
+                resultsStatus: '',
+                saveButtonClicked: false
             });
         } else {
             this.setState({
                 currentTestIndex: newIndex,
-                resultsStatus: ''
+                resultsStatus: '',
+                saveButtonClicked: false
             });
         }
     }
@@ -105,14 +101,16 @@ class TestRun extends Component {
     displayTestByIndex(index) {
         this.setState({
             currentTestIndex: index,
-            resultsStatus: ''
+            resultsStatus: '',
+            saveButtonClicked: false
         });
     }
 
     displayPreviousTest() {
         this.setState({
             currentTestIndex: this.state.currentTestIndex - 1,
-            resultsStatus: ''
+            resultsStatus: '',
+            saveButtonClicked: false
         });
     }
 
@@ -175,6 +173,9 @@ class TestRun extends Component {
         switch (action) {
             case 'saveTest': {
                 this.iframe.current.triggerSubmit();
+                this.setState({
+                    saveButtonClicked: true
+                })
                 break;
             }
             case 'closeTest': {
@@ -183,9 +184,9 @@ class TestRun extends Component {
                     const saved = await this.iframe.current.saveTestProgress();
                     if (saved) {
                         this.setState({ resultsStatus: PROGRESS_SAVED }, () => {
-                            setTimeout(() => { 
+                            setTimeout(() => {
                                 history.push(`/test-queue`);
-                            }, 200)
+                            }, 200);
                         });
                     } else {
                         history.push(`/test-queue`);
@@ -199,11 +200,11 @@ class TestRun extends Component {
                 // Save the serialized form of iframe
                 if (this.iframe.current) {
                     const saved = await this.iframe.current.saveTestProgress();
-                    if(saved) {
+                    if (saved) {
                         this.setState({ resultsStatus: PROGRESS_SAVED }, () => {
-                            setTimeout(() => { 
+                            setTimeout(() => {
                                 this.displayNextTest();
-                            }, 200)
+                            }, 200);
                         });
                     } else {
                         this.displayNextTest();
@@ -211,7 +212,7 @@ class TestRun extends Component {
                 } else {
                     this.displayNextTest();
                 }
-                
+
                 break;
             }
             case 'goToPreviousTest': {
@@ -220,9 +221,9 @@ class TestRun extends Component {
                     const saved = await this.iframe.current.saveTestProgress();
                     if (saved) {
                         this.setState({ resultsStatus: PROGRESS_SAVED }, () => {
-                            setTimeout(() => { 
+                            setTimeout(() => {
                                 this.displayPreviousTest();
-                            }, 200)
+                            }, 200);
                         });
                     } else {
                         this.displayPreviousTest();
@@ -238,9 +239,9 @@ class TestRun extends Component {
                     const saved = await this.iframe.current.saveTestProgress();
                     if (saved) {
                         this.setState({ resultsStatus: PROGRESS_SAVED }, () => {
-                            setTimeout(() => { 
+                            setTimeout(() => {
                                 this.displayTestByIndex(index);
-                            }, 200)
+                            }, 200);
                         });
                     } else {
                         this.displayTestByIndex(index);
@@ -414,42 +415,47 @@ class TestRun extends Component {
         let testContent = null;
 
         let primaryButtonGroup;
-        const nextButton = 
-                            <Button
-                                variant="secondary"
-                                onClick={this.handleNextTestClick}
-                                key="nextButton"
-                            >
-                                Next test
-                            </Button>
-        const prevButton = 
-                            <Button
-                                variant="secondary"
-                                onClick={this.handlePreviousTestClick}
-                                key="previousButton"
-                                className="testrun__button-right"
-                            >
-                                Previous test
-                            </Button>
-        let primaryButtons = isFirstTest ? [nextButton] : [prevButton, nextButton];
-        
+        const nextButton = (
+            <Button
+                variant="secondary"
+                onClick={this.handleNextTestClick}
+                key="nextButton"
+            >
+                Next test
+            </Button>
+        );
+        const prevButton = (
+            <Button
+                variant="secondary"
+                onClick={this.handlePreviousTestClick}
+                key="previousButton"
+                className="testrun__button-right"
+            >
+                Previous test
+            </Button>
+        );
+        let primaryButtons = isFirstTest
+            ? [nextButton]
+            : [prevButton, nextButton];
 
         if (this.testResultsCompleted) {
-            const editButton = 
-                            <Button variant="secondary" onClick={this.handleEditClick}>
-                                Edit results
-                            </Button>
-            const continueButton =
-                            <Button variant="primary" onClick={this.handleNextTestClick}>
-                                Continue
-                            </Button>
+            const editButton = (
+                <Button variant="secondary" onClick={this.handleEditClick}>
+                    Edit results
+                </Button>
+            );
+            const continueButton = (
+                <Button variant="primary" onClick={this.handleNextTestClick}>
+                    Continue
+                </Button>
+            );
             primaryButtons = [...primaryButtons, editButton, continueButton];
-            
         } else {
-            const saveResultsButton =
-                    <Button variant="primary" onClick={this.handleSaveClick}>
-                        Submit Results
-                    </Button>
+            const saveResultsButton = (
+                <Button variant="primary" onClick={this.handleSaveClick}>
+                    Submit Results
+                </Button>
+            );
             primaryButtons = [...primaryButtons, saveResultsButton];
         }
 
@@ -520,6 +526,13 @@ class TestRun extends Component {
             testerId
         });
 
+        const result =
+            test.results &&
+            Object.values(test.results).find(
+                ({ test_id, user_id }) =>
+                    test_id === test.id && user_id === testerId
+            );
+
         return (
             <Fragment>
                 <h4 data-test="test-run-h4">Testing task: {test.name}</h4>
@@ -528,7 +541,23 @@ class TestRun extends Component {
                     <Col md={9} className="test-iframe-contaner">
                         <Row>{testContent}</Row>
                         <Row>{primaryButtonGroup}</Row>
-                        <Row>{this.state.resultsStatus}</Row>
+                        <Row>
+                            {result && result.status === 'complete' && this.state.saveButtonClicked ? (
+                                <Alert key={nextId()} variant="success">
+                                    <CheckCircleFillIcon /> Thanks! Your results
+                                    have been submitted
+                                </Alert>
+                            ) : (
+                                <div>
+                                    {this.state.resultsStatus ? (
+                                        <span className="dot"></span>
+                                    ) : (
+                                        <></>
+                                    )}
+                                    {` ${this.state.resultsStatus}`}
+                                </div>
+                            )}
+                        </Row>
                     </Col>
                     <Col md={3}>{menuRightOfContent}</Col>
                 </Row>
