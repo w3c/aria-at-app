@@ -339,6 +339,8 @@ class TestRun extends Component {
         const { userId } = this.props;
         this.testHasResult = test.results && test.results[testerId];
 
+        const isFirstTest = run.tests.findIndex(t => t.id === test.id) === 0;
+
         this.testResultsCompleted =
             this.testHasResult && test.results[testerId].status === 'complete';
 
@@ -364,24 +366,41 @@ class TestRun extends Component {
         let testContent = null;
 
         let primaryButtonGroup;
+        const nextButton = 
+                            <Button
+                                variant="primary"
+                                onClick={this.handleNextTestClick}
+                                key="nextButton"
+                            >
+                                Next test
+                            </Button>
+        const prevButton = 
+                            <Button
+                                variant="primary"
+                                onClick={this.handlePreviousTestClick}
+                                key="previousButton"
+                                className="testrun__button-right"
+                            >
+                                Previous test
+                            </Button>
+        let primaryButtons = isFirstTest ? [nextButton] : [prevButton, nextButton];
+        
 
         if (this.testResultsCompleted) {
+            const editButton = 
+                            <Button variant="secondary" onClick={this.handleEditClick}>
+                                Edit results
+                            </Button>
+            primaryButtons = [...primaryButtons, editButton]
             primaryButtonGroup = (
                 <div className="testrun__button-toolbar-group">
-                    <Button
-                        variant="primary"
-                        onClick={this.handleNextTestClick}
-                    >
-                        Next test
-                    </Button>
-                    <Button variant="secondary" onClick={this.handleEditClick}>
-                        Edit results
-                    </Button>
+                    {primaryButtons}
                 </div>
             );
         } else {
             primaryButtonGroup = (
                 <div className="testrun__button-toolbar-group">
+                    {primaryButtons}
                     <Button variant="primary" onClick={this.handleSaveClick}>
                         Save results
                     </Button>
@@ -389,47 +408,6 @@ class TestRun extends Component {
             );
         }
 
-        // note ButtonToolbar children are in row-reverse flex
-        // direction to align right when there is only one child
-        // and create a more logical tab order
-        let menuUnderContent = (
-            <ButtonToolbar className="testrun__button-toolbar">
-                {primaryButtonGroup}
-                <Pagination>
-                    <Pagination.First
-                        onClick={() => {
-                            this.handleTestClick(1);
-                        }}
-                    />
-                    <Pagination.Prev onClick={this.handlePreviousTestClick} />
-                    {run.tests.reduce((acc, t, i, arr) => {
-                        const item = (
-                            <Pagination.Item
-                                key={i}
-                                active={i + 1 === testIndex}
-                                onClick={() => {
-                                    this.handleTestClick(i + 1);
-                                }}
-                            >
-                                {i + 1}
-                            </Pagination.Item>
-                        );
-                        if (arr.length < 10 || i < 5 || i >= arr.length - 5) {
-                            acc.push(item);
-                        } else if (arr.length > 10 && i === 6) {
-                            acc.push(<Pagination.Ellipsis key={i} />);
-                        }
-                        return acc;
-                    }, [])}
-                    <Pagination.Next onClick={this.handleNextTestClick} />
-                    <Pagination.Last
-                        onClick={() => {
-                            this.handleTestClick(run.tests.length + 1);
-                        }}
-                    />
-                </Pagination>
-            </ButtonToolbar>
-        );
         let menuRightOfContent = (
             <nav>
                 <Button
@@ -498,7 +476,8 @@ class TestRun extends Component {
                 <Row>
                     <Col md={9} className="test-iframe-contaner">
                         <Row>{testContent}</Row>
-                        <Row>{menuUnderContent}</Row>
+                        {/**TODO: REDO THIS */}
+                        <Row>{primaryButtonGroup}</Row>
                     </Col>
                     <Col md={3}>{menuRightOfContent}</Col>
                 </Row>
