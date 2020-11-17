@@ -24,7 +24,7 @@ class TestQueue extends Component {
     }
 
     renderAtBrowserList(runIds) {
-        const { userId, usersById, admin, activeRunsById } = this.props;
+        const { admin, activeRunsById } = this.props;
         const {
             at_name: atName,
             at_version: atVersion,
@@ -35,7 +35,7 @@ class TestQueue extends Component {
         let tableId = nextId('table_name_');
 
         return (
-            <div key={`${nextId('at_browser_pair')}`}>
+            <div key={`${atName}${atVersion}${browserName}${browserVersion}`}>
                 <h3
                     id={tableId}
                 >{`${atName} ${atVersion} with ${browserName} ${browserVersion}`}</h3>
@@ -50,28 +50,12 @@ class TestQueue extends Component {
                     </thead>
                     <tbody>
                         {runIds.map(runId => {
-                            const run = activeRunsById[runId];
-                            const {
-                                apg_example_name,
-                                testers,
-                                at_name_id,
-                                run_status,
-                                id,
-                                tests
-                            } = run;
                             return (
                                 <TestQueueRun
-                                    key={id}
-                                    runId={id}
-                                    runStatus={run_status}
-                                    apgExampleName={apg_example_name}
-                                    testers={testers}
-                                    usersById={usersById}
-                                    userId={userId}
+                                    key={runId}
+                                    runId={runId}
                                     atName={atName}
-                                    atNameId={at_name_id}
                                     browserName={browserName}
-                                    testsForRun={tests}
                                     admin={admin}
                                 />
                             );
