@@ -1509,11 +1509,6 @@
   resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.2.1.tgz#d7d1d7fbdc1f2aa24e62f4ef4b001be7727340c5"
   integrity sha512-BChdj3idQiLi+7vPhE6gEDiPzpozvSrUqbSMoSTlRbOQkU0p6u4si0UBydegTyphsYSZC2AUHGYYICP0gqmEVg==
 
-"@primer/octicons-react@^11.1.0":
-  version "11.1.0"
-  resolved "https://registry.yarnpkg.com/@primer/octicons-react/-/octicons-react-11.1.0.tgz#1f03bfdc598ea24006cf03a0adcab2812d0fc958"
-  integrity sha512-1d/0HM4eR6+meZh3OR1HaVCg6DLBwrBEwQBN6SblOlA/98HRGaphRHGwUV7YMbSfFUc1029Ggx54ceKYHYwdXA==
-
 "@reach/router@^1.2.1":
   version "1.3.3"
   resolved "https://registry.yarnpkg.com/@reach/router/-/router-1.3.3.tgz#58162860dce6c9449d49be86b0561b5ef46d80db"

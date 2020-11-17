@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faCheck,
     faTrashAlt,
-    faEllipsisV
+    faEllipsisV,
 } from '@fortawesome/free-solid-svg-icons';
 import nextId from 'react-id-generator';
 import { Button, Dropdown } from 'react-bootstrap';

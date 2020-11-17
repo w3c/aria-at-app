@@ -2,7 +2,10 @@ import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
-import { CheckCircleFillIcon } from '@primer/octicons-react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+    faCheckCircle
+} from '@fortawesome/free-solid-svg-icons';
 import nextId from 'react-id-generator';
 import { Alert, Button, Col, Container, Modal, Row } from 'react-bootstrap';
 import queryString from 'query-string';
@@ -430,13 +433,12 @@ class TestRun extends Component {
                 onClick={this.handlePreviousTestClick}
                 key="previousButton"
                 className="testrun__button-right"
+                disabled={isFirstTest}
             >
                 Previous test
             </Button>
         );
-        let primaryButtons = isFirstTest
-            ? [nextButton]
-            : [prevButton, nextButton];
+        let primaryButtons = [prevButton, nextButton];
 
         if (this.testResultsCompleted) {
             const editButton = (
@@ -544,7 +546,7 @@ class TestRun extends Component {
                         <Row>
                             {result && result.status === 'complete' && this.state.saveButtonClicked ? (
                                 <Alert key={nextId()} variant="success">
-                                    <CheckCircleFillIcon /> Thanks! Your results
+                                    <FontAwesomeIcon icon={faCheckCircle} /> Thanks! Your results
                                     have been submitted
                                 </Alert>
                             ) : (
