@@ -5,9 +5,8 @@ import { action } from '@storybook/addon-actions';
 import { linkTo } from '@storybook/addon-links';
 
 import { Button, Welcome } from '@storybook/react/demo';
-import App from '../components/App';
-import Login from '../components/Login';
-import Signup from '../components/Signup';
+import {Dropdown} from '@primer/components';
+
 
 storiesOf('Welcome', module).add('to Storybook', () => (
     <Welcome showApp={linkTo('Button')} />
@@ -25,11 +24,17 @@ storiesOf('Button', module)
         </Button>
     ));
 
-storiesOf('App', module).add('the app', () => <App />);
-storiesOf('Login', module).add('login button', () => (
-    <Login githubClientId={'12345'} />
-));
-
-storiesOf('Signup', module).add('signup button', () => (
-    <Signup onClick={action('clicked')} />
-));
+storiesOf('Dropdown', module)
+    .add('generic dropdown', () => {
+        return (<Dropdown>
+            <summary>
+                Dropdown
+                <Dropdown.Caret/>
+            </summary>
+            <Dropdown.Menu direction='se'>
+                <Dropdown.Item>Item 1</Dropdown.Item>
+                <Dropdown.Item>Item 2</Dropdown.Item>
+                <Dropdown.Item>Item 3</Dropdown.Item>
+            </Dropdown.Menu>
+            </Dropdown>)
+    })

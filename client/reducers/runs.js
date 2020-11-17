@@ -175,7 +175,7 @@ export default (state = initialState, action) => {
                 // Then we might not have fetched the active runs yet
                 if (state.activeRunsById) {
                     updatedActiveRunsById = {
-                        ...this.state.activeRunsById,
+                        ...state.activeRunsById,
                         [runId]: updatedRun
                     };
                 }

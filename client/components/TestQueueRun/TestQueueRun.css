@@ -47,3 +47,8 @@ button.more-actions.btn-primary:focus {
 button.more-actions:active {
     background: #0053ba;
 }
+
+.primer_dropdown_menu {
+    width: auto !important;
+}
+

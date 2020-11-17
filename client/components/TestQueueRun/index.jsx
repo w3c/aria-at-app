@@ -6,6 +6,8 @@ import {
     faTrashAlt,
     faEllipsisV
 } from '@fortawesome/free-solid-svg-icons';
+import PrimerDropdown from '@components/PrimerDropdown'
+import { Dropdown as PDropdown } from '@primer/components';
 import nextId from 'react-id-generator';
 import { Button, Dropdown } from 'react-bootstrap';
 import { connect } from 'react-redux';
@@ -213,7 +215,7 @@ class TestQueueRow extends Component {
         return { status, results };
     }
 
-    renderRunStatusChangeOption() {
+    generateRunStatus() {
         const { runStatus } = this.props;
 
         // If there are no conflicts OR the test has been marked as "final",
@@ -233,6 +235,12 @@ class TestQueueRow extends Component {
             newStatus = 'Final';
         }
 
+        return newStatus;
+    }
+
+    renderRunStatusChangeOption() {
+        const newStatus = this.generateRunStatus()
+
         if (newStatus) {
             return (
                 <Fragment>
@@ -249,20 +257,82 @@ class TestQueueRow extends Component {
         }
     }
 
-    renderAssignOptions(admin) {
+    renderRunStatusChangeOptionPrimer() {
+        const newStatus = this.generateRunStatus();
+
+        if (newStatus) {
+            return (
+                <Fragment>
+                    <div className="dropdown-header">
+                        Mark report status as
+                    </div>
+                    <PDropdown.Item className="dropdown-divider" role="separator"></PDropdown.Item>
+                    <PDropdown.Item
+                        role="menuitem"
+                        key={nextId()}
+                        onClick={() => this.updateRunStatus(newStatus)}
+                    >
+                        {newStatus}
+                    </PDropdown.Item>
+                </Fragment>
+            );
+        }
+    }
+
+    generateTestersForDropdown() {
         const { atNameId, testers, usersById, userId } = this.props;
 
-        let canAssignTesters = [];
+        let dropdownTesters = [];
+        
         for (let uid of Object.keys(usersById)) {
             const tester = usersById[uid];
 
             if (tester.configured_ats.find(ua => ua.at_name_id === atNameId)) {
-                canAssignTesters.push({
+                dropdownTesters.push({
                     ...tester,
                     assigned: testers.includes(tester.id)
                 });
             }
         }
+
+        return dropdownTesters;
+    }
+
+    renderAssignOptionsPrimer(admin) {
+        const { userId } = this.props;
+        let canAssignTesters = this.generateTestersForDropdown();
+
+        return (
+            <Fragment>
+            <div className="dropdown-header">
+                Assign to
+            </div>
+            <PDropdown.Item className="dropdown-divider" role="separator"></PDropdown.Item>
+            {canAssignTesters.map(t => {
+                let classname = t.assigned ? 'assigned' : 'not-assigned';
+                return (
+                    <PDropdown.Item
+                        key={nextId()}
+                        onClick={() => this.toggleTesterAssign(t.id)}
+                        disabled={!admin && t.id !== userId}
+                        aria-checked={t.assigned}
+                        role="menuitemcheckbox"
+                    >
+                        {t.assigned && <FontAwesomeIcon icon={faCheck} />}
+                        <span className={classname}>
+                            {`${t.username} `}
+                            <span className="fullname">{t.fullname}</span>
+                        </span>
+                    </PDropdown.Item>
+                );
+            })}
+            </Fragment>
+        )
+    }
+
+    renderAssignOptions(admin) {
+        const { userId } = this.props;
+        let canAssignTesters = this.generateTestersForDropdown();
 
         return (
             <Fragment>
@@ -291,7 +361,7 @@ class TestQueueRow extends Component {
         );
     }
 
-    renderDeleteOptions() {
+    generateTestersWithResults() {
         const { testers, usersById } = this.props;
 
         let testersWithResults = [];
@@ -304,6 +374,12 @@ class TestQueueRow extends Component {
                 testersWithResults.push(tester);
             }
         }
+
+        return testersWithResults;
+    }
+
+    renderDeleteOptions() {
+        let testersWithResults = this.generateTestersWithResults();
 
         if (testersWithResults.length) {
             return (
@@ -330,6 +406,35 @@ class TestQueueRow extends Component {
         }
     }
 
+    renderDeleteOptionsPrimer() {
+        let testersWithResults = this.generateTestersWithResults();
+
+        if (testersWithResults.length) {
+            return (
+                <Fragment>
+                    <div className="dropdown-header">
+                        Delete Results For
+                    </div>
+                    <PDropdown.Item className="dropdown-divider" role="separator"></PDropdown.Item>
+                    {testersWithResults.map(t => {
+                        return (
+                            <PDropdown.Item
+                                role="menuitem"
+                                key={nextId()}
+                                onClick={() =>
+                                    this.handleDeleteResultsForUser(t.id)
+                                }
+                            >
+                                <FontAwesomeIcon icon={faTrashAlt} />
+                                {t.username}
+                            </PDropdown.Item>
+                        );
+                    })}
+                </Fragment>
+            );
+        }
+    }
+
     renderTesterActionMenu() {
         const { userId } = this.props;
         return (
@@ -349,6 +454,35 @@ class TestQueueRow extends Component {
                 {this.renderAssignOptions(false)}
             </Dropdown.Menu>
         );
+    }
+
+    renderTesterActionMenuPrimer() {
+        const { userId } = this.props;
+        return (
+            <PDropdown.Menu role="menu" className='primer_dropdown_menu'>
+                {this.testsCompletedByUser[userId] && (
+                    <PDropdown.Item
+                        role="menuitem"
+                        key={nextId()}
+                        onClick={() => this.handleDeleteResultsForUser(userId)}
+                    >
+                        <FontAwesomeIcon icon={faTrashAlt} />
+                        Delete my results
+                    </PDropdown.Item>
+                )}
+                {this.renderAssignOptionsPrimer(false)}
+            </PDropdown.Menu>
+        );
+    }
+
+    renderAdminActionMenuPrimer() {
+        return (
+            <PDropdown.Menu className='primer_dropdown_menu'>
+                {this.renderAssignOptionsPrimer(true)}
+                {this.renderRunStatusChangeOptionPrimer()}
+                {this.renderDeleteOptionsPrimer()}
+            </PDropdown.Menu>
+        )
     }
 
     renderAdminActionMenu() {
@@ -445,17 +579,10 @@ class TestQueueRow extends Component {
                       </Button>
                       {admin && this.renderOpenAsDropdown()}
                     </div>
-                    <Dropdown className="kebab-menu">
-                        <Dropdown.Toggle
-                            id={nextId()}
-                            bsPrefix={'more-actions'}
-                            aria-label={'additional actions'}
-                        >
-                            <FontAwesomeIcon icon={faEllipsisV} />
-                        </Dropdown.Toggle>
-                        {admin && this.renderAdminActionMenu()}
-                        {!admin && this.renderTesterActionMenu()}
-                    </Dropdown>
+                    <PrimerDropdown aria-label={'additional actions'}>
+                        {admin && this.renderAdminActionMenuPrimer()}
+                        {!admin && this.renderTesterActionMenuPrimer()}
+                    </PrimerDropdown>
                 </td>
             </tr>
         );
