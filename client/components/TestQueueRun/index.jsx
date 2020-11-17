@@ -40,7 +40,7 @@ class TestQueueRow extends Component {
         );
         this.updateRunStatus = this.updateRunStatus.bind(this);
 
-        this.testerList = React.createRef();
+        this.startTestingButton = React.createRef();
     }
 
     countCompleteTestsAndConflicts() {
@@ -93,9 +93,12 @@ class TestQueueRow extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        // Focus on the user list after editing the user list
-        if (this.props.testers.length !== prevProps.testers.length) {
-            this.testerList.current.focus();
+        // Focus on the start testing button after assigning yourself
+        const { userId, testers } = this.props;
+        if (
+            testers.includes(userId) && !prevProps.testers.includes(userId)
+        ) {
+            this.startTestingButton.current.focus();
         }
 
         if (this.props.testsForRun.length !== prevProps.testsForRun.length) {
@@ -389,15 +392,24 @@ class TestQueueRow extends Component {
             return acc;
         }, {});
 
+        this.testsCompletedOrInProgressByThisUser = testsForRun.filter(
+            t => {
+                return (
+                    t.results &&
+                    t.results[userId]
+                );
+            }
+        ).length;
+
         let testerList = this.renderTesterList(currentUserAssigned);
 
         let { status, results } = this.renderStatusAndResult();
 
         return (
             <tr key={runId}>
-                <td>{designPatternLinkOrName}</td>
+                <th>{designPatternLinkOrName}</th>
                 <td>
-                    <ul tabIndex="-1" ref={this.testerList}>
+                    <ul>
                         {testerList.length !== 0 ? (
                             testerList
                         ) : (
@@ -423,14 +435,15 @@ class TestQueueRow extends Component {
                 </td>
                 <td className="actions">
                     <div className="primary-buttons">
-                        <Button
-                            variant="primary"
-                            href={`/run/${runId}`}
-                            disabled={!currentUserAssigned}
-                        >
-                            Start
-                        </Button>
-                        {admin && this.renderOpenAsDropdown()}
+                      <Button
+                          variant="primary"
+                          href={`/run/${runId}`}
+                          disabled={!currentUserAssigned}
+                          ref={this.startTestingButton}
+                      >
+                          {this.testsCompletedOrInProgressByThisUser ? "Continue testing" : "Start testing"}
+                      </Button>
+                      {admin && this.renderOpenAsDropdown()}
                     </div>
                     <Dropdown className="kebab-menu">
                         <Dropdown.Toggle
@@ -464,4 +477,32 @@ TestQueueRow.propTypes = {
     testsForRun: PropTypes.array
 };
 
-export default connect()(TestQueueRow);
+const mapStateToProps = (state, ownProps) => {
+    const { activeRunsById } = state.runs;
+    const { usersById } = state.users;
+    const { runId } = ownProps;
+    const userId = state.user.id;
+
+    const run = activeRunsById[runId];
+    const {
+        apg_example_name,
+        testers,
+        at_name_id,
+        run_status,
+        tests
+    } = run;
+
+    return {
+        apgExampleName: apg_example_name,
+        testers,
+        atNameId: at_name_id,
+        runStatus: run_status,
+        runId,
+        testsForRun: tests,
+        activeRunsById,
+        usersById,
+        userId
+    };
+};
+
+export default connect(mapStateToProps)(TestQueueRow);
