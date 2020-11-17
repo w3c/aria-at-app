@@ -3,9 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-    faCheckCircle
-} from '@fortawesome/free-solid-svg-icons';
+import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import nextId from 'react-id-generator';
 import { Alert, Button, Col, Container, Modal, Row } from 'react-bootstrap';
 import queryString from 'query-string';
@@ -178,7 +176,7 @@ class TestRun extends Component {
                 this.iframe.current.triggerSubmit();
                 this.setState({
                     saveButtonClicked: true
-                })
+                });
                 break;
             }
             case 'closeTest': {
@@ -544,10 +542,12 @@ class TestRun extends Component {
                         <Row>{testContent}</Row>
                         <Row>{primaryButtonGroup}</Row>
                         <Row>
-                            {result && result.status === 'complete' && this.state.saveButtonClicked ? (
+                            {result &&
+                            result.status === 'complete' &&
+                            this.state.saveButtonClicked ? (
                                 <Alert key={nextId()} variant="success">
-                                    <FontAwesomeIcon icon={faCheckCircle} /> Thanks! Your results
-                                    have been submitted
+                                    <FontAwesomeIcon icon={faCheckCircle} />{' '}
+                                    Thanks! Your results have been submitted
                                 </Alert>
                             ) : (
                                 <div>
@@ -712,18 +712,22 @@ class TestRun extends Component {
                                                 key={i}
                                             >
                                                 <span className="progress-indicator"></span>
-                                                <a
-                                                    href="#"
-                                                    onClick={() => {
-                                                        this.handleTestClick(
-                                                            i + 1
-                                                        );
-                                                    }}
-                                                    className="test-name"
-                                                    aria-label={`${resultStatus} ${t.name}`}
-                                                >
-                                                    {t.name}
-                                                </a>
+                                                {t.id !== test.id ? (
+                                                    <a
+                                                        href="#"
+                                                        onClick={() => {
+                                                            this.handleTestClick(
+                                                                i + 1
+                                                            );
+                                                        }}
+                                                        className="test-name"
+                                                        aria-label={`${resultStatus} ${t.name}`}
+                                                    >
+                                                        {t.name}
+                                                    </a>
+                                                ) : (
+                                                    <span>{t.name}</span>
+                                                )}
                                             </li>
                                         );
                                     })}
