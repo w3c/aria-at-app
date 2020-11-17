@@ -16,6 +16,30 @@ class ConfigureTechnologyRow extends Component {
         this.handleAtChange = this.handleAtChange.bind(this);
         this.deleteRun = this.deleteRun.bind(this);
         this.undoDelete = this.undoDelete.bind(this);
+
+        this.newRowRef = React.createRef();
+        this.deleteRef = React.createRef();
+        this.undoRef = React.createRef();
+    }
+
+    componentDidMount() {
+        const { editable } = this.props;
+        if (editable) {
+            this.newRowRef.current.focus();
+        }
+    }
+
+    componentDidUpdate(prevProps) {
+        if (
+            !this.props.editable
+        ) {
+            if (this.props.deleted && !prevProps.deleted) {
+                this.undoRef.current.focus();
+            }
+            else if (!this.props.deleted && prevProps.deleted) {
+                this.deleteRef.current.focus();
+            }
+        }
     }
 
     handleBrowserVersionChange(event) {
@@ -121,6 +145,7 @@ class ConfigureTechnologyRow extends Component {
                             1}`}
                         onClick={this.deleteRun}
                         disabled={deleted === true}
+                        ref={this.deleteRef}
                     >
                         Remove
                     </Button>
@@ -128,6 +153,7 @@ class ConfigureTechnologyRow extends Component {
                         disabled={deleted === false}
                         onClick={this.undoDelete}
                         aria-label="Undo delete"
+                        ref={this.undoRef}
                     >
                         <FontAwesomeIcon icon={faUndo}></FontAwesomeIcon>
                     </Button>
@@ -143,6 +169,7 @@ class ConfigureTechnologyRow extends Component {
                         }
                         onChange={this.handleAtChange}
                         as="select"
+                        ref={this.newRowRef}
                     >
                         <option key={-1} value={-1}></option>;
                         {availableAts.map((at, index) => {
