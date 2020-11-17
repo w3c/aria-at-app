@@ -76,34 +76,6 @@ class StatusBar extends Component {
             });
         }
 
-        const result =
-            test.results &&
-            Object.values(test.results).find(
-                ({ test_id, user_id }) =>
-                    test_id === test.id && user_id === testerId
-            );
-
-        if (result && result.status === 'complete') {
-            let variant = 'info';
-            let action = (
-                <Button
-                    className="ml-2"
-                    variant={variant}
-                    onClick={this.props.handleNextTestClick}
-                >
-                    Next test
-                </Button>
-            );
-            let icon = 'info';
-            let message = 'This test is complete.';
-            statuses.push({
-                action,
-                icon,
-                message,
-                variant
-            });
-        }
-
         this.setState({
             statuses
         });

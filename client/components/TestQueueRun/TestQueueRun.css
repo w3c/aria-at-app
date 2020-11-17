@@ -22,7 +22,7 @@ svg.svg-inline--fa {
 }
 
 button.more-actions svg {
-    color: #9FA4AA;
+    color: #9fa4aa;
 }
 
 button.more-actions {
@@ -36,7 +36,7 @@ button.more-actions {
 
 button.more-actions:hover svg,
 button.more-actions:focus svg {
-    color: #6D757D;
+    color: #6d757d;
 }
 
 button.more-actions.btn-primary:hover,
@@ -44,8 +44,6 @@ button.more-actions.btn-primary:focus {
     background: transparent;
 }
 
-
 button.more-actions:active {
     background: #0053ba;
 }
-

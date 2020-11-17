@@ -2,16 +2,10 @@ import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import nextId from 'react-id-generator';
-import {
-    Button,
-    ButtonToolbar,
-    Col,
-    Container,
-    Modal,
-    Pagination,
-    Row
-} from 'react-bootstrap';
+import { Alert, Button, Col, Container, Modal, Row } from 'react-bootstrap';
 import queryString from 'query-string';
 import {
     getActiveRunConfiguration,
@@ -26,6 +20,8 @@ import TestIframe from '@components/TestIframe';
 import checkForConflict from '../../utils/checkForConflict';
 import './TestRun.css';
 
+const PROGRESS_SAVED = 'Progress has been saved.';
+
 class TestRun extends Component {
     constructor(props) {
         super(props);
@@ -33,10 +29,12 @@ class TestRun extends Component {
         this.state = {
             currentTestIndex: 1,
             runComplete: false,
+            resultsStatus: '',
             showTestNavigator: true,
             showRaiseIssueModal: false,
             showConfirmModal: false,
-            showConflictsModal: false
+            showConflictsModal: false,
+            saveButtonClicked: false
         };
         this.buttonAction = null;
 
@@ -88,24 +86,32 @@ class TestRun extends Component {
         let newIndex = this.state.currentTestIndex + 1;
         if (newIndex > run.tests.length) {
             this.setState({
-                runComplete: true
+                runComplete: true,
+                resultsStatus: '',
+                saveButtonClicked: false
             });
         } else {
             this.setState({
-                currentTestIndex: newIndex
+                currentTestIndex: newIndex,
+                resultsStatus: '',
+                saveButtonClicked: false
             });
         }
     }
 
     displayTestByIndex(index) {
         this.setState({
-            currentTestIndex: index
+            currentTestIndex: index,
+            resultsStatus: '',
+            saveButtonClicked: false
         });
     }
 
     displayPreviousTest() {
         this.setState({
-            currentTestIndex: this.state.currentTestIndex - 1
+            currentTestIndex: this.state.currentTestIndex - 1,
+            resultsStatus: '',
+            saveButtonClicked: false
         });
     }
 
@@ -168,38 +174,82 @@ class TestRun extends Component {
         switch (action) {
             case 'saveTest': {
                 this.iframe.current.triggerSubmit();
+                this.setState({
+                    saveButtonClicked: true
+                });
                 break;
             }
             case 'closeTest': {
                 // Save the serialized form of iframe
                 if (this.iframe.current) {
-                    await this.iframe.current.saveTestProgress();
+                    const saved = await this.iframe.current.saveTestProgress();
+                    if (saved) {
+                        this.setState({ resultsStatus: PROGRESS_SAVED }, () => {
+                            setTimeout(() => {
+                                history.push(`/test-queue`);
+                            }, 200);
+                        });
+                    } else {
+                        history.push(`/test-queue`);
+                    }
+                } else {
+                    history.push(`/test-queue`);
                 }
-                history.push(`/test-queue`);
                 break;
             }
             case 'goToNextTest': {
                 // Save the serialized form of iframe
                 if (this.iframe.current) {
-                    await this.iframe.current.saveTestProgress();
+                    const saved = await this.iframe.current.saveTestProgress();
+                    if (saved) {
+                        this.setState({ resultsStatus: PROGRESS_SAVED }, () => {
+                            setTimeout(() => {
+                                this.displayNextTest();
+                            }, 200);
+                        });
+                    } else {
+                        this.displayNextTest();
+                    }
+                } else {
+                    this.displayNextTest();
                 }
-                this.displayNextTest();
+
                 break;
             }
             case 'goToPreviousTest': {
                 // Save the serialized form of iframe
                 if (this.iframe.current) {
-                    await this.iframe.current.saveTestProgress();
+                    const saved = await this.iframe.current.saveTestProgress();
+                    if (saved) {
+                        this.setState({ resultsStatus: PROGRESS_SAVED }, () => {
+                            setTimeout(() => {
+                                this.displayPreviousTest();
+                            }, 200);
+                        });
+                    } else {
+                        this.displayPreviousTest();
+                    }
+                } else {
+                    this.displayPreviousTest();
                 }
-                this.displayPreviousTest();
                 break;
             }
             case 'goToTestAtIndex': {
                 // Save the serialized form of iframe
                 if (this.iframe.current) {
-                    await this.iframe.current.saveTestProgress();
+                    const saved = await this.iframe.current.saveTestProgress();
+                    if (saved) {
+                        this.setState({ resultsStatus: PROGRESS_SAVED }, () => {
+                            setTimeout(() => {
+                                this.displayTestByIndex(index);
+                            }, 200);
+                        });
+                    } else {
+                        this.displayTestByIndex(index);
+                    }
+                } else {
+                    this.displayTestByIndex(index);
                 }
-                this.displayTestByIndex(index);
                 break;
             }
             case 'redoTest': {
@@ -339,6 +389,8 @@ class TestRun extends Component {
         const { userId } = this.props;
         this.testHasResult = test.results && test.results[testerId];
 
+        const isFirstTest = run.tests.findIndex(t => t.id === test.id) === 0;
+
         this.testResultsCompleted =
             this.testHasResult && test.results[testerId].status === 'complete';
 
@@ -364,72 +416,55 @@ class TestRun extends Component {
         let testContent = null;
 
         let primaryButtonGroup;
+        const nextButton = (
+            <Button
+                variant="secondary"
+                onClick={this.handleNextTestClick}
+                key="nextButton"
+            >
+                Next test
+            </Button>
+        );
+        const prevButton = (
+            <Button
+                variant="secondary"
+                onClick={this.handlePreviousTestClick}
+                key="previousButton"
+                className="testrun__button-right"
+                disabled={isFirstTest}
+            >
+                Previous test
+            </Button>
+        );
+        let primaryButtons = [prevButton, nextButton];
 
         if (this.testResultsCompleted) {
-            primaryButtonGroup = (
-                <div className="testrun__button-toolbar-group">
-                    <Button
-                        variant="primary"
-                        onClick={this.handleNextTestClick}
-                    >
-                        Next test
-                    </Button>
-                    <Button variant="secondary" onClick={this.handleEditClick}>
-                        Edit results
-                    </Button>
-                </div>
+            const editButton = (
+                <Button variant="secondary" onClick={this.handleEditClick}>
+                    Edit results
+                </Button>
             );
+            const continueButton = (
+                <Button variant="primary" onClick={this.handleNextTestClick}>
+                    Continue
+                </Button>
+            );
+            primaryButtons = [...primaryButtons, editButton, continueButton];
         } else {
-            primaryButtonGroup = (
-                <div className="testrun__button-toolbar-group">
-                    <Button variant="primary" onClick={this.handleSaveClick}>
-                        Save results
-                    </Button>
-                </div>
+            const saveResultsButton = (
+                <Button variant="primary" onClick={this.handleSaveClick}>
+                    Submit Results
+                </Button>
             );
+            primaryButtons = [...primaryButtons, saveResultsButton];
         }
 
-        // note ButtonToolbar children are in row-reverse flex
-        // direction to align right when there is only one child
-        // and create a more logical tab order
-        let menuUnderContent = (
-            <ButtonToolbar className="testrun__button-toolbar">
-                {primaryButtonGroup}
-                <Pagination>
-                    <Pagination.First
-                        onClick={() => {
-                            this.handleTestClick(1);
-                        }}
-                    />
-                    <Pagination.Prev onClick={this.handlePreviousTestClick} />
-                    {run.tests.reduce((acc, t, i, arr) => {
-                        const item = (
-                            <Pagination.Item
-                                key={i}
-                                active={i + 1 === testIndex}
-                                onClick={() => {
-                                    this.handleTestClick(i + 1);
-                                }}
-                            >
-                                {i + 1}
-                            </Pagination.Item>
-                        );
-                        if (arr.length < 10 || i < 5 || i >= arr.length - 5) {
-                            acc.push(item);
-                        } else if (arr.length > 10 && i === 6) {
-                            acc.push(<Pagination.Ellipsis key={i} />);
-                        }
-                        return acc;
-                    }, [])}
-                    <Pagination.Next onClick={this.handleNextTestClick} />
-                    <Pagination.Last
-                        onClick={() => {
-                            this.handleTestClick(run.tests.length + 1);
-                        }}
-                    />
-                </Pagination>
-            </ButtonToolbar>
+        primaryButtonGroup = (
+            <div className="testrun__button-toolbar-group">
+                {primaryButtons}
+            </div>
         );
+
         let menuRightOfContent = (
             <nav>
                 <Button
@@ -491,6 +526,13 @@ class TestRun extends Component {
             testerId
         });
 
+        const result =
+            test.results &&
+            Object.values(test.results).find(
+                ({ test_id, user_id }) =>
+                    test_id === test.id && user_id === testerId
+            );
+
         return (
             <Fragment>
                 <h4 data-test="test-run-h4">Testing task: {test.name}</h4>
@@ -498,7 +540,26 @@ class TestRun extends Component {
                 <Row>
                     <Col md={9} className="test-iframe-contaner">
                         <Row>{testContent}</Row>
-                        <Row>{menuUnderContent}</Row>
+                        <Row>{primaryButtonGroup}</Row>
+                        <Row>
+                            {result &&
+                            result.status === 'complete' &&
+                            this.state.saveButtonClicked ? (
+                                <Alert key={nextId()} variant="success">
+                                    <FontAwesomeIcon icon={faCheckCircle} />{' '}
+                                    Thanks! Your results have been submitted
+                                </Alert>
+                            ) : (
+                                <div>
+                                    {this.state.resultsStatus ? (
+                                        <span className="dot"></span>
+                                    ) : (
+                                        <></>
+                                    )}
+                                    {` ${this.state.resultsStatus}`}
+                                </div>
+                            )}
+                        </Row>
                     </Col>
                     <Col md={3}>{menuRightOfContent}</Col>
                 </Row>
@@ -651,18 +712,22 @@ class TestRun extends Component {
                                                 key={i}
                                             >
                                                 <span className="progress-indicator"></span>
-                                                <a
-                                                    href="#"
-                                                    onClick={() => {
-                                                        this.handleTestClick(
-                                                            i + 1
-                                                        );
-                                                    }}
-                                                    className="test-name"
-                                                    aria-label={`${resultStatus} ${t.name}`}
-                                                >
-                                                    {t.name}
-                                                </a>
+                                                {t.id !== test.id ? (
+                                                    <a
+                                                        href="#"
+                                                        onClick={() => {
+                                                            this.handleTestClick(
+                                                                i + 1
+                                                            );
+                                                        }}
+                                                        className="test-name"
+                                                        aria-label={`${resultStatus} ${t.name}`}
+                                                    >
+                                                        {t.name}
+                                                    </a>
+                                                ) : (
+                                                    <span>{t.name}</span>
+                                                )}
                                             </li>
                                         );
                                     })}

@@ -422,16 +422,16 @@ class TestQueueRow extends Component {
                     {results}
                 </td>
                 <td className="actions">
-                  <div className="primary-buttons">
-                    <Button
-                        variant="primary"
-                        href={`/run/${runId}`}
-                        disabled={!currentUserAssigned}
-                    >
-                        Start
-                    </Button>
-                    {admin && this.renderOpenAsDropdown()}
-                  </div>
+                    <div className="primary-buttons">
+                        <Button
+                            variant="primary"
+                            href={`/run/${runId}`}
+                            disabled={!currentUserAssigned}
+                        >
+                            Start
+                        </Button>
+                        {admin && this.renderOpenAsDropdown()}
+                    </div>
                     <Dropdown className="kebab-menu">
                         <Dropdown.Toggle
                             id={nextId()}
