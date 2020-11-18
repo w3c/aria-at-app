@@ -249,7 +249,7 @@ async function saveUserAndRoles(options) {
             }
         }
     } else {
-        throw Error(`User ${username} does not belong to any teams.`)
+        throw Error(`User ${username} does not belong to any teams.`);
     }
 
     return newUser.dataValues;
