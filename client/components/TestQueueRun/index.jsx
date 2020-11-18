@@ -263,14 +263,15 @@ class TestQueueRow extends Component {
         if (newStatus) {
             return (
                 <Fragment>
-                    <div className="dropdown-header">
+                    <div className="dropdown-header" tabIndex="0">
                         Mark report status as
                     </div>
-                    <PDropdown.Item className="dropdown-divider" role="separator"></PDropdown.Item>
+                    <div className="dropdown-divider" role="separator"></div>
                     <PDropdown.Item
                         role="menuitem"
                         key={nextId()}
                         onClick={() => this.updateRunStatus(newStatus)}
+                        tabIndex="0"
                     >
                         {newStatus}
                     </PDropdown.Item>
@@ -304,10 +305,10 @@ class TestQueueRow extends Component {
 
         return (
             <Fragment>
-            <div className="dropdown-header">
+            <div className="dropdown-header" tabIndex="0">
                 Assign to
             </div>
-            <PDropdown.Item className="dropdown-divider" role="separator"></PDropdown.Item>
+            <div className="dropdown-divider" role="separator"></div>
             {canAssignTesters.map(t => {
                 let classname = t.assigned ? 'assigned' : 'not-assigned';
                 return (
@@ -317,6 +318,7 @@ class TestQueueRow extends Component {
                         disabled={!admin && t.id !== userId}
                         aria-checked={t.assigned}
                         role="menuitemcheckbox"
+                        tabIndex="0"
                     >
                         {t.assigned && <FontAwesomeIcon icon={faCheck} />}
                         <span className={classname}>
@@ -412,10 +414,10 @@ class TestQueueRow extends Component {
         if (testersWithResults.length) {
             return (
                 <Fragment>
-                    <div className="dropdown-header">
+                    <div className="dropdown-header" tabIndex="0">
                         Delete Results For
                     </div>
-                    <PDropdown.Item className="dropdown-divider" role="separator"></PDropdown.Item>
+                    <div className="dropdown-divider" role="separator"></div>
                     {testersWithResults.map(t => {
                         return (
                             <PDropdown.Item
@@ -424,6 +426,7 @@ class TestQueueRow extends Component {
                                 onClick={() =>
                                     this.handleDeleteResultsForUser(t.id)
                                 }
+                                tabIndex="0"
                             >
                                 <FontAwesomeIcon icon={faTrashAlt} />
                                 {t.username}
@@ -465,6 +468,7 @@ class TestQueueRow extends Component {
                         role="menuitem"
                         key={nextId()}
                         onClick={() => this.handleDeleteResultsForUser(userId)}
+                        tabIndex="0"
                     >
                         <FontAwesomeIcon icon={faTrashAlt} />
                         Delete my results
