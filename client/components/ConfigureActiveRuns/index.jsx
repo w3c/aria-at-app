@@ -669,7 +669,10 @@ class ConfigureActiveRuns extends Component {
                     </Row>
                     <Row>
                         <Col>
-                            <Button onClick={this.addTechnologyRow}>
+                            <Button 
+                                variant="secondary" 
+                                onClick={this.addTechnologyRow}
+                            >
                                 Add another AT/Browser
                             </Button>
                         </Col>
@@ -701,12 +704,14 @@ class ConfigureActiveRuns extends Component {
                                             example.id
                                         ] ? (
                                             <Button
+                                                variant="danger"
                                                 onClick={this.selectExample}
                                             >
                                                 Remove from Queue
                                             </Button>
                                         ) : (
                                             <Button
+                                                variant="secondary"
                                                 onClick={this.selectExample}
                                             >
                                                 Add to Queue

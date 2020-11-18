@@ -422,7 +422,7 @@ class TestRun extends Component {
                 onClick={this.handleNextTestClick}
                 key="nextButton"
             >
-                Next test
+                Next Test
             </Button>
         );
         const prevButton = (
@@ -433,15 +433,15 @@ class TestRun extends Component {
                 className="testrun__button-right"
                 disabled={isFirstTest}
             >
-                Previous test
+                Previous Test
             </Button>
         );
         let primaryButtons = [prevButton, nextButton];
 
         if (this.testResultsCompleted) {
             const editButton = (
-                <Button variant="secondary" onClick={this.handleEditClick}>
-                    Edit results
+                <Button className="edit-results" variant="secondary" onClick={this.handleEditClick}>
+                    Edit Results
                 </Button>
             );
             const continueButton = (
@@ -469,21 +469,21 @@ class TestRun extends Component {
             <nav>
                 <Button
                     className="btn-block"
-                    variant="primary"
+                    variant="secondary"
                     onClick={this.handleRaiseIssueClick}
                 >
                     Raise an issue
                 </Button>
                 <Button
                     className="btn-block"
-                    variant="primary"
+                    variant="secondary"
                     onClick={this.handleRedoClick}
                 >
                     Start over
                 </Button>
                 <Button
                     className="btn-block"
-                    variant="primary"
+                    variant="secondary"
                     onClick={this.handleCloseRunClick}
                 >
                     Close
@@ -538,7 +538,7 @@ class TestRun extends Component {
                 <h4 data-test="test-run-h4">Testing task: {test.name}</h4>
                 <StatusBar key={nextId()} {...statusProps} />
                 <Row>
-                    <Col md={9} className="test-iframe-contaner">
+                    <Col md={10} className="test-iframe-contaner">
                         <Row>{testContent}</Row>
                         <Row>{primaryButtonGroup}</Row>
                         <Row>
@@ -561,7 +561,7 @@ class TestRun extends Component {
                             )}
                         </Row>
                     </Col>
-                    <Col md={3}>{menuRightOfContent}</Col>
+                    <Col md={2}>{menuRightOfContent}</Col>
                 </Row>
                 {modals}
             </Fragment>
