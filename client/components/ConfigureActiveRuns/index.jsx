@@ -500,9 +500,9 @@ class ConfigureActiveRuns extends Component {
 
         // Find if any complete results
         if (testsWithResults.length > 0) {
-            return <span>In Queue: <span class="status-label in-progress">In Progress</span></span>;
+            return <span>In Queue: <span className="status-label in-progress">In Progress</span></span>;
         } else if (testsWithResults.length === 0) {
-            return <span>In Queue: <span class="status-label not-started">Not Started</span></span>;
+            return <span>In Queue: <span className="status-label not-started">Not Started</span></span>;
         }
 
         return planStatus;
