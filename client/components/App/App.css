@@ -250,12 +250,12 @@ table tbody tr.assign-testers {
     text-transform: uppercase;
 }
 
-.in-progress {
+.status-label.in-progress {
     background: #d9f6de;
     color: #2c6c37;
 }
 
-.not-started {
+.status-label.not-started {
     background: #e7ecef;
     color: #748193;
 }
