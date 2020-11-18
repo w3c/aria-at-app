@@ -240,7 +240,27 @@ table tbody tr.assign-testers {
     color: #D52A49;
 }
 
-/* Actions */
+/* STATUS LABELS */
+
+.status-label {
+    font-size: .8rem;
+    padding: .25em .65em .15em;
+    border-radius: 22px;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.in-progress {
+    background: #d9f6de;
+    color: #2c6c37;
+}
+
+.not-started {
+    background: #e7ecef;
+    color: #748193;
+}
+
+/* ACTIONS */
 .table-bordered td.actions {
     border-right: 0px solid;
     border-bottom: 0px solid;
