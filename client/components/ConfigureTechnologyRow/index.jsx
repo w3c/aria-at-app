@@ -150,6 +150,7 @@ class ConfigureTechnologyRow extends Component {
                         Remove
                     </Button>
                     <Button
+                        variant="secondary"
                         disabled={deleted === false}
                         onClick={this.undoDelete}
                         aria-label="Undo delete"

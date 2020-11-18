@@ -186,7 +186,7 @@ class TestQueueRow extends Component {
     renderStatusAndResult() {
         const { runId, runStatus, testsForRun } = this.props;
 
-        let status = 'Not started';
+        let status = <span class="status-label not-started">Not Started</span>;
         let results = null;
 
         if (this.state.totalConflicts > 0) {
@@ -197,7 +197,7 @@ class TestQueueRow extends Component {
             this.state.testsWithResults > 0 &&
             this.state.testsWithResults !== testsForRun.length
         ) {
-            status = 'In progress with no conflicts';
+            status = <span class="status-label in-progress">In Progress</span>;
         } else if (this.state.testsWithResults === testsForRun.length) {
             status = 'Tests complete with no conflicts';
         }
