@@ -10,6 +10,12 @@ import {
 } from '../../actions/runs';
 import ConfigureTechnologyRow from '@components/ConfigureTechnologyRow';
 import ConfigurationModal from '@components/ConfigurationModal';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faCheck } from '@fortawesome/free-solid-svg-icons';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import './ConfigureActiveRuns.css';
+
 
 function selectExamples(testVersion, activeRunConfiguration) {
     let exampleSelected = {};
@@ -579,113 +585,103 @@ class ConfigureActiveRuns extends Component {
                 <h1 data-test="configure-run-h2">Configure Active Runs</h1>
                 <h2 data-test="configure-run-h3">Update Versions</h2>
                 <Form className="init-box">
-                    <Row>
-                        <Col>
-                            {Object.keys(
-                                activeRunConfiguration.active_test_version
-                            ).length > 0 ? (
-                                <Form.Group controlId="testVersion">
-                                    <Form.Label data-test="configure-run-current-commit-label">
-                                        Current Git Commit
-                                    </Form.Label>
-                                    <p>
-                                        {activeRunConfiguration.active_test_version.git_hash.slice(
-                                            0,
-                                            7
-                                        ) +
-                                            ' - ' +
-                                            activeRunConfiguration.active_test_version.git_commit_msg.slice(
-                                                0,
-                                                80
-                                            ) +
-                                            '...'}
-                                    </p>
-                                </Form.Group>
-                            ) : null}
-                        </Col>
-                    </Row>
-                    {renderedTestVersions !== null ? (
-                        <Row>
-                            <Col>
-                                <Form.Group controlId="testVersion">
-                                    <Form.Label data-test="configure-run-commit-label">
-                                        Select a different commit
-                                    </Form.Label>
-                                    {renderedTestVersions}
-                                </Form.Group>
-                            </Col>
-                        </Row>
+                    {Object.keys(
+                        activeRunConfiguration.active_test_version
+                    ).length > 0 ? (
+                        <Form.Group className="current-commit" controlId="testVersion">
+                            <Form.Label data-test="configure-run-current-commit-label">
+                                Current Git Commit
+                            </Form.Label>
+                            <p>
+                                <FontAwesomeIcon icon={faCheck} aria-hidden="true"></FontAwesomeIcon>
+                                {activeRunConfiguration.active_test_version.git_hash.slice(
+                                    0,
+                                    7
+                                ) +
+                                    ' - ' +
+                                    activeRunConfiguration.active_test_version.git_commit_msg.slice(
+                                        0,
+                                        80
+                                    ) +
+                                    '...'}
+                            </p>
+                        </Form.Group>
                     ) : null}
-                    <Row>
-                        <Table
-                            aria-label="Configure at/browser combinations for test run"
-                            striped
-                            bordered
-                            hover
-                        >
-                            <thead>
-                                <tr>
-                                    <th>Assistive Technology</th>
-                                    <th>AT Version</th>
-                                    <th>Browser</th>
-                                    <th>Browser Version</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {versionData &&
-                                    this.state.runTechnologyRows.map(
-                                        (runTech, index) => {
-                                            return (
-                                                <ConfigureTechnologyRow
-                                                    key={index}
-                                                    runTechnologies={runTech}
-                                                    index={index}
-                                                    availableAts={
-                                                        versionData.supported_ats
-                                                    }
-                                                    availableBrowsers={
-                                                        activeRunConfiguration.browsers
-                                                    }
-                                                    handleTechnologyRowChange={
-                                                        this
-                                                            .handleTechnologyRowChange
-                                                    }
-                                                    deleteTechnologyRow={
-                                                        this.deleteTechnologyRow
-                                                    }
-                                                    undoDeleteTechnologyRow={
-                                                        this
-                                                            .undoDeleteTechnologyRow
-                                                    }
-                                                    editable={runTech.editable}
-                                                    deleted={runTech.deleted}
-                                                />
-                                            );
-                                        }
-                                    )}
-                            </tbody>
-                        </Table>
-                    </Row>
-                    <Row>
-                        <Col>
-                            <Button 
-                                variant="secondary" 
-                                onClick={this.addTechnologyRow}
-                            >
-                                Add another AT/Browser
-                            </Button>
-                        </Col>
-                    </Row>
+                    {renderedTestVersions !== null ? (
+                        <Form.Group className="select-commit" controlId="testVersion">
+                            <Form.Label data-test="configure-run-commit-label">
+                                Select a different commit
+                            </Form.Label>
+                            {renderedTestVersions}
+                        </Form.Group>
+                    ) : null}
+                    <h2>AT and Browser Combinations</h2>
+                    <Table
+                        className="configure-at-browser"
+                        aria-label="Configure at/browser combinations for test run"
+                        striped
+                        bordered
+                        hover
+                    >
+                        <thead>
+                            <tr>
+                                <th>Assistive Technology</th>
+                                <th>AT Version</th>
+                                <th>Browser</th>
+                                <th>Browser Version</th>
+                                <th className="actions">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {versionData &&
+                                this.state.runTechnologyRows.map(
+                                    (runTech, index) => {
+                                        return (
+                                            <ConfigureTechnologyRow
+                                                key={index}
+                                                runTechnologies={runTech}
+                                                index={index}
+                                                availableAts={
+                                                    versionData.supported_ats
+                                                }
+                                                availableBrowsers={
+                                                    activeRunConfiguration.browsers
+                                                }
+                                                handleTechnologyRowChange={
+                                                    this
+                                                        .handleTechnologyRowChange
+                                                }
+                                                deleteTechnologyRow={
+                                                    this.deleteTechnologyRow
+                                                }
+                                                undoDeleteTechnologyRow={
+                                                    this
+                                                        .undoDeleteTechnologyRow
+                                                }
+                                                editable={runTech.editable}
+                                                deleted={runTech.deleted}
+                                            />
+                                        );
+                                    }
+                                )}
+                        </tbody>
+                    </Table>
+                    <div className="add-at-browser">
+                        <Button 
+                            className="btn-tertiary" 
+                            onClick={this.addTechnologyRow}
+                        >   <FontAwesomeIcon icon={faPlus} aria-hidden="true"></FontAwesomeIcon>
+                            Add another AT/Browser
+                        </Button>
+                    </div>
                 </Form>
-                <br />
                 <h2 data-test="configure-run-test-plans">Test Plans</h2>
-                <Table striped bordered hover>
+                <Table className="test-plans" striped bordered hover>
                     <thead>
                         <tr>
                             <th>Test Plan</th>
                             <th>Status</th>
-                            <th>Action</th>
+                            <th className="actions">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -707,13 +703,15 @@ class ConfigureActiveRuns extends Component {
                                                 variant="danger"
                                                 onClick={this.selectExample}
                                             >
+                                                <FontAwesomeIcon icon={faTrash} aria-hidden="true"></FontAwesomeIcon>
                                                 Remove from Queue
                                             </Button>
                                         ) : (
                                             <Button
-                                                variant="secondary"
+                                                className="btn-tertiary"
                                                 onClick={this.selectExample}
                                             >
+                                                <FontAwesomeIcon icon={faPlus} aria-hidden="true"></FontAwesomeIcon>
                                                 Add to Queue
                                             </Button>
                                         )}
