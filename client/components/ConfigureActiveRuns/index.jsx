@@ -37,7 +37,6 @@ function selectExamples(testVersion, activeRunConfiguration) {
             exampleSelected[example.id] = selected;
         }
     }
-
     return exampleSelected;
 }
 
