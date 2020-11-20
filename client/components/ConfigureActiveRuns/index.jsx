@@ -18,19 +18,26 @@ import './ConfigureActiveRuns.css';
 
 function selectExamples(testVersion, activeRunConfiguration) {
     let exampleSelected = {};
-    for (let example of testVersion.apg_examples) {
-        let selected = true;
-        // If we are looking at the currently configured test version, select
-        // only the currently configured apg examples, otherwise select all by default.
-        if (
-            testVersion.id === activeRunConfiguration.active_test_version.id &&
-            activeRunConfiguration.active_apg_examples.indexOf(example.id) ===
-                -1
-        ) {
-            selected = false;
+
+    // Select examples if there is a configured test version
+    if (Object.keys(testVersion).length) {
+        for (let example of testVersion.apg_examples) {
+            let selected = true;
+            // If we are looking at the currently configured test version, select
+            // only the currently configured apg examples, otherwise select all by default.
+            if (
+                testVersion.id ===
+                    activeRunConfiguration.active_test_version.id &&
+                activeRunConfiguration.active_apg_examples.indexOf(
+                    example.id
+                ) === -1
+            ) {
+                selected = false;
+            }
+            exampleSelected[example.id] = selected;
         }
-        exampleSelected[example.id] = selected;
     }
+
     return exampleSelected;
 }
 
@@ -54,7 +61,7 @@ function getDefaultsTechCombinations(testVersion, activeRunConfiguration) {
         }
     }
 
-    return initialRunRows.length ? initialRunRows : [{}];
+    return initialRunRows.length ? initialRunRows : [];
 }
 
 class ConfigureActiveRuns extends Component {
@@ -69,7 +76,7 @@ class ConfigureActiveRuns extends Component {
         this.state = {
             selectedVersion: testVersionId,
             name: '',
-            runTechnologyRows: [{}], // list of {at_id, at_version, browser_id, browser_version}
+            runTechnologyRows: [], // list of {at_id, at_version, browser_id, browser_version}
             exampleSelected: {},
             showChangeModal: false,
             configurationChanges: [],
@@ -135,10 +142,15 @@ class ConfigureActiveRuns extends Component {
             nextProps.activeRunConfiguration &&
             nextProps.testVersions
         ) {
+            // Get the active test version or the first test version if
+            // there is no active test (a clean database). This assumes
+            // that a single test version is imported initially.
             let testVersionId =
-                nextProps.activeRunConfiguration.active_test_version.id;
+                nextProps.activeRunConfiguration.active_test_version.id ||
+                nextProps.testVersions[0].id;
             let testVersion =
-                nextProps.activeRunConfiguration.active_test_version;
+                nextProps.activeRunConfiguration.active_test_version ||
+                nextProps.testVersions[0];
 
             let exampleSelected = selectExamples(
                 testVersion,
@@ -410,8 +422,14 @@ class ConfigureActiveRuns extends Component {
     }
 
     addTechnologyRow() {
-        let newRunTechnologies = [...this.state.runTechnologyRows];
-        newRunTechnologies.push({ editable: true });
+        let newRunTechnologies = [];
+        if (this.state.runTechnologyRows.length) {
+            newRunTechnologies = [...this.state.runTechnologyRows];
+            newRunTechnologies.push({ editable: true });
+        } else {
+            newRunTechnologies = [{ editable: true }];
+        }
+
         this.setState({
             runTechnologyRows: newRunTechnologies
         });
@@ -593,6 +611,32 @@ class ConfigureActiveRuns extends Component {
 
         const renderedTestVersions = this.renderTestVersionSelect();
 
+        let technologyRows = [];
+        if (versionData && this.state.runTechnologyRows.length) {
+            technologyRows = this.state.runTechnologyRows.map(
+                (runTech, index) => {
+                    return (
+                        <ConfigureTechnologyRow
+                            key={index}
+                            runTechnologies={runTech}
+                            index={index}
+                            availableAts={versionData.supported_ats}
+                            availableBrowsers={activeRunConfiguration.browsers}
+                            handleTechnologyRowChange={
+                                this.handleTechnologyRowChange
+                            }
+                            deleteTechnologyRow={this.deleteTechnologyRow}
+                            undoDeleteTechnologyRow={
+                                this.undoDeleteTechnologyRow
+                            }
+                            editable={runTech.editable}
+                            deleted={runTech.deleted}
+                        />
+                    );
+                }
+            );
+        }
+
         return (
             <Fragment>
                 <h1 data-test="configure-run-h2">Configure Active Runs</h1>
@@ -653,38 +697,11 @@ class ConfigureActiveRuns extends Component {
                                 <th className="actions">Actions</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            {versionData &&
-                                this.state.runTechnologyRows.map(
-                                    (runTech, index) => {
-                                        return (
-                                            <ConfigureTechnologyRow
-                                                key={index}
-                                                runTechnologies={runTech}
-                                                index={index}
-                                                availableAts={
-                                                    versionData.supported_ats
-                                                }
-                                                availableBrowsers={
-                                                    activeRunConfiguration.browsers
-                                                }
-                                                handleTechnologyRowChange={
-                                                    this
-                                                        .handleTechnologyRowChange
-                                                }
-                                                deleteTechnologyRow={
-                                                    this.deleteTechnologyRow
-                                                }
-                                                undoDeleteTechnologyRow={
-                                                    this.undoDeleteTechnologyRow
-                                                }
-                                                editable={runTech.editable}
-                                                deleted={runTech.deleted}
-                                            />
-                                        );
-                                    }
-                                )}
-                        </tbody>
+                        {technologyRows.length ? (
+                            <tbody>{technologyRows}</tbody>
+                        ) : (
+                            ''
+                        )}
                     </Table>
                     <div className="add-at-browser">
                         <Button
