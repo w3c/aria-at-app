@@ -36,9 +36,9 @@ class TestQueue extends Component {
 
         return (
             <div key={`${atName}${atVersion}${browserName}${browserVersion}`}>
-                <h3
+                <h2
                     id={tableId}
-                >{`${atName} ${atVersion} with ${browserName} ${browserVersion}`}</h3>
+                >{`${atName} ${atVersion} with ${browserName} ${browserVersion}`}</h2>
                 <Table aria-labelledby={tableId} striped bordered hover>
                     <thead>
                         <tr>

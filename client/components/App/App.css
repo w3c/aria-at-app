@@ -36,8 +36,34 @@ nav.navbar {
     padding: 0.5rem 1rem;
 }
 
+.nav-link {
+    position: relative;
+}
+
+.nav-link:hover {
+    color: #000;
+}
+
 .nav-link[aria-current='true'] {
     color: #000;
+}
+
+.nav-link:hover:after {
+    background: #cfcece;
+}
+
+.nav-link[aria-current='true']:after, .nav-link:hover:after {
+    position: absolute;
+    content: "";
+    width: 90%;
+    height: 2px;
+    left: 0;
+    bottom: -11px;
+    right: 0;
+    margin: auto;
+}
+.nav-link[aria-current='true']:after {
+    background: #0b60ab;
 }
 
 main.container-fluid .row {
@@ -121,6 +147,10 @@ button {
 table thead th {
     background: #e9ebee;
     white-space: nowrap;
+}
+
+table tbody th {
+    font-weight: 400;
 }
 
 table tbody tr {
