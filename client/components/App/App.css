@@ -44,6 +44,10 @@ main.container-fluid .row {
     padding: 0.5rem 1rem;
 }
 
+.row {
+    margin: 0;
+}
+
 @media (min-width: 700px) {
     nav.navbar {
         padding: 0.5rem 3rem;
@@ -85,7 +89,7 @@ h1 {
 }
 
 h2 {
-    margin: 1em 0 0.5em;
+    margin: 1.5em 0 0.5em;
     font-size: 1.5em;
 }
 
@@ -106,21 +110,8 @@ h5 {
     font-weight: 600;
 }
 
-h2,
-h3,
-h4,
-h5 {
-    margin: 0 0 0.5em;
-}
-
 button {
     margin: 0.25em 0;
-}
-
-.init-box {
-    background: #f6f8fa;
-    border: 1px solid #d2d5d9;
-    border-radius: 3px;
 }
 
 .table thead th {
@@ -128,7 +119,7 @@ button {
 }
 
 table thead th {
-    background: #f6f8fa;
+    background: #e9ebee;
     white-space: nowrap;
 }
 
@@ -166,13 +157,6 @@ table label input {
 
 table tbody tr.assign-testers {
     background-color: #f6f8fa;
-}
-
-.commit-message {
-    background: #ecf6ff;
-    border: 1px solid #c4d1e2;
-    padding: 1em;
-    border-radius: 3px;
 }
 
 /* BUTTONS */
@@ -235,6 +219,24 @@ table tbody tr.assign-testers {
     border: 1px solid #d7d7d7;
 }
 
+/* Button Tertiary */
+.btn-tertiary {
+    background: white;
+    color: #0b60ab;
+    border: 1px solid #d7d7d7;
+}
+
+.btn-primary:focus,
+.btn-primary.focus,
+.btn-primary:active,
+.btn-primary.active,
+.btn-primary:not(:disabled):not(.disabled):active {
+    background: white;
+    color: #0b60ab;
+    border-color:#abaaaa;
+    box-shadow: 0 0 0 0.2rem rgba(130, 138, 145, 0.3);
+}
+
 /* Button Danger */
 .btn-danger {
     color: #D52A49;
@@ -248,6 +250,8 @@ table tbody tr.assign-testers {
     border-radius: 22px;
     font-weight: 500;
     text-transform: uppercase;
+    display: inline-block;
+    white-space: nowrap;
 }
 
 .status-label.in-progress {

@@ -1,0 +1,23 @@
+
+.remove-at-browser.btn-danger, .remove-at-browser.btn-danger.disabled, .remove-at-browser.btn-danger:disabled {
+    border-radius: 3px 0px 0px 3px;
+    border-right: 0px;
+}
+
+.undo.btn-tertiary {
+    border-radius: 0px 3px 3px 0px
+}
+
+.undo.btn-tertiary .fa-undo {
+    margin: 0;
+}
+
+.configure-at-browser .row, 
+.configure-at-browser .col-md-9, 
+.configure-at-browser .col-md-3 {
+    padding: 0 !important;
+}
+
+.configure-at-browser button {
+    width: 100%;
+}

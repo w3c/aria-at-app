@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Button, Form } from 'react-bootstrap';
+import { Button, Form, Col, Row } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUndo } from '@fortawesome/free-solid-svg-icons';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import './ConfigureTechnologyRow.css';
 
 class ConfigureTechnologyRow extends Component {
     constructor(props) {
@@ -139,25 +141,33 @@ class ConfigureTechnologyRow extends Component {
                 </td>
                 <td>{runTechnologies.browser_version}</td>
                 <td>
-                    <Button
-                        variant="danger"
-                        aria-label={`Delete at/browser combination ${index +
-                            1}`}
-                        onClick={this.deleteRun}
-                        disabled={deleted === true}
-                        ref={this.deleteRef}
-                    >
-                        Remove
-                    </Button>
-                    <Button
-                        variant="secondary"
-                        disabled={deleted === false}
-                        onClick={this.undoDelete}
-                        aria-label="Undo delete"
-                        ref={this.undoRef}
-                    >
-                        <FontAwesomeIcon icon={faUndo}></FontAwesomeIcon>
-                    </Button>
+                    <Row>
+                        <Col md={9} >
+                            <Button
+                                className="remove-at-browser"
+                                variant="danger"
+                                aria-label={`Delete at/browser combination ${index +
+                                    1}`}
+                                onClick={this.deleteRun}
+                                disabled={deleted === true}
+                                ref={this.deleteRef}
+                            >
+                                <FontAwesomeIcon icon={faTrash}></FontAwesomeIcon>
+                                Remove
+                            </Button>
+                        </Col>
+                        <Col md={3} >
+                            <Button
+                                className="undo btn-tertiary"
+                                disabled={deleted === false}
+                                onClick={this.undoDelete}
+                                aria-label="Undo delete"
+                                ref={this.undoRef}
+                            >
+                                <FontAwesomeIcon icon={faUndo}></FontAwesomeIcon>
+                            </Button>
+                        </Col>
+                    </Row>
                 </td>
             </tr>
         ) : (
@@ -224,6 +234,7 @@ class ConfigureTechnologyRow extends Component {
                             1}`}
                         onClick={this.deleteRun}
                     >
+                        <FontAwesomeIcon icon={faTrash}></FontAwesomeIcon>
                         Remove
                     </Button>
                 </td>
