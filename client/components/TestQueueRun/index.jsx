@@ -1,12 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-    faCheck,
-    faTrashAlt,
-    faEllipsisV,
-    faPlus
-} from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faTrashAlt, faPlus } from '@fortawesome/free-solid-svg-icons';
 import nextId from 'react-id-generator';
 import { Button, Dropdown } from 'react-bootstrap';
 import { connect } from 'react-redux';
@@ -96,9 +91,7 @@ class TestQueueRow extends Component {
     componentDidUpdate(prevProps) {
         // Focus on the start testing button after assigning yourself
         const { userId, testers } = this.props;
-        if (
-            testers.includes(userId) && !prevProps.testers.includes(userId)
-        ) {
+        if (testers.includes(userId) && !prevProps.testers.includes(userId)) {
             this.startTestingButton.current.focus();
         }
 
@@ -236,27 +229,8 @@ class TestQueueRow extends Component {
         return newStatus;
     }
 
-    renderRunStatusChangeOption() {
-        const newStatus = this.generateRunStatus();
-
-        if (newStatus) {
-            return (
-                <Fragment>
-                    <Dropdown.Header>Mark report status as</Dropdown.Header>
-                    <Dropdown.Item
-                        role="menuitem"
-                        key={nextId()}
-                        onClick={() => this.updateRunStatus(newStatus)}
-                    >
-                        {newStatus}
-                    </Dropdown.Item>
-                </Fragment>
-            );
-        }
-    }
-
     generateAssignableTesters() {
-        const { atNameId, testers, usersById, userId } = this.props;
+        const { atNameId, testers, usersById } = this.props;
 
         let canAssignTesters = [];
         for (let uid of Object.keys(usersById)) {
@@ -280,71 +254,46 @@ class TestQueueRow extends Component {
 
         return (
             <Fragment>
-            <Dropdown aria-label="Assign testers menu">
-            <Dropdown.Toggle>
-                <FontAwesomeIcon icon={faPlus} />
-            </Dropdown.Toggle>
-            <Dropdown.Menu>
-                {canAssignTesters.map(t => {
-                    let classname = t.assigned ? 'assigned' : 'not-assigned';
-                    return (
-                        <Dropdown.Item
-                            variant="secondary"
-                            as="button"
-                            key={nextId()}
-                            onClick={() => this.toggleTesterAssign(t.id)}
-                            disabled={!admin && t.id !== userId}
-                            aria-checked={t.assigned}
-                            role="menuitemcheckbox"
-                        >
-                            {t.assigned && <FontAwesomeIcon icon={faCheck} />}
-                            <span className={classname}>
-                                {`${t.username} `}
-                                <span className="fullname">{t.fullname}</span>
-                            </span>
-                        </Dropdown.Item>
-                    );
-                })}
-
-            </Dropdown.Menu>
-            </Dropdown>
-            </Fragment>
-        )
-    }
-
-    renderAssignOptions(admin) {
-        const { userId } = this.props;
-
-        let canAssignTesters = this.generateAssignableTesters();
-
-        return (
-            <Fragment>
-                <Dropdown.Header>Assign to</Dropdown.Header>
-                {canAssignTesters.map(t => {
-                    let classname = t.assigned ? 'assigned' : 'not-assigned';
-                    return (
-                        <Dropdown.Item
-                            variant="secondary"
-                            as="button"
-                            key={nextId()}
-                            onClick={() => this.toggleTesterAssign(t.id)}
-                            disabled={!admin && t.id !== userId}
-                            aria-checked={t.assigned}
-                            role="menuitemcheckbox"
-                        >
-                            {t.assigned && <FontAwesomeIcon icon={faCheck} />}
-                            <span className={classname}>
-                                {`${t.username} `}
-                                <span className="fullname">{t.fullname}</span>
-                            </span>
-                        </Dropdown.Item>
-                    );
-                })}
+                <Dropdown aria-label="Assign testers menu">
+                    <Dropdown.Toggle>
+                        <FontAwesomeIcon icon={faPlus} />
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu>
+                        {canAssignTesters.map(t => {
+                            let classname = t.assigned
+                                ? 'assigned'
+                                : 'not-assigned';
+                            return (
+                                <Dropdown.Item
+                                    variant="secondary"
+                                    as="button"
+                                    key={nextId()}
+                                    onClick={() =>
+                                        this.toggleTesterAssign(t.id)
+                                    }
+                                    disabled={!admin && t.id !== userId}
+                                    aria-checked={t.assigned}
+                                    role="menuitemcheckbox"
+                                >
+                                    {t.assigned && (
+                                        <FontAwesomeIcon icon={faCheck} />
+                                    )}
+                                    <span className={classname}>
+                                        {`${t.username} `}
+                                        <span className="fullname">
+                                            {t.fullname}
+                                        </span>
+                                    </span>
+                                </Dropdown.Item>
+                            );
+                        })}
+                    </Dropdown.Menu>
+                </Dropdown>
             </Fragment>
         );
     }
 
-    renderDeleteOptions() {
+    generateTestersWithResults() {
         const { testers, usersById } = this.props;
 
         let testersWithResults = [];
@@ -358,50 +307,43 @@ class TestQueueRow extends Component {
             }
         }
 
+        return testersWithResults;
+    }
+
+    renderDeleteMenu() {
+        let testersWithResults = this.generateTestersWithResults();
+
         if (testersWithResults.length) {
             return (
                 <Fragment>
-                    <Dropdown.Header>Delete Results For</Dropdown.Header>
-                    {testersWithResults.map(t => {
-                        return (
-                            <Dropdown.Item
-                                role="menuitem"
-                                variant="secondary"
-                                as="button"
-                                key={nextId()}
-                                onClick={() =>
-                                    this.handleDeleteResultsForUser(t.id)
-                                }
-                            >
-                                <FontAwesomeIcon icon={faTrashAlt} />
-                                {t.username}
-                            </Dropdown.Item>
-                        );
-                    })}
+                    <Dropdown aria-label="Delete results menu">
+                        <Dropdown.Toggle>
+                            <FontAwesomeIcon icon={faTrashAlt} />
+                        </Dropdown.Toggle>
+                        <Dropdown.Menu>
+                            {testersWithResults.map(t => {
+                                return (
+                                    <Dropdown.Item
+                                        role="menuitem"
+                                        variant="secondary"
+                                        as="button"
+                                        key={nextId()}
+                                        onClick={() =>
+                                            this.handleDeleteResultsForUser(
+                                                t.id
+                                            )
+                                        }
+                                    >
+                                        <FontAwesomeIcon icon={faTrashAlt} />
+                                        {t.username}
+                                    </Dropdown.Item>
+                                );
+                            })}
+                        </Dropdown.Menu>
+                    </Dropdown>
                 </Fragment>
             );
         }
-    }
-
-    renderTesterActionMenu() {
-        const { userId } = this.props;
-        return (
-            <Dropdown.Menu role="menu">
-                {this.testsCompletedByUser[userId] && (
-                    <Dropdown.Item
-                        role="menuitem"
-                        variant="secondary"
-                        as="button"
-                        key={nextId()}
-                        onClick={() => this.handleDeleteResultsForUser(userId)}
-                    >
-                        <FontAwesomeIcon icon={faTrashAlt} />
-                        Delete my results
-                    </Dropdown.Item>
-                )}
-                {this.renderAssignOptions(false)}
-            </Dropdown.Menu>
-        );
     }
 
     renderAdminActionMenu() {
@@ -445,14 +387,9 @@ class TestQueueRow extends Component {
             return acc;
         }, {});
 
-        this.testsCompletedOrInProgressByThisUser = testsForRun.filter(
-            t => {
-                return (
-                    t.results &&
-                    t.results[userId]
-                );
-            }
-        ).length;
+        this.testsCompletedOrInProgressByThisUser = testsForRun.filter(t => {
+            return t.results && t.results[userId];
+        }).length;
 
         let testerList = this.renderTesterList(currentUserAssigned);
 
@@ -481,42 +418,54 @@ class TestQueueRow extends Component {
                                 </Button>
                             </li>
                         )}
-                        {admin && this.renderAssignMenu()}
+                        {this.renderAssignMenu(admin)}
                     </ul>
                 </td>
                 <td>
                     <ul>
-                        <li><div tabIndex="0">{status}</div></li>
+                        <li>
+                            <div tabIndex="0">{status}</div>
+                        </li>
                         <li>{results}</li>
-                    {
-                        newStatus &&
-                        <li><Button onClick={() => this.updateRunStatus(newStatus)}>Mark status as {newStatus}</Button></li>
-                    }
+                        {admin && newStatus && (
+                            <li>
+                                <Button
+                                    onClick={() =>
+                                        this.updateRunStatus(newStatus)
+                                    }
+                                >
+                                    Mark status as {newStatus}
+                                </Button>
+                            </li>
+                        )}
                     </ul>
                 </td>
                 <td className="actions">
                     <div className="primary-buttons">
-                      <Button
-                          variant="primary"
-                          href={`/run/${runId}`}
-                          disabled={!currentUserAssigned}
-                          ref={this.startTestingButton}
-                      >
-                          {this.testsCompletedOrInProgressByThisUser ? "Continue testing" : "Start testing"}
-                      </Button>
-                      {admin && this.renderOpenAsDropdown()}
-                    </div>
-                    <Dropdown className="kebab-menu">
-                        <Dropdown.Toggle
-                            id={nextId()}
-                            bsPrefix={'more-actions'}
-                            aria-label={'additional actions'}
+                        <Button
+                            variant="primary"
+                            href={`/run/${runId}`}
+                            disabled={!currentUserAssigned}
+                            ref={this.startTestingButton}
                         >
-                            <FontAwesomeIcon icon={faEllipsisV} />
-                        </Dropdown.Toggle>
-                        {admin && this.renderAdminActionMenu()}
-                        {!admin && this.renderTesterActionMenu()}
-                    </Dropdown>
+                            {this.testsCompletedOrInProgressByThisUser
+                                ? 'Continue testing'
+                                : 'Start testing'}
+                        </Button>
+                        {admin && this.renderOpenAsDropdown()}
+                    </div>
+                    {admin && this.renderDeleteMenu()}
+                    {(!admin && this.testsCompletedByUser[userId] && (
+                        <Button
+                            onClick={() =>
+                                this.handleDeleteResultsForUser(userId)
+                            }
+                            aria-label="Delete my results"
+                        >
+                            <FontAwesomeIcon icon={faTrashAlt} />
+                        </Button>
+                    )) ||
+                        ''}
                 </td>
             </tr>
         );
@@ -545,13 +494,7 @@ const mapStateToProps = (state, ownProps) => {
     const userId = state.user.id;
 
     const run = activeRunsById[runId];
-    const {
-        apg_example_name,
-        testers,
-        at_name_id,
-        run_status,
-        tests
-    } = run;
+    const { apg_example_name, testers, at_name_id, run_status, tests } = run;
 
     return {
         apgExampleName: apg_example_name,
