@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck, faTrashAlt, faUserPlus, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faTrashAlt, faUserPlus } from '@fortawesome/free-solid-svg-icons';
 import nextId from 'react-id-generator';
 import { Button, Dropdown, Col, Row } from 'react-bootstrap';
 import { connect } from 'react-redux';
