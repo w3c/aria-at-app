@@ -189,6 +189,10 @@ table tbody tr.assign-testers {
     background-color: #f6f8fa;
 }
 
+.table ul {
+    margin-bottom: 0;
+}
+
 /* BUTTONS */
 /* Button Primary */
 .btn {
@@ -294,63 +298,10 @@ table tbody tr.assign-testers {
     color: #748193;
 }
 
-/* ACTIONS */
-.table-bordered td.actions {
-    border-right: 0px solid;
-    border-bottom: 0px solid;
-    border-left: 0px solid;
-    display: flex;
-    align-items: center;
+.status-label.complete {
+    background: #bcddfa;
+    color: #10548f;
 }
-
-.actions .primary-buttons .btn {
-    width: 100%;
-}
-
-.actions .primary-buttons .open-run-as .btn {
-    padding-right: 2em;
-    position: relative;
-}
-
-.actions .kebab-menu button.more-actions {
-    margin-left: 0.75em;
-    padding: 0.25em 0.5em;
-}
-
-.actions .kebab-menu .btn-primary:focus,
-.actions .kebab-menu .btn-primary.focus {
-    border: none;
-}
-
-.actions .kebab-menu .btn-primary:active,
-.actions .kebab-menu .btn-primary.active {
-    background: #d3d5d9;
-}
-
-.actions .kebab-menu button.more-actions svg {
-    margin: 0;
-}
-
-.actions .kebab-menu .fullname {
-    color: gray;
-    font-size: 0.9em;
-    margin-left: 0.25em;
-}
-
-.actions .kebab-menu .assign-test.dropdown,
-.actions .kebab-menu .unassign-test.dropdown {
-    display: inline-block;
-    width: 50%;
-}
-
-.actions .kebab-menu .assign-test.dropdown {
-    padding-right: 0.5em;
-}
-
-.actions .kebab-menu .dropdown-header {
-    border-bottom: 1px solid #d0d3d5;
-}
-
 .dropdown-toggle::after {
     position: absolute;
     right: 0.5em;

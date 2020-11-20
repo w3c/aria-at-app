@@ -1,0 +1,22 @@
+main.container-fluid table .row, 
+main.container-fluid table .col-md-9,
+main.container-fluid table .col-md-3 {
+    padding: 0;
+}
+
+.table-bordered td.actions {
+    border-right: 0px solid;
+    border-bottom: 0px solid;
+    border-left: 0px solid;
+    display: flex;
+    align-items: center;
+}
+
+.actions .primary-buttons .btn {
+    width: 100%;
+}
+
+.actions .primary-buttons .open-run-as .btn {
+    padding-right: 2em;
+    position: relative;
+}

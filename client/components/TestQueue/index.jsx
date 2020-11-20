@@ -7,8 +7,8 @@ import { connect } from 'react-redux';
 import { getAllUsers } from '../../actions/users';
 import { getActiveRuns } from '../../actions/runs';
 import nextId from 'react-id-generator';
-
 import TestQueueRun from '@components/TestQueueRun';
+import './TestQueue.css';
 
 class TestQueue extends Component {
     componentDidMount() {
@@ -42,10 +42,11 @@ class TestQueue extends Component {
                 <Table aria-labelledby={tableId} striped bordered hover>
                     <thead>
                         <tr>
-                            <th>Test Plan</th>
+                            <th className="test-plan">Test Plan</th>
                             <th>Testers</th>
                             <th>Report Status</th>
                             <th>Actions</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>

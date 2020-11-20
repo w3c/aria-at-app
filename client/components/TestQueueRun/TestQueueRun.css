@@ -2,7 +2,21 @@
     padding: 0;
     border: 0;
     margin: 0;
-    text-align: left;
+}
+
+.assign-tester {
+    border-radius: 25px;
+    width: 3em;
+    height: 3em;
+    border-style: dashed;
+}
+
+.assign-tester .fa-user-plus {
+    margin: 0;
+}
+
+.assign-tester.dropdown-toggle:after {
+    display: none;
 }
 
 ul {
@@ -13,8 +27,18 @@ li {
     list-style: none;
 }
 
+.col-md-9 li {
+    padding-right: .5em;
+}
+
 .not-assigned {
     padding-left: 1.5em;
+}
+
+.fullname {
+    color: gray;
+    font-size: 0.9em;
+    margin-left: 0.25em;
 }
 
 svg.svg-inline--fa {
@@ -46,4 +70,8 @@ button.more-actions.btn-primary:focus {
 
 button.more-actions:active {
     background: #0053ba;
+}
+
+.primary-buttons {
+    width: inherit;
 }
