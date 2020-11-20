@@ -32,13 +32,10 @@ class ConfigureTechnologyRow extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        if (
-            !this.props.editable
-        ) {
+        if (!this.props.editable) {
             if (this.props.deleted && !prevProps.deleted) {
                 this.undoRef.current.focus();
-            }
-            else if (!this.props.deleted && prevProps.deleted) {
+            } else if (!this.props.deleted && prevProps.deleted) {
                 this.deleteRef.current.focus();
             }
         }

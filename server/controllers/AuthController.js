@@ -68,10 +68,9 @@ module.exports = {
                         accessToken: req.session.accessToken,
                         user: userToAuthorize
                     });
-                } catch(error) {
+                } catch (error) {
                     console.error(`Error: ${error}`);
                 }
-                
             }
 
             // Assuming we now have a user, assign updated roles
