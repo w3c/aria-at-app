@@ -4,7 +4,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faCheck,
     faTrashAlt,
-    faEllipsisV
+    faEllipsisV,
+    faPlus
 } from '@fortawesome/free-solid-svg-icons';
 import nextId from 'react-id-generator';
 import { Button, Dropdown } from 'react-bootstrap';
@@ -249,7 +250,7 @@ class TestQueueRow extends Component {
         }
     }
 
-    renderAssignOptions(admin) {
+    generateAssignableTesters() {
         const { atNameId, testers, usersById, userId } = this.props;
 
         let canAssignTesters = [];
@@ -263,6 +264,52 @@ class TestQueueRow extends Component {
                 });
             }
         }
+
+        return canAssignTesters;
+    }
+
+    renderAssignMenu(admin) {
+        const { userId } = this.props;
+
+        const canAssignTesters = this.generateAssignableTesters();
+
+        return (
+            <Fragment>
+            <Dropdown aria-label="Assign testers menu">
+            <Dropdown.Toggle>
+                <FontAwesomeIcon icon={faPlus} />
+            </Dropdown.Toggle>
+            <Dropdown.Menu>
+                {canAssignTesters.map(t => {
+                    let classname = t.assigned ? 'assigned' : 'not-assigned';
+                    return (
+                        <Dropdown.Item
+                            variant="secondary"
+                            as="button"
+                            key={nextId()}
+                            onClick={() => this.toggleTesterAssign(t.id)}
+                            disabled={!admin && t.id !== userId}
+                            aria-checked={t.assigned}
+                            role="menuitemcheckbox"
+                        >
+                            {t.assigned && <FontAwesomeIcon icon={faCheck} />}
+                            <span className={classname}>
+                                {`${t.username} `}
+                                <span className="fullname">{t.fullname}</span>
+                            </span>
+                        </Dropdown.Item>
+                    );
+                })}
+            </Dropdown.Menu>
+            </Dropdown>
+            </Fragment>
+        )
+    }
+
+    renderAssignOptions(admin) {
+        const { userId } = this.props;
+
+        let canAssignTesters = this.generateAssignableTesters();
 
         return (
             <Fragment>
@@ -427,6 +474,7 @@ class TestQueueRow extends Component {
                                 </Button>
                             </li>
                         )}
+                        {admin && this.renderAssignMenu()}
                     </ul>
                 </td>
                 <td>
