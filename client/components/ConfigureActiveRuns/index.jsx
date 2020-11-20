@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Table, Form, Button, Row, Col } from 'react-bootstrap';
+import { Table, Form, Button } from 'react-bootstrap';
 import {
     saveRunConfiguration,
     getActiveRunConfiguration,

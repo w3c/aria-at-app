@@ -2,8 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Button, Form, Col, Row } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUndo } from '@fortawesome/free-solid-svg-icons';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faUndo, faTrash } from '@fortawesome/free-solid-svg-icons';
 import './ConfigureTechnologyRow.css';
 
 class ConfigureTechnologyRow extends Component {

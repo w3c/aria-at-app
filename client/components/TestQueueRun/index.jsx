@@ -1,9 +1,9 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck, faTrashAlt, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faTrashAlt, faUserPlus, faPlus } from '@fortawesome/free-solid-svg-icons';
 import nextId from 'react-id-generator';
-import { Button, Dropdown } from 'react-bootstrap';
+import { Button, Dropdown, Col, Row } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import checkForConflict from '../../utils/checkForConflict';
@@ -184,16 +184,16 @@ class TestQueueRow extends Component {
         let results = null;
 
         if (this.state.totalConflicts > 0) {
-            status = `In progress with ${
+            status = `${
                 this.state.totalConflicts
-            } conflicting test${this.state.totalConflicts === 1 ? '' : 's'}`;
+            } Conflict${this.state.totalConflicts === 1 ? '' : 's'}`;
         } else if (
             this.state.testsWithResults > 0 &&
             this.state.testsWithResults !== testsForRun.length
         ) {
             status = <span className="status-label in-progress">In Progress</span>;
         } else if (this.state.testsWithResults === testsForRun.length) {
-            status = 'Tests complete with no conflicts';
+            status = <span className="status-label complete">Complete</span>;
         }
 
         if (runStatus === 'draft') {
@@ -255,8 +255,10 @@ class TestQueueRow extends Component {
         return (
             <Fragment>
                 <Dropdown aria-label="Assign testers menu">
-                    <Dropdown.Toggle>
-                        <FontAwesomeIcon icon={faPlus} />
+                    <Dropdown.Toggle 
+                        className="assign-tester"
+                        variant="secondary">
+                        <FontAwesomeIcon icon={faUserPlus} />
                     </Dropdown.Toggle>
                     <Dropdown.Menu>
                         {canAssignTesters.map(t => {
@@ -317,7 +319,7 @@ class TestQueueRow extends Component {
             return (
                 <Fragment>
                     <Dropdown aria-label="Delete results menu">
-                        <Dropdown.Toggle>
+                        <Dropdown.Toggle variant="danger">
                             <FontAwesomeIcon icon={faTrashAlt} />
                         </Dropdown.Toggle>
                         <Dropdown.Menu>
@@ -400,26 +402,20 @@ class TestQueueRow extends Component {
             <tr key={runId}>
                 <th>{designPatternLinkOrName}</th>
                 <td>
-                    <ul>
-                        {testerList.length !== 0 ? (
-                            testerList
-                        ) : (
-                            <li>No testers assigned</li>
-                        )}
-                        {!currentUserAssigned && (
-                            <li>
-                                <Button
-                                    onClick={this.handleAssignSelfClick}
-                                    aria-label={`Assign yourself to the test run ${this.testRun()}`}
-                                    variant="link"
-                                    className="assign-self"
-                                >
-                                    Assign Yourself
-                                </Button>
-                            </li>
-                        )}
-                        {this.renderAssignMenu(admin)}
-                    </ul>
+                    <Row>
+                        <Col md={9}>
+                            <ul>
+                                {testerList.length !== 0 ? (
+                                    testerList
+                                ) : (
+                                    <li>No testers assigned</li>
+                                )}
+                            </ul>
+                        </Col>
+                        <Col md={3}>
+                            {this.renderAssignMenu(admin)}
+                        </Col>
+                    </Row>
                 </td>
                 <td>
                     <ul>
@@ -430,6 +426,7 @@ class TestQueueRow extends Component {
                         {admin && newStatus && (
                             <li>
                                 <Button
+                                    variant="secondary"
                                     onClick={() =>
                                         this.updateRunStatus(newStatus)
                                     }
@@ -453,7 +450,9 @@ class TestQueueRow extends Component {
                                 : 'Start testing'}
                         </Button>
                         {admin && this.renderOpenAsDropdown()}
-                    </div>
+                    </div>  
+                </td>
+                <td>
                     {admin && this.renderDeleteMenu()}
                     {(!admin && this.testsCompletedByUser[userId] && (
                         <Button
