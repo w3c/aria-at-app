@@ -214,7 +214,7 @@ class TestQueueRow extends Component {
         return { status, results };
     }
 
-    renderRunStatusChangeOption() {
+    generateRunStatus() {
         const { runStatus } = this.props;
 
         // If there are no conflicts OR the test has been marked as "final",
@@ -233,6 +233,11 @@ class TestQueueRow extends Component {
         else if (runStatus === 'draft' && this.state.totalConflicts === 0) {
             newStatus = 'Final';
         }
+        return newStatus;
+    }
+
+    renderRunStatusChangeOption() {
+        const newStatus = this.generateRunStatus();
 
         if (newStatus) {
             return (
@@ -300,6 +305,7 @@ class TestQueueRow extends Component {
                         </Dropdown.Item>
                     );
                 })}
+
             </Dropdown.Menu>
             </Dropdown>
             </Fragment>
@@ -451,6 +457,7 @@ class TestQueueRow extends Component {
         let testerList = this.renderTesterList(currentUserAssigned);
 
         let { status, results } = this.renderStatusAndResult();
+        const newStatus = this.generateRunStatus();
 
         return (
             <tr key={runId}>
@@ -478,8 +485,14 @@ class TestQueueRow extends Component {
                     </ul>
                 </td>
                 <td>
-                    <div>{status}</div>
-                    {results}
+                    <ul>
+                        <li><div tabIndex="0">{status}</div></li>
+                        <li>{results}</li>
+                    {
+                        newStatus &&
+                        <li><Button onClick={() => this.updateRunStatus(newStatus)}>Mark status as {newStatus}</Button></li>
+                    }
+                    </ul>
                 </td>
                 <td className="actions">
                     <div className="primary-buttons">
