@@ -255,13 +255,6 @@ class RunResultsPage extends Component {
                                             </h2>
                                             <div className="float-right">
                                                 <Button
-                                                    target="_blank"
-                                                    href={`/aria-at/${git_hash}/${t.file}?at=${at_key}`}
-                                                    variant="secondary"
-                                                >
-                                                    Open Test
-                                                </Button>
-                                                <Button
                                                     variant="secondary"
                                                     onClick={() =>
                                                         this.handleRaiseIssueClick(
@@ -270,6 +263,13 @@ class RunResultsPage extends Component {
                                                     }
                                                 >
                                                     Raise an Issue
+                                                </Button>
+                                                <Button
+                                                    target="_blank"
+                                                    href={`/aria-at/${git_hash}/${t.file}?at=${at_key}`}
+                                                    variant="secondary"
+                                                >
+                                                    Open Test
                                                 </Button>
                                             </div>
                                         </div>
