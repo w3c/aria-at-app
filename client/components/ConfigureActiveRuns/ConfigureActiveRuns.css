@@ -6,19 +6,20 @@
 }
 .current-commit p {
     margin-bottom: 0;
-    background: rgba(0,0,0,.05);
-    padding: .45em .75em .4em;
+    background: rgba(0, 0, 0, 0.05);
+    padding: 0.45em 0.75em 0.4em;
     border-radius: 5px;
     border: 1px solid #c4d1e2;
 }
 
 .current-commit p .fa-check {
     color: green;
-    margin-right: .25em;
-    padding-top: .1em;
+    margin-right: 0.25em;
+    padding-top: 0.1em;
 }
 
-.current-commit p, .select-commit .form-control {
+.current-commit p,
+.select-commit .form-control {
     font-family: monospace;
     font-size: 1.2em;
 }
@@ -30,33 +31,34 @@
     border-radius: 3px;
 }
 
-.current-commit, .select-commit {
+.current-commit,
+.select-commit {
     position: relative;
     padding-left: 2.5em;
-    box-shadow: 0px 1px 3px 0px rgba(0,0,0,.15);
+    box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.15);
 }
 
 .current-commit:before,
 .select-commit:before {
-    content: "";
+    content: '';
     position: absolute;
     height: 100%;
     width: 2px;
-    background: rgba(0,0,0,.1);
+    background: rgba(0, 0, 0, 0.1);
     left: 1em;
     top: 0;
 }
 
 .current-commit:after,
 .select-commit:after {
-    content: "";
+    content: '';
     position: absolute;
     width: 10px;
     height: 10px;
-    border: 2px solid rgba(0,0,0,.5);
+    border: 2px solid rgba(0, 0, 0, 0.5);
     border-radius: 10px;
     background: white;
-    left: .75em;
+    left: 0.75em;
     top: 1.5em;
 }
 
@@ -66,11 +68,11 @@
 
 .current-commit label:before,
 .select-commit label:before {
-    content: "";
+    content: '';
     position: absolute;
     width: 18px;
     height: 2px;
-    left: .5em;
+    left: 0.5em;
     top: 1.75em;
     background: #7f7f7f;
 }
@@ -86,11 +88,11 @@
     display: block;
     text-align: center;
     width: 100%;
-    padding: .75em;
+    padding: 0.75em;
     border: 1px dashed #d2d5d9;
     border-top: none;
     background: #f5f8fa;
-    box-shadow: inset 0px 0px 6px rgba(0,0,0,0.1);
+    box-shadow: inset 0px 0px 6px rgba(0, 0, 0, 0.1);
 }
 
 button {
@@ -102,5 +104,5 @@ button {
 }
 
 .test-plans button {
-    width: 100%
+    width: 100%;
 }

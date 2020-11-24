@@ -14,7 +14,7 @@ class RunResultsPage extends Component {
         super(props);
 
         this.state = {
-            showRaiseIssueModal: {},
+            showRaiseIssueModal: {}
         };
 
         this.handleRaiseIssueClick = this.handleRaiseIssueClick.bind(this);
@@ -32,7 +32,9 @@ class RunResultsPage extends Component {
 
     handleRaiseIssueClick(i) {
         this.setState({
-          showRaiseIssueModal: Object.assign(this.state.showRaiseIssueModal, {[i]: !this.state.showRaiseIssueModal[i]})
+            showRaiseIssueModal: Object.assign(this.state.showRaiseIssueModal, {
+                [i]: !this.state.showRaiseIssueModal[i]
+            })
         });
     }
 
@@ -245,32 +247,47 @@ class RunResultsPage extends Component {
                                 return (
                                     <Fragment key={nextId()}>
                                         <div>
-                                          <h2 id={`test-${i.toString()}`} className='float-left'>
-                                              Details for test: {t.name}
-                                          </h2>
-                                          <div className='float-right'>
-                                            <Button
-                                                target="_blank"
-                                                href={`/aria-at/${git_hash}/${t.file}?at=${at_key}`}
-                                                variant="secondary"
+                                            <h2
+                                                id={`test-${i.toString()}`}
+                                                className="float-left"
                                             >
-                                                Open Test
-                                            </Button>
-                                            <Button variant="secondary"
-                                              onClick={() => this.handleRaiseIssueClick(i)}>
-                                                Raise an Issue
-                                            </Button>
-                                          </div>
+                                                Details for test: {t.name}
+                                            </h2>
+                                            <div className="float-right">
+                                                <Button
+                                                    target="_blank"
+                                                    href={`/aria-at/${git_hash}/${t.file}?at=${at_key}`}
+                                                    variant="secondary"
+                                                >
+                                                    Open Test
+                                                </Button>
+                                                <Button
+                                                    variant="secondary"
+                                                    onClick={() =>
+                                                        this.handleRaiseIssueClick(
+                                                            i
+                                                        )
+                                                    }
+                                                >
+                                                    Raise an Issue
+                                                </Button>
+                                            </div>
                                         </div>
                                         <TestResult testResult={t.result} />
                                         <RaiseIssueModal
                                             at_key={at_key}
                                             git_hash={git_hash}
-                                            onHide={() => this.handleRaiseIssueClick(i)}
+                                            onHide={() =>
+                                                this.handleRaiseIssueClick(i)
+                                            }
                                             run={run}
-                                            show={this.state.showRaiseIssueModal[i]}
+                                            show={
+                                                this.state.showRaiseIssueModal[
+                                                    i
+                                                ]
+                                            }
                                             test={t}
-                                            userDescriptor='Report viewer'
+                                            userDescriptor="Report viewer"
                                         />
                                     </Fragment>
                                 );

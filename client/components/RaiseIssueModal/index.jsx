@@ -12,7 +12,9 @@ import './RaiseIssueModal.css';
 const REPO_LINK = `https://github.com/${process.env.GITHUB_REPO_OWNER}/${process.env.GITHUB_REPO_NAME}`;
 
 function createIssueDefaults(userDescriptor, test, run, sha) {
-    const title = `${userDescriptor || 'Tester'} issue report for: "${test.name}"`;
+    const title = `${userDescriptor || 'Tester'} issue report for: "${
+        test.name
+    }"`;
     let body = `
 ### Test file at exact commit
 

@@ -52,9 +52,10 @@ nav.navbar {
     background: #cfcece;
 }
 
-.nav-link[aria-current='true']:after, .nav-link:hover:after {
+.nav-link[aria-current='true']:after,
+.nav-link:hover:after {
     position: absolute;
-    content: "";
+    content: '';
     width: 90%;
     height: 2px;
     left: 0;
@@ -196,7 +197,7 @@ table tbody tr.assign-testers {
 /* BUTTONS */
 /* Button Primary */
 .btn {
-    font-size: .9rem;
+    font-size: 0.9rem;
     font-weight: 500;
 }
 
@@ -220,7 +221,8 @@ table tbody tr.assign-testers {
 }
 
 /* Button Secondary */
-.btn-secondary, .btn-danger  {
+.btn-secondary,
+.btn-danger {
     background: #f4f4f4;
     color: black;
     border: 1px solid #d7d7d7;
@@ -240,13 +242,16 @@ table tbody tr.assign-testers {
 .show > .btn-secondary.dropdown-toggle {
     background: #f4f4f4;
     color: black;
-    border-color:#abaaaa;
+    border-color: #abaaaa;
     box-shadow: 0 0 0 0.2rem rgba(130, 138, 145, 0.3);
 }
 
-.btn-primary.disabled, .btn-primary:disabled,
-.btn-secondary.disabled, .btn-secondary:disabled,
-.btn-danger.disabled, .btn-danger:disabled {
+.btn-primary.disabled,
+.btn-primary:disabled,
+.btn-secondary.disabled,
+.btn-secondary:disabled,
+.btn-danger.disabled,
+.btn-danger:disabled {
     background: #f4f4f4;
     color: #999999;
     border: 1px solid #d7d7d7;
@@ -267,20 +272,20 @@ table tbody tr.assign-testers {
 .btn-primary:not(:disabled):not(.disabled):active {
     background: white;
     color: #0b60ab;
-    border-color:#abaaaa;
+    border-color: #abaaaa;
     box-shadow: 0 0 0 0.2rem rgba(130, 138, 145, 0.3);
 }
 
 /* Button Danger */
 .btn-danger {
-    color: #D52A49;
+    color: #d52a49;
 }
 
 /* STATUS LABELS */
 
 .status-label {
-    font-size: .8rem;
-    padding: .25em .65em .15em;
+    font-size: 0.8rem;
+    padding: 0.25em 0.65em 0.15em;
     border-radius: 22px;
     font-weight: 500;
     text-transform: uppercase;
