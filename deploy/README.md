@@ -49,10 +49,13 @@ can view logging from ansible with `sudo -i cat /var/log/messages`.
 
 To deploy this project to  server:
 
-1. Obtain a copy of the `ansible-vault-password.txt` file and place it in the
+1. Obtain an authorized key and add it to your keychain. 
+  - The shared key is called `aria-at-bocoup`.
+  - Add it to your keychain with the following command: `ssh-add <path>/<to>/<key>/aria-at-bocoup`
+2. Obtain a copy of the `ansible-vault-password.txt` file in LastPass and place it in the
    directory which contains this document
-2. Install [Ansible](https://www.ansible.com/)
-3. Execute the following command:
+3. Install [Ansible](https://www.ansible.com/)
+4. Execute the following command:
    - Staging:
     ```
     ansible-playbook provision.yml --inventory inventory/staging.yml
