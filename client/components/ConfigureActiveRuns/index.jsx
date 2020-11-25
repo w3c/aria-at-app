@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
+import moment from 'moment';
 import { connect } from 'react-redux';
 import { Table, Form, Button } from 'react-bootstrap';
 import {
@@ -141,7 +142,7 @@ class ConfigureActiveRuns extends Component {
             nextProps.activeRunConfiguration &&
             nextProps.testVersions
         ) {
-            // Get the active test version or the first test version if
+            // Get the active test version or the first test version i
             // there is no active test (a clean database). This assumes
             // that a single test version is imported initially.
             let testVersionId =
@@ -465,10 +466,10 @@ class ConfigureActiveRuns extends Component {
         const getTestVersions = function() {
             const testVersionOption = version => (
                 <option key={version.id} value={version.id}>
-                    {version.git_hash.slice(0, 7) +
-                        ' - ' +
+                    { moment(version.date).format('MMMM Do YYYY') + ' - ' +
                         version.git_commit_msg.slice(0, 80) +
-                        '...'}
+                        '...' + ' - ' + version.git_hash.slice(0, 7) +
+                        ' - ' }
                 </option>
             );
             return Object.keys(activeRunConfiguration.active_test_version)
@@ -698,9 +699,9 @@ class ConfigureActiveRuns extends Component {
                         </thead>
                         {technologyRows.length ? (
                             <tbody>{technologyRows}</tbody>
-                        ) : (
-                            ''
-                        )}
+                        ) :
+                            null
+                        }
                     </Table>
                     <div className="add-at-browser">
                         <Button
