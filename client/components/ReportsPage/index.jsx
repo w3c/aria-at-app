@@ -16,6 +16,7 @@ class ReportsPage extends Component {
         };
 
         this.setTechPairsState = this.setTechPairsState.bind(this);
+        this.selectTechPair = this.selectTechPair.bind(this);
     }
 
     componentDidMount() {
@@ -32,6 +33,26 @@ class ReportsPage extends Component {
         if (publishedRunsById !== prevProps.publishedRunsById) {
             this.setTechPairsState();
         }
+    }
+
+    selectTechPair(i, j) {
+        const originalElement = this.state.techMatrix[i][j];
+        const newElement = {
+            ...originalElement,
+            active: !originalElement['active']
+        };
+        const updatedRow = [
+            ...this.state.techMatrix[i].slice(0, j),
+            newElement,
+            ...this.state.techMatrix[i].slice(j + 1)
+        ];
+        this.setState({
+            techMatrix: [
+                ...this.state.techMatrix.slice(0, i),
+                updatedRow,
+                ...this.state.techMatrix.slice(i + 1)
+            ]
+        });
     }
 
     setTechPairsState() {
@@ -80,9 +101,12 @@ class ReportsPage extends Component {
                             'PASS'
                     );
                     if (techMatrix[rowIdx][colIdx] === null)
-                        techMatrix[rowIdx][colIdx] = {};
+                        techMatrix[rowIdx][colIdx] = {
+                            active: true,
+                            tests: {}
+                        };
 
-                    techMatrix[rowIdx][colIdx][apg_example_name] = {
+                    techMatrix[rowIdx][colIdx]['tests'][apg_example_name] = {
                         total: testsWithResults.length,
                         pass: testsPassed.length
                     };
@@ -98,6 +122,7 @@ class ReportsPage extends Component {
     render() {
         const { publishedRunsById } = this.props;
         const { techMatrix } = this.state;
+        let techPairSelectors = [];
         let techPairHeaders = [];
         let apgExampleRows = [];
         let topLevelRowData = [
@@ -117,15 +142,38 @@ class ReportsPage extends Component {
             for (let i = 1; i < techMatrix.length; i++) {
                 for (let j = 1; j < techMatrix[0].length; j++) {
                     if (techMatrix[i][j] !== null) {
+                        techPairSelectors.push(
+                            <div class="form-check form-check-inline">
+                                <input
+                                    type="checkbox"
+                                    id={`${techMatrix[0][j]}-with-${techMatrix[i][0]}-checkbox`}
+                                    name={`${techMatrix[0][j]}-with-${techMatrix[i][0]}`}
+                                    checked={techMatrix[i][j]['active']}
+                                    onChange={() => this.selectTechPair(i, j)}
+                                    className="form-check-input"
+                                ></input>
+                                <label
+                                    for={`${techMatrix[0][j]}-with-${techMatrix[i][0]}-checkbox`}
+                                    className="form-check-label"
+                                >
+                                    {techMatrix[0][j]} with {techMatrix[i][0]}
+                                </label>
+                            </div>
+                        );
+
                         techPairHeaders.push(
                             <th
                                 key={`${techMatrix[0][j]} with ${techMatrix[i][0]}`}
+                                className={
+                                    techMatrix[i][j]['active'] ? '' : 'd-none'
+                                }
                             >
                                 {techMatrix[0][j]} with {techMatrix[i][0]}
                             </th>
                         );
+
                         const topLevelColumnObj = Object.values(
-                            techMatrix[i][j]
+                            techMatrix[i][j]['tests']
                         ).reduce(
                             (acc, { total, pass }) => {
                                 acc.total += total;
@@ -145,6 +193,9 @@ class ReportsPage extends Component {
                         topLevelRowData.push(
                             <td
                                 key={`Percentage of ${techMatrix[0][j]} with ${techMatrix[i][0]}`}
+                                className={
+                                    techMatrix[i][j]['active'] ? '' : 'd-none'
+                                }
                             >
                                 <ProgressBar
                                     now={percentage}
@@ -184,10 +235,10 @@ class ReportsPage extends Component {
                     // The math for the rows works by taking all the passing tests
                     // and dividing by total number of tests with results
                     const percentage = Math.trunc(
-                        (techMatrix[techMatrixrow][techMatrixCol][
+                        (techMatrix[techMatrixrow][techMatrixCol]['tests'][
                             run.apg_example_name
                         ].pass /
-                            techMatrix[techMatrixrow][techMatrixCol][
+                            techMatrix[techMatrixrow][techMatrixCol]['tests'][
                                 run.apg_example_name
                             ].total) *
                             100
@@ -210,6 +261,13 @@ class ReportsPage extends Component {
                                 tableRows.push(
                                     <td
                                         key={`data-${run.id}-${run.apg_example_name}-${techPairHeaders[headerColumnIndex].key}`}
+                                        className={
+                                            techMatrix[techMatrixCol][
+                                                techMatrixrow
+                                            ]['active']
+                                                ? ''
+                                                : 'd-none'
+                                        }
                                     >
                                         <ProgressBar
                                             now={percentage}
@@ -222,6 +280,13 @@ class ReportsPage extends Component {
                                 tableRows.push(
                                     <td
                                         key={`data-${run.id}-${run.apg_example_name}-${techPairHeaders[i].key}`}
+                                        className={
+                                            techMatrix[techMatrixCol][
+                                                techMatrixrow
+                                            ]['active']
+                                                ? ''
+                                                : 'd-none'
+                                        }
                                     >
                                         -
                                     </td>
@@ -243,7 +308,16 @@ class ReportsPage extends Component {
                                 dataEntry.key.includes(run.browser_name)
                             ) {
                                 dataEntries.push(
-                                    <td key={dataEntry.key}>
+                                    <td
+                                        key={dataEntry.key}
+                                        className={
+                                            techMatrix[techMatrixCol][
+                                                techMatrixrow
+                                            ]['active']
+                                                ? ''
+                                                : 'd-none'
+                                        }
+                                    >
                                         <ProgressBar
                                             now={percentage}
                                             variant="info"
@@ -270,10 +344,14 @@ class ReportsPage extends Component {
                     <title>{`ARIA-AT Reports`}</title>
                 </Helmet>
                 <h1>Reports Page</h1>
+                <h2>Available AT and Browser Combinations</h2>
+                <form className="mb-3">{techPairSelectors}</form>
                 <Table bordered hover>
                     <thead>
                         <tr>
-                            <th>Design Pattern Examples</th>
+                            <th>
+                                <h2>Design Pattern Examples</h2>
+                            </th>
                             {techPairHeaders}
                         </tr>
                     </thead>
