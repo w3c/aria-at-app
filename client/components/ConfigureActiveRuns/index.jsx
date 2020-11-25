@@ -16,7 +16,6 @@ import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import './ConfigureActiveRuns.css';
 
-
 function selectExamples(testVersion, activeRunConfiguration) {
     let exampleSelected = {};
     for (let example of testVersion.apg_examples) {
@@ -506,9 +505,23 @@ class ConfigureActiveRuns extends Component {
 
         // Find if any complete results
         if (testsWithResults.length > 0) {
-            return <span>In Queue: <span className="status-label in-progress">In Progress</span></span>;
+            return (
+                <span>
+                    In Queue:{' '}
+                    <span className="status-label in-progress">
+                        In Progress
+                    </span>
+                </span>
+            );
         } else if (testsWithResults.length === 0) {
-            return <span>In Queue: <span className="status-label not-started">Not Started</span></span>;
+            return (
+                <span>
+                    In Queue:{' '}
+                    <span className="status-label not-started">
+                        Not Started
+                    </span>
+                </span>
+            );
         }
 
         return planStatus;
@@ -585,15 +598,20 @@ class ConfigureActiveRuns extends Component {
                 <h1 data-test="configure-run-h2">Configure Active Runs</h1>
                 <h2 data-test="configure-run-h3">Update Versions</h2>
                 <Form className="init-box">
-                    {Object.keys(
-                        activeRunConfiguration.active_test_version
-                    ).length > 0 ? (
-                        <Form.Group className="current-commit" controlId="testVersion">
+                    {Object.keys(activeRunConfiguration.active_test_version)
+                        .length > 0 ? (
+                        <Form.Group
+                            className="current-commit"
+                            controlId="testVersion"
+                        >
                             <Form.Label data-test="configure-run-current-commit-label">
                                 Current Git Commit
                             </Form.Label>
                             <p>
-                                <FontAwesomeIcon icon={faCheck} aria-hidden="true"></FontAwesomeIcon>
+                                <FontAwesomeIcon
+                                    icon={faCheck}
+                                    aria-hidden="true"
+                                ></FontAwesomeIcon>
                                 {activeRunConfiguration.active_test_version.git_hash.slice(
                                     0,
                                     7
@@ -608,7 +626,10 @@ class ConfigureActiveRuns extends Component {
                         </Form.Group>
                     ) : null}
                     {renderedTestVersions !== null ? (
-                        <Form.Group className="select-commit" controlId="testVersion">
+                        <Form.Group
+                            className="select-commit"
+                            controlId="testVersion"
+                        >
                             <Form.Label data-test="configure-run-commit-label">
                                 Select a different commit
                             </Form.Label>
@@ -655,8 +676,7 @@ class ConfigureActiveRuns extends Component {
                                                     this.deleteTechnologyRow
                                                 }
                                                 undoDeleteTechnologyRow={
-                                                    this
-                                                        .undoDeleteTechnologyRow
+                                                    this.undoDeleteTechnologyRow
                                                 }
                                                 editable={runTech.editable}
                                                 deleted={runTech.deleted}
@@ -667,10 +687,15 @@ class ConfigureActiveRuns extends Component {
                         </tbody>
                     </Table>
                     <div className="add-at-browser">
-                        <Button 
-                            className="btn-tertiary" 
+                        <Button
+                            className="btn-tertiary"
                             onClick={this.addTechnologyRow}
-                        >   <FontAwesomeIcon icon={faPlus} aria-hidden="true"></FontAwesomeIcon>
+                        >
+                            {' '}
+                            <FontAwesomeIcon
+                                icon={faPlus}
+                                aria-hidden="true"
+                            ></FontAwesomeIcon>
                             Add another AT/Browser
                         </Button>
                     </div>
@@ -703,7 +728,10 @@ class ConfigureActiveRuns extends Component {
                                                 variant="danger"
                                                 onClick={this.selectExample}
                                             >
-                                                <FontAwesomeIcon icon={faTrash} aria-hidden="true"></FontAwesomeIcon>
+                                                <FontAwesomeIcon
+                                                    icon={faTrash}
+                                                    aria-hidden="true"
+                                                ></FontAwesomeIcon>
                                                 Remove from Queue
                                             </Button>
                                         ) : (
@@ -711,7 +739,10 @@ class ConfigureActiveRuns extends Component {
                                                 className="btn-tertiary"
                                                 onClick={this.selectExample}
                                             >
-                                                <FontAwesomeIcon icon={faPlus} aria-hidden="true"></FontAwesomeIcon>
+                                                <FontAwesomeIcon
+                                                    icon={faPlus}
+                                                    aria-hidden="true"
+                                                ></FontAwesomeIcon>
                                                 Add to Queue
                                             </Button>
                                         )}

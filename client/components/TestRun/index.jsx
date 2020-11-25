@@ -440,7 +440,11 @@ class TestRun extends Component {
 
         if (this.testResultsCompleted) {
             const editButton = (
-                <Button className="edit-results" variant="secondary" onClick={this.handleEditClick}>
+                <Button
+                    className="edit-results"
+                    variant="secondary"
+                    onClick={this.handleEditClick}
+                >
                     Edit Results
                 </Button>
             );

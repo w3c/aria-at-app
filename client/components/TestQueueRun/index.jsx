@@ -1,7 +1,11 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck, faTrashAlt, faUserPlus } from '@fortawesome/free-solid-svg-icons';
+import {
+    faCheck,
+    faTrashAlt,
+    faUserPlus
+} from '@fortawesome/free-solid-svg-icons';
 import nextId from 'react-id-generator';
 import { Button, Dropdown, Col, Row } from 'react-bootstrap';
 import { connect } from 'react-redux';
@@ -180,18 +184,22 @@ class TestQueueRow extends Component {
     renderStatusAndResult() {
         const { runId, runStatus, testsForRun } = this.props;
 
-        let status = <span className="status-label not-started">Not Started</span>;
+        let status = (
+            <span className="status-label not-started">Not Started</span>
+        );
         let results = null;
 
         if (this.state.totalConflicts > 0) {
-            status = `${
-                this.state.totalConflicts
-            } Conflict${this.state.totalConflicts === 1 ? '' : 's'}`;
+            status = `${this.state.totalConflicts} Conflict${
+                this.state.totalConflicts === 1 ? '' : 's'
+            }`;
         } else if (
             this.state.testsWithResults > 0 &&
             this.state.testsWithResults !== testsForRun.length
         ) {
-            status = <span className="status-label in-progress">In Progress</span>;
+            status = (
+                <span className="status-label in-progress">In Progress</span>
+            );
         } else if (this.state.testsWithResults === testsForRun.length) {
             status = <span className="status-label complete">Complete</span>;
         }
@@ -255,9 +263,10 @@ class TestQueueRow extends Component {
         return (
             <Fragment>
                 <Dropdown aria-label="Assign testers menu">
-                    <Dropdown.Toggle 
+                    <Dropdown.Toggle
                         className="assign-tester"
-                        variant="secondary">
+                        variant="secondary"
+                    >
                         <FontAwesomeIcon icon={faUserPlus} />
                     </Dropdown.Toggle>
                     <Dropdown.Menu>
@@ -412,9 +421,7 @@ class TestQueueRow extends Component {
                                 )}
                             </ul>
                         </Col>
-                        <Col md={3}>
-                            {this.renderAssignMenu(admin)}
-                        </Col>
+                        <Col md={3}>{this.renderAssignMenu(admin)}</Col>
                     </Row>
                 </td>
                 <td>
@@ -450,7 +457,7 @@ class TestQueueRow extends Component {
                                 : 'Start testing'}
                         </Button>
                         {admin && this.renderOpenAsDropdown()}
-                    </div>  
+                    </div>
                 </td>
                 <td>
                     {admin && this.renderDeleteMenu()}

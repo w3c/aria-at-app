@@ -11,8 +11,10 @@ import './RaiseIssueModal.css';
 
 const REPO_LINK = `https://github.com/${process.env.GITHUB_REPO_OWNER}/${process.env.GITHUB_REPO_NAME}`;
 
-function createIssueDefaults(test, run, sha) {
-    const title = `Tester issue report for: "${test.name}"`;
+function createIssueDefaults(userDescriptor, test, run, sha) {
+    const title = `${userDescriptor || 'Tester'} issue report for: "${
+        test.name
+    }"`;
     let body = `
 ### Test file at exact commit
 
@@ -53,8 +55,9 @@ class RaiseIssueModal extends Component {
     constructor(props) {
         super(props);
 
-        const { test, run, git_hash, userId } = this.props;
+        const { test, run, git_hash, userId, userDescriptor } = this.props;
         const { title, body } = createIssueDefaults(
+            userDescriptor,
             test,
             run,
             git_hash,
@@ -300,7 +303,8 @@ RaiseIssueModal.propTypes = {
     test: PropTypes.object,
     testIndex: PropTypes.number,
     userId: PropTypes.number,
-    testerId: PropTypes.number
+    testerId: PropTypes.number,
+    userDescriptor: PropTypes.string
 };
 
 const mapStateToProps = (state, ownProps) => {

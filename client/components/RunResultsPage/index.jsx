@@ -2,13 +2,24 @@ import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
-import { Col, Container, Row, Table } from 'react-bootstrap';
+import { Col, Container, Row, Table, Button } from 'react-bootstrap';
 import { getPublishedRuns, getTestVersions } from '../../actions/runs';
 import checkForConflict from '../../utils/checkForConflict';
 import TestResult from '@components/TestResult';
+import RaiseIssueModal from '@components/RaiseIssueModal';
 import nextId from 'react-id-generator';
 
 class RunResultsPage extends Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            showRaiseIssueModal: {}
+        };
+
+        this.handleRaiseIssueClick = this.handleRaiseIssueClick.bind(this);
+    }
+
     async componentDidMount() {
         const { dispatch, run, testVersion } = this.props;
         if (!run) {
@@ -17,6 +28,14 @@ class RunResultsPage extends Component {
         if (!testVersion) {
             dispatch(getTestVersions());
         }
+    }
+
+    handleRaiseIssueClick(i) {
+        this.setState({
+            showRaiseIssueModal: Object.assign(this.state.showRaiseIssueModal, {
+                [i]: !this.state.showRaiseIssueModal[i]
+            })
+        });
     }
 
     renderResultRow(test, i) {
@@ -227,15 +246,49 @@ class RunResultsPage extends Component {
                             {tests.map((t, i) => {
                                 return (
                                     <Fragment key={nextId()}>
-                                        <h2 id={`test-${i.toString()}`}>
-                                            Details for test: {t.name}
-                                        </h2>
-                                        <a
-                                            href={`/aria-at/${git_hash}/${t.file}?at=${at_key}`}
-                                        >
-                                            See test
-                                        </a>
+                                        <div>
+                                            <h2
+                                                id={`test-${i.toString()}`}
+                                                className="float-left"
+                                            >
+                                                Details for test: {t.name}
+                                            </h2>
+                                            <div className="float-right">
+                                                <Button
+                                                    variant="secondary"
+                                                    onClick={() =>
+                                                        this.handleRaiseIssueClick(
+                                                            i
+                                                        )
+                                                    }
+                                                >
+                                                    Raise an Issue
+                                                </Button>
+                                                <Button
+                                                    target="_blank"
+                                                    href={`/aria-at/${git_hash}/${t.file}?at=${at_key}`}
+                                                    variant="secondary"
+                                                >
+                                                    Open Test
+                                                </Button>
+                                            </div>
+                                        </div>
                                         <TestResult testResult={t.result} />
+                                        <RaiseIssueModal
+                                            at_key={at_key}
+                                            git_hash={git_hash}
+                                            onHide={() =>
+                                                this.handleRaiseIssueClick(i)
+                                            }
+                                            run={run}
+                                            show={
+                                                this.state.showRaiseIssueModal[
+                                                    i
+                                                ]
+                                            }
+                                            test={t}
+                                            userDescriptor="Report viewer"
+                                        />
                                     </Fragment>
                                 );
                             })}
@@ -251,7 +304,7 @@ RunResultsPage.propTypes = {
     dispatch: PropTypes.func,
     allTests: PropTypes.array,
     run: PropTypes.object,
-    testVersion: PropTypes.array
+    testVersion: PropTypes.object
 };
 
 const mapStateToProps = (state, ownProps) => {
@@ -264,7 +317,7 @@ const mapStateToProps = (state, ownProps) => {
         run = publishedRunsById[runId];
     }
     if (run) {
-        testVersion = (testVersions || []).find(
+        testVersion = (testVersions || {}).find(
             v => v.id === run.test_version_id
         );
         allTests = run.tests;
