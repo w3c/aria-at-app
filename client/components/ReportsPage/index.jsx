@@ -154,6 +154,7 @@ class ReportsPage extends Component {
                             tableRows.push(
                                 <td
                                     key={`data-${run.id}-${run.apg_example_name}-${techPairHeaders[i].key}`}
+                                    aria-label={`No results data for ${run.apg_example_name} on ${techPairHeaders[i].key}`}
                                 >
                                     -
                                 </td>
