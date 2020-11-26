@@ -262,8 +262,8 @@ class ReportsPage extends Component {
                                     <td
                                         key={`data-${run.id}-${run.apg_example_name}-${techPairHeaders[headerColumnIndex].key}`}
                                         className={
-                                            techMatrix[techMatrixCol][
-                                                techMatrixrow
+                                            techMatrix[techMatrixrow][
+                                                techMatrixCol
                                             ]['active']
                                                 ? ''
                                                 : 'd-none'
@@ -281,8 +281,8 @@ class ReportsPage extends Component {
                                     <td
                                         key={`data-${run.id}-${run.apg_example_name}-${techPairHeaders[i].key}`}
                                         className={
-                                            techMatrix[techMatrixCol][
-                                                techMatrixrow
+                                            techMatrix[techMatrixrow][
+                                                techMatrixCol
                                             ]['active']
                                                 ? ''
                                                 : 'd-none'
@@ -311,8 +311,8 @@ class ReportsPage extends Component {
                                     <td
                                         key={dataEntry.key}
                                         className={
-                                            techMatrix[techMatrixCol][
-                                                techMatrixrow
+                                            techMatrix[techMatrixrow][
+                                                techMatrixCol
                                             ]['active']
                                                 ? ''
                                                 : 'd-none'
