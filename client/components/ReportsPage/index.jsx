@@ -10,6 +10,7 @@ import { ProgressBar } from 'react-bootstrap';
 import {
     generateStateMatrix,
     generateTechPairs,
+    generateApgExamples,
     calculateTotalObjectPercentage,
     findAndCalculatePercentage
 } from './utils';
@@ -19,7 +20,8 @@ class ReportsPage extends Component {
         super();
         this.state = {
             techMatrix: [[null]], // This is a matrix of ATs and Browsers
-            techPairs: []
+            techPairs: [],
+            apgExamples: [],
         };
 
         this.setTechPairsState = this.setTechPairsState.bind(this);
@@ -54,7 +56,8 @@ class ReportsPage extends Component {
         const { publishedRunsById } = this.props;
         let techMatrix = generateStateMatrix(publishedRunsById);
         let techPairs = generateTechPairs(techMatrix);
-        this.setState({ techMatrix, techPairs });
+        let apgExamples = generateApgExamples(publishedRunsById);
+        this.setState({ techMatrix, techPairs, apgExamples });
     }
 
     generateTopLevelData() {
@@ -77,11 +80,15 @@ class ReportsPage extends Component {
         for (let i = 1; i < techMatrix.length; i++) {
             for (let j = 1; j < techMatrix[0].length; j++) {
                 if (techMatrix[i][j] !== null) {
+                    let at = techMatrix[0][j];
+                    let browser = techMatrix[i][0];
+                    let techPair = this.state.techPairs.find(pair => pair.browser === browser && pair.at === at);
                     techPairHeaders.push(
                         <th
-                            key={`${techMatrix[0][j]} with ${techMatrix[i][0]}`}
+                            key={`${at} with ${browser}`}
+                            className={techPair.active ? '' : 'd-none'}
                         >
-                            {techMatrix[0][j]} with {techMatrix[i][0]}
+                            {at} with {browser}
                         </th>
                     );
 
@@ -94,7 +101,8 @@ class ReportsPage extends Component {
                     // for each test plan and dividing by the total of all the totals
                     topLevelRowData.push(
                         <td
-                            key={`Percentage of ${techMatrix[0][j]} with ${techMatrix[i][0]}`}
+                            key={`Percentage of ${at} with ${browser}`}
+                            className={techPair.active ? '' : 'd-none'}
                         >
                             <ProgressBar
                                 now={percentage}
@@ -109,7 +117,7 @@ class ReportsPage extends Component {
         return { techPairHeaders, topLevelRowData };
     }
 
-    generateApgExampleRows(apgExampleRows, techPairHeaders) {
+    generateApgExampleRowsOrignal(apgExampleRows, techPairHeaders) {
         const { techMatrix } = this.state;
         const { publishedRunsById } = this.props;
         // Determine which columns should have percentages
@@ -137,10 +145,14 @@ class ReportsPage extends Component {
                     run.apg_example_name
                 );
 
+                const techPair = this.state.techPairs.find(pair => pair.browser === run.browser_name && pair.at === run.at_name);
+                console.log(this.state.techPairs);
+
                 // Add new row
                 if (apgRowIndex < 0) {
                     tableRows[0] = (
-                        <td key={`example-${run.id}-${run.apg_example_name}`}>
+                      <td key={`example-${run.id}-${run.apg_example_name}`}
+                      >
                             <span>
                                 <FontAwesomeIcon icon={faFolder} />
                             </span>
@@ -152,6 +164,7 @@ class ReportsPage extends Component {
                             tableRows.push(
                                 <td
                                     key={`data-${run.id}-${run.apg_example_name}-${techPairHeaders[headerColumnIndex].key}`}
+                                    className={techPair.active ? '' : 'd-none'}
                                 >
                                     <ProgressBar
                                         now={percentage}
@@ -161,10 +174,13 @@ class ReportsPage extends Component {
                                 </td>
                             );
                         } else {
+                            // Not the techPair we just found it is some other
+                          // tech pair
                             tableRows.push(
                                 <td
                                     key={`data-${run.id}-${run.apg_example_name}-${techPairHeaders[i].key}`}
                                     aria-label={`No results data for ${run.apg_example_name} on ${techPairHeaders[i].key}`}
+                                    className={techPair.active ? '' : 'd-none'}
                                 >
                                     -
                                 </td>
@@ -185,8 +201,11 @@ class ReportsPage extends Component {
                             dataEntry.key.includes(run.at_name) &&
                             dataEntry.key.includes(run.browser_name)
                         ) {
+                            // What if this was a dash
                             dataEntries.push(
-                                <td key={dataEntry.key}>
+                              <td key={dataEntry.key}
+                                className={techPair.active ? '' : 'd-none'}
+                              >
                                     <ProgressBar
                                         now={percentage}
                                         variant="info"
@@ -205,6 +224,32 @@ class ReportsPage extends Component {
                     );
                 }
             });
+    }
+
+    generateApgExampleRows(apgExampleRows) {
+        const { techMatrix, apgExamples, techPairs } = this.state;
+
+        apgExamples.forEach(apgExample => {
+          let row = [];
+          row.push(
+            <td key={`example-${apgExample}`}
+            >
+              <span>
+                <FontAwesomeIcon icon={faFolder} />
+              </span>
+            {apgExample}
+          </td>
+        );
+          techPairs.filter(pair => pair.active).forEach(pair => {
+            row.push(<td>Placeholder</td>);
+          });
+          apgExampleRows.push(
+            <tr key={apgExample}>
+              {row}
+            </tr>
+          );
+        }
+        );
     }
 
     render() {
