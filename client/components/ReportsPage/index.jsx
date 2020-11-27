@@ -20,7 +20,7 @@ class ReportsPage extends Component {
         this.state = {
             techMatrix: [[null]], // This is a matrix of ATs and Browsers
             techPairs: [],
-            apgExamples: [],
+            apgExamples: []
         };
 
         this.setTechPairsState = this.setTechPairsState.bind(this);
@@ -46,9 +46,15 @@ class ReportsPage extends Component {
     }
 
     selectTechPair(i) {
-      this.setState({
-        techPairs: [...this.state.techPairs.slice(0, i), Object.assign(this.state.techPairs[i], {active: !this.state.techPairs[i]['active']}), ...this.state.techPairs.slice(i + 1)]
-      });
+        this.setState({
+            techPairs: [
+                ...this.state.techPairs.slice(0, i),
+                Object.assign(this.state.techPairs[i], {
+                    active: !this.state.techPairs[i]['active']
+                }),
+                ...this.state.techPairs.slice(i + 1)
+            ]
+        });
     }
 
     setTechPairsState() {
@@ -81,7 +87,9 @@ class ReportsPage extends Component {
                 if (techMatrix[i][j] !== null) {
                     let at = techMatrix[0][j];
                     let browser = techMatrix[i][0];
-                    let techPair = this.state.techPairs.find(pair => pair.browser === browser && pair.at === at);
+                    let techPair = this.state.techPairs.find(
+                        pair => pair.browser === browser && pair.at === at
+                    );
                     techPairHeaders.push(
                         <th
                             key={`${at} with ${browser}`}
@@ -120,49 +128,51 @@ class ReportsPage extends Component {
         const { techMatrix, apgExamples, techPairs } = this.state;
 
         apgExamples.forEach(apgExample => {
-          let row = [];
-          row.push(
-            <td key={`example-${apgExample}`}
-            >
-              <span>
-                <FontAwesomeIcon icon={faFolder} />
-              </span>
-            {apgExample}
-          </td>
-        );
-          techPairs.filter(pair => pair.active).forEach(pair => {
-            let techMatrixExample = techMatrix[pair.techMatrixRow][pair.techMatrixColumn][apgExample];
-            if (techMatrixExample) {
-              let percentage = Math.trunc((techMatrixExample.pass / techMatrixExample.total) * 100);
-              row.push(
-                <td
-                  key={`data-${apgExample}-${pair.at}-${pair.browser}`}
-                >
-                  <ProgressBar
-                    now={percentage}
-                    variant="info"
-                    label={`${percentage}%`}
-                  />
+            let row = [];
+            row.push(
+                <td key={`example-${apgExample}`}>
+                    <span>
+                        <FontAwesomeIcon icon={faFolder} />
+                    </span>
+                    {apgExample}
                 </td>
-              );
-            } else {
-              row.push(
-                <td
-                  key={`data-${apgExample}-${pair.at}-${pair.browser}`}
-                  aria-label={`No results data for ${apgExample} on ${pair.at} with ${pair.browser}`}
-                >
-                  -
-                </td>
-              );
-            }
-          });
-          apgExampleRows.push(
-            <tr key={apgExample}>
-              {row}
-            </tr>
-          );
-        }
-        );
+            );
+            techPairs
+                .filter(pair => pair.active)
+                .forEach(pair => {
+                    let techMatrixExample =
+                        techMatrix[pair.techMatrixRow][pair.techMatrixColumn][
+                            apgExample
+                        ];
+                    if (techMatrixExample) {
+                        let percentage = Math.trunc(
+                            (techMatrixExample.pass / techMatrixExample.total) *
+                                100
+                        );
+                        row.push(
+                            <td
+                                key={`data-${apgExample}-${pair.at}-${pair.browser}`}
+                            >
+                                <ProgressBar
+                                    now={percentage}
+                                    variant="info"
+                                    label={`${percentage}%`}
+                                />
+                            </td>
+                        );
+                    } else {
+                        row.push(
+                            <td
+                                key={`data-${apgExample}-${pair.at}-${pair.browser}`}
+                                aria-label={`No results data for ${apgExample} on ${pair.at} with ${pair.browser}`}
+                            >
+                                -
+                            </td>
+                        );
+                    }
+                });
+            apgExampleRows.push(<tr key={apgExample}>{row}</tr>);
+        });
     }
 
     render() {
@@ -186,26 +196,28 @@ class ReportsPage extends Component {
             this.generateApgExampleRows(apgExampleRows, techPairHeaders);
 
             this.state.techPairs.forEach((techPair, index) => {
-              techPairSelectors.push(
-                <div className="form-check form-check-inline" key={`${techPair['at']}-with-${techPair['browser']}`}>
-                  <input
-                    type="checkbox"
-                    id={`${techPair['at']}-with-${techPair['browser']}-checkbox`}
-                    name={`${techPair['at']}-with-${techPair['browser']}`}
-                    checked={techPair['active']}
-                    onChange={() => this.selectTechPair(index)}
-                    className="form-check-input"
-                  ></input>
-                  <label
-                    htmlFor={`${techPair['at']}-with-${techPair['browser']}-checkbox`}
-                    className="form-check-label"
-                  >
-                    {`${techPair['at']} with ${techPair['browser']}`}
-                  </label>
-                </div>
-              );
-            }
-            );
+                techPairSelectors.push(
+                    <div
+                        className="form-check form-check-inline"
+                        key={`${techPair['at']}-with-${techPair['browser']}`}
+                    >
+                        <input
+                            type="checkbox"
+                            id={`${techPair['at']}-with-${techPair['browser']}-checkbox`}
+                            name={`${techPair['at']}-with-${techPair['browser']}`}
+                            checked={techPair['active']}
+                            onChange={() => this.selectTechPair(index)}
+                            className="form-check-input"
+                        ></input>
+                        <label
+                            htmlFor={`${techPair['at']}-with-${techPair['browser']}-checkbox`}
+                            className="form-check-label"
+                        >
+                            {`${techPair['at']} with ${techPair['browser']}`}
+                        </label>
+                    </div>
+                );
+            });
         }
 
         return (
@@ -219,7 +231,9 @@ class ReportsPage extends Component {
                 <Table bordered hover>
                     <thead>
                         <tr>
-                            <th><h2>Design Pattern Examples</h2></th>
+                            <th>
+                                <h2>Design Pattern Examples</h2>
+                            </th>
                             {techPairHeaders}
                         </tr>
                     </thead>
