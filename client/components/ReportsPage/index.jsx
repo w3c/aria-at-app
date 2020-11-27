@@ -9,6 +9,7 @@ import { faFolderOpen, faFolder } from '@fortawesome/free-solid-svg-icons';
 import { ProgressBar } from 'react-bootstrap';
 import {
     generateStateMatrix,
+    generateTechPairs,
     calculateTotalObjectPercentage,
     findAndCalculatePercentage
 } from './utils';
@@ -17,12 +18,14 @@ class ReportsPage extends Component {
     constructor() {
         super();
         this.state = {
-            techMatrix: [[null]] // This is a matrix of ATs and Browsers
+            techMatrix: [[null]], // This is a matrix of ATs and Browsers
+            techPairs: []
         };
 
         this.setTechPairsState = this.setTechPairsState.bind(this);
         this.generateTopLevelData = this.generateTopLevelData.bind(this);
         this.generateApgExampleRows = this.generateApgExampleRows.bind(this);
+        this.selectTechPair = this.selectTechPair.bind(this);
     }
 
     componentDidMount() {
@@ -41,10 +44,17 @@ class ReportsPage extends Component {
         }
     }
 
+    selectTechPair(i) {
+      this.setState({
+        techPairs: [...this.state.techPairs.slice(0, i), Object.assign(this.state.techPairs[i], {active: !this.state.techPairs[i]['active']}), ...this.state.techPairs.slice(i + 1)]
+      });
+    }
+
     setTechPairsState() {
         const { publishedRunsById } = this.props;
         let techMatrix = generateStateMatrix(publishedRunsById);
-        this.setState({ techMatrix });
+        let techPairs = generateTechPairs(techMatrix);
+        this.setState({ techMatrix, techPairs });
     }
 
     generateTopLevelData() {
@@ -202,6 +212,7 @@ class ReportsPage extends Component {
         let techPairHeaders = [];
         let topLevelRowData = [];
         let apgExampleRows = [];
+        let techPairSelectors = [];
 
         // Generate the data table only if there is data
         if (techMatrix.length > 1) {
@@ -215,6 +226,28 @@ class ReportsPage extends Component {
             );
 
             this.generateApgExampleRows(apgExampleRows, techPairHeaders);
+
+            this.state.techPairs.forEach((techPair, index) => {
+              techPairSelectors.push(
+                <div className="form-check form-check-inline" key={`${techPair['at']}-with-${techPair['browser']}`}>
+                  <input
+                    type="checkbox"
+                    id={`${techPair['at']}-with-${techPair['browser']}-checkbox`}
+                    name={`${techPair['at']}-with-${techPair['browser']}`}
+                    checked={techPair['active']}
+                    onChange={() => this.selectTechPair(index)}
+                    className="form-check-input"
+                  ></input>
+                  <label
+                    htmlFor={`${techPair['at']}-with-${techPair['browser']}-checkbox`}
+                    className="form-check-label"
+                  >
+                    {`${techPair['at']} with ${techPair['browser']}`}
+                  </label>
+                </div>
+              );
+            }
+            );
         }
 
         return (
@@ -223,10 +256,12 @@ class ReportsPage extends Component {
                     <title>{`ARIA-AT Reports`}</title>
                 </Helmet>
                 <h1>Reports Page</h1>
+                <h2>Available AT and Browser Combinations</h2>
+                <form className="mb-3">{techPairSelectors}</form>
                 <Table bordered hover>
                     <thead>
                         <tr>
-                            <th>Design Pattern Examples</th>
+                            <th><h2>Design Pattern Examples</h2></th>
                             {techPairHeaders}
                         </tr>
                     </thead>

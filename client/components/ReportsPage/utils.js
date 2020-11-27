@@ -3,13 +3,13 @@
  * from the Redux store and maps it into a matrix
  * whereby the columns are AT names and the rows
  * are browser names.
- * 
+ *
  * At the intersection of a row and column is an object
  * that contains as the key, a test plan name, and the value
- * as an object containing the total number of tests 
+ * as an object containing the total number of tests
  * that have results and the number of tests with results
  * that pass.
- * 
+ *
  * An input like this:
  * {
     1: {
@@ -118,6 +118,21 @@ export function generateStateMatrix(publishedRunsById) {
     );
 
     return techMatrix;
+}
+
+export function generateTechPairs(techMatrix) {
+    let techPairs = [];
+    for (let i = 1; i < techMatrix.length; i++) {
+        for (let j = 1; j < techMatrix[0].length; j++) {
+            if (techMatrix[i][j] !== null) {
+                techPairs.push(
+                    {browser: techMatrix[i][0], at: techMatrix[0][j], active: true}
+                );
+            }
+        }
+    }
+    console.log(techPairs);
+    return techPairs;
 }
 
 /**
