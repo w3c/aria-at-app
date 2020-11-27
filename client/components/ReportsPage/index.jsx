@@ -12,7 +12,6 @@ import {
     generateTechPairs,
     generateApgExamples,
     calculateTotalObjectPercentage,
-    findAndCalculatePercentage
 } from './utils';
 
 class ReportsPage extends Component {

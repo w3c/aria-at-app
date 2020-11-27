@@ -167,26 +167,3 @@ export function calculateTotalObjectPercentage(object) {
 
     return Math.trunc((topLevelData.pass / topLevelData.total) * 100);
 }
-
-export function findAndCalculatePercentage(
-    techMatrix,
-    runAtName,
-    runBrowserName,
-    apgExampleName
-) {
-    // Get the data at that browser
-    const techMatrixCol = techMatrix[0].findIndex(
-        at_name => at_name === runAtName
-    );
-    const techMatrixRow = techMatrix.findIndex(
-        browserRow => browserRow[0] === runBrowserName
-    );
-
-    // The math for the rows works by taking all the passing tests
-    // and dividing by total number of tests with results
-    return Math.trunc(
-        (techMatrix[techMatrixRow][techMatrixCol][apgExampleName].pass /
-            techMatrix[techMatrixRow][techMatrixCol][apgExampleName].total) *
-            100
-    );
-}
