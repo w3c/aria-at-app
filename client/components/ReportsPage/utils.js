@@ -123,7 +123,6 @@ export function generateStateMatrix(publishedRunsById) {
 export function generateApgExamples(publishedRunsById) {
     const runs = Object.values(publishedRunsById);
     const apgExamples = [...new Set(runs.map(r => r.apg_example_name))];
-    console.log(apgExamples);
     return apgExamples;
 }
 
@@ -132,13 +131,16 @@ export function generateTechPairs(techMatrix) {
     for (let i = 1; i < techMatrix.length; i++) {
         for (let j = 1; j < techMatrix[0].length; j++) {
             if (techMatrix[i][j] !== null) {
-                techPairs.push(
-                    {browser: techMatrix[i][0], at: techMatrix[0][j], techMatrixColumn: j, techMatrixRow: i, active: true}
-                );
+                techPairs.push({
+                    browser: techMatrix[i][0],
+                    at: techMatrix[0][j],
+                    techMatrixColumn: j,
+                    techMatrixRow: i,
+                    active: true
+                });
             }
         }
     }
-    console.log(techPairs);
     return techPairs;
 }
 
