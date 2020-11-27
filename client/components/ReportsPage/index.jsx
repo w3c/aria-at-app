@@ -5,8 +5,9 @@ import { connect } from 'react-redux';
 import { getPublishedRuns } from '../../actions/runs';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFolderOpen, faFolder } from '@fortawesome/free-solid-svg-icons';
+import { faFolderOpen, faFileAlt } from '@fortawesome/free-solid-svg-icons';
 import { ProgressBar } from 'react-bootstrap';
+import checkForConflict from '../../utils/checkForConflict';
 import {
     generateStateMatrix,
     generateTechPairs,
@@ -134,9 +135,9 @@ class ReportsPage extends Component {
         apgExamples.forEach(apgExample => {
             let row = [];
             row.push(
-                <td key={`example-${apgExample}`}>
-                    <span>
-                        <FontAwesomeIcon icon={faFolder} />
+                <td key={`example-${apgExample}`} rowspan={2}>
+                    <span className="ml-3">
+                        <FontAwesomeIcon icon={faFolderOpen} />
                     </span>
                     {apgExample}
                 </td>
@@ -179,23 +180,36 @@ class ReportsPage extends Component {
                 });
             apgExampleRows.push(<tr key={apgExample}>{row}</tr>);
 
+            let testStatHeaderRow = [];
+            techPairs
+                .filter(pair => pair.active)
+                .forEach(pair => {
+                  testStatHeaderRow.push(<td>Required</td>);
+                  testStatHeaderRow.push(<td>Optional</td>);
+                  testStatHeaderRow.push(<td>Unexpected Behavior</td>);
+                });
+
+            apgExampleRows.push(<tr key={`${apgExample}-stat-headers`}>{testStatHeaderRow}</tr>);
+
+
             const exampleRuns = runs.filter(r => r.apg_example_name === apgExample);
             const tests = exampleRuns[0].tests;
             tests.forEach(test => {
-              let testRow = [<td key={`${apgExample}-${test.name}`}>{test.name}</td>];
+              let testRow = [<td key={`${apgExample}-${test.name}`}>
+                <span className="ml-5">
+                    <FontAwesomeIcon icon={faFileAlt} />
+                    {test.name}
+                </span>
+              </td>];
               techPairs
                   .filter(pair => pair.active)
                   .forEach(pair => {
                     const run = exampleRuns.find(r => r.browser_name === pair.browser && r.at_name === pair.at);
                     const results = Object.values(test.results || {});
-                    // TODO: Also check for conflicts if there are conflicts
-                    // don't show results
-                    //
-                    // TODO: Is it even possible for their to be conflicts??? I
-                    // feel like there shouldn't be for published results!!?
                     const result = results.find(result => result.status === 'complete');
+                    const noConflicts = checkForConflict(results).length === 0;
 
-                    if (result) {
+                    if (result && noConflicts) {
                       const details = result.result.details;
                       const required =
                           details.summary[1].pass + details.summary[1].fail > 0
@@ -212,7 +226,7 @@ class ReportsPage extends Component {
                       testRow.push(<td>{optional}</td>);
                       testRow.push(<td>{details.summary.unexpectedCount}</td>);
                     } else {
-                      testRow.push(<td colspan={3}></td>);
+                      testRow.push(<td colspan={3}>Skipped</td>);
                     }
 
               });
