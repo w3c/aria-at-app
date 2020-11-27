@@ -94,6 +94,7 @@ class ReportsPage extends Component {
                         <th
                             key={`${at} with ${browser}`}
                             className={techPair.active ? '' : 'd-none'}
+                            colspan={3}
                         >
                             {at} with {browser}
                         </th>
@@ -110,6 +111,7 @@ class ReportsPage extends Component {
                         <td
                             key={`Percentage of ${at} with ${browser}`}
                             className={techPair.active ? '' : 'd-none'}
+                            colspan={3}
                         >
                             <ProgressBar
                                 now={percentage}
@@ -126,6 +128,8 @@ class ReportsPage extends Component {
 
     generateApgExampleRows(apgExampleRows) {
         const { techMatrix, apgExamples, techPairs } = this.state;
+        const { publishedRunsById } = this.props;
+        const runs = Object.values(publishedRunsById);
 
         apgExamples.forEach(apgExample => {
             let row = [];
@@ -152,6 +156,7 @@ class ReportsPage extends Component {
                         row.push(
                             <td
                                 key={`data-${apgExample}-${pair.at}-${pair.browser}`}
+                                colspan={3}
                             >
                                 <ProgressBar
                                     now={percentage}
@@ -165,6 +170,7 @@ class ReportsPage extends Component {
                             <td
                                 key={`data-${apgExample}-${pair.at}-${pair.browser}`}
                                 aria-label={`No results data for ${apgExample} on ${pair.at} with ${pair.browser}`}
+                                colspan={3}
                             >
                                 -
                             </td>
@@ -172,6 +178,46 @@ class ReportsPage extends Component {
                     }
                 });
             apgExampleRows.push(<tr key={apgExample}>{row}</tr>);
+
+            const exampleRuns = runs.filter(r => r.apg_example_name === apgExample);
+            const tests = exampleRuns[0].tests;
+            tests.forEach(test => {
+              let testRow = [<td key={`${apgExample}-${test.name}`}>{test.name}</td>];
+              techPairs
+                  .filter(pair => pair.active)
+                  .forEach(pair => {
+                    const run = exampleRuns.find(r => r.browser_name === pair.browser && r.at_name === pair.at);
+                    const results = Object.values(test.results || {});
+                    // TODO: Also check for conflicts if there are conflicts
+                    // don't show results
+                    //
+                    // TODO: Is it even possible for their to be conflicts??? I
+                    // feel like there shouldn't be for published results!!?
+                    const result = results.find(result => result.status === 'complete');
+
+                    if (result) {
+                      const details = result.result.details;
+                      const required =
+                          details.summary[1].pass + details.summary[1].fail > 0
+                              ? `${details.summary[1].pass} / ${details.summary[1].fail +
+                                    details.summary[1].pass}`
+                              : '-';
+
+                      const optional =
+                          details.summary[2].pass + details.summary[2].fail > 0
+                              ? `${details.summary[2].pass} / ${details.summary[2].fail +
+                                    details.summary[1].pass}`
+                              : '-';
+                      testRow.push(<td>{required}</td>);
+                      testRow.push(<td>{optional}</td>);
+                      testRow.push(<td>{details.summary.unexpectedCount}</td>);
+                    } else {
+                      testRow.push(<td colspan={3}></td>);
+                    }
+
+              });
+              apgExampleRows.push(<tr key={`${apgExample}-${test.name}`}>{testRow}</tr>)
+            });
         });
     }
 
