@@ -5,6 +5,8 @@ Enzyme.configure({ adapter: new EnzymeAdapter() });
 import { storeFactory } from './util';
 import {
     generateStateMatrix,
+    generateTechPairs,
+    generateApgExamples,
     calculateTotalObjectPercentage,
 } from '../components/ReportsPage/utils';
 import ReportsPage from '../components/ReportsPage';
@@ -101,12 +103,16 @@ describe('utils', () => {
 describe('render', () => {
     test('generateTopLevelData()', () => {
         const techMatrix = generateStateMatrix(publishedRunsById);
+        let techPairs = generateTechPairs(techMatrix);
+        let apgExamples = generateApgExamples(publishedRunsById);
         const store = storeFactory({});
         const wrapper = shallow(<ReportsPage store={store} />)
             .dive()
             .dive();
         wrapper.setState({
-            techMatrix
+            techMatrix,
+            techPairs,
+            apgExamples
         });
         const {
             techPairHeaders,
@@ -130,12 +136,16 @@ describe('render', () => {
 
     test('generateApgExampleRows()', () => {
         const techMatrix = generateStateMatrix(publishedRunsById);
+        let techPairs = generateTechPairs(techMatrix);
+        let apgExamples = generateApgExamples(publishedRunsById);
         const store = storeFactory({ runs: { publishedRunsById } });
         const wrapper = shallow(<ReportsPage store={store} />)
             .dive()
             .dive();
         wrapper.setState({
-            techMatrix
+            techMatrix,
+            techPairs,
+            apgExamples
         });
 
         let apgExampleRows = [];
