@@ -120,6 +120,13 @@ export function generateStateMatrix(publishedRunsById) {
     return techMatrix;
 }
 
+export function generateApgExamples(publishedRunsById) {
+    const runs = Object.values(publishedRunsById);
+    const apgExamples = [...new Set(runs.map(r => r.apg_example_name))];
+    console.log(apgExamples);
+    return apgExamples;
+}
+
 export function generateTechPairs(techMatrix) {
     let techPairs = [];
     for (let i = 1; i < techMatrix.length; i++) {
