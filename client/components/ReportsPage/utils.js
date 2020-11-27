@@ -133,7 +133,7 @@ export function generateTechPairs(techMatrix) {
         for (let j = 1; j < techMatrix[0].length; j++) {
             if (techMatrix[i][j] !== null) {
                 techPairs.push(
-                    {browser: techMatrix[i][0], at: techMatrix[0][j], active: true}
+                    {browser: techMatrix[i][0], at: techMatrix[0][j], techMatrixColumn: j, techMatrixRow: i, active: true}
                 );
             }
         }
