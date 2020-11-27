@@ -10,7 +10,6 @@ import { ProgressBar } from 'react-bootstrap';
 import {
     generateStateMatrix,
     generateTechPairs,
-    generateApgExamples,
     calculateTotalObjectPercentage,
 } from './utils';
 
@@ -19,8 +18,7 @@ class ReportsPage extends Component {
         super();
         this.state = {
             techMatrix: [[null]], // This is a matrix of ATs and Browsers
-            techPairs: [],
-            apgExamples: []
+            techPairs: []
         };
 
         this.setTechPairsState = this.setTechPairsState.bind(this);
@@ -46,23 +44,16 @@ class ReportsPage extends Component {
     }
 
     selectTechPair(i) {
-        this.setState({
-            techPairs: [
-                ...this.state.techPairs.slice(0, i),
-                Object.assign(this.state.techPairs[i], {
-                    active: !this.state.techPairs[i]['active']
-                }),
-                ...this.state.techPairs.slice(i + 1)
-            ]
-        });
+      this.setState({
+        techPairs: [...this.state.techPairs.slice(0, i), Object.assign(this.state.techPairs[i], {active: !this.state.techPairs[i]['active']}), ...this.state.techPairs.slice(i + 1)]
+      });
     }
 
     setTechPairsState() {
         const { publishedRunsById } = this.props;
         let techMatrix = generateStateMatrix(publishedRunsById);
         let techPairs = generateTechPairs(techMatrix);
-        let apgExamples = generateApgExamples(publishedRunsById);
-        this.setState({ techMatrix, techPairs, apgExamples });
+        this.setState({ techMatrix, techPairs });
     }
 
     generateTopLevelData() {
@@ -196,28 +187,26 @@ class ReportsPage extends Component {
             this.generateApgExampleRows(apgExampleRows, techPairHeaders);
 
             this.state.techPairs.forEach((techPair, index) => {
-                techPairSelectors.push(
-                    <div
-                        className="form-check form-check-inline"
-                        key={`${techPair['at']}-with-${techPair['browser']}`}
-                    >
-                        <input
-                            type="checkbox"
-                            id={`${techPair['at']}-with-${techPair['browser']}-checkbox`}
-                            name={`${techPair['at']}-with-${techPair['browser']}`}
-                            checked={techPair['active']}
-                            onChange={() => this.selectTechPair(index)}
-                            className="form-check-input"
-                        ></input>
-                        <label
-                            htmlFor={`${techPair['at']}-with-${techPair['browser']}-checkbox`}
-                            className="form-check-label"
-                        >
-                            {`${techPair['at']} with ${techPair['browser']}`}
-                        </label>
-                    </div>
-                );
-            });
+              techPairSelectors.push(
+                <div className="form-check form-check-inline" key={`${techPair['at']}-with-${techPair['browser']}`}>
+                  <input
+                    type="checkbox"
+                    id={`${techPair['at']}-with-${techPair['browser']}-checkbox`}
+                    name={`${techPair['at']}-with-${techPair['browser']}`}
+                    checked={techPair['active']}
+                    onChange={() => this.selectTechPair(index)}
+                    className="form-check-input"
+                  ></input>
+                  <label
+                    htmlFor={`${techPair['at']}-with-${techPair['browser']}-checkbox`}
+                    className="form-check-label"
+                  >
+                    {`${techPair['at']} with ${techPair['browser']}`}
+                  </label>
+                </div>
+              );
+            }
+            );
         }
 
         return (
@@ -231,9 +220,7 @@ class ReportsPage extends Component {
                 <Table bordered hover>
                     <thead>
                         <tr>
-                            <th>
-                                <h2>Design Pattern Examples</h2>
-                            </th>
+                            <th><h2>Design Pattern Examples</h2></th>
                             {techPairHeaders}
                         </tr>
                     </thead>
