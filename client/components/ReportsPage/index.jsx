@@ -70,8 +70,6 @@ class ReportsPage extends Component {
         const { publishedRunsById } = this.props;
         let techPairs = generateTechPairs(publishedRunsById);
         let apgExamples = generateApgExamples(publishedRunsById, techPairs);
-        console.log(techPairs);
-        console.log(apgExamples);
         this.setState({ techPairs, apgExamples });
     }
 
@@ -106,7 +104,7 @@ class ReportsPage extends Component {
             .filter(({ active }) => active)
             .map(({ browser, at }) => {
                 return (
-                    <th key={`${at} with ${browser}`} colspan={3}>
+                    <th key={`${at} with ${browser}`} colSpan={3}>
                         <h3 className="text-center">
                             {at} with {browser}
                         </h3>
@@ -137,7 +135,7 @@ class ReportsPage extends Component {
                 );
 
                 topLevelRowData.push(
-                    <td key={`Percentage of ${at} with ${browser}`} colspan={3}>
+                    <td key={`Percentage of ${at} with ${browser}`} colSpan={3}>
                         <ProgressBar
                             now={percentage}
                             variant="info"
@@ -179,7 +177,7 @@ class ReportsPage extends Component {
                         exampleRow.push(
                             <td
                                 key={`data-${exampleName}-${at}-${browser}`}
-                                colspan={3}
+                                colSpan={3}
                             >
                                 <ProgressBar
                                     now={percentage}
@@ -193,7 +191,7 @@ class ReportsPage extends Component {
                             <td
                                 key={`data-${exampleName}-${at}-${browser}`}
                                 aria-label={`No results data for ${exampleName} on ${at} with ${browser}`}
-                                colspan={3}
+                                colSpan={3}
                             >
                                 -
                             </td>
@@ -206,10 +204,28 @@ class ReportsPage extends Component {
                 let testStatHeaderRow = [];
                 techPairs
                     .filter(pair => pair.active)
-                    .forEach(pair => {
-                        testStatHeaderRow.push(<td>Required</td>);
-                        testStatHeaderRow.push(<td>Optional</td>);
-                        testStatHeaderRow.push(<td>Unexpected Behavior</td>);
+                    .forEach(({ browser, at }) => {
+                        testStatHeaderRow.push(
+                            <td
+                                key={`stat-header-required$-${exampleName}-${at}-${browser}`}
+                            >
+                                Required
+                            </td>
+                        );
+                        testStatHeaderRow.push(
+                            <td
+                                key={`stat-header-optional-${exampleName}-${at}-${browser}`}
+                            >
+                                Optional
+                            </td>
+                        );
+                        testStatHeaderRow.push(
+                            <td
+                                key={`stat-header-unexpected-${exampleName}-${at}-${browser}`}
+                            >
+                                Unexpected Behavior
+                            </td>
+                        );
                     });
 
                 tableRows.push(
@@ -248,7 +264,9 @@ class ReportsPage extends Component {
                                         unexpectedBehaviors
                                     } = testWithResults;
                                     testRow.push(
-                                        <td>
+                                        <td
+                                            key={`${exampleName}-${testName}-${i}-${at}-${browser}-required`}
+                                        >
                                             {formatFraction(
                                                 passingRequiredAssertions,
                                                 requiredAssertions
@@ -256,7 +274,9 @@ class ReportsPage extends Component {
                                         </td>
                                     );
                                     testRow.push(
-                                        <td>
+                                        <td
+                                            key={`${exampleName}-${testName}-${i}-${at}-${browser}-optional`}
+                                        >
                                             {formatFraction(
                                                 passingOptionalAssertions,
                                                 optionalAssertions
@@ -264,18 +284,29 @@ class ReportsPage extends Component {
                                         </td>
                                     );
                                     testRow.push(
-                                        <td>
+                                        <td
+                                            key={`${exampleName}-${testName}-${i}-${at}-${browser}-unexpected`}
+                                        >
                                             {formatInteger(unexpectedBehaviors)}
                                         </td>
                                     );
                                 } else {
-                                    testRow.push(<td colspan={3}>Skipped</td>);
+                                    testRow.push(
+                                        <td
+                                            key={`${exampleName}-${testName}-${i}-${at}-${browser}`}
+                                            colSpan={3}
+                                        >
+                                            skipped
+                                        </td>
+                                    );
                                 }
                             }
                         }
                     );
                     tableRows.push(
-                        <tr key={`${exampleName}-${testName}`}>{testRow}</tr>
+                        <tr key={`${exampleName}-${testName}-${i}-row`}>
+                            {testRow}
+                        </tr>
                     );
                 });
 
@@ -292,7 +323,9 @@ class ReportsPage extends Component {
                             unexpectedBehaviors
                         } = testsWithMetaData;
                         supportRow.push(
-                            <td>
+                            <td
+                                key={`${exampleName}-${browser}-${at}-support-required`}
+                            >
                                 {formatFraction(
                                     passingRequiredAssertions,
                                     requiredAssertions
@@ -300,7 +333,9 @@ class ReportsPage extends Component {
                             </td>
                         );
                         supportRow.push(
-                            <td>
+                            <td
+                                key={`${exampleName}-${browser}-${at}-support-optional`}
+                            >
                                 {formatFraction(
                                     passingOptionalAssertions,
                                     optionalAssertions
@@ -308,7 +343,11 @@ class ReportsPage extends Component {
                             </td>
                         );
                         supportRow.push(
-                            <td>{formatInteger(unexpectedBehaviors)}</td>
+                            <td
+                                key={`${exampleName}-${browser}-${at}-support-unexpected`}
+                            >
+                                {formatInteger(unexpectedBehaviors)}
+                            </td>
                         );
                     }
                 });
