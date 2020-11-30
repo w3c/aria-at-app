@@ -230,9 +230,24 @@ class ReportsPage extends Component {
                     }
 
               });
-              apgExampleRows.push(<tr key={`${apgExample}-${test.name}`}>{testRow}</tr>)
+              apgExampleRows.push(<tr key={`${apgExample}-${test.name}`}>{testRow}</tr>);
             });
-        });
+            let supportRow = [];
+              techPairs
+                  .filter(pair => pair.active)
+                  .forEach(pair => {
+                    // TODO: Calculate argegate support numbers
+                    let totalPass = 0;
+                    let totalFail = 0;
+                    let optionalPass = 0;
+                    let optionalFail = 0;
+                    let totalUnexpectedCount = 0;
+                    supportRow.push(<td>{`${totalPass} / ${totalPass + totalFail}`}</td>);
+                    supportRow.push(<td>{`${optionalPass} / ${optionalPass + optionalFail}`}</td>);
+                    supportRow.push(<td>{totalUnexpectedCount > 0 ? totalUnexpectedCount : 'none'}</td>);
+                  });
+            apgExampleRows.push(<tr key={`${apgExample}-support`}><td><span className="ml-5">Support</span></td>{supportRow}</tr>);
+            });
     }
 
     render() {
