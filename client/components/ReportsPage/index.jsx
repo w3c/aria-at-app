@@ -9,24 +9,32 @@ import { faFolderOpen, faFileAlt } from '@fortawesome/free-solid-svg-icons';
 import { ProgressBar } from 'react-bootstrap';
 import checkForConflict from '../../utils/checkForConflict';
 import {
-    generateStateMatrix,
     generateTechPairs,
     generateApgExamples,
-    calculateTotalObjectPercentage,
+    calculateTotalPercentageForTechPair,
+    calculatePercentage,
+    formatFraction,
+    formatInteger
 } from './utils';
 
 class ReportsPage extends Component {
     constructor() {
         super();
         this.state = {
-            techMatrix: [[null]], // This is a matrix of ATs and Browsers
             techPairs: [],
             apgExamples: []
         };
 
-        this.setTechPairsState = this.setTechPairsState.bind(this);
-        this.generateTopLevelData = this.generateTopLevelData.bind(this);
-        this.generateApgExampleRows = this.generateApgExampleRows.bind(this);
+        this.generateInitialStateFromRuns = this.generateInitialStateFromRuns.bind(
+            this
+        );
+        this.generateTechPairTableHeaders = this.generateTechPairTableHeaders.bind(
+            this
+        );
+        this.generateTableRows = this.generateTableRows.bind(this);
+        this.generateTechPairSelectors = this.generateTechPairSelectors.bind(
+            this
+        );
         this.selectTechPair = this.selectTechPair.bind(this);
     }
 
@@ -35,14 +43,14 @@ class ReportsPage extends Component {
         if (!publishedRunsById) {
             dispatch(getPublishedRuns());
         } else {
-            this.setTechPairsState();
+            this.generateInitialStateFromRuns();
         }
     }
 
     componentDidUpdate(prevProps) {
         const { publishedRunsById } = this.props;
         if (publishedRunsById !== prevProps.publishedRunsById) {
-            this.setTechPairsState();
+            this.generateInitialStateFromRuns();
         }
     }
 
@@ -58,18 +66,60 @@ class ReportsPage extends Component {
         });
     }
 
-    setTechPairsState() {
+    generateInitialStateFromRuns() {
         const { publishedRunsById } = this.props;
-        let techMatrix = generateStateMatrix(publishedRunsById);
-        let techPairs = generateTechPairs(techMatrix);
-        let apgExamples = generateApgExamples(publishedRunsById);
-        this.setState({ techMatrix, techPairs, apgExamples });
+        let techPairs = generateTechPairs(publishedRunsById);
+        let apgExamples = generateApgExamples(publishedRunsById, techPairs);
+        console.log(techPairs);
+        console.log(apgExamples);
+        this.setState({ techPairs, apgExamples });
     }
 
-    generateTopLevelData() {
-        const { techMatrix } = this.state;
+    generateTechPairSelectors() {
+        return this.state.techPairs.map(({ browser, at, active }, index) => {
+            return (
+                <div
+                    className="form-check form-check-inline"
+                    key={`${at}-with-${browser}`}
+                >
+                    <input
+                        type="checkbox"
+                        id={`${at}-with-${browser}-checkbox`}
+                        name={`${at}-with-${browser}`}
+                        checked={active}
+                        onChange={() => this.selectTechPair(index)}
+                        className="form-check-input"
+                    ></input>
+                    <label
+                        htmlFor={`${at}-with-${browser}-checkbox`}
+                        className="form-check-label"
+                    >
+                        {`${at} with ${browser}`}
+                    </label>
+                </div>
+            );
+        });
+    }
 
-        let techPairHeaders = [];
+    generateTechPairTableHeaders() {
+        return this.state.techPairs
+            .filter(({ active }) => active)
+            .map(({ browser, at }) => {
+                return (
+                    <th key={`${at} with ${browser}`} colspan={3}>
+                        <h3 className="text-center">
+                            {at} with {browser}
+                        </h3>
+                        <p className="text-center">Passing Required Tests</p>
+                    </th>
+                );
+            });
+    }
+
+    generateTableRows() {
+        const { apgExamples, techPairs } = this.state;
+        let tableRows = [];
+
         let topLevelRowData = [
             <td key="High level pattern">
                 <span>
@@ -79,85 +129,56 @@ class ReportsPage extends Component {
             </td>
         ];
 
-        // Get the table headers by checking which at/browser
-        // row/column is set to an object in the techMatrix.
-        // Start at i = 1 because the first row is ats only
-        // Start at j = 1 because the first column is browsers only
-        for (let i = 1; i < techMatrix.length; i++) {
-            for (let j = 1; j < techMatrix[0].length; j++) {
-                if (techMatrix[i][j] !== null) {
-                    let at = techMatrix[0][j];
-                    let browser = techMatrix[i][0];
-                    let techPair = this.state.techPairs.find(
-                        pair => pair.browser === browser && pair.at === at
-                    );
-                    techPairHeaders.push(
-                        <th
-                            key={`${at} with ${browser}`}
-                            className={techPair.active ? '' : 'd-none'}
-                            colspan={3}
-                        >
-                          <h3 className="text-center">{at} with {browser}</h3>
-                          <p className="text-center">Passing Required Tests</p>
-                        </th>
-                    );
+        techPairs.forEach(({ browser, at, active }, index) => {
+            if (active) {
+                const percentage = calculateTotalPercentageForTechPair(
+                    apgExamples,
+                    index
+                );
 
-                    // Calculate the percentage of this top level column
-                    const percentage = calculateTotalObjectPercentage(
-                        techMatrix[i][j]
-                    );
-
-                    // The math for the top level row works by adding all the passing values
-                    // for each test plan and dividing by the total of all the totals
-                    topLevelRowData.push(
-                        <td
-                            key={`Percentage of ${at} with ${browser}`}
-                            className={techPair.active ? '' : 'd-none'}
-                            colspan={3}
-                        >
-                            <ProgressBar
-                                now={percentage}
-                                variant="info"
-                                label={`${percentage}%`}
-                            />
-                        </td>
-                    );
-                }
+                topLevelRowData.push(
+                    <td key={`Percentage of ${at} with ${browser}`} colspan={3}>
+                        <ProgressBar
+                            now={percentage}
+                            variant="info"
+                            label={`${percentage}%`}
+                        />
+                    </td>
+                );
             }
-        }
-        return { techPairHeaders, topLevelRowData };
-    }
+        });
 
-    generateApgExampleRows(apgExampleRows) {
-        const { techMatrix, apgExamples, techPairs } = this.state;
-        const { publishedRunsById } = this.props;
-        const runs = Object.values(publishedRunsById);
+        tableRows.push(
+            <tr key="ARIA Design Pattern Examples">{topLevelRowData}</tr>
+        );
 
-        apgExamples.forEach(apgExample => {
-            let row = [];
-            row.push(
-                <td key={`example-${apgExample}`} rowspan={2}>
-                    <span className="ml-3">
-                        <FontAwesomeIcon icon={faFolderOpen} />
-                    </span>
-                    {apgExample}
-                </td>
-            );
-            techPairs
-                .filter(pair => pair.active)
-                .forEach(pair => {
-                    let techMatrixExample =
-                        techMatrix[pair.techMatrixRow][pair.techMatrixColumn][
-                            apgExample
-                        ];
-                    if (techMatrixExample) {
-                        let percentage = Math.trunc(
-                            (techMatrixExample.pass / techMatrixExample.total) *
-                                100
+        apgExamples.forEach(
+            ({
+                exampleName,
+                testNames,
+                testsWithMetaDataIndexedByTechPair
+            }) => {
+                let exampleRow = [];
+                exampleRow.push(
+                    <td key={`example-${exampleName}`} rowSpan={2}>
+                        <span className="ml-3">
+                            <FontAwesomeIcon icon={faFolderOpen} />
+                        </span>
+                        {exampleName}
+                    </td>
+                );
+                techPairs.forEach(({ browser, at, active }, techPairIndex) => {
+                    const testsWithMetaData =
+                        testsWithMetaDataIndexedByTechPair[techPairIndex];
+
+                    if (testsWithMetaData.testsWithResults.length > 0) {
+                        const percentage = calculatePercentage(
+                            testsWithMetaData.passingRequiredAssertions,
+                            testsWithMetaData.requiredAssertions
                         );
-                        row.push(
+                        exampleRow.push(
                             <td
-                                key={`data-${apgExample}-${pair.at}-${pair.browser}`}
+                                key={`data-${exampleName}-${at}-${browser}`}
                                 colspan={3}
                             >
                                 <ProgressBar
@@ -168,10 +189,10 @@ class ReportsPage extends Component {
                             </td>
                         );
                     } else {
-                        row.push(
+                        exampleRow.push(
                             <td
-                                key={`data-${apgExample}-${pair.at}-${pair.browser}`}
-                                aria-label={`No results data for ${apgExample} on ${pair.at} with ${pair.browser}`}
+                                key={`data-${exampleName}-${at}-${browser}`}
+                                aria-label={`No results data for ${exampleName} on ${at} with ${browser}`}
                                 colspan={3}
                             >
                                 -
@@ -179,140 +200,150 @@ class ReportsPage extends Component {
                         );
                     }
                 });
-            apgExampleRows.push(<tr key={apgExample}>{row}</tr>);
 
-            let testStatHeaderRow = [];
-            techPairs
-                .filter(pair => pair.active)
-                .forEach(pair => {
-                  testStatHeaderRow.push(<td>Required</td>);
-                  testStatHeaderRow.push(<td>Optional</td>);
-                  testStatHeaderRow.push(<td>Unexpected Behavior</td>);
+                tableRows.push(<tr key={exampleName}>{exampleRow}</tr>);
+
+                let testStatHeaderRow = [];
+                techPairs
+                    .filter(pair => pair.active)
+                    .forEach(pair => {
+                        testStatHeaderRow.push(<td>Required</td>);
+                        testStatHeaderRow.push(<td>Optional</td>);
+                        testStatHeaderRow.push(<td>Unexpected Behavior</td>);
+                    });
+
+                tableRows.push(
+                    <tr key={`${exampleName}-stat-headers`}>
+                        {testStatHeaderRow}
+                    </tr>
+                );
+
+                testNames.forEach((testName, i) => {
+                    let testRow = [
+                        <td key={`${exampleName}-${testName}`}>
+                            <span className="ml-5">
+                                <FontAwesomeIcon icon={faFileAlt} />
+                                {testName}
+                            </span>
+                        </td>
+                    ];
+
+                    techPairs.forEach(
+                        ({ browser, at, active }, techPairIndex) => {
+                            if (active) {
+                                const testsWithMetaData =
+                                    testsWithMetaDataIndexedByTechPair[
+                                        techPairIndex
+                                    ];
+                                const testWithResults = testsWithMetaData.testsWithResults.find(
+                                    t => t.testName === testName
+                                );
+
+                                if (testWithResults) {
+                                    const {
+                                        requiredAssertions,
+                                        passingRequiredAssertions,
+                                        optionalAssertions,
+                                        passingOptionalAssertions,
+                                        unexpectedBehaviors
+                                    } = testWithResults;
+                                    testRow.push(
+                                        <td>
+                                            {formatFraction(
+                                                passingRequiredAssertions,
+                                                requiredAssertions
+                                            )}
+                                        </td>
+                                    );
+                                    testRow.push(
+                                        <td>
+                                            {formatFraction(
+                                                passingOptionalAssertions,
+                                                optionalAssertions
+                                            )}
+                                        </td>
+                                    );
+                                    testRow.push(
+                                        <td>
+                                            {formatInteger(unexpectedBehaviors)}
+                                        </td>
+                                    );
+                                } else {
+                                    testRow.push(<td colspan={3}>Skipped</td>);
+                                }
+                            }
+                        }
+                    );
+                    tableRows.push(
+                        <tr key={`${exampleName}-${testName}`}>{testRow}</tr>
+                    );
                 });
 
-            apgExampleRows.push(<tr key={`${apgExample}-stat-headers`}>{testStatHeaderRow}</tr>);
-
-
-            const exampleRuns = runs.filter(r => r.apg_example_name === apgExample);
-            const tests = exampleRuns[0].tests;
-            tests.forEach(test => {
-              let testRow = [<td key={`${apgExample}-${test.name}`}>
-                <span className="ml-5">
-                    <FontAwesomeIcon icon={faFileAlt} />
-                    {test.name}
-                </span>
-              </td>];
-              techPairs
-                  .filter(pair => pair.active)
-                  .forEach(pair => {
-                    const results = Object.values(test.results || {});
-                    const result = results.find(result => result.status === 'complete');
-                    const noConflicts = checkForConflict(results).length === 0;
-
-                    if (result && noConflicts) {
-                      const details = result.result.details;
-                      const required =
-                          details.summary[1].pass + details.summary[1].fail > 0
-                              ? `${details.summary[1].pass} / ${details.summary[1].fail +
-                                    details.summary[1].pass}`
-                              : '-';
-
-                      const optional =
-                          details.summary[2].pass + details.summary[2].fail > 0
-                              ? `${details.summary[2].pass} / ${details.summary[2].fail +
-                                    details.summary[1].pass}`
-                              : '-';
-                      testRow.push(<td>{required}</td>);
-                      testRow.push(<td>{optional}</td>);
-                      testRow.push(<td>{details.summary.unexpectedCount}</td>);
-                    } else {
-                      testRow.push(<td colspan={3}>Skipped</td>);
+                let supportRow = [];
+                techPairs.forEach(({ browser, at, active }, techPairIndex) => {
+                    if (active) {
+                        const testsWithMetaData =
+                            testsWithMetaDataIndexedByTechPair[techPairIndex];
+                        const {
+                            requiredAssertions,
+                            passingRequiredAssertions,
+                            optionalAssertions,
+                            passingOptionalAssertions,
+                            unexpectedBehaviors
+                        } = testsWithMetaData;
+                        supportRow.push(
+                            <td>
+                                {formatFraction(
+                                    passingRequiredAssertions,
+                                    requiredAssertions
+                                )}
+                            </td>
+                        );
+                        supportRow.push(
+                            <td>
+                                {formatFraction(
+                                    passingOptionalAssertions,
+                                    optionalAssertions
+                                )}
+                            </td>
+                        );
+                        supportRow.push(
+                            <td>{formatInteger(unexpectedBehaviors)}</td>
+                        );
                     }
-
-              });
-              apgExampleRows.push(<tr key={`${apgExample}-${test.name}`}>{testRow}</tr>);
-            });
-            let supportRow = [];
-              techPairs
-                  .filter(pair => pair.active)
-                  .forEach(pair => {
-                    // TODO: Calculate argegate support numbers
-                    let totalPass = 0;
-                    let totalFail = 0;
-                    let optionalPass = 0;
-                    let optionalFail = 0;
-                    let totalUnexpectedCount = 0;
-                    supportRow.push(<td>{`${totalPass} / ${totalPass + totalFail}`}</td>);
-                    supportRow.push(<td>{`${optionalPass} / ${optionalPass + optionalFail}`}</td>);
-                    supportRow.push(<td>{totalUnexpectedCount > 0 ? totalUnexpectedCount : 'none'}</td>);
-                  });
-            apgExampleRows.push(<tr key={`${apgExample}-support`}><td><span className="ml-5">Support</span></td>{supportRow}</tr>);
-            });
+                });
+                tableRows.push(
+                    <tr key={`${exampleName}-support`}>
+                        <td>
+                            <span className="ml-5">Support</span>
+                        </td>
+                        {supportRow}
+                    </tr>
+                );
+            }
+        );
+        return tableRows;
     }
 
     render() {
-        const { techMatrix } = this.state;
-        let techPairHeaders = [];
-        let topLevelRowData = [];
-        let apgExampleRows = [];
-        let techPairSelectors = [];
-
-        // Generate the data table only if there is data
-        if (techMatrix.length > 1) {
-            const topLevelData = this.generateTopLevelData();
-            techPairHeaders = topLevelData.techPairHeaders;
-            topLevelRowData = topLevelData.topLevelRowData;
-
-            // Set the very first row
-            apgExampleRows.push(
-                <tr key="ARIA Design Pattern Examples">{topLevelRowData}</tr>
-            );
-
-            this.generateApgExampleRows(apgExampleRows, techPairHeaders);
-
-            this.state.techPairs.forEach((techPair, index) => {
-                techPairSelectors.push(
-                    <div
-                        className="form-check form-check-inline"
-                        key={`${techPair['at']}-with-${techPair['browser']}`}
-                    >
-                        <input
-                            type="checkbox"
-                            id={`${techPair['at']}-with-${techPair['browser']}-checkbox`}
-                            name={`${techPair['at']}-with-${techPair['browser']}`}
-                            checked={techPair['active']}
-                            onChange={() => this.selectTechPair(index)}
-                            className="form-check-input"
-                        ></input>
-                        <label
-                            htmlFor={`${techPair['at']}-with-${techPair['browser']}-checkbox`}
-                            className="form-check-label"
-                        >
-                            {`${techPair['at']} with ${techPair['browser']}`}
-                        </label>
-                    </div>
-                );
-            });
-        }
-
         return (
             <Fragment>
                 <Helmet>
-                    <title>{`ARIA-AT Reports`}</title>
+                    <title>ARIA-AT Reports</title>
                 </Helmet>
                 <h1>Reports Page</h1>
                 <h2>Available AT and Browser Combinations</h2>
-                <form className="mb-3">{techPairSelectors}</form>
+                <form className="mb-3">{this.generateTechPairSelectors()}</form>
                 <Table bordered hover>
                     <thead>
                         <tr>
                             <th>
                                 <h2>Design Pattern Examples</h2>
                             </th>
-                            {techPairHeaders}
+                            {this.generateTechPairTableHeaders()}
                         </tr>
                     </thead>
-                    <tbody>{apgExampleRows}</tbody>
+                    <tbody>{this.generateTableRows()}</tbody>
                 </Table>
             </Fragment>
         );
