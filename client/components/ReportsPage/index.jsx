@@ -205,7 +205,6 @@ class ReportsPage extends Component {
               techPairs
                   .filter(pair => pair.active)
                   .forEach(pair => {
-                    const run = exampleRuns.find(r => r.browser_name === pair.browser && r.at_name === pair.at);
                     const results = Object.values(test.results || {});
                     const result = results.find(result => result.status === 'complete');
                     const noConflicts = checkForConflict(results).length === 0;
