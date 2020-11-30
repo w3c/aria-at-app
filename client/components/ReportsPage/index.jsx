@@ -97,7 +97,8 @@ class ReportsPage extends Component {
                             className={techPair.active ? '' : 'd-none'}
                             colspan={3}
                         >
-                            {at} with {browser}
+                          <h3 className="text-center">{at} with {browser}</h3>
+                          <p className="text-center">Passing Required Tests</p>
                         </th>
                     );
 
