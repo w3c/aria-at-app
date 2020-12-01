@@ -5,8 +5,9 @@ Enzyme.configure({ adapter: new EnzymeAdapter() });
 import { storeFactory } from './util';
 import {
     generateStateMatrix,
+    generateTechPairs,
+    generateApgExamples,
     calculateTotalObjectPercentage,
-    findAndCalculatePercentage
 } from '../components/ReportsPage/utils';
 import ReportsPage from '../components/ReportsPage';
 
@@ -61,13 +62,13 @@ describe('utils', () => {
     test('generateStateMatrix', () => {
         /**
          *  Expecting a matrix like this:
-         * 
-         * 
+         *
+         *
             [
                 [null, "JAWS", "NVDA"],
                 ["Firefox", { "Editor Menubar Example" : { total: 1, pass: 1 } }, { "Checkbox Example (Two State)" : { total: 1, pass: 1 } }]
             ]
-         * 
+         *
          */
         const matrix = generateStateMatrix(publishedRunsById);
 
@@ -97,28 +98,21 @@ describe('utils', () => {
         const totalPercent = calculateTotalObjectPercentage(objectToTotal);
         expect(totalPercent).toBe(100);
     });
-
-    test('findAndCalculatePercentage', () => {
-        const matrix = generateStateMatrix(publishedRunsById);
-        const percentage = findAndCalculatePercentage(
-            matrix,
-            publishedRunsById[1].at_name,
-            publishedRunsById[1].browser_name,
-            publishedRunsById[1].apg_example_name
-        );
-        expect(percentage).toBe(100);
-    });
 });
 
 describe('render', () => {
     test('generateTopLevelData()', () => {
         const techMatrix = generateStateMatrix(publishedRunsById);
+        let techPairs = generateTechPairs(techMatrix);
+        let apgExamples = generateApgExamples(publishedRunsById);
         const store = storeFactory({});
         const wrapper = shallow(<ReportsPage store={store} />)
             .dive()
             .dive();
         wrapper.setState({
-            techMatrix
+            techMatrix,
+            techPairs,
+            apgExamples
         });
         const {
             techPairHeaders,
@@ -142,12 +136,16 @@ describe('render', () => {
 
     test('generateApgExampleRows()', () => {
         const techMatrix = generateStateMatrix(publishedRunsById);
+        let techPairs = generateTechPairs(techMatrix);
+        let apgExamples = generateApgExamples(publishedRunsById);
         const store = storeFactory({ runs: { publishedRunsById } });
         const wrapper = shallow(<ReportsPage store={store} />)
             .dive()
             .dive();
         wrapper.setState({
-            techMatrix
+            techMatrix,
+            techPairs,
+            apgExamples
         });
 
         let apgExampleRows = [];

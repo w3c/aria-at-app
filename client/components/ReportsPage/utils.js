@@ -3,13 +3,13 @@
  * from the Redux store and maps it into a matrix
  * whereby the columns are AT names and the rows
  * are browser names.
- * 
+ *
  * At the intersection of a row and column is an object
  * that contains as the key, a test plan name, and the value
- * as an object containing the total number of tests 
+ * as an object containing the total number of tests
  * that have results and the number of tests with results
  * that pass.
- * 
+ *
  * An input like this:
  * {
     1: {
@@ -120,6 +120,30 @@ export function generateStateMatrix(publishedRunsById) {
     return techMatrix;
 }
 
+export function generateApgExamples(publishedRunsById) {
+    const runs = Object.values(publishedRunsById);
+    const apgExamples = [...new Set(runs.map(r => r.apg_example_name))];
+    return apgExamples;
+}
+
+export function generateTechPairs(techMatrix) {
+    let techPairs = [];
+    for (let i = 1; i < techMatrix.length; i++) {
+        for (let j = 1; j < techMatrix[0].length; j++) {
+            if (techMatrix[i][j] !== null) {
+                techPairs.push({
+                    browser: techMatrix[i][0],
+                    at: techMatrix[0][j],
+                    techMatrixColumn: j,
+                    techMatrixRow: i,
+                    active: true
+                });
+            }
+        }
+    }
+    return techPairs;
+}
+
 /**
  *
  * This function assumes that the object is in the form
@@ -142,27 +166,4 @@ export function calculateTotalObjectPercentage(object) {
     );
 
     return Math.trunc((topLevelData.pass / topLevelData.total) * 100);
-}
-
-export function findAndCalculatePercentage(
-    techMatrix,
-    runAtName,
-    runBrowserName,
-    apgExampleName
-) {
-    // Get the data at that browser
-    const techMatrixCol = techMatrix[0].findIndex(
-        at_name => at_name === runAtName
-    );
-    const techMatrixRow = techMatrix.findIndex(
-        browserRow => browserRow[0] === runBrowserName
-    );
-
-    // The math for the rows works by taking all the passing tests
-    // and dividing by total number of tests with results
-    return Math.trunc(
-        (techMatrix[techMatrixRow][techMatrixCol][apgExampleName].pass /
-            techMatrix[techMatrixRow][techMatrixCol][apgExampleName].total) *
-            100
-    );
 }
