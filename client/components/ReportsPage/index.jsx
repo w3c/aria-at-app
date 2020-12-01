@@ -7,7 +7,6 @@ import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFolderOpen, faFileAlt } from '@fortawesome/free-solid-svg-icons';
 import { ProgressBar } from 'react-bootstrap';
-import checkForConflict from '../../utils/checkForConflict';
 import {
     generateTechPairs,
     generateApgExamples,
@@ -166,36 +165,38 @@ class ReportsPage extends Component {
                     </td>
                 );
                 techPairs.forEach(({ browser, at, active }, techPairIndex) => {
-                    const testsWithMetaData =
-                        testsWithMetaDataIndexedByTechPair[techPairIndex];
+                    if (active) {
+                        const testsWithMetaData =
+                            testsWithMetaDataIndexedByTechPair[techPairIndex];
 
-                    if (testsWithMetaData.testsWithResults.length > 0) {
-                        const percentage = calculatePercentage(
-                            testsWithMetaData.passingRequiredAssertions,
-                            testsWithMetaData.requiredAssertions
-                        );
-                        exampleRow.push(
-                            <td
-                                key={`data-${exampleName}-${at}-${browser}`}
-                                colSpan={3}
-                            >
-                                <ProgressBar
-                                    now={percentage}
-                                    variant="info"
-                                    label={`${percentage}%`}
-                                />
-                            </td>
-                        );
-                    } else {
-                        exampleRow.push(
-                            <td
-                                key={`data-${exampleName}-${at}-${browser}`}
-                                aria-label={`No results data for ${exampleName} on ${at} with ${browser}`}
-                                colSpan={3}
-                            >
-                                -
-                            </td>
-                        );
+                        if (testsWithMetaData.testsWithResults.length > 0) {
+                            const percentage = calculatePercentage(
+                                testsWithMetaData.passingRequiredAssertions,
+                                testsWithMetaData.requiredAssertions
+                            );
+                            exampleRow.push(
+                                <td
+                                    key={`data-${exampleName}-${at}-${browser}`}
+                                    colSpan={3}
+                                >
+                                    <ProgressBar
+                                        now={percentage}
+                                        variant="info"
+                                        label={`${percentage}%`}
+                                    />
+                                </td>
+                            );
+                        } else {
+                            exampleRow.push(
+                                <td
+                                    key={`data-${exampleName}-${at}-${browser}`}
+                                    aria-label={`No results data for ${exampleName} on ${at} with ${browser}`}
+                                    colSpan={3}
+                                >
+                                    -
+                                </td>
+                            );
+                        }
                     }
                 });
 
