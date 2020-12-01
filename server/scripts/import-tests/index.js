@@ -103,11 +103,23 @@ const ariaat = {
             const stat = fse.statSync(subDirFullPath);
 
             if (stat.isDirectory() && exampleDir !== 'resources') {
+                const dataPath = path.join(subDirFullPath, 'data');
+                const referencesCsvPath = path.join(dataPath, 'references.csv');
+                const referencesCsv = fse.readFileSync(referencesCsvPath, { encoding: 'utf-8' });
+                const exampleRefLine = referencesCsv.split('\n').filter(line => line.includes('example'));
+                const practiceGuidelinesRefLine = referencesCsv.split('\n').filter(line => line.includes('practiceGuidelines'));
+
                 const exampleID = await this.upsertAPGExample(
                     exampleDir,
                     exampleName[exampleDir],
-                    testVersionID
+                    testVersionID,
+                    exampleRefLine,
+                    practiceGuidelinesRefLine
                 );
+
+                // Naive approach is to let the APG example get written to the database,
+                // and then add example and practical guidelines if they do exist in this version
+                
                 let tests = fse.readdirSync(subDirFullPath);
 
                 for (let j = 0; j < tests.length; j++) {
