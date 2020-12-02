@@ -174,7 +174,7 @@ class ReportsPage extends Component {
                 let exampleRow = [];
                 exampleRow.push(
                     <td key={`example-${exampleName}`} className="border-bottom-0 border-right-0 pr-0">
-                        <span className="ml-3" onClick={() => this.setOpenExample(exampleIndex)} aria-expanded={open}>
+                        <span className="ml-3" onClick={() => this.setOpenExample(exampleIndex)} aria-expanded={open} aria-label={`${open ? 'Collapse' : 'Open'} ${exampleName} tests`}>
                             <FontAwesomeIcon icon={open ? faFolderOpen : faFolder} />
                         </span>
                     </td>
