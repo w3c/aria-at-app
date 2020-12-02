@@ -28,6 +28,7 @@
     "@fortawesome/react-fontawesome": "^0.1.11",
     "bootstrap": "^4.4.1",
     "dotenv-webpack": "^1.8.0",
+    "jquery": "^3.5.1",
     "node-sass": "^4.13.1",
     "query-string": "^6.12.1",
     "react-bootstrap": "^1.0.0",

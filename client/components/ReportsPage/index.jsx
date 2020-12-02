@@ -15,6 +15,7 @@ import {
     formatFraction,
     formatInteger
 } from './utils';
+import "bootstrap/js/src/collapse.js";
 
 class ReportsPage extends Component {
     constructor() {
@@ -154,12 +155,14 @@ class ReportsPage extends Component {
                 exampleName,
                 testNames,
                 testsWithMetaDataIndexedByTechPair
-            }) => {
+            }, exampleIndex) => {
                 let exampleRow = [];
                 exampleRow.push(
-                    <td key={`example-${exampleName}`} rowSpan={2}>
+                    <td key={`example-${exampleName}`} className="border-bottom-0">
                         <span className="ml-3">
-                            <FontAwesomeIcon icon={faFolderOpen} />
+                            <a data-toggle="collapse" data-target={`.example-${exampleIndex}-row`} aria-expanded="true">
+                              <FontAwesomeIcon icon={faFolderOpen} />
+                            </a>
                         </span>
                         {exampleName}
                     </td>
@@ -200,12 +203,15 @@ class ReportsPage extends Component {
                     }
                 });
 
-                tableRows.push(<tr key={exampleName}>{exampleRow}</tr>);
+                tableRows.push(<tr key={exampleName} >{exampleRow}</tr>);
 
                 let testStatHeaderRow = [];
                 techPairs
                     .filter(pair => pair.active)
-                    .forEach(({ browser, at }) => {
+                    .forEach(({ browser, at }, techPairIndex) => {
+                        if (techPairIndex === 0) {
+                          testStatHeaderRow.push(<td className="border-top-0"></td>);
+                        }
                         testStatHeaderRow.push(
                             <td
                                 key={`stat-header-required$-${exampleName}-${at}-${browser}`}
@@ -230,7 +236,8 @@ class ReportsPage extends Component {
                     });
 
                 tableRows.push(
-                    <tr key={`${exampleName}-stat-headers`}>
+                    <tr key={`${exampleName}-stat-headers`}
+                      className={`collapse show example-${exampleIndex}-row`}>
                         {testStatHeaderRow}
                     </tr>
                 );
@@ -305,7 +312,8 @@ class ReportsPage extends Component {
                         }
                     );
                     tableRows.push(
-                        <tr key={`${exampleName}-${testName}-${i}-row`}>
+                        <tr key={`${exampleName}-${testName}-${i}-row`}
+                          className={`collapse show example-${exampleIndex}-row`}>
                             {testRow}
                         </tr>
                     );
@@ -353,7 +361,8 @@ class ReportsPage extends Component {
                     }
                 });
                 tableRows.push(
-                    <tr key={`${exampleName}-support`}>
+                    <tr key={`${exampleName}-support`}
+                      className={`collapse show example-${exampleIndex}-row`}>
                         <td>
                             <span className="ml-5">Support</span>
                         </td>
