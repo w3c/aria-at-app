@@ -18,6 +18,8 @@ class RunResultsPage extends Component {
         };
 
         this.handleRaiseIssueClick = this.handleRaiseIssueClick.bind(this);
+
+      this.$refs = {};
     }
 
     async componentDidMount() {
@@ -28,6 +30,18 @@ class RunResultsPage extends Component {
         if (!testVersion) {
             dispatch(getTestVersions());
         }
+    }
+
+    async componentDidUpdate() {
+      if (this.$refs && location.href.includes('#test-')) {
+        const anchor = location.href.split('#')[1];
+        if (anchor !== undefined) {
+          const ref = this.$refs[anchor];
+          if (ref !== undefined) {
+            ref.scrollIntoView();
+          }
+        }
+      }
     }
 
     handleRaiseIssueClick(i) {
@@ -248,6 +262,7 @@ class RunResultsPage extends Component {
                                     <Fragment key={nextId()}>
                                         <div>
                                             <h2
+                                              ref={ref=>{this.$refs[`test-${t.execution_order}`] = ref}}
                                                 id={`test-${t.execution_order}`}
                                                 className="float-left"
                                             >

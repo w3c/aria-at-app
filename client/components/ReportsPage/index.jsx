@@ -304,7 +304,7 @@ class ReportsPage extends Component {
                                         <td
                                             key={`${exampleName}-${testName}-${i}-${at}-${browser}-link`}
                                         >
-                                          <a href={`/results/run/${runId}#test-${executionOrder}`} target="blank" aria-label={`Detailed Test Report for ${testName} ${at} ${browser}`}><FontAwesomeIcon icon={faExternalLinkAlt} /></href>
+                                          <a href={`/results/run/${runId}#test-${executionOrder}`} target="blank" aria-label={`Detailed Test Report for ${testName} ${at} ${browser}`}><FontAwesomeIcon icon={faExternalLinkAlt} /></a>
                                         </td>
                                     );
                                 } else {
