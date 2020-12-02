@@ -114,7 +114,7 @@ const ariaat = {
                     .filter(line => line.includes('example'));
                 const practiceGuidelinesRefLine = referencesCsv
                     .split('\n')
-                    .filter(line => line.includes('practiceGuide'));
+                    .filter(line => line.includes('designPattern'));
 
                 const exampleID = await this.upsertAPGExample(
                     exampleDir,
@@ -278,7 +278,7 @@ const ariaat = {
         practiceGuidelinesRefLine
     ) {
         const exampleResult = await client.query(
-            'SELECT id, example, practice_guide FROM apg_example WHERE directory=$1 and test_version_id=$2',
+            'SELECT id, example, design_pattern FROM apg_example WHERE directory=$1 and test_version_id=$2',
             [exampleDir, testVersionID]
         );
 
@@ -288,7 +288,7 @@ const ariaat = {
 
         if (!example) {
             example = await this.insertRow(
-                'INSERT INTO apg_example(directory, name, test_version_id) VALUES($1, $2, $3) RETURNING id, example, practice_guide',
+                'INSERT INTO apg_example(directory, name, test_version_id) VALUES($1, $2, $3) RETURNING id, example, design_pattern',
                 [exampleDir, exampleName, testVersionID]
             );
         }
@@ -296,17 +296,17 @@ const ariaat = {
         if (exampleRefLine.length > 0 && !example.example) {
             const exampleLink = exampleRefLine[0].split(',')[1];
             example = await this.insertRow(
-                'UPDATE apg_example SET example=$1 WHERE id=$2 RETURNING id, example, practice_guide;',
+                'UPDATE apg_example SET example=$1 WHERE id=$2 RETURNING id, example, design_pattern;',
                 [exampleLink, example.id]
             );
         }
 
-        if (practiceGuidelinesRefLine.length > 0 && !example.practice_guide) {
+        if (practiceGuidelinesRefLine.length > 0 && !example.design_pattern) {
             const practiceGuidelinesLink = practiceGuidelinesRefLine[0].split(
                 ','
             )[1];
             example = await this.insertRow(
-                'UPDATE apg_example SET practice_guide=$1 WHERE id=$2 RETURNING id, example, practice_guide;',
+                'UPDATE apg_example SET design_pattern=$1 WHERE id=$2 RETURNING id, example, design_pattern;',
                 [practiceGuidelinesLink, example.id]
             );
         }
