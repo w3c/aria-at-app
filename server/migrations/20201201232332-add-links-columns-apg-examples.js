@@ -12,7 +12,7 @@ module.exports = {
                 ),
                 queryInterface.addColumn(
                     'apg_example',
-                    'practice_guide',
+                    'design_pattern',
                     { type: Sequelize.TEXT },
                     { transaction: t }
                 )
@@ -26,7 +26,7 @@ module.exports = {
                 queryInterface.removeColumn('apg_example', 'example', {
                     transaction: t
                 }),
-                queryInterface.removeColumn('apg_example', 'practice_guide', {
+                queryInterface.removeColumn('apg_example', 'design_pattern', {
                     transaction: t
                 })
             ]);
