@@ -19,7 +19,7 @@ class RunResultsPage extends Component {
 
         this.handleRaiseIssueClick = this.handleRaiseIssueClick.bind(this);
 
-      this.$refs = {};
+        this.$refs = {};
     }
 
     async componentDidMount() {
@@ -33,15 +33,15 @@ class RunResultsPage extends Component {
     }
 
     async componentDidUpdate() {
-      if (this.$refs && location.href.includes('#test-')) {
-        const anchor = location.href.split('#')[1];
-        if (anchor !== undefined) {
-          const ref = this.$refs[anchor];
-          if (ref !== undefined) {
-            ref.scrollIntoView();
-          }
+        if (this.$refs && location.href.includes('#test-')) {
+            const anchor = location.href.split('#')[1];
+            if (anchor !== undefined) {
+                const ref = this.$refs[anchor];
+                if (ref !== undefined) {
+                    ref.scrollIntoView();
+                }
+            }
         }
-      }
     }
 
     handleRaiseIssueClick(i) {
@@ -52,7 +52,7 @@ class RunResultsPage extends Component {
         });
     }
 
-    renderResultRow(test, i) {
+    renderResultRow(test) {
         const details = test.result.result.details;
         let required =
             details.summary[1].pass + details.summary[1].fail > 0
@@ -203,8 +203,8 @@ class RunResultsPage extends Component {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {tests.map((test, i) =>
-                                        this.renderResultRow(test, i)
+                                    {tests.map(test =>
+                                        this.renderResultRow(test)
                                     )}
                                     <tr>
                                         <td>Support</td>
@@ -262,7 +262,11 @@ class RunResultsPage extends Component {
                                     <Fragment key={nextId()}>
                                         <div>
                                             <h2
-                                              ref={ref=>{this.$refs[`test-${t.execution_order}`] = ref}}
+                                                ref={ref => {
+                                                    this.$refs[
+                                                        `test-${t.execution_order}`
+                                                    ] = ref;
+                                                }}
                                                 id={`test-${t.execution_order}`}
                                                 className="float-left"
                                             >

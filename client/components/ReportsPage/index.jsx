@@ -5,7 +5,11 @@ import { connect } from 'react-redux';
 import { getPublishedRuns } from '../../actions/runs';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFolderOpen, faFileAlt, faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
+import {
+    faFolderOpen,
+    faFileAlt,
+    faExternalLinkAlt
+} from '@fortawesome/free-solid-svg-icons';
 import { ProgressBar } from 'react-bootstrap';
 import {
     generateTechPairs,
@@ -231,8 +235,7 @@ class ReportsPage extends Component {
                             <td
                                 key={`stat-header-link-${exampleName}-${at}-${browser}`}
                                 aria-label="Link to detailed test report"
-                            >
-                            </td>
+                            ></td>
                         );
                     });
 
@@ -304,7 +307,15 @@ class ReportsPage extends Component {
                                         <td
                                             key={`${exampleName}-${testName}-${i}-${at}-${browser}-link`}
                                         >
-                                          <a href={`/results/run/${runId}#test-${executionOrder}`} target="blank" aria-label={`Detailed Test Report for ${testName} ${at} ${browser}`}><FontAwesomeIcon icon={faExternalLinkAlt} /></a>
+                                            <a
+                                                href={`/results/run/${runId}#test-${executionOrder}`}
+                                                target="blank"
+                                                aria-label={`Detailed Test Report for ${testName} ${at} ${browser}`}
+                                            >
+                                                <FontAwesomeIcon
+                                                    icon={faExternalLinkAlt}
+                                                />
+                                            </a>
                                         </td>
                                     );
                                 } else {
@@ -369,8 +380,7 @@ class ReportsPage extends Component {
                         supportRow.push(
                             <td
                                 key={`${exampleName}-${browser}-${at}-support-link`}
-                            >
-                            </td>
+                            ></td>
                         );
                     }
                 });
