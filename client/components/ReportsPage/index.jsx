@@ -1,11 +1,11 @@
 import React, { Component, Fragment } from 'react';
 import { Helmet } from 'react-helmet';
-import { Table } from 'react-bootstrap';
+import { Table, Button, Collapse } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { getPublishedRuns } from '../../actions/runs';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFolderOpen, faFileAlt } from '@fortawesome/free-solid-svg-icons';
+import { faFolderOpen, faFolder, faFileAlt } from '@fortawesome/free-solid-svg-icons';
 import { ProgressBar } from 'react-bootstrap';
 import {
     generateTechPairs,
@@ -15,7 +15,6 @@ import {
     formatFraction,
     formatInteger
 } from './utils';
-import "bootstrap/js/src/collapse.js";
 
 class ReportsPage extends Component {
     constructor() {
@@ -36,6 +35,7 @@ class ReportsPage extends Component {
             this
         );
         this.selectTechPair = this.selectTechPair.bind(this);
+        this.setOpenExample = this.setOpenExample.bind(this);
     }
 
     componentDidMount() {
@@ -62,6 +62,18 @@ class ReportsPage extends Component {
                     active: !this.state.techPairs[i]['active']
                 }),
                 ...this.state.techPairs.slice(i + 1)
+            ]
+        });
+    }
+
+    setOpenExample(i) {
+        this.setState({
+            apgExamples: [
+                ...this.state.apgExamples.slice(0, i),
+                Object.assign(this.state.apgExamples[i], {
+                    oenn: !this.state.apgExamples[i]['open']
+                }),
+                ...this.state.apgExamples.slice(i + 1)
             ]
         });
     }
@@ -154,15 +166,16 @@ class ReportsPage extends Component {
             ({
                 exampleName,
                 testNames,
-                testsWithMetaDataIndexedByTechPair
+                testsWithMetaDataIndexedByTechPair,
+                open
             }, exampleIndex) => {
                 let exampleRow = [];
                 exampleRow.push(
                     <td key={`example-${exampleName}`} className="border-bottom-0">
                         <span className="ml-3">
-                            <a data-toggle="collapse" data-target={`.example-${exampleIndex}-row`} aria-expanded="true">
-                              <FontAwesomeIcon icon={faFolderOpen} />
-                            </a>
+                            <Button variant="link" onClick={() => this.setOpenExample(exampleIndex)} aria-expanded={open}>
+                                <FontAwesomeIcon icon={open ? faFolderOpen : faFolder} />
+                            </Button>
                         </span>
                         {exampleName}
                     </td>
@@ -236,10 +249,11 @@ class ReportsPage extends Component {
                     });
 
                 tableRows.push(
-                    <tr key={`${exampleName}-stat-headers`}
-                      className={`collapse show example-${exampleIndex}-row`}>
-                        {testStatHeaderRow}
-                    </tr>
+                  <Collapse in={open}>
+                      <tr key={`${exampleName}-stat-headers`}>
+                          {testStatHeaderRow}
+                      </tr>
+                    </Collapse>
                 );
 
                 testNames.forEach((testName, i) => {
@@ -312,10 +326,11 @@ class ReportsPage extends Component {
                         }
                     );
                     tableRows.push(
-                        <tr key={`${exampleName}-${testName}-${i}-row`}
-                          className={`collapse show example-${exampleIndex}-row`}>
-                            {testRow}
-                        </tr>
+                        <Collapse in={open}>
+                          <tr key={`${exampleName}-${testName}-${i}-row`}>
+                                {testRow}
+                            </tr>
+                        </Collapse>
                     );
                 });
 
@@ -361,13 +376,14 @@ class ReportsPage extends Component {
                     }
                 });
                 tableRows.push(
-                    <tr key={`${exampleName}-support`}
-                      className={`collapse show example-${exampleIndex}-row`}>
+                        <Collapse in={open}>
+                  <tr key={`${exampleName}-support`}>
                         <td>
                             <span className="ml-5">Support</span>
                         </td>
                         {supportRow}
                     </tr>
+                  </Collapse>
                 );
             }
         );

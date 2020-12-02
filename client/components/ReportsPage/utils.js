@@ -66,6 +66,7 @@ function generateTestsWithMetaData(runs, techPairs) {
  * @typedef Example
  * @type {object}
  * @property {string} exampleName
+ * @property {boolean} open - should open the folder accordian
  * @property {Array.<string>} testNames - Name of every test for an example
  * @property {Array.<TestWithMetaData>} testsWithMetaDataIndexedByTechPair
  *
@@ -94,6 +95,7 @@ export function generateApgExamples(publishedRunsById, techPairs) {
         const exampleRuns = runs.filter(r => r.apg_example_name === example);
         return {
             exampleName: example,
+            open: true,
             testNames: exampleRuns[0].tests.map(({ name }) => name),
             testsWithMetaDataIndexedByTechPair: generateTestsWithMetaData(
                 exampleRuns,
