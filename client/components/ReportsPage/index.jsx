@@ -5,7 +5,11 @@ import { connect } from 'react-redux';
 import { getPublishedRuns } from '../../actions/runs';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFolderOpen, faFolder, faFileAlt } from '@fortawesome/free-solid-svg-icons';
+import {
+    faFolderOpen,
+    faFolder,
+    faFileAlt
+} from '@fortawesome/free-solid-svg-icons';
 import { ProgressBar } from 'react-bootstrap';
 import {
     generateTechPairs,
@@ -131,11 +135,11 @@ class ReportsPage extends Component {
         let tableRows = [];
 
         let topLevelRowData = [
-            <td className="border-right-0">
+            <td key="empty-high-level-pattern" className="border-right-0">
                 <span className="pr-0">
                     <FontAwesomeIcon icon={faFolderOpen} />
                 </span>
-              </td>,
+            </td>,
             <td key="High level pattern" className="border-left-0">
                 ARIA Design Pattern Example
             </td>
@@ -165,22 +169,40 @@ class ReportsPage extends Component {
         );
 
         apgExamples.forEach(
-            ({
-                exampleName,
-                testNames,
-                testsWithMetaDataIndexedByTechPair,
-                open
-            }, exampleIndex) => {
+            (
+                {
+                    exampleName,
+                    testNames,
+                    testsWithMetaDataIndexedByTechPair,
+                    open
+                },
+                exampleIndex
+            ) => {
                 let exampleRow = [];
                 exampleRow.push(
-                    <td key={`example-${exampleName}`} className="border-bottom-0 border-right-0 pr-0">
-                        <span className="ml-3" onClick={() => this.setOpenExample(exampleIndex)} aria-expanded={open} aria-label={`${open ? 'Collapse' : 'Open'} ${exampleName} tests`}>
-                            <FontAwesomeIcon icon={open ? faFolderOpen : faFolder} />
+                    <td
+                        key={`example-${exampleName}`}
+                        className="border-bottom-0 border-right-0 pr-0"
+                    >
+                        <span
+                            className="ml-3"
+                            onClick={() => this.setOpenExample(exampleIndex)}
+                            aria-expanded={open}
+                            aria-label={`${
+                                open ? 'Collapse' : 'Open'
+                            } ${exampleName} tests`}
+                        >
+                            <FontAwesomeIcon
+                                icon={open ? faFolderOpen : faFolder}
+                            />
                         </span>
                     </td>
                 );
                 exampleRow.push(
-                    <td key={`example-${exampleName}-name`} className="border-bottom-0 border-left-0 pl-0">
+                    <td
+                        key={`example-${exampleName}-name`}
+                        className="border-bottom-0 border-left-0 pl-0"
+                    >
                         {exampleName}
                     </td>
                 );
@@ -208,7 +230,7 @@ class ReportsPage extends Component {
                             );
                         } else {
                             exampleRow.push(
-                  <td
+                                <td
                                     key={`data-${exampleName}-${at}-${browser}`}
                                     aria-label={`No results data for ${exampleName} on ${at} with ${browser}`}
                                     colSpan={3}
@@ -220,15 +242,19 @@ class ReportsPage extends Component {
                     }
                 });
 
-                tableRows.push(<tr key={exampleName} >{exampleRow}</tr>);
+                tableRows.push(<tr key={exampleName}>{exampleRow}</tr>);
 
                 let testStatHeaderRow = [];
                 techPairs
                     .filter(pair => pair.active)
                     .forEach(({ browser, at }, techPairIndex) => {
                         if (techPairIndex === 0) {
-                          testStatHeaderRow.push(<td className="border-top-0 border-right-0"></td>);
-                          testStatHeaderRow.push(<td className="border-top-0 border-left-0"></td>);
+                            testStatHeaderRow.push(
+                                <td className="border-top-0 border-right-0"></td>
+                            );
+                            testStatHeaderRow.push(
+                                <td className="border-top-0 border-left-0"></td>
+                            );
                         }
                         testStatHeaderRow.push(
                             <td
@@ -254,17 +280,23 @@ class ReportsPage extends Component {
                     });
 
                 tableRows.push(
-                  <Collapse in={open}>
-                      <tr key={`${exampleName}-stat-headers`}>
-                          {testStatHeaderRow}
-                      </tr>
+                    <Collapse in={open}>
+                        <tr key={`${exampleName}-stat-headers`}>
+                            {testStatHeaderRow}
+                        </tr>
                     </Collapse>
                 );
 
                 testNames.forEach((testName, i) => {
                     let testRow = [
-                        <td className="border-right-0"></td>,,
-                        <td key={`${exampleName}-${testName}`} className="border-left-0 pl-0">
+                        <td
+                            key={`${exampleName}-${testName}-empty`}
+                            className="border-right-0"
+                        ></td>,
+                        <td
+                            key={`${exampleName}-${testName}`}
+                            className="border-left-0 pl-0"
+                        >
                             <span>
                                 <FontAwesomeIcon icon={faFileAlt} />
                                 {testName}
@@ -333,7 +365,7 @@ class ReportsPage extends Component {
                     );
                     tableRows.push(
                         <Collapse in={open}>
-                          <tr key={`${exampleName}-${testName}-${i}-row`}>
+                            <tr key={`${exampleName}-${testName}-${i}-row`}>
                                 {testRow}
                             </tr>
                         </Collapse>
@@ -382,15 +414,15 @@ class ReportsPage extends Component {
                     }
                 });
                 tableRows.push(
-                        <Collapse in={open}>
-                  <tr key={`${exampleName}-support`}>
-                        <td className="border-right-0"></td>
-                        <td className="border-left-0">
-                            <span>Support</span>
-                        </td>
-                        {supportRow}
-                    </tr>
-                  </Collapse>
+                    <Collapse in={open}>
+                        <tr key={`${exampleName}-support`}>
+                            <td className="border-right-0"></td>
+                            <td className="border-left-0">
+                                <span>Support</span>
+                            </td>
+                            {supportRow}
+                        </tr>
+                    </Collapse>
                 );
             }
         );
@@ -409,7 +441,7 @@ class ReportsPage extends Component {
                 <Table bordered hover>
                     <thead>
                         <tr>
-                            <th colspan={2}>
+                            <th colSpan={2} key="design-pattern-examples">
                                 <h2>Design Pattern Examples</h2>
                             </th>
                             {this.generateTechPairTableHeaders()}
