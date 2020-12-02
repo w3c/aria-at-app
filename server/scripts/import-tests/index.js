@@ -106,8 +106,9 @@ const ariaat = {
                 const dataPath = path.join(subDirFullPath, 'data');
                 const referencesCsvPath = path.join(dataPath, 'references.csv');
                 const referencesCsv = fse.readFileSync(referencesCsvPath, { encoding: 'utf-8' });
+
                 const exampleRefLine = referencesCsv.split('\n').filter(line => line.includes('example'));
-                const practiceGuidelinesRefLine = referencesCsv.split('\n').filter(line => line.includes('practiceGuidelines'));
+                const practiceGuidelinesRefLine = referencesCsv.split('\n').filter(line => line.includes('practiceGuide'));
 
                 const exampleID = await this.upsertAPGExample(
                     exampleDir,
@@ -116,9 +117,6 @@ const ariaat = {
                     exampleRefLine,
                     practiceGuidelinesRefLine
                 );
-
-                // Naive approach is to let the APG example get written to the database,
-                // and then add example and practical guidelines if they do exist in this version
                 
                 let tests = fse.readdirSync(subDirFullPath);
 
@@ -266,21 +264,41 @@ const ariaat = {
      * @param {int} testVersionID - foreign key into the test_version table
      * @return {int} id
      */
-    async upsertAPGExample(exampleDir, exampleName, testVersionID) {
+    async upsertAPGExample(exampleDir, exampleName, testVersionID, exampleRefLine, practiceGuidelinesRefLine) {
         const exampleResult = await client.query(
-            'SELECT id FROM apg_example WHERE directory=$1 and test_version_id=$2',
+            'SELECT id, example, practice_guide FROM apg_example WHERE directory=$1 and test_version_id=$2',
             [exampleDir, testVersionID]
         );
-        let exampleID = exampleResult.rowCount
-            ? exampleResult.rows[0].id
+
+        let example = exampleResult.rowCount
+            ? exampleResult.rows[0]
             : undefined;
-        if (!exampleID) {
-            exampleID = await this.insertRowReturnId(
-                'INSERT INTO apg_example(directory, name, test_version_id) VALUES($1, $2, $3) RETURNING id',
+
+        if (!example) {
+            example = await this.insertRow(
+                'INSERT INTO apg_example(directory, name, test_version_id) VALUES($1, $2, $3) RETURNING id, example, practice_guide',
                 [exampleDir, exampleName, testVersionID]
             );
         }
-        return exampleID;
+
+        if (exampleRefLine.length > 0 && !example.example) {
+            const exampleLink = exampleRefLine[0].split(',')[1];
+            example = await this.insertRow(
+                'UPDATE apg_example SET example=$1 WHERE id=$2 RETURNING id, example, practice_guide;',
+                [exampleLink, example.id]
+            )
+        }
+
+
+        if (practiceGuidelinesRefLine.length > 0 && !example.practice_guide) {
+            const practiceGuidelinesLink = practiceGuidelinesRefLine[0].split(',')[1];
+            example = await this.insertRow(
+                'UPDATE apg_example SET practice_guide=$1 WHERE id=$2 RETURNING id, example, practice_guide;',
+                [practiceGuidelinesLink, example.id]
+            )
+        }
+
+        return example.id;
     },
 
     /**
@@ -345,7 +363,20 @@ const ariaat = {
             throw err;
         }
         return result.id;
-    }
+    },
+
+    async insertRow(query, params) {
+        let result;
+        try {
+            result = (await client.query(query, params)).rows[0];
+        } catch (err) {
+            console.log(
+                `ERROR: Insertion query '${query}' with parameters '[${params}]' should return id.`
+            );
+            throw err;
+        }
+        return result;
+    },
 };
 
 ariaat
