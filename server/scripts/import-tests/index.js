@@ -105,10 +105,16 @@ const ariaat = {
             if (stat.isDirectory() && exampleDir !== 'resources') {
                 const dataPath = path.join(subDirFullPath, 'data');
                 const referencesCsvPath = path.join(dataPath, 'references.csv');
-                const referencesCsv = fse.readFileSync(referencesCsvPath, { encoding: 'utf-8' });
+                const referencesCsv = fse.readFileSync(referencesCsvPath, {
+                    encoding: 'utf-8'
+                });
 
-                const exampleRefLine = referencesCsv.split('\n').filter(line => line.includes('example'));
-                const practiceGuidelinesRefLine = referencesCsv.split('\n').filter(line => line.includes('practiceGuide'));
+                const exampleRefLine = referencesCsv
+                    .split('\n')
+                    .filter(line => line.includes('example'));
+                const practiceGuidelinesRefLine = referencesCsv
+                    .split('\n')
+                    .filter(line => line.includes('practiceGuide'));
 
                 const exampleID = await this.upsertAPGExample(
                     exampleDir,
@@ -117,7 +123,7 @@ const ariaat = {
                     exampleRefLine,
                     practiceGuidelinesRefLine
                 );
-                
+
                 let tests = fse.readdirSync(subDirFullPath);
 
                 for (let j = 0; j < tests.length; j++) {
@@ -264,7 +270,13 @@ const ariaat = {
      * @param {int} testVersionID - foreign key into the test_version table
      * @return {int} id
      */
-    async upsertAPGExample(exampleDir, exampleName, testVersionID, exampleRefLine, practiceGuidelinesRefLine) {
+    async upsertAPGExample(
+        exampleDir,
+        exampleName,
+        testVersionID,
+        exampleRefLine,
+        practiceGuidelinesRefLine
+    ) {
         const exampleResult = await client.query(
             'SELECT id, example, practice_guide FROM apg_example WHERE directory=$1 and test_version_id=$2',
             [exampleDir, testVersionID]
@@ -286,16 +298,17 @@ const ariaat = {
             example = await this.insertRow(
                 'UPDATE apg_example SET example=$1 WHERE id=$2 RETURNING id, example, practice_guide;',
                 [exampleLink, example.id]
-            )
+            );
         }
 
-
         if (practiceGuidelinesRefLine.length > 0 && !example.practice_guide) {
-            const practiceGuidelinesLink = practiceGuidelinesRefLine[0].split(',')[1];
+            const practiceGuidelinesLink = practiceGuidelinesRefLine[0].split(
+                ','
+            )[1];
             example = await this.insertRow(
                 'UPDATE apg_example SET practice_guide=$1 WHERE id=$2 RETURNING id, example, practice_guide;',
                 [practiceGuidelinesLink, example.id]
-            )
+            );
         }
 
         return example.id;
@@ -376,7 +389,7 @@ const ariaat = {
             throw err;
         }
         return result;
-    },
+    }
 };
 
 ariaat
