@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { getPublishedRuns } from '../../actions/runs';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFolderOpen, faFileAlt } from '@fortawesome/free-solid-svg-icons';
+import { faFolderOpen, faFileAlt, faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
 import { ProgressBar } from 'react-bootstrap';
 import {
     generateTechPairs,
@@ -103,7 +103,7 @@ class ReportsPage extends Component {
             .filter(({ active }) => active)
             .map(({ browser, at }) => {
                 return (
-                    <th key={`${at} with ${browser}`} colSpan={3}>
+                    <th key={`${at} with ${browser}`} colSpan={4}>
                         <h3 className="text-center">
                             {at} with {browser}
                         </h3>
@@ -134,7 +134,7 @@ class ReportsPage extends Component {
                 );
 
                 topLevelRowData.push(
-                    <td key={`Percentage of ${at} with ${browser}`} colSpan={3}>
+                    <td key={`Percentage of ${at} with ${browser}`} colSpan={4}>
                         <ProgressBar
                             now={percentage}
                             variant="info"
@@ -177,7 +177,7 @@ class ReportsPage extends Component {
                             exampleRow.push(
                                 <td
                                     key={`data-${exampleName}-${at}-${browser}`}
-                                    colSpan={3}
+                                    colSpan={4}
                                 >
                                     <ProgressBar
                                         now={percentage}
@@ -191,7 +191,7 @@ class ReportsPage extends Component {
                                 <td
                                     key={`data-${exampleName}-${at}-${browser}`}
                                     aria-label={`No results data for ${exampleName} on ${at} with ${browser}`}
-                                    colSpan={3}
+                                    colSpan={4}
                                 >
                                     -
                                 </td>
@@ -225,6 +225,13 @@ class ReportsPage extends Component {
                                 key={`stat-header-unexpected-${exampleName}-${at}-${browser}`}
                             >
                                 Unexpected Behavior
+                            </td>
+                        );
+                        testStatHeaderRow.push(
+                            <td
+                                key={`stat-header-link-${exampleName}-${at}-${browser}`}
+                                aria-label="Link to detailed test report"
+                            >
                             </td>
                         );
                     });
@@ -262,7 +269,9 @@ class ReportsPage extends Component {
                                         passingRequiredAssertions,
                                         optionalAssertions,
                                         passingOptionalAssertions,
-                                        unexpectedBehaviors
+                                        unexpectedBehaviors,
+                                        runId,
+                                        executionOrder
                                     } = testWithResults;
                                     testRow.push(
                                         <td
@@ -291,11 +300,18 @@ class ReportsPage extends Component {
                                             {formatInteger(unexpectedBehaviors)}
                                         </td>
                                     );
+                                    testRow.push(
+                                        <td
+                                            key={`${exampleName}-${testName}-${i}-${at}-${browser}-link`}
+                                        >
+                                          <a href={`/results/run/${runId}#test-${executionOrder}`} target="blank" aria-label={`Detailed Test Report for ${testName} ${at} ${browser}`}><FontAwesomeIcon icon={faExternalLinkAlt} /></href>
+                                        </td>
+                                    );
                                 } else {
                                     testRow.push(
                                         <td
                                             key={`${exampleName}-${testName}-${i}-${at}-${browser}`}
-                                            colSpan={3}
+                                            colSpan={4}
                                         >
                                             skipped
                                         </td>
@@ -348,6 +364,12 @@ class ReportsPage extends Component {
                                 key={`${exampleName}-${browser}-${at}-support-unexpected`}
                             >
                                 {formatInteger(unexpectedBehaviors)}
+                            </td>
+                        );
+                        supportRow.push(
+                            <td
+                                key={`${exampleName}-${browser}-${at}-support-link`}
+                            >
                             </td>
                         );
                     }

@@ -55,7 +55,7 @@ class RunResultsPage extends Component {
         return (
             <tr key={nextId()}>
                 <td>
-                    <a href={`#test-${i.toString()}`}>{details.name}</a>
+                    <a href={`#test-${test.execution_order}`}>{details.name}</a>
                 </td>
                 <td>{required}</td>
                 <td>{optional}</td>
@@ -248,7 +248,7 @@ class RunResultsPage extends Component {
                                     <Fragment key={nextId()}>
                                         <div>
                                             <h2
-                                                id={`test-${i.toString()}`}
+                                                id={`test-${t.execution_order}`}
                                                 className="float-left"
                                             >
                                                 Details for test: {t.name}
