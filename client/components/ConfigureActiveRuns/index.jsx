@@ -467,32 +467,40 @@ class ConfigureActiveRuns extends Component {
 
         const getTestVersions = function() {
             const emptyVersion = {
-                id: 0,
-            }
-            const testVersionOption = version => (
-                version.id == 0 ?
-                <option key={version.id} value={version.id}>select test version</option> :
-                <option key={version.id} value={version.id}>
-                    { moment(version.date).format('MMMM Do YYYY') + ' - ' +
-                        version.git_commit_msg.slice(0, 80) +
-                        '...' + ' - ' + version.git_hash.slice(0, 7) +
-                        ' - ' }
-                </option>
-            );
-            let versionList = Object.keys(activeRunConfiguration.active_test_version)
-                .length > 0
-                ? testVersions
-                      .filter(
-                          version =>
-                              version.date >
-                              activeRunConfiguration.active_test_version.date
-                      )
-                      .map(version => {
+                id: 0
+            };
+            const testVersionOption = version =>
+                version.id == 0 ? (
+                    <option key={version.id} value={version.id}>
+                        select test version
+                    </option>
+                ) : (
+                    <option key={version.id} value={version.id}>
+                        {moment(version.date).format('MMMM Do YYYY') +
+                            ' - ' +
+                            version.git_commit_msg.slice(0, 80) +
+                            '...' +
+                            ' - ' +
+                            version.git_hash.slice(0, 7) +
+                            ' - '}
+                    </option>
+                );
+            let versionList =
+                Object.keys(activeRunConfiguration.active_test_version).length >
+                0
+                    ? testVersions
+                          .filter(
+                              version =>
+                                  version.date >
+                                  activeRunConfiguration.active_test_version
+                                      .date
+                          )
+                          .map(version => {
+                              return testVersionOption(version);
+                          })
+                    : testVersions.map(version => {
                           return testVersionOption(version);
-                      })
-                : testVersions.map(version => {
-                      return testVersionOption(version);
-                  });
+                      });
             versionList.unshift(testVersionOption(emptyVersion));
             return versionList;
         };
@@ -502,7 +510,7 @@ class ConfigureActiveRuns extends Component {
         return versions.length > 0 ? (
             <Form.Control
                 data-test="configure-run-commit-select"
-                defaultValue={""}
+                defaultValue={''}
                 onChange={this.handleVersionChange}
                 as="select"
             >
@@ -708,10 +716,7 @@ class ConfigureActiveRuns extends Component {
                         </thead>
                         {technologyRows.length ? (
                             <tbody>{technologyRows}</tbody>
-                        ) : (
-                            null
-                        )}
-
+                        ) : null}
                     </Table>
                     <div className="add-at-browser">
                         <Button
