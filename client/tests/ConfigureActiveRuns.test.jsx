@@ -117,7 +117,7 @@ describe('render', () => {
             component = findByTestAttr(wrapper, 'configure-run-commit-select');
             expect(component.length).toBe(1);
             expect(component.text()).toContain(
-                '12345 - Checkbox 2: Test navigating'
+                'May 7th 2020 - Checkbox 2: Test navigating'
             );
 
             component = findByTestAttr(wrapper, 'configure-run-commit-label');
