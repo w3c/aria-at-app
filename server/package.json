@@ -49,6 +49,7 @@
     "node-mocks-http": "^1.8.1",
     "prettier": "^1.19.1",
     "sequelize-cli": "^5.5.1",
-    "supertest": "^4.0.2"
+    "supertest": "^4.0.2",
+    "valid-url": "^1.0.9"
   }
 }
