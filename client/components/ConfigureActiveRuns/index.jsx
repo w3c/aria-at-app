@@ -393,18 +393,20 @@ class ConfigureActiveRuns extends Component {
             version => version.id === parseInt(event.currentTarget.value)
         )[0];
 
-        this.setState({
-            selectedVersion: versionData.id,
-            assignedTesters: [],
-            exampleSelected: selectExamples(
-                versionData,
-                activeRunConfiguration
-            ),
-            runTechnologyRows: getDefaultsTechCombinations(
-                versionData,
-                activeRunConfiguration
-            )
-        });
+        if (versionData) {
+            this.setState({
+                selectedVersion: versionData.id,
+                assignedTesters: [],
+                exampleSelected: selectExamples(
+                    versionData,
+                    activeRunConfiguration
+                ),
+                runTechnologyRows: getDefaultsTechCombinations(
+                    versionData,
+                    activeRunConfiguration
+                )
+            });
+        }
     }
 
     handleTechnologyRowChange(runTechnologies, index) {
@@ -464,7 +466,12 @@ class ConfigureActiveRuns extends Component {
         const { testVersions, activeRunConfiguration } = this.props;
 
         const getTestVersions = function() {
+            const emptyVersion = {
+                id: 0,
+            }
             const testVersionOption = version => (
+                version.id == 0 ?
+                <option key={version.id} value={version.id}>select test version</option> :
                 <option key={version.id} value={version.id}>
                     { moment(version.date).format('MMMM Do YYYY') + ' - ' +
                         version.git_commit_msg.slice(0, 80) +
@@ -472,7 +479,7 @@ class ConfigureActiveRuns extends Component {
                         ' - ' }
                 </option>
             );
-            return Object.keys(activeRunConfiguration.active_test_version)
+            let versionList = Object.keys(activeRunConfiguration.active_test_version)
                 .length > 0
                 ? testVersions
                       .filter(
@@ -486,6 +493,8 @@ class ConfigureActiveRuns extends Component {
                 : testVersions.map(version => {
                       return testVersionOption(version);
                   });
+            versionList.unshift(testVersionOption(emptyVersion));
+            return versionList;
         };
 
         const versions = getTestVersions();
@@ -493,7 +502,7 @@ class ConfigureActiveRuns extends Component {
         return versions.length > 0 ? (
             <Form.Control
                 data-test="configure-run-commit-select"
-                value={this.state.selectedVersion}
+                defaultValue={""}
                 onChange={this.handleVersionChange}
                 as="select"
             >
@@ -699,9 +708,10 @@ class ConfigureActiveRuns extends Component {
                         </thead>
                         {technologyRows.length ? (
                             <tbody>{technologyRows}</tbody>
-                        ) :
+                        ) : (
                             null
-                        }
+                        )}
+
                     </Table>
                     <div className="add-at-browser">
                         <Button
