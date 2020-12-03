@@ -5,6 +5,7 @@ const nodegit = require('nodegit');
 const { Client } = require('pg');
 const fse = require('fs-extra');
 const np = require('node-html-parser');
+const db = require('../../models/index');
 
 const args = require('minimist')(process.argv.slice(2), {
     alias: {
@@ -41,6 +42,8 @@ const ariaat = {
      */
     async getMostRecentTests() {
         await client.connect();
+
+        console.log(db)
 
         fse.ensureDirSync(tmpDirectory);
         let repo = await nodegit.Clone(ariaAtRepo, tmpDirectory, {});
