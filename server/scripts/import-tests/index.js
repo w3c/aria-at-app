@@ -6,6 +6,7 @@ const { Client } = require('pg');
 const fse = require('fs-extra');
 const np = require('node-html-parser');
 const db = require('../../models/index');
+const validUrl = require('valid-url');
 
 const args = require('minimist')(process.argv.slice(2), {
     alias: {
@@ -42,8 +43,6 @@ const ariaat = {
      */
     async getMostRecentTests() {
         await client.connect();
-
-        console.log(db)
 
         fse.ensureDirSync(tmpDirectory);
         let repo = await nodegit.Clone(ariaAtRepo, tmpDirectory, {});
@@ -108,9 +107,18 @@ const ariaat = {
             if (stat.isDirectory() && exampleDir !== 'resources') {
                 const dataPath = path.join(subDirFullPath, 'data');
                 const referencesCsvPath = path.join(dataPath, 'references.csv');
-                const referencesCsv = fse.readFileSync(referencesCsvPath, {
-                    encoding: 'utf-8'
-                });
+                let referencesCsv;
+
+                try {
+                    referencesCsv = fse.readFileSync(referencesCsvPath, {
+                        encoding: 'utf-8'
+                    });
+                } catch (error) {
+                    console.error(
+                        `Reference file, ${referencesCsvPath}, does not exist!`
+                    );
+                    throw error;
+                }
 
                 const exampleRefLine = referencesCsv
                     .split('\n')
@@ -290,28 +298,54 @@ const ariaat = {
             : undefined;
 
         if (!example) {
-            example = await this.insertRow(
-                'INSERT INTO apg_example(directory, name, test_version_id) VALUES($1, $2, $3) RETURNING id, example, design_pattern',
-                [exampleDir, exampleName, testVersionID]
-            );
+            example = await db.ApgExample.create({
+                directory: exampleDir,
+                name: exampleName,
+                test_version_id: testVersionID
+            });
         }
 
         if (exampleRefLine.length > 0 && !example.example) {
             const exampleLink = exampleRefLine[0].split(',')[1];
-            example = await this.insertRow(
-                'UPDATE apg_example SET example=$1 WHERE id=$2 RETURNING id, example, design_pattern;',
-                [exampleLink, example.id]
-            );
+            if (validUrl.isUri(exampleLink)) {
+                await db.ApgExample.update(
+                    {
+                        example: exampleLink
+                    },
+                    {
+                        where: {
+                            id: example.id
+                        }
+                    }
+                );
+            } else {
+                console.error(
+                    `WARNING: The example link is not valid for ${exampleName}. Not writing to database.`
+                );
+            }
         }
 
         if (practiceGuidelinesRefLine.length > 0 && !example.design_pattern) {
             const practiceGuidelinesLink = practiceGuidelinesRefLine[0].split(
                 ','
             )[1];
-            example = await this.insertRow(
-                'UPDATE apg_example SET design_pattern=$1 WHERE id=$2 RETURNING id, example, design_pattern;',
-                [practiceGuidelinesLink, example.id]
-            );
+
+            if (validUrl.isUri(practiceGuidelinesLink)) {
+                await db.ApgExample.update(
+                    {
+                        design_pattern: practiceGuidelinesLink
+                    },
+                    {
+                        where: {
+                            id: example.id
+                        }
+                    }
+                );
+            } else {
+                console.error(
+                    `WARNING: The design pattern link is not valid for ${exampleName}. Not writing to database.`
+                );
+            }
         }
 
         return example.id;
