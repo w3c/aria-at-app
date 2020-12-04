@@ -48,7 +48,9 @@ function generateTestsWithMetaData(runs, techPairs) {
                         optionalAssertions,
                         passingOptionalAssertions:
                             optionalAssertionsSummary.pass,
-                        unexpectedBehaviors
+                        unexpectedBehaviors,
+                        executionOrder: test.execution_order,
+                        runId: runForTechPair.id
                     });
                 }
             });
@@ -87,6 +89,8 @@ function generateTestsWithMetaData(runs, techPairs) {
  * @type {number} optionalAssertions
  * @type {number} passingOptionalAssertions
  * @type {number} unexpectedBehaviors
+ * @type {number} executionOrder
+ * @type {number} runId
  */
 export function generateApgExamples(publishedRunsById, techPairs) {
     const runs = Object.values(publishedRunsById);
