@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { Helmet } from 'react-helmet';
-import { Table } from 'react-bootstrap';
+import { Table, Collapse } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { getPublishedRuns } from '../../actions/runs';
 import PropTypes from 'prop-types';
@@ -8,7 +8,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faFolderOpen,
     faFileAlt,
-    faExternalLinkAlt
+    faExternalLinkAlt,
+    faFolder
 } from '@fortawesome/free-solid-svg-icons';
 import { ProgressBar } from 'react-bootstrap';
 import {
@@ -39,6 +40,7 @@ class ReportsPage extends Component {
             this
         );
         this.selectTechPair = this.selectTechPair.bind(this);
+        this.setOpenExample = this.setOpenExample.bind(this);
     }
 
     componentDidMount() {
@@ -65,6 +67,18 @@ class ReportsPage extends Component {
                     active: !this.state.techPairs[i]['active']
                 }),
                 ...this.state.techPairs.slice(i + 1)
+            ]
+        });
+    }
+
+    setOpenExample(i) {
+        this.setState({
+            apgExamples: [
+                ...this.state.apgExamples.slice(0, i),
+                Object.assign(this.state.apgExamples[i], {
+                    open: !this.state.apgExamples[i]['open']
+                }),
+                ...this.state.apgExamples.slice(i + 1)
             ]
         });
     }
@@ -122,10 +136,12 @@ class ReportsPage extends Component {
         let tableRows = [];
 
         let topLevelRowData = [
-            <td key="High level pattern">
-                <span>
+            <td key="empty-high-level-pattern" className="border-right-0">
+                <span className="pr-0">
                     <FontAwesomeIcon icon={faFolderOpen} />
                 </span>
+            </td>,
+            <td key="High level pattern" className="border-left-0">
                 ARIA Design Pattern Example
             </td>
         ];
@@ -154,17 +170,40 @@ class ReportsPage extends Component {
         );
 
         apgExamples.forEach(
-            ({
-                exampleName,
-                testNames,
-                testsWithMetaDataIndexedByTechPair
-            }) => {
+            (
+                {
+                    exampleName,
+                    testNames,
+                    testsWithMetaDataIndexedByTechPair,
+                    open
+                },
+                exampleIndex
+            ) => {
                 let exampleRow = [];
                 exampleRow.push(
-                    <td key={`example-${exampleName}`} rowSpan={2}>
-                        <span className="ml-3">
-                            <FontAwesomeIcon icon={faFolderOpen} />
+                    <td
+                        key={`example-${exampleName}`}
+                        className="border-bottom-0 border-right-0 pr-0"
+                    >
+                        <span
+                            className="ml-3"
+                            onClick={() => this.setOpenExample(exampleIndex)}
+                            aria-expanded={open}
+                            aria-label={`${
+                                open ? 'Collapse' : 'Open'
+                            } ${exampleName} tests`}
+                        >
+                            <FontAwesomeIcon
+                                icon={open ? faFolderOpen : faFolder}
+                            />
                         </span>
+                    </td>
+                );
+                exampleRow.push(
+                    <td
+                        key={`example-${exampleName}-name`}
+                        className="border-bottom-0 border-left-0 pl-0"
+                    >
                         {exampleName}
                     </td>
                 );
@@ -209,7 +248,15 @@ class ReportsPage extends Component {
                 let testStatHeaderRow = [];
                 techPairs
                     .filter(pair => pair.active)
-                    .forEach(({ browser, at }) => {
+                    .forEach(({ browser, at }, techPairIndex) => {
+                        if (techPairIndex === 0) {
+                            testStatHeaderRow.push(
+                                <td className="border-top-0 border-right-0"></td>
+                            );
+                            testStatHeaderRow.push(
+                                <td className="border-top-0 border-left-0"></td>
+                            );
+                        }
                         testStatHeaderRow.push(
                             <td
                                 key={`stat-header-required$-${exampleName}-${at}-${browser}`}
@@ -240,15 +287,24 @@ class ReportsPage extends Component {
                     });
 
                 tableRows.push(
-                    <tr key={`${exampleName}-stat-headers`}>
-                        {testStatHeaderRow}
-                    </tr>
+                    <Collapse in={open}>
+                        <tr key={`${exampleName}-stat-headers`}>
+                            {testStatHeaderRow}
+                        </tr>
+                    </Collapse>
                 );
 
                 testNames.forEach((testName, i) => {
                     let testRow = [
-                        <td key={`${exampleName}-${testName}`}>
-                            <span className="ml-5">
+                        <td
+                            key={`${exampleName}-${testName}-empty`}
+                            className="border-right-0"
+                        ></td>,
+                        <td
+                            key={`${exampleName}-${testName}`}
+                            className="border-left-0 pl-0"
+                        >
+                            <span>
                                 <FontAwesomeIcon icon={faFileAlt} />
                                 {testName}
                             </span>
@@ -332,9 +388,11 @@ class ReportsPage extends Component {
                         }
                     );
                     tableRows.push(
-                        <tr key={`${exampleName}-${testName}-${i}-row`}>
-                            {testRow}
-                        </tr>
+                        <Collapse in={open}>
+                            <tr key={`${exampleName}-${testName}-${i}-row`}>
+                                {testRow}
+                            </tr>
+                        </Collapse>
                     );
                 });
 
@@ -385,12 +443,15 @@ class ReportsPage extends Component {
                     }
                 });
                 tableRows.push(
-                    <tr key={`${exampleName}-support`}>
-                        <td>
-                            <span className="ml-5">Support</span>
-                        </td>
-                        {supportRow}
-                    </tr>
+                    <Collapse in={open}>
+                        <tr key={`${exampleName}-support`}>
+                            <td className="border-right-0"></td>
+                            <td className="border-left-0">
+                                <span>Support</span>
+                            </td>
+                            {supportRow}
+                        </tr>
+                    </Collapse>
                 );
             }
         );
@@ -409,7 +470,7 @@ class ReportsPage extends Component {
                 <Table bordered hover>
                     <thead>
                         <tr>
-                            <th>
+                            <th colSpan={2} key="design-pattern-examples">
                                 <h2>Design Pattern Examples</h2>
                             </th>
                             {this.generateTechPairTableHeaders()}
