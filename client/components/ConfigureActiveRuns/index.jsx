@@ -142,7 +142,7 @@ class ConfigureActiveRuns extends Component {
             nextProps.activeRunConfiguration &&
             nextProps.testVersions
         ) {
-            // Get the active test version or the first test version i
+            // Get the active test version or the first test version if
             // there is no active test (a clean database). This assumes
             // that a single test version is imported initially.
             let testVersionId =
@@ -466,25 +466,17 @@ class ConfigureActiveRuns extends Component {
         const { testVersions, activeRunConfiguration } = this.props;
 
         const getTestVersions = function() {
-            const emptyVersion = {
-                id: 0
-            };
-            const testVersionOption = version =>
-                version.id == 0 ? (
-                    <option key={version.id} value={version.id}>
-                        select test version
-                    </option>
-                ) : (
-                    <option key={version.id} value={version.id}>
-                        {moment(version.date).format('MMMM Do YYYY') +
-                            ' - ' +
-                            version.git_commit_msg.slice(0, 80) +
-                            '...' +
-                            ' - ' +
-                            version.git_hash.slice(0, 7) +
-                            ' - '}
-                    </option>
-                );
+            const testVersionOption = version => (
+                <option key={version.id} value={version.id}>
+                    {moment(version.date).format('MMMM Do YYYY') +
+                        ' - ' +
+                        version.git_commit_msg.slice(0, 80) +
+                        '...' +
+                        ' - ' +
+                        version.git_hash.slice(0, 7) +
+                        ' - '}
+                </option>
+            );
             let versionList =
                 Object.keys(activeRunConfiguration.active_test_version).length >
                 0
@@ -501,7 +493,6 @@ class ConfigureActiveRuns extends Component {
                     : testVersions.map(version => {
                           return testVersionOption(version);
                       });
-            versionList.unshift(testVersionOption(emptyVersion));
             return versionList;
         };
 
@@ -514,6 +505,9 @@ class ConfigureActiveRuns extends Component {
                 onChange={this.handleVersionChange}
                 as="select"
             >
+                <option key="default-version" value="Select test verion">
+                    Select test version
+                </option>
                 {versions}
             </Form.Control>
         ) : null;
