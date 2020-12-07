@@ -138,7 +138,7 @@ class ConfigureTechnologyRow extends Component {
                 <td>{runTechnologies.browser_version}</td>
                 <td>
                     <Row>
-                        <Col md={9}>
+                        <Col md={7} className="btn-container">
                             <Button
                                 className="remove-at-browser"
                                 variant="danger"
@@ -154,7 +154,7 @@ class ConfigureTechnologyRow extends Component {
                                 Remove
                             </Button>
                         </Col>
-                        <Col md={3}>
+                        <Col md={5} className="btn-container">
                             <Button
                                 className="undo btn-tertiary"
                                 disabled={deleted === false}
@@ -165,6 +165,7 @@ class ConfigureTechnologyRow extends Component {
                                 <FontAwesomeIcon
                                     icon={faUndo}
                                 ></FontAwesomeIcon>
+                                Undo
                             </Button>
                         </Col>
                     </Row>
