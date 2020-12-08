@@ -18,21 +18,20 @@ class Home extends Component {
                     <h2>About this project</h2>
                     <p>
                         This project aims to improve how well assistive
-                        technologies render web experiences. It defines and
-                        runs manual tests of assistive technologies to
-                        measure their support of accessibility semantics
-                        using the example web components in
-                        {' the '}
+                        technologies render web experiences. It defines and runs
+                        manual tests of assistive technologies to measure their
+                        support of accessibility semantics using the example web
+                        components in the{' '}
                         <a href="https://w3c.github.io/aria-practices/">
                             WAI-ARIA Authoring Practices
                         </a>
-                        {
-                            ". The tests and test results are vetted with assistive technology vendors and other stakeholders following the project's "
-                        }
+                        . The tests and test results are vetted with assistive
+                        technology vendors and other stakeholders following the
+                        project&apos;s{' '}
                         <a href="https://github.com/w3c/aria-at/wiki/Working-Mode">
                             Working Mode
-                        </a>
-                        {' process.'}
+                        </a>{' '}
+                        process.
                     </p>
 
                     <h3>Get involved</h3>
@@ -40,8 +39,8 @@ class Home extends Component {
                         <li>
                             <a href="https://www.w3.org/community/aria-at/">
                                 Join the community group
-                            </a>
-                            {' (see '}
+                            </a>{' '}
+                            (see{' '}
                             <a href="https://www.w3.org/community/about/faq/#how-do-i-join-a-group">
                                 how to join a W3C community group
                             </a>
@@ -72,11 +71,11 @@ class Home extends Component {
                         <div className="description">
                             <h3>Test Management</h3>
                             <p>
-                                This app allows project administrators to
-                                create Test Runs for managing execution of
-                                tests of a collection of ARIA patterns with
-                                a specified set of assistive technology and
-                                browser combinations.
+                                This app allows project administrators to create
+                                Test Runs for managing execution of tests of a
+                                collection of ARIA patterns with a specified set
+                                of assistive technology and browser
+                                combinations.
                             </p>
                         </div>
                         <div className="screenshot">
@@ -91,9 +90,8 @@ class Home extends Component {
                             <h3>Test Queue</h3>
                             <p>
                                 Testers can view in-progress Test Runs and
-                                assign themselves to run a specific test
-                                plan using a given assistive technology and
-                                browser.
+                                assign themselves to run a specific test plan
+                                using a given assistive technology and browser.
                             </p>
                         </div>
                         <div className="screenshot">
@@ -107,11 +105,10 @@ class Home extends Component {
                         <div className="description">
                             <h3>Running Tests</h3>
                             <p>
-                                When running a Test Plan, the app loads the
-                                ARIA AT tests and displays instructions for
-                                how to record various assertions about the
-                                behavior of the AT and browser for a given
-                                test.
+                                When running a Test Plan, the app loads the ARIA
+                                AT tests and displays instructions for how to
+                                record various assertions about the behavior of
+                                the AT and browser for a given test.
                             </p>
                         </div>
                         <div className="screenshot">
@@ -126,10 +123,9 @@ class Home extends Component {
                             <h3>Test Review</h3>
                             <p>
                                 After multiple runs have been recorded for a
-                                particular Test Plan, users can view a
-                                summary of results, and project
-                                administrators can publish them to the
-                                public Reports page.
+                                particular Test Plan, users can view a summary
+                                of results, and project administrators can
+                                publish them to the public Reports page.
                             </p>
                         </div>
                         <div className="screenshot">

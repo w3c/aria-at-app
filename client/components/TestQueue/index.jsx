@@ -106,15 +106,21 @@ class TestQueue extends Component {
                     </Helmet>
                     <h2 data-test="test-queue-no-ats-h2">{noAts}</h2>
                     <p data-test="test-queue-no-ats-p">
-                        Please configure your preferred Assistive Technologies in the {settingsLink} page.
+                        Please configure your preferred Assistive Technologies
+                        in the {settingsLink} page.
                     </p>
                     <p>
-                        If you have configured your Assistive Technologies and are still not seeing any 
-                        Test Plans in this page, it could be that there are no Test Plans available under your configuration. 
-                    <p> 
-                    </p>    
-                        Please <a href="mailto: public-aria-at@w3.org">contact the ARIA AT community group</a>.
-                    </p> 
+                        If you have configured your Assistive Technologies and
+                        are still not seeing any Test Plans in this page, it
+                        could be that there are no Test Plans available under
+                        your configuration.
+                        <p></p>
+                        Please{' '}
+                        <a href="mailto: public-aria-at@w3.org">
+                            contact the ARIA AT community group
+                        </a>
+                        .
+                    </p>
                 </Fragment>
             );
         }

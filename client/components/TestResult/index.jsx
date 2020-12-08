@@ -69,25 +69,17 @@ class TestResult extends Component {
                                     <td>{support}</td>
                                     <td>
                                         <dl>
-                                            <dt>
-                                                Output:
-                                            </dt>
+                                            <dt>Output:</dt>
                                             <dd>{output}</dd>
-                                            <dt>
-                                                Passing Assertions:
-                                            </dt>
+                                            <dt>Passing Assertions:</dt>
                                             {this.renderOutcomeList(passing)}
-                                            <dt>
-                                                Failing Assertions:{' '}
-                                            </dt>
+                                            <dt>Failing Assertions: </dt>
                                             {this.renderOutcomeList(failing)}
-                                            <dt>
-                                                Unexpected Behaviors:{' '}
-                                            </dt>
+                                            <dt>Unexpected Behaviors: </dt>
                                             {this.renderOutcomeList([
                                                 ...unexpected_behaviors
                                             ])}
-                                        </dl>                                          
+                                        </dl>
                                     </td>
                                 </tr>
                             );

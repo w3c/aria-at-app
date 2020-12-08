@@ -70,7 +70,7 @@ class App extends Component {
         return (
             <Fragment>
                 <Container fluid>
-                    <Navbar bg="light" expand="lg">
+                    <Navbar bg="light" expand="lg" aria-label="Main Menu">
                         <Navbar.Brand
                             className="logo"
                             as={Link}
@@ -80,8 +80,6 @@ class App extends Component {
                         </Navbar.Brand>
                         <Navbar.Toggle aria-controls="basic-navbar-nav" />
                         <Navbar.Collapse
-                            aria-label="Main Menu"
-                            role="menubar"
                             id="basic-navbar-nav"
                             className="justify-content-end"
                         >

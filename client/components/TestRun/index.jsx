@@ -500,7 +500,10 @@ class TestRun extends Component {
                             Save and Close
                         </Button>
                     </li>
-                    <li>Need Help? <a href="mailto:public-aria-at@w3.org">Email Us</a></li>
+                    <li>
+                        Need Help?{' '}
+                        <a href="mailto:public-aria-at@w3.org">Email Us</a>
+                    </li>
                 </ul>
             </div>
         );

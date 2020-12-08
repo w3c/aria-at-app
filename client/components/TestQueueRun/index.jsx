@@ -436,13 +436,13 @@ class TestQueueRow extends Component {
                             )}
                             {currentUserAssigned && (
                                 <Button
-                                onClick={this.handleUnassignSelfClick}
-                                aria-label={`Unassign yourself from the test run ${this.testRun()}`}
-                                variant="link"
-                                className="assign-self"
-                            >
-                                Unassign Yourself
-                            </Button>
+                                    onClick={this.handleUnassignSelfClick}
+                                    aria-label={`Unassign yourself from the test run ${this.testRun()}`}
+                                    variant="link"
+                                    className="assign-self"
+                                >
+                                    Unassign Yourself
+                                </Button>
                             )}
                         </Col>
                     </Row>
