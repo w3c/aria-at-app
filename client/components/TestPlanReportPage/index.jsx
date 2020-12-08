@@ -4,12 +4,9 @@ import { Table } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { getPublishedRuns } from '../../actions/runs';
 import PropTypes from 'prop-types';
-import { ProgressBar } from 'react-bootstrap';
 import {
     generateTechPairs,
     generateApgExample,
-    calculateTotalPercentageForTechPair,
-    calculatePercentage,
     formatFraction,
     formatInteger
 } from '../ReportsPage/utils';
@@ -45,89 +42,122 @@ class TestPlanReportPage extends Component {
     generateInitialStateFromRuns() {
         const { publishedRunsById, testPlanId } = this.props;
         let techPairs = generateTechPairs(publishedRunsById);
-        let apgExample = generateApgExample(publishedRunsById, techPairs, testPlanId);
+        let apgExample = generateApgExample(
+            publishedRunsById,
+            techPairs,
+            testPlanId
+        );
         this.setState({ techPairs, apgExample });
     }
 
     generateTableRows(testsWithMetaData) {
-		const { apgExample } = this.state;
-		const {
-			requiredAssertions,
-			passingRequiredAssertions,
-			optionalAssertions,
-			passingOptionalAssertions,
-			unexpectedBehaviors
-		} = testsWithMetaData;
-		let rows = [];
-		rows.push(
-			<tr key='summary'>
-				<th scope="row" key="summary">
-					All Tests
-				</th>
+        const { apgExample } = this.state;
+        const {
+            requiredAssertions,
+            passingRequiredAssertions,
+            optionalAssertions,
+            passingOptionalAssertions,
+            unexpectedBehaviors
+        } = testsWithMetaData;
+        let rows = [];
+        rows.push(
+            <tr key="summary">
+                <th scope="row" key="summary">
+                    All Tests
+                </th>
 
-				<td
-					key='summary-required'
-				>
-					{formatFraction(
-						passingRequiredAssertions,
-						requiredAssertions
-					)}
-				</td>
-				<td
-					key='summary-optional'
-				>
-					{formatFraction(
-						passingOptionalAssertions,
-						optionalAssertions
-					)}
-				</td>
-				<td
-					key='summary-unexpected'
-				>
-					{formatInteger(unexpectedBehaviors)}
-				</td>
-			</tr>
-		);
-		return rows;
-	}
+                <td key="summary-required">
+                    {formatFraction(
+                        passingRequiredAssertions,
+                        requiredAssertions
+                    )}
+                </td>
+                <td key="summary-optional">
+                    {formatFraction(
+                        passingOptionalAssertions,
+                        optionalAssertions
+                    )}
+                </td>
+                <td key="summary-unexpected">
+                    {formatInteger(unexpectedBehaviors)}
+                </td>
+            </tr>
+        );
+
+        apgExample.testNames.forEach((testName, testIndex) => {
+            const testWithResults = testsWithMetaData.testsWithResults.find(
+                t => t.testName === testName
+            );
+
+            rows.push(
+                <tr key={`${testIndex}-row`}>
+                    <th scope="row" key={`${testIndex}-name`}>
+                        {testName}
+                    </th>
+                    <td key={`${testIndex}-required`}>
+                        {(testWithResults &&
+                            formatFraction(
+                                testWithResults.passingRequiredAssertions,
+                                testWithResults.requiredAssertions
+                            )) ||
+                            '-'}
+                    </td>
+                    <td key={`${testIndex}-optional`}>
+                        {(testWithResults &&
+                            formatFraction(
+                                testWithResults.passingOptionalAssertions,
+                                testWithResults.optionalAssertions
+                            )) ||
+                            '-'}
+                    </td>
+                    <td key={`${testIndex}-unexpected`}>
+                        {(testWithResults &&
+                            formatInteger(unexpectedBehaviors)) ||
+                            '-'}
+                    </td>
+                </tr>
+            );
+        });
+
+        return rows;
+    }
 
     generateTables() {
         const { apgExample, techPairs } = this.state;
         let tables = [];
 
-        this.state.techPairs
-            .forEach(({ browser, at }, techPairIndex) => {
-                const testsWithMetaData =
-                    apgExample.testsWithMetaDataIndexedByTechPair[techPairIndex];
-                if (testsWithMetaData.testsWithResults.length > 0) {
-                    tables.push(
-                        <Table bordered hover>
-                            <caption>
-                                {at} with {browser}
-                            </caption>
-                            <thead>
-                                <tr>
-                                    <th key="tests" scope="col">
-                                    	Test Name
-                                    </th>
-                                    <th key="required" scope="col">
-                                        Required Assertions
-                                    </th>
-                                    <th key="optional" scope="col">
-                                        Optional Assertions
-                                    </th>
-                                    <th key="unexpected" scope="col">
-                                        Unexpected Behaviors
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {this.generateTableRows(testsWithMetaData)}
-                            </tbody>
-                        </Table>
-                    );
-                }
-            });
+        techPairs.forEach(({ browser, at }, techPairIndex) => {
+            const testsWithMetaData =
+                apgExample.testsWithMetaDataIndexedByTechPair[techPairIndex];
+            if (testsWithMetaData.testsWithResults.length > 0) {
+                tables.push(
+                    <Table bordered hover key={`table-${techPairIndex}`}>
+                        <caption>
+                            {at} with {browser}
+                        </caption>
+                        <thead>
+                            <tr>
+                                <th key="tests" scope="col">
+                                    Test Name
+                                </th>
+                                <th key="required" scope="col">
+                                    Required Assertions
+                                </th>
+                                <th key="optional" scope="col">
+                                    Optional Assertions
+                                </th>
+                                <th key="unexpected" scope="col">
+                                    Unexpected Behaviors
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {this.generateTableRows(testsWithMetaData)}
+                        </tbody>
+                    </Table>
+                );
+            }
+        });
 
         return tables;
     }
@@ -156,7 +186,6 @@ TestPlanReportPage.propTypes = {
     publishedRunsById: PropTypes.object,
     testPlanId: PropTypes.number
 };
-
 
 const mapStateToProps = (state, ownProps) => {
     const { publishedRunsById } = state.runs;

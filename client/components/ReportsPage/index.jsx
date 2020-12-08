@@ -1,24 +1,15 @@
 import React, { Component, Fragment } from 'react';
 import { Helmet } from 'react-helmet';
-import { Table, Collapse } from 'react-bootstrap';
+import { Table } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { getPublishedRuns } from '../../actions/runs';
 import PropTypes from 'prop-types';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-    faFolderOpen,
-    faFileAlt,
-    faExternalLinkAlt,
-    faFolder
-} from '@fortawesome/free-solid-svg-icons';
 import { ProgressBar } from 'react-bootstrap';
 import {
     generateTechPairs,
     generateApgExamples,
     calculateTotalPercentageForTechPair,
-    calculatePercentage,
-    formatFraction,
-    formatInteger
+    calculatePercentage
 } from './utils';
 
 class ReportsPage extends Component {
@@ -62,18 +53,17 @@ class ReportsPage extends Component {
     }
 
     generateTechPairTableHeaders() {
-        return this.state.techPairs
-            .map(({ browser, at }) => {
-                return (
-                    <th scope="col" key={`${at} with ${browser}`}>
-                        <span className="text-center">
-                            {at} with {browser}
-                        </span>
-                        <br></br>
-                        <span className="text-center">Passing Required Tests</span>
-                    </th>
-                );
-            });
+        return this.state.techPairs.map(({ browser, at }) => {
+            return (
+                <th scope="col" key={`${at} with ${browser}`}>
+                    <span className="text-center">
+                        {at} with {browser}
+                    </span>
+                    <br></br>
+                    <span className="text-center">Passing Required Tests</span>
+                </th>
+            );
+        });
     }
 
     generateTableRows() {
@@ -87,20 +77,20 @@ class ReportsPage extends Component {
         ];
 
         techPairs.forEach(({ browser, at }, index) => {
-              const percentage = calculateTotalPercentageForTechPair(
-                  apgExamples,
-                  index
-              );
+            const percentage = calculateTotalPercentageForTechPair(
+                apgExamples,
+                index
+            );
 
-              topLevelRowData.push(
-                  <td key={`Percentage of ${at} with ${browser}`}>
-                      <ProgressBar
-                          now={percentage}
-                          variant="info"
-                          label={`${percentage}%`}
-                      />
-                  </td>
-              );
+            topLevelRowData.push(
+                <td key={`Percentage of ${at} with ${browser}`}>
+                    <ProgressBar
+                        now={percentage}
+                        variant="info"
+                        label={`${percentage}%`}
+                    />
+                </td>
+            );
         });
 
         tableRows.push(
@@ -108,54 +98,45 @@ class ReportsPage extends Component {
         );
 
         apgExamples.forEach(
-            (
-                {
-                    exampleName,
-                    testNames,
-                    testsWithMetaDataIndexedByTechPair
-                }
-            ) => {
+            ({ exampleName, testsWithMetaDataIndexedByTechPair }) => {
                 let exampleRow = [];
                 exampleRow.push(
-                    <th scope="row"
-                        key={`example-${exampleName}-name`}
-                    >
+                    <th scope="row" key={`example-${exampleName}-name`}>
                         {exampleName}
                     </th>
                 );
                 techPairs.forEach(({ browser, at }, techPairIndex) => {
-                      const testsWithMetaData =
-                          testsWithMetaDataIndexedByTechPair[techPairIndex];
+                    const testsWithMetaData =
+                        testsWithMetaDataIndexedByTechPair[techPairIndex];
 
-                      if (testsWithMetaData.testsWithResults.length > 0) {
-                          const percentage = calculatePercentage(
-                              testsWithMetaData.passingRequiredAssertions,
-                              testsWithMetaData.requiredAssertions
-                          );
-                          exampleRow.push(
-                              <td
-                                  key={`data-${exampleName}-${at}-${browser}`}
-                              >
-                                  <ProgressBar
-                                      now={percentage}
-                                      variant="info"
-                                      label={`${percentage}%`}
-                                  />
-                              </td>
-                          );
-                      } else {
-                          exampleRow.push(
-                              <td
-                                  key={`data-${exampleName}-${at}-${browser}`}
-                                  aria-label={`No results data for ${exampleName} on ${at} with ${browser}`}
-                              >
-                                  -
-                              </td>
-                          );
-                      }
+                    if (testsWithMetaData.testsWithResults.length > 0) {
+                        const percentage = calculatePercentage(
+                            testsWithMetaData.passingRequiredAssertions,
+                            testsWithMetaData.requiredAssertions
+                        );
+                        exampleRow.push(
+                            <td key={`data-${exampleName}-${at}-${browser}`}>
+                                <ProgressBar
+                                    now={percentage}
+                                    variant="info"
+                                    label={`${percentage}%`}
+                                />
+                            </td>
+                        );
+                    } else {
+                        exampleRow.push(
+                            <td
+                                key={`data-${exampleName}-${at}-${browser}`}
+                                aria-label={`No results data for ${exampleName} on ${at} with ${browser}`}
+                            >
+                                -
+                            </td>
+                        );
+                    }
                 });
-                  tableRows.push(<tr key={exampleName}>{exampleRow}</tr>);
-            });
+                tableRows.push(<tr key={exampleName}>{exampleRow}</tr>);
+            }
+        );
 
         return tableRows;
     }
