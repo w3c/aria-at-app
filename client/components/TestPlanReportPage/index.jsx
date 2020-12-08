@@ -92,7 +92,10 @@ class TestPlanReportPage extends Component {
             rows.push(
                 <tr key={`${testIndex}-row`}>
                     <th scope="row" key={`${testIndex}-name`}>
-                        {testName}
+                        {testWithResults &&
+                        <a href={`/results/run/${testWithResults.runId}#test-${testWithResults.executionOrder}`}>
+                            {testName}
+                        </a> || testName}
                     </th>
                     <td key={`${testIndex}-required`}>
                         {(testWithResults &&
