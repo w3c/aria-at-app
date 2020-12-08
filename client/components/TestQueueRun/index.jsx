@@ -265,6 +265,7 @@ class TestQueueRow extends Component {
                 <Col md={3}>
                     <Dropdown aria-label="Assign testers menu">
                         <Dropdown.Toggle
+                            aria-label="Assign testers"
                             className="assign-tester"
                             variant="secondary"
                         >
