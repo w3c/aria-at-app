@@ -71,6 +71,7 @@ button.test-navigator-toggle.show:after {
 .test-name-wrapper {
     position: relative;
     margin: 0 0 0.5em 0.25em;
+    list-style: unset;
 }
 
 .test-name-wrapper:before {
