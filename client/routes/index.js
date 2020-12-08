@@ -7,6 +7,7 @@ import ConfirmAuth from '@components/ConfirmAuth';
 import Home from '@components/Home';
 import NotFound from '@components/NotFound';
 import ReportsPage from '@components/ReportsPage';
+import TestPlanReportPage from '@components/TestPlanReportPage';
 import RunResultsPage from '@components/RunResultsPage';
 import ResultsPage from '@components/ResultsPage';
 import SignupInstructions from '@components/SignupInstructions';
@@ -73,6 +74,10 @@ export default [
             {
                 path: '/run/:runId(\\d+)',
                 component: TestRun
+            },
+            {
+                path: '/reports/test-plans/:testPlanId(\\d+)',
+                component: TestPlanReportPage
             },
             {
                 path: '/reports',
