@@ -41,7 +41,7 @@
       },
       "collect": {
         "startServerCommand": "npm run dev",
-        "url": ["http://localhost:3000"],
+        "url": ["http://localhost:3000", "http://localhost:3000/reports"],
         "settings": { "chromeFlags": "--no-sandbox" }
       }
     }
