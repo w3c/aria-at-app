@@ -97,6 +97,10 @@ button.test-navigator-toggle.show:after {
     border-radius: 50px;
 }
 
+.test-name-wrapper .test-name {
+    display: block;
+}
+
 /* Test States in Test Navigator */
 .test-name-wrapper.not-started .progress-indicator {
     background: White;
