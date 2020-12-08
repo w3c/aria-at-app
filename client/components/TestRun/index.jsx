@@ -470,29 +470,38 @@ class TestRun extends Component {
         );
 
         let menuRightOfContent = (
-            <nav>
-                <Button
-                    className="btn-block"
-                    variant="secondary"
-                    onClick={this.handleRaiseIssueClick}
-                >
-                    Raise an issue
-                </Button>
-                <Button
-                    className="btn-block"
-                    variant="secondary"
-                    onClick={this.handleRedoClick}
-                >
-                    Start over
-                </Button>
-                <Button
-                    className="btn-block"
-                    variant="secondary"
-                    onClick={this.handleCloseRunClick}
-                >
-                    Close
-                </Button>
-            </nav>
+            <div role="complementary">
+                <h3>Current Test Options</h3>
+                <ul>
+                    <li>
+                        <Button
+                            className="btn-block"
+                            variant="secondary"
+                            onClick={this.handleRaiseIssueClick}
+                        >
+                            Raise an issue
+                        </Button>
+                    </li>
+                    <li>
+                        <Button
+                            className="btn-block"
+                            variant="secondary"
+                            onClick={this.handleRedoClick}
+                        >
+                            Start over
+                        </Button>
+                    </li>
+                    <li>
+                        <Button
+                            className="btn-block"
+                            variant="secondary"
+                            onClick={this.handleCloseRunClick}
+                        >
+                            Save and Close
+                        </Button>
+                    </li>
+                </ul>
+            </div>
         );
 
         if (this.testResultsCompleted) {
