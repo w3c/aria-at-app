@@ -262,44 +262,46 @@ class TestQueueRow extends Component {
 
         return (
             <Fragment>
-                <Dropdown aria-label="Assign testers menu">
-                    <Dropdown.Toggle
-                        className="assign-tester"
-                        variant="secondary"
-                    >
-                        <FontAwesomeIcon icon={faUserPlus} />
-                    </Dropdown.Toggle>
-                    <Dropdown.Menu>
-                        {canAssignTesters.map(t => {
-                            let classname = t.assigned
-                                ? 'assigned'
-                                : 'not-assigned';
-                            return (
-                                <Dropdown.Item
-                                    variant="secondary"
-                                    as="button"
-                                    key={nextId()}
-                                    onClick={() =>
-                                        this.toggleTesterAssign(t.id)
-                                    }
-                                    disabled={!admin && t.id !== userId}
-                                    aria-checked={t.assigned}
-                                    role="menuitemcheckbox"
-                                >
-                                    {t.assigned && (
-                                        <FontAwesomeIcon icon={faCheck} />
-                                    )}
-                                    <span className={classname}>
-                                        {`${t.username} `}
-                                        <span className="fullname">
-                                            {t.fullname}
+                <Col md={3}>
+                    <Dropdown aria-label="Assign testers menu">
+                        <Dropdown.Toggle
+                            className="assign-tester"
+                            variant="secondary"
+                        >
+                            <FontAwesomeIcon icon={faUserPlus} />
+                        </Dropdown.Toggle>
+                        <Dropdown.Menu>
+                            {canAssignTesters.map(t => {
+                                let classname = t.assigned
+                                    ? 'assigned'
+                                    : 'not-assigned';
+                                return (
+                                    <Dropdown.Item
+                                        variant="secondary"
+                                        as="button"
+                                        key={nextId()}
+                                        onClick={() =>
+                                            this.toggleTesterAssign(t.id)
+                                        }
+                                        disabled={!admin && t.id !== userId}
+                                        aria-checked={t.assigned}
+                                        role="menuitemcheckbox"
+                                    >
+                                        {t.assigned && (
+                                            <FontAwesomeIcon icon={faCheck} />
+                                        )}
+                                        <span className={classname}>
+                                            {`${t.username} `}
+                                            <span className="fullname">
+                                                {t.fullname}
+                                            </span>
                                         </span>
-                                    </span>
-                                </Dropdown.Item>
-                            );
-                        })}
-                    </Dropdown.Menu>
-                </Dropdown>
+                                    </Dropdown.Item>
+                                );
+                            })}
+                        </Dropdown.Menu>
+                    </Dropdown>
+                </Col>
             </Fragment>
         );
     }
@@ -412,6 +414,7 @@ class TestQueueRow extends Component {
                 <th>{designPatternLinkOrName}</th>
                 <td>
                     <Row>
+                        {admin && this.renderAssignMenu()}
                         <Col md={9}>
                             <ul>
                                 {testerList.length !== 0 ? (
@@ -420,8 +423,27 @@ class TestQueueRow extends Component {
                                     <li>No testers assigned</li>
                                 )}
                             </ul>
+                            {!currentUserAssigned && (
+                                <Button
+                                    onClick={this.handleAssignSelfClick}
+                                    aria-label={`Assign yourself to the test run ${this.testRun()}`}
+                                    variant="link"
+                                    className="assign-self"
+                                >
+                                    Assign Yourself
+                                </Button>
+                            )}
+                            {currentUserAssigned && (
+                                <Button
+                                onClick={this.handleUnassignSelfClick}
+                                aria-label={`Assign yourself to the test run ${this.testRun()}`}
+                                variant="link"
+                                className="assign-self"
+                            >
+                                Unassign Yourself
+                            </Button>
+                            )}
                         </Col>
-                        <Col md={3}>{this.renderAssignMenu(admin)}</Col>
                     </Row>
                 </td>
                 <td>
