@@ -134,30 +134,30 @@ class TestPlanReportPage extends Component {
                 apgExample.testsWithMetaDataIndexedByTechPair[techPairIndex];
             if (testsWithMetaData.testsWithResults.length > 0) {
                 tables.push(
-                    <Table bordered hover key={`table-${techPairIndex}`}>
-                        <caption>
-                            {at} with {browser}
-                        </caption>
-                        <thead>
-                            <tr>
-                                <th key="tests" scope="col">
-                                    Test Name
-                                </th>
-                                <th key="required" scope="col">
-                                    Required Assertions
-                                </th>
-                                <th key="optional" scope="col">
-                                    Optional Assertions
-                                </th>
-                                <th key="unexpected" scope="col">
-                                    Unexpected Behaviors
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {this.generateTableRows(testsWithMetaData)}
-                        </tbody>
-                    </Table>
+                    <div>
+                        <h2>{browser} with {at} Results</h2>
+                        <Table bordered hover key={`table-${techPairIndex}`}>
+                            <thead>
+                                <tr>
+                                    <th key="tests" scope="col">
+                                        Test Name
+                                    </th>
+                                    <th key="required" scope="col">
+                                        Required Assertions
+                                    </th>
+                                    <th key="optional" scope="col">
+                                        Optional Assertions
+                                    </th>
+                                    <th key="unexpected" scope="col">
+                                        Unexpected Behaviors
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {this.generateTableRows(testsWithMetaData)}
+                            </tbody>
+                        </Table>
+                    </div>
                 );
             }
         });
