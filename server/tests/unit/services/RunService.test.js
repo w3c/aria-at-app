@@ -1530,7 +1530,158 @@ describe('RunService', () => {
             });
         });
 
-        it('should return the data from an active run', async () => {
+        it('should return the data from the last active run if the current active run has no results', async () => {
+            await dbCleaner(async () => {
+                const previousTestVersion = await db.TestVersion.findOne({
+                    where: {
+                        git_hash: process.env.IMPORT_ARIA_AT_TESTS_COMMIT_1
+                    }
+                });
+                const currentTestVersion = await db.TestVersion.findOne({
+                    where: {
+                        git_hash: process.env.IMPORT_ARIA_AT_TESTS_COMMIT_2
+                    }
+                });
+                const apgExampleDirectory = 'checkbox';
+                const apgExampleName = 'Checkbox Example (Two State)';
+
+                const currentApgExample = await db.ApgExample.create({
+                    test_version_id: currentTestVersion.id,
+                    directory: apgExampleDirectory,
+                    name: apgExampleName
+                });
+                const previousApgExample = await db.ApgExample.create({
+                    test_version_id: previousTestVersion.id,
+                    directory: apgExampleDirectory,
+                    name: apgExampleName
+                });
+                const user = await db.Users.create();
+                const atNameString = 'NVDA';
+                const atName = await db.AtName.findOne({
+                    where: {
+                        name: atNameString
+                    }
+                });
+                const atVersionNumber = '3.2.1';
+                const atVersion = await db.AtVersion.create({
+                    at_name_id: atName.id,
+                    version: atVersionNumber
+                });
+                const previousRunAt = await db.At.findOne({
+                    where: {
+                        at_name_id: atName.id,
+                        test_version_id: previousTestVersion.id
+                    }
+                });
+                const browser = await db.Browser.findOne({
+                    where: { name: db.Browser.CHROME }
+                });
+                const browserVersionNumber = '1.2.3';
+                const browserVersion = await db.BrowserVersion.create({
+                    browser_id: browser.id,
+                    version: browserVersionNumber
+                });
+                const browserVersionToAtVersion = await db.BrowserVersionToAtVersion.create(
+                    {
+                        browser_version_id: browserVersion.id,
+                        at_version_id: atVersion.id
+                    }
+                );
+                const runStatus = await db.RunStatus.findOne({
+                    where: { name: db.RunStatus.FINAL }
+                });
+
+                const publishedPreviousTestVersionRun = await db.Run.create({
+                    browser_version_to_at_versions_id:
+                        browserVersionToAtVersion.id,
+                    apg_example_id: previousApgExample.id,
+                    run_status_id: runStatus.id,
+                    test_version_id: previousTestVersion.id
+                });
+
+                const draftRunStatus = await db.RunStatus.findOne({
+                    where: { name: db.RunStatus.DRAFT }
+                });
+
+                // Run for current version in draft state
+                await db.Run.create({
+                    browser_version_to_at_versions_id:
+                        browserVersionToAtVersion.id,
+                    apg_example_id: currentApgExample.id,
+                    run_status_id: draftRunStatus.id,
+                    test_version_id: currentTestVersion.id
+                });
+                await db.TesterToRun.create({
+                    run_id: publishedPreviousTestVersionRun.id,
+                    user_id: user.id
+                });
+
+                const test = await db.Test.create({
+                    name: 'Operate a checkbox',
+                    file: 'tests/checkbox/test-01-operate',
+                    execution_order: 1,
+                    apg_example_id: previousApgExample.id,
+                    test_version_id: previousTestVersion.id
+                });
+
+                await db.TestToAt.create({
+                    test_id: test.id,
+                    at_id: previousRunAt.id
+                });
+
+                const testStatus = await db.TestStatus.findOne({
+                    where: { name: db.TestStatus.COMPLETE }
+                });
+                const result = '{ result: "It worked" }';
+                const testResult = await db.TestResult.create({
+                    test_id: test.id,
+                    run_id: publishedPreviousTestVersionRun.id,
+                    user_id: user.id,
+                    status_id: testStatus.id,
+                    result: result
+                });
+
+                const publishedRuns = await RunService.getPublishedRuns();
+                expect(Object.keys(publishedRuns).length).toEqual(1);
+                expect(publishedRuns[publishedPreviousTestVersionRun.id]).toEqual({
+                    id: publishedPreviousTestVersionRun.id,
+                    browser_id: browser.id,
+                    browser_version: browserVersionNumber,
+                    browser_name: db.Browser.CHROME,
+                    at_id: previousRunAt.id,
+                    at_key: previousRunAt.key,
+                    at_name: atNameString,
+                    at_name_id: atName.id,
+                    at_version: atVersionNumber,
+                    apg_example_directory: apgExampleDirectory,
+                    apg_example_name: apgExampleName,
+                    apg_example_id: previousApgExample.id,
+                    run_status_id: runStatus.id,
+                    run_status: db.RunStatus.FINAL,
+                    test_version_id: previousTestVersion.id,
+                    testers: [user.id],
+                    tests: [
+                        {
+                            id: test.id,
+                            file: test.file,
+                            name: test.name,
+                            execution_order: test.execution_order,
+                            results: {
+                                [user.id]: {
+                                    id: testResult.id,
+                                    user_id: user.id,
+                                    status: db.TestStatus.COMPLETE,
+                                    result: result,
+                                    serialized_form: null
+                                }
+                            }
+                        }
+                    ]
+                });
+            });
+        });
+
+        it('should return the data from an active run if there are published results', async () => {
             await dbCleaner(async () => {
                 const testVersion = await db.TestVersion.findOne({
                     where: {

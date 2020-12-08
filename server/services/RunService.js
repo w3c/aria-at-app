@@ -407,7 +407,7 @@ async function configureRuns(
 }
 
 async function sequelizeRunsToJsonRuns(sequelizeRuns) {
-    let ats = {};
+    let ats = [];
     if (sequelizeRuns.length > 0) {
         ats = await db.At.findAll({
             where: {
@@ -512,41 +512,54 @@ async function getActiveRuns() {
 }
 
 /**
- * Gets all published runs
+ * Gets the all published runs for the most recent test version with results
  *
  * @return {Object.<number, Run>} - A mapping from run_id to Run
  */
 async function getPublishedRuns() {
     try {
-        const publishedRuns = await db.Run.findAll({
-            where: {},
+        // NB: Match the test_version for the most recently published run
+        // instead of the currently active run so results can still be shown
+        // even if new runs were just configured
+        const mostRecentPublishedRun = await db.Run.findOne({
+            order: ['updated_at'],
             include: [
-                { model: db.RunStatus, where: { name: db.RunStatus.FINAL } },
-                {
-                    model: db.ApgExample,
-                    include: {
-                        model: db.Test,
-                        include: [
-                            db.TestToAt,
-                            {
-                                model: db.TestResult,
-                                include: db.TestStatus
-                            }
-                        ]
-                    }
-                },
-                {
-                    model: db.BrowserVersionToAtVersion,
-                    include: [
-                        { model: db.AtVersion, include: [db.AtName] },
-                        { model: db.BrowserVersion, include: [db.Browser] }
-                    ]
-                },
-                db.Users
+                { model: db.RunStatus, where: { name: db.RunStatus.FINAL } }
             ]
         });
+        if (mostRecentPublishedRun) {
+            const publishedRuns = await db.Run.findAll({
+                where: { test_version_id: mostRecentPublishedRun.test_version_id },
+                include: [
+                    { model: db.RunStatus, where: { name: db.RunStatus.FINAL } },
+                    {
+                        model: db.ApgExample,
+                        include: {
+                            model: db.Test,
+                            include: [
+                                db.TestToAt,
+                                {
+                                    model: db.TestResult,
+                                    include: db.TestStatus
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        model: db.BrowserVersionToAtVersion,
+                        include: [
+                            { model: db.AtVersion, include: [db.AtName] },
+                            { model: db.BrowserVersion, include: [db.Browser] }
+                        ]
+                    },
+                    db.Users
+                ]
+            });
 
-        return await sequelizeRunsToJsonRuns(publishedRuns);
+            return await sequelizeRunsToJsonRuns(publishedRuns);
+        } else {
+            return {};
+        }
     } catch (error) {
         console.error(`Error: ${error}`);
         throw error;
