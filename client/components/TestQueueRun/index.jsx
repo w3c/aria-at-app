@@ -437,7 +437,7 @@ class TestQueueRow extends Component {
                             {currentUserAssigned && (
                                 <Button
                                 onClick={this.handleUnassignSelfClick}
-                                aria-label={`Assign yourself to the test run ${this.testRun()}`}
+                                aria-label={`Unassign yourself from the test run ${this.testRun()}`}
                                 variant="link"
                                 className="assign-self"
                             >
