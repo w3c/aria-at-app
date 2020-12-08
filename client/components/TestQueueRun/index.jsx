@@ -485,6 +485,7 @@ class TestQueueRow extends Component {
                     {admin && this.renderDeleteMenu()}
                     {(!admin && this.testsCompletedByUser[userId] && (
                         <Button
+                            variant="danger"
                             onClick={() =>
                                 this.handleDeleteResultsForUser(userId)
                             }
