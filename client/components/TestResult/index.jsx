@@ -10,11 +10,11 @@ class TestResult extends Component {
             outcomes.push('None.');
         }
         return (
-            <ul>
+            <dd>
                 {outcomes.map(outcome => (
                     <li key={nextId()}>{outcome}</li>
                 ))}
-            </ul>
+            </dd>
         );
     }
 
@@ -68,15 +68,18 @@ class TestResult extends Component {
                                     <td>{command}</td>
                                     <td>{support}</td>
                                     <td>
-                                        <p>Output: {output}</p>
-                                        <p>Passing Assertions:</p>
-                                        {this.renderOutcomeList(passing)}
-                                        <p>Failing Assertions:</p>{' '}
-                                        {this.renderOutcomeList(failing)}
-                                        <p>Unexpected Behaviors:</p>{' '}
-                                        {this.renderOutcomeList([
-                                            ...unexpected_behaviors
-                                        ])}
+                                        <dl>
+                                            <dt>Output:</dt>
+                                            <dd>{output}</dd>
+                                            <dt>Passing Assertions:</dt>
+                                            {this.renderOutcomeList(passing)}
+                                            <dt>Failing Assertions: </dt>
+                                            {this.renderOutcomeList(failing)}
+                                            <dt>Unexpected Behaviors: </dt>
+                                            {this.renderOutcomeList([
+                                                ...unexpected_behaviors
+                                            ])}
+                                        </dl>
                                     </td>
                                 </tr>
                             );

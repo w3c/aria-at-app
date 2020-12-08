@@ -71,6 +71,7 @@ button.test-navigator-toggle.show:after {
 .test-name-wrapper {
     position: relative;
     margin: 0 0 0.5em 0.25em;
+    list-style: unset;
 }
 
 .test-name-wrapper:before {
@@ -94,6 +95,10 @@ button.test-navigator-toggle.show:after {
     width: 18px;
     height: 18px;
     border-radius: 50px;
+}
+
+.test-name-wrapper .test-name {
+    display: block;
 }
 
 /* Test States in Test Navigator */

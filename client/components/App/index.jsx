@@ -70,7 +70,7 @@ class App extends Component {
         return (
             <Fragment>
                 <Container fluid>
-                    <Navbar bg="light" expand="lg">
+                    <Navbar bg="light" expand="lg" aria-label="Main Menu">
                         <Navbar.Brand
                             className="logo"
                             as={Link}

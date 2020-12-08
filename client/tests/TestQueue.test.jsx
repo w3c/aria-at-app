@@ -71,13 +71,13 @@ describe('render', () => {
             let component = findByTestAttr(wrapper, 'test-queue-no-ats-h2');
             expect(component.length).toBe(1);
             expect(component.text()).toContain(
-                'No Assistive Technologies Configured'
+                'There are no Test Plans available'
             );
 
             component = findByTestAttr(wrapper, 'test-queue-no-ats-p');
             expect(component.length).toBe(1);
             expect(component.text()).toContain(
-                'To contribute tests, please configure the relevant Assistive Technologies in Settings'
+                'Please configure your preferred Assistive Technologies in the Settings page.'
             );
         });
     });

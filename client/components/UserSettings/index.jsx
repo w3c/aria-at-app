@@ -99,7 +99,7 @@ class UserSettings extends Component {
 
         const desc = this.state.editView
             ? 'Select the assistive technologies you can test:'
-            : 'You can test the following assitive technologies:';
+            : 'You can test the following assistive technologies:';
 
         const actionButton = this.state.editView ? (
             <Button variant="primary" onClick={this.onSubmit}>
