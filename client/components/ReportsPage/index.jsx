@@ -98,11 +98,13 @@ class ReportsPage extends Component {
         );
 
         apgExamples.forEach(
-            ({ exampleName, testsWithMetaDataIndexedByTechPair }) => {
+            ({ exampleName, id, testsWithMetaDataIndexedByTechPair }) => {
                 let exampleRow = [];
                 exampleRow.push(
                     <th scope="row" key={`example-${exampleName}-name`}>
-                        {exampleName}
+                        <a href={`/reports/test-plans/${id}`}>
+                            {exampleName}
+                        </a>
                     </th>
                 );
                 techPairs.forEach(({ browser, at }, techPairIndex) => {
