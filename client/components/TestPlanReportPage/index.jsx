@@ -88,16 +88,21 @@ class TestPlanReportPage extends Component {
             const testWithResults = testsWithMetaData.testsWithResults.find(
                 t => t.testName === testName
             );
+            const aria = testWithResults ? {} : { 'aria-label': 'No results' };
 
             rows.push(
                 <tr key={`${testIndex}-row`}>
                     <th scope="row" key={`${testIndex}-name`}>
-                        {testWithResults &&
-                        <a href={`/results/run/${testWithResults.runId}#test-${testWithResults.executionOrder}`}>
-                            {testName}
-                        </a> || testName}
+                        {(testWithResults && (
+                            <a
+                                href={`/results/run/${testWithResults.runId}#test-${testWithResults.executionOrder}`}
+                            >
+                                {testName}
+                            </a>
+                        )) ||
+                            testName}
                     </th>
-                    <td key={`${testIndex}-required`}>
+                    <td key={`${testIndex}-required`} {...aria}>
                         {(testWithResults &&
                             formatFraction(
                                 testWithResults.passingRequiredAssertions,
@@ -105,7 +110,7 @@ class TestPlanReportPage extends Component {
                             )) ||
                             '-'}
                     </td>
-                    <td key={`${testIndex}-optional`}>
+                    <td key={`${testIndex}-optional`} {...aria}>
                         {(testWithResults &&
                             formatFraction(
                                 testWithResults.passingOptionalAssertions,
@@ -113,7 +118,7 @@ class TestPlanReportPage extends Component {
                             )) ||
                             '-'}
                     </td>
-                    <td key={`${testIndex}-unexpected`}>
+                    <td key={`${testIndex}-unexpected`} {...aria}>
                         {(testWithResults &&
                             formatInteger(unexpectedBehaviors)) ||
                             '-'}
@@ -135,8 +140,13 @@ class TestPlanReportPage extends Component {
             if (testsWithMetaData.testsWithResults.length > 0) {
                 tables.push(
                     <div>
-                        <h2>{browser} with {at} Results</h2>
+                        <h2>
+                            {browser} with {at} Results
+                        </h2>
                         <Table bordered hover key={`table-${techPairIndex}`}>
+                            <caption>
+                                {`This table shows the number of passing required assertions, the number of passing optional assertions and the number of unexpected behaviors for results from the most recently tested version of the ARIA-AT tests. The first row is a summary of results from all tests run on ${browser} with ${at}. All other rows are data from a single test on ${browser} with ${at}. The test name in the first column is a link to the detailed results of a specific test.`}
+                            </caption>
                             <thead>
                                 <tr>
                                     <th key="tests" scope="col">
@@ -169,7 +179,7 @@ class TestPlanReportPage extends Component {
         const { apgExample } = this.state;
 
         if (!apgExample) {
-            return <div>Loading Test Plan Report Page...</div>;
+            return <div>Loading Test Plan Report...</div>;
         }
 
         return (
@@ -177,7 +187,7 @@ class TestPlanReportPage extends Component {
                 <Helmet>
                     <title>{`ARIA-AT Report ${apgExample.exampleName}`}</title>
                 </Helmet>
-                <h1>{apgExample.exampleName} Report Page</h1>
+                <h1>{apgExample.exampleName} Report</h1>
                 {this.generateTables()}
             </Fragment>
         );

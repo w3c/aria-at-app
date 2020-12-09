@@ -4,7 +4,6 @@ import { Table } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { getPublishedRuns } from '../../actions/runs';
 import PropTypes from 'prop-types';
-import { ProgressBar } from 'react-bootstrap';
 import {
     generateTechPairs,
     generateApgExamples,
@@ -27,6 +26,7 @@ class ReportsPage extends Component {
             this
         );
         this.generateTableRows = this.generateTableRows.bind(this);
+        this.generateProgressBar = this.generateProgressBar.bind(this);
     }
 
     componentDidMount() {
@@ -55,15 +55,30 @@ class ReportsPage extends Component {
     generateTechPairTableHeaders() {
         return this.state.techPairs.map(({ browser, at }) => {
             return (
-                <th scope="col" key={`${at} with ${browser}`}>
-                    <span className="text-center">
-                        {at} with {browser}
-                    </span>
-                    <br></br>
-                    <span className="text-center">Passing Required Tests</span>
+                <th
+                    scope="col"
+                    key={`${at} with ${browser}`}
+                    className="text-center text-wrap"
+                >
+                    {at} with {browser} Required Tests Passing
                 </th>
             );
         });
+    }
+
+    generateProgressBar(percentage) {
+        // NB: Manually style with bootstrap instead of using react-bootstrap
+        // progress bars in order to improve screen reader output
+        return (
+            <div className="progress">
+                <div
+                    className="progress-bar bg-info"
+                    style={{ width: `${percentage}%` }}
+                >
+                    {percentage}%
+                </div>
+            </div>
+        );
     }
 
     generateTableRows() {
@@ -84,11 +99,7 @@ class ReportsPage extends Component {
 
             topLevelRowData.push(
                 <td key={`Percentage of ${at} with ${browser}`}>
-                    <ProgressBar
-                        now={percentage}
-                        variant="info"
-                        label={`${percentage}%`}
-                    />
+                    {this.generateProgressBar(percentage)}
                 </td>
             );
         });
@@ -102,9 +113,7 @@ class ReportsPage extends Component {
                 let exampleRow = [];
                 exampleRow.push(
                     <th scope="row" key={`example-${exampleName}-name`}>
-                        <a href={`/reports/test-plans/${id}`}>
-                            {exampleName}
-                        </a>
+                        <a href={`/reports/test-plans/${id}`}>{exampleName}</a>
                     </th>
                 );
                 techPairs.forEach(({ browser, at }, techPairIndex) => {
@@ -118,18 +127,14 @@ class ReportsPage extends Component {
                         );
                         exampleRow.push(
                             <td key={`data-${exampleName}-${at}-${browser}`}>
-                                <ProgressBar
-                                    now={percentage}
-                                    variant="info"
-                                    label={`${percentage}%`}
-                                />
+                                {this.generateProgressBar(percentage)}
                             </td>
                         );
                     } else {
                         exampleRow.push(
                             <td
                                 key={`data-${exampleName}-${at}-${browser}`}
-                                aria-label={`No results data for ${exampleName} on ${at} with ${browser}`}
+                                aria-label={`No results`}
                             >
                                 -
                             </td>
@@ -149,12 +154,19 @@ class ReportsPage extends Component {
                 <Helmet>
                     <title>ARIA-AT Reports</title>
                 </Helmet>
-                <h1>Reports Page</h1>
+                <h1>Summary Report</h1>
                 <Table bordered hover>
+                    <caption>
+                        This table shows the percentage of required passing
+                        tests for all finalized test results for the most
+                        recently tested version of the ARIA-AT tests. The first
+                        row is a summary of results from all examples. All other
+                        rows are the summary of results for a single example.
+                    </caption>
                     <thead>
                         <tr>
                             <th key="design-pattern-examples">
-                                <h2>Design Pattern Examples</h2>
+                                Design Pattern Examples
                             </th>
                             {this.generateTechPairTableHeaders()}
                         </tr>

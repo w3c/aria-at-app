@@ -39,6 +39,7 @@ class RunResultsPage extends Component {
                 const ref = this.$refs[anchor];
                 if (ref !== undefined) {
                     ref.scrollIntoView();
+                    ref.focus();
                 }
             }
         }
