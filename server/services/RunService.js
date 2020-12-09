@@ -529,9 +529,14 @@ async function getPublishedRuns() {
         });
         if (mostRecentPublishedRun) {
             const publishedRuns = await db.Run.findAll({
-                where: { test_version_id: mostRecentPublishedRun.test_version_id },
+                where: {
+                    test_version_id: mostRecentPublishedRun.test_version_id
+                },
                 include: [
-                    { model: db.RunStatus, where: { name: db.RunStatus.FINAL } },
+                    {
+                        model: db.RunStatus,
+                        where: { name: db.RunStatus.FINAL }
+                    },
                     {
                         model: db.ApgExample,
                         include: {
