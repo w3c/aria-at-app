@@ -160,7 +160,7 @@ class TestQueueRow extends Component {
                     id={nextId()}
                     variant="secondary"
                     aria-label={`Open run ${testrun} as tester`}
-                    // disabled={testers.length ? false : true}
+                    disabled={testers.length ? false : true}
                 >
                     Open run as...
                 </Dropdown.Toggle>
