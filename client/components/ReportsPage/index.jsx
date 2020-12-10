@@ -60,7 +60,7 @@ class ReportsPage extends Component {
                     key={`${at} with ${browser}`}
                     className="text-center text-wrap"
                 >
-                    {at} with {browser} Required Tests Passing
+                    {at}/{browser} Passing Tests
                 </th>
             );
         });
