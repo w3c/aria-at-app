@@ -84,7 +84,7 @@ class ConfigureActiveRuns extends Component {
             resultsDeleted: false
         };
 
-        if (activeRunConfiguration && testVersionId) {
+        if (activeRunConfiguration && testVersionId && testVersions) {
             this.state.runTechnologyRows = getDefaultsTechCombinations(
                 testVersions.filter(
                     version =>
