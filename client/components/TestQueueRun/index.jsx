@@ -7,7 +7,7 @@ import {
     faUserPlus
 } from '@fortawesome/free-solid-svg-icons';
 import nextId from 'react-id-generator';
-import { Button, Dropdown, Col, Row } from 'react-bootstrap';
+import { Button, Dropdown} from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import checkForConflict from '../../utils/checkForConflict';
@@ -451,7 +451,7 @@ class TestQueueRow extends Component {
                     </div>
                 </td>
                 <td>
-                    <div class="status-wrapper">{status}</div>
+                    <div className="status-wrapper">{status}</div>
                     <div className="secondary-actions">
                         {admin && newStatus && (
                         
