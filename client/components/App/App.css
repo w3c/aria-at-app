@@ -223,7 +223,7 @@ table tbody tr.assign-testers {
 /* Button Secondary */
 .btn-secondary,
 .btn-danger {
-    background: #f4f4f4;
+    background: white;
     color: black;
     border: 1px solid #d7d7d7;
 }
@@ -242,8 +242,7 @@ table tbody tr.assign-testers {
 .show > .btn-secondary.dropdown-toggle {
     background: #f4f4f4;
     color: black;
-    border-color: #abaaaa;
-    box-shadow: 0 0 0 0.2rem rgba(130, 138, 145, 0.3);
+    box-shadow: 0 0 0 0.2rem rgba(103, 171, 197, 0.5);
 }
 
 .btn-primary.disabled,
@@ -272,8 +271,6 @@ table tbody tr.assign-testers {
 .btn-primary:not(:disabled):not(.disabled):active {
     background: white;
     color: #0b60ab;
-    border-color: #abaaaa;
-    box-shadow: 0 0 0 0.2rem rgba(130, 138, 145, 0.3);
 }
 
 /* Button Danger */
@@ -293,6 +290,13 @@ table tbody tr.assign-testers {
     white-space: nowrap;
 }
 
+.status-label.conflicts {
+    /* background: #f7e990;
+    color: #706a3f; */
+    background: #f9aeae;
+    color: #640303;
+}
+
 .status-label.in-progress {
     background: #d9f6de;
     color: #2c6c37;
@@ -307,6 +311,11 @@ table tbody tr.assign-testers {
     background: #bcddfa;
     color: #10548f;
 }
+
+.dropdown-toggle {
+    position: relative;
+}
+
 .dropdown-toggle::after {
     position: absolute;
     right: 0.5em;

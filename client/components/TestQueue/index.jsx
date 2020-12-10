@@ -39,14 +39,13 @@ class TestQueue extends Component {
                 <h2
                     id={tableId}
                 >{`${atName} ${atVersion} with ${browserName} ${browserVersion}`}</h2>
-                <Table aria-labelledby={tableId} striped bordered hover>
+                <Table className="test-queue" aria-labelledby={tableId} striped bordered hover>
                     <thead>
                         <tr>
                             <th className="test-plan">Test Plan</th>
-                            <th>Testers</th>
-                            <th>Report Status</th>
-                            <th>Actions</th>
-                            <th></th>
+                            <th className="testers">Testers</th>
+                            <th className="report-status">Report Status</th>
+                            <th className="actions">Actions</th>
                         </tr>
                     </thead>
                     <tbody>

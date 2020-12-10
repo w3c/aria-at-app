@@ -131,6 +131,7 @@ class TestQueueRow extends Component {
                 >
                     {usersById[uid].username}
                 </a>
+                <br/>
                 {` (${testsCompleted} of ${totalTests} tests complete)`}
             </li>
         );
@@ -190,9 +191,10 @@ class TestQueueRow extends Component {
         let results = null;
 
         if (this.state.totalConflicts > 0) {
-            status = `${this.state.totalConflicts} Conflict${
+            let pluralizedStatus = `${this.state.totalConflicts} Conflict${
                 this.state.totalConflicts === 1 ? '' : 's'
             }`;
+            status = <span className="status-label conflicts">{pluralizedStatus}</span>
         } else if (
             this.state.testsWithResults > 0 &&
             this.state.testsWithResults !== testsForRun.length
@@ -205,10 +207,10 @@ class TestQueueRow extends Component {
         }
 
         if (runStatus === 'draft') {
-            results = <Link to={`/results/run/${runId}`}>DRAFT RESULTS</Link>;
+            results = <Link className="reports-link"  to={`/results/run/${runId}`}>View Draft Reports</Link>;
         } else if (runStatus === 'final') {
             results = (
-                <Link to={`/results/run/${runId}`}>PUBLISHED RESULTS</Link>
+                <Link className="reports-link" to={`/results/run/${runId}`}>View Published Results</Link>
             );
         }
 
@@ -262,47 +264,45 @@ class TestQueueRow extends Component {
 
         return (
             <Fragment>
-                <Col md={3}>
-                    <Dropdown aria-label="Assign testers menu">
-                        <Dropdown.Toggle
-                            aria-label="Assign testers"
-                            className="assign-tester"
-                            variant="secondary"
-                        >
-                            <FontAwesomeIcon icon={faUserPlus} />
-                        </Dropdown.Toggle>
-                        <Dropdown.Menu>
-                            {canAssignTesters.map(t => {
-                                let classname = t.assigned
-                                    ? 'assigned'
-                                    : 'not-assigned';
-                                return (
-                                    <Dropdown.Item
-                                        variant="secondary"
-                                        as="button"
-                                        key={nextId()}
-                                        onClick={() =>
-                                            this.toggleTesterAssign(t.id)
-                                        }
-                                        disabled={!admin && t.id !== userId}
-                                        aria-checked={t.assigned}
-                                        role="menuitemcheckbox"
-                                    >
-                                        {t.assigned && (
-                                            <FontAwesomeIcon icon={faCheck} />
-                                        )}
-                                        <span className={classname}>
-                                            {`${t.username} `}
-                                            <span className="fullname">
-                                                {t.fullname}
-                                            </span>
+                <Dropdown aria-label="Assign testers menu">
+                    <Dropdown.Toggle
+                        aria-label="Assign testers"
+                        className="assign-tester"
+                        variant="secondary"
+                    >
+                        <FontAwesomeIcon icon={faUserPlus} />
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu>
+                        {canAssignTesters.map(t => {
+                            let classname = t.assigned
+                                ? 'assigned'
+                                : 'not-assigned';
+                            return (
+                                <Dropdown.Item
+                                    variant="secondary"
+                                    as="button"
+                                    key={nextId()}
+                                    onClick={() =>
+                                        this.toggleTesterAssign(t.id)
+                                    }
+                                    disabled={!admin && t.id !== userId}
+                                    aria-checked={t.assigned}
+                                    role="menuitemcheckbox"
+                                >
+                                    {t.assigned && (
+                                        <FontAwesomeIcon icon={faCheck} />
+                                    )}
+                                    <span className={classname}>
+                                        {`${t.username} `}
+                                        <span className="fullname">
+                                            {t.fullname}
                                         </span>
-                                    </Dropdown.Item>
-                                );
-                            })}
-                        </Dropdown.Menu>
-                    </Dropdown>
-                </Col>
+                                    </span>
+                                </Dropdown.Item>
+                            );
+                        })}
+                    </Dropdown.Menu>
+                </Dropdown>
             </Fragment>
         );
     }
@@ -333,6 +333,7 @@ class TestQueueRow extends Component {
                     <Dropdown aria-label="Delete results menu">
                         <Dropdown.Toggle variant="danger">
                             <FontAwesomeIcon icon={faTrashAlt} />
+                            Delete for...
                         </Dropdown.Toggle>
                         <Dropdown.Menu>
                             {testersWithResults.map(t => {
@@ -414,21 +415,14 @@ class TestQueueRow extends Component {
             <tr key={runId}>
                 <th>{designPatternLinkOrName}</th>
                 <td>
-                    <Row>
+                    <div className="testers-wrapper">
                         {admin && this.renderAssignMenu()}
-                        <Col md={9}>
-                            <ul>
-                                {testerList.length !== 0 ? (
-                                    testerList
-                                ) : (
-                                    <li>No testers assigned</li>
-                                )}
-                            </ul>
+                        <div className="assign-actions">
                             {!currentUserAssigned && (
                                 <Button
+                                    variant="secondary"
                                     onClick={this.handleAssignSelfClick}
                                     aria-label={`Assign yourself to the test run ${this.testRun()}`}
-                                    variant="link"
                                     className="assign-self"
                                 >
                                     Assign Yourself
@@ -436,39 +430,46 @@ class TestQueueRow extends Component {
                             )}
                             {currentUserAssigned && (
                                 <Button
+                                    variant="secondary"
                                     onClick={this.handleUnassignSelfClick}
                                     aria-label={`Unassign yourself from the test run ${this.testRun()}`}
-                                    variant="link"
                                     className="assign-self"
                                 >
                                     Unassign Yourself
                                 </Button>
                             )}
-                        </Col>
-                    </Row>
+                        </div>
+                    </div>
+                    <div className="secondary-actions">
+                        <ul className="assignees">
+                            {testerList.length !== 0 ? (
+                                testerList
+                            ) : (
+                                <li className="no-assignees">No testers assigned</li>
+                            )}
+                        </ul>
+                    </div>
                 </td>
                 <td>
-                    <ul>
-                        <li>
-                            <div tabIndex="0">{status}</div>
-                        </li>
-                        <li>{results}</li>
+                    <div class="status-wrapper">{status}</div>
+                    <div className="secondary-actions">
                         {admin && newStatus && (
-                            <li>
-                                <Button
-                                    variant="secondary"
-                                    onClick={() =>
-                                        this.updateRunStatus(newStatus)
-                                    }
-                                >
-                                    Mark status as {newStatus}
-                                </Button>
-                            </li>
+                        
+                            <Button
+                                variant="secondary"
+                                onClick={() =>
+                                    this.updateRunStatus(newStatus)
+                                }
+                            >
+                                Mark as {newStatus}
+                            </Button>
+                        
                         )}
-                    </ul>
+                        {results}
+                    </div>
                 </td>
                 <td className="actions">
-                    <div className="primary-buttons">
+                    <div className="test-cta-wrapper">
                         <Button
                             variant="primary"
                             href={`/run/${runId}`}
@@ -479,23 +480,24 @@ class TestQueueRow extends Component {
                                 ? 'Continue testing'
                                 : 'Start testing'}
                         </Button>
-                        {admin && this.renderOpenAsDropdown()}
                     </div>
-                </td>
-                <td>
-                    {admin && this.renderDeleteMenu()}
-                    {(!admin && this.testsCompletedByUser[userId] && (
-                        <Button
-                            variant="danger"
-                            onClick={() =>
-                                this.handleDeleteResultsForUser(userId)
-                            }
-                            aria-label="Delete my results"
-                        >
-                            <FontAwesomeIcon icon={faTrashAlt} />
-                        </Button>
-                    )) ||
-                        ''}
+                    <div className="secondary-actions">
+                        {admin && this.renderOpenAsDropdown()}
+                        {admin && this.renderDeleteMenu()}
+                        {(!admin && this.testsCompletedByUser[userId] && (
+                            <Button
+                                variant="danger"
+                                onClick={() =>
+                                    this.handleDeleteResultsForUser(userId)
+                                }
+                                aria-label="Delete my results"
+                            >
+                                <FontAwesomeIcon icon={faTrashAlt} />
+                                Delete Results
+                            </Button>
+                        )) ||
+                            ''}
+                    </div>
                 </td>
             </tr>
         );
