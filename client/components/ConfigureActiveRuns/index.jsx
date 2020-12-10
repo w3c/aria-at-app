@@ -535,20 +535,14 @@ class ConfigureActiveRuns extends Component {
         // Find if any complete results
         if (testsWithResults.length > 0) {
             return (
-                <span>
-                    In Queue:{' '}
-                    <span className="status-label in-progress">
-                        In Progress
-                    </span>
+                <span className="status-label in-progress">
+                    In Progress
                 </span>
             );
         } else if (testsWithResults.length === 0) {
             return (
-                <span>
-                    In Queue:{' '}
-                    <span className="status-label not-started">
-                        Not Started
-                    </span>
+                <span className="status-label not-started">
+                    Not Started
                 </span>
             );
         }
@@ -704,7 +698,7 @@ class ConfigureActiveRuns extends Component {
                                 <th>Assistive Technology</th>
                                 <th>AT Version</th>
                                 <th>Browser</th>
-                                <th>Browser Version</th>
+                                <th className="browser-version">Browser Version</th>
                                 <th className="actions">Actions</th>
                             </tr>
                         </thead>
@@ -731,7 +725,7 @@ class ConfigureActiveRuns extends Component {
                     <thead>
                         <tr>
                             <th>Test Plan</th>
-                            <th>Status</th>
+                            <th className="status">Status</th>
                             <th className="actions">Actions</th>
                         </tr>
                     </thead>

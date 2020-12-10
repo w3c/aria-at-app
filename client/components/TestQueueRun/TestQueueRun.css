@@ -1,14 +1,31 @@
-.assign-self {
-    padding: 0;
-    border: 0;
-    margin: 0;
+.testers-wrapper {
+    display: flex;
+    flex-direction: row
+}
+
+.testers-wrapper div {
+    flex-basis: auto;
+}
+
+.testers-wrapper .dropdown {
+    padding-right: .75em;
+}
+
+.testers-wrapper .assign-actions {
+    width: 100%;
+}
+
+.assignees {
+    margin-top: .3em;
+    font-size: 0.9rem;
+    text-align: center;
 }
 
 .assign-tester {
     border-radius: 25px;
-    width: 3em;
-    height: 3em;
+    height: 2.5em;
     border-style: dashed;
+    padding: .4em .6em;
 }
 
 .assign-tester .fa-user-plus {
@@ -29,6 +46,10 @@ li {
 
 .col-md-9 li {
     padding-right: 0.5em;
+}
+
+.no-assignees {
+    text-align: center;
 }
 
 .not-assigned {
@@ -74,4 +95,11 @@ button.more-actions:active {
 
 .primary-buttons {
     width: inherit;
+}
+
+.reports-link {
+    display: block;
+    text-align: center;
+    margin: .45em 0 0;
+    font-size: .9rem;
 }

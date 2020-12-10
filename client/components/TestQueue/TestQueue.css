@@ -4,19 +4,55 @@ main.container-fluid table .col-md-3 {
     padding: 0;
 }
 
-.table-bordered td.actions {
-    border-right: 0px solid;
-    border-bottom: 0px solid;
-    border-left: 0px solid;
-    display: flex;
-    align-items: center;
+.test-queue.table td {
+    padding: 0;
+    /* background: #f4f4f4; */
 }
 
-.actions .primary-buttons .btn {
-    width: 100%;
+.test-queue.table .testers-wrapper,
+.test-queue.table .status-wrapper,
+.test-queue.table .test-cta-wrapper {
+    padding: .75em;
+    /* background: #ffffff; */
+}
+
+.test-queue.table .secondary-actions {
+    border-top: 1px solid #d2d5d9;
+    padding: .75em;
+}
+
+.test-queue.table .test-cta-wrapper .btn-primary {
+    margin-bottom: 1px;
+}
+
+.test-queue.table .secondary-actions .btn-danger {
+    margin-top: .75em;
+}
+
+.test-queue.table th.testers {
+    width: 225px;
+}
+
+.test-queue.table th.report-status, 
+.test-queue.table th.actions {
+    width: 175px;
 }
 
 .actions .primary-buttons .open-run-as .btn {
     padding-right: 2em;
     position: relative;
+}
+
+table .btn {
+    width: 100%;
+}
+
+table button {
+    margin: 0;
+}
+
+.status-label {
+    width: 100%;
+    text-align: center;
+    margin: .45em 0;
 }

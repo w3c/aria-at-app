@@ -111,10 +111,16 @@ button {
     width: max-content;
 }
 
-.actions {
+.test-plans button {
+    width: 100%;
+}
+
+.test-plans.table .actions,
+.configure-at-browser .actions{
     width: 220px;
 }
 
-.test-plans button {
-    width: 100%;
+.configure-at-browser.table .browser-version,
+.test-plans.table .status {
+    width: 150px;
 }
