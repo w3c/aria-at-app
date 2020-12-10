@@ -10,6 +10,7 @@ import nextId from 'react-id-generator';
 import { Button, Dropdown} from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
+import ATAlert from '@components/ATAlert';
 import checkForConflict from '../../utils/checkForConflict';
 import {
     deleteTestResults,
@@ -19,7 +20,7 @@ import {
 } from '../../actions/runs';
 import './TestQueueRun.css';
 
-class TestQueueRow extends Component {
+class TestQueueRun extends Component {
     constructor(props) {
         super(props);
 
@@ -71,6 +72,9 @@ class TestQueueRow extends Component {
     handleAssignSelfClick() {
         const { dispatch, userId, runId } = this.props;
         dispatch(saveUsersToRuns([userId], [runId]));
+        this.setState({
+            alertMessage: 'You have been assigned to this test run.'
+        });
     }
 
     toggleTesterAssign(uid) {
@@ -454,7 +458,6 @@ class TestQueueRow extends Component {
                     <div className="status-wrapper">{status}</div>
                     <div className="secondary-actions">
                         {admin && newStatus && (
-                        
                             <Button
                                 variant="secondary"
                                 onClick={() =>
@@ -463,7 +466,6 @@ class TestQueueRow extends Component {
                             >
                                 Mark as {newStatus}
                             </Button>
-                        
                         )}
                         {results}
                     </div>
@@ -497,6 +499,7 @@ class TestQueueRow extends Component {
                             </Button>
                         )) ||
                             ''}
+                    <ATAlert message={this.state.alertMessage} />
                     </div>
                 </td>
             </tr>
@@ -504,7 +507,7 @@ class TestQueueRow extends Component {
     }
 }
 
-TestQueueRow.propTypes = {
+TestQueueRun.propTypes = {
     admin: PropTypes.bool,
     runId: PropTypes.number,
     runStatus: PropTypes.string,
@@ -541,4 +544,4 @@ const mapStateToProps = (state, ownProps) => {
     };
 };
 
-export default connect(mapStateToProps)(TestQueueRow);
+export default connect(mapStateToProps)(TestQueueRun);
