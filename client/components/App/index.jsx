@@ -4,7 +4,7 @@ import './App.css';
 import { renderRoutes } from 'react-router-config';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { Container, Col, Navbar, Nav, Row } from 'react-bootstrap';
+import { Container, Navbar, Nav } from 'react-bootstrap';
 import { handleCheckSignedIn, handleSignout } from '../../actions/user';
 import { getAllUsers } from '../../actions/users';
 import { handleGetValidAts } from '../../actions/ats';
