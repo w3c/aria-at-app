@@ -170,7 +170,7 @@ class RunResultsPage extends Component {
         title = `${run_status.toUpperCase()} results for ${apg_example_name} tested with ${at_name} ${at_version} on ${browser_name} ${browser_version}`;
 
         return (
-            <Fragment>
+            <Container as="main">
                 <Helmet>
                     <title>{title}</title>
                 </Helmet>
@@ -315,7 +315,7 @@ class RunResultsPage extends Component {
                         </Col>
                     </Row>
                 </Container>
-            </Fragment>
+            </Container>
         );
     }
 }

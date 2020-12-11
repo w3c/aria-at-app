@@ -170,7 +170,7 @@ class UserSettings extends Component {
             );
 
         return (
-            <Fragment>
+            <Container as="main">
                 <Container fluid data-test="user-settings-contents">
                     <Helmet>
                         <title>Settings | ARIA-AT</title>
@@ -178,7 +178,7 @@ class UserSettings extends Component {
                     <h1>Settings</h1>
                     {content}
                 </Container>
-            </Fragment>
+            </Container>
         );
     }
 }

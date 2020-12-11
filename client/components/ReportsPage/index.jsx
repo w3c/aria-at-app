@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { Helmet } from 'react-helmet';
-import { Table } from 'react-bootstrap';
+import { Table, Container } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { getPublishedRuns } from '../../actions/runs';
 import PropTypes from 'prop-types';
@@ -151,7 +151,7 @@ class ReportsPage extends Component {
 
     render() {
         return (
-            <Fragment>
+            <Container as="main">
                 <Helmet>
                     <title>ARIA-AT Reports</title>
                 </Helmet>
@@ -172,7 +172,7 @@ class ReportsPage extends Component {
                     </thead>
                     <tbody>{this.generateTableRows()}</tbody>
                 </Table>
-            </Fragment>
+            </Container>
         );
     }
 }

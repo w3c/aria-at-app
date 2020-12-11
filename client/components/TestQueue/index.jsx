@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
-import { Table } from 'react-bootstrap';
+import { Container, Table } from 'react-bootstrap';
 import { Helmet } from 'react-helmet';
 import { connect } from 'react-redux';
 import { getAllUsers } from '../../actions/users';
@@ -105,7 +105,7 @@ class TestQueue extends Component {
             const noAts = 'There are no Test Plans available';
             const settingsLink = <Link to="/account/settings">Settings</Link>;
             return (
-                <Fragment>
+                <Container as="main">
                     <Helmet>
                         <title>{noAts} | ARIA-AT</title>
                     </Helmet>
@@ -128,7 +128,7 @@ class TestQueue extends Component {
                             .
                         </p>
                     </div>
-                </Fragment>
+                </Container>
             );
         }
 
@@ -173,7 +173,7 @@ class TestQueue extends Component {
         }
 
         return (
-            <Fragment>
+            <Container as="main">
                 <Helmet>
                     <title>{`Test queue | ARIA-AT`}</title>
                 </Helmet>
@@ -188,7 +188,7 @@ class TestQueue extends Component {
                 {atBrowserRunSets.map(abr =>
                     this.renderAtBrowserList(abr.runs)
                 )}
-            </Fragment>
+            </Container>
         );
     }
 }

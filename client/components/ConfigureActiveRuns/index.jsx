@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import { connect } from 'react-redux';
-import { Table, Form, Button } from 'react-bootstrap';
+import { Container, Table, Form, Button } from 'react-bootstrap';
 import {
     saveRunConfiguration,
     getActiveRunConfiguration,
@@ -639,7 +639,7 @@ class ConfigureActiveRuns extends Component {
         }
 
         return (
-            <Fragment>
+            <Container as="main">
                 <h1 data-test="configure-run-h2">Configure Active Runs</h1>
                 <h2 data-test="configure-run-h3">Update Versions</h2>
                 <Form className="init-box">
@@ -792,7 +792,7 @@ class ConfigureActiveRuns extends Component {
                     configurationChanges={this.state.configurationChanges}
                     resultsDeleted={this.state.resultsDeleted}
                 />
-            </Fragment>
+            </Container>
         );
     }
 }

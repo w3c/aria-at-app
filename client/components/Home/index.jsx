@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
+import { Container } from 'react-bootstrap';
 import testManagementScreenshot from '../../assets/test-management.jpg';
 import testQueueScreenshot from '../../assets/test-queue.jpg';
 import testViewScreenshot from '../../assets/test-view.jpg';
@@ -9,7 +10,7 @@ import testReviewScreenshot from '../../assets/test-review.jpg';
 class Home extends Component {
     render() {
         return (
-            <Fragment>
+            <Container as="main">
                 <Helmet>
                     <title>ARIA-AT App</title>
                 </Helmet>
@@ -136,7 +137,7 @@ class Home extends Component {
                         </div>
                     </div>
                 </section>
-            </Fragment>
+            </Container>
         );
     }
 }

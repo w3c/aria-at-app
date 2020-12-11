@@ -680,11 +680,11 @@ class TestRun extends Component {
         title = `${prepend}${title}`;
 
         return (
-            <Fragment>
+            <Container as="main">
                 <Helmet>
                     <title>{title}</title>
                 </Helmet>
-                <Container fluid>
+                <Container>
                     <Row>
                         {this.state.showTestNavigator ? (
                             <aside className="col-md-3 test-navigator">
@@ -751,26 +751,28 @@ class TestRun extends Component {
                             <></>
                         )}
                         <Col md={this.state.showTestNavigator ? 9 : 12}>
-                            {this.state.showTestNavigator ? (
-                                <></>
-                            ) : (
-                                <span className="test-navigator-toggle-container">
-                                    <button
-                                        onClick={this.toggleTestNavigator}
-                                        className="test-navigator-toggle show"
-                                    ></button>
-                                </span>
-                            )}
-                            {heading}
-                            {testContent || (
-                                <Row>
-                                    <Col>{content}</Col>
-                                </Row>
-                            )}
+                            <Container as="main">
+                                {this.state.showTestNavigator ? (
+                                    <></>
+                                ) : (
+                                    <span className="test-navigator-toggle-container">
+                                        <button
+                                            onClick={this.toggleTestNavigator}
+                                            className="test-navigator-toggle show"
+                                        ></button>
+                                    </span>
+                                )}
+                                {heading}
+                                {testContent || (
+                                    <Row>
+                                        <Col>{content}</Col>
+                                    </Row>
+                                )}
+                            </Container>
                         </Col>
                     </Row>
                 </Container>
-            </Fragment>
+            </Container>
         );
     }
 }
