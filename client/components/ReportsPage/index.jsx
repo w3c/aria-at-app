@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import { Helmet } from 'react-helmet';
 import { Table, Container } from 'react-bootstrap';
 import { connect } from 'react-redux';
