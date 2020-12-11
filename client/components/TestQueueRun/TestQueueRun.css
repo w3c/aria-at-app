@@ -1,6 +1,6 @@
 .testers-wrapper {
     display: flex;
-    flex-direction: row
+    flex-direction: row;
 }
 
 .testers-wrapper div {
@@ -8,7 +8,7 @@
 }
 
 .testers-wrapper .dropdown {
-    padding-right: .75em;
+    padding-right: 0.75em;
 }
 
 .testers-wrapper .assign-actions {
@@ -16,7 +16,7 @@
 }
 
 .assignees {
-    margin-top: .3em;
+    margin-top: 0.3em;
     font-size: 0.9rem;
     text-align: center;
 }
@@ -25,7 +25,7 @@
     border-radius: 25px;
     height: 2.5em;
     border-style: dashed;
-    padding: .4em .6em;
+    padding: 0.4em 0.6em;
 }
 
 .assign-tester .fa-user-plus {
@@ -100,6 +100,6 @@ button.more-actions:active {
 .reports-link {
     display: block;
     text-align: center;
-    margin: .45em 0 0;
-    font-size: .9rem;
+    margin: 0.45em 0 0;
+    font-size: 0.9rem;
 }

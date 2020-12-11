@@ -7,7 +7,7 @@ import {
     faUserPlus
 } from '@fortawesome/free-solid-svg-icons';
 import nextId from 'react-id-generator';
-import { Button, Dropdown} from 'react-bootstrap';
+import { Button, Dropdown } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import checkForConflict from '../../utils/checkForConflict';
@@ -131,7 +131,7 @@ class TestQueueRow extends Component {
                 >
                     {usersById[uid].username}
                 </a>
-                <br/>
+                <br />
                 {` (${testsCompleted} of ${totalTests} tests complete)`}
             </li>
         );
@@ -194,7 +194,11 @@ class TestQueueRow extends Component {
             let pluralizedStatus = `${this.state.totalConflicts} Conflict${
                 this.state.totalConflicts === 1 ? '' : 's'
             }`;
-            status = <span className="status-label conflicts">{pluralizedStatus}</span>
+            status = (
+                <span className="status-label conflicts">
+                    {pluralizedStatus}
+                </span>
+            );
         } else if (
             this.state.testsWithResults > 0 &&
             this.state.testsWithResults !== testsForRun.length
@@ -207,10 +211,16 @@ class TestQueueRow extends Component {
         }
 
         if (runStatus === 'draft') {
-            results = <Link className="reports-link"  to={`/results/run/${runId}`}>View Draft Reports</Link>;
+            results = (
+                <Link className="reports-link" to={`/results/run/${runId}`}>
+                    View Draft Reports
+                </Link>
+            );
         } else if (runStatus === 'final') {
             results = (
-                <Link className="reports-link" to={`/results/run/${runId}`}>View Published Results</Link>
+                <Link className="reports-link" to={`/results/run/${runId}`}>
+                    View Published Results
+                </Link>
             );
         }
 
@@ -445,7 +455,9 @@ class TestQueueRow extends Component {
                             {testerList.length !== 0 ? (
                                 testerList
                             ) : (
-                                <li className="no-assignees">No testers assigned</li>
+                                <li className="no-assignees">
+                                    No testers assigned
+                                </li>
                             )}
                         </ul>
                     </div>
@@ -454,16 +466,12 @@ class TestQueueRow extends Component {
                     <div className="status-wrapper">{status}</div>
                     <div className="secondary-actions">
                         {admin && newStatus && (
-                        
                             <Button
                                 variant="secondary"
-                                onClick={() =>
-                                    this.updateRunStatus(newStatus)
-                                }
+                                onClick={() => this.updateRunStatus(newStatus)}
                             >
                                 Mark as {newStatus}
                             </Button>
-                        
                         )}
                         {results}
                     </div>

@@ -39,7 +39,13 @@ class TestQueue extends Component {
                 <h2
                     id={tableId}
                 >{`${atName} ${atVersion} with ${browserName} ${browserVersion}`}</h2>
-                <Table className="test-queue" aria-labelledby={tableId} striped bordered hover>
+                <Table
+                    className="test-queue"
+                    aria-labelledby={tableId}
+                    striped
+                    bordered
+                    hover
+                >
                     <thead>
                         <tr>
                             <th className="test-plan">Test Plan</th>
@@ -106,14 +112,14 @@ class TestQueue extends Component {
                     <h2 data-test="test-queue-no-ats-h2">{noAts}</h2>
                     <div role="alert">
                         <p data-test="test-queue-no-ats-p">
-                            Please configure your preferred Assistive Technologies
-                            in the {settingsLink} page.
+                            Please configure your preferred Assistive
+                            Technologies in the {settingsLink} page.
                         </p>
                         <p>
-                            If you have configured your Assistive Technologies and
-                            are still not seeing any Test Plans in this page, it
-                            could be that there are no Test Plans available under
-                            your configuration.
+                            If you have configured your Assistive Technologies
+                            and are still not seeing any Test Plans in this
+                            page, it could be that there are no Test Plans
+                            available under your configuration.
                             <p></p>
                             Please{' '}
                             <a href="mailto: public-aria-at@w3.org">
