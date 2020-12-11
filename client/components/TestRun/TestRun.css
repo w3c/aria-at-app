@@ -219,3 +219,7 @@ main.container-fluid .test-iframe-contaner > .row {
     border-radius: 50%;
     display: inline-block;
 }
+
+a[aria-current='true'] {
+    font-weight: bold;
+}

@@ -729,22 +729,19 @@ class TestRun extends Component {
                                                 key={i}
                                             >
                                                 <span className="progress-indicator"></span>
-                                                {t.id !== test.id ? (
-                                                    <a
-                                                        href="#"
-                                                        onClick={() => {
-                                                            this.handleTestClick(
-                                                                i + 1
-                                                            );
-                                                        }}
-                                                        className="test-name"
-                                                        aria-label={`${resultStatus} ${t.name}`}
-                                                    >
-                                                        {t.name}
-                                                    </a>
-                                                ) : (
-                                                    <span>{t.name}</span>
-                                                )}
+                                                <a
+                                                    href="#"
+                                                    onClick={() => {
+                                                        this.handleTestClick(
+                                                            i + 1
+                                                        );
+                                                    }}
+                                                    className="test-name"
+                                                    aria-label={`${resultStatus} ${t.name}`}
+                                                    aria-current={t.id === test.id}
+                                                >
+                                                    {t.name}
+                                                </a>
                                             </li>
                                         );
                                     })}
