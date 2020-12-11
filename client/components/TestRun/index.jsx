@@ -680,17 +680,16 @@ class TestRun extends Component {
         title = `${prepend}${title}`;
 
         return (
-            <Container as="main">
+            <Container className="test-run-container">
                 <Helmet>
                     <title>{title}</title>
                 </Helmet>
-                <Container>
-                    <Row>
-                        {this.state.showTestNavigator ? (
-                            <aside className="col-md-3 test-navigator">
-                                <h3>Test Navigator</h3>
-                                <button
-                                    onClick={this.toggleTestNavigator}
+                <Row>
+                    {this.state.showTestNavigator ? (
+                        <aside className="col-md-3 test-navigator">
+                            <h3>Test Navigator</h3>
+                            <button
+                                onClick={this.toggleTestNavigator}
                                     className="test-navigator-toggle hide"
                                 >
                                     Hide
@@ -747,31 +746,28 @@ class TestRun extends Component {
                                     })}
                                 </ol>
                             </aside>
-                        ) : (
+                    ) : (
+                        <></>
+                    )}
+                    <Col as="main" md={this.state.showTestNavigator ? 9 : 12}>
+                        {this.state.showTestNavigator ? (
                             <></>
+                        ) : (
+                            <span className="test-navigator-toggle-container">
+                                <button
+                                    onClick={this.toggleTestNavigator}
+                                    className="test-navigator-toggle show"
+                                ></button>
+                            </span>
                         )}
-                        <Col md={this.state.showTestNavigator ? 9 : 12}>
-                            <Container as="main">
-                                {this.state.showTestNavigator ? (
-                                    <></>
-                                ) : (
-                                    <span className="test-navigator-toggle-container">
-                                        <button
-                                            onClick={this.toggleTestNavigator}
-                                            className="test-navigator-toggle show"
-                                        ></button>
-                                    </span>
-                                )}
-                                {heading}
-                                {testContent || (
-                                    <Row>
-                                        <Col>{content}</Col>
-                                    </Row>
-                                )}
-                            </Container>
-                        </Col>
-                    </Row>
-                </Container>
+                        {heading}
+                        {testContent || (
+                            <Row>
+                                <Col>{content}</Col>
+                            </Row>
+                        )}
+                    </Col>
+                </Row>
             </Container>
         );
     }

@@ -138,9 +138,7 @@ class App extends Component {
                     </Navbar>
                 </Container>
                 <Container fluid>
-                    <Row>
-                        <Col>{renderRoutes(route.routes)}</Col>
-                    </Row>
+                    {renderRoutes(route.routes)}
                 </Container>
             </Fragment>
         );
