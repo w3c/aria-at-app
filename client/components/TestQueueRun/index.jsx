@@ -93,9 +93,15 @@ class TestQueueRow extends Component {
         dispatch(saveRunStatus(status.toLowerCase(), runId));
     }
 
-    handleDeleteResultsForUser(userId) {
+    async handleDeleteResultsForUser(userId) {
         const { dispatch, runId } = this.props;
-        dispatch(deleteTestResults(userId, runId));
+        await dispatch(deleteTestResults(userId, runId));
+
+        // Recount the number of tests with results
+        const { testsWithResults } = this.countCompleteTestsAndConflicts();
+        this.setState({
+            testsWithResults
+        });
     }
 
     componentDidUpdate(prevProps) {
