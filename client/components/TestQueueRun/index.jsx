@@ -471,18 +471,21 @@ class TestQueueRun extends Component {
                     </div>
                 </td>
                 <td className="actions">
-                    <div className="test-cta-wrapper">
-                        <Button
-                            variant="primary"
-                            href={`/run/${runId}`}
-                            disabled={!currentUserAssigned}
-                            ref={this.startTestingButton}
-                        >
-                            {this.testsCompletedOrInProgressByThisUser
-                                ? 'Continue testing'
-                                : 'Start testing'}
-                        </Button>
-                    </div>
+                  {currentUserAssigned && (
+                        <div className="test-cta-wrapper">
+
+                            <Button
+                                variant="primary"
+                                href={`/run/${runId}`}
+                                disabled={!currentUserAssigned}
+                                ref={this.startTestingButton}
+                            >
+                                {this.testsCompletedOrInProgressByThisUser
+                                    ? 'Continue testing'
+                                    : 'Start testing'}
+                            </Button>
+                        </div>
+                    )}
                     <div className="secondary-actions">
                         {admin && this.renderOpenAsDropdown()}
                         {admin && this.renderDeleteMenu()}
