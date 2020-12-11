@@ -12,13 +12,13 @@ main.container-fluid table .col-md-3 {
 .test-queue.table .testers-wrapper,
 .test-queue.table .status-wrapper,
 .test-queue.table .test-cta-wrapper {
-    padding: .75em;
+    padding: 0.75em;
     /* background: #ffffff; */
 }
 
 .test-queue.table .secondary-actions {
     border-top: 1px solid #d2d5d9;
-    padding: .75em;
+    padding: 0.75em;
 }
 
 .test-queue.table .test-cta-wrapper .btn-primary {
@@ -26,14 +26,14 @@ main.container-fluid table .col-md-3 {
 }
 
 .test-queue.table .secondary-actions .btn-danger {
-    margin-top: .75em;
+    margin-top: 0.75em;
 }
 
 .test-queue.table th.testers {
     width: 225px;
 }
 
-.test-queue.table th.report-status, 
+.test-queue.table th.report-status,
 .test-queue.table th.actions {
     width: 175px;
 }
@@ -54,5 +54,5 @@ table button {
 .status-label {
     width: 100%;
     text-align: center;
-    margin: .45em 0;
+    margin: 0.45em 0;
 }
