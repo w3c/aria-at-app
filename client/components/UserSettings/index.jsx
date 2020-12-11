@@ -125,7 +125,7 @@ class UserSettings extends Component {
                         </a>
                     </p>
                     <p>{email}</p>
-                    <h2>Assistive Technology</h2>
+                    <h2>Assistive Technology Settings</h2>
                     <div tabIndex={0} ref={this.currentAtsRef}>
                         {currentUserAts.length > 0
                             ? currentAtDisplay
@@ -136,7 +136,8 @@ class UserSettings extends Component {
                         technologies you can test:
                     </p>
                     <Form>
-                        <Form.Group controlId="formBasicCheckbox">
+                        <h3 id="at-group-label">ATs</h3>
+                        <Form.Group controlId="formBasicCheckbox" role="group" aria-labeled-by="at-group-label">
                             {ats &&
                                 ats.map(at => {
                                     return (
