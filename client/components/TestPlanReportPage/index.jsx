@@ -8,7 +8,8 @@ import {
     generateTechPairs,
     generateApgExample,
     formatFraction,
-    formatInteger
+    formatInteger,
+    formatNoResults
 } from '../ReportsPage/utils';
 
 class TestPlanReportPage extends Component {
@@ -88,8 +89,6 @@ class TestPlanReportPage extends Component {
             const testWithResults = testsWithMetaData.testsWithResults.find(
                 t => t.testName === testName
             );
-            const aria = testWithResults ? {} : { 'aria-label': 'No results' };
-
             rows.push(
                 <tr key={`${testIndex}-row`}>
                     <th scope="row" key={`${testIndex}-name`}>
@@ -102,26 +101,26 @@ class TestPlanReportPage extends Component {
                         )) ||
                             testName}
                     </th>
-                    <td key={`${testIndex}-required`} {...aria}>
+                    <td key={`${testIndex}-required`}>
                         {(testWithResults &&
                             formatFraction(
                                 testWithResults.passingRequiredAssertions,
                                 testWithResults.requiredAssertions
                             )) ||
-                            '-'}
+                            formatNoResults()}
                     </td>
-                    <td key={`${testIndex}-optional`} {...aria}>
+                    <td key={`${testIndex}-optional`}>
                         {(testWithResults &&
                             formatFraction(
                                 testWithResults.passingOptionalAssertions,
                                 testWithResults.optionalAssertions
                             )) ||
-                            '-'}
+                            formatNoResults()}
                     </td>
-                    <td key={`${testIndex}-unexpected`} {...aria}>
+                    <td key={`${testIndex}-unexpected`}>
                         {(testWithResults &&
                             formatInteger(unexpectedBehaviors)) ||
-                            '-'}
+                            formatNoResults()}
                     </td>
                 </tr>
             );

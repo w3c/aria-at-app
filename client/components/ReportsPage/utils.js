@@ -1,3 +1,4 @@
+import React from 'react';
 import checkForConflict from '../../utils/checkForConflict';
 
 function generateTestsWithMetaData(runs, techPairs) {
@@ -156,11 +157,25 @@ export function calculatePercentage(numerator, demoninator) {
     }
 }
 
+export function formatNoResults() {
+    return (
+        <>
+            <span className="sr-only">No results</span>
+            <span aria-hidden="true">{'-'}</span>
+        </>
+    );
+}
+
 export function formatFraction(numerator, demoninator) {
     if (demoninator > 0) {
-        return `${numerator} / ${demoninator}`;
+        return (
+            <>
+                <span className="sr-only">{`${numerator} of ${demoninator}`}</span>
+                <span aria-hidden="true">{`${numerator} / ${demoninator}`}</span>
+            </>
+        );
     } else {
-        return '-';
+        return formatNoResults();
     }
 }
 

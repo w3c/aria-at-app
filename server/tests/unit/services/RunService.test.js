@@ -1643,7 +1643,9 @@ describe('RunService', () => {
 
                 const publishedRuns = await RunService.getPublishedRuns();
                 expect(Object.keys(publishedRuns).length).toEqual(1);
-                expect(publishedRuns[publishedPreviousTestVersionRun.id]).toEqual({
+                expect(
+                    publishedRuns[publishedPreviousTestVersionRun.id]
+                ).toEqual({
                     id: publishedPreviousTestVersionRun.id,
                     browser_id: browser.id,
                     browser_version: browserVersionNumber,

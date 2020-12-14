@@ -8,7 +8,8 @@ import {
     generateTechPairs,
     generateApgExamples,
     calculateTotalPercentageForTechPair,
-    calculatePercentage
+    calculatePercentage,
+    formatNoResults
 } from './utils';
 
 class ReportsPage extends Component {
@@ -136,7 +137,7 @@ class ReportsPage extends Component {
                                 key={`data-${exampleName}-${at}-${browser}`}
                                 aria-label={`No results`}
                             >
-                                -
+                                {formatNoResults()}
                             </td>
                         );
                     }
@@ -165,9 +166,7 @@ class ReportsPage extends Component {
                     </caption>
                     <thead>
                         <tr>
-                            <th key="design-pattern-examples">
-                                Test Plan
-                            </th>
+                            <th key="design-pattern-examples">Test Plan</th>
                             {this.generateTechPairTableHeaders()}
                         </tr>
                     </thead>
