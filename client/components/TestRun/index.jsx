@@ -680,97 +680,90 @@ class TestRun extends Component {
         title = `${prepend}${title}`;
 
         return (
-            <Fragment>
+            <Container className="test-run-container">
                 <Helmet>
                     <title>{title}</title>
                 </Helmet>
-                <Container fluid>
-                    <Row>
+                <Row>
+                    {this.state.showTestNavigator ? (
+                        <aside className="col-md-3 test-navigator">
+                            <h3>Test Navigator</h3>
+                            <button
+                                onClick={this.toggleTestNavigator}
+                                className="test-navigator-toggle hide"
+                            >
+                                Hide
+                            </button>
+                            <ol className="test-navigator-list">
+                                {run.tests.map((t, i) => {
+                                    let resultClassName = 'not-started';
+                                    let resultStatus = 'not started:';
+                                    const testersResult =
+                                        t.results &&
+                                        t.results[openAsUser || userId];
+                                    if (testersResult) {
+                                        if (
+                                            testersResult.status == 'incomplete'
+                                        ) {
+                                            resultClassName = 'in-progress';
+                                            resultStatus = 'in progress:';
+                                        } else if (
+                                            checkForConflict(t.results).length
+                                        ) {
+                                            resultClassName = 'conflicts';
+                                            resultStatus = 'has conflicts:';
+                                        } else if (
+                                            testersResult.status === 'complete'
+                                        ) {
+                                            resultClassName = 'complete';
+                                            resultStatus = 'complete test:';
+                                        }
+                                    }
+                                    return (
+                                        <li
+                                            className={`test-name-wrapper ${resultClassName}`}
+                                            key={i}
+                                        >
+                                            <span className="progress-indicator"></span>
+                                            <a
+                                                href="#"
+                                                onClick={() => {
+                                                    this.handleTestClick(i + 1);
+                                                }}
+                                                className="test-name"
+                                                aria-label={`${resultStatus} ${t.name}`}
+                                                aria-current={t.id === test.id}
+                                            >
+                                                {t.name}
+                                            </a>
+                                        </li>
+                                    );
+                                })}
+                            </ol>
+                        </aside>
+                    ) : (
+                        <></>
+                    )}
+                    <Col as="main" md={this.state.showTestNavigator ? 9 : 12}>
                         {this.state.showTestNavigator ? (
-                            <aside className="col-md-3 test-navigator">
-                                <h3>Test Navigator</h3>
+                            <></>
+                        ) : (
+                            <span className="test-navigator-toggle-container">
                                 <button
                                     onClick={this.toggleTestNavigator}
-                                    className="test-navigator-toggle hide"
-                                >
-                                    Hide
-                                </button>
-                                <ol className="test-navigator-list">
-                                    {run.tests.map((t, i) => {
-                                        let resultClassName = 'not-started';
-                                        let resultStatus = 'not started:';
-                                        const testersResult =
-                                            t.results &&
-                                            t.results[openAsUser || userId];
-                                        if (testersResult) {
-                                            if (
-                                                testersResult.status ==
-                                                'incomplete'
-                                            ) {
-                                                resultClassName = 'in-progress';
-                                                resultStatus = 'in progress:';
-                                            } else if (
-                                                checkForConflict(t.results)
-                                                    .length
-                                            ) {
-                                                resultClassName = 'conflicts';
-                                                resultStatus = 'has conflicts:';
-                                            } else if (
-                                                testersResult.status ===
-                                                'complete'
-                                            ) {
-                                                resultClassName = 'complete';
-                                                resultStatus = 'complete test:';
-                                            }
-                                        }
-                                        return (
-                                            <li
-                                                className={`test-name-wrapper ${resultClassName}`}
-                                                key={i}
-                                            >
-                                                <span className="progress-indicator"></span>
-                                                <a
-                                                    href="#"
-                                                    onClick={() => {
-                                                        this.handleTestClick(
-                                                            i + 1
-                                                        );
-                                                    }}
-                                                    className="test-name"
-                                                    aria-label={`${resultStatus} ${t.name}`}
-                                                    aria-current={t.id === test.id}
-                                                >
-                                                    {t.name}
-                                                </a>
-                                            </li>
-                                        );
-                                    })}
-                                </ol>
-                            </aside>
-                        ) : (
-                            <></>
+                                    className="test-navigator-toggle show"
+                                ></button>
+                            </span>
                         )}
-                        <Col md={this.state.showTestNavigator ? 9 : 12}>
-                            {this.state.showTestNavigator ? (
-                                <></>
-                            ) : (
-                                <span className="test-navigator-toggle-container">
-                                    <button
-                                        onClick={this.toggleTestNavigator}
-                                        className="test-navigator-toggle show"
-                                    ></button>
-                                </span>
-                            )}
-                            {heading}
-                            {testContent || (
-                                <Row>
-                                    <Col>{content}</Col>
-                                </Row>
-                            )}
-                        </Col>
-                    </Row>
-                </Container>
-            </Fragment>
+                        {heading}
+                        {testContent || (
+                            <Row>
+                                <Col>{content}</Col>
+                            </Row>
+                        )}
+                    </Col>
+                </Row>
+            </Container>
         );
     }
 }

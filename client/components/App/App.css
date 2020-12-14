@@ -14,8 +14,9 @@ main {
     height: 100%;
 }
 
-main,
-nav.navbar {
+nav.navbar,
+main.container,
+.test-run-container {
     max-width: 1400px;
     margin: auto;
 }
@@ -80,7 +81,8 @@ main.container-fluid .row {
         padding: 0.5rem 3rem;
     }
 
-    main.container-fluid > .row {
+    main.container,
+    .test-run-container {
         padding: 2rem 3rem;
     }
 }
@@ -90,8 +92,9 @@ main.container-fluid .row {
         padding: 0.5rem 5rem;
     }
 
-    main.container-fluid > .row {
-        padding: 4rem;
+    main.container,
+    .test-run-container {
+        padding: 5rem;
     }
 }
 

@@ -1,4 +1,4 @@
-import React, { Fragment, Component } from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
@@ -137,7 +137,11 @@ class UserSettings extends Component {
                     </p>
                     <Form>
                         <h3 id="at-group-label">ATs</h3>
-                        <Form.Group controlId="formBasicCheckbox" role="group" aria-labeled-by="at-group-label">
+                        <Form.Group
+                            controlId="formBasicCheckbox"
+                            role="group"
+                            aria-labeled-by="at-group-label"
+                        >
                             {ats &&
                                 ats.map(at => {
                                     return (
@@ -170,7 +174,7 @@ class UserSettings extends Component {
             );
 
         return (
-            <Fragment>
+            <Container as="main">
                 <Container fluid data-test="user-settings-contents">
                     <Helmet>
                         <title>Settings | ARIA-AT</title>
@@ -178,7 +182,7 @@ class UserSettings extends Component {
                     <h1>Settings</h1>
                     {content}
                 </Container>
-            </Fragment>
+            </Container>
         );
     }
 }
