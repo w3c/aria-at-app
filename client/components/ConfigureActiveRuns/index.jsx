@@ -11,6 +11,7 @@ import {
 } from '../../actions/runs';
 import ConfigureTechnologyRow from '@components/ConfigureTechnologyRow';
 import ConfigurationModal from '@components/ConfigurationModal';
+import CurrentGitCommit from '@components/CurrentGitCommit';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
@@ -645,30 +646,10 @@ class ConfigureActiveRuns extends Component {
                 <Form className="init-box">
                     {Object.keys(activeRunConfiguration.active_test_version)
                         .length > 0 ? (
-                        <Form.Group
-                            className="current-commit"
-                            controlId="testVersion"
-                        >
-                            <Form.Label data-test="configure-run-current-commit-label">
-                                Current Git Commit
-                            </Form.Label>
-                            <p>
-                                <FontAwesomeIcon
-                                    icon={faCheck}
-                                    aria-hidden="true"
-                                ></FontAwesomeIcon>
-                                {activeRunConfiguration.active_test_version.git_hash.slice(
-                                    0,
-                                    7
-                                ) +
-                                    ' - ' +
-                                    activeRunConfiguration.active_test_version.git_commit_msg.slice(
-                                        0,
-                                        80
-                                    ) +
-                                    '...'}
-                            </p>
-                        </Form.Group>
+                        <CurrentGitCommit
+                          gitHash={activeRunConfiguration.active_test_version.git_hash}
+                          gitCommitMessage={activeRunConfiguration.active_test_version.git_commit_msg}
+                        />
                     ) : null}
                     {renderedTestVersions !== null ? (
                         <Form.Group
