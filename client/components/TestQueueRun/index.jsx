@@ -44,7 +44,7 @@ class TestQueueRow extends Component {
     }
 
     countCompleteTestsAndConflicts() {
-        const { testsForRun } = this.props;
+        const { testsForRun, runStatus } = this.props;
 
         let totalConflicts = 0;
         let testsWithResults = 0;
@@ -60,6 +60,12 @@ class TestQueueRow extends Component {
                 }
             }
         }
+
+        // Update the run status back to raw if there are no test results
+        if (testsWithResults === 0 && runStatus !== 'raw') {
+            this.updateRunStatus('raw');
+        }
+
         return { totalConflicts, testsWithResults };
     }
 
@@ -87,9 +93,15 @@ class TestQueueRow extends Component {
         dispatch(saveRunStatus(status.toLowerCase(), runId));
     }
 
-    handleDeleteResultsForUser(userId) {
+    async handleDeleteResultsForUser(userId) {
         const { dispatch, runId } = this.props;
-        dispatch(deleteTestResults(userId, runId));
+        await dispatch(deleteTestResults(userId, runId));
+
+        // Recount the number of tests with results
+        const { testsWithResults } = this.countCompleteTestsAndConflicts();
+        this.setState({
+            testsWithResults
+        });
     }
 
     componentDidUpdate(prevProps) {
@@ -243,7 +255,11 @@ class TestQueueRow extends Component {
         }
         // If the results have been marked as draft and there is no conflict,
         // they can be marked as "final"
-        else if (runStatus === 'draft' && this.state.totalConflicts === 0) {
+        else if (
+            runStatus === 'draft' &&
+            this.state.totalConflicts === 0 &&
+            this.state.testsWithResults > 0
+        ) {
             newStatus = 'Final';
         }
         return newStatus;
