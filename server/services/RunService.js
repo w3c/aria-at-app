@@ -522,7 +522,7 @@ async function getPublishedRuns() {
         // instead of the currently active run so results can still be shown
         // even if new runs were just configured
         const mostRecentPublishedRun = await db.Run.findOne({
-            order: ['updated_at'],
+            order: [['updated_at', 'desc nulls last']],
             include: [
                 { model: db.RunStatus, where: { name: db.RunStatus.FINAL } }
             ]

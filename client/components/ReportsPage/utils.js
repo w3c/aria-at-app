@@ -1,3 +1,4 @@
+import React from 'react';
 import checkForConflict from '../../utils/checkForConflict';
 
 function generateTestsWithMetaData(runs, techPairs) {
@@ -63,12 +64,12 @@ function generateTestsWithMetaData(runs, techPairs) {
  * @param {Object.<number, Run>} publishedRunsById
  * @param {TechPair}
  *
- * @return {Array.<Examples>}
+ * @return {Array.<Example>}
  *
  * @typedef Example
  * @type {object}
  * @property {string} exampleName
- * @property {boolean} open - should open the folder accordian
+ * @property {number} id
  * @property {Array.<string>} testNames - Name of every test for an example
  * @property {Array.<TestWithMetaData>} testsWithMetaDataIndexedByTechPair
  *
@@ -99,7 +100,7 @@ export function generateApgExamples(publishedRunsById, techPairs) {
         const exampleRuns = runs.filter(r => r.apg_example_name === example);
         return {
             exampleName: example,
-            open: true,
+            id: exampleRuns[0].apg_example_id,
             testNames: exampleRuns[0].tests.map(({ name }) => name),
             testsWithMetaDataIndexedByTechPair: generateTestsWithMetaData(
                 exampleRuns,
@@ -107,6 +108,18 @@ export function generateApgExamples(publishedRunsById, techPairs) {
             )
         };
     });
+}
+
+/**
+ * @param {Object.<number, Run>} publishedRunsById
+ * @param {TechPair}
+ * @param {number} apgExampleId
+ *
+ * @return {Example}
+ */
+export function generateApgExample(publishedRunsById, techPairs, apgExampleId) {
+    const apgExamples = generateApgExamples(publishedRunsById, techPairs);
+    return apgExamples.find(({ id }) => id === apgExampleId);
 }
 
 /**
@@ -118,7 +131,6 @@ export function generateApgExamples(publishedRunsById, techPairs) {
  * @type {object}
  * @property {string} browser
  * @property {string} at
- * @property {boolean} active
  */
 export function generateTechPairs(publishedRunsById) {
     let techPairs = [];
@@ -130,8 +142,7 @@ export function generateTechPairs(publishedRunsById) {
         if (!match) {
             techPairs.push({
                 browser: run.browser_name,
-                at: run.at_name,
-                active: true
+                at: run.at_name
             });
         }
     });
@@ -146,11 +157,25 @@ export function calculatePercentage(numerator, demoninator) {
     }
 }
 
+export function formatNoResults() {
+    return (
+        <>
+            <span className="sr-only">No results</span>
+            <span aria-hidden="true">{'-'}</span>
+        </>
+    );
+}
+
 export function formatFraction(numerator, demoninator) {
     if (demoninator > 0) {
-        return `${numerator} / ${demoninator}`;
+        return (
+            <>
+                <span className="sr-only">{`${numerator} of ${demoninator}`}</span>
+                <span aria-hidden="true">{`${numerator} / ${demoninator}`}</span>
+            </>
+        );
     } else {
-        return '-';
+        return formatNoResults();
     }
 }
 

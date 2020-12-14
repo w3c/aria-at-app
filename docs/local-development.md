@@ -94,7 +94,8 @@ If running the tests on demand, in a hot-loaded way, run the following for each 
 There are some automatable accessibility checks, but the only real way to know whether a webpage is accessible is to access it with a screen reader.
 
 If you have a linux computer, you will have to download a Windows VM in order to test the application with NVDA or JAWS. Here are the basic instructions:
-* Download VirtualBox
+* Enable virtualization in your BIOS settings
+* Download [VirtualBox](http://download.virtualbox.org/virtualbox/)
 * Download a [Windows VM](https://developer.microsoft.com/en-us/windows/downloads/virtual-machines)
 * Import the downloaded VM with the default settings.
 * Start the virtual machine and download JAWS or NVDA.
@@ -111,7 +112,8 @@ If you have a linux computer, you will have to download a Windows VM in order to
     netsh interface portproxy add v4tov4 listenaddress=127.0.0.1 listenport=3000 connectaddress=10.0.2.2 connectport=3000
     netsh interface portproxy add v4tov4 listenaddress=127.0.0.1 listenport=5000 connectaddress=10.0.2.2 connectport=5000
     ```
-* Now open your browser, and navigate to: `localhost:3000` and log in, and turn on the screen reader.
+* Now open your browser, and navigate to: `localhost:3000` and log in, and turn
+  on the screen reader. There are several helpful [guides](https://dequeuniversity.com/screenreaders/) to the keyboard shortcuts used. 
 
 
 #### Automated accessibility tests
