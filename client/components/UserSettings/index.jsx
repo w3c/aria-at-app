@@ -137,7 +137,11 @@ class UserSettings extends Component {
                     </p>
                     <Form>
                         <h3 id="at-group-label">ATs</h3>
-                        <Form.Group controlId="formBasicCheckbox" role="group" aria-labeled-by="at-group-label">
+                        <Form.Group
+                            controlId="formBasicCheckbox"
+                            role="group"
+                            aria-labeled-by="at-group-label"
+                        >
                             {ats &&
                                 ats.map(at => {
                                     return (

@@ -77,7 +77,7 @@ main.container-fluid .row {
 }
 
 @media (min-width: 700px) {
-    nav.navbar{
+    nav.navbar {
         padding: 0.5rem 3rem;
     }
 
@@ -93,7 +93,7 @@ main.container-fluid .row {
     }
 
     main.container,
-    .test-run-container  {
+    .test-run-container {
         padding: 5rem;
     }
 }

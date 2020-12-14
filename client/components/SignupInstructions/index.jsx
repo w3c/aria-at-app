@@ -9,7 +9,8 @@ const SignupInstructions = () => {
                 Please create an issue at{' '}
                 <a href="https://github.com/w3c/aria-at-app">
                     ARIA-AT App GitHub
-                </a>.
+                </a>
+                .
             </p>
         </Container>
     );
