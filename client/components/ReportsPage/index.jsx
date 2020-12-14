@@ -87,7 +87,7 @@ class ReportsPage extends Component {
 
         let topLevelRowData = [
             <th key="High level pattern" scope="row">
-                All Design Pattern Examples
+                All Test Plans
             </th>
         ];
 
@@ -166,7 +166,7 @@ class ReportsPage extends Component {
                     <thead>
                         <tr>
                             <th key="design-pattern-examples">
-                                Design Pattern Examples
+                                Test Plan
                             </th>
                             {this.generateTechPairTableHeaders()}
                         </tr>
