@@ -471,40 +471,36 @@ class TestRun extends Component {
 
         let menuRightOfContent = (
             <div role="complementary">
-                <h2>Current Test Options</h2>
-                <ul>
-                    <li>
-                        <Button
-                            className="btn-block"
-                            variant="secondary"
-                            onClick={this.handleRaiseIssueClick}
-                        >
-                            Raise an issue
-                        </Button>
-                    </li>
-                    <li>
-                        <Button
-                            className="btn-block"
-                            variant="secondary"
-                            onClick={this.handleRedoClick}
-                        >
-                            Start over
-                        </Button>
-                    </li>
-                    <li>
-                        <Button
-                            className="btn-block"
-                            variant="secondary"
-                            onClick={this.handleCloseRunClick}
-                        >
-                            Save and Close
-                        </Button>
-                    </li>
-                    <li>
+                <h3>Test Options</h3>
+                <div className="options-wrapper">
+                    <Button
+                        className="btn-block"
+                        variant="secondary"
+                        onClick={this.handleRaiseIssueClick}
+                    >
+                        Raise an issue
+                    </Button>
+
+                    <Button
+                        className="btn-block"
+                        variant="secondary"
+                        onClick={this.handleRedoClick}
+                    >
+                        Start over
+                    </Button>
+
+                    <Button
+                        className="btn-block"
+                        variant="secondary"
+                        onClick={this.handleCloseRunClick}
+                    >
+                        Save and Close
+                    </Button>
+                    <div className="help-link">
                         Need Help?{' '}
                         <a href="mailto:public-aria-at@w3.org">Email Us</a>
-                    </li>
-                </ul>
+                    </div>
+                </div>
             </div>
         );
 
@@ -555,7 +551,7 @@ class TestRun extends Component {
                 <h1 data-test="testing-task"><span class="task-label">Testing task:</span> {test.name}</h1>
                 <StatusBar key={nextId()} {...statusProps} />
                 <Row>
-                    <Col md={10} className="test-iframe-contaner">
+                    <Col md={9} className="test-iframe-contaner">
                         <Row>{testContent}</Row>
                         <Row>{primaryButtonGroup}</Row>
                         <Row>
@@ -578,7 +574,7 @@ class TestRun extends Component {
                             )}
                         </Row>
                     </Col>
-                    <Col md={2}>{menuRightOfContent}</Col>
+                    <Col className="current-test-options" md={3}>{menuRightOfContent}</Col>
                 </Row>
                 {modals}
             </Fragment>
@@ -623,11 +619,11 @@ class TestRun extends Component {
         if (openAsUser) {
             runningAsUserHeader = (
                 <>
-                    <div>
+                    <div class="test-info-entity reviewing-as">
                         Reviewings tests of{' '}
-                        <b>{`${usersById[openAsUser].username}`}</b>
+                        <b>{`${usersById[openAsUser].username}`}.</b>
+                        <p>{`All changes will be saved as performed by ${usersById[openAsUser].username}.`}</p>
                     </div>
-                    <p>{`All changes will be saved as performed by ${usersById[openAsUser].username}.`}</p>
                 </>
             );
         }
@@ -635,12 +631,22 @@ class TestRun extends Component {
         if (testsToRun) {
             heading = (
                 <Fragment>
-                    {runningAsUserHeader}
-                    <div data-test="apg-example-name">
-                        {' '}
-                        {`${apg_example_name} (${this.state.currentTestIndex} of ${run.tests.length})`}
+                    <div className="test-info-wrapper">
+                        <div className="test-info-entity apg-example-name" data-test="apg-example-name">
+                            <div className="info-label">APG Example</div>
+                            {' '}
+                            {`${apg_example_name}`}
+                        </div>
+                        <div className="test-info-entity at-browser" data-test="at-browser">
+                            <div className="info-label">AT and Browser</div>
+                            {`${at_name} ${at_version} with ${browser_name} ${browser_version}`}
+                        </div>
+                        <div className="test-info-entity tests-completed">
+                            <div className="info-label">Progress</div>
+                            {`${this.state.currentTestIndex} of ${run.tests.length} tests completed`}
+                        </div>
                     </div>
-                    <div data-test="at-browser">{`${at_name} ${at_version} with ${browser_name} ${browser_version}`}</div>
+                    {runningAsUserHeader}
                 </Fragment>
             );
 
@@ -661,8 +667,14 @@ class TestRun extends Component {
         } else {
             heading = (
                 <Fragment>
-                    <div>{`${apg_example_name}`}</div>
-                    <div>{`${at_name} ${at_version} with ${browser_name} ${browser_version}`}</div>
+                    <div className="test-info-entity apg-example-name">
+                        <div className="info-label">APG Example</div>
+                        {`${apg_example_name}`}
+                    </div>
+                    <div className="test-info-entity at-browser">
+                        <div className="info-label">AT and Browser</div>
+                        {`${at_name} ${at_version} with ${browser_name} ${browser_version}`}
+                    </div>
                 </Fragment>
             );
             content = <div>No tests for this browser / AT combination</div>;
@@ -744,7 +756,7 @@ class TestRun extends Component {
                     ) : (
                         <></>
                     )}
-                    <Col as="main" md={this.state.showTestNavigator ? 9 : 12}>
+                    <Col className="main-test-area" as="main" md={this.state.showTestNavigator ? 9 : 12}>
                         {this.state.showTestNavigator ? (
                             <></>
                         ) : (
