@@ -434,6 +434,8 @@ async function sequelizeRunsToJsonRuns(sequelizeRuns) {
             apg_example_directory: run.ApgExample.directory,
             apg_example_name: run.ApgExample.name,
             apg_example_id: run.apg_example_id,
+            design_pattern: run.ApgExample.design_pattern,
+            example: run.ApgExample.example,
             run_status_id: run.run_status_id,
             run_status: run.RunStatus.name,
             test_version_id: run.test_version_id,
