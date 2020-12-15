@@ -294,7 +294,7 @@ class RunResultsPage extends Component {
                                                 </Button>
                                             </div>
                                         </div>
-                                        <TestResult testResult={t.result} />
+                                        <TestResult testResult={t.result} label={`test-${t.execution_order}`} />
                                         <RaiseIssueModal
                                             at_key={at_key}
                                             git_hash={git_hash}
