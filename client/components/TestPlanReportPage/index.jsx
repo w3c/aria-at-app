@@ -139,14 +139,14 @@ class TestPlanReportPage extends Component {
         const { apgExample, techPairs } = this.state;
         let tables = [];
 
-        techPairs.forEach(({ browser, at }, techPairIndex) => {
+        techPairs.forEach(({ browser, browserVersion, at, atVersion }, techPairIndex) => {
             const testsWithMetaData =
                 apgExample.testsWithMetaDataIndexedByTechPair[techPairIndex];
             if (testsWithMetaData.testsWithResults.length > 0) {
                 tables.push(
                     <div>
                         <h2>
-                            {browser} with {at} Results
+                            {browser} {browserVersion} with {at} {atVersion} Results
                         </h2>
                         <Table bordered hover key={`table-${techPairIndex}`}>
                             <caption>

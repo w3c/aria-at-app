@@ -58,14 +58,14 @@ class ReportsPage extends Component {
     }
 
     generateTechPairTableHeaders() {
-        return this.state.techPairs.map(({ browser, at }) => {
+        return this.state.techPairs.map(({ browser, browserVersion,  at, atVersion }) => {
             return (
                 <th
                     scope="col"
-                    key={`${at} with ${browser}`}
+                    key={`${at} ${atVersion} with ${browser} ${browserVersion}`}
                     className="text-center text-wrap"
                 >
-                    {at}/{browser} Passing Tests
+                    {at} {atVersion} / {browser} {browserVersion}
                 </th>
             );
         });
