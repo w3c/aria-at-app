@@ -647,6 +647,7 @@ class ConfigureActiveRuns extends Component {
                     {Object.keys(activeRunConfiguration.active_test_version)
                         .length > 0 ? (
                         <CurrentGitCommit
+                          label="Current Git Commit"
                           gitHash={activeRunConfiguration.active_test_version.git_hash}
                           gitCommitMessage={activeRunConfiguration.active_test_version.git_commit_msg}
                         />

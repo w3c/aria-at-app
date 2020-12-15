@@ -12,7 +12,7 @@ class CurrentGitCommit extends Component {
         controlId="testVersion"
       >
         <Form.Label data-test="configure-run-current-commit-label">
-          Current Git Commit
+          {this.props.label}
         </Form.Label>
         <p>
           <FontAwesomeIcon
@@ -36,6 +36,7 @@ class CurrentGitCommit extends Component {
 }
 
 CurrentGitCommit.propTypes = {
+  label: PropTypes.string,
   gitHash: PropTypes.string,
   gitCommitMessage: PropTypes.string
 };

@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import { Helmet } from 'react-helmet';
 import { Table, Container } from 'react-bootstrap';
 import { connect } from 'react-redux';
-import { getPublishedRuns } from '../../actions/runs';
+import { getPublishedRuns, getTestVersions } from '../../actions/runs';
+import CurrentGitCommit from '@components/CurrentGitCommit';
 import PropTypes from 'prop-types';
 import {
     generateTechPairs,
@@ -31,11 +32,14 @@ class ReportsPage extends Component {
     }
 
     componentDidMount() {
-        const { dispatch, publishedRunsById } = this.props;
+        const { dispatch, publishedRunsById, testVersion } = this.props;
         if (!publishedRunsById) {
             dispatch(getPublishedRuns());
         } else {
             this.generateInitialStateFromRuns();
+        }
+        if (!testVersion) {
+            dispatch(getTestVersions());
         }
     }
 
@@ -156,6 +160,12 @@ class ReportsPage extends Component {
                     <title>ARIA-AT Reports</title>
                 </Helmet>
                 <h1>Summary Report</h1>
+                { this.props.testVersion ?
+                  <CurrentGitCommit
+                    label="Results shown are from the most recent test version."
+                    gitHash={this.props.testVersion.git_hash}
+                    gitCommitMessage={this.props.testVersion.git_commit_msg}
+                  /> : <></>}
                 <Table bordered hover>
                     <caption>
                         This table shows the percentage of required passing
@@ -179,12 +189,23 @@ class ReportsPage extends Component {
 
 ReportsPage.propTypes = {
     dispatch: PropTypes.func,
-    publishedRunsById: PropTypes.object
+    publishedRunsById: PropTypes.object,
+    testVersion: PropTypes.object
 };
 
 const mapStateToProps = state => {
-    const { publishedRunsById } = state.runs;
-    return { publishedRunsById };
+    const { publishedRunsById, testVersions } = state.runs;
+    let testVersion = null;
+    if (publishedRunsById && testVersions) {
+      const runs = Object.values(publishedRunsById);
+
+      if (runs.length > 0) {
+          testVersion = (testVersions || []).find(
+              v => v.id === runs[0].test_version_id
+          );
+      }
+    }
+    return { publishedRunsById, testVersion };
 };
 
 export default connect(mapStateToProps)(ReportsPage);
