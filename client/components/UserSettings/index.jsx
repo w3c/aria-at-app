@@ -9,6 +9,8 @@ class UserSettings extends Component {
     constructor(props) {
         super(props);
 
+        this.state = {};
+
         this.onCheckboxClicked = this.onCheckboxClicked.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
         this.hydrateSelectedUserAts = this.hydrateSelectedUserAts.bind(this);
@@ -140,7 +142,7 @@ class UserSettings extends Component {
                         <Form.Group
                             controlId="formBasicCheckbox"
                             role="group"
-                            aria-labeled-by="at-group-label"
+                            aria-labelledby="at-group-label"
                         >
                             {ats &&
                                 ats.map(at => {
