@@ -145,13 +145,10 @@ class TestPlanReportPage extends Component {
             if (testsWithMetaData.testsWithResults.length > 0) {
                 tables.push(
                     <div>
-                        <h2>
+                        <h2 id={`table-${techPairIndex}`}>
                             {browser} {browserVersion} with {at} {atVersion} Results
                         </h2>
-                        <Table bordered hover key={`table-${techPairIndex}`}>
-                            <caption>
-                                {`This table shows the number of passing required assertions, the number of passing optional assertions and the number of unexpected behaviors for results from the most recently tested version of the ARIA-AT tests. The first row is a summary of results from all tests run on ${browser} with ${at}. All other rows are data from a single test on ${browser} with ${at}. The test name in the first column is a link to the detailed results of a specific test.`}
-                            </caption>
+                        <Table bordered hover key={`table-${techPairIndex}`} aria-labelledby={`tabel-${techPairIndex}`}>
                             <thead>
                                 <tr>
                                     <th key="tests" scope="col">

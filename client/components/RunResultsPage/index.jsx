@@ -269,6 +269,7 @@ class RunResultsPage extends Component {
                                                     ] = ref;
                                                 }}
                                                 id={`test-${t.execution_order}`}
+                                                tabIndex="-1"
                                                 className="float-left"
                                             >
                                                 Details for test: {t.name}

@@ -64,6 +64,7 @@ class ReportsPage extends Component {
                     scope="col"
                     key={`${at} ${atVersion} with ${browser} ${browserVersion}`}
                     className="text-center text-wrap"
+                    aria-describedby="#tech-pair-description"
                 >
                     {at} {atVersion} / {browser} {browserVersion}
                 </th>
@@ -131,14 +132,14 @@ class ReportsPage extends Component {
                             testsWithMetaData.requiredAssertions
                         );
                         exampleRow.push(
-                            <td key={`data-${exampleName}-${at}-${browser}`}>
+                            <td key={`data-${exampleName}-${techPairIndex}`}>
                                 {this.generateProgressBar(percentage)}
                             </td>
                         );
                     } else {
                         exampleRow.push(
                             <td
-                                key={`data-${exampleName}-${at}-${browser}`}
+                                key={`data-${exampleName}-${techPairIndex}`}
                                 aria-label={`No results`}
                             >
                                 {formatNoResults()}
@@ -159,21 +160,17 @@ class ReportsPage extends Component {
                 <Helmet>
                     <title>ARIA-AT Reports</title>
                 </Helmet>
-                <h1>Summary Report</h1>
+                <h1 id="table-header">Summary Report</h1>
                 { this.props.testVersion ?
                   <CurrentGitCommit
                     label="Results shown are from the most recent test version:"
                     gitHash={this.props.testVersion.git_hash}
                     gitCommitMessage={this.props.testVersion.git_commit_msg}
                   /> : <></>}
-                <Table bordered hover>
-                    <caption>
-                        This table shows the percentage of required passing
-                        tests for all finalized test results for the most
-                        recently tested version of the ARIA-AT tests. The first
-                        row is a summary of results from all examples. All other
-                        rows are the summary of results for a single example.
-                    </caption>
+                <p id="tech-pair-description">
+                  Each At/Brower Pair shows the Percentage of Required Passing Tests for the pairing.
+                </p>
+                <Table bordered hover aria-labelledby="#table-header">
                     <thead>
                         <tr>
                             <th key="design-pattern-examples">Test Plan</th>
