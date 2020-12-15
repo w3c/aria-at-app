@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { Helmet } from 'react-helmet';
-import { Table } from 'react-bootstrap';
+import { Table, Container } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { getPublishedRuns } from '../../actions/runs';
 import PropTypes from 'prop-types';
@@ -182,13 +182,13 @@ class TestPlanReportPage extends Component {
         }
 
         return (
-            <Fragment>
+            <Container as="main">
                 <Helmet>
                     <title>{`ARIA-AT Report ${apgExample.exampleName}`}</title>
                 </Helmet>
                 <h1>{apgExample.exampleName} Report</h1>
                 {this.generateTables()}
-            </Fragment>
+            </Container>
         );
     }
 }
