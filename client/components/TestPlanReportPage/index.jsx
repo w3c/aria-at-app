@@ -194,6 +194,10 @@ class TestPlanReportPage extends Component {
                     <Breadcrumb.Item active>Test Plan Report: {apgExample.exampleName}</Breadcrumb.Item>
                 </Breadcrumb>
                 <h1>{apgExample.exampleName} Report</h1>
+                <ul>
+                  { apgExample.exampleUrl ? <li><a href={apgExample.exampleUrl}>Example under test</a></li> : <></> }
+                  { apgExample.designPatternUrl ? <li><a href={apgExample.designPatternUrl}>Design pattern</a></li> : <></> }
+                </ul>
                 { this.props.testVersion ?
                   <CurrentGitCommit
                     label="Results shown are from the most recent test version:"

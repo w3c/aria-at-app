@@ -69,6 +69,8 @@ function generateTestsWithMetaData(runs, techPairs) {
  * @typedef Example
  * @type {object}
  * @property {string} exampleName
+ * @property {string} exampleUrl
+ * @property {string} designPatternUrl
  * @property {number} id
  * @property {Array.<string>} testNames - Name of every test for an example
  * @property {Array.<TestWithMetaData>} testsWithMetaDataIndexedByTechPair
@@ -101,6 +103,8 @@ export function generateApgExamples(publishedRunsById, techPairs) {
         return {
             exampleName: example,
             id: exampleRuns[0].apg_example_id,
+            exampleUrl: exampleRuns[0].example,
+            designPatternUrl: exampleRuns[0].design_pattern,
             testNames: exampleRuns[0].tests.map(({ name }) => name),
             testsWithMetaDataIndexedByTechPair: generateTestsWithMetaData(
                 exampleRuns,
