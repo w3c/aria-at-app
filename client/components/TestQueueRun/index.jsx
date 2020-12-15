@@ -497,9 +497,8 @@ class TestQueueRun extends Component {
                     </div>
                 </td>
                 <td className="actions">
-                  {currentUserAssigned && (
+                    {currentUserAssigned && (
                         <div className="test-cta-wrapper">
-
                             <Button
                                 variant="primary"
                                 href={`/run/${runId}`}
@@ -528,7 +527,7 @@ class TestQueueRun extends Component {
                             </Button>
                         )) ||
                             ''}
-                    <ATAlert message={this.state.alertMessage} />
+                        <ATAlert message={this.state.alertMessage} />
                     </div>
                 </td>
             </tr>
