@@ -471,7 +471,7 @@ class TestRun extends Component {
 
         let menuRightOfContent = (
             <div role="complementary">
-                <h3>Current Test Options</h3>
+                <h2>Current Test Options</h2>
                 <ul>
                     <li>
                         <Button
@@ -552,7 +552,7 @@ class TestRun extends Component {
 
         return (
             <Fragment>
-                <h4 data-test="test-run-h4">Testing task: {test.name}</h4>
+                <h1 data-test="testing-task"><span class="task-label">Testing task:</span> {test.name}</h1>
                 <StatusBar key={nextId()} {...statusProps} />
                 <Row>
                     <Col md={10} className="test-iframe-contaner">
@@ -623,10 +623,10 @@ class TestRun extends Component {
         if (openAsUser) {
             runningAsUserHeader = (
                 <>
-                    <h2>
+                    <div>
                         Reviewings tests of{' '}
                         <b>{`${usersById[openAsUser].username}`}</b>
-                    </h2>
+                    </div>
                     <p>{`All changes will be saved as performed by ${usersById[openAsUser].username}.`}</p>
                 </>
             );
@@ -636,11 +636,11 @@ class TestRun extends Component {
             heading = (
                 <Fragment>
                     {runningAsUserHeader}
-                    <h2 data-test="test-run-h2">
+                    <div data-test="apg-example-name">
                         {' '}
                         {`${apg_example_name} (${this.state.currentTestIndex} of ${run.tests.length})`}
-                    </h2>
-                    <h3 data-test="test-run-h3">{`${at_name} ${at_version} with ${browser_name} ${browser_version}`}</h3>
+                    </div>
+                    <div data-test="at-browser">{`${at_name} ${at_version} with ${browser_name} ${browser_version}`}</div>
                 </Fragment>
             );
 
@@ -661,8 +661,8 @@ class TestRun extends Component {
         } else {
             heading = (
                 <Fragment>
-                    <h2>{`${apg_example_name}`}</h2>
-                    <h3>{`${at_name} ${at_version} with ${browser_name} ${browser_version}`}</h3>
+                    <div>{`${apg_example_name}`}</div>
+                    <div>{`${at_name} ${at_version} with ${browser_name} ${browser_version}`}</div>
                 </Fragment>
             );
             content = <div>No tests for this browser / AT combination</div>;
@@ -687,7 +687,7 @@ class TestRun extends Component {
                 <Row>
                     {this.state.showTestNavigator ? (
                         <aside className="col-md-3 test-navigator">
-                            <h3>Test Navigator</h3>
+                            <h2>Test Navigator</h2>
                             <button
                                 onClick={this.toggleTestNavigator}
                                 className="test-navigator-toggle hide"

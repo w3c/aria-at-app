@@ -1,3 +1,7 @@
+h2 {
+    margin-top: 0;
+}
+
 /* Test Navigator */
 button.test-navigator-toggle.hide {
     text-decoration: none;
@@ -222,4 +226,13 @@ main.container-fluid .test-iframe-contaner > .row {
 
 a[aria-current='true'] {
     font-weight: bold;
+}
+
+.task-label {
+    display: table;
+    font-size: .6em;
+    font-weight: normal;
+    background: #c3f9fc;
+    padding: .25em;
+    border-radius: 3px;
 }
