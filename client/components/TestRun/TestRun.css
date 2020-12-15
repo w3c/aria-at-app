@@ -229,8 +229,12 @@ main.container-fluid .test-iframe-contaner > .row {
     display: inline-block;
 }
 
-a[aria-current='true'] {
-    font-weight: bold;
+.test-navigator a[aria-current='true'] {
+    color: black;
+}
+
+.test-navigator a[aria-current='true']:hover {
+    text-decoration: none;
 }
 
 /* Test Headings and information */
@@ -250,7 +254,6 @@ a[aria-current='true'] {
 .test-info-entity {
     padding: .5em .75em;
     border-radius: 3px;
-    box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.15);
     margin-bottom: 1em;
     font-size: .9em;
 }
@@ -258,12 +261,11 @@ a[aria-current='true'] {
 .apg-example-name, .at-browser, .tests-completed {
     background: #f5f8fa;
     border: 1px solid #d2d5d9;
-    width: 32%;
+    width: 37%;
 }
 
-.info-label {
-    font-size: .9em;
-    font-weight: 700;
+.tests-completed {
+    width: 23.5%;
 }
 
 .reviewing-as {
@@ -280,7 +282,6 @@ a[aria-current='true'] {
 }
 
 /* Current Test Options */
-
 .current-test-options {
     padding-right: 0;
 }
@@ -310,3 +311,8 @@ a[aria-current='true'] {
     text-align: center;
     padding: .5em;
 }
+
+/* Alert warning message */
+/* .alert-warning {
+
+} */

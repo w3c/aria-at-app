@@ -633,17 +633,15 @@ class TestRun extends Component {
                 <Fragment>
                     <div className="test-info-wrapper">
                         <div className="test-info-entity apg-example-name" data-test="apg-example-name">
-                            <div className="info-label">APG Example</div>
+                            <div className="info-label"><b>APG Example:</b> {`${apg_example_name}`}</div>
                             {' '}
-                            {`${apg_example_name}`}
                         </div>
                         <div className="test-info-entity at-browser" data-test="at-browser">
-                            <div className="info-label">AT and Browser</div>
-                            {`${at_name} ${at_version} with ${browser_name} ${browser_version}`}
+                            <div className="info-label"><b>AT and Browser:</b> {`${at_name} ${at_version} with ${browser_name} ${browser_version}`} </div>
                         </div>
                         <div className="test-info-entity tests-completed">
-                            <div className="info-label">Progress</div>
-                            {`${this.state.currentTestIndex} of ${run.tests.length} tests completed`}
+                            <div className="info-label"><b>{`${this.state.currentTestIndex} of ${run.tests.length}`}</b> Tests completed</div>
+                            
                         </div>
                     </div>
                     {runningAsUserHeader}
