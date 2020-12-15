@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { Helmet } from 'react-helmet';
-import { Table, Container } from 'react-bootstrap';
+import { Table, Container, Breadcrumb } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { getPublishedRuns, getTestVersions } from '../../actions/runs';
 import CurrentGitCommit from '@components/CurrentGitCommit';
@@ -189,6 +189,10 @@ class TestPlanReportPage extends Component {
                 <Helmet>
                     <title>{`ARIA-AT Report ${apgExample.exampleName}`}</title>
                 </Helmet>
+                <Breadcrumb>
+                    <Breadcrumb.Item href="/reports">Summary Report</Breadcrumb.Item>
+                    <Breadcrumb.Item active>Test Plan Report: {apgExample.exampleName}</Breadcrumb.Item>
+                </Breadcrumb>
                 <h1>{apgExample.exampleName} Report</h1>
                 { this.props.testVersion ?
                   <CurrentGitCommit

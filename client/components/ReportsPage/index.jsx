@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Helmet } from 'react-helmet';
-import { Table, Container } from 'react-bootstrap';
+import { Table, Container, Breadcrumb } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { getPublishedRuns, getTestVersions } from '../../actions/runs';
 import CurrentGitCommit from '@components/CurrentGitCommit';
@@ -160,6 +160,9 @@ class ReportsPage extends Component {
                 <Helmet>
                     <title>ARIA-AT Reports</title>
                 </Helmet>
+                <Breadcrumb>
+                    <Breadcrumb.Item active>Summary Report</Breadcrumb.Item>
+                </Breadcrumb>
                 <h1 id="table-header">Summary Report</h1>
                 { this.props.testVersion ?
                   <CurrentGitCommit
@@ -168,7 +171,7 @@ class ReportsPage extends Component {
                     gitCommitMessage={this.props.testVersion.git_commit_msg}
                   /> : <></>}
                 <p id="tech-pair-description">
-                  Each At/Brower Pair shows the Percentage of Required Passing Tests for the pairing.
+                  Each AT / Browser Pair shows the Percentage of Required Passing Tests for the pairing.
                 </p>
                 <Table bordered hover aria-labelledby="#table-header">
                     <thead>
