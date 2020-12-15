@@ -355,6 +355,7 @@ class TestQueueRun extends Component {
     }
 
     renderDeleteMenu() {
+        const { showDeleteResultsModal } = this.props;
         let testersWithResults = this.generateTestersWithResults();
 
         if (testersWithResults.length) {
@@ -374,8 +375,12 @@ class TestQueueRun extends Component {
                                         as="button"
                                         key={nextId()}
                                         onClick={() =>
-                                            this.handleDeleteResultsForUser(
-                                                t.id
+                                            showDeleteResultsModal(
+                                                t.username,
+                                                async () =>
+                                                    await this.handleDeleteResultsForUser(
+                                                        t.id
+                                                    )
                                             )
                                         }
                                     >
@@ -405,10 +410,12 @@ class TestQueueRun extends Component {
         const {
             admin,
             userId,
+            usersById,
             runId,
             testers,
             testsForRun,
-            apgExampleName
+            apgExampleName,
+            showDeleteResultsModal
         } = this.props;
 
         let currentUserAssigned = testers.includes(userId);
@@ -518,7 +525,13 @@ class TestQueueRun extends Component {
                             <Button
                                 variant="danger"
                                 onClick={() =>
-                                    this.handleDeleteResultsForUser(userId)
+                                    showDeleteResultsModal(
+                                        usersById[userId].username,
+                                        async () =>
+                                            await this.handleDeleteResultsForUser(
+                                                userId
+                                            )
+                                    )
                                 }
                                 aria-label="Delete my results"
                             >
@@ -547,7 +560,8 @@ TestQueueRun.propTypes = {
     atNameId: PropTypes.number,
     browserName: PropTypes.string,
     dispatch: PropTypes.func,
-    testsForRun: PropTypes.array
+    testsForRun: PropTypes.array,
+    showDeleteResultsModal: PropTypes.func
 };
 
 const mapStateToProps = (state, ownProps) => {

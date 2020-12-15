@@ -8,9 +8,24 @@ import { getAllUsers } from '../../actions/users';
 import { getActiveRuns } from '../../actions/runs';
 import nextId from 'react-id-generator';
 import TestQueueRun from '@components/TestQueueRun';
+import DeleteResultsModal from '@components/DeleteResultsModal';
 import './TestQueue.css';
 
 class TestQueue extends Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            showDeleteResultsModal: false,
+            userForResultsDelete: null,
+            deleteFunction: null
+        };
+
+        this.deleteResults = this.deleteResults.bind(this);
+        this.showDeleteResultsModal = this.showDeleteResultsModal.bind(this);
+        this.closeDeleteResultsModal = this.closeDeleteResultsModal.bind(this);
+    }
+
     componentDidMount() {
         const { dispatch, activeRunsById, usersById } = this.props;
 
@@ -21,6 +36,23 @@ class TestQueue extends Component {
         if (!Object.keys(usersById).length) {
             dispatch(getAllUsers());
         }
+    }
+
+    async deleteResults() {
+        await this.state.deleteFunction();
+        this.closeDeleteResultsModal();
+    }
+
+    showDeleteResultsModal(username, deleteFunction) {
+        this.setState({
+            showDeleteResultsModal: true,
+            userForResultsDelete: username,
+            deleteFunction
+        });
+    }
+
+    closeDeleteResultsModal() {
+        this.setState({ showDeleteResultsModal: false });
     }
 
     renderAtBrowserList(runIds) {
@@ -63,6 +95,10 @@ class TestQueue extends Component {
                                     atName={atName}
                                     browserName={browserName}
                                     admin={admin}
+                                    deleteResults={this.deleteResults}
+                                    showDeleteResultsModal={
+                                        this.showDeleteResultsModal
+                                    }
                                 />
                             );
                         })}
@@ -188,6 +224,13 @@ class TestQueue extends Component {
                 {atBrowserRunSets.map(abr =>
                     this.renderAtBrowserList(abr.runs)
                 )}
+                <DeleteResultsModal
+                    show={this.state.showDeleteResultsModal}
+                    handleClose={this.closeDeleteResultsModal}
+                    user={this.state.userForResultsDelete}
+                    admin={admin}
+                    deleteResults={this.deleteResults}
+                />
             </Container>
         );
     }
