@@ -2,7 +2,8 @@ import React, { Component, Fragment } from 'react';
 import { Helmet } from 'react-helmet';
 import { Table, Container } from 'react-bootstrap';
 import { connect } from 'react-redux';
-import { getPublishedRuns } from '../../actions/runs';
+import { getPublishedRuns, getTestVersions } from '../../actions/runs';
+import CurrentGitCommit from '@components/CurrentGitCommit';
 import PropTypes from 'prop-types';
 import {
     generateTechPairs,
@@ -25,11 +26,14 @@ class TestPlanReportPage extends Component {
     }
 
     componentDidMount() {
-        const { dispatch, publishedRunsById } = this.props;
+        const { dispatch, publishedRunsById, testVersion } = this.props;
         if (!publishedRunsById) {
             dispatch(getPublishedRuns());
         } else {
             this.generateInitialStateFromRuns();
+        }
+        if (!testVersion) {
+            dispatch(getTestVersions());
         }
     }
 
@@ -189,6 +193,12 @@ class TestPlanReportPage extends Component {
                     <title>{`ARIA-AT Report ${apgExample.exampleName}`}</title>
                 </Helmet>
                 <h1>{apgExample.exampleName} Report</h1>
+                { this.props.testVersion ?
+                  <CurrentGitCommit
+                    label="Results shown are from the most recent test version:"
+                    gitHash={this.props.testVersion.git_hash}
+                    gitCommitMessage={this.props.testVersion.git_commit_msg}
+                  /> : <></>}
                 {this.generateTables()}
             </Container>
         );
@@ -202,11 +212,19 @@ TestPlanReportPage.propTypes = {
 };
 
 const mapStateToProps = (state, ownProps) => {
-    const { publishedRunsById } = state.runs;
-
+    const { publishedRunsById, testVersions } = state.runs;
     const testPlanId = parseInt(ownProps.match.params.testPlanId);
+    let testVersion = null;
+    if (publishedRunsById && testVersions) {
+      const runs = Object.values(publishedRunsById);
 
-    return { publishedRunsById, testPlanId };
+      if (runs.length > 0) {
+          testVersion = (testVersions || []).find(
+              v => v.id === runs[0].test_version_id
+          );
+      }
+    }
+    return { publishedRunsById, testVersion, testPlanId };
 };
 
 export default connect(mapStateToProps)(TestPlanReportPage);

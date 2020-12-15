@@ -162,7 +162,7 @@ class ReportsPage extends Component {
                 <h1>Summary Report</h1>
                 { this.props.testVersion ?
                   <CurrentGitCommit
-                    label="Results shown are from the most recent test version."
+                    label="Results shown are from the most recent test version:"
                     gitHash={this.props.testVersion.git_hash}
                     gitCommitMessage={this.props.testVersion.git_commit_msg}
                   /> : <></>}
