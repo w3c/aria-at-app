@@ -14,7 +14,6 @@ import ConfigurationModal from '@components/ConfigurationModal';
 import CurrentGitCommit from '@components/CurrentGitCommit';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
-import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import './ConfigureActiveRuns.css';
 
@@ -647,9 +646,15 @@ class ConfigureActiveRuns extends Component {
                     {Object.keys(activeRunConfiguration.active_test_version)
                         .length > 0 ? (
                         <CurrentGitCommit
-                          label="Current Git Commit"
-                          gitHash={activeRunConfiguration.active_test_version.git_hash}
-                          gitCommitMessage={activeRunConfiguration.active_test_version.git_commit_msg}
+                            label="Current Git Commit"
+                            gitHash={
+                                activeRunConfiguration.active_test_version
+                                    .git_hash
+                            }
+                            gitCommitMessage={
+                                activeRunConfiguration.active_test_version
+                                    .git_commit_msg
+                            }
                         />
                     ) : null}
                     {renderedTestVersions !== null ? (

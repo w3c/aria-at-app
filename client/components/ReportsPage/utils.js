@@ -143,7 +143,11 @@ export function generateTechPairs(publishedRunsById) {
     const runs = Object.values(publishedRunsById);
     runs.forEach(run => {
         const match = techPairs.find(
-            pair => pair.browser === run.browser_name && pair.at === run.at_name && pair.browserVersion === run.browser_version && pair.atVersion === run.at_version
+            pair =>
+                pair.browser === run.browser_name &&
+                pair.at === run.at_name &&
+                pair.browserVersion === run.browser_version &&
+                pair.atVersion === run.at_version
         );
         if (!match) {
             techPairs.push({

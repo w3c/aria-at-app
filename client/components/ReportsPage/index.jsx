@@ -58,18 +58,20 @@ class ReportsPage extends Component {
     }
 
     generateTechPairTableHeaders() {
-        return this.state.techPairs.map(({ browser, browserVersion,  at, atVersion }) => {
-            return (
-                <th
-                    scope="col"
-                    key={`${at} ${atVersion} with ${browser} ${browserVersion}`}
-                    className="text-center text-wrap"
-                    aria-describedby="#tech-pair-description"
-                >
-                    {at} {atVersion} / {browser} {browserVersion}
-                </th>
-            );
-        });
+        return this.state.techPairs.map(
+            ({ browser, browserVersion, at, atVersion }) => {
+                return (
+                    <th
+                        scope="col"
+                        key={`${at} ${atVersion} with ${browser} ${browserVersion}`}
+                        className="text-center text-wrap"
+                        aria-describedby="#tech-pair-description"
+                    >
+                        {at} {atVersion} / {browser} {browserVersion}
+                    </th>
+                );
+            }
+        );
     }
 
     generateProgressBar(percentage) {
@@ -122,7 +124,7 @@ class ReportsPage extends Component {
                         <a href={`/reports/test-plans/${id}`}>{exampleName}</a>
                     </th>
                 );
-                techPairs.forEach(({ browser, at }, techPairIndex) => {
+                techPairs.forEach((_, techPairIndex) => {
                     const testsWithMetaData =
                         testsWithMetaDataIndexedByTechPair[techPairIndex];
 
@@ -164,14 +166,18 @@ class ReportsPage extends Component {
                     <Breadcrumb.Item active>Summary Report</Breadcrumb.Item>
                 </Breadcrumb>
                 <h1 id="table-header">Summary Report</h1>
-                { this.props.testVersion ?
-                  <CurrentGitCommit
-                    label="Results shown are from the most recent test version:"
-                    gitHash={this.props.testVersion.git_hash}
-                    gitCommitMessage={this.props.testVersion.git_commit_msg}
-                  /> : <></>}
+                {this.props.testVersion ? (
+                    <CurrentGitCommit
+                        label="Results shown are from the most recent test version:"
+                        gitHash={this.props.testVersion.git_hash}
+                        gitCommitMessage={this.props.testVersion.git_commit_msg}
+                    />
+                ) : (
+                    <></>
+                )}
                 <p id="tech-pair-description">
-                  Each AT / Browser Pair shows the Percentage of Required Passing Tests for the pairing.
+                    Each AT / Browser Pair shows the Percentage of Required
+                    Passing Tests for the pairing.
                 </p>
                 <Table bordered hover aria-labelledby="#table-header">
                     <thead>
@@ -197,13 +203,13 @@ const mapStateToProps = state => {
     const { publishedRunsById, testVersions } = state.runs;
     let testVersion = null;
     if (publishedRunsById && testVersions) {
-      const runs = Object.values(publishedRunsById);
+        const runs = Object.values(publishedRunsById);
 
-      if (runs.length > 0) {
-          testVersion = (testVersions || []).find(
-              v => v.id === runs[0].test_version_id
-          );
-      }
+        if (runs.length > 0) {
+            testVersion = (testVersions || []).find(
+                v => v.id === runs[0].test_version_id
+            );
+        }
     }
     return { publishedRunsById, testVersion };
 };

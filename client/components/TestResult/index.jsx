@@ -12,9 +12,9 @@ class TestResult extends Component {
         return (
             <dd>
                 <ul>
-                  {outcomes.map(outcome => (
-                      <li key={nextId()}>{outcome}</li>
-                  ))}
+                    {outcomes.map(outcome => (
+                        <li key={nextId()}>{outcome}</li>
+                    ))}
                 </ul>
             </dd>
         );

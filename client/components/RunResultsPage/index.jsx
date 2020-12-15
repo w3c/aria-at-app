@@ -2,7 +2,14 @@ import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
-import { Col, Container, Row, Table, Button, Breadcrumb } from 'react-bootstrap';
+import {
+    Col,
+    Container,
+    Row,
+    Table,
+    Button,
+    Breadcrumb
+} from 'react-bootstrap';
 import { getPublishedRuns, getTestVersions } from '../../actions/runs';
 import checkForConflict from '../../utils/checkForConflict';
 import TestResult from '@components/TestResult';
@@ -180,9 +187,18 @@ class RunResultsPage extends Component {
                         <Col>
                             <Fragment>
                                 <Breadcrumb>
-                                    <Breadcrumb.Item href="/reports">Summary Report</Breadcrumb.Item>
-                                    <Breadcrumb.Item href={`/reports/test-plans/${apg_example_id}`}>Test Plan Report: {apg_example_name}</Breadcrumb.Item>
-                                    <Breadcrumb.Item active>Tech Pair Report: {at_name} {at_version} on {browser_name} {browser_version}</Breadcrumb.Item>
+                                    <Breadcrumb.Item href="/reports">
+                                        Summary Report
+                                    </Breadcrumb.Item>
+                                    <Breadcrumb.Item
+                                        href={`/reports/test-plans/${apg_example_id}`}
+                                    >
+                                        Test Plan Report: {apg_example_name}
+                                    </Breadcrumb.Item>
+                                    <Breadcrumb.Item active>
+                                        Tech Pair Report: {at_name} {at_version}{' '}
+                                        on {browser_name} {browser_version}
+                                    </Breadcrumb.Item>
                                 </Breadcrumb>
                                 <h1>{title}</h1>
                             </Fragment>
@@ -300,7 +316,10 @@ class RunResultsPage extends Component {
                                                 </Button>
                                             </div>
                                         </div>
-                                        <TestResult testResult={t.result} label={`test-${t.execution_order}`} />
+                                        <TestResult
+                                            testResult={t.result}
+                                            label={`test-${t.execution_order}`}
+                                        />
                                         <RaiseIssueModal
                                             at_key={at_key}
                                             git_hash={git_hash}
