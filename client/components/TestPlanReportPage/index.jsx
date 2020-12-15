@@ -64,7 +64,9 @@ class TestPlanReportPage extends Component {
         rows.push(
             <tr key="summary">
                 <th scope="row" key="summary">
-                    All Tests
+                    <a href='/reports'>
+                        All Tests
+                    </a>
                 </th>
 
                 <td key="summary-required">
