@@ -1,8 +1,9 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import { Helmet } from 'react-helmet';
-import { Table } from 'react-bootstrap';
+import { Table, Container, Breadcrumb } from 'react-bootstrap';
 import { connect } from 'react-redux';
-import { getPublishedRuns } from '../../actions/runs';
+import { getPublishedRuns, getTestVersions } from '../../actions/runs';
+import CurrentGitCommit from '@components/CurrentGitCommit';
 import PropTypes from 'prop-types';
 import {
     generateTechPairs,
@@ -25,11 +26,14 @@ class TestPlanReportPage extends Component {
     }
 
     componentDidMount() {
-        const { dispatch, publishedRunsById } = this.props;
+        const { dispatch, publishedRunsById, testVersion } = this.props;
         if (!publishedRunsById) {
             dispatch(getPublishedRuns());
         } else {
             this.generateInitialStateFromRuns();
+        }
+        if (!testVersion) {
+            dispatch(getTestVersions());
         }
     }
 
@@ -64,7 +68,7 @@ class TestPlanReportPage extends Component {
         rows.push(
             <tr key="summary">
                 <th scope="row" key="summary">
-                    All Tests
+                    <a href="/reports">All Tests</a>
                 </th>
 
                 <td key="summary-required">
@@ -133,43 +137,50 @@ class TestPlanReportPage extends Component {
         const { apgExample, techPairs } = this.state;
         let tables = [];
 
-        techPairs.forEach(({ browser, at }, techPairIndex) => {
-            const testsWithMetaData =
-                apgExample.testsWithMetaDataIndexedByTechPair[techPairIndex];
-            if (testsWithMetaData.testsWithResults.length > 0) {
-                tables.push(
-                    <div>
-                        <h2>
-                            {browser} with {at} Results
-                        </h2>
-                        <Table bordered hover key={`table-${techPairIndex}`}>
-                            <caption>
-                                {`This table shows the number of passing required assertions, the number of passing optional assertions and the number of unexpected behaviors for results from the most recently tested version of the ARIA-AT tests. The first row is a summary of results from all tests run on ${browser} with ${at}. All other rows are data from a single test on ${browser} with ${at}. The test name in the first column is a link to the detailed results of a specific test.`}
-                            </caption>
-                            <thead>
-                                <tr>
-                                    <th key="tests" scope="col">
-                                        Test Name
-                                    </th>
-                                    <th key="required" scope="col">
-                                        Required Assertions
-                                    </th>
-                                    <th key="optional" scope="col">
-                                        Optional Assertions
-                                    </th>
-                                    <th key="unexpected" scope="col">
-                                        Unexpected Behaviors
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {this.generateTableRows(testsWithMetaData)}
-                            </tbody>
-                        </Table>
-                    </div>
-                );
+        techPairs.forEach(
+            ({ browser, browserVersion, at, atVersion }, techPairIndex) => {
+                const testsWithMetaData =
+                    apgExample.testsWithMetaDataIndexedByTechPair[
+                        techPairIndex
+                    ];
+                if (testsWithMetaData.testsWithResults.length > 0) {
+                    tables.push(
+                        <div>
+                            <h2 id={`table-${techPairIndex}`}>
+                                {browser} {browserVersion} with {at} {atVersion}{' '}
+                                Results
+                            </h2>
+                            <Table
+                                bordered
+                                hover
+                                key={`table-${techPairIndex}`}
+                                aria-labelledby={`tabel-${techPairIndex}`}
+                            >
+                                <thead>
+                                    <tr>
+                                        <th key="tests" scope="col">
+                                            Test Name
+                                        </th>
+                                        <th key="required" scope="col">
+                                            Required Assertions
+                                        </th>
+                                        <th key="optional" scope="col">
+                                            Optional Assertions
+                                        </th>
+                                        <th key="unexpected" scope="col">
+                                            Unexpected Behaviors
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {this.generateTableRows(testsWithMetaData)}
+                                </tbody>
+                            </Table>
+                        </div>
+                    );
+                }
             }
-        });
+        );
 
         return tables;
     }
@@ -182,13 +193,50 @@ class TestPlanReportPage extends Component {
         }
 
         return (
-            <Fragment>
+            <Container as="main">
                 <Helmet>
                     <title>{`ARIA-AT Report ${apgExample.exampleName}`}</title>
                 </Helmet>
+                <Breadcrumb>
+                    <Breadcrumb.Item href="/reports">
+                        Summary Report
+                    </Breadcrumb.Item>
+                    <Breadcrumb.Item active>
+                        Test Plan Report: {apgExample.exampleName}
+                    </Breadcrumb.Item>
+                </Breadcrumb>
                 <h1>{apgExample.exampleName} Report</h1>
+                <ul>
+                    {apgExample.exampleUrl ? (
+                        <li>
+                            <a href={apgExample.exampleUrl}>
+                                Example under test
+                            </a>
+                        </li>
+                    ) : (
+                        <></>
+                    )}
+                    {apgExample.designPatternUrl ? (
+                        <li>
+                            <a href={apgExample.designPatternUrl}>
+                                Design pattern
+                            </a>
+                        </li>
+                    ) : (
+                        <></>
+                    )}
+                </ul>
+                {this.props.testVersion ? (
+                    <CurrentGitCommit
+                        label="Results shown are from the most recent test version:"
+                        gitHash={this.props.testVersion.git_hash}
+                        gitCommitMessage={this.props.testVersion.git_commit_msg}
+                    />
+                ) : (
+                    <></>
+                )}
                 {this.generateTables()}
-            </Fragment>
+            </Container>
         );
     }
 }
@@ -196,15 +244,24 @@ class TestPlanReportPage extends Component {
 TestPlanReportPage.propTypes = {
     dispatch: PropTypes.func,
     publishedRunsById: PropTypes.object,
-    testPlanId: PropTypes.number
+    testPlanId: PropTypes.number,
+    testVersion: PropTypes.object
 };
 
 const mapStateToProps = (state, ownProps) => {
-    const { publishedRunsById } = state.runs;
-
+    const { publishedRunsById, testVersions } = state.runs;
     const testPlanId = parseInt(ownProps.match.params.testPlanId);
+    let testVersion = null;
+    if (publishedRunsById && testVersions) {
+        const runs = Object.values(publishedRunsById);
 
-    return { publishedRunsById, testPlanId };
+        if (runs.length > 0) {
+            testVersion = (testVersions || []).find(
+                v => v.id === runs[0].test_version_id
+            );
+        }
+    }
+    return { publishedRunsById, testVersion, testPlanId };
 };
 
 export default connect(mapStateToProps)(TestPlanReportPage);

@@ -69,6 +69,8 @@ function generateTestsWithMetaData(runs, techPairs) {
  * @typedef Example
  * @type {object}
  * @property {string} exampleName
+ * @property {string} exampleUrl
+ * @property {string} designPatternUrl
  * @property {number} id
  * @property {Array.<string>} testNames - Name of every test for an example
  * @property {Array.<TestWithMetaData>} testsWithMetaDataIndexedByTechPair
@@ -101,6 +103,8 @@ export function generateApgExamples(publishedRunsById, techPairs) {
         return {
             exampleName: example,
             id: exampleRuns[0].apg_example_id,
+            exampleUrl: exampleRuns[0].example,
+            designPatternUrl: exampleRuns[0].design_pattern,
             testNames: exampleRuns[0].tests.map(({ name }) => name),
             testsWithMetaDataIndexedByTechPair: generateTestsWithMetaData(
                 exampleRuns,
@@ -130,19 +134,27 @@ export function generateApgExample(publishedRunsById, techPairs, apgExampleId) {
  * @typedef TechPair
  * @type {object}
  * @property {string} browser
+ * @property {string} browserVersion
  * @property {string} at
+ * @property {string} atVersion
  */
 export function generateTechPairs(publishedRunsById) {
     let techPairs = [];
     const runs = Object.values(publishedRunsById);
     runs.forEach(run => {
         const match = techPairs.find(
-            pair => pair.browser === run.browser_name && pair.at === run.at_name
+            pair =>
+                pair.browser === run.browser_name &&
+                pair.at === run.at_name &&
+                pair.browserVersion === run.browser_version &&
+                pair.atVersion === run.at_version
         );
         if (!match) {
             techPairs.push({
                 browser: run.browser_name,
-                at: run.at_name
+                browserVersion: run.browser_version,
+                at: run.at_name,
+                atVersion: run.at_version
             });
         }
     });

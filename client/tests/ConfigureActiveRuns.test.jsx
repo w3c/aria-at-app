@@ -107,13 +107,6 @@ describe('render', () => {
             expect(component.length).toBe(1);
             expect(component.text()).toContain('Update Versions');
 
-            component = findByTestAttr(
-                wrapper,
-                'configure-run-current-commit-label'
-            );
-            expect(component.length).toBe(1);
-            expect(component.text()).toContain('Current Git Commit');
-
             component = findByTestAttr(wrapper, 'configure-run-commit-select');
             expect(component.length).toBe(1);
             expect(component.text()).toContain(

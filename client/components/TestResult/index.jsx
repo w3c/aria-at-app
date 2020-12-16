@@ -11,15 +11,17 @@ class TestResult extends Component {
         }
         return (
             <dd>
-                {outcomes.map(outcome => (
-                    <li key={nextId()}>{outcome}</li>
-                ))}
+                <ul>
+                    {outcomes.map(outcome => (
+                        <li key={nextId()}>{outcome}</li>
+                    ))}
+                </ul>
             </dd>
         );
     }
 
     render() {
-        const { testResult } = this.props;
+        const { testResult, label } = this.props;
         const keys = ['pass', 'fail'];
         const commandReports = testResult.result.details.commands.map(
             command => {
@@ -43,7 +45,7 @@ class TestResult extends Component {
         );
         return (
             <Fragment>
-                <Table striped bordered hover>
+                <Table striped bordered hover aria-labelledby={label}>
                     <thead>
                         <tr>
                             <th>Command</th>
@@ -92,7 +94,8 @@ class TestResult extends Component {
 }
 
 TestResult.propTypes = {
-    testResult: PropTypes.object
+    testResult: PropTypes.object,
+    label: PropTypes.string
 };
 
 export default TestResult;

@@ -2,7 +2,14 @@ import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
-import { Col, Container, Row, Table, Button } from 'react-bootstrap';
+import {
+    Col,
+    Container,
+    Row,
+    Table,
+    Button,
+    Breadcrumb
+} from 'react-bootstrap';
 import { getPublishedRuns, getTestVersions } from '../../actions/runs';
 import checkForConflict from '../../utils/checkForConflict';
 import TestResult from '@components/TestResult';
@@ -89,6 +96,7 @@ class RunResultsPage extends Component {
         const {
             at_key,
             apg_example_name,
+            apg_example_id,
             at_name,
             at_version,
             browser_name,
@@ -167,7 +175,7 @@ class RunResultsPage extends Component {
             }
         }
 
-        title = `${run_status.toUpperCase()} results for ${apg_example_name} tested with ${at_name} ${at_version} on ${browser_name} ${browser_version}`;
+        title = `${apg_example_name} with ${at_name} ${at_version} on ${browser_name} ${browser_version} Report`;
 
         return (
             <Container as="main">
@@ -178,6 +186,20 @@ class RunResultsPage extends Component {
                     <Row>
                         <Col>
                             <Fragment>
+                                <Breadcrumb>
+                                    <Breadcrumb.Item href="/reports">
+                                        Summary Report
+                                    </Breadcrumb.Item>
+                                    <Breadcrumb.Item
+                                        href={`/reports/test-plans/${apg_example_id}`}
+                                    >
+                                        Test Plan Report: {apg_example_name}
+                                    </Breadcrumb.Item>
+                                    <Breadcrumb.Item active>
+                                        Tech Pair Report: {at_name} {at_version}{' '}
+                                        on {browser_name} {browser_version}
+                                    </Breadcrumb.Item>
+                                </Breadcrumb>
                                 <h1>{title}</h1>
                             </Fragment>
                         </Col>
@@ -269,6 +291,7 @@ class RunResultsPage extends Component {
                                                     ] = ref;
                                                 }}
                                                 id={`test-${t.execution_order}`}
+                                                tabIndex="-1"
                                                 className="float-left"
                                             >
                                                 Details for test: {t.name}
@@ -293,7 +316,10 @@ class RunResultsPage extends Component {
                                                 </Button>
                                             </div>
                                         </div>
-                                        <TestResult testResult={t.result} />
+                                        <TestResult
+                                            testResult={t.result}
+                                            label={`test-${t.execution_order}`}
+                                        />
                                         <RaiseIssueModal
                                             at_key={at_key}
                                             git_hash={git_hash}
