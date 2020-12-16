@@ -1,4 +1,5 @@
 import React, { Component, Fragment } from 'react';
+import { Redirect } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
@@ -87,10 +88,18 @@ class RunResultsPage extends Component {
     }
 
     render() {
-        const { run, allTests, testVersion } = this.props;
+        const { run, allTests, testVersion, publishedRunsById } = this.props;
+
+        if (publishedRunsById && !run) {
+            return <Redirect to={{ pathname: '/404' }} />;
+        }
 
         if (!run || !allTests || !testVersion) {
-            return <div>Loading</div>;
+            return (
+                <Container as="main">
+                    <div>Loading Run Report...</div>
+                </Container>
+            );
         }
 
         const {
@@ -350,7 +359,8 @@ RunResultsPage.propTypes = {
     dispatch: PropTypes.func,
     allTests: PropTypes.array,
     run: PropTypes.object,
-    testVersion: PropTypes.object
+    testVersion: PropTypes.object,
+    publishedRunsById: PropTypes.object
 };
 
 const mapStateToProps = (state, ownProps) => {
@@ -372,7 +382,8 @@ const mapStateToProps = (state, ownProps) => {
     return {
         run,
         allTests,
-        testVersion
+        testVersion,
+        publishedRunsById
     };
 };
 
