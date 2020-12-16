@@ -1,5 +1,5 @@
 .main-test-area {
-    position: relative
+    position: relative;
 }
 
 /* Test Navigator */
@@ -14,7 +14,6 @@ button.test-navigator-toggle.show {
     color: #929292;
 }
 
-
 button.test-navigator-toggle.hide:hover,
 button.test-navigator-toggle.show:hover {
     color: #0b60ab;
@@ -23,13 +22,13 @@ button.test-navigator-toggle.show:hover {
 .test-navigator-toggle-container {
     position: absolute;
     left: -2.75em;
-    top: -.15em;
+    top: -0.15em;
 }
 
 .test-navigator-list {
     position: relative;
     margin-top: 1em;
-    font-size: .9em;
+    font-size: 0.9em;
     padding-left: 3.25em;
 }
 
@@ -218,7 +217,7 @@ main.container-fluid .test-iframe-contaner > .row {
 /* Test Headings and information */
 .task-label {
     display: table;
-    font-size: .6em;
+    font-size: 0.6em;
     font-weight: normal;
     border-radius: 3px;
 }
@@ -230,13 +229,15 @@ main.container-fluid .test-iframe-contaner > .row {
 }
 
 .test-info-entity {
-    padding: .5em .75em;
+    padding: 0.5em 0.75em;
     border-radius: 3px;
     margin-bottom: 1em;
-    font-size: .9em;
+    font-size: 0.9em;
 }
 
-.apg-example-name, .at-browser, .tests-completed {
+.apg-example-name,
+.at-browser,
+.tests-completed {
     background: #f5f8fa;
     border: 1px solid #d2d5d9;
     width: 37%;
@@ -255,7 +256,7 @@ main.container-fluid .test-iframe-contaner > .row {
 .reviewing-as p {
     margin: 0;
     font-style: italic;
-    margin-left: .5em;
+    margin-left: 0.5em;
     display: inline-block;
 }
 
@@ -272,8 +273,8 @@ main.container-fluid .test-iframe-contaner > .row {
 
 .current-test-options h3 {
     margin-top: 0;
-    padding: .9em;
-    background: #E9EBEE;
+    padding: 0.9em;
+    background: #e9ebee;
     font-size: 1em;
     font-weight: 700;
     border-bottom: 1px solid #d2d5d9;
@@ -281,13 +282,13 @@ main.container-fluid .test-iframe-contaner > .row {
 }
 
 .current-test-options .options-wrapper {
-    padding: .05em .75em;
+    padding: 0.05em 0.75em;
 }
 
 .help-link {
-    font-size: .9em;
+    font-size: 0.9em;
     text-align: center;
-    padding: .5em;
+    padding: 0.5em;
 }
 
 /* Alert warning message */

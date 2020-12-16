@@ -3,7 +3,12 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheckCircle, faArrowLeft, faAlignLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import {
+    faCheckCircle,
+    faArrowLeft,
+    faAlignLeft,
+    faArrowRight
+} from '@fortawesome/free-solid-svg-icons';
 import nextId from 'react-id-generator';
 import { Alert, Button, Col, Container, Modal, Row } from 'react-bootstrap';
 import queryString from 'query-string';
@@ -548,7 +553,10 @@ class TestRun extends Component {
 
         return (
             <Fragment>
-                <h1 data-test="testing-task"><span className="task-label">Testing task:</span> {`${this.state.currentTestIndex}.`} {test.name}</h1>
+                <h1 data-test="testing-task">
+                    <span className="task-label">Testing task:</span>{' '}
+                    {`${this.state.currentTestIndex}.`} {test.name}
+                </h1>
                 <StatusBar key={nextId()} {...statusProps} />
                 <Row>
                     <Col md={9} className="test-iframe-contaner">
@@ -574,7 +582,9 @@ class TestRun extends Component {
                             )}
                         </Row>
                     </Col>
-                    <Col className="current-test-options" md={3}>{menuRightOfContent}</Col>
+                    <Col className="current-test-options" md={3}>
+                        {menuRightOfContent}
+                    </Col>
                 </Row>
                 {modals}
             </Fragment>
@@ -632,16 +642,28 @@ class TestRun extends Component {
             heading = (
                 <Fragment>
                     <div className="test-info-wrapper">
-                        <div className="test-info-entity apg-example-name" data-test="apg-example-name">
-                            <div className="info-label"><b>Test Plan:</b> {`${apg_example_name}`}</div>
-                            {' '}
+                        <div
+                            className="test-info-entity apg-example-name"
+                            data-test="apg-example-name"
+                        >
+                            <div className="info-label">
+                                <b>Test Plan:</b> {`${apg_example_name}`}
+                            </div>{' '}
                         </div>
-                        <div className="test-info-entity at-browser" data-test="at-browser">
-                            <div className="info-label"><b>AT and Browser:</b> {`${at_name} ${at_version} with ${browser_name} ${browser_version}`} </div>
+                        <div
+                            className="test-info-entity at-browser"
+                            data-test="at-browser"
+                        >
+                            <div className="info-label">
+                                <b>AT and Browser:</b>{' '}
+                                {`${at_name} ${at_version} with ${browser_name} ${browser_version}`}{' '}
+                            </div>
                         </div>
                         <div className="test-info-entity tests-completed">
-                            <div className="info-label"><b>{`${this.state.currentTestIndex} of ${run.tests.length}`}</b> Tests completed</div>
-                            
+                            <div className="info-label">
+                                <b>{`${this.state.currentTestIndex} of ${run.tests.length}`}</b>{' '}
+                                Tests completed
+                            </div>
                         </div>
                     </div>
                     {runningAsUserHeader}
@@ -717,17 +739,20 @@ class TestRun extends Component {
                                             t.results[openAsUser || userId];
                                         if (testersResult) {
                                             if (
-                                                testersResult.status == 'incomplete'
+                                                testersResult.status ==
+                                                'incomplete'
                                             ) {
                                                 resultClassName = 'in-progress';
                                                 resultStatus = 'In Progress:';
                                             } else if (
-                                                checkForConflict(t.results).length
+                                                checkForConflict(t.results)
+                                                    .length
                                             ) {
                                                 resultClassName = 'conflicts';
                                                 resultStatus = 'Has Conflicts:';
                                             } else if (
-                                                testersResult.status === 'complete'
+                                                testersResult.status ===
+                                                'complete'
                                             ) {
                                                 resultClassName = 'complete';
                                                 resultStatus = 'Complete Test:';
@@ -741,15 +766,22 @@ class TestRun extends Component {
                                                 <a
                                                     href="#"
                                                     onClick={() => {
-                                                        this.handleTestClick(i + 1);
+                                                        this.handleTestClick(
+                                                            i + 1
+                                                        );
                                                     }}
                                                     className="test-name"
                                                     aria-label={`${resultStatus} ${t.name}`}
-                                                    aria-current={t.id === test.id}
+                                                    aria-current={
+                                                        t.id === test.id
+                                                    }
                                                 >
                                                     {t.name}
                                                 </a>
-                                                <span className="progress-indicator" title={`${resultStatus}`}></span>
+                                                <span
+                                                    className="progress-indicator"
+                                                    title={`${resultStatus}`}
+                                                ></span>
                                             </li>
                                         );
                                     })}
@@ -759,7 +791,11 @@ class TestRun extends Component {
                     ) : (
                         <></>
                     )}
-                    <Col className="main-test-area" as="main" md={this.state.showTestNavigator ? 9 : 12}>
+                    <Col
+                        className="main-test-area"
+                        as="main"
+                        md={this.state.showTestNavigator ? 9 : 12}
+                    >
                         {this.state.showTestNavigator ? (
                             <></>
                         ) : (

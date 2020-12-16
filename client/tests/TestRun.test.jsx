@@ -59,7 +59,7 @@ describe('render', () => {
         test('renders testing headings', () => {
             let component = findByTestAttr(wrapper, 'apg-example-name');
             expect(component.length).toBe(1);
-            expect(component.text()).toContain('of');
+            expect(component.text()).toContain('Test Plan');
 
             component = findByTestAttr(wrapper, 'at-browser');
             expect(component.length).toBe(1);
