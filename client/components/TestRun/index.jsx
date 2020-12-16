@@ -633,7 +633,7 @@ class TestRun extends Component {
                 <Fragment>
                     <div className="test-info-wrapper">
                         <div className="test-info-entity apg-example-name" data-test="apg-example-name">
-                            <div className="info-label"><b>APG Example:</b> {`${apg_example_name}`}</div>
+                            <div className="info-label"><b>Test Plan:</b> {`${apg_example_name}`}</div>
                             {' '}
                         </div>
                         <div className="test-info-entity at-browser" data-test="at-browser">
