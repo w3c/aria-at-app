@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
+import { faCheckCircle, faArrowLeft, faAlignLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import nextId from 'react-id-generator';
 import { Alert, Button, Col, Container, Modal, Row } from 'react-bootstrap';
 import queryString from 'query-string';
@@ -698,16 +698,19 @@ class TestRun extends Component {
                     {this.state.showTestNavigator ? (
                         <aside className="col-md-3 test-navigator">
                             <h2>Test Navigator</h2>
-                            <button
-                                onClick={this.toggleTestNavigator}
-                                className="test-navigator-toggle hide"
-                            >
-                                Hide
-                            </button>
+                            <div className="test-navigator-toggle-container">
+                                <button
+                                    onClick={this.toggleTestNavigator}
+                                    className="test-navigator-toggle hide"
+                                >
+                                    <FontAwesomeIcon icon={faArrowLeft} />
+                                    <FontAwesomeIcon icon={faAlignLeft} />
+                                </button>
+                            </div>
                             <ol className="test-navigator-list">
                                 {run.tests.map((t, i) => {
                                     let resultClassName = 'not-started';
-                                    let resultStatus = 'not started:';
+                                    let resultStatus = 'Not Started:';
                                     const testersResult =
                                         t.results &&
                                         t.results[openAsUser || userId];
@@ -716,17 +719,17 @@ class TestRun extends Component {
                                             testersResult.status == 'incomplete'
                                         ) {
                                             resultClassName = 'in-progress';
-                                            resultStatus = 'in progress:';
+                                            resultStatus = 'In Progress:';
                                         } else if (
                                             checkForConflict(t.results).length
                                         ) {
                                             resultClassName = 'conflicts';
-                                            resultStatus = 'has conflicts:';
+                                            resultStatus = 'Has Conflicts:';
                                         } else if (
                                             testersResult.status === 'complete'
                                         ) {
                                             resultClassName = 'complete';
-                                            resultStatus = 'complete test:';
+                                            resultStatus = 'Complete Test:';
                                         }
                                     }
                                     return (
@@ -734,7 +737,6 @@ class TestRun extends Component {
                                             className={`test-name-wrapper ${resultClassName}`}
                                             key={i}
                                         >
-                                            <span className="progress-indicator"></span>
                                             <a
                                                 href="#"
                                                 onClick={() => {
@@ -746,6 +748,7 @@ class TestRun extends Component {
                                             >
                                                 {t.name}
                                             </a>
+                                            <span className="progress-indicator" title={`${resultStatus}`}></span>
                                         </li>
                                     );
                                 })}
@@ -762,7 +765,10 @@ class TestRun extends Component {
                                 <button
                                     onClick={this.toggleTestNavigator}
                                     className="test-navigator-toggle show"
-                                ></button>
+                                >
+                                    <FontAwesomeIcon icon={faArrowRight} />
+                                    <FontAwesomeIcon icon={faAlignLeft} />
+                                </button>
                             </span>
                         )}
                         {heading}
