@@ -696,7 +696,7 @@ class TestRun extends Component {
                 </Helmet>
                 <Row>
                     {this.state.showTestNavigator ? (
-                        <aside className="col-md-3 test-navigator">
+                        <div className="col-md-3 test-navigator">
                             <h2>Test Navigator</h2>
                             <div className="test-navigator-toggle-container">
                                 <button
@@ -707,53 +707,55 @@ class TestRun extends Component {
                                     <FontAwesomeIcon icon={faAlignLeft} />
                                 </button>
                             </div>
-                            <ol className="test-navigator-list">
-                                {run.tests.map((t, i) => {
-                                    let resultClassName = 'not-started';
-                                    let resultStatus = 'Not Started:';
-                                    const testersResult =
-                                        t.results &&
-                                        t.results[openAsUser || userId];
-                                    if (testersResult) {
-                                        if (
-                                            testersResult.status == 'incomplete'
-                                        ) {
-                                            resultClassName = 'in-progress';
-                                            resultStatus = 'In Progress:';
-                                        } else if (
-                                            checkForConflict(t.results).length
-                                        ) {
-                                            resultClassName = 'conflicts';
-                                            resultStatus = 'Has Conflicts:';
-                                        } else if (
-                                            testersResult.status === 'complete'
-                                        ) {
-                                            resultClassName = 'complete';
-                                            resultStatus = 'Complete Test:';
+                            <nav role="complementary">
+                                <ol className="test-navigator-list">
+                                    {run.tests.map((t, i) => {
+                                        let resultClassName = 'not-started';
+                                        let resultStatus = 'Not Started:';
+                                        const testersResult =
+                                            t.results &&
+                                            t.results[openAsUser || userId];
+                                        if (testersResult) {
+                                            if (
+                                                testersResult.status == 'incomplete'
+                                            ) {
+                                                resultClassName = 'in-progress';
+                                                resultStatus = 'In Progress:';
+                                            } else if (
+                                                checkForConflict(t.results).length
+                                            ) {
+                                                resultClassName = 'conflicts';
+                                                resultStatus = 'Has Conflicts:';
+                                            } else if (
+                                                testersResult.status === 'complete'
+                                            ) {
+                                                resultClassName = 'complete';
+                                                resultStatus = 'Complete Test:';
+                                            }
                                         }
-                                    }
-                                    return (
-                                        <li
-                                            className={`test-name-wrapper ${resultClassName}`}
-                                            key={i}
-                                        >
-                                            <a
-                                                href="#"
-                                                onClick={() => {
-                                                    this.handleTestClick(i + 1);
-                                                }}
-                                                className="test-name"
-                                                aria-label={`${resultStatus} ${t.name}`}
-                                                aria-current={t.id === test.id}
+                                        return (
+                                            <li
+                                                className={`test-name-wrapper ${resultClassName}`}
+                                                key={i}
                                             >
-                                                {t.name}
-                                            </a>
-                                            <span className="progress-indicator" title={`${resultStatus}`}></span>
-                                        </li>
-                                    );
-                                })}
-                            </ol>
-                        </aside>
+                                                <a
+                                                    href="#"
+                                                    onClick={() => {
+                                                        this.handleTestClick(i + 1);
+                                                    }}
+                                                    className="test-name"
+                                                    aria-label={`${resultStatus} ${t.name}`}
+                                                    aria-current={t.id === test.id}
+                                                >
+                                                    {t.name}
+                                                </a>
+                                                <span className="progress-indicator" title={`${resultStatus}`}></span>
+                                            </li>
+                                        );
+                                    })}
+                                </ol>
+                            </nav>
+                        </div>
                     ) : (
                         <></>
                     )}
