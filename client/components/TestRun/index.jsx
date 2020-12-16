@@ -548,7 +548,7 @@ class TestRun extends Component {
 
         return (
             <Fragment>
-                <h1 data-test="testing-task"><span class="task-label">Testing task:</span> {`${this.state.currentTestIndex}.`} {test.name}</h1>
+                <h1 data-test="testing-task"><span className="task-label">Testing task:</span> {`${this.state.currentTestIndex}.`} {test.name}</h1>
                 <StatusBar key={nextId()} {...statusProps} />
                 <Row>
                     <Col md={9} className="test-iframe-contaner">
@@ -619,7 +619,7 @@ class TestRun extends Component {
         if (openAsUser) {
             runningAsUserHeader = (
                 <>
-                    <div class="test-info-entity reviewing-as">
+                    <div className="test-info-entity reviewing-as">
                         Reviewings tests of{' '}
                         <b>{`${usersById[openAsUser].username}`}.</b>
                         <p>{`All changes will be saved as performed by ${usersById[openAsUser].username}.`}</p>
