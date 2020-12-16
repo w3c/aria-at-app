@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Redirect } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { Table, Container, Breadcrumb } from 'react-bootstrap';
 import { connect } from 'react-redux';
@@ -17,7 +18,7 @@ class TestPlanReportPage extends Component {
     constructor() {
         super();
         this.state = {
-            techPairs: [],
+            techPairs: null,
             apgExample: null
         };
 
@@ -186,7 +187,11 @@ class TestPlanReportPage extends Component {
     }
 
     render() {
-        const { apgExample } = this.state;
+        const { techPairs, apgExample } = this.state;
+
+        if (techPairs && !apgExample) {
+            return <Redirect to={{ pathname: '/404' }} />;
+        }
 
         if (!apgExample) {
             return <div>Loading Test Plan Report...</div>;
