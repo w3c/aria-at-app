@@ -10,14 +10,14 @@ import testReviewScreenshot from '../../assets/test-review.jpg';
 class Home extends Component {
     render() {
         return (
-            <Container as="main">
+            <Container className="home-page" as="main">
                 <Helmet>
                     <title>ARIA-AT App</title>
                 </Helmet>
-                <section className="about">
-                    <h1>ARIA-AT Home</h1>
-                    <h2>About this project</h2>
-                    <p>
+                <section className="hero-section about">
+                    <h1>Improving how well assistive technologies render web experiences</h1>
+                    
+                    {/* <p>
                         This project aims to improve how well assistive
                         technologies render web experiences. It defines and runs
                         manual tests of assistive technologies to measure their
@@ -65,12 +65,12 @@ class Home extends Component {
                                 Fix a good first issue
                             </a>
                         </li>
-                    </ul>
+                    </ul> */}
                 </section>
                 <section className="app-screenshots">
                     <div className="container">
                         <div className="description">
-                            <h3>Test Management</h3>
+                            <h2>Test Management</h2>
                             <p>
                                 This app allows project administrators to create
                                 Test Runs for managing execution of tests of a
@@ -88,7 +88,7 @@ class Home extends Component {
                     </div>
                     <div className="container">
                         <div className="description right">
-                            <h3>Test Queue</h3>
+                            <h2>Test Queue</h2>
                             <p>
                                 Testers can view in-progress Test Runs and
                                 assign themselves to run a specific test plan
@@ -104,7 +104,7 @@ class Home extends Component {
                     </div>
                     <div className="container">
                         <div className="description">
-                            <h3>Running Tests</h3>
+                            <h2>Running Tests</h2>
                             <p>
                                 When running a Test Plan, the app loads the ARIA
                                 AT tests and displays instructions for how to
@@ -121,7 +121,7 @@ class Home extends Component {
                     </div>
                     <div className="container">
                         <div className="description right">
-                            <h3>Test Review</h3>
+                            <h2>Test Review</h2>
                             <p>
                                 After multiple runs have been recorded for a
                                 particular Test Plan, users can view a summary

@@ -60,7 +60,7 @@ nav.navbar {
     width: 90%;
     height: 2px;
     left: 0;
-    bottom: -11px;
+    bottom: -12px;
     right: 0;
     margin: auto;
 }
@@ -74,28 +74,6 @@ main.container-fluid .row {
 
 .row {
     margin: 0;
-}
-
-@media (min-width: 700px) {
-    nav.navbar {
-        padding: 0.5rem 3rem;
-    }
-
-    main.container,
-    .test-run-container {
-        padding: 2rem 3rem;
-    }
-}
-
-@media (min-width: 1000px) {
-    nav.navbar {
-        padding: 0.5rem 5rem;
-    }
-
-    main.container,
-    .test-run-container {
-        padding: 5rem;
-    }
 }
 
 nav .logo.navbar-brand {
@@ -341,9 +319,28 @@ ul li {
     top: 50%;
 }
 
+/* Home Page */
+main.home-page.container {
+    padding: 0;
+}
+
+main.home-page.container h1 {
+    border: none;
+    text-align: center;
+    font-size: 2.75em;
+    width: 70%;
+    margin: auto;
+}
+
+.hero-section {
+    background: #dae8fa;
+    padding: 1em;
+    border-top: 1px solid #c4d5eb;
+    border-bottom: 1px solid #c4d5eb;
+}
+
 .app-screenshots {
     margin-top: 3em;
-    border-top: 1px solid gainsboro;
     padding-top: 3em;
 }
 
@@ -368,12 +365,36 @@ img {
     max-width: 100%;
 }
 
+@media (min-width: 700px) {
+    nav.navbar {
+        padding: 0.5rem 3rem;
+    }
+
+    main.container,
+    .test-run-container,
+    .hero-section {
+        padding: 2rem 3rem;
+    }
+}
+
 @media (min-width: 800px) {
     .app-screenshots .description,
     .app-screenshots .screenshot {
         width: 50%;
         display: inline-block;
         vertical-align: top;
+    }
+}
+
+@media (min-width: 1000px) {
+    nav.navbar {
+        padding: 0.5rem 5rem;
+    }
+
+    main.container,
+    .test-run-container,
+    .hero-section {
+        padding: 5rem;
     }
 }
 
