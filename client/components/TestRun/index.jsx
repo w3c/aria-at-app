@@ -548,7 +548,7 @@ class TestRun extends Component {
 
         return (
             <Fragment>
-                <h1 data-test="testing-task"><span class="task-label">Testing task:</span> {test.name}</h1>
+                <h1 data-test="testing-task"><span class="task-label">Testing task:</span> {`${this.state.currentTestIndex}.`} {test.name}</h1>
                 <StatusBar key={nextId()} {...statusProps} />
                 <Row>
                     <Col md={9} className="test-iframe-contaner">
