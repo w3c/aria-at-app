@@ -108,7 +108,7 @@ describe('AuthController', () => {
             await AuthController.authorize(req, res, next);
             expect(res.statusCode).toBe(303);
             expect(res._isEndCalled()).toBeTruthy();
-            expect(res._getRedirectUrl()).toBe('localhost:5000');
+            expect(res._getRedirectUrl()).toBe('localhost:5000/test-queue');
         });
         it('should provide a user with updated roles assigned on sign in', async () => {
             req.session.authType = OAUTH;

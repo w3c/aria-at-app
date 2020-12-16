@@ -48,7 +48,6 @@ module.exports = {
             authorizationError = error;
         }
         let authorized = false;
-        let newUser = false;
 
         if (req.session.authType === OAUTH) {
             let user;
@@ -66,7 +65,6 @@ module.exports = {
             // ...otherwise, add them as a new user.
             if (!user) {
                 try {
-                    newUser = true;
                     user = await UsersService.signupUser({
                         accessToken: req.session.accessToken,
                         user: userToAuthorize
@@ -86,9 +84,7 @@ module.exports = {
             }
         }
         if (authorized && userToAuthorize) {
-            const redirectUrl = newUser
-                ? `${req.session.referer}/test-queue`
-                : req.session.referer;
+            const redirectUrl = `${req.session.referer}/test-queue`;
             req.session.user = userToAuthorize;
             res.redirect(303, redirectUrl);
             res.end(() => {
