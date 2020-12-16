@@ -75,3 +75,12 @@ Change the following variables (at minimum) to create a new configuration:
    - A new GitHub OAuth application must be created for a new environment. Instructions TBD.
 - GITHUB_CLIENT_SECRET
 - SESSION_SECRET
+
+## Manual DB Backup
+
+1. Ssh into the machine.
+  `ssh -i <deploy key> root@aria-at.w3.org`
+2. Create the backup and save it to a file.
+  `pg_dump aria_at_report | tee /tmp/aria_at_report_<datetime>.sql`
+3. If needed copy that data to another machine, download it with `scp`.
+  `scp root@aria-at.w3.org:/tmp/aria_at_report_<datetime>.sql /tmp/aria_at_report_<datetime>.sql`
