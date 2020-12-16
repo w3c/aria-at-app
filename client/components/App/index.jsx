@@ -64,7 +64,7 @@ class App extends Component {
             return null;
         }
 
-        const { route, isSignedIn, isAdmin, isTester } = this.props;
+        const { route, isSignedIn, isAdmin, isTester, username } = this.props;
         const signInURL = `${process.env.API_SERVER}/api/auth/oauth?referer=${window.location.origin}&service=github`;
 
         return (
@@ -84,15 +84,23 @@ class App extends Component {
                             className="justify-content-end"
                         >
                             {(!isSignedIn && (
-                                <Nav.Link
-                                    as={Link}
-                                    to="/"
-                                    onClick={() =>
-                                        (window.location.href = signInURL)
-                                    }
-                                >
-                                    Sign in with GitHub
-                                </Nav.Link>
+                                <React.Fragment>
+                                    <Nav.Link
+                                        as={Link}
+                                        {...this.navProps('/reports')}
+                                    >
+                                        Test Reports
+                                    </Nav.Link>
+                                    <Nav.Link
+                                        as={Link}
+                                        to="/"
+                                        onClick={() =>
+                                            (window.location.href = signInURL)
+                                        }
+                                    >
+                                        Sign in with GitHub
+                                    </Nav.Link>
+                                </React.Fragment>
                             )) || (
                                 <React.Fragment>
                                     {isAdmin && (
@@ -130,7 +138,7 @@ class App extends Component {
                                         to="/"
                                         onClick={this.signOut}
                                     >
-                                        Sign out
+                                        Sign out {username}
                                     </Nav.Link>
                                 </React.Fragment>
                             )}
@@ -148,16 +156,17 @@ App.propTypes = {
     isSignedIn: PropTypes.bool,
     isAdmin: PropTypes.bool,
     isTester: PropTypes.bool,
+    username: PropTypes.string,
     location: PropTypes.object,
     route: PropTypes.object,
     loadedUserData: PropTypes.bool
 };
 
 const mapStateToProps = state => {
-    const { isSignedIn, loadedUserData, roles } = state.user;
+    const { isSignedIn, loadedUserData, roles, username } = state.user;
     let isAdmin = roles ? roles.includes('admin') : false;
     let isTester = isAdmin || (roles && roles.includes('tester'));
-    return { isSignedIn, isAdmin, isTester, loadedUserData };
+    return { isSignedIn, isAdmin, isTester, loadedUserData, username };
 };
 
 export default connect(mapStateToProps)(App);
