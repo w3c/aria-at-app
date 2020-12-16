@@ -3,7 +3,12 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
+import {
+    faCheckCircle,
+    faArrowLeft,
+    faAlignLeft,
+    faArrowRight
+} from '@fortawesome/free-solid-svg-icons';
 import nextId from 'react-id-generator';
 import { Alert, Button, Col, Container, Modal, Row } from 'react-bootstrap';
 import queryString from 'query-string';
@@ -471,40 +476,36 @@ class TestRun extends Component {
 
         let menuRightOfContent = (
             <div role="complementary">
-                <h3>Current Test Options</h3>
-                <ul>
-                    <li>
-                        <Button
-                            className="btn-block"
-                            variant="secondary"
-                            onClick={this.handleRaiseIssueClick}
-                        >
-                            Raise an issue
-                        </Button>
-                    </li>
-                    <li>
-                        <Button
-                            className="btn-block"
-                            variant="secondary"
-                            onClick={this.handleRedoClick}
-                        >
-                            Start over
-                        </Button>
-                    </li>
-                    <li>
-                        <Button
-                            className="btn-block"
-                            variant="secondary"
-                            onClick={this.handleCloseRunClick}
-                        >
-                            Save and Close
-                        </Button>
-                    </li>
-                    <li>
+                <h3>Test Options</h3>
+                <div className="options-wrapper">
+                    <Button
+                        className="btn-block"
+                        variant="secondary"
+                        onClick={this.handleRaiseIssueClick}
+                    >
+                        Raise an issue
+                    </Button>
+
+                    <Button
+                        className="btn-block"
+                        variant="secondary"
+                        onClick={this.handleRedoClick}
+                    >
+                        Start over
+                    </Button>
+
+                    <Button
+                        className="btn-block"
+                        variant="secondary"
+                        onClick={this.handleCloseRunClick}
+                    >
+                        Save and Close
+                    </Button>
+                    <div className="help-link">
                         Need Help?{' '}
                         <a href="mailto:public-aria-at@w3.org">Email Us</a>
-                    </li>
-                </ul>
+                    </div>
+                </div>
             </div>
         );
 
@@ -552,10 +553,13 @@ class TestRun extends Component {
 
         return (
             <Fragment>
-                <h4 data-test="test-run-h4">Testing task: {test.name}</h4>
+                <h1 data-test="testing-task">
+                    <span className="task-label">Testing task:</span>{' '}
+                    {`${this.state.currentTestIndex}.`} {test.name}
+                </h1>
                 <StatusBar key={nextId()} {...statusProps} />
                 <Row>
-                    <Col md={10} className="test-iframe-contaner">
+                    <Col md={9} className="test-iframe-contaner">
                         <Row>{testContent}</Row>
                         <Row>{primaryButtonGroup}</Row>
                         <Row>
@@ -578,7 +582,9 @@ class TestRun extends Component {
                             )}
                         </Row>
                     </Col>
-                    <Col md={2}>{menuRightOfContent}</Col>
+                    <Col className="current-test-options" md={3}>
+                        {menuRightOfContent}
+                    </Col>
                 </Row>
                 {modals}
             </Fragment>
@@ -623,11 +629,11 @@ class TestRun extends Component {
         if (openAsUser) {
             runningAsUserHeader = (
                 <>
-                    <h2>
+                    <div className="test-info-entity reviewing-as">
                         Reviewings tests of{' '}
-                        <b>{`${usersById[openAsUser].username}`}</b>
-                    </h2>
-                    <p>{`All changes will be saved as performed by ${usersById[openAsUser].username}.`}</p>
+                        <b>{`${usersById[openAsUser].username}`}.</b>
+                        <p>{`All changes will be saved as performed by ${usersById[openAsUser].username}.`}</p>
+                    </div>
                 </>
             );
         }
@@ -635,12 +641,32 @@ class TestRun extends Component {
         if (testsToRun) {
             heading = (
                 <Fragment>
+                    <div className="test-info-wrapper">
+                        <div
+                            className="test-info-entity apg-example-name"
+                            data-test="apg-example-name"
+                        >
+                            <div className="info-label">
+                                <b>Test Plan:</b> {`${apg_example_name}`}
+                            </div>{' '}
+                        </div>
+                        <div
+                            className="test-info-entity at-browser"
+                            data-test="at-browser"
+                        >
+                            <div className="info-label">
+                                <b>AT and Browser:</b>{' '}
+                                {`${at_name} ${at_version} with ${browser_name} ${browser_version}`}{' '}
+                            </div>
+                        </div>
+                        <div className="test-info-entity tests-completed">
+                            <div className="info-label">
+                                <b>{`${this.state.currentTestIndex} of ${run.tests.length}`}</b>{' '}
+                                Tests completed
+                            </div>
+                        </div>
+                    </div>
                     {runningAsUserHeader}
-                    <h2 data-test="test-run-h2">
-                        {' '}
-                        {`${apg_example_name} (${this.state.currentTestIndex} of ${run.tests.length})`}
-                    </h2>
-                    <h3 data-test="test-run-h3">{`${at_name} ${at_version} with ${browser_name} ${browser_version}`}</h3>
                 </Fragment>
             );
 
@@ -661,8 +687,14 @@ class TestRun extends Component {
         } else {
             heading = (
                 <Fragment>
-                    <h2>{`${apg_example_name}`}</h2>
-                    <h3>{`${at_name} ${at_version} with ${browser_name} ${browser_version}`}</h3>
+                    <div className="test-info-entity apg-example-name">
+                        <div className="info-label">APG Example</div>
+                        {`${apg_example_name}`}
+                    </div>
+                    <div className="test-info-entity at-browser">
+                        <div className="info-label">AT and Browser</div>
+                        {`${at_name} ${at_version} with ${browser_name} ${browser_version}`}
+                    </div>
                 </Fragment>
             );
             content = <div>No tests for this browser / AT combination</div>;
@@ -686,65 +718,84 @@ class TestRun extends Component {
                 </Helmet>
                 <Row>
                     {this.state.showTestNavigator ? (
-                        <aside className="col-md-3 test-navigator">
-                            <h3>Test Navigator</h3>
-                            <button
-                                onClick={this.toggleTestNavigator}
-                                className="test-navigator-toggle hide"
-                            >
-                                Hide
-                            </button>
-                            <ol className="test-navigator-list">
-                                {run.tests.map((t, i) => {
-                                    let resultClassName = 'not-started';
-                                    let resultStatus = 'not started:';
-                                    const testersResult =
-                                        t.results &&
-                                        t.results[openAsUser || userId];
-                                    if (testersResult) {
-                                        if (
-                                            testersResult.status == 'incomplete'
-                                        ) {
-                                            resultClassName = 'in-progress';
-                                            resultStatus = 'in progress:';
-                                        } else if (
-                                            checkForConflict(t.results).length
-                                        ) {
-                                            resultClassName = 'conflicts';
-                                            resultStatus = 'has conflicts:';
-                                        } else if (
-                                            testersResult.status === 'complete'
-                                        ) {
-                                            resultClassName = 'complete';
-                                            resultStatus = 'complete test:';
+                        <div className="col-md-3 test-navigator">
+                            <h2>Test Navigator</h2>
+                            <div className="test-navigator-toggle-container">
+                                <button
+                                    onClick={this.toggleTestNavigator}
+                                    className="test-navigator-toggle hide"
+                                >
+                                    <FontAwesomeIcon icon={faArrowLeft} />
+                                    <FontAwesomeIcon icon={faAlignLeft} />
+                                </button>
+                            </div>
+                            <nav role="complementary">
+                                <ol className="test-navigator-list">
+                                    {run.tests.map((t, i) => {
+                                        let resultClassName = 'not-started';
+                                        let resultStatus = 'Not Started:';
+                                        const testersResult =
+                                            t.results &&
+                                            t.results[openAsUser || userId];
+                                        if (testersResult) {
+                                            if (
+                                                testersResult.status ==
+                                                'incomplete'
+                                            ) {
+                                                resultClassName = 'in-progress';
+                                                resultStatus = 'In Progress:';
+                                            } else if (
+                                                checkForConflict(t.results)
+                                                    .length
+                                            ) {
+                                                resultClassName = 'conflicts';
+                                                resultStatus = 'Has Conflicts:';
+                                            } else if (
+                                                testersResult.status ===
+                                                'complete'
+                                            ) {
+                                                resultClassName = 'complete';
+                                                resultStatus = 'Complete Test:';
+                                            }
                                         }
-                                    }
-                                    return (
-                                        <li
-                                            className={`test-name-wrapper ${resultClassName}`}
-                                            key={i}
-                                        >
-                                            <span className="progress-indicator"></span>
-                                            <a
-                                                href="#"
-                                                onClick={() => {
-                                                    this.handleTestClick(i + 1);
-                                                }}
-                                                className="test-name"
-                                                aria-label={`${resultStatus} ${t.name}`}
-                                                aria-current={t.id === test.id}
+                                        return (
+                                            <li
+                                                className={`test-name-wrapper ${resultClassName}`}
+                                                key={i}
                                             >
-                                                {t.name}
-                                            </a>
-                                        </li>
-                                    );
-                                })}
-                            </ol>
-                        </aside>
+                                                <a
+                                                    href="#"
+                                                    onClick={() => {
+                                                        this.handleTestClick(
+                                                            i + 1
+                                                        );
+                                                    }}
+                                                    className="test-name"
+                                                    aria-label={`${resultStatus} ${t.name}`}
+                                                    aria-current={
+                                                        t.id === test.id
+                                                    }
+                                                >
+                                                    {t.name}
+                                                </a>
+                                                <span
+                                                    className="progress-indicator"
+                                                    title={`${resultStatus}`}
+                                                ></span>
+                                            </li>
+                                        );
+                                    })}
+                                </ol>
+                            </nav>
+                        </div>
                     ) : (
                         <></>
                     )}
-                    <Col as="main" md={this.state.showTestNavigator ? 9 : 12}>
+                    <Col
+                        className="main-test-area"
+                        as="main"
+                        md={this.state.showTestNavigator ? 9 : 12}
+                    >
                         {this.state.showTestNavigator ? (
                             <></>
                         ) : (
@@ -752,7 +803,10 @@ class TestRun extends Component {
                                 <button
                                     onClick={this.toggleTestNavigator}
                                     className="test-navigator-toggle show"
-                                ></button>
+                                >
+                                    <FontAwesomeIcon icon={faArrowRight} />
+                                    <FontAwesomeIcon icon={faAlignLeft} />
+                                </button>
                             </span>
                         )}
                         {heading}

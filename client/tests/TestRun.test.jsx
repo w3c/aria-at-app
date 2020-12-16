@@ -57,11 +57,11 @@ describe('render', () => {
             wrapper.setState({ currentTestIndex: 1 });
         });
         test('renders testing headings', () => {
-            let component = findByTestAttr(wrapper, 'test-run-h2');
+            let component = findByTestAttr(wrapper, 'apg-example-name');
             expect(component.length).toBe(1);
-            expect(component.text()).toContain('of');
+            expect(component.text()).toContain('Test Plan');
 
-            component = findByTestAttr(wrapper, 'test-run-h3');
+            component = findByTestAttr(wrapper, 'at-browser');
             expect(component.length).toBe(1);
             expect(component.text()).toContain('with');
         });
