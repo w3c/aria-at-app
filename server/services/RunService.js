@@ -516,6 +516,8 @@ async function getActiveRuns() {
 /**
  * Gets the all published runs for the most recent test version with results
  *
+ * Published runs are either "Final" or "In Reivew"
+ *
  * @return {Object.<number, Run>} - A mapping from run_id to Run
  */
 async function getPublishedRuns() {

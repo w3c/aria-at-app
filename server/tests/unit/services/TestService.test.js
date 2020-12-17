@@ -56,7 +56,7 @@ describe('RunService', () => {
                 });
 
                 let runStatus = await db.RunStatus.findOne({
-                    where: { name: 'raw' }
+                    where: { name: db.RunStatus.DRAFT }
                 });
 
                 let tech = await db.BrowserVersionToAtVersion.create({
