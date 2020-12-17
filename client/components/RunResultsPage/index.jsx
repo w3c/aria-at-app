@@ -89,7 +89,7 @@ class RunResultsPage extends Component {
     }
 
     render() {
-        const { run, allTests, testVersion, runsLoaded } = this.props;
+        const { run, allTests, testVersion, runsLoaded, formattedRunStatus } = this.props;
 
         if (runsLoaded && !run) {
             return <Redirect to={{ pathname: '/404' }} />;
@@ -128,7 +128,7 @@ class RunResultsPage extends Component {
                             <Col>
                                 <Fragment>
                                     <h1>{title}</h1>
-                                    <p>{`No results have been marked as DRAFT or FINAL for this run.`}</p>
+                                    <p>{`No results have been marked as 'In Review' or 'Published' for this run.`}</p>
                                 </Fragment>
                             </Col>
                         </Row>
@@ -196,21 +196,22 @@ class RunResultsPage extends Component {
                     <Row>
                         <Col>
                             <Fragment>
-                                <Breadcrumb>
-                                    <Breadcrumb.Item href="/reports">
-                                        Summary Report
-                                    </Breadcrumb.Item>
-                                    <Breadcrumb.Item
-                                        href={`/reports/test-plans/${apg_example_id}`}
-                                    >
-                                        Test Plan Report: {apg_example_name}
-                                    </Breadcrumb.Item>
-                                    <Breadcrumb.Item active>
-                                        Tech Pair Report: {at_name} {at_version}{' '}
-                                        on {browser_name} {browser_version}
-                                    </Breadcrumb.Item>
-                                </Breadcrumb>
-                                <h1>{title}</h1>
+                                { formattedRunStatus == 'Published' ?
+                                  <Breadcrumb>
+                                      <Breadcrumb.Item href="/reports">
+                                          Summary Report
+                                      </Breadcrumb.Item>
+                                      <Breadcrumb.Item
+                                          href={`/reports/test-plans/${apg_example_id}`}
+                                      >
+                                          Test Plan Report: {apg_example_name}
+                                      </Breadcrumb.Item>
+                                      <Breadcrumb.Item active>
+                                          Tech Pair Report: {at_name} {at_version}{' '}
+                                          on {browser_name} {browser_version}
+                                        </Breadcrumb.Item>
+                                </Breadcrumb> : <></> }
+                                <h1><span>{formattedRunStatus}:</span> {title}</h1>
                             </Fragment>
                         </Col>
                     </Row>
@@ -359,25 +360,30 @@ class RunResultsPage extends Component {
 RunResultsPage.propTypes = {
     dispatch: PropTypes.func,
     allTests: PropTypes.array,
+    formattedRunStatus: PropTypes.string,
     run: PropTypes.object,
     testVersion: PropTypes.object,
-    runsLoaded: PropTypes.bool
+    runsLoaded: PropTypes.bool,
+    isSignedIn: PropTypes.bool
 };
 
 const mapStateToProps = (state, ownProps) => {
+    const { isSignedIn } = state.user;
     const { publishedRunsById, activeRunsById, testVersions } = state.runs;
 
     const runId = parseInt(ownProps.match.params.runId);
 
     let run, testVersion, allTests;
     let runsLoaded = false;
+    let formattedRunStatus = 'In Review';
     if (publishedRunsById) {
         run = publishedRunsById[runId];
+        formattedRunStatus = 'Published'
     }
     if (!run && activeRunsById) {
       run = activeRunsById[runId];
     }
-    if (publishedRunsById || activeRunsById) {
+    if (publishedRunsById && activeRunsById) {
       runsLoaded = true;
     }
     if (run) {
@@ -389,9 +395,11 @@ const mapStateToProps = (state, ownProps) => {
 
     return {
         run,
+        formattedRunStatus,
         allTests,
         testVersion,
-        runsLoaded
+        runsLoaded,
+        isSignedIn
     };
 };
 
