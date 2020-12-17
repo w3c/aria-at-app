@@ -6,6 +6,13 @@ import testManagementScreenshot from '../../assets/test-management.jpg';
 import testQueueScreenshot from '../../assets/test-queue.jpg';
 import testViewScreenshot from '../../assets/test-view.jpg';
 import testReviewScreenshot from '../../assets/test-review.jpg';
+import iconReviewAssertions from '../../assets/review-assertion.jpg';
+import iconJoinCommunity from '../../assets/join-community.jpg';
+import iconWriteTests from '../../assets/write-tests.jpg';
+import iconReviewTests from '../../assets/review-tests.jpg';
+import iconFixIssue from '../../assets/fix-issue.jpg';
+
+
 
 class Home extends Component {
     render() {
@@ -16,8 +23,7 @@ class Home extends Component {
                 </Helmet>
                 <section className="hero-section about">
                     <h1>Improving how well assistive technologies render web experiences</h1>
-                    
-                    {/* <p>
+                    <p>
                         This project aims to improve how well assistive
                         technologies render web experiences. It defines and runs
                         manual tests of assistive technologies to measure their
@@ -34,38 +40,41 @@ class Home extends Component {
                         </a>{' '}
                         process.
                     </p>
-
-                    <h3>Get involved</h3>
-                    <ul>
-                        <li>
-                            <a href="https://www.w3.org/community/aria-at/">
-                                Join the community group
-                            </a>{' '}
-                            (see{' '}
-                            <a href="https://www.w3.org/community/about/faq/#how-do-i-join-a-group">
-                                how to join a W3C community group
-                            </a>
-                            )
-                        </li>
-                        <li>
-                            <a href="https://github.com/w3c/aria-at/wiki/How-to-contribute-tests">
-                                Write more tests
-                            </a>
-                        </li>
-                        <li>
-                            <a href="https://w3c.github.io/aria-at/">
-                                Review the assertions of existing test plans
-                            </a>
-                        </li>
-                        <li>
-                            <Link to="/results">Review test results</Link>
-                        </li>
-                        <li>
-                            <a href="https://github.com/w3c/aria-at/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22">
-                                Fix a good first issue
-                            </a>
-                        </li>
-                    </ul> */}
+                </section>
+                <section className="get-involved">
+                    <div className="container">
+                        <h2>Get Involved</h2>
+                        <div className="resources">
+                            <article>
+                                <img src={iconJoinCommunity} alt=""/>
+                                <a href="https://www.w3.org/community/aria-at/">
+                                    Join the community group
+                                </a>
+                            </article>
+                            <article>
+                                <img src={iconWriteTests} alt=""/>
+                                <a href="https://github.com/w3c/aria-at/wiki/How-to-contribute-tests">
+                                    Write more tests
+                                </a>
+                            </article>
+                            <article>
+                                <img src={iconReviewAssertions} alt=""/>
+                                <a href="https://w3c.github.io/aria-at/">
+                                    Review the assertions of existing test plans
+                                </a>
+                            </article>
+                            <article>
+                                <img src={iconReviewTests} alt=""/>
+                                <Link to="/results">Review test results</Link>
+                            </article>
+                            <article>
+                                <img src={iconFixIssue} alt=""/>
+                                <a href="https://github.com/w3c/aria-at/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22">
+                                    Fix a good first issue
+                                </a>
+                            </article>
+                        </div>
+                    </div>
                 </section>
                 <section className="app-screenshots">
                     <div className="container">
