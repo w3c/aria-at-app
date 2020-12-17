@@ -287,9 +287,7 @@ class TestQueueRun extends Component {
         return canAssignTesters;
     }
 
-    renderAssignMenu(admin) {
-        const { userId } = this.props;
-
+    renderAssignMenu() {
         const canAssignTesters = this.generateAssignableTesters();
 
         return (
@@ -315,7 +313,6 @@ class TestQueueRun extends Component {
                                     onClick={() =>
                                         this.toggleTesterAssign(t.id)
                                     }
-                                    disabled={!admin && t.id !== userId}
                                     aria-checked={t.assigned}
                                     role="menuitemcheckbox"
                                 >
