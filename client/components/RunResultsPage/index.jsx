@@ -11,7 +11,11 @@ import {
     Button,
     Breadcrumb
 } from 'react-bootstrap';
-import { getPublishedRuns, getActiveRuns, getTestVersions } from '../../actions/runs';
+import {
+    getPublishedRuns,
+    getActiveRuns,
+    getTestVersions
+} from '../../actions/runs';
 import checkForConflict from '../../utils/checkForConflict';
 import TestResult from '@components/TestResult';
 import RaiseIssueModal from '@components/RaiseIssueModal';
@@ -89,7 +93,14 @@ class RunResultsPage extends Component {
     }
 
     render() {
-        const { run, allTests, testVersion, runsLoaded, formattedRunStatus, isSignedIn } = this.props;
+        const {
+            run,
+            allTests,
+            testVersion,
+            runsLoaded,
+            formattedRunStatus,
+            isSignedIn
+        } = this.props;
 
         if (runsLoaded && !run) {
             return <Redirect to={{ pathname: '/404' }} />;
@@ -196,22 +207,28 @@ class RunResultsPage extends Component {
                     <Row>
                         <Col>
                             <Fragment>
-                                { formattedRunStatus == 'Final' ?
-                                  <Breadcrumb>
-                                      <Breadcrumb.Item href="/reports">
-                                          Summary Report
-                                      </Breadcrumb.Item>
-                                      <Breadcrumb.Item
-                                          href={`/reports/test-plans/${apg_example_id}`}
-                                      >
-                                          Test Plan Report: {apg_example_name}
-                                      </Breadcrumb.Item>
-                                      <Breadcrumb.Item active>
-                                          Tech Pair Report: {at_name} {at_version}{' '}
-                                          on {browser_name} {browser_version}
+                                {formattedRunStatus == 'Final' ? (
+                                    <Breadcrumb>
+                                        <Breadcrumb.Item href="/reports">
+                                            Summary Report
                                         </Breadcrumb.Item>
-                                </Breadcrumb> : <></> }
-                                <h1><span>{formattedRunStatus}:</span> {title}</h1>
+                                        <Breadcrumb.Item
+                                            href={`/reports/test-plans/${apg_example_id}`}
+                                        >
+                                            Test Plan Report: {apg_example_name}
+                                        </Breadcrumb.Item>
+                                        <Breadcrumb.Item active>
+                                            Tech Pair Report: {at_name}{' '}
+                                            {at_version} on {browser_name}{' '}
+                                            {browser_version}
+                                        </Breadcrumb.Item>
+                                    </Breadcrumb>
+                                ) : (
+                                    <></>
+                                )}
+                                <h1>
+                                    <span>{formattedRunStatus}:</span> {title}
+                                </h1>
                             </Fragment>
                         </Col>
                     </Row>
@@ -308,7 +325,7 @@ class RunResultsPage extends Component {
                                                 Details for test: {t.name}
                                             </h2>
                                             <div className="float-right">
-                                                { isSignedIn ?
+                                                {isSignedIn ? (
                                                     <Button
                                                         variant="secondary"
                                                         onClick={() =>
@@ -318,15 +335,16 @@ class RunResultsPage extends Component {
                                                         }
                                                     >
                                                         Raise an Issue
-                                                      </Button> :
-                                                      <Button
-                                                          target="_blank"
-                                                          href="https://github.com/w3c/aria-at/issues/new/choose"
-                                                          variant="secondary"
-                                                      >
+                                                    </Button>
+                                                ) : (
+                                                    <Button
+                                                        target="_blank"
+                                                        href="https://github.com/w3c/aria-at/issues/new/choose"
+                                                        variant="secondary"
+                                                    >
                                                         Raise an Issue
-                                                      </Button>
-                                                }
+                                                    </Button>
+                                                )}
                                                 <Button
                                                     target="_blank"
                                                     href={`/aria-at/${git_hash}/${t.file}?at=${at_key}`}
@@ -387,13 +405,13 @@ const mapStateToProps = (state, ownProps) => {
     let formattedRunStatus = 'In Review';
     if (publishedRunsById) {
         run = publishedRunsById[runId];
-        formattedRunStatus = 'Final'
+        formattedRunStatus = 'Final';
     }
     if (!run && activeRunsById) {
-      run = activeRunsById[runId];
+        run = activeRunsById[runId];
     }
     if (publishedRunsById && activeRunsById) {
-      runsLoaded = true;
+        runsLoaded = true;
     }
     if (run) {
         testVersion = (testVersions || []).find(
