@@ -378,6 +378,8 @@ img {
     margin: 0 0 1em 0;
     text-align: center;
     font-size: 2em;
+    text-transform: uppercase;
+    font-weight: bold;
 }
 
 .get-involved .resources {
@@ -388,10 +390,26 @@ img {
 
 .get-involved .resources article {
     background: white;
-    padding: 2em;
-    box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.15);
-    border-radius: 3px;
+    padding: 1.5em 1em;
+    box-shadow: 0px 6px 11px 0px rgba(0, 0, 0, 0.15);
+    border-radius: 5px;
     text-align: center;
+}
+
+.get-involved .resources img {
+    width: 100px;
+    height: 100px;
+    display: block;
+    margin: auto;
+}
+
+.get-involved .resources a {
+    color: #4d4d4d;
+    margin-top: 1em;
+    display: block;
+    font-weight: bold;
+    font-size: 1.1em;
+    line-height: 1.2;
 }
 
 @media (min-width: 700px) {

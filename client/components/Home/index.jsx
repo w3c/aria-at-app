@@ -12,8 +12,6 @@ import iconWriteTests from '../../assets/write-tests.jpg';
 import iconReviewTests from '../../assets/review-tests.jpg';
 import iconFixIssue from '../../assets/fix-issue.jpg';
 
-
-
 class Home extends Component {
     render() {
         return (
@@ -60,7 +58,7 @@ class Home extends Component {
                             <article>
                                 <img src={iconReviewAssertions} alt=""/>
                                 <a href="https://w3c.github.io/aria-at/">
-                                    Review the assertions of existing test plans
+                                    Review existing test plans assesrtions
                                 </a>
                             </article>
                             <article>
