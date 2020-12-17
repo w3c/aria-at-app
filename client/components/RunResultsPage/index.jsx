@@ -128,7 +128,7 @@ class RunResultsPage extends Component {
                             <Col>
                                 <Fragment>
                                     <h1>{title}</h1>
-                                    <p>{`No results have been marked as 'In Review' or 'Published' for this run.`}</p>
+                                    <p>{`No results have been marked as 'In Review' or 'Final' for this run.`}</p>
                                 </Fragment>
                             </Col>
                         </Row>
@@ -196,7 +196,7 @@ class RunResultsPage extends Component {
                     <Row>
                         <Col>
                             <Fragment>
-                                { formattedRunStatus == 'Published' ?
+                                { formattedRunStatus == 'Final' ?
                                   <Breadcrumb>
                                       <Breadcrumb.Item href="/reports">
                                           Summary Report
@@ -387,7 +387,7 @@ const mapStateToProps = (state, ownProps) => {
     let formattedRunStatus = 'In Review';
     if (publishedRunsById) {
         run = publishedRunsById[runId];
-        formattedRunStatus = 'Published'
+        formattedRunStatus = 'Final'
     }
     if (!run && activeRunsById) {
       run = activeRunsById[runId];
