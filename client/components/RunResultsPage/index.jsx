@@ -11,7 +11,7 @@ import {
     Button,
     Breadcrumb
 } from 'react-bootstrap';
-import { getPublishedRuns, getTestVersions } from '../../actions/runs';
+import { getPublishedRuns, getActiveRuns, getTestVersions } from '../../actions/runs';
 import checkForConflict from '../../utils/checkForConflict';
 import TestResult from '@components/TestResult';
 import RaiseIssueModal from '@components/RaiseIssueModal';
@@ -34,6 +34,7 @@ class RunResultsPage extends Component {
         const { dispatch, run, testVersion } = this.props;
         if (!run) {
             dispatch(getPublishedRuns());
+            dispatch(getActiveRuns());
         }
         if (!testVersion) {
             dispatch(getTestVersions());
@@ -88,9 +89,9 @@ class RunResultsPage extends Component {
     }
 
     render() {
-        const { run, allTests, testVersion, publishedRunsById } = this.props;
+        const { run, allTests, testVersion, runsLoaded } = this.props;
 
-        if (publishedRunsById && !run) {
+        if (runsLoaded && !run) {
             return <Redirect to={{ pathname: '/404' }} />;
         }
 
@@ -360,17 +361,24 @@ RunResultsPage.propTypes = {
     allTests: PropTypes.array,
     run: PropTypes.object,
     testVersion: PropTypes.object,
-    publishedRunsById: PropTypes.object
+    runsLoaded: PropTypes.bool
 };
 
 const mapStateToProps = (state, ownProps) => {
-    const { publishedRunsById, testVersions } = state.runs;
+    const { publishedRunsById, activeRunsById, testVersions } = state.runs;
 
     const runId = parseInt(ownProps.match.params.runId);
 
     let run, testVersion, allTests;
+    let runsLoaded = false;
     if (publishedRunsById) {
         run = publishedRunsById[runId];
+    }
+    if (!run && activeRunsById) {
+      run = activeRunsById[runId];
+    }
+    if (publishedRunsById || activeRunsById) {
+      runsLoaded = true;
     }
     if (run) {
         testVersion = (testVersions || []).find(
@@ -383,7 +391,7 @@ const mapStateToProps = (state, ownProps) => {
         run,
         allTests,
         testVersion,
-        publishedRunsById
+        runsLoaded
     };
 };
 
