@@ -26,7 +26,6 @@ import checkForConflict from '../../utils/checkForConflict';
 import './TestRun.css';
 
 const PROGRESS_SAVED = 'Progress has been saved.';
-let heading = null;
 
 class TestRun extends Component {
     constructor(props) {
@@ -390,7 +389,7 @@ class TestRun extends Component {
         );
     }
 
-    renderTest({ run, test, git_hash, at_key, testIndex, testerId }) {
+    renderTest({ run, test, git_hash, at_key, testIndex, testerId }, heading) {
         const { conflicts } = this.state;
         const { userId } = this.props;
         this.testHasResult = test.results && test.results[testerId];
@@ -558,7 +557,7 @@ class TestRun extends Component {
                     <span className="task-label">Testing task:</span>{' '}
                     {`${this.state.currentTestIndex}.`} {test.name}
                 </h1>
-                <span>{ heading }</span>
+                <span>{heading}</span>
                 <StatusBar key={nextId()} {...statusProps} />
                 <Row>
                     <Col md={9} className="test-iframe-contaner">
@@ -624,6 +623,7 @@ class TestRun extends Component {
         }
 
         let content = null;
+        let heading = null;
         let testContent = null;
         let runningAsUserHeader = null;
 
@@ -672,18 +672,26 @@ class TestRun extends Component {
             );
 
             if (!this.state.runComplete) {
-                testContent = this.renderTest({
-                    key: `${test.id}/${this.state.currentTestIndex}`,
-                    run,
-                    test,
-                    testIndex: this.state.currentTestIndex,
-                    git_hash,
-                    at_key,
-                    userId,
-                    testerId: openAsUser || userId
-                });
+                testContent = this.renderTest(
+                    {
+                        key: `${test.id}/${this.state.currentTestIndex}`,
+                        run,
+                        test,
+                        testIndex: this.state.currentTestIndex,
+                        git_hash,
+                        at_key,
+                        userId,
+                        testerId: openAsUser || userId
+                    },
+                    heading
+                );
             } else {
-                content = <div>Tests are complete.</div>;
+                content = (
+                    <div>
+                        {heading}
+                        <p>Tests are complete.</p>
+                    </div>
+                );
             }
         } else {
             heading = (
