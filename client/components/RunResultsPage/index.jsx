@@ -89,7 +89,7 @@ class RunResultsPage extends Component {
     }
 
     render() {
-        const { run, allTests, testVersion, runsLoaded, formattedRunStatus } = this.props;
+        const { run, allTests, testVersion, runsLoaded, formattedRunStatus, isSignedIn } = this.props;
 
         if (runsLoaded && !run) {
             return <Redirect to={{ pathname: '/404' }} />;
@@ -308,16 +308,25 @@ class RunResultsPage extends Component {
                                                 Details for test: {t.name}
                                             </h2>
                                             <div className="float-right">
-                                                <Button
-                                                    variant="secondary"
-                                                    onClick={() =>
-                                                        this.handleRaiseIssueClick(
-                                                            i
-                                                        )
-                                                    }
-                                                >
-                                                    Raise an Issue
-                                                </Button>
+                                                { isSignedIn ?
+                                                    <Button
+                                                        variant="secondary"
+                                                        onClick={() =>
+                                                            this.handleRaiseIssueClick(
+                                                                i
+                                                            )
+                                                        }
+                                                    >
+                                                        Raise an Issue
+                                                      </Button> :
+                                                      <Button
+                                                          target="_blank"
+                                                          href="https://github.com/w3c/aria-at/issues/new/choose"
+                                                          variant="secondary"
+                                                      >
+                                                        Raise an Issue
+                                                      </Button>
+                                                }
                                                 <Button
                                                     target="_blank"
                                                     href={`/aria-at/${git_hash}/${t.file}?at=${at_key}`}
