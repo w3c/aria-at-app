@@ -26,6 +26,7 @@ import checkForConflict from '../../utils/checkForConflict';
 import './TestRun.css';
 
 const PROGRESS_SAVED = 'Progress has been saved.';
+let heading = null;
 
 class TestRun extends Component {
     constructor(props) {
@@ -557,6 +558,7 @@ class TestRun extends Component {
                     <span className="task-label">Testing task:</span>{' '}
                     {`${this.state.currentTestIndex}.`} {test.name}
                 </h1>
+                <span>{ heading }</span>
                 <StatusBar key={nextId()} {...statusProps} />
                 <Row>
                     <Col md={9} className="test-iframe-contaner">
@@ -621,7 +623,6 @@ class TestRun extends Component {
             testsToRun = true;
         }
 
-        let heading = null;
         let content = null;
         let testContent = null;
         let runningAsUserHeader = null;
@@ -809,7 +810,6 @@ class TestRun extends Component {
                                 </button>
                             </span>
                         )}
-                        {heading}
                         {testContent || (
                             <Row>
                                 <Col>{content}</Col>
