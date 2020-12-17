@@ -93,8 +93,12 @@ class TestQueueRun extends Component {
     }
 
     updateRunStatus(status) {
+        let statusMap = {
+            'In Review': 'draft',
+            Final: 'final'
+        };
         const { dispatch, runId } = this.props;
-        dispatch(saveRunStatus(status.toLowerCase(), runId));
+        dispatch(saveRunStatus(statusMap[status], runId));
     }
 
     async handleDeleteResultsForUser(userId) {
@@ -219,9 +223,7 @@ class TestQueueRun extends Component {
             this.state.testsWithResults > 0 &&
             this.state.testsWithResults !== testsForRun.length
         ) {
-            status = (
-                <span className="status-label in-progress">In Progress</span>
-            );
+            status = <span className="status-label in-progress">Draft</span>;
         } else if (this.state.testsWithResults === testsForRun.length) {
             status = <span className="status-label complete">Complete</span>;
         }
@@ -255,7 +257,7 @@ class TestQueueRun extends Component {
                 this.state.testsWithResults > 0) ||
             runStatus === 'final'
         ) {
-            newStatus = 'Draft';
+            newStatus = 'In Review';
         }
         // If the results have been marked as draft and there is no conflict,
         // they can be marked as "final"
