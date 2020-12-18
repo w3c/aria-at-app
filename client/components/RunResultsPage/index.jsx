@@ -268,7 +268,7 @@ class RunResultsPage extends Component {
                                 The following tests have been skipped in this
                                 test run:
                             </p>
-                            <ul>
+                            <ol>
                                 {skippedTests.map(s => {
                                     return (
                                         <li key={nextId()}>
@@ -280,7 +280,7 @@ class RunResultsPage extends Component {
                                         </li>
                                     );
                                 })}
-                            </ul>
+                            </ol>
                         </Col>
                     </Row>
                     <Row>
