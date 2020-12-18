@@ -333,10 +333,17 @@ main.home-page.container h1 {
 }
 
 .hero-section {
-    background: #dae8fa;
+    background: #eaf3fe;
     padding: 1em;
     border-top: 1px solid #c4d5eb;
     border-bottom: 1px solid #c4d5eb;
+}
+.hero-section .hero-buttons {
+    text-align: center;
+}
+
+.hero-section .hero-buttons button {
+    margin: 0 .5em;
 }
 
 .app-screenshots {
@@ -390,7 +397,7 @@ img {
 
 .get-involved .resources article {
     background: white;
-    padding: 1.5em 1em;
+    padding: 2em 1em;
     box-shadow: 0px 6px 11px 0px rgba(0, 0, 0, 0.15);
     border-radius: 5px;
     text-align: center;
@@ -404,10 +411,9 @@ img {
 }
 
 .get-involved .resources a {
-    color: #4d4d4d;
+    color: black;
     margin-top: 1em;
     display: block;
-    font-weight: bold;
     font-size: 1.1em;
     line-height: 1.2;
 }

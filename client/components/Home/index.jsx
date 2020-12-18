@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
-import { Container } from 'react-bootstrap';
+import { Button, Container } from 'react-bootstrap';
 import testManagementScreenshot from '../../assets/test-management.jpg';
 import testQueueScreenshot from '../../assets/test-queue.jpg';
 import testViewScreenshot from '../../assets/test-view.jpg';
@@ -38,6 +38,10 @@ class Home extends Component {
                         </a>{' '}
                         process.
                     </p>
+                    <div className="hero-buttons">
+                        <Button variant="primary">Get Involved</Button>
+                        <Button variant="primary">Review Tests Results</Button>
+                    </div>
                 </section>
                 <section className="get-involved">
                     <div className="container">
