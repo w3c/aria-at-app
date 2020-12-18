@@ -264,11 +264,13 @@ class RunResultsPage extends Component {
                                 </tbody>
                             </Table>
 
-                            <h2>Skipped Tests</h2>
-                            <p>
-                                The following tests have been skipped in this
-                                test run:
-                            </p>
+                            <div className="skipped-tests-heading">
+                                <h2>Skipped Tests</h2>
+                                <p>
+                                    The following tests have been skipped in this
+                                    test run:
+                                </p>
+                            </div>
                             <ol className="skipped-tests">
                                 {skippedTests.map(s => {
                                     return (
@@ -289,7 +291,7 @@ class RunResultsPage extends Component {
                             {tests.map((t, i) => {
                                 return (
                                     <Fragment key={nextId()}>
-                                        <div>
+                                        <div className="test-result-heading">
                                             <h2
                                                 ref={ref => {
                                                     this.$refs[
@@ -298,11 +300,10 @@ class RunResultsPage extends Component {
                                                 }}
                                                 id={`test-${t.execution_order}`}
                                                 tabIndex="-1"
-                                                className="float-left"
                                             >
                                                 <span className="test-details">Details for test:</span> {t.name}
                                             </h2>
-                                            <div className="float-right">
+                                            <div className="test-result-buttons">
                                                 {isSignedIn ? (
                                                     <Button
                                                         variant="secondary"

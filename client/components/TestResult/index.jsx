@@ -50,7 +50,7 @@ class TestResult extends Component {
                         <tr>
                             <th>Command</th>
                             <th>Support</th>
-                            <th>Details</th>
+                            <th className="report-results-details">Details</th>
                         </tr>
                     </thead>
                     <tbody>
