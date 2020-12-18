@@ -516,6 +516,8 @@ async function getActiveRuns() {
 /**
  * Gets the all published runs for the most recent test version with results
  *
+ * Published runs are either "Final" or "In Reivew"
+ *
  * @return {Object.<number, Run>} - A mapping from run_id to Run
  */
 async function getPublishedRuns() {
@@ -523,10 +525,11 @@ async function getPublishedRuns() {
         // NB: Match the test_version for the most recently published run
         // instead of the currently active run so results can still be shown
         // even if new runs were just configured
+        const publishedStatuses = [db.RunStatus.FINAL, db.RunStatus.IN_REVIEW];
         const mostRecentPublishedRun = await db.Run.findOne({
             order: [['updated_at', 'desc nulls last']],
             include: [
-                { model: db.RunStatus, where: { name: db.RunStatus.FINAL } }
+                { model: db.RunStatus, where: { name: publishedStatuses } }
             ]
         });
         if (mostRecentPublishedRun) {
@@ -537,7 +540,7 @@ async function getPublishedRuns() {
                 include: [
                     {
                         model: db.RunStatus,
-                        where: { name: db.RunStatus.FINAL }
+                        where: { name: publishedStatuses }
                     },
                     {
                         model: db.ApgExample,

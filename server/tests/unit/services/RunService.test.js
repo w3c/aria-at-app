@@ -33,7 +33,7 @@ describe('RunService', () => {
                 const browser = await db.Browser.findOne();
 
                 const runStatus = await db.RunStatus.findOne({
-                    where: { name: db.RunStatus.RAW }
+                    where: { name: db.RunStatus.DRAFT }
                 });
 
                 const activeRuns = await RunService.configureRuns(
@@ -70,7 +70,7 @@ describe('RunService', () => {
                     design_pattern: null,
                     example: null,
                     run_status_id: runStatus.id,
-                    run_status: db.RunStatus.RAW,
+                    run_status: db.RunStatus.DRAFT,
                     test_version_id: testVersion.id,
                     testers: [],
                     tests: expect.any(Array)
@@ -136,7 +136,7 @@ describe('RunService', () => {
                 });
 
                 let runStatus = await db.RunStatus.findOne({
-                    where: { name: 'raw' }
+                    where: { name: db.RunStatus.DRAFT }
                 });
 
                 let tech = await db.BrowserVersionToAtVersion.create({
@@ -204,7 +204,7 @@ describe('RunService', () => {
                     design_pattern: null,
                     example: null,
                     run_status_id: runStatus.id,
-                    run_status: db.RunStatus.RAW,
+                    run_status: db.RunStatus.DRAFT,
                     test_version_id: testVersion2.id,
                     testers: [],
                     tests: expect.any(Array)
@@ -264,7 +264,7 @@ describe('RunService', () => {
                 });
 
                 const runStatus = await db.RunStatus.findOne({
-                    where: { name: db.RunStatus.RAW }
+                    where: { name: db.RunStatus.DRAFT }
                 });
 
                 let tech = await db.BrowserVersionToAtVersion.create({
@@ -329,7 +329,7 @@ describe('RunService', () => {
                     apg_example_name: apgExample.name,
                     apg_example_id: apgExample.id,
                     run_status_id: runStatus.id,
-                    run_status: db.RunStatus.RAW,
+                    run_status: db.RunStatus.DRAFT,
                     test_version_id: testVersion.id,
                     testers: [],
                     tests: expect.any(Array)
@@ -355,7 +355,7 @@ describe('RunService', () => {
                     design_pattern: null,
                     example: null,
                     run_status_id: runStatus.id,
-                    run_status: db.RunStatus.RAW,
+                    run_status: db.RunStatus.DRAFT,
                     test_version_id: testVersion.id,
                     testers: [],
                     tests: expect.any(Array)
@@ -398,7 +398,7 @@ describe('RunService', () => {
                 });
 
                 const runStatus = await db.RunStatus.findOne({
-                    where: { name: db.RunStatus.RAW }
+                    where: { name: db.RunStatus.DRAFT }
                 });
 
                 let tech = await db.BrowserVersionToAtVersion.create({
@@ -465,7 +465,7 @@ describe('RunService', () => {
                     design_pattern: null,
                     example: null,
                     run_status_id: runStatus.id,
-                    run_status: db.RunStatus.RAW,
+                    run_status: db.RunStatus.DRAFT,
                     test_version_id: testVersion.id,
                     testers: [],
                     tests: expect.any(Array)
@@ -491,7 +491,7 @@ describe('RunService', () => {
                     design_pattern: null,
                     example: null,
                     run_status_id: runStatus.id,
-                    run_status: db.RunStatus.RAW,
+                    run_status: db.RunStatus.DRAFT,
                     test_version_id: testVersion.id,
                     testers: [],
                     tests: expect.any(Array)
@@ -531,7 +531,7 @@ describe('RunService', () => {
                 });
 
                 const runStatus = await db.RunStatus.findOne({
-                    where: { name: db.RunStatus.RAW }
+                    where: { name: db.RunStatus.DRAFT }
                 });
 
                 let techPairDeactivate = await db.BrowserVersionToAtVersion.create(
@@ -584,7 +584,7 @@ describe('RunService', () => {
                     design_pattern: null,
                     example: null,
                     run_status_id: runStatus.id,
-                    run_status: db.RunStatus.RAW,
+                    run_status: db.RunStatus.DRAFT,
                     test_version_id: testVersion.id,
                     testers: [],
                     tests: expect.any(Array)
@@ -646,7 +646,7 @@ describe('RunService', () => {
                 });
 
                 const runStatus = await db.RunStatus.findOne({
-                    where: { name: db.RunStatus.RAW }
+                    where: { name: db.RunStatus.DRAFT }
                 });
 
                 let techPairActivate = await db.BrowserVersionToAtVersion.create(
@@ -727,7 +727,7 @@ describe('RunService', () => {
                 });
 
                 const runStatus = await db.RunStatus.findOne({
-                    where: { name: db.RunStatus.RAW }
+                    where: { name: db.RunStatus.DRAFT }
                 });
 
                 let tech = await db.BrowserVersionToAtVersion.create({
@@ -784,7 +784,7 @@ describe('RunService', () => {
                     design_pattern: null,
                     example: null,
                     run_status_id: runStatus.id,
-                    run_status: db.RunStatus.RAW,
+                    run_status: db.RunStatus.DRAFT,
                     test_version_id: testVersion.id,
                     testers: [],
                     tests: expect.any(Array)
@@ -829,7 +829,7 @@ describe('RunService', () => {
                 });
 
                 const runStatus = await db.RunStatus.findOne({
-                    where: { name: db.RunStatus.RAW }
+                    where: { name: db.RunStatus.DRAFT }
                 });
 
                 let tech = await db.BrowserVersionToAtVersion.create({
@@ -904,7 +904,7 @@ describe('RunService', () => {
                     design_pattern: null,
                     example: null,
                     run_status_id: runStatus.id,
-                    run_status: db.RunStatus.RAW,
+                    run_status: db.RunStatus.DRAFT,
                     test_version_id: testVersion.id,
                     testers: [],
                     tests: expect.any(Array)
@@ -954,7 +954,7 @@ describe('RunService', () => {
                 });
 
                 const runStatus = await db.RunStatus.findOne({
-                    where: { name: db.RunStatus.RAW }
+                    where: { name: db.RunStatus.DRAFT }
                 });
 
                 let tech = await db.BrowserVersionToAtVersion.create({
@@ -1016,7 +1016,7 @@ describe('RunService', () => {
                     design_pattern: null,
                     example: null,
                     run_status_id: runStatus.id,
-                    run_status: db.RunStatus.RAW,
+                    run_status: db.RunStatus.DRAFT,
                     test_version_id: testVersion2.id,
                     testers: [],
                     tests: []
@@ -1066,7 +1066,7 @@ describe('RunService', () => {
                 });
 
                 const runStatus = await db.RunStatus.findOne({
-                    where: { name: db.RunStatus.RAW }
+                    where: { name: db.RunStatus.DRAFT }
                 });
 
                 const user = await db.Users.create();
@@ -1133,7 +1133,7 @@ describe('RunService', () => {
                     design_pattern: null,
                     example: null,
                     run_status_id: runStatus.id,
-                    run_status: db.RunStatus.RAW,
+                    run_status: db.RunStatus.DRAFT,
                     test_version_id: testVersion2.id,
                     testers: [testerToRun.user_id],
                     tests: []
@@ -1183,7 +1183,7 @@ describe('RunService', () => {
                 });
 
                 const runStatusRaw = await db.RunStatus.findOne({
-                    where: { name: db.RunStatus.RAW }
+                    where: { name: db.RunStatus.DRAFT }
                 });
 
                 const runStatusFinal = await db.RunStatus.findOne({
@@ -1254,7 +1254,7 @@ describe('RunService', () => {
                     design_pattern: null,
                     example: null,
                     run_status_id: runStatusRaw.id,
-                    run_status: db.RunStatus.RAW,
+                    run_status: db.RunStatus.DRAFT,
                     test_version_id: testVersion2.id,
                     testers: [],
                     tests: []
@@ -1517,24 +1517,11 @@ describe('RunService', () => {
                         at_version_id: atVersion.id
                     }
                 );
-                const rawRunStatus = await db.RunStatus.findOne({
-                    where: { name: db.RunStatus.RAW }
-                });
-
-                // Raw Run
-                await db.Run.create({
-                    browser_version_to_at_versions_id:
-                        browserVersionToAtVersion.id,
-                    apg_example_id: apgExample.id,
-                    run_status_id: rawRunStatus.id,
-                    test_version_id: testVersion.id
-                });
-
                 const draftRunStatus = await db.RunStatus.findOne({
                     where: { name: db.RunStatus.DRAFT }
                 });
 
-                // Draft run
+                // Draft Run
                 await db.Run.create({
                     browser_version_to_at_versions_id:
                         browserVersionToAtVersion.id,

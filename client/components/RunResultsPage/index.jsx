@@ -88,9 +88,15 @@ class RunResultsPage extends Component {
     }
 
     render() {
-        const { run, allTests, testVersion, publishedRunsById } = this.props;
+        const {
+            run,
+            allTests,
+            testVersion,
+            runsLoaded,
+            isSignedIn
+        } = this.props;
 
-        if (publishedRunsById && !run) {
+        if (runsLoaded && !run) {
             return <Redirect to={{ pathname: '/404' }} />;
         }
 
@@ -116,26 +122,6 @@ class RunResultsPage extends Component {
         const { git_hash } = testVersion;
 
         let title = `Results for ${apg_example_name} tested with ${at_name} ${at_version} on ${browser_name} ${browser_version}`;
-        if (!run_status) {
-            return (
-                <>
-                    <Helmet>
-                        <title>{title}</title>
-                    </Helmet>
-                    <Container fluid>
-                        <Row>
-                            <Col>
-                                <Fragment>
-                                    <h1>{title}</h1>
-                                    <p>{`No results have been marked as DRAFT or FINAL for this run.`}</p>
-                                </Fragment>
-                            </Col>
-                        </Row>
-                    </Container>
-                </>
-            );
-        }
-
         let tests = [];
         let skippedTests = [];
         for (let test of allTests) {
@@ -209,7 +195,15 @@ class RunResultsPage extends Component {
                                         on {browser_name} {browser_version}
                                     </Breadcrumb.Item>
                                 </Breadcrumb>
-                                <h1>{title}</h1>
+                                <h1>
+                                    <span>
+                                        {run_status === 'final'
+                                            ? 'Final'
+                                            : 'In Review'}
+                                        :
+                                    </span>{' '}
+                                    {title}
+                                </h1>
                             </Fragment>
                         </Col>
                     </Row>
@@ -306,16 +300,26 @@ class RunResultsPage extends Component {
                                                 Details for test: {t.name}
                                             </h2>
                                             <div className="float-right">
-                                                <Button
-                                                    variant="secondary"
-                                                    onClick={() =>
-                                                        this.handleRaiseIssueClick(
-                                                            i
-                                                        )
-                                                    }
-                                                >
-                                                    Raise an Issue
-                                                </Button>
+                                                {isSignedIn ? (
+                                                    <Button
+                                                        variant="secondary"
+                                                        onClick={() =>
+                                                            this.handleRaiseIssueClick(
+                                                                i
+                                                            )
+                                                        }
+                                                    >
+                                                        Raise an Issue
+                                                    </Button>
+                                                ) : (
+                                                    <Button
+                                                        target="_blank"
+                                                        href="https://github.com/w3c/aria-at/issues/new/choose"
+                                                        variant="secondary"
+                                                    >
+                                                        Raise an Issue
+                                                    </Button>
+                                                )}
                                                 <Button
                                                     target="_blank"
                                                     href={`/aria-at/${git_hash}/${t.file}?at=${at_key}`}
@@ -360,17 +364,21 @@ RunResultsPage.propTypes = {
     allTests: PropTypes.array,
     run: PropTypes.object,
     testVersion: PropTypes.object,
-    publishedRunsById: PropTypes.object
+    runsLoaded: PropTypes.bool,
+    isSignedIn: PropTypes.bool
 };
 
 const mapStateToProps = (state, ownProps) => {
+    const { isSignedIn } = state.user;
     const { publishedRunsById, testVersions } = state.runs;
 
     const runId = parseInt(ownProps.match.params.runId);
 
     let run, testVersion, allTests;
+    let runsLoaded = false;
     if (publishedRunsById) {
         run = publishedRunsById[runId];
+        runsLoaded = true;
     }
     if (run) {
         testVersion = (testVersions || []).find(
@@ -383,7 +391,8 @@ const mapStateToProps = (state, ownProps) => {
         run,
         allTests,
         testVersion,
-        publishedRunsById
+        runsLoaded,
+        isSignedIn
     };
 };
 

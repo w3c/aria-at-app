@@ -300,7 +300,7 @@ describe('TestService', () => {
                 });
 
                 const runStatus = await db.RunStatus.findOne({
-                    where: { name: db.RunStatus.RAW }
+                    where: { name: db.RunStatus.DRAFT }
                 });
 
                 let tech = await db.BrowserVersionToAtVersion.create({
@@ -370,7 +370,7 @@ describe('TestService', () => {
                 });
 
                 const runStatus = await db.RunStatus.findOne({
-                    where: { name: db.RunStatus.RAW }
+                    where: { name: db.RunStatus.DRAFT }
                 });
 
                 let tech = await db.BrowserVersionToAtVersion.create({

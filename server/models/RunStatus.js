@@ -19,8 +19,11 @@ const RunStatus = function(sequelize, DataTypes) {
         }
     );
 
-    model.RAW = 'raw';
-    model.DRAFT = 'draft';
+    // NB: The names in the db don't reflect the names we currently surface on
+    // the FE. The names of the variables have been changed untill we get a
+    // chance to make the correct refactoring.
+    model.DRAFT = 'raw';
+    model.IN_REVIEW = 'draft';
     model.FINAL = 'final';
 
     return model;
