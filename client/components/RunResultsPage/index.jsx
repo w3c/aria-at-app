@@ -11,10 +11,7 @@ import {
     Button,
     Breadcrumb
 } from 'react-bootstrap';
-import {
-    getPublishedRuns,
-    getTestVersions
-} from '../../actions/runs';
+import { getPublishedRuns, getTestVersions } from '../../actions/runs';
 import checkForConflict from '../../utils/checkForConflict';
 import TestResult from '@components/TestResult';
 import RaiseIssueModal from '@components/RaiseIssueModal';
@@ -194,13 +191,18 @@ class RunResultsPage extends Component {
                                         Test Plan Report: {apg_example_name}
                                     </Breadcrumb.Item>
                                     <Breadcrumb.Item active>
-                                        Tech Pair Report: {at_name}{' '}
-                                        {at_version} on {browser_name}{' '}
-                                        {browser_version}
+                                        Tech Pair Report: {at_name} {at_version}{' '}
+                                        on {browser_name} {browser_version}
                                     </Breadcrumb.Item>
                                 </Breadcrumb>
                                 <h1>
-                                    <span>{ run_status === 'final' ? 'Final' : 'In Review' }:</span> {title}
+                                    <span>
+                                        {run_status === 'final'
+                                            ? 'Final'
+                                            : 'In Review'}
+                                        :
+                                    </span>{' '}
+                                    {title}
                                 </h1>
                             </Fragment>
                         </Col>
