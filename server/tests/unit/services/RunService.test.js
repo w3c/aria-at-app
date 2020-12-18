@@ -1530,19 +1530,6 @@ describe('RunService', () => {
                     test_version_id: testVersion.id
                 });
 
-                const inReviewRunStatus = await db.RunStatus.findOne({
-                    where: { name: db.RunStatus.IN_REVIEW }
-                });
-
-                // In-review run
-                await db.Run.create({
-                    browser_version_to_at_versions_id:
-                        browserVersionToAtVersion.id,
-                    apg_example_id: apgExample.id,
-                    run_status_id: inReviewRunStatus.id,
-                    test_version_id: testVersion.id
-                });
-
                 // Run without any status
                 await db.Run.create({
                     browser_version_to_at_versions_id:
@@ -1625,16 +1612,16 @@ describe('RunService', () => {
                     test_version_id: previousTestVersion.id
                 });
 
-                const inReviewRunStatus = await db.RunStatus.findOne({
-                    where: { name: db.RunStatus.IN_REVIEW }
+                const draftRunStatus = await db.RunStatus.findOne({
+                    where: { name: db.RunStatus.DRAFT }
                 });
 
-                // Run for current version in inReview state
+                // Run for current version in draft state
                 await db.Run.create({
                     browser_version_to_at_versions_id:
                         browserVersionToAtVersion.id,
                     apg_example_id: currentApgExample.id,
-                    run_status_id: inReviewRunStatus.id,
+                    run_status_id: draftRunStatus.id,
                     test_version_id: currentTestVersion.id
                 });
                 await db.TesterToRun.create({
@@ -1770,14 +1757,14 @@ describe('RunService', () => {
                     test_version_id: testVersion.id
                 });
 
-                const inReviewRunStatus = await db.RunStatus.findOne({
-                    where: { name: db.RunStatus.IN_REVIEW }
+                const draftRunStatus = await db.RunStatus.findOne({
+                    where: { name: db.RunStatus.DRAFT }
                 });
-                const inReviewRun = await db.Run.create({
+                const draftRun = await db.Run.create({
                     browser_version_to_at_versions_id:
                         browserVersionToAtVersion.id,
                     apg_example_id: apgExample.id,
-                    run_status_id: inReviewRunStatus.id,
+                    run_status_id: draftRunStatus.id,
                     test_version_id: testVersion.id
                 });
                 await db.TesterToRun.create({
@@ -1820,7 +1807,7 @@ describe('RunService', () => {
                 });
                 // TestResult for different Run should not be included
                 await db.TestResult.create({
-                    run_id: inReviewRun.id,
+                    run_id: draftRun.id,
                     test_id: test.id,
                     user_id: user.id,
                     status_id: testStatus.id,
