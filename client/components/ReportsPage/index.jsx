@@ -12,6 +12,9 @@ import {
     calculatePercentage,
     formatNoResults
 } from './utils';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHome } from '@fortawesome/free-solid-svg-icons';
+import './ReportsPage.css';
 
 class ReportsPage extends Component {
     constructor() {
@@ -162,10 +165,11 @@ class ReportsPage extends Component {
                 <Helmet>
                     <title>ARIA-AT Reports</title>
                 </Helmet>
-                <Breadcrumb>
-                    <Breadcrumb.Item active>Summary Report</Breadcrumb.Item>
-                </Breadcrumb>
                 <h1 id="table-header">Summary Report</h1>
+                <Breadcrumb>
+                    <Breadcrumb.Item active><FontAwesomeIcon icon={faHome} />Summary Report</Breadcrumb.Item>
+                </Breadcrumb>
+                <h2>Test Version</h2>
                 {this.props.testVersion ? (
                     <CurrentGitCommit
                         label="Results shown are from the most recent test version:"
@@ -175,6 +179,7 @@ class ReportsPage extends Component {
                 ) : (
                     <></>
                 )}
+                <h2>Test Reports</h2>
                 <p id="tech-pair-description">
                     Each AT / Browser Pair shows the Percentage of Required
                     Passing Tests for the pairing.

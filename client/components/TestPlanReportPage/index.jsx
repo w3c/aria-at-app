@@ -13,6 +13,8 @@ import {
     formatInteger,
     formatNoResults
 } from '../ReportsPage/utils';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHome } from '@fortawesome/free-solid-svg-icons';
 
 class TestPlanReportPage extends Component {
     constructor() {
@@ -202,15 +204,15 @@ class TestPlanReportPage extends Component {
                 <Helmet>
                     <title>{`ARIA-AT Report ${apgExample.exampleName}`}</title>
                 </Helmet>
+                <h1>{apgExample.exampleName} Report</h1>
                 <Breadcrumb>
                     <Breadcrumb.Item href="/reports">
-                        Summary Report
+                        <FontAwesomeIcon icon={faHome} />Summary Report
                     </Breadcrumb.Item>
                     <Breadcrumb.Item active>
                         Test Plan Report: {apgExample.exampleName}
                     </Breadcrumb.Item>
                 </Breadcrumb>
-                <h1>{apgExample.exampleName} Report</h1>
                 <ul>
                     {apgExample.exampleUrl ? (
                         <li>
@@ -231,6 +233,7 @@ class TestPlanReportPage extends Component {
                         <></>
                     )}
                 </ul>
+                <h2>Test Version</h2>
                 {this.props.testVersion ? (
                     <CurrentGitCommit
                         label="Results shown are from the most recent test version:"

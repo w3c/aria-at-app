@@ -1,0 +1,57 @@
+.breadcrumb {
+    background: none;
+    border: 1px solid gainsboro;
+    position: relative;
+    font-size: .9em;
+    margin: 0;
+}
+
+.breadcrumb-item {
+    position: relative;
+}
+
+.breadcrumb-item + .breadcrumb-item {
+    padding-left: 1.5rem; 
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    content: "";
+    position: absolute;
+    width: 1px;
+    height: 1.6em;
+    background: gainsboro;
+    display: initial;
+    padding: 0;
+    top: -.8em;
+    transform: rotate(-20deg);
+    left: .75em;
+}
+
+.breadcrumb-item + .breadcrumb-item::after {
+    content: "";
+    position: absolute;
+    width: 1px;
+    height: 1.6em;
+    background: gainsboro;
+    display: initial;
+    padding: 0;
+    bottom: -.8em;
+    transform: rotate(20deg);
+    left: .75em;
+}
+
+.breadcrumb-item a {
+    color: #0b60ab;
+}
+
+.breadcrumb-item a:hover {
+    color: #0b60ab;
+}
+
+.breadcrumb-item.active {
+    color: #000000;
+}
+
+.current-commit {
+    margin-top: 1em;
+}

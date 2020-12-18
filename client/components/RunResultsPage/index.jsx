@@ -16,6 +16,8 @@ import checkForConflict from '../../utils/checkForConflict';
 import TestResult from '@components/TestResult';
 import RaiseIssueModal from '@components/RaiseIssueModal';
 import nextId from 'react-id-generator';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHome } from '@fortawesome/free-solid-svg-icons';
 
 class RunResultsPage extends Component {
     constructor(props) {
@@ -181,9 +183,18 @@ class RunResultsPage extends Component {
                     <Row>
                         <Col>
                             <Fragment>
+                                <h1>
+                                    <span>
+                                        {run_status === 'final'
+                                            ? 'Final'
+                                            : 'In Review'}
+                                        :
+                                    </span>{' '}
+                                    {title}
+                                </h1>
                                 <Breadcrumb>
                                     <Breadcrumb.Item href="/reports">
-                                        Summary Report
+                                        <FontAwesomeIcon icon={faHome} />Summary Report
                                     </Breadcrumb.Item>
                                     <Breadcrumb.Item
                                         href={`/reports/test-plans/${apg_example_id}`}
@@ -195,15 +206,6 @@ class RunResultsPage extends Component {
                                         on {browser_name} {browser_version}
                                     </Breadcrumb.Item>
                                 </Breadcrumb>
-                                <h1>
-                                    <span>
-                                        {run_status === 'final'
-                                            ? 'Final'
-                                            : 'In Review'}
-                                        :
-                                    </span>{' '}
-                                    {title}
-                                </h1>
                             </Fragment>
                         </Col>
                     </Row>
