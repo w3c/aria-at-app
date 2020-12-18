@@ -55,3 +55,21 @@
 .current-commit {
     margin-top: 1em;
 }
+
+.skipped-tests {
+    columns: 2;
+    line-height: 2;
+    border: 1px solid #ecead3;
+    padding: 1.5em 3em;
+    background: #fffbeb;
+}
+
+.skipped-tests li {
+    margin-bottom: .5em;
+    border-bottom: 1px solid #ebead3;
+    padding-bottom: .5em;
+    margin-right: 3em;
+    -webkit-column-break-inside: avoid;
+          page-break-inside: avoid;
+               break-inside: avoid;
+}

@@ -18,6 +18,7 @@ import RaiseIssueModal from '@components/RaiseIssueModal';
 import nextId from 'react-id-generator';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome } from '@fortawesome/free-solid-svg-icons';
+import './RunResultsPage.css';
 
 class RunResultsPage extends Component {
     constructor(props) {
@@ -268,7 +269,7 @@ class RunResultsPage extends Component {
                                 The following tests have been skipped in this
                                 test run:
                             </p>
-                            <ol>
+                            <ol className="skipped-tests">
                                 {skippedTests.map(s => {
                                     return (
                                         <li key={nextId()}>
@@ -299,7 +300,7 @@ class RunResultsPage extends Component {
                                                 tabIndex="-1"
                                                 className="float-left"
                                             >
-                                                Details for test: {t.name}
+                                                <span className="test-details">Details for test:</span> {t.name}
                                             </h2>
                                             <div className="float-right">
                                                 {isSignedIn ? (
