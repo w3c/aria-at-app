@@ -13,7 +13,6 @@ import {
 } from 'react-bootstrap';
 import {
     getPublishedRuns,
-    getActiveRuns,
     getTestVersions
 } from '../../actions/runs';
 import checkForConflict from '../../utils/checkForConflict';
@@ -38,7 +37,6 @@ class RunResultsPage extends Component {
         const { dispatch, run, testVersion } = this.props;
         if (!run) {
             dispatch(getPublishedRuns());
-            dispatch(getActiveRuns());
         }
         if (!testVersion) {
             dispatch(getTestVersions());
@@ -98,7 +96,6 @@ class RunResultsPage extends Component {
             allTests,
             testVersion,
             runsLoaded,
-            formattedRunStatus,
             isSignedIn
         } = this.props;
 
@@ -128,26 +125,6 @@ class RunResultsPage extends Component {
         const { git_hash } = testVersion;
 
         let title = `Results for ${apg_example_name} tested with ${at_name} ${at_version} on ${browser_name} ${browser_version}`;
-        if (!run_status) {
-            return (
-                <>
-                    <Helmet>
-                        <title>{title}</title>
-                    </Helmet>
-                    <Container fluid>
-                        <Row>
-                            <Col>
-                                <Fragment>
-                                    <h1>{title}</h1>
-                                    <p>{`No results have been marked as 'In Review' or 'Final' for this run.`}</p>
-                                </Fragment>
-                            </Col>
-                        </Row>
-                    </Container>
-                </>
-            );
-        }
-
         let tests = [];
         let skippedTests = [];
         for (let test of allTests) {
@@ -207,27 +184,23 @@ class RunResultsPage extends Component {
                     <Row>
                         <Col>
                             <Fragment>
-                                {formattedRunStatus == 'Final' ? (
-                                    <Breadcrumb>
-                                        <Breadcrumb.Item href="/reports">
-                                            Summary Report
-                                        </Breadcrumb.Item>
-                                        <Breadcrumb.Item
-                                            href={`/reports/test-plans/${apg_example_id}`}
-                                        >
-                                            Test Plan Report: {apg_example_name}
-                                        </Breadcrumb.Item>
-                                        <Breadcrumb.Item active>
-                                            Tech Pair Report: {at_name}{' '}
-                                            {at_version} on {browser_name}{' '}
-                                            {browser_version}
-                                        </Breadcrumb.Item>
-                                    </Breadcrumb>
-                                ) : (
-                                    <></>
-                                )}
+                                <Breadcrumb>
+                                    <Breadcrumb.Item href="/reports">
+                                        Summary Report
+                                    </Breadcrumb.Item>
+                                    <Breadcrumb.Item
+                                        href={`/reports/test-plans/${apg_example_id}`}
+                                    >
+                                        Test Plan Report: {apg_example_name}
+                                    </Breadcrumb.Item>
+                                    <Breadcrumb.Item active>
+                                        Tech Pair Report: {at_name}{' '}
+                                        {at_version} on {browser_name}{' '}
+                                        {browser_version}
+                                    </Breadcrumb.Item>
+                                </Breadcrumb>
                                 <h1>
-                                    <span>{formattedRunStatus}:</span> {title}
+                                    <span>{ run_status === 'final' ? 'Final' : 'In Review' }:</span> {title}
                                 </h1>
                             </Fragment>
                         </Col>
@@ -387,7 +360,6 @@ class RunResultsPage extends Component {
 RunResultsPage.propTypes = {
     dispatch: PropTypes.func,
     allTests: PropTypes.array,
-    formattedRunStatus: PropTypes.string,
     run: PropTypes.object,
     testVersion: PropTypes.object,
     runsLoaded: PropTypes.bool,
@@ -396,21 +368,14 @@ RunResultsPage.propTypes = {
 
 const mapStateToProps = (state, ownProps) => {
     const { isSignedIn } = state.user;
-    const { publishedRunsById, activeRunsById, testVersions } = state.runs;
+    const { publishedRunsById, testVersions } = state.runs;
 
     const runId = parseInt(ownProps.match.params.runId);
 
     let run, testVersion, allTests;
     let runsLoaded = false;
-    let formattedRunStatus = 'In Review';
     if (publishedRunsById) {
         run = publishedRunsById[runId];
-        formattedRunStatus = 'Final';
-    }
-    if (!run && activeRunsById) {
-        run = activeRunsById[runId];
-    }
-    if (publishedRunsById && activeRunsById) {
         runsLoaded = true;
     }
     if (run) {
@@ -422,7 +387,6 @@ const mapStateToProps = (state, ownProps) => {
 
     return {
         run,
-        formattedRunStatus,
         allTests,
         testVersion,
         runsLoaded,
