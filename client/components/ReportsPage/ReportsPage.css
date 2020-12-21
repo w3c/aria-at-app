@@ -2,7 +2,7 @@
     background: none;
     border: 1px solid gainsboro;
     position: relative;
-    font-size: .9em;
+    font-size: 0.9em;
     margin: 0;
 }
 
@@ -11,33 +11,33 @@
 }
 
 .breadcrumb-item + .breadcrumb-item {
-    padding-left: 1.5rem; 
+    padding-left: 1.5rem;
 }
 
 .breadcrumb-item + .breadcrumb-item::before {
-    content: "";
+    content: '';
     position: absolute;
     width: 1px;
     height: 1.6em;
     background: gainsboro;
     display: initial;
     padding: 0;
-    top: -.8em;
+    top: -0.8em;
     transform: rotate(-20deg);
-    left: .75em;
+    left: 0.75em;
 }
 
 .breadcrumb-item + .breadcrumb-item::after {
-    content: "";
+    content: '';
     position: absolute;
     width: 1px;
     height: 1.6em;
     background: gainsboro;
     display: initial;
     padding: 0;
-    bottom: -.8em;
+    bottom: -0.8em;
     transform: rotate(20deg);
-    left: .75em;
+    left: 0.75em;
 }
 
 .breadcrumb-item a {
@@ -69,13 +69,13 @@
     line-height: 2;
     border: 1px solid #eddfbe;
     padding: 1.5em 3em;
-    background:#fdfcf6;
+    background: #fdfcf6;
 }
 
 .skipped-tests li {
-    margin-bottom: .5em;
+    margin-bottom: 0.5em;
     border-bottom: 1px solid #eddfbe;
-    padding-bottom: .5em;
+    padding-bottom: 0.5em;
     margin-right: 3em;
     -webkit-column-break-inside: avoid;
     page-break-inside: avoid;
@@ -97,16 +97,17 @@
     margin-top: 2em;
 }
 
-.skipped-tests-heading h2, .test-result-heading h2 {
+.skipped-tests-heading h2,
+.test-result-heading h2 {
     margin-top: 0;
 }
 
 .test-result-buttons {
-    margin-bottom: .5em;
+    margin-bottom: 0.5em;
 }
 
 .test-result-buttons button {
-    margin-right: .5em;
+    margin-right: 0.5em;
 }
 
 .test-result-buttons .btn {
@@ -124,10 +125,9 @@
 .progress {
     height: 1.2rem;
     border-radius: 1rem;
-    margin-top: .2em;
+    margin-top: 0.2em;
 }
 
 .progress .progress-bar.bg-info {
     background-color: #0b60ab !important;
 }
-

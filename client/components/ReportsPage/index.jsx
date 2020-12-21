@@ -167,7 +167,10 @@ class ReportsPage extends Component {
                 </Helmet>
                 <h1 id="table-header">Summary Report</h1>
                 <Breadcrumb>
-                    <Breadcrumb.Item active><FontAwesomeIcon icon={faHome} />Summary Report</Breadcrumb.Item>
+                    <Breadcrumb.Item active>
+                        <FontAwesomeIcon icon={faHome} />
+                        Summary Report
+                    </Breadcrumb.Item>
                 </Breadcrumb>
                 <h2>Test Version</h2>
                 {this.props.testVersion ? (

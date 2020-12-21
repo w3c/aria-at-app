@@ -195,7 +195,8 @@ class RunResultsPage extends Component {
                                 </h1>
                                 <Breadcrumb>
                                     <Breadcrumb.Item href="/reports">
-                                        <FontAwesomeIcon icon={faHome} />Summary Report
+                                        <FontAwesomeIcon icon={faHome} />
+                                        Summary Report
                                     </Breadcrumb.Item>
                                     <Breadcrumb.Item
                                         href={`/reports/test-plans/${apg_example_id}`}
@@ -267,8 +268,8 @@ class RunResultsPage extends Component {
                             <div className="skipped-tests-heading">
                                 <h2>Skipped Tests</h2>
                                 <p>
-                                    The following tests have been skipped in this
-                                    test run:
+                                    The following tests have been skipped in
+                                    this test run:
                                 </p>
                             </div>
                             <ol className="skipped-tests">
@@ -301,7 +302,10 @@ class RunResultsPage extends Component {
                                                 id={`test-${t.execution_order}`}
                                                 tabIndex="-1"
                                             >
-                                                <span className="test-details">Details for test:</span> {t.name}
+                                                <span className="test-details">
+                                                    Details for test:
+                                                </span>{' '}
+                                                {t.name}
                                             </h2>
                                             <div className="test-result-buttons">
                                                 {isSignedIn ? (

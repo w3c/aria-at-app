@@ -207,7 +207,8 @@ class TestPlanReportPage extends Component {
                 <h1>{apgExample.exampleName} Report</h1>
                 <Breadcrumb>
                     <Breadcrumb.Item href="/reports">
-                        <FontAwesomeIcon icon={faHome} />Summary Report
+                        <FontAwesomeIcon icon={faHome} />
+                        Summary Report
                     </Breadcrumb.Item>
                     <Breadcrumb.Item active>
                         Test Plan Report: {apgExample.exampleName}
