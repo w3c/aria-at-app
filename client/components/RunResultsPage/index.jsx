@@ -16,6 +16,9 @@ import checkForConflict from '../../utils/checkForConflict';
 import TestResult from '@components/TestResult';
 import RaiseIssueModal from '@components/RaiseIssueModal';
 import nextId from 'react-id-generator';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHome } from '@fortawesome/free-solid-svg-icons';
+import './RunResultsPage.css';
 
 class RunResultsPage extends Component {
     constructor(props) {
@@ -181,8 +184,18 @@ class RunResultsPage extends Component {
                     <Row>
                         <Col>
                             <Fragment>
+                                <h1>
+                                    <span>
+                                        {run_status === 'final'
+                                            ? 'Final'
+                                            : 'In Review'}
+                                        :
+                                    </span>{' '}
+                                    {title}
+                                </h1>
                                 <Breadcrumb>
                                     <Breadcrumb.Item href="/reports">
+                                        <FontAwesomeIcon icon={faHome} />
                                         Summary Report
                                     </Breadcrumb.Item>
                                     <Breadcrumb.Item
@@ -195,15 +208,6 @@ class RunResultsPage extends Component {
                                         on {browser_name} {browser_version}
                                     </Breadcrumb.Item>
                                 </Breadcrumb>
-                                <h1>
-                                    <span>
-                                        {run_status === 'final'
-                                            ? 'Final'
-                                            : 'In Review'}
-                                        :
-                                    </span>{' '}
-                                    {title}
-                                </h1>
                             </Fragment>
                         </Col>
                     </Row>
@@ -261,12 +265,14 @@ class RunResultsPage extends Component {
                                 </tbody>
                             </Table>
 
-                            <h2>Skipped Tests</h2>
-                            <p>
-                                The following tests have been skipped in this
-                                test run:
-                            </p>
-                            <ul>
+                            <div className="skipped-tests-heading">
+                                <h2>Skipped Tests</h2>
+                                <p>
+                                    The following tests have been skipped in
+                                    this test run:
+                                </p>
+                            </div>
+                            <ol className="skipped-tests">
                                 {skippedTests.map(s => {
                                     return (
                                         <li key={nextId()}>
@@ -278,7 +284,7 @@ class RunResultsPage extends Component {
                                         </li>
                                     );
                                 })}
-                            </ul>
+                            </ol>
                         </Col>
                     </Row>
                     <Row>
@@ -286,7 +292,7 @@ class RunResultsPage extends Component {
                             {tests.map((t, i) => {
                                 return (
                                     <Fragment key={nextId()}>
-                                        <div>
+                                        <div className="test-result-heading">
                                             <h2
                                                 ref={ref => {
                                                     this.$refs[
@@ -295,11 +301,13 @@ class RunResultsPage extends Component {
                                                 }}
                                                 id={`test-${t.execution_order}`}
                                                 tabIndex="-1"
-                                                className="float-left"
                                             >
-                                                Details for test: {t.name}
+                                                <span className="test-details">
+                                                    Details for test:
+                                                </span>{' '}
+                                                {t.name}
                                             </h2>
-                                            <div className="float-right">
+                                            <div className="test-result-buttons">
                                                 {isSignedIn ? (
                                                     <Button
                                                         variant="secondary"

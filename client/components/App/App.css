@@ -197,6 +197,22 @@ table tbody tr.assign-testers {
     margin-bottom: 0;
 }
 
+ol {
+    padding-left: 1.75em;
+}
+
+ul {
+    padding-left: 0;
+}
+
+ul li {
+    list-style: none;
+}
+
+.col-md-9 li {
+    padding-right: 0.5em;
+}
+
 /* BUTTONS */
 /* Button Primary */
 .btn {

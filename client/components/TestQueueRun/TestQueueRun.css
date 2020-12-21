@@ -36,18 +36,6 @@
     display: none;
 }
 
-ul {
-    padding-left: 0;
-}
-
-li {
-    list-style: none;
-}
-
-.col-md-9 li {
-    padding-right: 0.5em;
-}
-
 .no-assignees {
     text-align: center;
 }
