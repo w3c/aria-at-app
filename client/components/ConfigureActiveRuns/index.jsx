@@ -210,7 +210,8 @@ class ConfigureActiveRuns extends Component {
         if (oldVersionId !== newVersionId) {
             configurationChanges = configurationChanges.concat(
                 Object.values(activeRunsById).filter(
-                    run => run.run_status === 'draft'
+                    run =>
+                        run.run_status === 'draft' || run.run_status === 'raw'
                 )
             );
         }
@@ -373,17 +374,27 @@ class ConfigureActiveRuns extends Component {
                 newConfiguration: config,
                 resultsDeleted: true
             };
-        }
 
-        this.setState(stateConfiguration, () => {
-            this.showChanges();
-        });
+            this.setState(stateConfiguration, () => {
+                this.showChanges();
+            });
+        } else {
+            stateConfiguration = {
+                newConfiguration: config,
+                resultsDeleted: false
+            };
+            this.setState(stateConfiguration, () => {
+                this.saveNewConfiguration();
+            });
+        }
     }
 
     saveNewConfiguration() {
         this.props.dispatch(saveRunConfiguration(this.state.newConfiguration));
 
-        this.closeChanges();
+        if (this.state.showChangeModal) {
+            this.closeChanges();
+        }
     }
 
     handleVersionChange(event) {
@@ -772,13 +783,14 @@ class ConfigureActiveRuns extends Component {
                         Update Active Run Configuration
                     </Button>
                 </div>
-                <ConfigurationModal
-                    show={this.state.showChangeModal}
-                    handleClose={this.closeChanges}
-                    saveRunConfiguration={this.saveNewConfiguration}
-                    configurationChanges={this.state.configurationChanges}
-                    resultsDeleted={this.state.resultsDeleted}
-                />
+                {this.state.resultsDeleted && (
+                    <ConfigurationModal
+                        show={this.state.showChangeModal}
+                        handleClose={this.closeChanges}
+                        saveRunConfiguration={this.saveNewConfiguration}
+                        configurationChanges={this.state.configurationChanges}
+                    />
+                )}
             </Container>
         );
     }
