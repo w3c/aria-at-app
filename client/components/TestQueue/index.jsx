@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
-import { Container, Table } from 'react-bootstrap';
+import { Container, Table, Alert } from 'react-bootstrap';
 import { Helmet } from 'react-helmet';
 import { connect } from 'react-redux';
 import { getAllUsers } from '../../actions/users';
@@ -146,24 +146,14 @@ class TestQueue extends Component {
                         <title>{noAts} | ARIA-AT</title>
                     </Helmet>
                     <h2 data-test="test-queue-no-ats-h2">{noAts}</h2>
-                    <div role="alert">
-                        <p data-test="test-queue-no-ats-p">
-                            Please configure your preferred Assistive
-                            Technologies in the {settingsLink} page.
-                        </p>
-                        <p>
-                            If you have configured your Assistive Technologies
-                            and are still not seeing any Test Plans in this
-                            page, it could be that there are no Test Plans
-                            available under your configuration.
-                            <p></p>
-                            Please{' '}
-                            <a href="mailto: public-aria-at@w3.org">
-                                contact the ARIA AT community group
-                            </a>
-                            .
-                        </p>
-                    </div>
+                    <Alert
+                        key="alert-configure"
+                        variant="danger"
+                        data-test="test-queue-no-ats-p"
+                    >
+                        Please configure your preferred Assistive Technologies
+                        in the {settingsLink} page.
+                    </Alert>
                 </Container>
             );
         }
@@ -206,6 +196,31 @@ class TestQueue extends Component {
                     runs: [run.id]
                 });
             }
+        }
+
+        if (atBrowserRunSets.length === 0) {
+            return (
+                <Container as="main">
+                    <Helmet>
+                        <title>No Test Plans | ARIA-AT</title>
+                    </Helmet>
+                    <h2 data-test="test-queue-no-ats-h2">No Test Plans</h2>
+                    <div role="alert">
+                        <p>
+                            If you have configured your Assistive Technologies
+                            and are still not seeing any Test Plans in this
+                            page, it could be that there are no Test Plans
+                            available under your configuration.
+                            <p></p>
+                            Please{' '}
+                            <a href="mailto: public-aria-at@w3.org">
+                                contact the ARIA AT community group
+                            </a>
+                            .
+                        </p>
+                    </div>
+                </Container>
+            );
         }
 
         return (
