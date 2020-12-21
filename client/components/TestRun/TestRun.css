@@ -241,6 +241,7 @@ main.container-fluid .test-iframe-contaner > .row {
     background: #f5f8fa;
     border: 1px solid #d2d5d9;
     width: 37%;
+    text-align: center;
 }
 
 .tests-completed {
@@ -291,7 +292,10 @@ main.container-fluid .test-iframe-contaner > .row {
     padding: 0.5em;
 }
 
-/* Alert warning message */
-/* .alert-warning {
+.fa-exclamation-circle, .fa-redo, .fa-pen, .fa-external-link-alt {
+    color: #959595;
+}
 
-} */
+.fa-check {
+    color: #1e8f37;
+}

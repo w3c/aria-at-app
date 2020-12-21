@@ -7,7 +7,11 @@ import {
     faCheckCircle,
     faArrowLeft,
     faAlignLeft,
-    faArrowRight
+    faArrowRight,
+    faRedo,
+    faExclamationCircle,
+    faCheck,
+    faPen
 } from '@fortawesome/free-solid-svg-icons';
 import nextId from 'react-id-generator';
 import { Alert, Button, Col, Container, Modal, Row } from 'react-bootstrap';
@@ -450,7 +454,7 @@ class TestRun extends Component {
                     variant="secondary"
                     onClick={this.handleEditClick}
                 >
-                    Edit Results
+                    <FontAwesomeIcon icon={faPen} />Edit Results
                 </Button>
             );
             const continueButton = (
@@ -483,7 +487,7 @@ class TestRun extends Component {
                         variant="secondary"
                         onClick={this.handleRaiseIssueClick}
                     >
-                        Raise an issue
+                        <FontAwesomeIcon icon={faExclamationCircle} />Raise an issue
                     </Button>
 
                     <Button
@@ -491,7 +495,7 @@ class TestRun extends Component {
                         variant="secondary"
                         onClick={this.handleRedoClick}
                     >
-                        Start over
+                        <FontAwesomeIcon icon={faRedo} />Start over
                     </Button>
 
                     <Button
@@ -568,7 +572,7 @@ class TestRun extends Component {
                             result.status === 'complete' &&
                             this.state.saveButtonClicked ? (
                                 <Alert key={nextId()} variant="success">
-                                    <FontAwesomeIcon icon={faCheckCircle} />{' '}
+                                    <FontAwesomeIcon icon={faCheck} />{' '}
                                     Thanks! Your results have been submitted
                                 </Alert>
                             ) : (
@@ -662,6 +666,7 @@ class TestRun extends Component {
                         </div>
                         <div className="test-info-entity tests-completed">
                             <div className="info-label">
+                                <FontAwesomeIcon icon={faCheck} />
                                 <b>{`${this.state.currentTestIndex} of ${run.tests.length}`}</b>{' '}
                                 Tests completed
                             </div>
