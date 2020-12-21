@@ -8,6 +8,8 @@ import { Container, Navbar, Nav } from 'react-bootstrap';
 import { handleCheckSignedIn, handleSignout } from '../../actions/user';
 import { getAllUsers } from '../../actions/users';
 import { handleGetValidAts } from '../../actions/ats';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
 
 class App extends Component {
     constructor(props) {
@@ -138,8 +140,9 @@ class App extends Component {
                                         to="/"
                                         onClick={this.signOut}
                                     >
-                                        Sign out {username}
+                                        Sign out
                                     </Nav.Link>
+                                    <div className="signed-in"><FontAwesomeIcon icon={faUserCircle} />Signed in as <b>{username}</b></div>
                                 </React.Fragment>
                             )}
                         </Navbar.Collapse>

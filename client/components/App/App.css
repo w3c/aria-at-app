@@ -376,3 +376,8 @@ img {
         vertical-align: top;
     }
 }
+
+.signed-in {
+    padding-left: .75em;
+    border-left: 2px solid #d2d5d9;
+}
