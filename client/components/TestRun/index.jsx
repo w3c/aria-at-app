@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-    faCheckCircle,
     faArrowLeft,
     faAlignLeft,
     faArrowRight,
