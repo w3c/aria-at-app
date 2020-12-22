@@ -326,24 +326,20 @@ main.home-page.container {
 
 main.home-page.container h1 {
     border: none;
-    text-align: center;
-    font-size: 2.75em;
-    width: 70%;
-    margin: auto;
 }
 
 .hero-section {
-    background: #eaf3fe;
-    padding: 1em;
+    padding: 1em ;
     border-top: 1px solid #c4d5eb;
     border-bottom: 1px solid #c4d5eb;
 }
-.hero-section .hero-buttons {
-    text-align: center;
+
+.hero-illustration {
+    display: none;
 }
 
 .hero-section .hero-buttons button {
-    margin: 0 .5em;
+    margin-right: .5em;
 }
 
 .app-screenshots {
@@ -374,30 +370,30 @@ img {
 
 .get-involved {
     background-color: #f8f8f8;
-    padding: 5em 0;
+    padding: 1em;
 }
 
-.get-involved .container {
+.get-involved-container {
     background: none;
 }
 
-.get-involved .container h2 {
+.get-involved-container h2 {
     margin: 0 0 1em 0;
     text-align: center;
-    font-size: 2em;
     text-transform: uppercase;
     font-weight: bold;
 }
 
 .get-involved .resources {
     display: grid;
-    grid-template-columns: 19% 19% 19% 19% 19%;
-    column-gap: 1.25%;
+    grid-template-columns: 48.5% 48.5%;
+    column-gap: 3%;
 }
 
 .get-involved .resources article {
     background: white;
     padding: 2em 1em;
+    margin-bottom: 1em;
     box-shadow: 0px 6px 11px 0px rgba(0, 0, 0, 0.15);
     border-radius: 5px;
     text-align: center;
@@ -425,8 +421,14 @@ img {
 
     main.container,
     .test-run-container,
-    .hero-section {
-        padding: 2rem 3rem;
+    .hero-section,
+    .get-involved {
+        padding: 3rem;
+    }
+
+    .get-involved .resources {
+        grid-template-columns: 32.5% 32.5% 32.5%;
+        column-gap: 1.25%;
     }
 }
 
@@ -446,11 +448,37 @@ img {
 
     main.container,
     .test-run-container,
-    .hero-section {
+    .get-involved {
         padding: 5rem;
+    }
+    
+    .get-involved-container h2 {
+        font-size: 1.75em;
+    }
+
+    .get-involved .resources {
+        grid-template-columns: 19% 19% 19% 19% 19%;
+        column-gap: 1.25%;
     }
 }
 
+@media (min-width: 1325px) {
+    .hero-section {
+        padding: 0 5rem;
+        display: grid;
+        grid-template-columns: 50% 50%;
+    }
+
+    .hero-copy {
+        padding: 5rem 0;
+    }
+
+    .hero-illustration {
+        display: block;
+        align-self: end;
+    }
+
+}
 .signed-in {
     padding-left: 0.75em;
     border-left: 2px solid #d2d5d9;

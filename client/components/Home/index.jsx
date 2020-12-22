@@ -11,6 +11,7 @@ import iconJoinCommunity from '../../assets/join-community.jpg';
 import iconWriteTests from '../../assets/write-tests.jpg';
 import iconReviewTests from '../../assets/review-tests.jpg';
 import iconFixIssue from '../../assets/fix-issue.jpg';
+import heroImage from '../../assets/hero-illustration.png';
 
 class Home extends Component {
     render() {
@@ -20,31 +21,36 @@ class Home extends Component {
                     <title>ARIA-AT App</title>
                 </Helmet>
                 <section className="hero-section about">
-                    <h1>
-                        Assistive technologies should render the web
-                        consistently for all users
-                    </h1>
-                    <p>
-                        ARIA-AT is an interoperability testing project for
-                        assistive technologies like screen readers. The tests
-                        are based on design patterns from the W3C ARIA
-                        Authoring Practices Guide. By specifying the expected
-                        output given a specific user interaction, we can
-                        evaluate how consistently different ATs render user
-                        interface code.
-                    </p>
-                    <p>
-                        This app collects test data, hosts the latest test
-                        results reports, and provides an interface for
-                        manual testers to record results.
-                    </p>
-                    <div className="hero-buttons">
-                        <Button variant="primary">Sign Up to Run Tests</Button>
-                        <Button variant="secondary">Browse Test Reports</Button>
+                    <div className="hero-copy">
+                        <h1>
+                            Assistive technologies should render the web
+                            consistently for all users
+                        </h1>
+                        <p>
+                            ARIA-AT is an interoperability testing project for
+                            assistive technologies like screen readers. The tests
+                            are based on design patterns from the W3C ARIA
+                            Authoring Practices Guide. By specifying the expected
+                            output given a specific user interaction, we can
+                            evaluate how consistently different ATs render user
+                            interface code.
+                        </p>
+                        <p>
+                            This app collects test data, hosts the latest test
+                            results reports, and provides an interface for
+                            manual testers to record results.
+                        </p>
+                        <div className="hero-buttons">
+                            <Button variant="primary">Sign Up to Run Tests</Button>
+                            <Button variant="secondary">Browse Test Reports</Button>
+                        </div>
+                    </div>
+                    <div className="hero-illustration">
+                        <img src={heroImage} alt=""/>
                     </div>
                 </section>
                 <section className="get-involved">
-                    <div className="container">
+                    <div className="get-involved-container">
                         <h2>Get Involved</h2>
                         <div className="resources">
                             <article>
