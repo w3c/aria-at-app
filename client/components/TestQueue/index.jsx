@@ -5,10 +5,11 @@ import { Container, Table, Alert } from 'react-bootstrap';
 import { Helmet } from 'react-helmet';
 import { connect } from 'react-redux';
 import { getAllUsers } from '../../actions/users';
-import { getActiveRuns } from '../../actions/runs';
+import { getActiveRuns, getActiveRunConfiguration } from '../../actions/runs';
 import nextId from 'react-id-generator';
 import TestQueueRun from '@components/TestQueueRun';
 import DeleteResultsModal from '@components/DeleteResultsModal';
+import CurrentGitCommit from '@components/CurrentGitCommit';
 import './TestQueue.css';
 
 class TestQueue extends Component {
@@ -27,10 +28,19 @@ class TestQueue extends Component {
     }
 
     componentDidMount() {
-        const { dispatch, activeRunsById, usersById } = this.props;
+        const {
+            dispatch,
+            activeRunsById,
+            usersById,
+            activeRunConfiguration
+        } = this.props;
 
         if (!activeRunsById) {
             dispatch(getActiveRuns());
+        }
+
+        if (!activeRunConfiguration) {
+            dispatch(getActiveRunConfiguration());
         }
 
         if (!Object.keys(usersById).length) {
@@ -114,7 +124,8 @@ class TestQueue extends Component {
             usersById,
             userId,
             admin,
-            activeRunsById
+            activeRunsById,
+            activeRunConfiguration
         } = this.props;
 
         const loading = <div data-test="test-queue-loading">Loading</div>;
@@ -223,6 +234,10 @@ class TestQueue extends Component {
             );
         }
 
+        if (!activeRunConfiguration) {
+            return loading;
+        }
+
         return (
             <Container as="main">
                 <Helmet>
@@ -236,6 +251,16 @@ class TestQueue extends Component {
                     `Assign yourself a test plan or start executing one that it's
                         already assigned to you.`}
                 </p>
+                <CurrentGitCommit
+                    label="Current Git Commit"
+                    gitHash={
+                        activeRunConfiguration.active_test_version.git_hash
+                    }
+                    gitCommitMessage={
+                        activeRunConfiguration.active_test_version
+                            .git_commit_msg
+                    }
+                />
                 {atBrowserRunSets.map(abr =>
                     this.renderAtBrowserList(abr.runs)
                 )}
@@ -253,6 +278,7 @@ class TestQueue extends Component {
 
 TestQueue.propTypes = {
     activeRunsById: PropTypes.object,
+    activeRunConfiguration: PropTypes.object,
     admin: PropTypes.bool,
     usersById: PropTypes.object,
     userId: PropTypes.number,
@@ -261,7 +287,7 @@ TestQueue.propTypes = {
 };
 
 const mapStateToProps = state => {
-    const { activeRunsById } = state.runs;
+    const { activeRunsById, activeRunConfiguration } = state.runs;
     const { usersById } = state.users;
     const userId = state.user.id;
     const roles = state.user.roles;
@@ -271,6 +297,7 @@ const mapStateToProps = state => {
 
     return {
         activeRunsById,
+        activeRunConfiguration,
         testsFetched,
         usersById,
         userId,
