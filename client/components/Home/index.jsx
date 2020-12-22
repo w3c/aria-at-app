@@ -42,11 +42,11 @@ class Home extends Component {
                         </p>
                         <div className="hero-buttons">
                             <Button variant="primary">Sign Up to Run Tests</Button>
-                            <Button variant="secondary">Browse Test Reports</Button>
+                            <Link className="btn-secondary btn" to="/reports">Browse Test Reports</Link>
                         </div>
                     </div>
                     <div className="hero-illustration">
-                        <img src={heroImage} alt=""/>
+                        <img src={heroImage} alt="An illustration of a computer where a test is being performed"/>
                     </div>
                 </section>
                 <section className="get-involved">
@@ -73,7 +73,7 @@ class Home extends Component {
                             </article>
                             <article>
                                 <img src={iconReviewTests} alt=""/>
-                                <Link to="/results">Review test results</Link>
+                                <Link to="/reports">Review test results</Link>
                             </article>
                             <article>
                                 <img src={iconFixIssue} alt=""/>
