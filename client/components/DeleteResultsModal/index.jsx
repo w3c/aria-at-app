@@ -4,7 +4,18 @@ import PropTypes from 'prop-types';
 
 class DeleteResultsModal extends Component {
     render() {
-        const { show, handleClose, deleteResults, admin, user } = this.props;
+        const {
+            show,
+            handleClose,
+            deleteResults,
+            admin,
+            user,
+            run
+        } = this.props;
+
+        const deleteDetails = run
+            ? `${run.apg_example_name} - ${run.at_name} ${run.at_version} ${run.browser_name} ${run.browser_version}`
+            : '';
         return (
             <Modal show={show} onHide={handleClose}>
                 <Modal.Header closeButton>
@@ -18,15 +29,26 @@ class DeleteResultsModal extends Component {
                     {admin ? (
                         <React.Fragment>
                             <p>
-                                Results for {user} will be deleted. Please press{' '}
-                                <b>Delete</b> to confirm this action.
+                                The following results for <b>{user}</b> will be
+                                deleted:
+                            </p>
+                            <p>
+                                <b>{deleteDetails}</b>
+                            </p>
+                            <p>
+                                Please press <b>Delete</b> to confirm this
+                                action.
                             </p>
                         </React.Fragment>
                     ) : (
                         <React.Fragment>
+                            <p>Your results will be deleted for:</p>
                             <p>
-                                Your results will be deleted. Please press{' '}
-                                <b>Delete</b> to confirm this action.
+                                <b>{deleteDetails}</b>
+                            </p>
+                            <p>
+                                Please press <b>Delete</b> to confirm this
+                                action.
                             </p>
                         </React.Fragment>
                     )}
@@ -48,6 +70,7 @@ DeleteResultsModal.propTypes = {
     admin: PropTypes.bool,
     deleteResults: PropTypes.func,
     handleClose: PropTypes.func,
+    run: PropTypes.object,
     show: PropTypes.bool,
     user: PropTypes.string
 };
