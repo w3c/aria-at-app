@@ -20,27 +20,27 @@ class Home extends Component {
                     <title>ARIA-AT App</title>
                 </Helmet>
                 <section className="hero-section about">
-                    <h1>Improving how well assistive technologies render web experiences</h1>
+                    <h1>
+                        Assistive technologies should render the web
+                        consistently for all users
+                    </h1>
                     <p>
-                        This project aims to improve how well assistive
-                        technologies render web experiences. It defines and runs
-                        manual tests of assistive technologies to measure their
-                        support of accessibility semantics using the example web
-                        components in the{' '}
-                        <a href="https://w3c.github.io/aria-practices/">
-                            WAI-ARIA Authoring Practices
-                        </a>
-                        . The tests and test results are vetted with assistive
-                        technology vendors and other stakeholders following the
-                        project&apos;s{' '}
-                        <a href="https://github.com/w3c/aria-at/wiki/Working-Mode">
-                            Working Mode
-                        </a>{' '}
-                        process.
+                        ARIA-AT is an interoperability testing project for
+                        assistive technologies like screen readers. The tests
+                        are based on design patterns from the W3C ARIA
+                        Authoring Practices Guide. By specifying the expected
+                        output given a specific user interaction, we can
+                        evaluate how consistently different ATs render user
+                        interface code.
+                    </p>
+                    <p>
+                        This app collects test data, hosts the latest test
+                        results reports, and provides an interface for
+                        manual testers to record results.
                     </p>
                     <div className="hero-buttons">
-                        <Button variant="primary">Get Involved</Button>
-                        <Button variant="primary">Review Tests Results</Button>
+                        <Button variant="primary">Sign Up to Run Tests</Button>
+                        <Button variant="secondary">Browse Test Reports</Button>
                     </div>
                 </section>
                 <section className="get-involved">
@@ -56,7 +56,7 @@ class Home extends Component {
                             <article>
                                 <img src={iconWriteTests} alt=""/>
                                 <a href="https://github.com/w3c/aria-at/wiki/How-to-contribute-tests">
-                                    Write more tests
+                                    Help write more tests
                                 </a>
                             </article>
                             <article>
