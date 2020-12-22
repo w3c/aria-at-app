@@ -6,6 +6,7 @@ import { Helmet } from 'react-helmet';
 import { connect } from 'react-redux';
 import { getAllUsers } from '../../actions/users';
 import { getActiveRuns, getActiveRunConfiguration } from '../../actions/runs';
+import { handleGetValidAts } from '../../actions/ats';
 import nextId from 'react-id-generator';
 import TestQueueRun from '@components/TestQueueRun';
 import DeleteResultsModal from '@components/DeleteResultsModal';
@@ -32,6 +33,7 @@ class TestQueue extends Component {
             dispatch,
             activeRunsById,
             usersById,
+            ats,
             activeRunConfiguration
         } = this.props;
 
@@ -41,6 +43,10 @@ class TestQueue extends Component {
 
         if (!activeRunConfiguration) {
             dispatch(getActiveRunConfiguration());
+        }
+
+        if (!ats) {
+            dispatch(handleGetValidAts());
         }
 
         if (!Object.keys(usersById).length) {
@@ -125,7 +131,8 @@ class TestQueue extends Component {
             userId,
             admin,
             activeRunsById,
-            activeRunConfiguration
+            activeRunConfiguration,
+            ats
         } = this.props;
 
         const loading = <div data-test="test-queue-loading">Loading</div>;
@@ -144,11 +151,16 @@ class TestQueue extends Component {
             return loading;
         }
 
-        let configuredAtNameIds = currentUser.configured_ats.map(
-            a => a.at_name_id
-        );
+        let configuredAtNameIds;
+        if (!admin) {
+            configuredAtNameIds = currentUser.configured_ats.map(
+                a => a.at_name_id
+            );
+        } else {
+            configuredAtNameIds = ats.map(at => at.id);
+        }
 
-        if (!configuredAtNameIds.length) {
+        if (!admin && !configuredAtNameIds.length) {
             const noAts = 'There are no Test Plans available';
             const settingsLink = <Link to="/account/settings">Settings</Link>;
             return (
@@ -209,7 +221,7 @@ class TestQueue extends Component {
             }
         }
 
-        if (atBrowserRunSets.length === 0) {
+        if (!admin && atBrowserRunSets.length === 0) {
             return (
                 <Container as="main">
                     <Helmet>
@@ -277,6 +289,7 @@ class TestQueue extends Component {
 }
 
 TestQueue.propTypes = {
+    ats: PropTypes.array,
     activeRunsById: PropTypes.object,
     activeRunConfiguration: PropTypes.object,
     admin: PropTypes.bool,
@@ -301,7 +314,8 @@ const mapStateToProps = state => {
         testsFetched,
         usersById,
         userId,
-        admin
+        admin,
+        ats: state.ats
     };
 };
 

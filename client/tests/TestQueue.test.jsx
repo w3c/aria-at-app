@@ -35,6 +35,7 @@ describe('render', () => {
                 runs: {
                     activeRunsById: {
                         1: {
+                            id: 1,
                             apg_example_name: 'apg_example_name',
                             at_name: 'at_name',
                             at_version: 'at_version',
@@ -49,7 +50,7 @@ describe('render', () => {
                     id: 10,
                     isSignedIn: true,
                     loadedUserData: true,
-                    roles: ['admin', 'tester'],
+                    roles: ['tester'],
                     username: 'jane'
                 },
                 users: {
@@ -67,7 +68,7 @@ describe('render', () => {
             wrapper = setup(initialState);
             wrapper.setState({ currentTestIndex: 1 });
         });
-        test('renders notice to configure ATs', () => {
+        test('renders notice to configure ATs, as a tester', () => {
             let component = findByTestAttr(wrapper, 'test-queue-no-ats-h2');
             expect(component.length).toBe(1);
             expect(component.text()).toContain(
