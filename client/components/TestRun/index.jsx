@@ -2,6 +2,7 @@ import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
+import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faArrowLeft,
@@ -89,15 +90,38 @@ class TestRun extends Component {
         }
     }
 
+    /**
+     * This function checks if all the tests in a run
+     * are complete and returns a boolean value.
+     */
+    isTestsComplete() {
+        const { openAsUser, run, userId } = this.props;
+        const uid = openAsUser || userId;
+        let testsComplete = true;
+
+        for (let test of run.tests) {
+            const hasResults =
+                Object.keys(test.results).length > 0 && test.results[uid];
+            if (!hasResults) return false;
+            testsComplete =
+                testsComplete && test.results[uid].status === 'complete';
+            if (!testsComplete) return false;
+        }
+
+        return testsComplete;
+    }
+
     displayNextTest() {
         const { run } = this.props;
         let newIndex = this.state.currentTestIndex + 1;
         if (newIndex > run.tests.length) {
-            this.setState({
-                runComplete: true,
-                resultsStatus: '',
-                saveButtonClicked: false
-            });
+            if (this.isTestsComplete()) {
+                this.setState({
+                    runComplete: true,
+                    resultsStatus: '',
+                    saveButtonClicked: false
+                });
+            }
         } else {
             this.setState({
                 currentTestIndex: newIndex,
@@ -444,7 +468,10 @@ class TestRun extends Component {
                 Previous Test
             </Button>
         );
-        let primaryButtons = [prevButton, nextButton];
+
+        const endOfRun = this.state.currentTestIndex + 1 > run.tests.length;
+        let primaryButtons = []; // These are the list of buttons that will appear below the tests
+        let forwardButtons = []; // These are buttons that navigate to next tests and continue
 
         if (this.testResultsCompleted) {
             const editButton = (
@@ -457,19 +484,32 @@ class TestRun extends Component {
                     Edit Results
                 </Button>
             );
+
             const continueButton = (
-                <Button variant="primary" onClick={this.handleNextTestClick}>
+                <Button
+                    variant="primary"
+                    disabled={endOfRun && !this.isTestsComplete()}
+                    onClick={this.handleNextTestClick}
+                >
                     Continue
                 </Button>
             );
-            primaryButtons = [...primaryButtons, editButton, continueButton];
+
+            if (!endOfRun) forwardButtons = [nextButton];
+            primaryButtons = [
+                prevButton,
+                editButton,
+                ...forwardButtons,
+                continueButton
+            ];
         } else {
             const saveResultsButton = (
                 <Button variant="primary" onClick={this.handleSaveClick}>
                     Submit Results
                 </Button>
             );
-            primaryButtons = [...primaryButtons, saveResultsButton];
+            if (!endOfRun) forwardButtons = [nextButton];
+            primaryButtons = [prevButton, ...forwardButtons, saveResultsButton];
         }
 
         primaryButtonGroup = (
@@ -696,7 +736,10 @@ class TestRun extends Component {
                 content = (
                     <div>
                         {heading}
-                        <p>Tests are complete.</p>
+                        <p>
+                            Tests are complete. Please return to the{' '}
+                            <Link to="/test-queue">Test Queue</Link>.
+                        </p>
                     </div>
                 );
             }
