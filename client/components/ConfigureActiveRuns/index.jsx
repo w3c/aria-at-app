@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import { connect } from 'react-redux';
 import { Container, Table, Form, Button } from 'react-bootstrap';
+import { Helmet } from 'react-helmet';
 import {
     saveRunConfiguration,
     getActiveRunConfiguration,
@@ -651,6 +652,9 @@ class ConfigureActiveRuns extends Component {
 
         return (
             <Container as="main">
+                <Helmet>
+                    <title>Configure Active Runs | ARIA-AT</title>
+                </Helmet>
                 <h1 data-test="configure-run-h2">Configure Active Runs</h1>
                 <h2 data-test="configure-run-h3">Update Versions</h2>
                 <Form className="init-box">
