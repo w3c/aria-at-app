@@ -2,10 +2,11 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { Button, Container } from 'react-bootstrap';
-import testManagementScreenshot from '../../assets/test-management.jpg';
-import testQueueScreenshot from '../../assets/test-queue.jpg';
-import testViewScreenshot from '../../assets/test-view.jpg';
-import testReviewScreenshot from '../../assets/test-review.jpg';
+import testManagementScreenshot from '../../assets/home-page/config-test.jpg';
+import testQueueScreenshot from '../../assets/home-page/test-queue.jpg';
+import testViewScreenshot from '../../assets/home-page/test-run.jpg';
+import testReviewScreenshot from '../../assets/home-page/test-report.jpg';
+
 import iconReviewAssertions from '../../assets/review-assertion.jpg';
 import iconJoinCommunity from '../../assets/join-community.jpg';
 import iconWriteTests from '../../assets/write-tests.jpg';
@@ -104,7 +105,7 @@ class Home extends Component {
                         </div>
                     </div>
                     <div className="container">
-                        <div className="description right">
+                        <div className="description">
                             <h2>Test Queue</h2>
                             <p>
                                 Testers can view in-progress Test Runs and
@@ -137,7 +138,7 @@ class Home extends Component {
                         </div>
                     </div>
                     <div className="container">
-                        <div className="description right">
+                        <div className="description">
                             <h2>Test Review</h2>
                             <p>
                                 After multiple runs have been recorded for a

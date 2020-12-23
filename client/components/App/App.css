@@ -330,8 +330,13 @@ main.home-page.container h1 {
 
 .hero-section {
     padding: 1em ;
-    border-top: 1px solid #c4d5eb;
-    border-bottom: 1px solid #c4d5eb;
+
+}
+
+.hero-section p {
+    font-weight: 400;
+    font-size: 1.2em;
+    color: #70859f;
 }
 
 .hero-illustration {
@@ -342,23 +347,30 @@ main.home-page.container h1 {
     margin-right: .5em;
 }
 
-.app-screenshots {
-    margin-top: 3em;
-    padding-top: 3em;
-}
-
 .app-screenshots .container {
     padding: 0;
-    margin-bottom: 5em;
+    margin: 0 0 2em 0;
+    max-width: 100%;
+    border-bottom: 1px solid #d8d8d8;
 }
 
-.app-screenshots .container > div {
-    padding-right: 2em;
+.app-screenshots .description {
+    padding: 2em;
+    
+}
+
+.app-screenshots .description p {
+    font-weight: 400;
+    font-size: 1.2em;
+    color: #70859f;
 }
 
 .app-screenshots .description h2 {
     margin-top: 0;
+    font-size: 2em;
+    font-weight: 700;
 }
+
 
 .right {
     float: right;
@@ -369,7 +381,7 @@ img {
 }
 
 .get-involved {
-    background-color: #f8f8f8;
+    background-color: #f6fbfe;
     padding: 1em;
 }
 
@@ -380,7 +392,6 @@ img {
 .get-involved-container h2 {
     margin: 0 0 1em 0;
     text-align: center;
-    text-transform: uppercase;
     font-weight: bold;
 }
 
@@ -439,6 +450,26 @@ img {
         display: inline-block;
         vertical-align: top;
     }
+
+    .hero-section {
+        padding: 5rem; 
+    }
+
+    .app-screenshots {
+        margin-top: 3em;
+        padding-top: 3em;
+    }
+    .app-screenshots .container {
+        margin-bottom: 5em;
+    }
+
+    .app-screenshots .container .screenshot {
+        display: inline-block;
+    }
+    
+    .app-screenshots .container img {
+        max-width: 100%;
+    }
 }
 
 @media (min-width: 1000px) {
@@ -460,6 +491,12 @@ img {
         grid-template-columns: 19% 19% 19% 19% 19%;
         column-gap: 1.25%;
     }
+    .app-screenshots .container {
+        border: none
+    }
+    .app-screenshots .description {
+        padding: 5em 2em 2em 5em;
+    }
 }
 
 @media (min-width: 1325px) {
@@ -478,8 +515,11 @@ img {
         align-self: end;
     }
 
-}
-.signed-in {
+    .app-screenshots .description {
+        padding-left: 10em;
+    }
+
+}.signed-in {
     padding-left: 0.75em;
     border-left: 2px solid #d2d5d9;
 }
