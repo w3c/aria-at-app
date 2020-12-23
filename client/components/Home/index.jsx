@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { Button, Container } from 'react-bootstrap';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 import testManagementScreenshot from '../../assets/home-page/config-test.jpg';
 import testQueueScreenshot from '../../assets/home-page/test-queue.jpg';
 import testViewScreenshot from '../../assets/home-page/test-run.jpg';
@@ -29,12 +31,12 @@ class Home extends Component {
                         </h1>
                         <p>
                             ARIA-AT is an interoperability testing project for
-                            assistive technologies like screen readers. The tests
-                            are based on design patterns from the W3C ARIA
-                            Authoring Practices Guide. By specifying the expected
-                            output given a specific user interaction, we can
-                            evaluate how consistently different ATs render user
-                            interface code.
+                            assistive technologies like screen readers. The
+                            tests are based on design patterns from the W3C ARIA
+                            Authoring Practices Guide. By specifying the
+                            expected output given a specific user interaction,
+                            we can evaluate how consistently different ATs
+                            render user interface code.
                         </p>
                         <p>
                             This app collects test data, hosts the latest test
@@ -42,12 +44,23 @@ class Home extends Component {
                             manual testers to record results.
                         </p>
                         <div className="hero-buttons">
-                            <Button variant="primary">Sign Up to Run Tests</Button>
-                            <Link className="btn-secondary btn" to="/reports">Browse Test Reports</Link>
+                            {this.props.isSignedIn ? (
+                                <Button variant="primary">
+                                    Sign Up to Run Tests
+                                </Button>
+                            ) : (
+                                <></>
+                            )}
+                            <Link className="btn-secondary btn" to="/reports">
+                                Browse Test Reports
+                            </Link>
                         </div>
                     </div>
                     <div className="hero-illustration">
-                        <img src={heroImage} alt="An illustration of a computer where a test is being performed"/>
+                        <img
+                            src={heroImage}
+                            alt="An illustration of a computer where a test is being performed"
+                        />
                     </div>
                 </section>
                 <section className="get-involved">
@@ -55,29 +68,29 @@ class Home extends Component {
                         <h2>Get Involved</h2>
                         <div className="resources">
                             <article>
-                                <img src={iconJoinCommunity} alt=""/>
+                                <img src={iconJoinCommunity} alt="" />
                                 <a href="https://www.w3.org/community/aria-at/">
                                     Join the community group
                                 </a>
                             </article>
                             <article>
-                                <img src={iconWriteTests} alt=""/>
+                                <img src={iconWriteTests} alt="" />
                                 <a href="https://github.com/w3c/aria-at/wiki/How-to-contribute-tests">
                                     Help write more tests
                                 </a>
                             </article>
                             <article>
-                                <img src={iconReviewAssertions} alt=""/>
+                                <img src={iconReviewAssertions} alt="" />
                                 <a href="https://w3c.github.io/aria-at/">
                                     Review existing test plans assesrtions
                                 </a>
                             </article>
                             <article>
-                                <img src={iconReviewTests} alt=""/>
+                                <img src={iconReviewTests} alt="" />
                                 <Link to="/reports">Review test results</Link>
                             </article>
                             <article>
-                                <img src={iconFixIssue} alt=""/>
+                                <img src={iconFixIssue} alt="" />
                                 <a href="https://github.com/w3c/aria-at/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22">
                                     Fix a good first issue
                                 </a>
@@ -160,4 +173,13 @@ class Home extends Component {
     }
 }
 
-export default Home;
+Home.propTypes = {
+    dispatch: PropTypes.func,
+    isSignedIn: PropTypes.bool
+};
+
+const mapStateToProps = state => {
+    return { isSignedIn: state.user.isSignedIn };
+};
+
+export default connect(mapStateToProps)(Home);

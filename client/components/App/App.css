@@ -329,8 +329,7 @@ main.home-page.container h1 {
 }
 
 .hero-section {
-    padding: 1em ;
-
+    padding: 1em;
 }
 
 .hero-section p {
@@ -344,7 +343,7 @@ main.home-page.container h1 {
 }
 
 .hero-section .hero-buttons button {
-    margin-right: .5em;
+    margin-right: 0.5em;
 }
 
 .app-screenshots .container {
@@ -356,7 +355,6 @@ main.home-page.container h1 {
 
 .app-screenshots .description {
     padding: 2em;
-    
 }
 
 .app-screenshots .description p {
@@ -370,7 +368,6 @@ main.home-page.container h1 {
     font-size: 2em;
     font-weight: 700;
 }
-
 
 .right {
     float: right;
@@ -452,7 +449,7 @@ img {
     }
 
     .hero-section {
-        padding: 5rem; 
+        padding: 5rem;
     }
 
     .app-screenshots {
@@ -466,7 +463,7 @@ img {
     .app-screenshots .container .screenshot {
         display: inline-block;
     }
-    
+
     .app-screenshots .container img {
         max-width: 100%;
     }
@@ -482,7 +479,7 @@ img {
     .get-involved {
         padding: 5rem;
     }
-    
+
     .get-involved-container h2 {
         font-size: 1.75em;
     }
@@ -492,7 +489,7 @@ img {
         column-gap: 1.25%;
     }
     .app-screenshots .container {
-        border: none
+        border: none;
     }
     .app-screenshots .description {
         padding: 5em 2em 2em 5em;
@@ -518,8 +515,8 @@ img {
     .app-screenshots .description {
         padding-left: 10em;
     }
-
-}.signed-in {
+}
+.signed-in {
     padding-left: 0.75em;
     border-left: 2px solid #d2d5d9;
 }
