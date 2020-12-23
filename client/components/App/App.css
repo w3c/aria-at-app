@@ -60,7 +60,7 @@ nav.navbar {
     width: 90%;
     height: 2px;
     left: 0;
-    bottom: -11px;
+    bottom: -12px;
     right: 0;
     margin: auto;
 }
@@ -74,28 +74,6 @@ main.container-fluid .row {
 
 .row {
     margin: 0;
-}
-
-@media (min-width: 700px) {
-    nav.navbar {
-        padding: 0.5rem 3rem;
-    }
-
-    main.container,
-    .test-run-container {
-        padding: 2rem 3rem;
-    }
-}
-
-@media (min-width: 1000px) {
-    nav.navbar {
-        padding: 0.5rem 5rem;
-    }
-
-    main.container,
-    .test-run-container {
-        padding: 5rem;
-    }
 }
 
 nav .logo.navbar-brand {
@@ -341,23 +319,54 @@ ul li {
     top: 50%;
 }
 
-.app-screenshots {
-    margin-top: 3em;
-    border-top: 1px solid gainsboro;
-    padding-top: 3em;
+/* Home Page */
+main.home-page.container {
+    padding: 0;
+}
+
+main.home-page.container h1 {
+    border: none;
+}
+
+.hero-section {
+    padding: 1em;
+}
+
+.hero-section p {
+    font-weight: 400;
+    font-size: 1.2em;
+    color: #5c728e;
+}
+
+.hero-illustration {
+    display: none;
+}
+
+.hero-section .hero-buttons button {
+    margin-right: 0.5em;
 }
 
 .app-screenshots .container {
     padding: 0;
-    margin-bottom: 5em;
+    margin: 0 0 2em 0;
+    max-width: 100%;
+    border-bottom: 1px solid #d8d8d8;
 }
 
-.app-screenshots .container > div {
-    padding-right: 2em;
+.app-screenshots .description {
+    padding: 2em;
+}
+
+.app-screenshots .description p {
+    font-weight: 400;
+    font-size: 1.2em;
+    color: #5c728e;
 }
 
 .app-screenshots .description h2 {
     margin-top: 0;
+    font-size: 2em;
+    font-weight: 700;
 }
 
 .right {
@@ -368,6 +377,69 @@ img {
     max-width: 100%;
 }
 
+.get-involved {
+    background-color: #f6fbfe;
+    padding: 1em;
+}
+
+.get-involved-container {
+    background: none;
+}
+
+.get-involved-container h2 {
+    margin: 0 0 1em 0;
+    text-align: center;
+    font-weight: bold;
+}
+
+.get-involved .resources {
+    display: grid;
+    grid-template-columns: 48.5% 48.5%;
+    column-gap: 3%;
+}
+
+.get-involved .resources article {
+    background: white;
+    padding: 2em 1em;
+    margin-bottom: 1em;
+    box-shadow: 0px 6px 11px 0px rgba(0, 0, 0, 0.15);
+    border-radius: 5px;
+    text-align: center;
+}
+
+.get-involved .resources img {
+    width: 100px;
+    height: 100px;
+    display: block;
+    margin: auto;
+}
+
+.get-involved .resources a {
+    color: black;
+    margin-top: 1em;
+    display: block;
+    font-size: 1.1em;
+    line-height: 1.2;
+}
+
+@media (min-width: 700px) {
+    nav.navbar {
+        padding: 0.5rem 3rem;
+    }
+
+    main.container,
+    .test-run-container,
+    .hero-section,
+    .get-involved {
+        padding: 3rem;
+    }
+
+    .get-involved .resources {
+        grid-template-columns: 32.5% 32.5% 32.5%;
+        column-gap: 1.25%;
+    }
+}
+
 @media (min-width: 800px) {
     .app-screenshots .description,
     .app-screenshots .screenshot {
@@ -375,8 +447,75 @@ img {
         display: inline-block;
         vertical-align: top;
     }
+
+    .hero-section {
+        padding: 5rem;
+    }
+
+    .app-screenshots {
+        margin-top: 3em;
+        padding-top: 3em;
+    }
+    .app-screenshots .container {
+        margin-bottom: 5em;
+    }
+
+    .app-screenshots .container .screenshot {
+        display: inline-block;
+    }
+
+    .app-screenshots .container img {
+        max-width: 100%;
+    }
 }
 
+@media (min-width: 1000px) {
+    nav.navbar {
+        padding: 0.5rem 5rem;
+    }
+
+    main.container,
+    .test-run-container,
+    .get-involved {
+        padding: 5rem;
+    }
+
+    .get-involved-container h2 {
+        font-size: 1.75em;
+    }
+
+    .get-involved .resources {
+        grid-template-columns: 19% 19% 19% 19% 19%;
+        column-gap: 1.25%;
+    }
+    .app-screenshots .container {
+        border: none;
+    }
+    .app-screenshots .description {
+        padding: 5em 2em 2em 5em;
+    }
+}
+
+@media (min-width: 1325px) {
+    .hero-section {
+        padding: 0 5rem;
+        display: grid;
+        grid-template-columns: 50% 50%;
+    }
+
+    .hero-copy {
+        padding: 5rem 0;
+    }
+
+    .hero-illustration {
+        display: block;
+        align-self: end;
+    }
+
+    .app-screenshots .description {
+        padding-left: 10em;
+    }
+}
 .signed-in {
     padding-left: 0.75em;
     border-left: 2px solid #d2d5d9;
