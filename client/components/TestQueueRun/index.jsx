@@ -354,7 +354,7 @@ class TestQueueRun extends Component {
     }
 
     renderDeleteMenu() {
-        const { showDeleteResultsModal } = this.props;
+        const { showDeleteResultsModal, activeRunsById, runId } = this.props;
         let testersWithResults = this.generateTestersWithResults();
 
         if (testersWithResults.length) {
@@ -376,6 +376,7 @@ class TestQueueRun extends Component {
                                         onClick={() =>
                                             showDeleteResultsModal(
                                                 t.username,
+                                                activeRunsById[runId],
                                                 async () =>
                                                     await this.handleDeleteResultsForUser(
                                                         t.id
@@ -407,6 +408,7 @@ class TestQueueRun extends Component {
 
     render() {
         const {
+            activeRunsById,
             admin,
             userId,
             usersById,
@@ -526,6 +528,7 @@ class TestQueueRun extends Component {
                                 onClick={() =>
                                     showDeleteResultsModal(
                                         usersById[userId].username,
+                                        activeRunsById[runId],
                                         async () =>
                                             await this.handleDeleteResultsForUser(
                                                 userId
@@ -548,6 +551,7 @@ class TestQueueRun extends Component {
 }
 
 TestQueueRun.propTypes = {
+    activeRunsById: PropTypes.object,
     admin: PropTypes.bool,
     runId: PropTypes.number,
     runStatus: PropTypes.string,

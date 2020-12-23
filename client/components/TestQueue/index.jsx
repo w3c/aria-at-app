@@ -19,7 +19,10 @@ class TestQueue extends Component {
 
         this.state = {
             showDeleteResultsModal: false,
-            userForResultsDelete: null,
+            resultsDelete: {
+                username: '',
+                run: null
+            },
             deleteFunction: null
         };
 
@@ -59,10 +62,13 @@ class TestQueue extends Component {
         this.closeDeleteResultsModal();
     }
 
-    showDeleteResultsModal(username, deleteFunction) {
+    showDeleteResultsModal(username, run, deleteFunction) {
         this.setState({
             showDeleteResultsModal: true,
-            userForResultsDelete: username,
+            resultsDelete: {
+                username,
+                run
+            },
             deleteFunction
         });
     }
@@ -279,7 +285,8 @@ class TestQueue extends Component {
                 <DeleteResultsModal
                     show={this.state.showDeleteResultsModal}
                     handleClose={this.closeDeleteResultsModal}
-                    user={this.state.userForResultsDelete}
+                    user={this.state.resultsDelete.username}
+                    run={this.state.resultsDelete.run}
                     admin={admin}
                     deleteResults={this.deleteResults}
                 />
