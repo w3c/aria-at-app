@@ -149,21 +149,23 @@ export default (state = initialState, action) => {
                     }
                 };
             } else if (oldStatus !== 'final' && run_status === 'final') {
-                const updatedActiveRunsById = { ...state.activeRunsById };
-                delete updatedActiveRunsById[runId];
                 let updatedPublishedRunsById = undefined;
 
                 // If we switched the run from active to published,
                 // Then we might not have fetched the published runs yet
                 if (state.publishedRuns) {
                     updatedPublishedRunsById = {
-                        ...this.state.publishedRunsById,
+                        ...state.publishedRunsById,
                         [runId]: updatedRun
                     };
                 }
+
                 return {
                     ...state,
-                    activeRunsById: updatedActiveRunsById,
+                    activeRunsById: {
+                        ...state.activeRunsById,
+                        [runId]: updatedRun
+                    },
                     publishedRunsById: updatedPublishedRunsById
                 };
             } else if (oldStatus === 'final' && run_status !== 'final') {
