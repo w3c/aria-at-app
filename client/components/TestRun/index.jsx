@@ -453,7 +453,8 @@ class TestRun extends Component {
                     variant="secondary"
                     onClick={this.handleEditClick}
                 >
-                    <FontAwesomeIcon icon={faPen} />Edit Results
+                    <FontAwesomeIcon icon={faPen} />
+                    Edit Results
                 </Button>
             );
             const continueButton = (
@@ -486,7 +487,8 @@ class TestRun extends Component {
                         variant="secondary"
                         onClick={this.handleRaiseIssueClick}
                     >
-                        <FontAwesomeIcon icon={faExclamationCircle} />Raise an issue
+                        <FontAwesomeIcon icon={faExclamationCircle} />
+                        Raise an issue
                     </Button>
 
                     <Button
@@ -494,7 +496,8 @@ class TestRun extends Component {
                         variant="secondary"
                         onClick={this.handleRedoClick}
                     >
-                        <FontAwesomeIcon icon={faRedo} />Start over
+                        <FontAwesomeIcon icon={faRedo} />
+                        Start over
                     </Button>
 
                     <Button
@@ -571,8 +574,8 @@ class TestRun extends Component {
                             result.status === 'complete' &&
                             this.state.saveButtonClicked ? (
                                 <Alert key={nextId()} variant="success">
-                                    <FontAwesomeIcon icon={faCheck} />{' '}
-                                    Thanks! Your results have been submitted
+                                    <FontAwesomeIcon icon={faCheck} /> Thanks!
+                                    Your results have been submitted
                                 </Alert>
                             ) : (
                                 <div>

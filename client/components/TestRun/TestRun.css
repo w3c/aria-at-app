@@ -292,7 +292,10 @@ main.container-fluid .test-iframe-contaner > .row {
     padding: 0.5em;
 }
 
-.fa-exclamation-circle, .fa-redo, .fa-pen, .fa-external-link-alt {
+.fa-exclamation-circle,
+.fa-redo,
+.fa-pen,
+.fa-external-link-alt {
     color: #959595;
 }
 

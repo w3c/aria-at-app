@@ -142,7 +142,10 @@ class App extends Component {
                                     >
                                         Sign out
                                     </Nav.Link>
-                                    <div className="signed-in"><FontAwesomeIcon icon={faUserCircle} />Signed in as <b>{username}</b></div>
+                                    <div className="signed-in">
+                                        <FontAwesomeIcon icon={faUserCircle} />
+                                        Signed in as <b>{username}</b>
+                                    </div>
                                 </React.Fragment>
                             )}
                         </Navbar.Collapse>

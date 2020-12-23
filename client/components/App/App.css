@@ -378,6 +378,6 @@ img {
 }
 
 .signed-in {
-    padding-left: .75em;
+    padding-left: 0.75em;
     border-left: 2px solid #d2d5d9;
 }
