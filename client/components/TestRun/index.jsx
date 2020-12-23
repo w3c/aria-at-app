@@ -77,6 +77,13 @@ class TestRun extends Component {
         this.handleModalConfirmClick = this.handleModalConfirmClick.bind(this);
 
         this.iframe = React.createRef();
+
+        this.saveInterval = setInterval(async () => {
+            if (this.iframe.current) {
+                const saved = await this.iframe.current.saveTestProgress();
+                this.setState({ resultsStatus: saved ? PROGRESS_SAVED : '' });
+            }
+        }, 7500);
     }
 
     async componentDidMount() {
@@ -87,6 +94,10 @@ class TestRun extends Component {
         if (!run) {
             dispatch(getActiveRuns());
         }
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.saveInterval);
     }
 
     displayNextTest() {
@@ -190,74 +201,33 @@ class TestRun extends Component {
             case 'closeTest': {
                 // Save the serialized form of iframe
                 if (this.iframe.current) {
-                    const saved = await this.iframe.current.saveTestProgress();
-                    if (saved) {
-                        this.setState({ resultsStatus: PROGRESS_SAVED }, () => {
-                            setTimeout(() => {
-                                history.push(`/test-queue`);
-                            }, 200);
-                        });
-                    } else {
-                        history.push(`/test-queue`);
-                    }
-                } else {
-                    history.push(`/test-queue`);
+                    await this.iframe.current.saveTestProgress();
                 }
+                history.push(`/test-queue`);
                 break;
             }
             case 'goToNextTest': {
                 // Save the serialized form of iframe
                 if (this.iframe.current) {
-                    const saved = await this.iframe.current.saveTestProgress();
-                    if (saved) {
-                        this.setState({ resultsStatus: PROGRESS_SAVED }, () => {
-                            setTimeout(() => {
-                                this.displayNextTest();
-                            }, 200);
-                        });
-                    } else {
-                        this.displayNextTest();
-                    }
-                } else {
-                    this.displayNextTest();
+                    await this.iframe.current.saveTestProgress();
                 }
-
+                this.displayNextTest();
                 break;
             }
             case 'goToPreviousTest': {
                 // Save the serialized form of iframe
                 if (this.iframe.current) {
-                    const saved = await this.iframe.current.saveTestProgress();
-                    if (saved) {
-                        this.setState({ resultsStatus: PROGRESS_SAVED }, () => {
-                            setTimeout(() => {
-                                this.displayPreviousTest();
-                            }, 200);
-                        });
-                    } else {
-                        this.displayPreviousTest();
-                    }
-                } else {
-                    this.displayPreviousTest();
+                    await this.iframe.current.saveTestProgress();
                 }
+                this.displayPreviousTest();
                 break;
             }
             case 'goToTestAtIndex': {
                 // Save the serialized form of iframe
                 if (this.iframe.current) {
-                    const saved = await this.iframe.current.saveTestProgress();
-                    if (saved) {
-                        this.setState({ resultsStatus: PROGRESS_SAVED }, () => {
-                            setTimeout(() => {
-                                this.displayTestByIndex(index);
-                            }, 200);
-                        });
-                    } else {
-                        this.displayTestByIndex(index);
-                    }
-                } else {
-                    this.displayTestByIndex(index);
+                    await this.iframe.current.saveTestProgress();
                 }
+                this.displayTestByIndex(index);
                 break;
             }
             case 'redoTest': {
@@ -569,28 +539,30 @@ class TestRun extends Component {
                     <Col md={9} className="test-iframe-contaner">
                         <Row>{testContent}</Row>
                         <Row>{primaryButtonGroup}</Row>
-                        <Row>
-                            {result &&
-                            result.status === 'complete' &&
-                            this.state.saveButtonClicked ? (
-                                <Alert key={nextId()} variant="success">
-                                    <FontAwesomeIcon icon={faCheck} /> Thanks!
-                                    Your results have been submitted
-                                </Alert>
-                            ) : (
-                                <div>
-                                    {this.state.resultsStatus ? (
-                                        <span className="dot"></span>
-                                    ) : (
-                                        <></>
-                                    )}
-                                    {` ${this.state.resultsStatus}`}
-                                </div>
-                            )}
-                        </Row>
                     </Col>
-                    <Col className="current-test-options" md={3}>
-                        {menuRightOfContent}
+                    <Col md={3}>
+                        <div className="current-test-options">
+                            {menuRightOfContent}
+                        </div>
+                        {result &&
+                        result.status === 'complete' &&
+                        this.state.saveButtonClicked ? (
+                            <Alert key={nextId()} variant="success">
+                                <FontAwesomeIcon icon={faCheck} /> Thanks! Your
+                                results have been submitted
+                            </Alert>
+                        ) : (
+                            <div>
+                                {this.state.resultsStatus ? (
+                                    <Alert key={nextId()} variant="success">
+                                        <FontAwesomeIcon icon={faCheck} />
+                                        {this.state.resultsStatus}
+                                    </Alert>
+                                ) : (
+                                    <></>
+                                )}
+                            </div>
+                        )}
                     </Col>
                 </Row>
                 {modals}
