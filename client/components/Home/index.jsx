@@ -88,19 +88,18 @@ class Home extends Component {
                 <section className="app-screenshots">
                     <div className="container">
                         <div className="description">
-                            <h2>Test Management</h2>
+                            <h2>Test Review</h2>
                             <p>
-                                This app allows project administrators to create
-                                Test Runs for managing execution of tests of a
-                                collection of ARIA patterns with a specified set
-                                of assistive technology and browser
-                                combinations.
+                                After multiple runs have been recorded for a
+                                particular Test Plan, users can view a summary
+                                of results, and project administrators can
+                                publish them to the public Reports page.
                             </p>
                         </div>
                         <div className="screenshot">
                             <img
-                                src={testManagementScreenshot}
-                                alt="This page has two main sections: test run configuration and test plans. From the “configure active runs” section, the user can select a git commit of tests and define the assistive technology and browser combinations they want the testers to use for the test runs. In the ”test plans” section, the user is presented with all the test plans available in the system where he can assign testers to specific test plans or assistive technology and browser combinations."
+                                src={testReviewScreenshot}
+                                alt="A table with a summary of the results recorded for a test plan."
                             />
                         </div>
                     </div>
@@ -116,7 +115,7 @@ class Home extends Component {
                         <div className="screenshot">
                             <img
                                 src={testQueueScreenshot}
-                                alt="This page displays all the test plans available to be tested grouped by assistive technology and browser. Each assistive technology and browser combination as a table with the following columns: test plan,  assigned testers, report status and actions."
+                                alt="A Table displaying the Editor Menu bar example and the Checkbox two state example. Both under JAWS with Chrome."
                             />
                         </div>
                     </div>
@@ -133,24 +132,25 @@ class Home extends Component {
                         <div className="screenshot">
                             <img
                                 src={testViewScreenshot}
-                                alt="This page displays a test plan being ran, it has instructions for how to execute the test and record results. As part of the actions in this page, the user can: raise an issue, re-do the test, save and close, navigate to the previous and next test as well as skip it without necessarily having to record results."
+                                alt="A test plan being ran, where the test navigator with the list of tasks is highlighted."
                             />
                         </div>
                     </div>
                     <div className="container">
                         <div className="description">
-                            <h2>Test Review</h2>
+                            <h2>Test Management</h2>
                             <p>
-                                After multiple runs have been recorded for a
-                                particular Test Plan, users can view a summary
-                                of results, and project administrators can
-                                publish them to the public Reports page.
+                                This app allows project administrators to create
+                                Test Runs for managing execution of tests of a
+                                collection of ARIA patterns with a specified set
+                                of assistive technology and browser
+                                combinations.
                             </p>
                         </div>
                         <div className="screenshot">
                             <img
-                                src={testReviewScreenshot}
-                                alt="This page displays a table with a summary of the results recorded for a test plan. As part of the actions in this page, the user can: raise an issue, re-do the test, close, and edit."
+                                src={testManagementScreenshot}
+                                alt="The current git commit for a Test run and the option to select a different one from a dropdown menu"
                             />
                         </div>
                     </div>
