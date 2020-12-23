@@ -17,7 +17,11 @@ import TestResult from '@components/TestResult';
 import RaiseIssueModal from '@components/RaiseIssueModal';
 import nextId from 'react-id-generator';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHome } from '@fortawesome/free-solid-svg-icons';
+import {
+    faHome,
+    faExclamationCircle,
+    faExternalLinkAlt
+} from '@fortawesome/free-solid-svg-icons';
 import './RunResultsPage.css';
 
 class RunResultsPage extends Component {
@@ -317,6 +321,11 @@ class RunResultsPage extends Component {
                                                             )
                                                         }
                                                     >
+                                                        <FontAwesomeIcon
+                                                            icon={
+                                                                faExclamationCircle
+                                                            }
+                                                        />
                                                         Raise an Issue
                                                     </Button>
                                                 ) : (
@@ -325,6 +334,11 @@ class RunResultsPage extends Component {
                                                         href="https://github.com/w3c/aria-at/issues/new/choose"
                                                         variant="secondary"
                                                     >
+                                                        <FontAwesomeIcon
+                                                            icon={
+                                                                faExclamationCircle
+                                                            }
+                                                        />
                                                         Raise an Issue
                                                     </Button>
                                                 )}
@@ -333,6 +347,9 @@ class RunResultsPage extends Component {
                                                     href={`/aria-at/${git_hash}/${t.file}?at=${at_key}`}
                                                     variant="secondary"
                                                 >
+                                                    <FontAwesomeIcon
+                                                        icon={faExternalLinkAlt}
+                                                    />
                                                     Open Test
                                                 </Button>
                                             </div>

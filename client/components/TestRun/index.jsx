@@ -4,10 +4,13 @@ import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-    faCheckCircle,
     faArrowLeft,
     faAlignLeft,
-    faArrowRight
+    faArrowRight,
+    faRedo,
+    faExclamationCircle,
+    faCheck,
+    faPen
 } from '@fortawesome/free-solid-svg-icons';
 import nextId from 'react-id-generator';
 import { Alert, Button, Col, Container, Modal, Row } from 'react-bootstrap';
@@ -450,6 +453,7 @@ class TestRun extends Component {
                     variant="secondary"
                     onClick={this.handleEditClick}
                 >
+                    <FontAwesomeIcon icon={faPen} />
                     Edit Results
                 </Button>
             );
@@ -483,6 +487,7 @@ class TestRun extends Component {
                         variant="secondary"
                         onClick={this.handleRaiseIssueClick}
                     >
+                        <FontAwesomeIcon icon={faExclamationCircle} />
                         Raise an issue
                     </Button>
 
@@ -491,6 +496,7 @@ class TestRun extends Component {
                         variant="secondary"
                         onClick={this.handleRedoClick}
                     >
+                        <FontAwesomeIcon icon={faRedo} />
                         Start over
                     </Button>
 
@@ -568,8 +574,8 @@ class TestRun extends Component {
                             result.status === 'complete' &&
                             this.state.saveButtonClicked ? (
                                 <Alert key={nextId()} variant="success">
-                                    <FontAwesomeIcon icon={faCheckCircle} />{' '}
-                                    Thanks! Your results have been submitted
+                                    <FontAwesomeIcon icon={faCheck} /> Thanks!
+                                    Your results have been submitted
                                 </Alert>
                             ) : (
                                 <div>
@@ -662,6 +668,7 @@ class TestRun extends Component {
                         </div>
                         <div className="test-info-entity tests-completed">
                             <div className="info-label">
+                                <FontAwesomeIcon icon={faCheck} />
                                 <b>{`${this.state.currentTestIndex} of ${run.tests.length}`}</b>{' '}
                                 Tests completed
                             </div>
