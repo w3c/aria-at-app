@@ -94,6 +94,7 @@ class TestQueueRun extends Component {
 
     updateRunStatus(status) {
         let statusMap = {
+            'Draft': 'raw',
             'In Review': 'draft',
             Final: 'final'
         };
@@ -494,12 +495,20 @@ class TestQueueRun extends Component {
                     <div className="status-wrapper">{status}</div>
                     <div className="secondary-actions">
                         {admin && newStatus && (
-                            <Button
-                                variant="secondary"
-                                onClick={() => this.updateRunStatus(newStatus)}
-                            >
-                                Mark as {newStatus}
-                            </Button>
+                            <>
+                                <Button
+                                    variant="secondary"
+                                    onClick={() => this.updateRunStatus(newStatus)}
+                                >
+                                    Mark as {newStatus}
+                                </Button>
+                                <Button
+                                    variant="link" className="mt-1"
+                                    onClick={() => this.updateRunStatus('Draft')}
+                                >
+                                    Mark as Draft
+                                </Button>
+                            </>
                         )}
                         {results}
                     </div>
