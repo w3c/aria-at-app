@@ -764,6 +764,12 @@ class TestRun extends Component {
 
         if (openAsUser) {
             prepend = `Reviewing test results for ${usersById[openAsUser].username} for `;
+        } else if (
+            userId &&
+            test.results[userId] &&
+            test.results[userId].status === 'complete'
+        ) {
+            prepend = `Reviewing test results for `;
         } else {
             prepend = 'Testing ';
         }
