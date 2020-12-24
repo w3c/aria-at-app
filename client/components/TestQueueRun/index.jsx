@@ -94,6 +94,7 @@ class TestQueueRun extends Component {
 
     updateRunStatus(status) {
         let statusMap = {
+            Draft: 'raw',
             'In Review': 'draft',
             Final: 'final'
         };
@@ -203,12 +204,8 @@ class TestQueueRun extends Component {
     }
 
     renderStatusAndResult() {
-        const { runId, runStatus, testsForRun } = this.props;
-
-        let status = (
-            <span className="status-label not-started">Not Started</span>
-        );
-        let results = null;
+        const { runId, runStatus } = this.props;
+        let status, results;
 
         if (this.state.totalConflicts > 0) {
             let pluralizedStatus = `${this.state.totalConflicts} Conflict${
@@ -219,25 +216,22 @@ class TestQueueRun extends Component {
                     {pluralizedStatus}
                 </span>
             );
-        } else if (
-            this.state.testsWithResults > 0 &&
-            this.state.testsWithResults !== testsForRun.length
-        ) {
-            status = <span className="status-label in-progress">Draft</span>;
-        } else if (this.state.testsWithResults === testsForRun.length) {
-            status = <span className="status-label complete">Complete</span>;
-        }
-
-        if (runStatus === 'draft') {
+        } else if (runStatus === 'raw' || !runStatus) {
+            status = <span className="status-label not-started">Draft</span>;
+        } else if (runStatus === 'draft') {
+            status = (
+                <span className="status-label in-progress">In Review</span>
+            );
             results = (
                 <Link className="reports-link" to={`/results/run/${runId}`}>
-                    View Draft Reports
+                    View Results
                 </Link>
             );
         } else if (runStatus === 'final') {
+            status = <span className="status-label complete">Final</span>;
             results = (
                 <Link className="reports-link" to={`/results/run/${runId}`}>
-                    View Published Results
+                    View Final Results
                 </Link>
             );
         }
@@ -494,12 +488,29 @@ class TestQueueRun extends Component {
                     <div className="status-wrapper">{status}</div>
                     <div className="secondary-actions">
                         {admin && newStatus && (
-                            <Button
-                                variant="secondary"
-                                onClick={() => this.updateRunStatus(newStatus)}
-                            >
-                                Mark as {newStatus}
-                            </Button>
+                            <>
+                                <Button
+                                    variant="secondary"
+                                    onClick={() =>
+                                        this.updateRunStatus(newStatus)
+                                    }
+                                >
+                                    Mark as {newStatus}
+                                </Button>
+                                {newStatus === 'Final' ? (
+                                    <Button
+                                        variant="link"
+                                        className="mt-1"
+                                        onClick={() =>
+                                            this.updateRunStatus('Draft')
+                                        }
+                                    >
+                                        Mark as Draft
+                                    </Button>
+                                ) : (
+                                    <></>
+                                )}
+                            </>
                         )}
                         {results}
                     </div>
