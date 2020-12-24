@@ -105,16 +105,12 @@ class App extends Component {
                                 </React.Fragment>
                             )) || (
                                 <React.Fragment>
-                                    {isAdmin && (
-                                        <Nav.Link
-                                            as={Link}
-                                            {...this.navProps(
-                                                '/admin/configure-runs'
-                                            )}
-                                        >
-                                            Configure Active Runs
-                                        </Nav.Link>
-                                    )}
+                                    <Nav.Link
+                                        as={Link}
+                                        {...this.navProps('/reports')}
+                                    >
+                                        Test Reports
+                                    </Nav.Link>
                                     {isTester && (
                                         <Nav.Link
                                             as={Link}
@@ -123,12 +119,16 @@ class App extends Component {
                                             Test Queue
                                         </Nav.Link>
                                     )}
-                                    <Nav.Link
-                                        as={Link}
-                                        {...this.navProps('/reports')}
-                                    >
-                                        Test Reports
-                                    </Nav.Link>
+                                    {isAdmin && (
+                                        <Nav.Link
+                                            as={Link}
+                                            {...this.navProps(
+                                                '/admin/configure-runs'
+                                            )}
+                                        >
+                                            Test Configuration
+                                        </Nav.Link>
+                                    )}
                                     <Nav.Link
                                         as={Link}
                                         {...this.navProps('/account/settings')}

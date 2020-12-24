@@ -101,11 +101,11 @@ describe('render', () => {
         test('renders component ui sections with an existing active test version', () => {
             let component = findByTestAttr(wrapper, 'configure-run-h2');
             expect(component.length).toBe(1);
-            expect(component.text()).toContain('Configure Active Runs');
+            expect(component.text()).toContain('Test Configuration');
 
             component = findByTestAttr(wrapper, 'configure-run-h3');
             expect(component.length).toBe(1);
-            expect(component.text()).toContain('Update Versions');
+            expect(component.text()).toContain('Test Version');
 
             component = findByTestAttr(wrapper, 'configure-run-commit-select');
             expect(component.length).toBe(1);

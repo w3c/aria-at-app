@@ -4,7 +4,7 @@ import { Helmet } from 'react-helmet';
 import { Button, Container } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import testManagementScreenshot from '../../assets/home-page/config-test.jpg';
+import testConfigurationScreenshot from '../../assets/home-page/config-test.jpg';
 import testQueueScreenshot from '../../assets/home-page/test-queue.jpg';
 import testViewScreenshot from '../../assets/home-page/test-run.jpg';
 import testReviewScreenshot from '../../assets/home-page/test-report.jpg';
@@ -101,7 +101,7 @@ class Home extends Component {
                 <section className="app-screenshots">
                     <div className="container">
                         <div className="description">
-                            <h2>Test Review</h2>
+                            <h2>Reviewing Test Reports</h2>
                             <p>
                                 After multiple runs have been recorded for a
                                 particular Test Plan, users can view a summary
@@ -118,7 +118,7 @@ class Home extends Component {
                     </div>
                     <div className="container">
                         <div className="description">
-                            <h2>Test Queue</h2>
+                            <h2>Browsing the Test Queue</h2>
                             <p>
                                 Testers can view in-progress Test Runs and
                                 assign themselves to run a specific test plan
@@ -151,7 +151,7 @@ class Home extends Component {
                     </div>
                     <div className="container">
                         <div className="description">
-                            <h2>Test Management</h2>
+                            <h2>Updating Test Configuration</h2>
                             <p>
                                 This app allows project administrators to create
                                 Test Runs for managing execution of tests of a
@@ -162,7 +162,7 @@ class Home extends Component {
                         </div>
                         <div className="screenshot">
                             <img
-                                src={testManagementScreenshot}
+                                src={testConfigurationScreenshot}
                                 alt="The current git commit for a Test run and the option to select a different one from a dropdown menu"
                             />
                         </div>
