@@ -653,10 +653,10 @@ class ConfigureActiveRuns extends Component {
         return (
             <Container as="main">
                 <Helmet>
-                    <title>Configure Active Runs | ARIA-AT</title>
+                    <title>Test Configuration | ARIA-AT</title>
                 </Helmet>
-                <h1 data-test="configure-run-h2">Configure Active Runs</h1>
-                <h2 data-test="configure-run-h3">Update Versions</h2>
+                <h1 data-test="configure-run-h2">Test Configuration</h1>
+                <h2 data-test="configure-run-h3">Test Version</h2>
                 <Form className="init-box">
                     {Object.keys(activeRunConfiguration.active_test_version)
                         .length > 0 ? (
@@ -784,7 +784,7 @@ class ConfigureActiveRuns extends Component {
                         disabled={!enableSaveButton}
                         onClick={this.configureActiveRuns}
                     >
-                        Update Active Run Configuration
+                        Update Test Configuration
                     </Button>
                 </div>
                 {this.state.resultsDeleted && (
