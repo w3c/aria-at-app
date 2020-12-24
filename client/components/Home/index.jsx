@@ -18,6 +18,8 @@ import heroImage from '../../assets/hero-illustration.png';
 
 class Home extends Component {
     render() {
+        const signInURL = `${process.env.API_SERVER}/api/auth/oauth?referer=${window.location.origin}&service=github`;
+
         return (
             <Container className="home-page" as="main">
                 <Helmet>
@@ -45,11 +47,16 @@ class Home extends Component {
                         </p>
                         <div className="hero-buttons">
                             {this.props.isSignedIn ? (
-                                <Button variant="primary">
+                                <></>
+                            ) : (
+                                <Button
+                                    variant="primary"
+                                    onClick={() =>
+                                        (window.location.href = signInURL)
+                                    }
+                                >
                                     Sign Up to Run Tests
                                 </Button>
-                            ) : (
-                                <></>
                             )}
                             <Link className="btn-secondary btn" to="/reports">
                                 Browse Test Reports
