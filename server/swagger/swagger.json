@@ -19,7 +19,6 @@
         ],
         "summary": "Get list of available AT names",
         "description": "",
-        "operationId": "addPet",
         "produces": [
           "application/json"
         ],
@@ -32,6 +31,381 @@
                 "type": "string"
               }
             }
+          }
+        }
+      }
+    },
+    "/runs": {
+      "post": {
+        "tags": [
+          "runs"
+        ],
+        "summary": "Configure active run",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Run configuration object",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RunConfiguration"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "The active run configuration",
+            "schema": {
+              "$ref": "#/definitions/Run"
+            }
+          },
+          "400": {
+            "description": "Error raised during configure operation"
+          }
+        }
+      }
+    },
+    "/runs/active": {
+      "get": {
+        "tags": [
+          "runs"
+        ],
+        "summary": "Get all active runs",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "201": {
+            "description": "This should be changed to 200",
+            "schema": {
+              "$ref": "#/definitions/Run"
+            }
+          },
+          "400": {
+            "description": "Error raised during GET"
+          }
+        }
+      }
+    },
+    "/runs/config": {
+      "get": {
+        "tags": [
+          "runs"
+        ],
+        "summary": "Get the active configuration for the current suite of tests",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "201": {
+            "description": "This should be changed to 200",
+            "schema": {
+              "$ref": "#/definitions/ActiveRunConfiguration"
+            }
+          }
+        }
+      }
+    },
+    "/runs/published": {
+      "get": {
+        "tags": [
+          "runs"
+        ],
+        "summary": "Get all published runs",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "201": {
+            "description": "This should be changed to 200",
+            "schema": {
+              "$ref": "#/definitions/Run"
+            }
+          },
+          "400": {
+            "description": "Error raised during GET"
+          }
+        }
+      }
+    },
+    "/runs/status": {
+      "post": {
+        "tags": [
+          "runs"
+        ],
+        "summary": "Set the status of a run",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "201": {
+            "description": "This should change to 200",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer"
+                },
+                "run_status_id": {
+                  "type": "integer"
+                },
+                "run_status": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error raised during POST"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "ActiveRunConfiguration": {
+      "type": "object",
+      "properties": {
+        "active_test_version": {
+          "$ref": "#/definitions/TestVersion"
+        },
+        "active_apg_examples": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "active_at_browser_pairs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TechPair"
+          }
+        },
+        "browsers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Browser"
+          }
+        }
+      }
+    },
+    "At": {
+      "type": "object",
+      "properties": {
+        "at_name_id": {
+          "type": "integer"
+        },
+        "at_name": {
+          "type": "string"
+        },
+        "at_key": {
+          "type": "string"
+        },
+        "at_id": {
+          "type": "integer"
+        }
+      }
+    },
+    "Browser": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "Result": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "user_id": {
+          "type": "integer"
+        },
+        "status": {
+          "type": "string"
+        },
+        "result": {
+          "type": "object"
+        },
+        "serialized_form": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "Run": {
+      "type": "object",
+      "properties": {
+        "0": {
+          "$ref": "#/definitions/RunData"
+        }
+      }
+    },
+    "RunConfiguration": {
+      "type": "object",
+      "properties": {
+        "test_version_id": {
+          "type": "integer"
+        },
+        "apg_example_ids": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "at_browser_pairs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TechPair"
+          }
+        }
+      }
+    },
+    "RunData": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "browser_id": {
+          "type": "integer"
+        },
+        "browser_version": {
+          "type": "string"
+        },
+        "browser_name": {
+          "type": "string"
+        },
+        "at_id": {
+          "type": "integer"
+        },
+        "at_key": {
+          "type": "string"
+        },
+        "at_name": {
+          "type": "string"
+        },
+        "at_version": {
+          "type": "string"
+        },
+        "apg_example_directory": {
+          "type": "string"
+        },
+        "apg_example_name": {
+          "type": "string"
+        },
+        "apg_example_id": {
+          "type": "integer"
+        },
+        "design_pattern": {
+          "type": "string"
+        },
+        "example": {
+          "type": "string"
+        },
+        "run_status_id": {
+          "type": "integer"
+        },
+        "run_status": {
+          "type": "string"
+        },
+        "test_version_id": {
+          "type": "string"
+        },
+        "testers": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "tests": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Test"
+          }
+        }
+      }
+    },
+    "TechPair": {
+      "type": "object",
+      "properties": {
+        "browser_id": {
+          "type": "integer"
+        },
+        "browser_version": {
+          "type": "string"
+        },
+        "at_version": {
+          "type": "string"
+        },
+        "at_name_id": {
+          "type": "integer"
+        }
+      }
+    },
+    "Test": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "file": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "execution_order": {
+          "type": "integer"
+        },
+        "results": {
+          "type": "object",
+          "properties": {
+            "0": {
+              "$ref": "#/definitions/Result"
+            }
+          }
+        }
+      }
+    },
+    "TestVersion": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "git_repo": {
+          "type": "string"
+        },
+        "git_tag": {
+          "type": "string"
+        },
+        "git_hash": {
+          "type": "string"
+        },
+        "git_commit_msg": {
+          "type": "string"
+        },
+        "date": {
+          "type": "string"
+        },
+        "supported_ats": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/At"
           }
         }
       }
