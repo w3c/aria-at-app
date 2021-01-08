@@ -1,0 +1,44 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "This is the API description for the ARIA-AT App server",
+    "version": "1.0.0",
+    "title": "ARIA-AT API"
+  },
+  "host": "localhost:5000",
+  "basePath": "/api",
+  "schemes": [
+    "https",
+    "http"
+  ],
+  "paths": {
+    "/ats": {
+      "get": {
+        "tags": [
+          "ats"
+        ],
+        "summary": "Get list of available AT names",
+        "description": "",
+        "operationId": "addPet",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of AT names",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "externalDocs": {
+    "description": "Find out more about Swagger",
+    "url": "http://swagger.io"
+  }
+}
