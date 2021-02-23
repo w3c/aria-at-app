@@ -68,7 +68,7 @@ class ReportsPage extends Component {
                         scope="col"
                         key={`${at} ${atVersion} with ${browser} ${browserVersion}`}
                         className="text-center text-wrap"
-                        aria-describedby="#tech-pair-description"
+                        aria-describedby="tech-pair-description"
                     >
                         {at} {atVersion} / {browser} {browserVersion}
                     </th>
@@ -187,7 +187,7 @@ class ReportsPage extends Component {
                     Each AT / Browser Pair shows the Percentage of Required
                     Passing Tests for the pairing.
                 </p>
-                <Table bordered hover aria-labelledby="#table-header">
+                <Table bordered hover aria-labelledby="table-header">
                     <thead>
                         <tr>
                             <th key="design-pattern-examples">Test Plan</th>
