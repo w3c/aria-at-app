@@ -89,7 +89,7 @@ class Home extends Component {
                             <article>
                                 <img src={iconReviewAssertions} alt="" />
                                 <a href="https://w3c.github.io/aria-at/">
-                                    Review existing test plans assesrtions
+                                    Review existing test plans
                                 </a>
                             </article>
                             <article>
