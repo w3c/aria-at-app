@@ -13,11 +13,17 @@ import SignupInstructions from '@components/SignupInstructions';
 import TestQueue from '@components/TestQueue';
 import TestRun from '@components/TestRun';
 import UserSettings from '@components/UserSettings';
+import MappingDemo from '@components/MappingDemo/MappingDemo';
 
 export default [
     {
         component: App,
         routes: [
+            {
+                path: '/mapping-demo',
+                exact: true,
+                component: MappingDemo
+            },
             {
                 path: '/',
                 exact: true,

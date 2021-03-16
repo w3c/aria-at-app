@@ -69,7 +69,7 @@ Code formatting is performed by **Prettier**. To manually run Prettier:
 * Express server tests are located in `server/tests`.
 * Both the client and server side user **Jest** for testing.
     * The client side, additionally, uses **Enzyme** to test React output
-    * The server side, additionally, user **Supertest** to test HTTP integration
+    * The server side, additionally, uses **Supertest** to test HTTP integration
 
 The following command will run all unit tests.
     ```

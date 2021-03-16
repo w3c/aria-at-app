@@ -255,7 +255,6 @@ class TestQueue extends Component {
         if (!activeRunConfiguration) {
             return loading;
         }
-
         return (
             <Container as="main">
                 <Helmet>
