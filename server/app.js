@@ -27,14 +27,14 @@ app.use('/test-versions', testVersionRoutes);
 
 const resolvers = {
     Query: {
-        books: () => [
+        testPlans: () => [
             {
-                title: 'The Awakening',
-                author: 'Kate Chopin'
+                title: 'Checkbox (Two State)',
+                note: 'This is fake data'
             },
             {
-                title: 'City of Glass',
-                author: 'Paul Auster'
+                title: 'Editor Menubar Example',
+                note: 'This is fake data'
             }
         ]
     }

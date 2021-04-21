@@ -1,13 +1,13 @@
 const { gql } = require('apollo-server');
 
 const graphqlSchema = gql`
-    type Book {
+    type TestPlan {
         title: String
-        author: String
+        note: String
     }
 
     type Query {
-        books: [Book]
+        testPlans: [TestPlan]
     }
 `;
 
