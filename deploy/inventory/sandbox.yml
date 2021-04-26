@@ -2,7 +2,7 @@
 all:
   hosts:
     aria-at-app-sandbox.bocoup.com:
-      ansible_user: root
   vars:
+    ansible_become: yes
     deployment_mode: staging
     fqdn: aria-at-app-sandbox.bocoup.com
