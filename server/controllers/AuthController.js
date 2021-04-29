@@ -93,10 +93,11 @@ module.exports = {
             // Allows for quickly logging in with different roles - changing
             // roles would otherwise require leaving and joining GitHub teams
             const matchedFakeRole =
-                dataFromFrontend && dataFromFrontend.match(/fakeRole-(\w+)/);
+                dataFromFrontend && dataFromFrontend.match(/fakeRole-(\w*)/);
 
             if (allowsFakeRole && matchedFakeRole) {
-                req.session.user.roles = [matchedFakeRole[1]];
+                req.session.user.roles =
+                    matchedFakeRole[1] === '' ? [] : [matchedFakeRole[1]];
             }
 
             res.redirect(303, redirectUrl);

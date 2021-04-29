@@ -30,7 +30,7 @@ ARIA-AT App determines whether you are authorized to sign in as a tester or admi
 Another way to log in as either a tester or admin, useful for quick testing and not requiring membership within any GitHub organizations or teams, is described below.
 
 1. Sign out and return to the home page.
-2. Add `?fakeRole=admin` to the URL bar and press enter. Alternatively use `?fakeRole=tester` to log in as a tester only.
+2. Add `?fakeRole=admin` to the URL bar and press enter. Alternatively use `?fakeRole=tester` to log in as a tester only or `?fakeRole=` to preview logging in without a role.
 3. Follow the sign in steps as normal.
 4. After signing in, your selected role will be used for the duration of your session.
 

@@ -68,7 +68,7 @@ class App extends Component {
 
         // Allows for quickly logging in with different roles - changing
         // roles would otherwise require leaving and joining GitHub teams
-        const matchedFakeRole = location.href.match(/fakeRole=(\w+)/);
+        const matchedFakeRole = location.href.match(/fakeRole=(\w*)/);
 
         let dataFromFrontend = '';
         if (matchedFakeRole) {
