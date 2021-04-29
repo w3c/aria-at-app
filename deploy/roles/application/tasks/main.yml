@@ -6,15 +6,19 @@
 
 - name: Define source code location
   set_fact:
-    source_dir: /home/{{application_user}}/aria-at-report
+    source_dir: /home/{{application_user}}/aria-at-app
 
-- name: Upload project source code
-  synchronize:
-    src: '{{playbook_dir}}/..'
-    dest: '{{source_dir}}'
-    rsync_opts:
-      - '--filter=:- .gitignore'
-  when: deployment_mode != 'development'
+# - name: Upload project source code
+#   synchronize:
+#     src: '{{playbook_dir}}/..'
+#     dest: '~/aria-at-app'
+#     rsync_opts:
+#       - '--filter=:- .gitignore'
+#   when: deployment_mode != 'development'
+
+# rsync -r --filter=':- .gitignore' ./ aria-at-app-sandbox.bocoup.com:~/aria-at-app
+# ON SERVER:
+# cd ~/aria-at-app && sudo rsync -a --filter=':- .gitignore' ./ /home/aria-bot/aria-at-app
 
 # TODO: this can be removed when the import tests feature is fully complete
 # This is a workaround solution for shelling out to the import script

@@ -5,9 +5,9 @@
     - permissions
     - database
     - nodejs
+    - proxy
     - role: certbot
       when: deployment_mode != 'development'
-    - proxy
     - application
   handlers:
     - name: Reload systemd daemon

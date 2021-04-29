@@ -56,6 +56,11 @@ To deploy this project to  server:
    directory which contains this document
 3. Install [Ansible](https://www.ansible.com/)
 4. Execute the following command:
+   - Sandbox:
+    ```
+    ansible-playbook provision.yml --inventory inventory/sandbox.yml --ask-become-pass
+    ```
+    The command will ask you the sudo password you use while shelling into Bocoup-managed servers.
    - Staging:
     ```
     ansible-playbook provision.yml --inventory inventory/staging.yml

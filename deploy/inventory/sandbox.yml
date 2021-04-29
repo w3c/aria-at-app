@@ -1,0 +1,8 @@
+---
+all:
+  hosts:
+    aria-at-app-sandbox.bocoup.com:
+  vars:
+    ansible_become: yes
+    deployment_mode: sandbox
+    fqdn: aria-at-app-sandbox.bocoup.com
