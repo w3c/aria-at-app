@@ -87,7 +87,6 @@ module.exports = {
             }
         }
         if (authorized && userToAuthorize) {
-            const redirectUrl = `${req.session.referer}/test-queue`;
             req.session.user = userToAuthorize;
 
             // Allows for quickly logging in with different roles - changing
@@ -100,6 +99,11 @@ module.exports = {
                     matchedFakeRole[1] === '' ? [] : [matchedFakeRole[1]];
             }
 
+            const redirectUrl =
+                req.session.user.roles.length === 0
+                    ? `${req.session.referer}/signup-instructions`
+                    : `${req.session.referer}/test-queue`;
+
             res.redirect(303, redirectUrl);
             res.end(() => {
                 delete req.session.referer;
@@ -110,7 +114,7 @@ module.exports = {
                 res.status(401);
                 res.end();
             } else {
-                res.redirect(303, `${req.session.referer}/signupInstructions`);
+                res.redirect(303, `${req.session.referer}/signup-instructions`);
                 res.end(() => destroySession(req, res));
             }
         }
