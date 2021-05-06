@@ -8,17 +8,34 @@
   set_fact:
     source_dir: /home/{{application_user}}/aria-at-app
 
-# - name: Upload project source code
-#   synchronize:
-#     src: '{{playbook_dir}}/..'
-#     dest: '~/aria-at-app'
-#     rsync_opts:
-#       - '--filter=:- .gitignore'
-#   when: deployment_mode != 'development'
+# Since some environments log in as the application_user and others do
+# not, and since `become: yes` does not work with commands executed on
+# the client instead of the server, uploading the source code takes two
+# steps. One to upload to the logged-in user's home directory (without
+# sudo) and one to move the source code to the application_user home
+# directory (with sudo).
+- name: Upload project source code
+  command:
+    cmd: rsync -rv --filter=':- .gitignore' --exclude='.git/' ./ aria-at-app-sandbox.bocoup.com:~/aria-at-app
+    chdir: '{{playbook_dir}}/..'
+  delegate_to: localhost
 
-# rsync -r --filter=':- .gitignore' ./ aria-at-app-sandbox.bocoup.com:~/aria-at-app
-# ON SERVER:
-# cd ~/aria-at-app && sudo rsync -a --filter=':- .gitignore' ./ /home/aria-bot/aria-at-app
+- name: Determine the ssh user
+  # Source https://stackoverflow.com/a/42095916/3888572
+  local_action: shell ssh -G {{fqdn}} | awk '/^user /{ print $2 }'
+  changed_when: false
+  register: ssh_user_output
+
+- name: Set the ssh user
+  set_fact:
+    ssh_user: "{{ssh_user_output.stdout}}"
+
+- when: ssh_user != application_user
+  name: Move source code into application user directory
+  become: yes
+  command:
+    cmd: rsync -a --filter=':- /home/{{ssh_user}}/aria-at-app/.gitignore' /home/{{ssh_user}}/aria-at-app/ /home/{{application_user}}/aria-at-app
+    chdir: /home/{{ssh_user}}/aria-at-app
 
 # TODO: this can be removed when the import tests feature is fully complete
 # This is a workaround solution for shelling out to the import script
