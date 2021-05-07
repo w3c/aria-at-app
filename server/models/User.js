@@ -1,7 +1,7 @@
 const MODEL_NAME = 'User';
 
 module.exports = function(sequelize, DataTypes) {
-    const User = sequelize.define(
+    const Model = sequelize.define(
         MODEL_NAME,
         {
             id: {
@@ -22,12 +22,12 @@ module.exports = function(sequelize, DataTypes) {
         }
     );
 
-    User.associate = function(models) {
-        User.belongsToMany(models.Role, {
+    Model.associate = function(models) {
+        Model.belongsToMany(models.Role, {
             through: 'UserRoles',
             as: 'roles'
         });
     };
 
-    return User;
+    return Model;
 };
