@@ -23,9 +23,12 @@ describe('TestPlanReportModel', () => {
 
     describe('properties', () => {
         // A3
-        ['publishStatus', 'testedConfiguration', 'testPlan'].forEach(
-            checkPropertyExists(modelInstance)
-        );
+        [
+            'publishStatus',
+            'testedConfiguration',
+            'testPlan',
+            'createdAt'
+        ].forEach(checkPropertyExists(modelInstance));
     });
 
     describe('associations', () => {

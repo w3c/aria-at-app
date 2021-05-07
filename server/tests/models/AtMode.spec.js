@@ -17,6 +17,6 @@ describe('AtModeModel', () => {
 
     describe('properties', () => {
         // A3
-        ['name'].forEach(checkPropertyExists(modelInstance));
+        ['at', 'name'].forEach(checkPropertyExists(modelInstance));
     });
 });

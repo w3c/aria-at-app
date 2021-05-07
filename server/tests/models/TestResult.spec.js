@@ -21,17 +21,9 @@ describe('TestResultModel', () => {
 
     describe('properties', () => {
         // A3
-        [
-            'startedAt',
-            'completedAt',
-            'atMode',
-            'nthInput',
-            'sourceSteps',
-            'steps',
-            'stepResults',
-            'supportLevel',
-            'testPlanRun'
-        ].forEach(checkPropertyExists(modelInstance));
+        ['startedAt', 'completedAt', 'testPlanRun', 'data'].forEach(
+            checkPropertyExists(modelInstance)
+        );
     });
 
     describe('associations', () => {

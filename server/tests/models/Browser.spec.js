@@ -21,7 +21,7 @@ describe('BrowserModel', () => {
 
     describe('properties', () => {
         // A3
-        ['name', 'versions'].forEach(checkPropertyExists(modelInstance));
+        ['name'].forEach(checkPropertyExists(modelInstance));
     });
 
     describe('associations', () => {

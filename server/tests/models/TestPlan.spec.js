@@ -22,7 +22,9 @@ describe('TestPlanModel', () => {
             'publishStatus',
             'revision',
             'sourceGitCommit',
-            'exampleUrl'
+            'exampleUrl',
+            'createdAt',
+            'parsedTest'
         ].forEach(checkPropertyExists(modelInstance));
     });
 });
