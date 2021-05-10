@@ -33,7 +33,7 @@ describe('UserModel Schema Checks', () => {
         // A2
         beforeAll(() => {
             Model.belongsToMany(RoleModel, ROLE_ASSOCIATION);
-            Model.hasOne(UserModel, USER_ASSOCIATION); // this association will add 'tester' to the target model
+            Model.hasOne(TestPlanRunModel, USER_ASSOCIATION); // this association will add 'tester' to the target model
         });
 
         // A3
@@ -45,7 +45,7 @@ describe('UserModel Schema Checks', () => {
             );
         });
 
-        it('defined a hasOne association with User', () => {
+        it('defined a hasOne association with TestPlanRun', () => {
             expect(Model.hasOne).to.have.been.calledWith(
                 TestPlanRunModel,
                 match(USER_ASSOCIATION)

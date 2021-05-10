@@ -34,7 +34,7 @@ describe('BrowserModel', () => {
             Model.hasMany(BrowserVersionModel, BROWSER_VERSION_ASSOCIATION);
         });
 
-        it('defined a hasMany association with BrowserVersionVersion', () => {
+        it('defined a hasMany association with BrowserVersion', () => {
             // A3
             expect(Model.hasMany).to.have.been.calledWith(
                 BrowserVersionModel,
