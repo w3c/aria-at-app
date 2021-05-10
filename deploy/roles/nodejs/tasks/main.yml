@@ -14,7 +14,7 @@
     update_cache: True
   with_items:
     - deb https://dl.yarnpkg.com/debian/ stable main
-    - deb https://deb.nodesource.com/node_15.x focal main
+    - deb https://deb.nodesource.com/node_15.x buster main
 
 - name: Install packages
   apt:

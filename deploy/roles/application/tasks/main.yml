@@ -4,6 +4,66 @@
     name: git
     state: present
 
+# - name: Install nodegit depedency libstdc++
+#   apt:
+#     name: libstdc++
+#     state: present
+
+# - name: Install nodegit depedency libkrb5-dev
+#   apt:
+#     name: libkrb5-dev
+#     state: present
+
+# - name: Install nodegit depedency krb5-config
+#   apt:
+#     name: krb5-config
+#     state: present
+
+# - name: Install nodegit depedency libssl-dev
+#   apt:
+#     name: libssl-dev
+#     state: present
+
+# - name: Install nodegit depedency libsasl2-dev
+#   apt:
+#     name: libsasl2-dev
+#     state: present
+
+# - name: Install nodegit depedency libsasl2-modules-gssapi-mit
+#   apt:
+#     name: libsasl2-modules-gssapi-mit
+#     state: present
+
+# - name: Install nodegit depedency gcc
+#   apt:
+#     name: gcc
+#     state: present
+
+# - name: Install nodegit depedency libc-dev
+#   apt:
+#     name: libc-dev
+#     state: present
+
+# - name: Install nodegit depedency make
+#   apt:
+#     name: make
+#     state: present
+
+# - name: Install nodegit depedency g++
+#   apt:
+#     name: g++
+#     state: present
+
+# - name: Install nodegit depedency build-essential
+#   apt:
+#     name: build-essential
+#     state: present
+
+# - name: Install nodegit depedency libpcre++-dev
+#   apt:
+#     name: libpcre++-dev
+#     state: present
+
 - name: Define source code location
   set_fact:
     source_dir: /home/{{application_user}}/aria-at-app
@@ -19,23 +79,27 @@
     cmd: rsync -rv --filter=':- .gitignore' --exclude='.git/' ./ aria-at-app-sandbox.bocoup.com:~/aria-at-app
     chdir: '{{playbook_dir}}/..'
   delegate_to: localhost
+  when: deployment_mode != 'development'
 
 - name: Determine the ssh user
   # Source https://stackoverflow.com/a/42095916/3888572
   local_action: shell ssh -G {{fqdn}} | awk '/^user /{ print $2 }'
-  changed_when: false
   register: ssh_user_output
+  when: deployment_mode != 'development'
 
 - name: Set the ssh user
   set_fact:
     ssh_user: "{{ssh_user_output.stdout}}"
+  when: deployment_mode != 'development'
 
-- when: ssh_user != application_user
-  name: Move source code into application user directory
+- name: Move source code into application user directory
   become: yes
   command:
     cmd: rsync -a --filter=':- /home/{{ssh_user}}/aria-at-app/.gitignore' /home/{{ssh_user}}/aria-at-app/ /home/{{application_user}}/aria-at-app
     chdir: /home/{{ssh_user}}/aria-at-app
+  when:
+    - deployment_mode != 'development'
+    - ssh_user != application_user
 
 # TODO: this can be removed when the import tests feature is fully complete
 # This is a workaround solution for shelling out to the import script
