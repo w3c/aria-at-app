@@ -1,0 +1,16 @@
+[
+  {
+    "id": 1,
+    "publishStatus": "draft",
+    "revision": "",
+    "sourceGitCommit": "",
+    "exampleUrl": "",
+    "createdAt": "",
+    "parsedTest": {
+      "title": "",
+      "minimumInputCount": "",
+      "maximumInputCount": "",
+      "sourceSteps": ""
+    }
+  }
+]
