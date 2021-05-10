@@ -1,6 +1,8 @@
+const MODEL_NAME = 'At';
+
 module.exports = function(sequelize, DataTypes) {
-    let At = sequelize.define(
-        'At',
+    const Model = sequelize.define(
+        MODEL_NAME,
         {
             id: {
                 type: DataTypes.INTEGER,
@@ -8,44 +10,30 @@ module.exports = function(sequelize, DataTypes) {
                 primaryKey: true,
                 autoIncrement: true
             },
-            key: {
+            name: {
                 type: DataTypes.TEXT,
-                allowNull: true
-            },
-            at_name_id: {
-                type: DataTypes.INTEGER,
-                allowNull: false,
-                references: {
-                    model: 'at_name',
-                    key: 'id'
-                }
-            },
-            test_version_id: {
-                type: DataTypes.INTEGER,
-                allowNull: false,
-                references: {
-                    model: 'test_version',
-                    key: 'id'
-                }
-            },
-            active: {
-                type: DataTypes.BOOLEAN,
-                allowNull: false,
-                defaultValue: false
+                allowNull: false
             }
         },
         {
             timestamps: false,
-            tableName: 'at'
+            tableName: MODEL_NAME
         }
     );
 
-    At.associate = function(models) {
-        models.At.belongsTo(models.AtName, {
-            foreignKey: 'at_name_id',
-            targetKey: 'id'
+    Model.associate = function(models) {
+        Model.hasMany(models.AtVersion, {
+            as: 'versions',
+            foreignKey: 'id',
+            sourceKey: 'at'
+        });
+
+        Model.hasMany(models.AtMode, {
+            as: 'modes',
+            foreignKey: 'id',
+            sourceKey: 'at'
         });
     };
 
-    return At;
+    return Model;
 };

@@ -3,13 +3,13 @@
 module.exports = {
     up: queryInterface => {
         return queryInterface.bulkInsert(
-            'browser',
+            'Browser',
             [{ name: 'Firefox' }, { name: 'Chrome' }, { name: 'Safari' }],
             {}
         );
     },
 
     down: queryInterface => {
-        return queryInterface.bulkDelete('browser', null, {});
+        return queryInterface.bulkDelete('Browser', null, {});
     }
 };

@@ -1,20 +1,25 @@
-const MODEL_NAME = 'AtMode';
+const MODEL_NAME = 'UserRoles';
 
 module.exports = function(sequelize, DataTypes) {
-    const Model = sequelize.define(
+    return sequelize.define(
         MODEL_NAME,
         {
-            at: {
+            userId: {
                 type: DataTypes.INTEGER,
                 allowNull: false,
                 references: {
-                    model: 'At',
+                    model: 'User',
                     key: 'id'
-                }
+                },
+                unique: true
             },
-            name: {
+            roleName: {
                 type: DataTypes.TEXT,
-                allowNull: false
+                allowNull: false,
+                references: {
+                    model: 'Role',
+                    key: 'name'
+                }
             }
         },
         {
@@ -22,12 +27,4 @@ module.exports = function(sequelize, DataTypes) {
             tableName: MODEL_NAME
         }
     );
-
-    Model.associate = function(models) {
-        Model.belongsTo(models.At, {
-            foreignKey: 'at'
-        });
-    };
-
-    return Model;
 };

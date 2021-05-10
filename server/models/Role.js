@@ -1,22 +1,19 @@
+const MODEL_NAME = 'Role';
+
 module.exports = function(sequelize, DataTypes) {
     return sequelize.define(
-        'Role',
+        MODEL_NAME,
         {
-            id: {
-                type: DataTypes.INTEGER,
-                allowNull: false,
-                primaryKey: true,
-                autoIncrement: true
-            },
             name: {
                 type: DataTypes.TEXT,
-                allowNull: true,
+                primaryKey: true,
+                allowNull: false,
                 unique: true
             }
         },
         {
             timestamps: false,
-            tableName: 'role'
+            tableName: MODEL_NAME
         }
     );
 };
