@@ -4,6 +4,9 @@
     name: git
     state: present
 
+# TODO: Install dependencies for Nodegit
+# The below libraries are not currently functioning
+#
 # - name: Install nodegit depedency libstdc++
 #   apt:
 #     name: libstdc++
