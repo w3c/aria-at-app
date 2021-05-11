@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-const MODEL_NAME = 'TestedConfiguration';
+const MODEL_NAME = 'TestPlanTarget';
 
 module.exports = function(sequelize, DataTypes) {
     const Model = sequelize.define(

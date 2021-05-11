@@ -7,7 +7,7 @@ const {
 
 const TestPlanReportModel = require('../../models/TestPlanReport');
 const TestPlanModel = require('../../models/TestPlan');
-const TestedConfigurationModel = require('../../models/TestedConfiguration');
+const TestPlanTargetModel = require('../../models/TestPlanTarget');
 const TestPlanRunModel = require('../../models/TestPlanRun');
 
 describe('TestPlanReportModel', () => {
@@ -20,27 +20,21 @@ describe('TestPlanReportModel', () => {
 
     describe('properties', () => {
         // A3
-        [
-            'publishStatus',
-            'testedConfiguration',
-            'testPlan',
-            'createdAt'
-        ].forEach(checkPropertyExists(modelInstance));
+        ['publishStatus', 'testPlanTarget', 'testPlan', 'createdAt'].forEach(
+            checkPropertyExists(modelInstance)
+        );
     });
 
     describe('associations', () => {
         // A1
         const TEST_PLAN_ASSOCIATION = { as: 'testPlan' };
-        const TESTED_CONFIGURATION_ASSOCIATION = { as: 'testedConfiguration' };
+        const TEST_PLAN_TARGET_ASSOCIATION = { as: 'testPlanTarget' };
         const TEST_PLAN_RUN_ASSOCIATION = { as: 'testPlanRuns' };
 
         // A2
         beforeEach(() => {
             Model.belongsTo(TestPlanModel, TEST_PLAN_ASSOCIATION);
-            Model.belongsTo(
-                TestedConfigurationModel,
-                TESTED_CONFIGURATION_ASSOCIATION
-            );
+            Model.belongsTo(TestPlanTargetModel, TEST_PLAN_TARGET_ASSOCIATION);
             Model.hasMany(TestPlanRunModel, TEST_PLAN_RUN_ASSOCIATION);
         });
 
@@ -51,10 +45,10 @@ describe('TestPlanReportModel', () => {
             );
         });
 
-        it('defined a belongsTo association to TestedConfiguration', () => {
+        it('defined a belongsTo association to TestPlanTarget', () => {
             expect(Model.belongsTo).toHaveBeenCalledWith(
-                TestedConfigurationModel,
-                expect.objectContaining(Model.TESTED_CONFIGURATION_ASSOCIATION)
+                TestPlanTargetModel,
+                expect.objectContaining(Model.TEST_PLAN_TARGET_ASSOCIATION)
             );
         });
 

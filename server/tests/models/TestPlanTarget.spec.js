@@ -5,30 +5,25 @@ const {
     checkPropertyExists
 } = require('sequelize-test-helpers');
 
-const TestedConfigurationModel = require('../../models/TestedConfiguration');
+const TestPlanTargetModel = require('../../models/TestPlanTarget');
 const AtModel = require('../../models/At');
 const AtVersionModel = require('../../models/AtVersion');
 const BrowserModel = require('../../models/Browser');
 const BrowserVersionModel = require('../../models/BrowserVersion');
 
-describe('TestedConfigurationModel', () => {
+describe('TestPlanTargetModel', () => {
     // A1
-    const Model = TestedConfigurationModel(sequelize, dataTypes);
+    const Model = TestPlanTargetModel(sequelize, dataTypes);
     const modelInstance = new Model();
 
     // A2
-    checkModelName(Model)('TestedConfiguration');
+    checkModelName(Model)('TestPlanTarget');
 
     describe('properties', () => {
         // A3
-        [
-            'title',
-            'publishStatus',
-            'at',
-            'atVersion',
-            'browser',
-            'browserVersion'
-        ].forEach(checkPropertyExists(modelInstance));
+        ['title', 'at', 'atVersion', 'browser', 'browserVersion'].forEach(
+            checkPropertyExists(modelInstance)
+        );
     });
 
     describe('associations', () => {
