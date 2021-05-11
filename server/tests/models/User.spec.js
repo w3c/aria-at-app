@@ -1,12 +1,9 @@
-/* eslint-disable jest/valid-expect */
 const {
     sequelize,
     dataTypes,
     checkModelName,
     checkPropertyExists
 } = require('sequelize-test-helpers');
-
-const { expect, match } = require('./_modelsTestHelper');
 
 const UserModel = require('../../models/User');
 const RoleModel = require('../../models/Role');
@@ -28,27 +25,26 @@ describe('UserModel Schema Checks', () => {
     describe('associations', () => {
         // A1
         const ROLE_ASSOCIATION = { through: 'UserRoles', as: 'roles' };
-        const USER_ASSOCIATION = { as: 'tester' };
+        const TEST_PLAN_RUN_ASSOCIATION = { as: 'tester' };
 
         // A2
         beforeAll(() => {
             Model.belongsToMany(RoleModel, ROLE_ASSOCIATION);
-            Model.hasOne(TestPlanRunModel, USER_ASSOCIATION); // this association will add 'tester' to the target model
+            Model.hasOne(TestPlanRunModel, TEST_PLAN_RUN_ASSOCIATION); // this association will add 'tester' to the target model
         });
 
         // A3
         it('defined a belongsToMany association with Role', () => {
-            // expect(Model.belongsToMany).toHaveBeenCalledWith(RoleModel, {
-            expect(Model.belongsToMany).to.have.been.calledWith(
+            expect(Model.belongsToMany).toHaveBeenCalledWith(
                 RoleModel,
-                match(ROLE_ASSOCIATION) // check if association options on the model contains a subset of the association object
+                expect.objectContaining(Model.ROLE_ASSOCIATION)
             );
         });
 
         it('defined a hasOne association with TestPlanRun', () => {
-            expect(Model.hasOne).to.have.been.calledWith(
+            expect(Model.hasOne).toHaveBeenCalledWith(
                 TestPlanRunModel,
-                match(USER_ASSOCIATION)
+                expect.objectContaining(Model.TEST_PLAN_RUN_ASSOCIATION)
             );
         });
     });

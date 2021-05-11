@@ -1,12 +1,9 @@
-/* eslint-disable jest/valid-expect */
 const {
     sequelize,
     dataTypes,
     checkModelName,
     checkPropertyExists
 } = require('sequelize-test-helpers');
-
-const { expect, match } = require('./_modelsTestHelper');
 
 const TestPlanReportModel = require('../../models/TestPlanReport');
 const TestPlanModel = require('../../models/TestPlan');
@@ -39,12 +36,6 @@ describe('TestPlanReportModel', () => {
 
         // A2
         beforeEach(() => {
-            // Model.associate({
-            //     TestPlan,
-            //     TestedConfiguration,
-            //     TestPlanRun
-            // });
-
             Model.belongsTo(TestPlanModel, TEST_PLAN_ASSOCIATION);
             Model.belongsTo(
                 TestedConfigurationModel,
@@ -56,22 +47,22 @@ describe('TestPlanReportModel', () => {
         it('defined a belongsTo association to TestPlan', () => {
             expect(Model.belongsTo).toHaveBeenCalledWith(
                 TestPlanModel,
-                match(TEST_PLAN_ASSOCIATION)
+                expect.objectContaining(Model.TEST_PLAN_ASSOCIATION)
             );
         });
 
-        it('defined a belongsTo association to TestConfiguration', () => {
+        it('defined a belongsTo association to TestedConfiguration', () => {
             expect(Model.belongsTo).toHaveBeenCalledWith(
                 TestedConfigurationModel,
-                match(TESTED_CONFIGURATION_ASSOCIATION)
+                expect.objectContaining(Model.TESTED_CONFIGURATION_ASSOCIATION)
             );
         });
 
         it('defined a hasMany association with TestPlanRun', () => {
             // A3
-            expect(Model.hasMany).to.have.been.calledWith(
+            expect(Model.hasMany).toHaveBeenCalledWith(
                 TestPlanRunModel,
-                match(TEST_PLAN_RUN_ASSOCIATION)
+                expect.objectContaining(Model.TEST_PLAN_RUN_ASSOCIATION)
             );
         });
     });

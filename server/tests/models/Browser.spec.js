@@ -1,12 +1,9 @@
-/* eslint-disable jest/valid-expect */
 const {
     sequelize,
     dataTypes,
     checkModelName,
     checkPropertyExists
 } = require('sequelize-test-helpers');
-
-const { expect, match } = require('./_modelsTestHelper');
 
 const BrowserModel = require('../../models/Browser');
 const BrowserVersionModel = require('../../models/BrowserVersion');
@@ -36,9 +33,9 @@ describe('BrowserModel', () => {
 
         it('defined a hasMany association with BrowserVersion', () => {
             // A3
-            expect(Model.hasMany).to.have.been.calledWith(
+            expect(Model.hasMany).toHaveBeenCalledWith(
                 BrowserVersionModel,
-                match(BROWSER_VERSION_ASSOCIATION)
+                expect.objectContaining(Model.BROWSER_VERSION_ASSOCIATION)
             );
         });
     });

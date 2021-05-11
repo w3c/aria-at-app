@@ -5,8 +5,6 @@ const {
     checkPropertyExists
 } = require('sequelize-test-helpers');
 
-const { expect, match } = require('./_modelsTestHelper');
-
 const AtVersionModel = require('../../models/AtVersion');
 const AtModel = require('../../models/At');
 
@@ -35,9 +33,9 @@ describe('AtVersionModel', () => {
 
         it('defined a hasOne association with At', () => {
             // A3
-            expect(Model.hasOne).to.have.been.calledWith(
+            expect(Model.hasOne).toHaveBeenCalledWith(
                 AtModel,
-                match(AT_ASSOCIATION)
+                expect.objectContaining(Model.AT_ASSOCIATION)
             );
         });
     });
