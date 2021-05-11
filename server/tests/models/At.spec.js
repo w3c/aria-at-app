@@ -1,12 +1,9 @@
-/* eslint-disable jest/valid-expect */
 const {
     sequelize,
     dataTypes,
     checkModelName,
     checkPropertyExists
 } = require('sequelize-test-helpers');
-
-const { expect, match } = require('./_modelsTestHelper');
 
 const AtModel = require('../../models/At');
 const AtVersionModel = require('../../models/AtVersion');
@@ -39,17 +36,17 @@ describe('AtModel', () => {
 
         it('defined a hasMany association with AtVersion', () => {
             // A3
-            expect(Model.hasMany).to.have.been.calledWith(
+            expect(Model.hasMany).toHaveBeenCalledWith(
                 AtVersionModel,
-                match(AT_VERSION_ASSOCIATION)
+                expect.objectContaining(Model.AT_VERSION_ASSOCIATION)
             );
         });
 
         it('defined a hasMany association with AtMode', () => {
             // A3
-            expect(Model.hasMany).to.have.been.calledWith(
+            expect(Model.hasMany).toHaveBeenCalledWith(
                 AtModeModel,
-                match(AT_MODE_ASSOCIATION)
+                expect.objectContaining(Model.AT_MODE_ASSOCIATION)
             );
         });
     });

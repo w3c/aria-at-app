@@ -6,6 +6,7 @@ const {
 } = require('sequelize-test-helpers');
 
 const AtModeModel = require('../../models/AtMode');
+const AtModel = require('../../models/At');
 
 describe('AtModeModel', () => {
     // A1
@@ -18,5 +19,24 @@ describe('AtModeModel', () => {
     describe('properties', () => {
         // A3
         ['at', 'name'].forEach(checkPropertyExists(modelInstance));
+    });
+
+    describe('associations', () => {
+        // A1
+        const AT_ASSOCIATION = { foreignKey: 'at' };
+
+        // A2
+        beforeEach(() => {
+            // Model.associate({ AtVersion, AtMode });
+            Model.belongsTo(AtModel, AT_ASSOCIATION);
+        });
+
+        it('defined a hasOne association with At', () => {
+            // A3
+            expect(Model.hasOne).toHaveBeenCalledWith(
+                AtModel,
+                expect.objectContaining(Model.AT_ASSOCIATION)
+            );
+        });
     });
 });

@@ -1,7 +1,8 @@
+/* eslint-disable no-unused-vars */
 const MODEL_NAME = 'UserRoles';
 
 module.exports = function(sequelize, DataTypes) {
-    return sequelize.define(
+    const Model = sequelize.define(
         MODEL_NAME,
         {
             userId: {
@@ -27,4 +28,8 @@ module.exports = function(sequelize, DataTypes) {
             tableName: MODEL_NAME
         }
     );
+
+    Model.associate = function(models) {};
+
+    return Model;
 };

@@ -1,4 +1,3 @@
-/* eslint-disable jest/valid-expect */
 const {
     sequelize,
     dataTypes,
@@ -6,32 +5,25 @@ const {
     checkPropertyExists
 } = require('sequelize-test-helpers');
 
-const { expect, match } = require('./_modelsTestHelper');
-
-const TestedConfigurationModel = require('../../models/TestedConfiguration');
+const TestPlanTargetModel = require('../../models/TestPlanTarget');
 const AtModel = require('../../models/At');
 const AtVersionModel = require('../../models/AtVersion');
 const BrowserModel = require('../../models/Browser');
 const BrowserVersionModel = require('../../models/BrowserVersion');
 
-describe('TestedConfigurationModel', () => {
+describe('TestPlanTargetModel', () => {
     // A1
-    const Model = TestedConfigurationModel(sequelize, dataTypes);
+    const Model = TestPlanTargetModel(sequelize, dataTypes);
     const modelInstance = new Model();
 
     // A2
-    checkModelName(Model)('TestedConfiguration');
+    checkModelName(Model)('TestPlanTarget');
 
     describe('properties', () => {
         // A3
-        [
-            'title',
-            'publishStatus',
-            'at',
-            'atVersion',
-            'browser',
-            'browserVersion'
-        ].forEach(checkPropertyExists(modelInstance));
+        ['title', 'at', 'atVersion', 'browser', 'browserVersion'].forEach(
+            checkPropertyExists(modelInstance)
+        );
     });
 
     describe('associations', () => {
@@ -52,33 +44,33 @@ describe('TestedConfigurationModel', () => {
 
         it('defined a belongsTo association with At', () => {
             // A3
-            expect(Model.belongsTo).to.have.been.calledWith(
+            expect(Model.belongsTo).toHaveBeenCalledWith(
                 AtModel,
-                match(AT_ASSOCIATION)
+                expect.objectContaining(Model.AT_ASSOCIATION)
             );
         });
 
         it('defined a belongsTo association with AtVersion', () => {
             // A3
-            expect(Model.belongsTo).to.have.been.calledWith(
+            expect(Model.belongsTo).toHaveBeenCalledWith(
                 AtVersionModel,
-                match(AT_VERSION_ASSOCIATION)
+                expect.objectContaining(Model.AT_VERSION_ASSOCIATION)
             );
         });
 
         it('defined a belongsTo association with Browser', () => {
             // A3
-            expect(Model.belongsTo).to.have.been.calledWith(
+            expect(Model.belongsTo).toHaveBeenCalledWith(
                 BrowserModel,
-                match(BROWSER_ASSOCIATION)
+                expect.objectContaining(Model.BROWSER_ASSOCIATION)
             );
         });
 
         it('defined a belongsTo association with BrowserVersion', () => {
             // A3
-            expect(Model.belongsTo).to.have.been.calledWith(
+            expect(Model.belongsTo).toHaveBeenCalledWith(
                 BrowserVersionModel,
-                match(BROWSER_VERSION_ASSOCIATION)
+                expect.objectContaining(Model.BROWSER_VERSION_ASSOCIATION)
             );
         });
     });

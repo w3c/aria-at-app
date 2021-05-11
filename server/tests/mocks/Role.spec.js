@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 const SequelizeMock = require('sequelize-mock');
 const mockRoles = require('../mock-data/roles.json');
 

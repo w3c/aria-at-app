@@ -22,10 +22,14 @@ module.exports = function(sequelize, DataTypes) {
         }
     );
 
+    Model.ROLE_ASSOCIATION = {
+        through: 'UserRoles',
+        as: 'roles'
+    };
+
     Model.associate = function(models) {
         Model.belongsToMany(models.Role, {
-            through: 'UserRoles',
-            as: 'roles',
+            ...Model.ROLE_ASSOCIATION,
             foreignKey: 'userId',
             otherKey: 'roleName'
         });
