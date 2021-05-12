@@ -1,41 +1,46 @@
 const { gql } = require('apollo-server');
 
 const graphqlSchema = gql`
-    type Query {
-        testPlanReports(testPlan: ID): [TestPlanReport]!
-        testPlanReport(id: ID): TestPlanReport
-        testPlanTargets: [TestPlanTarget]!
-        testPlans: [TestPlan]!
+    # Required for mutations that do not return anything
+    scalar NoResponse
+
+    """
+    ISO-8601-formatted timestamp.
+    """
+    scalar Timestamp
+
+    enum Role {
+        TESTER
+        ADMIN
     }
 
-    type TestPlanReport {
-        id: ID!
-        publishStatus: TestPlanReportStatus!
-        coveragePercent: Int!
-        testPlan: TestPlan!
-        testPlanTarget: TestPlanTarget!
-        canonicalRun: TestPlanRun # Present when finalized
-        testPlanRuns: [TestPlanRun]!
-        createdAt: Timestamp!
+    type User {
+        id: ID
+        username: String
+        roles: [Role]!
     }
 
-    input TestPlanReportInput {
-        testPlan: ID!
-        testPlanTarget: ID!
+    type Browser {
+        name: String!
+        versions: [String]!
     }
 
-    type TestPlan {
-        id: ID!
-        title: String!
-        publishStatus: TestPlanStatus!
-        revision: String!
-        sourceGitCommit: String!
-        exampleUrl: String! # ????
-        createdAt: Timestamp! # Wait, what about the source code age?
-        tests: [Test]!
-        testCount: Int!
+    enum AtMode {
+        READING
+        INTERACTION
+        MODELESS
     }
 
+    type At {
+        name: String!
+        modes: [AtMode]!
+        versions: [String]!
+    }
+
+    """
+    Specifies which AT and browser combination we are testing, divided into
+    buckets for each major version.
+    """
     type TestPlanTarget {
         id: ID!
         title: String!
@@ -59,33 +64,34 @@ const graphqlSchema = gql`
         FINALIZED
     }
 
-    scalar Timestamp
-
-    enum TestPlanReportStatus {
-        DRAFT
-        IN_REVIEW
-        FINALIZED
-        # ????
+    type TestPlan {
+        id: ID!
+        title: String!
+        publishStatus: TestPlanStatus!
+        revision: String!
+        sourceGitCommit: String!
+        exampleUrl: String!
+        # TODO: consider renaming createdAt and including the date the source
+        # code age was authored as well.
+        createdAt: Timestamp!
+        tests: [Test]!
+        testCount: Int!
     }
 
-    type At {
-        name: String!
-        modes: [AtMode]!
-        versions: [AtVersion]!
+    interface Test {
+        title: String!
+        totalAssertions: Int!
+        # TODO: need complete representation of test data
     }
 
-    enum AtMode {
-        READING
-        INTERACTION
-        MODELESS
-    }
-
-    scalar AtVersion
-    scalar BrowserVersion
-
-    type Browser {
-        name: String!
-        versions: [BrowserVersion]!
+    type TestResult implements Test {
+        title: String!
+        startedAt: Timestamp!
+        completedAt: Timestamp
+        testPlanRun: TestPlanRun
+        passedAssertions: Int
+        totalAssertions: Int!
+        # TODO: need complete representation of test data & results
     }
 
     type TestPlanRun {
@@ -97,37 +103,36 @@ const graphqlSchema = gql`
         testResultCount: Int!
     }
 
-    interface Test {
-        title: String!
-        totalAssertions: Int!
+    enum TestPlanReportStatus {
+        DRAFT
+        IN_REVIEW
+        FINALIZED
     }
 
-    type TestResult implements Test {
-        title: String!
-        startedAt: Timestamp!
-        completedAt: Timestamp
-        testPlanRun: TestPlanRun
-        passedAssertions: Int
-        totalAssertions: Int!
-        # results
+    type TestPlanReport {
+        id: ID!
+        publishStatus: TestPlanReportStatus!
+        coveragePercent: Int!
+        testPlan: TestPlan!
+        testPlanTarget: TestPlanTarget!
+        canonicalRun: TestPlanRun # Present when finalized
+        testPlanRuns: [TestPlanRun]!
+        createdAt: Timestamp!
     }
 
-    type User {
-        id: ID
-        username: String
-        roles: [String]
+    input TestPlanReportInput {
+        testPlan: ID!
+        testPlanTarget: ID!
     }
 
-    type Mutation {
-        createTestPlanReport(
-            input: TestPlanReportInput
-        ): TestPlanReportOperations
-        createTestPlanTarget(
-            input: TestPlanTargetInput
-        ): TestPlanTargetOperations
-        testPlanReport(id: ID): TestPlanReportOperations
-        testPlanTarget(id: ID): TestPlanTargetOperations
+    type Query {
+        testPlanReports(testPlan: ID): [TestPlanReport]!
+        testPlanReport(id: ID): TestPlanReport
+        testPlanTargets: [TestPlanTarget]!
+        testPlans: [TestPlan]!
     }
+
+    # Mutation-specific types below
 
     type TestPlanReportOperations {
         assignTester(user: ID): NoResponse
@@ -141,7 +146,16 @@ const graphqlSchema = gql`
         resultingTestPlanTarget: TestPlanTarget
     }
 
-    scalar NoResponse
+    type Mutation {
+        createTestPlanReport(
+            input: TestPlanReportInput
+        ): TestPlanReportOperations
+        createTestPlanTarget(
+            input: TestPlanTargetInput
+        ): TestPlanTargetOperations
+        testPlanReport(id: ID): TestPlanReportOperations
+        testPlanTarget(id: ID): TestPlanTargetOperations
+    }
 `;
 
 module.exports = graphqlSchema;
