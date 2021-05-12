@@ -5,40 +5,40 @@ index a29d558..347d819 100644
 @@ -18,6 +18,9 @@ This library assumes:
  2. You are using [`sinon`](http://sinonjs.org) — Version 5 or better.
  3. Using [`mocha`](https://mochajs.org) is also recommended, but as long as you are using `chai` and `sinon` this should work with any test runner.
- 
+
 +**NB. You can also use [`jest`](https://jestjs.io) - Version 26 or better. Ensure `SEQUELIZE_TEST_HELPERS_JEST_RUNNER=true` is set in your environment.**
 +
 +
  ### Installation
- 
+
  Add `sequelize-test-helpers` as a `devDependency`:
 @@ -116,11 +119,11 @@ describe('src/models/User', () => {
- 
+
    checkModelName(User)('User')
- 
+
 -  context('properties', () => {
 +  describe('properties', () => {
      ;['age', 'firstname', 'lastname', 'email', 'token'].forEach(checkPropertyExists(user))
    })
- 
+
 -  context('associations', () => {
 +  describe('associations', () => {
      const Company = 'some dummy company'
- 
+
      before(() => {
 @@ -132,7 +135,7 @@ describe('src/models/User', () => {
      })
    })
- 
+
 -  context('indexes', () => {
 +  describe('indexes', () => {
      ;['email', 'token'].forEach(checkUniqueIndex(user))
    })
  })
 @@ -242,7 +245,7 @@ describe('src/utils/save', () => {
- 
+
    let result
- 
+
 -  context('user does not exist', () => {
 +  describe('user does not exist', () => {
      before(async () => {
@@ -47,7 +47,7 @@ index a29d558..347d819 100644
 @@ -263,7 +266,7 @@ describe('src/utils/save', () => {
      })
    })
- 
+
 -  context('user exists', () => {
 +  describe('user exists', () => {
      before(async () => {
@@ -55,7 +55,7 @@ index a29d558..347d819 100644
        User.findOne.resolves(fakeUser)
 @@ -281,7 +284,7 @@ describe('src/utils/save', () => {
      })
- 
+
      it('returned the user', () => {
 -      expect(result).to.deep.equal(fakeUser)
 +      expect(result).toEqual(fakeUser)
@@ -80,7 +80,7 @@ index a29d558..347d819 100644
    return User
  }
 @@ -341,14 +344,14 @@ describe('src/models/User', () => {
- 
+
    it('called User.init with the correct parameters', () => {
      expect(User.init).to.have.been.calledWith(
 -      {
@@ -109,7 +109,7 @@ index 32d4792..511e3ba 100644
 @@ -1,8 +1,10 @@
 -const { expect } = require('chai')
 +const { isJestRunner, expect } = require('../utils/checkIsJestRunner')
- 
+
  const checkHookDefined = instance => hookName => {
    it(`defined a ${hookName} hook`, () => {
 -    expect(instance.hooks[hookName]).to.be.a('function')
@@ -118,7 +118,7 @@ index 32d4792..511e3ba 100644
 +      expect(instance.hooks[hookName]).to.be.a('function')
    })
  }
- 
+
 diff --git a/node_modules/sequelize-test-helpers/src/checks/checkModelName.js b/node_modules/sequelize-test-helpers/src/checks/checkModelName.js
 index 1c91542..b604d53 100644
 --- a/node_modules/sequelize-test-helpers/src/checks/checkModelName.js
@@ -126,7 +126,7 @@ index 1c91542..b604d53 100644
 @@ -1,8 +1,10 @@
 -const { expect } = require('chai')
 +const { isJestRunner, expect } = require('../utils/checkIsJestRunner')
- 
+
  const checkModelName = model => modelName => {
    it(`is named '${modelName}'`, () => {
 -    expect(model.modelName).to.equal(modelName)
@@ -135,7 +135,7 @@ index 1c91542..b604d53 100644
 +      expect(model.modelName).to.equal(modelName)
    })
  }
- 
+
 diff --git a/node_modules/sequelize-test-helpers/src/checks/checkNonUniqueIndex.js b/node_modules/sequelize-test-helpers/src/checks/checkNonUniqueIndex.js
 index 5f696f5..fc50574 100644
 --- a/node_modules/sequelize-test-helpers/src/checks/checkNonUniqueIndex.js
@@ -143,7 +143,7 @@ index 5f696f5..fc50574 100644
 @@ -1,9 +1,12 @@
 -const { expect } = require('chai')
 +const { isJestRunner, expect } = require('../utils/checkIsJestRunner')
- 
+
  const checkNonUniqueIndex = instance => indexName => {
    it(`indexed a non-unique ${indexName}`, () => {
 -    expect(instance.indexes.find(index => index.unique === false && index.fields[0] === indexName))
@@ -155,7 +155,7 @@ index 5f696f5..fc50574 100644
 +        .not.to.be.undefined
    })
  }
- 
+
 diff --git a/node_modules/sequelize-test-helpers/src/checks/checkPropertyExists.js b/node_modules/sequelize-test-helpers/src/checks/checkPropertyExists.js
 index 7bb10d5..9da6028 100644
 --- a/node_modules/sequelize-test-helpers/src/checks/checkPropertyExists.js
@@ -163,7 +163,7 @@ index 7bb10d5..9da6028 100644
 @@ -1,8 +1,10 @@
 -const { expect } = require('chai')
 +const { isJestRunner, expect } = require('../utils/checkIsJestRunner')
- 
+
  const checkPropertyExists = instance => propName => {
    it(`has property ${propName}`, () => {
 -    expect(instance).to.have.property(propName)
@@ -172,7 +172,7 @@ index 7bb10d5..9da6028 100644
 +      expect(instance).to.have.property(propName)
    })
  }
- 
+
 diff --git a/node_modules/sequelize-test-helpers/src/checks/checkUniqueCompoundIndex.js b/node_modules/sequelize-test-helpers/src/checks/checkUniqueCompoundIndex.js
 index 6483ff9..1b85583 100644
 --- a/node_modules/sequelize-test-helpers/src/checks/checkUniqueCompoundIndex.js
@@ -180,7 +180,7 @@ index 6483ff9..1b85583 100644
 @@ -1,12 +1,18 @@
 -const { expect } = require('chai')
 +const { isJestRunner, expect } = require('../utils/checkIsJestRunner')
- 
+
  const checkUniqueCompoundIndex = instance => indecies => {
    it(`indexed a unique index of ${indecies.join(' and ')}`, () => {
 -    expect(
@@ -201,7 +201,7 @@ index 6483ff9..1b85583 100644
 +      ).not.to.be.undefined
    })
  }
- 
+
 diff --git a/node_modules/sequelize-test-helpers/src/checks/checkUniqueIndex.js b/node_modules/sequelize-test-helpers/src/checks/checkUniqueIndex.js
 index ce8541d..5e74541 100644
 --- a/node_modules/sequelize-test-helpers/src/checks/checkUniqueIndex.js
@@ -209,7 +209,7 @@ index ce8541d..5e74541 100644
 @@ -1,9 +1,12 @@
 -const { expect } = require('chai')
 +const { isJestRunner, expect } = require('../utils/checkIsJestRunner')
- 
+
  const checkUniqueIndex = instance => indexName => {
    it(`indexed a unique ${indexName}`, () => {
 -    expect(instance.indexes.find(index => index.unique === true && index.fields[0] === indexName))
@@ -221,7 +221,7 @@ index ce8541d..5e74541 100644
 +        .not.to.be.undefined
    })
  }
- 
+
 diff --git a/node_modules/sequelize-test-helpers/src/mockSequelize.js b/node_modules/sequelize-test-helpers/src/mockSequelize.js
 index 05d90cb..0a3bca6 100644
 --- a/node_modules/sequelize-test-helpers/src/mockSequelize.js
@@ -230,9 +230,9 @@ index 05d90cb..0a3bca6 100644
 -const { spy } = require('sinon')
 +const { isJestRunner, sinon } = require('./utils/checkIsJestRunner')
 +const { spy } = sinon
- 
+
  const DataTypes = require('./dataTypes')
- 
+
  class Model {}
 -Model.init = spy()
 -Model.belongsToMany = spy()
@@ -244,10 +244,10 @@ index 05d90cb..0a3bca6 100644
 +Model.belongsTo = isJestRunner ? jest.fn() : spy()
 +Model.hasMany = isJestRunner ? jest.fn() : spy()
 +Model.hasOne = isJestRunner ? jest.fn() : spy()
- 
+
  module.exports = { Model, DataTypes }
 diff --git a/node_modules/sequelize-test-helpers/src/sequelize.js b/node_modules/sequelize-test-helpers/src/sequelize.js
-index b3983c9..9ee5a01 100644
+index b3983c9..a654f77 100644
 --- a/node_modules/sequelize-test-helpers/src/sequelize.js
 +++ b/node_modules/sequelize-test-helpers/src/sequelize.js
 @@ -1,11 +1,12 @@
@@ -256,48 +256,48 @@ index b3983c9..9ee5a01 100644
  const staticMethods = require('./constants/staticMethods')
  const { syncMethods, asyncMethods } = require('./constants/staticModelMethods')
 +const { isJestRunner, sinon } = require('./utils/checkIsJestRunner')
- 
+
  const sequelize = {
    define: (modelName, modelDefn, metaData = {}) => {
 -    const model = function () {}
 +    const model = function() {
 +    }
      model.modelName = modelName
- 
+
      const attachHook = name => hook => {
 @@ -19,7 +20,7 @@ const sequelize = {
      }
- 
+
      const addStatic = key => {
 -      model[key] = sinon.stub()
 +      model[key] = isJestRunner ? jest.fn() : sinon.stub()
      }
- 
+
      hooks.forEach(hook => {
 @@ -34,11 +35,11 @@ const sequelize = {
      syncMethods.forEach(addStatic)
      asyncMethods.forEach(addStatic)
- 
+
 -    model.isHierarchy = sinon.spy()
 +    model.isHierarchy = isJestRunner ? jest.fn() : sinon.spy()
- 
+
 -    model.prototype.update = sinon.stub()
 -    model.prototype.reload = sinon.stub()
 -    model.prototype.set = sinon.spy()
-+    model.prototype.update = isJestRunner ? jest.mock() : sinon.stub()
-+    model.prototype.reload = isJestRunner ? jest.mock() : sinon.stub()
++    model.prototype.update = isJestRunner ? jest.fn() : sinon.stub()
++    model.prototype.reload = isJestRunner ? jest.fn() : sinon.stub()
 +    model.prototype.set = isJestRunner ? jest.fn() : sinon.spy()
      Object.keys(modelDefn).forEach(attachProp)
- 
+
      model.prototype.indexes = metaData.indexes
 @@ -49,7 +50,7 @@ const sequelize = {
  }
- 
+
  staticMethods.forEach(method => {
 -  sequelize[method] = sinon.stub()
-+  sequelize[method] = isJestRunner ? jest.mock() : sinon.stub()
++  sequelize[method] = isJestRunner ? jest.fn() : sinon.stub()
  })
- 
+
  module.exports = sequelize
 diff --git a/node_modules/sequelize-test-helpers/src/utils/checkIsJestRunner.js b/node_modules/sequelize-test-helpers/src/utils/checkIsJestRunner.js
 new file mode 100644

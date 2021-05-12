@@ -19,18 +19,20 @@ describe('UserModel Schema Checks', () => {
 
     describe('properties', () => {
         // A3
-        ['username'].forEach(checkPropertyExists(modelInstance));
+        ['username', 'createdAt', 'updatedAt'].forEach(
+            checkPropertyExists(modelInstance)
+        );
     });
 
     describe('associations', () => {
         // A1
         const ROLE_ASSOCIATION = { through: 'UserRoles', as: 'roles' };
-        const TEST_PLAN_RUN_ASSOCIATION = { as: 'tester' };
+        const TEST_PLAN_RUN_ASSOCIATION = { as: 'testPlanRuns' };
 
         // A2
         beforeAll(() => {
             Model.belongsToMany(RoleModel, ROLE_ASSOCIATION);
-            Model.hasOne(TestPlanRunModel, TEST_PLAN_RUN_ASSOCIATION); // this association will add 'tester' to the target model
+            Model.hasMany(TestPlanRunModel, TEST_PLAN_RUN_ASSOCIATION);
         });
 
         // A3
@@ -41,8 +43,8 @@ describe('UserModel Schema Checks', () => {
             );
         });
 
-        it('defined a hasOne association with TestPlanRun', () => {
-            expect(Model.hasOne).toHaveBeenCalledWith(
+        it('defined a hasMany association with TestPlanRun', () => {
+            expect(Model.hasMany).toHaveBeenCalledWith(
                 TestPlanRunModel,
                 expect.objectContaining(Model.TEST_PLAN_RUN_ASSOCIATION)
             );

@@ -8,6 +8,7 @@ const {
 const TestPlanRunModel = require('../../models/TestPlanRun');
 const TestResultModel = require('../../models/TestResult');
 const TestPlanReportModel = require('../../models/TestPlanReport');
+const UserModel = require('../../models/User');
 
 describe('TestPlanRunModel', () => {
     // A1
@@ -27,12 +28,14 @@ describe('TestPlanRunModel', () => {
     describe('associations', () => {
         // A1
         const TEST_RESULT_ASSOCIATION = { as: 'testResults' };
-        const TEST_PLAN_REPORT_ASSOCIATION = { as: 'testPlanReport' };
+        const TEST_PLAN_REPORT_ASSOCIATION = { foreignKey: 'testPlanReport' };
+        const USER_ASSOCIATION = { foreignKey: 'tester' };
 
         // A2
-        beforeEach(() => {
+        beforeAll(() => {
             Model.hasMany(TestResultModel, TEST_RESULT_ASSOCIATION);
             Model.belongsTo(TestPlanReportModel, TEST_PLAN_REPORT_ASSOCIATION);
+            Model.belongsTo(UserModel, USER_ASSOCIATION);
         });
 
         it('defined a hasMany association with TestResult', () => {
@@ -48,6 +51,14 @@ describe('TestPlanRunModel', () => {
             expect(Model.belongsTo).toHaveBeenCalledWith(
                 TestPlanReportModel,
                 expect.objectContaining(Model.TEST_PLAN_REPORT_ASSOCIATION)
+            );
+        });
+
+        it('defined a belongsTo association with User', () => {
+            // A3
+            expect(Model.belongsTo).toHaveBeenCalledWith(
+                UserModel,
+                expect.objectContaining(Model.USER_ASSOCIATION)
             );
         });
     });

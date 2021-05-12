@@ -20,19 +20,23 @@ describe('TestPlanReportModel', () => {
 
     describe('properties', () => {
         // A3
-        ['publishStatus', 'testPlanTarget', 'testPlan', 'createdAt'].forEach(
-            checkPropertyExists(modelInstance)
-        );
+        [
+            'publishStatus',
+            'testPlanTarget',
+            'testPlan',
+            'coveragePercent',
+            'createdAt'
+        ].forEach(checkPropertyExists(modelInstance));
     });
 
     describe('associations', () => {
         // A1
-        const TEST_PLAN_ASSOCIATION = { as: 'testPlan' };
-        const TEST_PLAN_TARGET_ASSOCIATION = { as: 'testPlanTarget' };
+        const TEST_PLAN_ASSOCIATION = { foreignKey: 'testPlan' };
+        const TEST_PLAN_TARGET_ASSOCIATION = { foreignKey: 'testPlanTarget' };
         const TEST_PLAN_RUN_ASSOCIATION = { as: 'testPlanRuns' };
 
         // A2
-        beforeEach(() => {
+        beforeAll(() => {
             Model.belongsTo(TestPlanModel, TEST_PLAN_ASSOCIATION);
             Model.belongsTo(TestPlanTargetModel, TEST_PLAN_TARGET_ASSOCIATION);
             Model.hasMany(TestPlanRunModel, TEST_PLAN_RUN_ASSOCIATION);

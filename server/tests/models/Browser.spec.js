@@ -26,8 +26,7 @@ describe('BrowserModel', () => {
         const BROWSER_VERSION_ASSOCIATION = { as: 'versions' };
 
         // A2
-        beforeEach(() => {
-            // Model.associate({ BrowserVersion });
+        beforeAll(() => {
             Model.hasMany(BrowserVersionModel, BROWSER_VERSION_ASSOCIATION);
         });
 

@@ -26,14 +26,13 @@ describe('BrowserVersionModel', () => {
         const BROWSER_ASSOCIATION = { foreignKey: 'browser' };
 
         // A2
-        beforeEach(() => {
-            // Model.associate({ AtVersion, AtMode });
+        beforeAll(() => {
             Model.belongsTo(BrowserModel, BROWSER_ASSOCIATION);
         });
 
-        it('defined a hasOne association with At', () => {
+        it('defined a belongsTo association with At', () => {
             // A3
-            expect(Model.hasOne).toHaveBeenCalledWith(
+            expect(Model.belongsTo).toHaveBeenCalledWith(
                 BrowserModel,
                 expect.objectContaining(Model.BROWSER_ASSOCIATION)
             );

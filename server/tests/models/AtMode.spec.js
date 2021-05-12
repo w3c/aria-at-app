@@ -26,14 +26,13 @@ describe('AtModeModel', () => {
         const AT_ASSOCIATION = { foreignKey: 'at' };
 
         // A2
-        beforeEach(() => {
-            // Model.associate({ AtVersion, AtMode });
+        beforeAll(() => {
             Model.belongsTo(AtModel, AT_ASSOCIATION);
         });
 
-        it('defined a hasOne association with At', () => {
+        it('defined a belongsTo association with At', () => {
             // A3
-            expect(Model.hasOne).toHaveBeenCalledWith(
+            expect(Model.belongsTo).toHaveBeenCalledWith(
                 AtModel,
                 expect.objectContaining(Model.AT_ASSOCIATION)
             );
