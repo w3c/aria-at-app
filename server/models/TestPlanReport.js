@@ -10,7 +10,10 @@ module.exports = function(sequelize, DataTypes) {
                 primaryKey: true,
                 autoIncrement: true
             },
-            publishStatus: { type: DataTypes.TEXT },
+            publishStatus: {
+                type: DataTypes.TEXT
+                // type: DataTypes.ENUM('draft', 'raw', 'final')
+            },
             testPlanTarget: { type: DataTypes.INTEGER },
             testPlan: { type: DataTypes.INTEGER },
             coveragePercent: { type: DataTypes.NUMERIC },

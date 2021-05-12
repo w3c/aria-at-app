@@ -6,11 +6,12 @@ module.exports = function(sequelize, DataTypes) {
         {
             startedAt: {
                 type: DataTypes.DATE,
-                defaultValue: sequelize.literal('now()')
+                defaultValue: DataTypes.NOW
             },
             completedAt: {
                 type: DataTypes.DATE,
-                defaultValue: sequelize.literal('now()')
+                defaultValue: null,
+                allowNull: true
             },
             testPlanRun: { type: DataTypes.INTEGER },
             data: { type: DataTypes.JSONB }

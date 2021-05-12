@@ -348,8 +348,8 @@ ALTER SEQUENCE public."TestPlan_id_seq" OWNED BY public."TestPlan".id;
 --
 
 CREATE TABLE public."TestResult" (
-                                     "startedAt" timestamp with time zone DEFAULT now(),
-                                     "completedAt" timestamp with time zone DEFAULT now(),
+                                     "startedAt" timestamp with time zone,
+                                     "completedAt" timestamp with time zone,
                                      "testPlanRun" integer,
                                      data jsonb
 );
