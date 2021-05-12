@@ -13,6 +13,7 @@ module.exports = function(sequelize, DataTypes) {
             publishStatus: { type: DataTypes.TEXT },
             testPlanTarget: { type: DataTypes.INTEGER },
             testPlan: { type: DataTypes.INTEGER },
+            coveragePercent: { type: DataTypes.NUMERIC },
             createdAt: {
                 type: DataTypes.DATE,
                 defaultValue: DataTypes.NOW

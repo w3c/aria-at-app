@@ -218,6 +218,7 @@ CREATE TABLE public."TestPlanReport" (
                                          "publishStatus" text,
                                          "testPlanTarget" integer,
                                          "testPlan" integer,
+                                         "coveragePercent" numeric,
                                          "createdAt" timestamp with time zone
 );
 
@@ -362,7 +363,9 @@ ALTER TABLE public."TestResult" OWNER TO atr;
 
 CREATE TABLE public."User" (
                                id integer NOT NULL,
-                               username text NOT NULL
+                               username text NOT NULL,
+                               "createdAt" timestamp with time zone,
+                               "updatedAt" timestamp with time zone
 );
 
 

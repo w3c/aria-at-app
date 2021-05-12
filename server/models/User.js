@@ -14,10 +14,12 @@ module.exports = function(sequelize, DataTypes) {
                 type: DataTypes.TEXT,
                 allowNull: false,
                 unique: true
-            }
+            },
+            createdAt: { type: DataTypes.DATE },
+            updatedAt: { type: DataTypes.DATE }
         },
         {
-            timestamps: false,
+            timestamps: true,
             tableName: MODEL_NAME
         }
     );
