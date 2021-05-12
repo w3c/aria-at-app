@@ -25,21 +25,7 @@ app.use('/run', runRoutes);
 app.use('/test', testRoutes);
 app.use('/test-versions', testVersionRoutes);
 
-const resolvers = {
-    Query: {
-        testPlans: () => [
-            {
-                title: 'Checkbox (Two State)',
-                note: 'This is fake data'
-            },
-            {
-                title: 'Editor Menubar Example',
-                note: 'This is fake data'
-            }
-        ]
-    }
-};
-const server = new ApolloServer({ typeDefs: graphqlSchema, resolvers });
+const server = new ApolloServer({ typeDefs: graphqlSchema, mocks: true });
 server.start().then(() => {
     server.applyMiddleware({ app });
 });
