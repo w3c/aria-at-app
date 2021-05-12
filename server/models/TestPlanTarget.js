@@ -13,8 +13,20 @@ module.exports = function(sequelize, DataTypes) {
             title: { type: DataTypes.TEXT },
             at: { type: DataTypes.INTEGER },
             browser: { type: DataTypes.INTEGER },
-            atVersion: { type: DataTypes.TEXT },
-            browserVersion: { type: DataTypes.TEXT }
+            atVersion: {
+                type: DataTypes.TEXT,
+                references: {
+                    model: 'AtVersion',
+                    key: 'version'
+                }
+            },
+            browserVersion: {
+                type: DataTypes.TEXT,
+                references: {
+                    model: 'BrowserVersion',
+                    key: 'version'
+                }
+            }
         },
         {
             timestamps: false,

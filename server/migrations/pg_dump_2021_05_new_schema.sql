@@ -20,7 +20,9 @@ ALTER TABLE IF EXISTS ONLY public."UserRoles" DROP CONSTRAINT IF EXISTS "UserRol
 ALTER TABLE IF EXISTS ONLY public."UserRoles" DROP CONSTRAINT IF EXISTS "UserRoles_roleName_fkey";
 ALTER TABLE IF EXISTS ONLY public."TestResult" DROP CONSTRAINT IF EXISTS "TestResult_testPlanRun_fkey";
 ALTER TABLE IF EXISTS ONLY public."TestPlanTarget" DROP CONSTRAINT IF EXISTS "TestPlanTarget_browser_fkey";
+ALTER TABLE IF EXISTS ONLY public."TestPlanTarget" DROP CONSTRAINT IF EXISTS "TestPlanTarget_browserVersion_fkey";
 ALTER TABLE IF EXISTS ONLY public."TestPlanTarget" DROP CONSTRAINT IF EXISTS "TestPlanTarget_at_fkey";
+ALTER TABLE IF EXISTS ONLY public."TestPlanTarget" DROP CONSTRAINT IF EXISTS "TestPlanTarget_atVersion_fkey";
 ALTER TABLE IF EXISTS ONLY public."TestPlanRun" DROP CONSTRAINT IF EXISTS "TestPlanRun_tester_fkey";
 ALTER TABLE IF EXISTS ONLY public."TestPlanRun" DROP CONSTRAINT IF EXISTS "TestPlanRun_testPlanReport_fkey";
 ALTER TABLE IF EXISTS ONLY public."TestPlanReport" DROP CONSTRAINT IF EXISTS "TestPlanReport_testPlan_fkey";
@@ -37,8 +39,10 @@ ALTER TABLE IF EXISTS ONLY public."TestPlanRun" DROP CONSTRAINT IF EXISTS "TestP
 ALTER TABLE IF EXISTS ONLY public."TestPlanReport" DROP CONSTRAINT IF EXISTS "TestPlanReport_pkey";
 ALTER TABLE IF EXISTS ONLY public."Role" DROP CONSTRAINT IF EXISTS "Role_pkey";
 ALTER TABLE IF EXISTS ONLY public."Browser" DROP CONSTRAINT IF EXISTS "Browser_pkey";
+ALTER TABLE IF EXISTS ONLY public."BrowserVersion" DROP CONSTRAINT IF EXISTS "BrowserVersion_version_key";
 ALTER TABLE IF EXISTS ONLY public."BrowserVersion" DROP CONSTRAINT IF EXISTS "BrowserVersion_pkey";
 ALTER TABLE IF EXISTS ONLY public."At" DROP CONSTRAINT IF EXISTS "At_pkey";
+ALTER TABLE IF EXISTS ONLY public."AtVersion" DROP CONSTRAINT IF EXISTS "AtVersion_version_key";
 ALTER TABLE IF EXISTS ONLY public."AtVersion" DROP CONSTRAINT IF EXISTS "AtVersion_pkey";
 ALTER TABLE IF EXISTS ONLY public."AtMode" DROP CONSTRAINT IF EXISTS "AtMode_pkey";
 ALTER TABLE IF EXISTS public."User" ALTER COLUMN id DROP DEFAULT;
@@ -591,6 +595,14 @@ ALTER TABLE ONLY public."AtVersion"
 
 
 --
+-- Name: AtVersion AtVersion_version_key; Type: CONSTRAINT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public."AtVersion"
+    ADD CONSTRAINT "AtVersion_version_key" UNIQUE (version);
+
+
+--
 -- Name: At At_pkey; Type: CONSTRAINT; Schema: public; Owner: atr
 --
 
@@ -604,6 +616,14 @@ ALTER TABLE ONLY public."At"
 
 ALTER TABLE ONLY public."BrowserVersion"
     ADD CONSTRAINT "BrowserVersion_pkey" PRIMARY KEY (browser, version);
+
+
+--
+-- Name: BrowserVersion BrowserVersion_version_key; Type: CONSTRAINT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public."BrowserVersion"
+    ADD CONSTRAINT "BrowserVersion_version_key" UNIQUE (version);
 
 
 --
@@ -735,11 +755,27 @@ ALTER TABLE ONLY public."TestPlanRun"
 
 
 --
+-- Name: TestPlanTarget TestPlanTarget_atVersion_fkey; Type: FK CONSTRAINT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public."TestPlanTarget"
+    ADD CONSTRAINT "TestPlanTarget_atVersion_fkey" FOREIGN KEY ("atVersion") REFERENCES public."AtVersion"(version);
+
+
+--
 -- Name: TestPlanTarget TestPlanTarget_at_fkey; Type: FK CONSTRAINT; Schema: public; Owner: atr
 --
 
 ALTER TABLE ONLY public."TestPlanTarget"
     ADD CONSTRAINT "TestPlanTarget_at_fkey" FOREIGN KEY (at) REFERENCES public."At"(id) ON UPDATE CASCADE;
+
+
+--
+-- Name: TestPlanTarget TestPlanTarget_browserVersion_fkey; Type: FK CONSTRAINT; Schema: public; Owner: atr
+--
+
+ALTER TABLE ONLY public."TestPlanTarget"
+    ADD CONSTRAINT "TestPlanTarget_browserVersion_fkey" FOREIGN KEY ("browserVersion") REFERENCES public."BrowserVersion"(version);
 
 
 --

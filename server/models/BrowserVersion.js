@@ -16,7 +16,8 @@ module.exports = function(sequelize, DataTypes) {
             version: {
                 type: DataTypes.TEXT,
                 allowNull: false,
-                primaryKey: true
+                primaryKey: true,
+                unique: true
             }
         },
         {
