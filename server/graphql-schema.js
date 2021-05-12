@@ -4,6 +4,24 @@ const graphqlSchema = gql`
     type Query {
         testPlanReports(testPlan: ID): [TestPlanReport]!
         testPlanReport(id: ID): TestPlanReport
+        testPlanTargets: [TestPlanTarget]!
+        testPlans: [TestPlan]!
+    }
+
+    type TestPlanReport {
+        id: ID!
+        publishStatus: TestPlanReportStatus!
+        coveragePercent: Int!
+        testPlan: TestPlan!
+        testPlanTarget: TestPlanTarget!
+        canonicalRun: TestPlanRun # Present when finalized
+        testPlanRuns: [TestPlanRun]!
+        createdAt: Timestamp!
+    }
+
+    input TestPlanReportInput {
+        testPlan: ID!
+        testPlanTarget: ID!
     }
 
     type TestPlan {
@@ -18,6 +36,23 @@ const graphqlSchema = gql`
         testCount: Int!
     }
 
+    type TestPlanTarget {
+        id: ID!
+        title: String!
+        at: At!
+        atVersion: String!
+        browser: Browser!
+        browserVersion: String!
+        testPlanReports: [TestPlanReport]!
+    }
+
+    input TestPlanTargetInput {
+        at: ID!
+        atVersion: String!
+        browser: ID!
+        browserVersion: String!
+    }
+
     enum TestPlanStatus {
         DRAFT
         IN_REVIEW
@@ -25,34 +60,12 @@ const graphqlSchema = gql`
     }
 
     scalar Timestamp
-    scalar TBD
-
-    type TestPlanReport {
-        id: ID!
-        publishStatus: TestPlanReportStatus!
-        coveragePercent: Int!
-        testPlan: TestPlan!
-        testPlanTarget: TestPlanTarget!
-        canonicalRun: TestPlanRun
-        testPlanRuns: [TestPlanRun]!
-        createdAt: Timestamp!
-    }
 
     enum TestPlanReportStatus {
         DRAFT
         IN_REVIEW
         FINALIZED
         # ????
-    }
-
-    type TestPlanTarget {
-        id: ID!
-        title: String!
-        at: At!
-        atVersion: AtVersion!
-        browser: Browser!
-        browserVersion: BrowserVersion!
-        testPlanReports: [TestPlanReport]!
     }
 
     type At {
@@ -104,6 +117,31 @@ const graphqlSchema = gql`
         username: String
         roles: [String]
     }
+
+    type Mutation {
+        createTestPlanReport(
+            input: TestPlanReportInput
+        ): TestPlanReportOperations
+        createTestPlanTarget(
+            input: TestPlanTargetInput
+        ): TestPlanTargetOperations
+        testPlanReport(id: ID): TestPlanReportOperations
+        testPlanTarget(id: ID): TestPlanTargetOperations
+    }
+
+    type TestPlanReportOperations {
+        assignTester(user: ID): NoResponse
+        deleteTestPlanRun(user: ID): NoResponse
+        updateStatus(status: TestPlanReportStatus): NoResponse
+        resultingTestPlanReport: TestPlanReport!
+    }
+
+    type TestPlanTargetOperations {
+        delete: NoResponse # UI should warn this will delete any runs as well
+        resultingTestPlanTarget: TestPlanTarget
+    }
+
+    scalar NoResponse
 `;
 
 module.exports = graphqlSchema;
