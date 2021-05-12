@@ -32,7 +32,7 @@ describe('TestPlanRunModel', () => {
         const USER_ASSOCIATION = { foreignKey: 'tester' };
 
         // A2
-        beforeEach(() => {
+        beforeAll(() => {
             Model.hasMany(TestResultModel, TEST_RESULT_ASSOCIATION);
             Model.belongsTo(TestPlanReportModel, TEST_PLAN_REPORT_ASSOCIATION);
             Model.belongsTo(UserModel, USER_ASSOCIATION);

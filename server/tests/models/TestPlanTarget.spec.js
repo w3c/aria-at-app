@@ -34,7 +34,7 @@ describe('TestPlanTargetModel', () => {
         const BROWSER_VERSION_ASSOCIATION = { foreignKey: 'browserVersion' };
 
         // A2
-        beforeEach(() => {
+        beforeAll(() => {
             // Model.associate({ At, AtVersion, Browser, BrowserVersion });
             Model.belongsTo(AtModel, AT_ASSOCIATION);
             Model.belongsTo(AtVersionModel, AT_VERSION_ASSOCIATION);

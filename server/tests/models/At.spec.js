@@ -28,7 +28,7 @@ describe('AtModel', () => {
         const AT_MODE_ASSOCIATION = { as: 'modes' };
 
         // A2
-        beforeEach(() => {
+        beforeAll(() => {
             Model.hasMany(AtVersionModel, AT_VERSION_ASSOCIATION);
             Model.hasMany(AtModeModel, AT_MODE_ASSOCIATION);
         });
