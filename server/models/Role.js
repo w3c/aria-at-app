@@ -23,7 +23,7 @@ module.exports = function(sequelize, DataTypes) {
     };
 
     Model.associate = function(models) {
-        Model.belongsToMany(models.Role, {
+        Model.belongsToMany(models.User, {
             ...Model.USER_ASSOCIATION,
             foreignKey: 'roleName',
             otherKey: 'userId'
