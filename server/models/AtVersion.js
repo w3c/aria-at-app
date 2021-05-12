@@ -7,6 +7,7 @@ module.exports = function(sequelize, DataTypes) {
             at: {
                 type: DataTypes.INTEGER,
                 allowNull: false,
+                primaryKey: true,
                 references: {
                     model: 'At',
                     key: 'id'
@@ -14,7 +15,8 @@ module.exports = function(sequelize, DataTypes) {
             },
             version: {
                 type: DataTypes.TEXT,
-                allowNull: true
+                allowNull: false,
+                primaryKey: true
             }
         },
         {
@@ -23,9 +25,12 @@ module.exports = function(sequelize, DataTypes) {
         }
     );
 
+    Model.AT_ASSOCIATION = { foreignKey: 'at' };
+
     Model.associate = function(models) {
         Model.belongsTo(models.At, {
-            foreignKey: 'at'
+            ...Model.AT_ASSOCIATION,
+            targetKey: 'id'
         });
     };
 

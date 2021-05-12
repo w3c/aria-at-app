@@ -4,9 +4,10 @@ module.exports = function(sequelize, DataTypes) {
     const Model = sequelize.define(
         MODEL_NAME,
         {
-            at: {
+            browser: {
                 type: DataTypes.INTEGER,
                 allowNull: false,
+                primaryKey: true,
                 references: {
                     model: 'Browser',
                     key: 'id'
@@ -14,7 +15,8 @@ module.exports = function(sequelize, DataTypes) {
             },
             version: {
                 type: DataTypes.TEXT,
-                allowNull: true
+                allowNull: false,
+                primaryKey: true
             }
         },
         {
@@ -23,9 +25,12 @@ module.exports = function(sequelize, DataTypes) {
         }
     );
 
+    Model.BROWSER_ASSOCIATION = { foreignKey: 'browser' };
+
     Model.associate = function(models) {
         Model.belongsTo(models.Browser, {
-            foreignKey: 'browser'
+            ...Model.BROWSER_ASSOCIATION,
+            targetKey: 'id'
         });
     };
 

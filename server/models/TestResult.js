@@ -1,66 +1,36 @@
+const MODEL_NAME = 'TestResult';
+
 module.exports = function(sequelize, DataTypes) {
-    const TestResult = sequelize.define(
-        'TestResult',
+    const Model = sequelize.define(
+        MODEL_NAME,
         {
-            id: {
-                type: DataTypes.INTEGER,
-                allowNull: false,
-                primaryKey: true,
-                autoIncrement: true
+            startedAt: {
+                type: DataTypes.DATE,
+                defaultValue: sequelize.literal('now()')
             },
-            test_id: {
-                type: DataTypes.INTEGER,
-                allowNull: false,
-                references: {
-                    model: 'test',
-                    key: 'id'
-                }
+            completedAt: {
+                type: DataTypes.DATE,
+                defaultValue: sequelize.literal('now()')
             },
-            run_id: {
-                type: DataTypes.INTEGER,
-                allowNull: false,
-                references: {
-                    model: 'run',
-                    key: 'id'
-                }
-            },
-            user_id: {
-                type: DataTypes.INTEGER,
-                allowNull: false,
-                references: {
-                    model: 'users',
-                    key: 'id'
-                }
-            },
-            status_id: {
-                type: DataTypes.INTEGER,
-                allowNull: true,
-                references: {
-                    model: 'test_status',
-                    key: 'id'
-                }
-            },
-            result: {
-                type: DataTypes.JSONB,
-                allowNull: true
-            },
-            serialized_form: {
-                type: DataTypes.JSONB,
-                allowNull: true
-            }
+            testPlanRun: { type: DataTypes.INTEGER },
+            data: { type: DataTypes.JSONB }
         },
         {
             timestamps: false,
-            tableName: 'test_result'
+            tableName: MODEL_NAME
         }
     );
 
-    TestResult.associate = function(models) {
-        models.TestResult.belongsTo(models.TestStatus, {
-            foreignKey: 'status_id',
-            sourceKey: 'id'
+    Model.TEST_PLAN_RUN_ASSOCIATION = { foreignKey: 'testPlanRun' };
+
+    Model.associate = function(models) {
+        Model.belongsTo(models.TestPlanRun, {
+            ...Model.TEST_PLAN_RUN_ASSOCIATION,
+            targetKey: 'id'
         });
     };
 
-    return TestResult;
+    Model.removeAttribute('id'); // stop automatic primary key (id) creation; not needed for this table
+
+    return Model;
 };

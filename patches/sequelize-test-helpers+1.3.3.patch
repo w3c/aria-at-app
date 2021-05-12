@@ -247,7 +247,7 @@ index 05d90cb..0a3bca6 100644
  
  module.exports = { Model, DataTypes }
 diff --git a/node_modules/sequelize-test-helpers/src/sequelize.js b/node_modules/sequelize-test-helpers/src/sequelize.js
-index b3983c9..9ee5a01 100644
+index b3983c9..a654f77 100644
 --- a/node_modules/sequelize-test-helpers/src/sequelize.js
 +++ b/node_modules/sequelize-test-helpers/src/sequelize.js
 @@ -1,11 +1,12 @@
@@ -284,8 +284,8 @@ index b3983c9..9ee5a01 100644
 -    model.prototype.update = sinon.stub()
 -    model.prototype.reload = sinon.stub()
 -    model.prototype.set = sinon.spy()
-+    model.prototype.update = isJestRunner ? jest.mock() : sinon.stub()
-+    model.prototype.reload = isJestRunner ? jest.mock() : sinon.stub()
++    model.prototype.update = isJestRunner ? jest.fn() : sinon.stub()
++    model.prototype.reload = isJestRunner ? jest.fn() : sinon.stub()
 +    model.prototype.set = isJestRunner ? jest.fn() : sinon.spy()
      Object.keys(modelDefn).forEach(attachProp)
  
@@ -295,7 +295,7 @@ index b3983c9..9ee5a01 100644
  
  staticMethods.forEach(method => {
 -  sequelize[method] = sinon.stub()
-+  sequelize[method] = isJestRunner ? jest.mock() : sinon.stub()
++  sequelize[method] = isJestRunner ? jest.fn() : sinon.stub()
  })
  
  module.exports = sequelize

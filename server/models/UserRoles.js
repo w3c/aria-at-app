@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 const MODEL_NAME = 'UserRoles';
 
 module.exports = function(sequelize, DataTypes) {

@@ -22,16 +22,21 @@ module.exports = function(sequelize, DataTypes) {
         }
     );
 
-    Model.ROLE_ASSOCIATION = {
-        through: 'UserRoles',
-        as: 'roles'
-    };
+    Model.ROLE_ASSOCIATION = { through: 'UserRoles', as: 'roles' };
+
+    Model.TEST_PLAN_RUN_ASSOCIATION = { as: 'testPlanRuns' };
 
     Model.associate = function(models) {
         Model.belongsToMany(models.Role, {
             ...Model.ROLE_ASSOCIATION,
             foreignKey: 'userId',
             otherKey: 'roleName'
+        });
+
+        Model.hasMany(models.TestPlanRun, {
+            ...Model.TEST_PLAN_RUN_ASSOCIATION,
+            foreignKey: 'tester',
+            sourceKey: 'id'
         });
     };
 

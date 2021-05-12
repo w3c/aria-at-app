@@ -27,8 +27,8 @@ describe('TestPlanReportModel', () => {
 
     describe('associations', () => {
         // A1
-        const TEST_PLAN_ASSOCIATION = { as: 'testPlan' };
-        const TEST_PLAN_TARGET_ASSOCIATION = { as: 'testPlanTarget' };
+        const TEST_PLAN_ASSOCIATION = { foreignKey: 'testPlan' };
+        const TEST_PLAN_TARGET_ASSOCIATION = { foreignKey: 'testPlanTarget' };
         const TEST_PLAN_RUN_ASSOCIATION = { as: 'testPlanRuns' };
 
         // A2

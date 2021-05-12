@@ -28,10 +28,10 @@ describe('TestPlanTargetModel', () => {
 
     describe('associations', () => {
         // A1
-        const AT_ASSOCIATION = { as: 'at' };
-        const AT_VERSION_ASSOCIATION = { as: 'atVersion' };
-        const BROWSER_ASSOCIATION = { as: 'browser' };
-        const BROWSER_VERSION_ASSOCIATION = { as: 'browserVersion' };
+        const AT_ASSOCIATION = { foreignKey: 'at' };
+        const AT_VERSION_ASSOCIATION = { foreignKey: 'atVersion' };
+        const BROWSER_ASSOCIATION = { foreignKey: 'browser' };
+        const BROWSER_VERSION_ASSOCIATION = { foreignKey: 'browserVersion' };
 
         // A2
         beforeEach(() => {

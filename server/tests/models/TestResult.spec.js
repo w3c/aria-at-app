@@ -25,7 +25,7 @@ describe('TestResultModel', () => {
 
     describe('associations', () => {
         // A1
-        const TEST_PLAN_RUN_ASSOCIATION = { as: 'testPlanRun' };
+        const TEST_PLAN_RUN_ASSOCIATION = { foreignKey: 'testPlanRun' };
 
         // A2
         beforeEach(() => {

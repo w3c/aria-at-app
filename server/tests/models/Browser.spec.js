@@ -27,7 +27,6 @@ describe('BrowserModel', () => {
 
         // A2
         beforeEach(() => {
-            // Model.associate({ BrowserVersion });
             Model.hasMany(BrowserVersionModel, BROWSER_VERSION_ASSOCIATION);
         });
 
