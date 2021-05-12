@@ -36,7 +36,7 @@ describe('TestPlanReportModel', () => {
         const TEST_PLAN_RUN_ASSOCIATION = { as: 'testPlanRuns' };
 
         // A2
-        beforeEach(() => {
+        beforeAll(() => {
             Model.belongsTo(TestPlanModel, TEST_PLAN_ASSOCIATION);
             Model.belongsTo(TestPlanTargetModel, TEST_PLAN_TARGET_ASSOCIATION);
             Model.hasMany(TestPlanRunModel, TEST_PLAN_RUN_ASSOCIATION);

@@ -26,7 +26,7 @@ describe('AtVersionModel', () => {
         const AT_ASSOCIATION = { foreignKey: 'at' };
 
         // A2
-        beforeEach(() => {
+        beforeAll(() => {
             Model.belongsTo(AtModel, AT_ASSOCIATION);
         });
 

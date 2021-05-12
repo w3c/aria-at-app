@@ -26,7 +26,7 @@ describe('BrowserVersionModel', () => {
         const BROWSER_ASSOCIATION = { foreignKey: 'browser' };
 
         // A2
-        beforeEach(() => {
+        beforeAll(() => {
             Model.belongsTo(BrowserModel, BROWSER_ASSOCIATION);
         });
 

@@ -19,7 +19,9 @@ describe('UserModel Schema Checks', () => {
 
     describe('properties', () => {
         // A3
-        ['username'].forEach(checkPropertyExists(modelInstance));
+        ['username', 'createdAt', 'updatedAt'].forEach(
+            checkPropertyExists(modelInstance)
+        );
     });
 
     describe('associations', () => {
