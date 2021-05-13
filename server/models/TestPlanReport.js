@@ -37,12 +37,14 @@ module.exports = function(sequelize, DataTypes) {
     Model.associate = function(models) {
         Model.belongsTo(models.TestPlan, {
             ...Model.TEST_PLAN_ASSOCIATION,
-            targetKey: 'id'
+            targetKey: 'id',
+            as: 'testPlanObject'
         });
 
         Model.belongsTo(models.TestPlanTarget, {
             ...Model.TEST_PLAN_TARGET_ASSOCIATION,
-            targetKey: 'id'
+            targetKey: 'id',
+            as: 'testPlanTargetObject'
         });
 
         Model.hasMany(models.TestPlanRun, {

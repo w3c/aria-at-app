@@ -40,7 +40,8 @@ module.exports = function(sequelize, DataTypes) {
 
         Model.belongsTo(models.User, {
             ...Model.USER_ASSOCIATION,
-            targetKey: 'id'
+            targetKey: 'id',
+            as: 'testerObject'
         });
     };
 

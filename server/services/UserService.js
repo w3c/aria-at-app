@@ -1,27 +1,21 @@
-const { Sequelize, User, Role, UserRoles, TestPlanRun } = require('../models');
+const ModelService = require('./ModelService');
+const {
+    USER_ATTRIBUTES,
+    ROLE_ATTRIBUTES,
+    TEST_PLAN_RUN_ATTRIBUTES
+} = require('./helpers');
+const { Sequelize, User, UserRoles } = require('../models');
 const { Op } = Sequelize;
 
-// default attributes to be returned for models and related associations
-const USER_ATTRIBUTES = ['id', 'username', 'createdAt', 'updatedAt'];
-const ROLE_ATTRIBUTES = ['name'];
-const TEST_PLAN_RUN_ATTRIBUTES = [
-    'id',
-    'isManuallyTested',
-    'tester',
-    'testPlanReport'
-];
-
-// association helpers to be included with User Models' results
+// Section :- association helpers to be included with Models' results
 const roleAssociation = roleAttributes => ({
-    model: Role,
-    as: 'roles',
+    association: 'roles',
     attributes: roleAttributes,
     through: { attributes: [] }
 });
 
-const testPlanAssociation = testPlanRunAttributes => ({
-    model: TestPlanRun,
-    as: 'testPlanRuns',
+const testPlanRunAssociation = testPlanRunAttributes => ({
+    association: 'testPlanRuns',
     attributes: testPlanRunAttributes
 });
 
@@ -39,15 +33,10 @@ const getUserById = async (
     roleAttributes = ROLE_ATTRIBUTES,
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES
 ) => {
-    // findByPk
-    return await User.findOne({
-        where: { id },
-        attributes: userAttributes,
-        include: [
-            roleAssociation(roleAttributes),
-            testPlanAssociation(testPlanRunAttributes)
-        ]
-    });
+    return await ModelService.getById(User, id, userAttributes, [
+        roleAssociation(roleAttributes),
+        testPlanRunAssociation(testPlanRunAttributes)
+    ]);
 };
 
 /**
@@ -64,32 +53,28 @@ const getUserByUsername = async (
     roleAttributes = ROLE_ATTRIBUTES,
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES
 ) => {
-    return await User.findOne({
-        where: { username },
-        attributes: userAttributes,
-        include: [
-            roleAssociation(roleAttributes),
-            testPlanAssociation(testPlanRunAttributes)
-        ]
-    });
+    return await ModelService.getByQuery(User, { username }, userAttributes, [
+        roleAssociation(roleAttributes),
+        testPlanRunAssociation(testPlanRunAttributes)
+    ]);
 };
 
 /**
  * @param search
- // * @param pagination
  * @param filter
  * @param userAttributes
  * @param roleAttributes
  * @param testPlanRunAttributes
+ * @param pagination
  * @returns {Promise<*>}
  */
 const getUsers = async (
     search,
-    // pagination = {},
     filter = {}, // pass to 'where' for top level User object
     userAttributes = USER_ATTRIBUTES,
     roleAttributes = ROLE_ATTRIBUTES,
-    testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES
+    testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
+    pagination = {}
 ) => {
     // search and filtering options
     let where = { ...filter };
@@ -97,24 +82,16 @@ const getUsers = async (
     if (searchQuery)
         where = { ...where, username: { [Op.iLike]: searchQuery } };
 
-    // pagination and sorting options
-    // let { page = 0, limit = 10, order = [], enable = false } = pagination; // page 0->1, 1->2; manage through middleware
-    // // 'order' eg. [ [ 'username', 'DESC' ], [..., ...], ... ]
-    // if (page < 0) page = 0;
-    // if (limit < 0 || !enable) limit = null;
-    // const offset = limit < 0 ? 0 : page * limit; // skip (1 * 10 results) = 10 to get get to page 2
-
-    return await User.findAll({
+    return await ModelService.get(
+        User,
         where,
-        // limit,
-        // offset,
-        // order,
-        attributes: userAttributes,
-        include: [
+        userAttributes,
+        [
             roleAssociation(roleAttributes),
-            testPlanAssociation(testPlanRunAttributes)
-        ]
-    });
+            testPlanRunAssociation(testPlanRunAttributes)
+        ],
+        pagination
+    );
 };
 
 /**
@@ -126,22 +103,21 @@ const getUsers = async (
  */
 const createUser = async (
     { username, role },
-    userAttributes,
-    roleAttributes,
-    testPlanRunAttributes
+    userAttributes = USER_ATTRIBUTES,
+    roleAttributes = ROLE_ATTRIBUTES,
+    testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES
 ) => {
-    const userResult = await User.create({ username });
+    const userResult = await ModelService.create(User, { username });
     const { id } = userResult;
 
-    if (role) await UserRoles.create({ userId: id, roleName: role });
+    // eslint-disable-next-line no-use-before-define
+    if (role) await addUserToRole(id, role);
 
     // to ensure the structure being returned matches what we expect for simple queries and can be controlled
-    return await getUserById(
-        id,
-        userAttributes,
-        roleAttributes,
-        testPlanRunAttributes
-    );
+    return await ModelService.getById(User, id, userAttributes, [
+        roleAssociation(roleAttributes),
+        testPlanRunAssociation(testPlanRunAttributes)
+    ]);
 };
 
 /**
@@ -155,19 +131,16 @@ const createUser = async (
 const updateUser = async (
     id,
     { username },
-    userAttributes,
-    roleAttributes,
-    testPlanRunAttributes
+    userAttributes = USER_ATTRIBUTES,
+    roleAttributes = ROLE_ATTRIBUTES,
+    testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES
 ) => {
-    await User.update({ username }, { where: { id } });
+    await ModelService.update(User, { id }, { username });
 
-    // to ensure the structure being returned matches what we expect for simple queries and can be controlled
-    return await getUserById(
-        id,
-        userAttributes,
-        roleAttributes,
-        testPlanRunAttributes
-    );
+    return await ModelService.getById(User, id, userAttributes, [
+        roleAssociation(roleAttributes),
+        testPlanRunAssociation(testPlanRunAttributes)
+    ]);
 };
 
 /**
@@ -176,22 +149,58 @@ const updateUser = async (
  * @returns {Promise<boolean>}
  */
 const removeUser = async (id, deleteOptions = { truncate: false }) => {
-    const { truncate } = deleteOptions;
-    await User.destroy({
-        where: { id },
-        truncate
+    return await ModelService.removeById(User, id, deleteOptions);
+};
+
+/**
+ * @link {https://sequelize.org/v5/manual/raw-queries.html} for related documentation in case of expanding
+ * @param query
+ * @returns {Promise<*>}
+ */
+const rawQuery = async query => {
+    return await ModelService.rawQuery(query);
+};
+
+// Section :- Custom Functions
+
+/**
+ * This assumes the id (userId) and the role (roleName) are valid entries that already exist
+ * @param id
+ * @param role
+ * @returns {Promise<*>}
+ */
+const addUserToRole = async (id, role) => {
+    return await ModelService.create(UserRoles, { userId: id, roleName: role });
+};
+
+/**
+ *
+ * @param id
+ * @param role
+ * @returns {Promise<boolean>}
+ */
+const deleteUserFromRole = async (id, role) => {
+    return await ModelService.removeByQuery(UserRoles, {
+        userId: id,
+        roleName: role
     });
-    return true;
 };
 
 module.exports = {
+    // Basic CRUD
     getUserById,
     getUserByUsername,
     getUsers,
     createUser,
     updateUser,
     removeUser,
+    rawQuery,
 
+    // Custom Functions
+    addUserToRole,
+    deleteUserFromRole,
+
+    // Constants
     USER_ATTRIBUTES,
     ROLE_ATTRIBUTES,
     TEST_PLAN_RUN_ATTRIBUTES
