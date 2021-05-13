@@ -12,6 +12,8 @@ const testRoutes = require('./routes/tests');
 const testVersionRoutes = require('./routes/test-version');
 const path = require('path');
 const graphqlSchema = require('./graphql-schema');
+const getGraphQLContext = require('./graphql-context');
+const resolvers = require('./resolvers');
 
 const app = express();
 
@@ -27,8 +29,8 @@ app.use('/test-versions', testVersionRoutes);
 
 const server = new ApolloServer({
     typeDefs: graphqlSchema,
-    // Remove when we add genuine business logic and connect to Sequelize
-    mocks: true
+    context: getGraphQLContext,
+    resolvers
 });
 server.start().then(() => {
     server.applyMiddleware({ app });

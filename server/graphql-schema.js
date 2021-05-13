@@ -126,6 +126,7 @@ const graphqlSchema = gql`
     }
 
     type Query {
+        first: String! # TEMPORARY
         testPlanReports(testPlan: ID): [TestPlanReport]!
         testPlanReport(id: ID): TestPlanReport
         testPlanTargets: [TestPlanTarget]!
