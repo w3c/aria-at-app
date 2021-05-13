@@ -20,7 +20,8 @@
     "db-import-tests:dev": "yarn workspace server db-import-tests:dev",
     "storybook": "yarn workspaces run storybook",
     "sequelize": "dotenv -e config/dev.env npx sequelize-cli",
-    "sequelize:test": "dotenv -e config/test.env npx sequelize-cli"
+    "sequelize:test": "dotenv -e config/test.env npx sequelize-cli",
+    "postinstall": "npx patch-package"
   },
   "repository": {
     "type": "git",
