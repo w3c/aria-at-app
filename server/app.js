@@ -25,7 +25,11 @@ app.use('/run', runRoutes);
 app.use('/test', testRoutes);
 app.use('/test-versions', testVersionRoutes);
 
-const server = new ApolloServer({ typeDefs: graphqlSchema, mocks: true });
+const server = new ApolloServer({
+    typeDefs: graphqlSchema,
+    // Remove when we add genuine business logic and connect to Sequelize
+    mocks: true
+});
 server.start().then(() => {
     server.applyMiddleware({ app });
 });
