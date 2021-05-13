@@ -1,8 +1,12 @@
-const first = require('./first');
+const me = require('./me');
+const userRoles = require('./user-roles');
 
 const resolvers = {
     Query: {
-        first
+        me
+    },
+    User: {
+        roles: userRoles
     }
 };
 
