@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "DOTENV_CONFIG_PATH=../config/dev.env nodemon --ignore './scripts/' -r dotenv/config server.js --watch",
     "dev-debug": "DEBUG=express:* DOTENV_CONFIG_PATH=../config/dev.env nodemon --inspect -r dotenv/config server.js --watch",
-    "jest": "dotenv -e ../config/test.env -- jest",
+    "jest": "SEQUELIZE_TEST_HELPERS_JEST_RUNNER=true dotenv -e ../config/test.env -- jest",
     "prettier": "prettier --write \"**/*.{js,jsx,css}\"",
     "lint": "eslint --ext js,jsx .",
     "db-import-tests:dev": "DOTENV_CONFIG_PATH=../config/dev.env node -r dotenv/config ./scripts/import-tests/index.js",
@@ -49,6 +49,8 @@
     "node-mocks-http": "^1.8.1",
     "prettier": "^1.19.1",
     "sequelize-cli": "^5.5.1",
+    "sequelize-mock": "^0.10.2",
+    "sequelize-test-helpers": "1.3.3",
     "supertest": "^4.0.2",
     "valid-url": "^1.0.9"
   }
