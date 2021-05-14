@@ -1,44 +1,39 @@
+const MODEL_NAME = 'AtVersion';
+
 module.exports = function(sequelize, DataTypes) {
-    let AtVersion = sequelize.define(
-        'AtVersion',
+    const Model = sequelize.define(
+        MODEL_NAME,
         {
-            id: {
+            at: {
                 type: DataTypes.INTEGER,
                 allowNull: false,
                 primaryKey: true,
-                autoIncrement: true
-            },
-            at_name_id: {
-                type: DataTypes.INTEGER,
-                allowNull: false,
                 references: {
-                    model: 'at_name',
+                    model: 'At',
                     key: 'id'
-                },
-                unique: true
+                }
             },
             version: {
-                type: DataTypes.STRING,
-                allowNull: true,
-                primaryKey: true
-            },
-            release_order: {
-                type: DataTypes.INTEGER,
-                allowNull: true
+                type: DataTypes.TEXT,
+                allowNull: false,
+                primaryKey: true,
+                unique: true
             }
         },
         {
             timestamps: false,
-            tableName: 'at_version'
+            tableName: MODEL_NAME
         }
     );
 
-    AtVersion.associate = function(models) {
-        models.AtVersion.belongsTo(models.AtName, {
-            foreignKey: 'at_name_id',
+    Model.AT_ASSOCIATION = { foreignKey: 'at' };
+
+    Model.associate = function(models) {
+        Model.belongsTo(models.At, {
+            ...Model.AT_ASSOCIATION,
             targetKey: 'id'
         });
     };
 
-    return AtVersion;
+    return Model;
 };

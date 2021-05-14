@@ -1,43 +1,39 @@
+const MODEL_NAME = 'BrowserVersion';
+
 module.exports = function(sequelize, DataTypes) {
-    const BrowserVersion = sequelize.define(
-        'BrowserVersion',
+    const Model = sequelize.define(
+        MODEL_NAME,
         {
-            id: {
+            browser: {
                 type: DataTypes.INTEGER,
                 allowNull: false,
                 primaryKey: true,
-                autoIncrement: true
-            },
-            browser_id: {
-                type: DataTypes.INTEGER,
-                allowNull: false,
                 references: {
-                    model: 'browser',
+                    model: 'Browser',
                     key: 'id'
-                },
-                unique: true
+                }
             },
             version: {
-                type: DataTypes.STRING,
-                allowNull: true,
-                primaryKey: true
-            },
-            release_order: {
-                type: DataTypes.INTEGER,
-                allowNull: true
+                type: DataTypes.TEXT,
+                allowNull: false,
+                primaryKey: true,
+                unique: true
             }
         },
         {
             timestamps: false,
-            tableName: 'browser_version'
+            tableName: MODEL_NAME
         }
     );
 
-    BrowserVersion.associate = function(models) {
-        models.BrowserVersion.belongsTo(models.Browser, {
-            foreignKey: 'browser_id'
+    Model.BROWSER_ASSOCIATION = { foreignKey: 'browser' };
+
+    Model.associate = function(models) {
+        Model.belongsTo(models.Browser, {
+            ...Model.BROWSER_ASSOCIATION,
+            targetKey: 'id'
         });
     };
 
-    return BrowserVersion;
+    return Model;
 };

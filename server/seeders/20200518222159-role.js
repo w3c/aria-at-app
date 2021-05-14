@@ -3,13 +3,13 @@
 module.exports = {
     up: queryInterface => {
         return queryInterface.bulkInsert(
-            'role',
+            'Role',
             [{ name: 'admin' }, { name: 'tester' }],
             {}
         );
     },
 
     down: queryInterface => {
-        return queryInterface.bulkDelete('role', null, {});
+        return queryInterface.bulkDelete('Role', null, {});
     }
 };
