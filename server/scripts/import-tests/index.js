@@ -293,12 +293,21 @@ const ariaAtImport = {
             name: testName.replace(/'/g, "''")
         };
 
-        return await this.upsertRowReturnId(
+        const result = await this.upsertRowReturnId(
             `UPDATE "TestPlan" SET "parsedTest" = jsonb_set("parsedTest"::jsonb, array['sourceSteps'], ("parsedTest" -> 'sourceSteps')::jsonb || '[${JSON.stringify(
                 sourceStepsObject
             )}]'::jsonb) WHERE id=$1 AND "revision"=$2 RETURNING id`,
             [testPlanId, commitHash]
         );
+
+        if (result) {
+            await this.upsertRowReturnId(
+                `UPDATE "TestPlan" SET "parsedTest" = "parsedTest" || CONCAT('{"maximumInputCount":', COALESCE("parsedTest" ->> 'maximumInputCount', '0')::int + 1, '}')::jsonb WHERE id=$1 AND "revision"=$2 RETURNING id`,
+                [testPlanId, commitHash]
+            );
+        }
+
+        return result;
     },
 
     /**
