@@ -121,8 +121,8 @@ describe('GithubService', () => {
     });
 
     describe('GithubService.login', () => {
-        it('should have a url attribute', () => {
-            expect(typeof GithubService.url).toBe('string');
+        it('should have a url function', () => {
+            expect(typeof GithubService.getUrl).toBe('function');
         });
     });
     describe('GithubService.authorize', () => {
