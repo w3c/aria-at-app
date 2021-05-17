@@ -49,6 +49,7 @@ const ariaAtImport = {
         console.log(`Cloned ${path.basename(ariaAtRepo)} to ${repo.workdir()}`);
 
         let commit;
+        let tags;
         if (args.commit) {
             try {
                 commit = await nodegit.Commit.lookup(repo, args.commit);
@@ -69,11 +70,13 @@ const ariaAtImport = {
                 )
                 .trim();
             commit = await nodegit.Commit.lookup(repo, latestCommit);
+            tags = await nodegit.Tag.list(repo);
         }
 
         let commitDate = commit.date();
-        let commitMsg = commit.message();
+        let commitMessage = commit.message();
         let commitHash = commit.id().tostrS();
+        let commitTag = tags.length ? tags[tags.length - 1] : null; // get the latest tag found for the previously set commit
 
         const support = JSON.parse(fse.readFileSync(supportFile));
         const ats = support.ats;
@@ -121,8 +124,9 @@ const ariaAtImport = {
                     exampleNames[exampleDir],
                     ariaAtRepo,
                     commitHash,
-                    commitMsg,
+                    commitMessage,
                     commitDate,
+                    commitTag,
                     exampleRefLine,
                     practiceGuidelinesRefLine
                 );
@@ -156,7 +160,6 @@ const ariaAtImport = {
                             htmlFile,
                             testPlanId,
                             commitHash,
-                            commitMsg,
                             executionOrder
                         );
                     }
@@ -191,8 +194,9 @@ const ariaAtImport = {
      * @param {string} exampleName - the name of the example test being processed
      * @param {string} ariaAtRepo - the repository url the tests are being pulled from (ideally {@link https://github.com/w3c/aria-at.git})
      * @param {string} commitHash - the hash of the latest version of tests pulled from the {@param ariaAtRepo} repository
-     * @param {string} commitMsg - the message of the latest version of tests pulled from the {@param ariaAtRepo} repository
+     * @param {string} commitMessage - the message of the latest version of tests pulled from the {@param ariaAtRepo} repository
      * @param {string} commitDate - the date of the latest versions of the tests pulled from the {@param ariaAtRepo} repository
+     * @param {string} commitTag - the latest tag pulled from the based on the commit {@param ariaAtRepo} repository
      * @param {string[]} exampleRefLine - the example url link pulled from the references.csv file related to the test
      * @param {string[]} practiceGuidelinesRefLine - the APG (ARIA Practices Guidelines) link pulled from the references.csv file related to the test
      * @returns {number} - returns TestPlan.id
@@ -202,8 +206,9 @@ const ariaAtImport = {
         exampleName,
         ariaAtRepo,
         commitHash,
-        commitMsg,
+        commitMessage,
         commitDate,
+        commitTag,
         exampleRefLine,
         practiceGuidelinesRefLine
     ) {
@@ -235,7 +240,7 @@ const ariaAtImport = {
 
         // checking to see if unique testPlan row
         const testPlanResult = await client.query(
-            'SELECT id, revision FROM "TestPlan" WHERE revision=$1 and "exampleUrl"=$2',
+            'SELECT id, "sourceGitCommitHash" FROM "TestPlan" WHERE "sourceGitCommitHash"=$1 and "exampleUrl"=$2',
             [commitHash, exampleUrl]
         );
 
@@ -244,8 +249,9 @@ const ariaAtImport = {
             : await db.TestPlan.create({
                   title: exampleName,
                   publishStatus: 'draft',
-                  revision: commitHash,
-                  sourceGitCommit: commitMsg,
+                  revision: commitTag,
+                  sourceGitCommitHash: commitHash,
+                  sourceGitCommitMessage: commitMessage,
                   exampleUrl,
                   createdAt: commitDate,
                   parsedTest
@@ -259,7 +265,6 @@ const ariaAtImport = {
      * @param {string} file - the relative path to the test file in the repository (ideally {@link https://github.com/w3c/aria-at.git})
      * @param {number} testPlanId - TestPlan.id to be queried to update the TestPlan.parsedTest.testActions if necessary
      * @param {string} commitHash - the hash of the latest version of tests pulled from the repository (ideally {@link https://github.com/w3c/aria-at.git})
-     * @param {string} commitMsg - the message of the latest version of tests pulled from the repository (ideally {@link https://github.com/w3c/aria-at.git})
      * @param {number} executionOrder - the order in which the test step is executed (within the APG pattern)
      * @returns {number | null} - returns TestPlan.id
      */
@@ -268,11 +273,10 @@ const ariaAtImport = {
         file,
         testPlanId,
         commitHash,
-        commitMsg,
         executionOrder
     ) {
         const testPlanResult = await client.query(
-            'SELECT id, "parsedTest" FROM "TestPlan" WHERE id=$1 AND revision=$2',
+            'SELECT id, "parsedTest" FROM "TestPlan" WHERE id=$1 AND "sourceGitCommitHash"=$2',
             [testPlanId, commitHash]
         );
         let testPlan = testPlanResult.rowCount ? testPlanResult.rows[0] : null;
@@ -296,13 +300,13 @@ const ariaAtImport = {
         const result = await this.upsertRowReturnId(
             `UPDATE "TestPlan" SET "parsedTest" = jsonb_set("parsedTest"::jsonb, array['testActions'], ("parsedTest" -> 'testActions')::jsonb || '[${JSON.stringify(
                 testActionsObject
-            )}]'::jsonb) WHERE id=$1 AND "revision"=$2 RETURNING id`,
+            )}]'::jsonb) WHERE id=$1 AND "sourceGitCommitHash"=$2 RETURNING id`,
             [testPlanId, commitHash]
         );
 
         if (result) {
             await this.upsertRowReturnId(
-                `UPDATE "TestPlan" SET "parsedTest" = "parsedTest" || CONCAT('{"maximumInputCount":', COALESCE("parsedTest" ->> 'maximumInputCount', '0')::int + 1, '}')::jsonb WHERE id=$1 AND "revision"=$2 RETURNING id`,
+                `UPDATE "TestPlan" SET "parsedTest" = "parsedTest" || CONCAT('{"maximumInputCount":', COALESCE("parsedTest" ->> 'maximumInputCount', '0')::int + 1, '}')::jsonb WHERE id=$1 AND "sourceGitCommitHash"=$2 RETURNING id`,
                 [testPlanId, commitHash]
             );
         }
