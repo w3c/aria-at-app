@@ -24,7 +24,7 @@ export default [
                 component: Home
             },
             {
-                path: '/signupInstructions',
+                path: '/signup-instructions',
                 exact: true,
                 component: SignupInstructions
             },
