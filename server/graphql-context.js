@@ -1,7 +1,6 @@
 const getGraphQLContext = ({ req }) => {
-    return {
-        user: req.session?.user ?? null
-    };
+    const user = req.session?.user ?? null;
+    return { user };
 };
 
 module.exports = getGraphQLContext;
