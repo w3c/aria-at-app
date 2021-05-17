@@ -1,5 +1,11 @@
 const MODEL_NAME = 'TestPlan';
 
+const STATUS = {
+    DRAFT: 'draft',
+    IN_REVIEW: 'in_review',
+    FINAL: 'final'
+};
+
 module.exports = function(sequelize, DataTypes) {
     const Model = sequelize.define(
         MODEL_NAME,
@@ -11,7 +17,16 @@ module.exports = function(sequelize, DataTypes) {
                 autoIncrement: true
             },
             title: { type: DataTypes.TEXT },
-            publishStatus: { type: DataTypes.TEXT },
+            publishStatus: {
+                type: DataTypes.TEXT,
+                // type: DataTypes.ENUM(
+                //     STATUS.DRAFT,
+                //     STATUS.IN_REVIEW,
+                //     STATUS.FINAL
+                // ),
+                allowNull: false,
+                defaultValue: STATUS.DRAFT
+            },
             revision: { type: DataTypes.TEXT },
             sourceGitCommit: { type: DataTypes.TEXT },
             exampleUrl: { type: DataTypes.TEXT },
@@ -27,7 +42,9 @@ module.exports = function(sequelize, DataTypes) {
         }
     );
 
-    Model.associate = function(models) {};
+    Model.DRAFT = STATUS.DRAFT;
+    Model.IN_REVIEW = STATUS.IN_REVIEW;
+    Model.FINAL = STATUS.FINAL;
 
     return Model;
 };

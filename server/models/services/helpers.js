@@ -12,7 +12,7 @@ const {
     TestResult,
     User,
     UserRoles
-} = require('../models');
+} = require('../index');
 
 const getSequelizeModelAttributes = model => {
     if (!model) throw new Error('Model not defined');

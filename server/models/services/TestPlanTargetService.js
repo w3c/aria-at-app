@@ -1,6 +1,6 @@
 const ModelService = require('./ModelService');
 const { TEST_PLAN_TARGET_ATTRIBUTES } = require('./helpers');
-const { Sequelize, TestPlanTarget } = require('../models');
+const { Sequelize, TestPlanTarget } = require('../index');
 const { Op } = Sequelize;
 
 // Section :- association helpers to be included with Models' results
@@ -59,12 +59,14 @@ const createTestPlanTarget = async (
     { title, at, atVersion, browser, browserVersion },
     testPlanTargetAttributes = TEST_PLAN_TARGET_ATTRIBUTES
 ) => {
-    // TODO: Check if at, atVersion, browser, browserVersion exists and create it not? Or assume they exist?
+    // TODO: Construct title as <at> <atVersion> with <browser> <browserVersion>
+
+    // TODO: Check if at, atVersion, browser, browserVersion exists and create it not on the fly? Or assume they exist?
     const testPlanTargetResult = await ModelService.create(TestPlanTarget, {
         title,
-        at, // TODO: If at passed in as string, check if exists in db and get the matching id
+        at, // TODO: If 'at' passed in as string, check if exists in db and get the matching id
         atVersion,
-        browser, // TODO: If browser passed in as string, check if exists in db and get the matching id
+        browser, // TODO: If 'browser' passed in as string, check if exists in db and get the matching id
         browserVersion
     });
     const { id } = testPlanTargetResult;

@@ -4,7 +4,7 @@ const {
     ROLE_ATTRIBUTES,
     TEST_PLAN_RUN_ATTRIBUTES
 } = require('./helpers');
-const { Sequelize, User, UserRoles } = require('../models');
+const { Sequelize, User, UserRoles } = require('../index');
 const { Op } = Sequelize;
 
 // Section :- association helpers to be included with Models' results
@@ -65,7 +65,11 @@ const getUserByUsername = async (
  * @param userAttributes
  * @param roleAttributes
  * @param testPlanRunAttributes
- * @param pagination
+ * @param {object} pagination - pagination options for query
+ * @param {number} [pagination.page=0] - page to be queried in the pagination result (affected by {@param pagination.enable})
+ * @param {number} [pagination.limit=10] - amount of results to be returned per page (affected by {@param pagination.enable})
+ * @param {string[][]} [pagination.order=[]] - expects a Sequelize structured input dataset for sorting the Sequelize Model results (NOT affected by {@param pagination.enable}). See {@link https://sequelize.org/v5/manual/querying.html#ordering} and {@example [ [ 'username', 'DESC' ], [..., ...], ... ]}
+ * @param {boolean} [pagination.enable=false] - use to enable pagination for a query result as well useful values. Data for all items matching query if not enabled
  * @returns {Promise<*>}
  */
 const getUsers = async (
@@ -152,15 +156,6 @@ const removeUser = async (id, deleteOptions = { truncate: false }) => {
     return await ModelService.removeById(User, id, deleteOptions);
 };
 
-/**
- * @link {https://sequelize.org/v5/manual/raw-queries.html} for related documentation in case of expanding
- * @param query
- * @returns {Promise<*>}
- */
-const rawQuery = async query => {
-    return await ModelService.rawQuery(query);
-};
-
 // Section :- Custom Functions
 
 /**
@@ -194,7 +189,6 @@ module.exports = {
     createUser,
     updateUser,
     removeUser,
-    rawQuery,
 
     // Custom Functions
     addUserToRole,

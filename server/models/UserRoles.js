@@ -1,7 +1,7 @@
 const MODEL_NAME = 'UserRoles';
 
 module.exports = function(sequelize, DataTypes) {
-    const Model = sequelize.define(
+    return sequelize.define(
         MODEL_NAME,
         {
             userId: {
@@ -27,8 +27,4 @@ module.exports = function(sequelize, DataTypes) {
             tableName: MODEL_NAME
         }
     );
-
-    Model.associate = function(models) {};
-
-    return Model;
 };
