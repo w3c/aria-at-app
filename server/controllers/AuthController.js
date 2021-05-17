@@ -1,6 +1,8 @@
 const services = require('../services');
 const { GithubService, UsersService } = services;
+
 const OAUTH = 'oauth';
+const allowsFakeRole = process.env.ALLOW_FAKE_ROLE === 'true';
 
 const capitalizeServiceString = service =>
     `${service.charAt(0).toUpperCase()}${service.slice(1)}`;
@@ -24,16 +26,17 @@ function resolveService(service) {
 
 module.exports = {
     async oauth(req, res) {
-        const { service, referer } = req.query;
+        const { service, referer, dataFromFrontend } = req.query;
         const authService = resolveService(service);
         req.session.referer = referer;
         req.session.authType = OAUTH;
-        res.redirect(303, authService.url);
+        const oauthServiceUrl = authService.getUrl({ state: dataFromFrontend });
+        res.redirect(303, oauthServiceUrl);
         res.end();
     },
 
     async authorize(req, res) {
-        const { service, code } = req.query;
+        const { service, code, state: dataFromFrontend } = req.query;
         const authService = resolveService(service);
 
         req.session.accessToken = await authService.authorize(code);
@@ -84,8 +87,23 @@ module.exports = {
             }
         }
         if (authorized && userToAuthorize) {
-            const redirectUrl = `${req.session.referer}/test-queue`;
             req.session.user = userToAuthorize;
+
+            // Allows for quickly logging in with different roles - changing
+            // roles would otherwise require leaving and joining GitHub teams
+            const matchedFakeRole =
+                dataFromFrontend && dataFromFrontend.match(/fakeRole-(\w*)/);
+
+            if (allowsFakeRole && matchedFakeRole) {
+                req.session.user.roles =
+                    matchedFakeRole[1] === '' ? [] : [matchedFakeRole[1]];
+            }
+
+            const redirectUrl =
+                req.session.user.roles.length === 0
+                    ? `${req.session.referer}/signup-instructions`
+                    : `${req.session.referer}/test-queue`;
+
             res.redirect(303, redirectUrl);
             res.end(() => {
                 delete req.session.referer;
@@ -96,7 +114,7 @@ module.exports = {
                 res.status(401);
                 res.end();
             } else {
-                res.redirect(303, `${req.session.referer}/signupInstructions`);
+                res.redirect(303, `${req.session.referer}/signup-instructions`);
                 res.end(() => destroySession(req, res));
             }
         }
