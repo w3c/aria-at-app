@@ -1,22 +1,34 @@
+const MODEL_NAME = 'Role';
+
 module.exports = function(sequelize, DataTypes) {
-    return sequelize.define(
-        'Role',
+    const Model = sequelize.define(
+        MODEL_NAME,
         {
-            id: {
-                type: DataTypes.INTEGER,
-                allowNull: false,
-                primaryKey: true,
-                autoIncrement: true
-            },
             name: {
                 type: DataTypes.TEXT,
-                allowNull: true,
+                primaryKey: true,
+                allowNull: false,
                 unique: true
             }
         },
         {
             timestamps: false,
-            tableName: 'role'
+            tableName: MODEL_NAME
         }
     );
+
+    Model.USER_ASSOCIATION = {
+        through: 'UserRoles',
+        as: 'users'
+    };
+
+    Model.associate = function(models) {
+        Model.belongsToMany(models.User, {
+            ...Model.USER_ASSOCIATION,
+            foreignKey: 'roleName',
+            otherKey: 'userId'
+        });
+    };
+
+    return Model;
 };
