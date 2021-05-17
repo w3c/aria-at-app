@@ -151,7 +151,7 @@ const ariaAtImport = {
                         // Get the test order from the file name
                         const executionOrder = parseInt(test.split('-')[1]);
 
-                        await this.upsertTestPlanParsedTestSourceSteps(
+                        await this.upsertTestPlanParsedTestActions(
                             testFullName,
                             htmlFile,
                             testPlanId,
@@ -229,7 +229,7 @@ const ariaAtImport = {
             directory: exampleDir,
             minimumInputCount: 0,
             maximumInputCount: 0,
-            sourceSteps: [],
+            testActions: [],
             designPattern
         };
 
@@ -254,16 +254,16 @@ const ariaAtImport = {
     },
 
     /**
-     * Checks TestPlan.parsedTest.sourceSteps to see if it has the relevant steps to run the test and inserts it if not
+     * Checks TestPlan.parsedTest.testActions to see if it has the relevant test actions to run the test and inserts it if not
      * @param {string} testName - the name of the test
      * @param {string} file - the relative path to the test file in the repository (ideally {@link https://github.com/w3c/aria-at.git})
-     * @param {number} testPlanId - TestPlan.id to be queried to update the TestPlan.parsedTest.sourceSteps if necessary
+     * @param {number} testPlanId - TestPlan.id to be queried to update the TestPlan.parsedTest.testActions if necessary
      * @param {string} commitHash - the hash of the latest version of tests pulled from the repository (ideally {@link https://github.com/w3c/aria-at.git})
      * @param {string} commitMsg - the message of the latest version of tests pulled from the repository (ideally {@link https://github.com/w3c/aria-at.git})
      * @param {number} executionOrder - the order in which the test step is executed (within the APG pattern)
      * @returns {number | null} - returns TestPlan.id
      */
-    async upsertTestPlanParsedTestSourceSteps(
+    async upsertTestPlanParsedTestActions(
         testName,
         file,
         testPlanId,
@@ -277,16 +277,16 @@ const ariaAtImport = {
         );
         let testPlan = testPlanResult.rowCount ? testPlanResult.rows[0] : null;
 
-        // check to see if sourceSteps object already exists
+        // check to see if test action object already exists in testActions dataset
         if (testPlan) {
-            const testStepsFound = testPlan.parsedTest.sourceSteps.find(
+            const testStepsFound = testPlan.parsedTest.testActions.find(
                 test => test.executionOrder === executionOrder
             );
-            // short circuit method because parsedTest.sourceSteps.[step] is already present
+            // short circuit method because parsedTest.testActions.[action] is already present
             if (testStepsFound) return testPlan.id;
         }
 
-        const sourceStepsObject = {
+        const testActionsObject = {
             file,
             executionOrder,
             // single quotes need to be managed to match PostgreSQL standard when inserting into jsonb
@@ -294,8 +294,8 @@ const ariaAtImport = {
         };
 
         const result = await this.upsertRowReturnId(
-            `UPDATE "TestPlan" SET "parsedTest" = jsonb_set("parsedTest"::jsonb, array['sourceSteps'], ("parsedTest" -> 'sourceSteps')::jsonb || '[${JSON.stringify(
-                sourceStepsObject
+            `UPDATE "TestPlan" SET "parsedTest" = jsonb_set("parsedTest"::jsonb, array['testActions'], ("parsedTest" -> 'testActions')::jsonb || '[${JSON.stringify(
+                testActionsObject
             )}]'::jsonb) WHERE id=$1 AND "revision"=$2 RETURNING id`,
             [testPlanId, commitHash]
         );
