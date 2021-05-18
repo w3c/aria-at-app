@@ -4,16 +4,25 @@ const {
     TEST_PLAN_ATTRIBUTES,
     TEST_PLAN_TARGET_ATTRIBUTES,
     TEST_PLAN_RUN_ATTRIBUTES,
-    USER_ATTRIBUTES
+    USER_ATTRIBUTES,
+    TEST_RESULT_ATTRIBUTES
 } = require('./helpers');
 const { TestPlanReport, TestPlanRun } = require('../index');
 
 // Section :- association helpers to be included with Models' results
-const testPlanRunAssociation = (testPlanRunAttributes, userAttributes) => ({
+const testPlanRunAssociation = (
+    testPlanRunAttributes,
+    userAttributes,
+    testResultAttributes
+) => ({
     association: 'testPlanRuns',
     attributes: testPlanRunAttributes,
-    // eslint-disable-next-line no-use-before-define
-    include: [userAssociation(userAttributes)]
+    include: [
+        // eslint-disable-next-line no-use-before-define
+        userAssociation(userAttributes),
+        // eslint-disable-next-line no-use-before-define
+        testResultAssociation(testResultAttributes)
+    ]
 });
 
 const testPlanAssociation = testPlanAttributes => ({
@@ -31,6 +40,11 @@ const userAssociation = userAttributes => ({
     attributes: userAttributes
 });
 
+const testResultAssociation = testResultAttributes => ({
+    association: 'testResults',
+    attributes: testResultAttributes
+});
+
 /**
  * NB. Pass @param {roleAttributes} or @param {testPlanRunAttributes} as '[]' to exclude that related association
  * @param {number} id
@@ -39,7 +53,8 @@ const userAssociation = userAttributes => ({
  * @param {string[]} testPlanAttributes
  * @param {string[]} testPlanTargetAttributes
  * @param {string[]} userAttributes
- * @returns {Promise<void>}
+ * @param {string[]} testResultAttributes
+ * @returns {Promise<Model|object>}
  */
 const getTestPlanReportById = async (
     id,
@@ -47,18 +62,84 @@ const getTestPlanReportById = async (
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanAttributes = TEST_PLAN_ATTRIBUTES,
     testPlanTargetAttributes = TEST_PLAN_TARGET_ATTRIBUTES,
-    userAttributes = USER_ATTRIBUTES
+    userAttributes = USER_ATTRIBUTES,
+    testResultAttributes = TEST_RESULT_ATTRIBUTES
 ) => {
-    return await ModelService.getById(
+    // check to see if 'canonicalRun' has been requested; custom attribute handling required
+    const canonicalRunKeyFound = testPlanReportAttributes.some(
+        key => key === 'canonicalRun'
+    );
+
+    // required to be used to determine whether or not to actually return 'canonicalRun'; TestPlan.publishStatus MUST be 'final' for 'canonicalRun' to be returned
+    const testPlanReportPublishStatusFound = testPlanReportAttributes.some(
+        key => key === 'publishStatus'
+    );
+    const testPlanParsedTestFound = testPlanAttributes.some(
+        key => key === 'parsedTest'
+    );
+    const testPlanRunAttributesFound = testPlanAttributes.length;
+
+    if (canonicalRunKeyFound) {
+        testPlanReportAttributes = [
+            ...testPlanReportAttributes,
+            'publishStatus'
+        ];
+        testPlanAttributes = [...testPlanAttributes, 'parsedTest'];
+        testPlanRunAttributes = [...testPlanRunAttributes, 'tester'];
+    }
+
+    // filter out 'canonicalRun' so it doesn't pollute attributes being passed to sequelize structure
+    testPlanReportAttributes = testPlanReportAttributes.filter(
+        key => key !== 'canonicalRun'
+    );
+
+    let result = await ModelService.getById(
         TestPlanReport,
         id,
         testPlanReportAttributes,
         [
-            testPlanRunAssociation(testPlanRunAttributes, userAttributes),
+            testPlanRunAssociation(
+                testPlanRunAttributes,
+                userAttributes,
+                testResultAttributes
+            ),
             testPlanAssociation(testPlanAttributes),
             testPlanTargetAssociation(testPlanTargetAttributes)
         ]
     );
+
+    if (canonicalRunKeyFound) {
+        // add canonicalRun to result which is built from `testPlanObject.parsedTest`
+        const testPlanReport = result.get();
+
+        // cleanup attributes that weren't actually requested [start]
+        if (!testPlanReportPublishStatusFound)
+            delete testPlanReport.publishStatus;
+
+        if (!testPlanParsedTestFound) {
+            // delete only that key in case attributes attributes were requested
+            if (Object.keys(testPlanReport.testPlanObject).length > 1)
+                delete testPlanReport.testPlanObject.parsedTest;
+            else delete testPlanReport.testPlanObject;
+        }
+
+        if (!testPlanRunAttributesFound) delete testPlanReport.testPlanRuns;
+        // cleanup attributes that weren't actually requested [end]
+
+        if (testPlanReport.publishStatus === TestPlanReport.FINAL) {
+            testPlanReport.canonicalRun = {
+                title: '',
+                passedAssertions:
+                    result.testPlanRuns[0].testResults.length || 0,
+                totalAssertions:
+                    result.testPlanObject.parsedTest.maximumInputCount ||
+                    result.testPlanObject.parsedTest.testActions.length
+            };
+        }
+        return testPlanReport;
+    }
+
+    return result;
 };
 
 /**
@@ -69,6 +150,7 @@ const getTestPlanReportById = async (
  * @param testPlanAttributes
  * @param testPlanTargetAttributes
  * @param userAttributes
+ * @param testResultAttributes
  * @param {object} pagination - pagination options for query
  * @param {number} [pagination.page=0] - page to be queried in the pagination result (affected by {@param pagination.enable})
  * @param {number} [pagination.limit=10] - amount of results to be returned per page (affected by {@param pagination.enable})
@@ -84,22 +166,130 @@ const getTestPlanReports = async (
     testPlanAttributes = TEST_PLAN_ATTRIBUTES,
     testPlanTargetAttributes = TEST_PLAN_TARGET_ATTRIBUTES,
     userAttributes = USER_ATTRIBUTES,
+    testResultAttributes = TEST_RESULT_ATTRIBUTES,
     pagination = {}
 ) => {
     // search and filtering options
     let where = { ...filter };
 
-    return await ModelService.get(
+    // check to see if 'canonicalRun' has been requested; custom attribute handling required
+    const canonicalRunKeyFound = testPlanReportAttributes.some(
+        key => key === 'canonicalRun'
+    );
+
+    // required to be used to determine whether or not to actually return 'canonicalRun'; TestPlan.publishStatus MUST be 'final' for 'canonicalRun' to be returned
+    const testPlanReportPublishStatusFound = testPlanReportAttributes.some(
+        key => key === 'publishStatus'
+    );
+    const testPlanParsedTestFound = testPlanAttributes.some(
+        key => key === 'parsedTest'
+    );
+    const testPlanRunAttributesFound = testPlanAttributes.length;
+
+    if (canonicalRunKeyFound) {
+        testPlanReportAttributes = [
+            ...testPlanReportAttributes,
+            'publishStatus'
+        ];
+        testPlanAttributes = [...testPlanAttributes, 'parsedTest'];
+        testPlanRunAttributes = [...testPlanRunAttributes, 'tester'];
+    }
+
+    // filter out 'canonicalRun' so it doesn't pollute attributes being passed to sequelize structure
+    testPlanReportAttributes = testPlanReportAttributes.filter(
+        key => key !== 'canonicalRun'
+    );
+
+    let results = await ModelService.get(
         TestPlanReport,
         where,
         testPlanReportAttributes,
         [
-            testPlanRunAssociation(testPlanRunAttributes, userAttributes),
+            testPlanRunAssociation(
+                testPlanRunAttributes,
+                userAttributes,
+                testResultAttributes
+            ),
             testPlanAssociation(testPlanAttributes),
             testPlanTargetAssociation(testPlanTargetAttributes)
         ],
         pagination
     );
+
+    if (canonicalRunKeyFound) {
+        // structure of results will be different
+        const { enable: enablePagination } = pagination;
+
+        if (enablePagination) {
+            // add canonicalRun to result which is built from `testPlanObject.parsedTest`
+            results.data.map(result => {
+                const testPlanReport = result.get();
+
+                // cleanup attributes that weren't actually requested [start]
+                if (!testPlanReportPublishStatusFound)
+                    delete testPlanReport.publishStatus;
+
+                if (!testPlanParsedTestFound) {
+                    // delete only that key in case attributes attributes were requested
+                    if (Object.keys(testPlanReport.testPlanObject).length > 1)
+                        delete testPlanReport.testPlanObject.parsedTest;
+                    else delete testPlanReport.testPlanObject;
+                }
+
+                if (!testPlanRunAttributesFound)
+                    delete testPlanReport.testPlanRuns;
+                // cleanup attributes that weren't actually requested [end]
+
+                if (testPlanReport.publishStatus === TestPlanReport.FINAL) {
+                    testPlanReport.canonicalRun = {
+                        title: '',
+                        passedAssertions:
+                            result.testPlanRuns[0].testResults.length || 0,
+                        totalAssertions:
+                            result.testPlanObject.parsedTest
+                                .maximumInputCount ||
+                            result.testPlanObject.parsedTest.testActions.length
+                    };
+                }
+                return testPlanReport;
+            });
+        } else {
+            // add canonicalRun to result which is built from `testPlanObject.parsedTest`
+            results.map(result => {
+                const testPlanReport = result.get();
+
+                // cleanup attributes that weren't actually requested [start]
+                if (!testPlanReportPublishStatusFound)
+                    delete testPlanReport.publishStatus;
+
+                if (!testPlanParsedTestFound) {
+                    // delete only that key in case attributes attributes were requested
+                    if (Object.keys(testPlanReport.testPlanObject).length > 1)
+                        delete testPlanReport.testPlanObject.parsedTest;
+                    else delete testPlanReport.testPlanObject;
+                }
+
+                if (!testPlanRunAttributesFound)
+                    delete testPlanReport.testPlanRuns;
+                // cleanup attributes that weren't actually requested [end]
+
+                if (testPlanReport.publishStatus === TestPlanReport.FINAL) {
+                    testPlanReport.canonicalRun = {
+                        title: '',
+                        passedAssertions:
+                            result.testPlanRuns[0].testResults.length || 0,
+                        totalAssertions:
+                            result.testPlanObject.parsedTest
+                                .maximumInputCount ||
+                            result.testPlanObject.parsedTest.testActions.length
+                    };
+                }
+                return testPlanReport;
+            });
+        }
+    }
+
+    return results;
 };
 
 /**
@@ -110,6 +300,7 @@ const getTestPlanReports = async (
  * @param testPlanAttributes
  * @param testPlanTargetAttributes
  * @param userAttributes
+ * @param testResultAttributes
  * @returns {Promise<void>}
  */
 const updateTestPlanReport = async (
@@ -119,7 +310,8 @@ const updateTestPlanReport = async (
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanAttributes = TEST_PLAN_ATTRIBUTES,
     testPlanTargetAttributes = TEST_PLAN_TARGET_ATTRIBUTES,
-    userAttributes = USER_ATTRIBUTES
+    userAttributes = USER_ATTRIBUTES,
+    testResultAttributes = TEST_RESULT_ATTRIBUTES
 ) => {
     await ModelService.update(
         TestPlanReport,
@@ -132,7 +324,11 @@ const updateTestPlanReport = async (
         id,
         testPlanReportAttributes,
         [
-            testPlanRunAssociation(testPlanRunAttributes, userAttributes),
+            testPlanRunAssociation(
+                testPlanRunAttributes,
+                userAttributes,
+                testResultAttributes
+            ),
             testPlanAssociation(testPlanAttributes),
             testPlanTargetAssociation(testPlanTargetAttributes)
         ]
@@ -152,6 +348,7 @@ const updateTestPlanReport = async (
  * @param testPlanAttributes
  * @param testPlanTargetAttributes
  * @param userAttributes
+ * @param testResultAttributes
  * @returns {Promise<*>}
  */
 const assignTestPlanReportToUser = async (
@@ -162,7 +359,8 @@ const assignTestPlanReportToUser = async (
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanAttributes = TEST_PLAN_ATTRIBUTES,
     testPlanTargetAttributes = TEST_PLAN_TARGET_ATTRIBUTES,
-    userAttributes = USER_ATTRIBUTES
+    userAttributes = USER_ATTRIBUTES,
+    testResultAttributes = TEST_RESULT_ATTRIBUTES
 ) => {
     // TestPlanRun has to be created for that user
     await ModelService.create(TestPlanRun, {
@@ -176,7 +374,11 @@ const assignTestPlanReportToUser = async (
         {},
         testPlanReportAttributes,
         [
-            testPlanRunAssociation(testPlanRunAttributes, userAttributes),
+            testPlanRunAssociation(
+                testPlanRunAttributes,
+                userAttributes,
+                testResultAttributes
+            ),
             testPlanAssociation(testPlanAttributes),
             testPlanTargetAssociation(testPlanTargetAttributes)
         ]
@@ -193,6 +395,7 @@ const assignTestPlanReportToUser = async (
  * @param testPlanAttributes
  * @param testPlanTargetAttributes
  * @param userAttributes
+ * @param testResultAttributes
  * @returns {Promise<*>}
  */
 const removeTestPlanReportForUser = async (
@@ -202,7 +405,8 @@ const removeTestPlanReportForUser = async (
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanAttributes = TEST_PLAN_ATTRIBUTES,
     testPlanTargetAttributes = TEST_PLAN_TARGET_ATTRIBUTES,
-    userAttributes = USER_ATTRIBUTES
+    userAttributes = USER_ATTRIBUTES,
+    testResultAttributes = TEST_RESULT_ATTRIBUTES
 ) => {
     // TestPlanRun had have been created for that user
     await ModelService.removeByQuery(TestPlanRun, {
@@ -215,7 +419,11 @@ const removeTestPlanReportForUser = async (
         {},
         testPlanReportAttributes,
         [
-            testPlanRunAssociation(testPlanRunAttributes, userAttributes),
+            testPlanRunAssociation(
+                testPlanRunAttributes,
+                userAttributes,
+                testResultAttributes
+            ),
             testPlanAssociation(testPlanAttributes),
             testPlanTargetAssociation(testPlanTargetAttributes)
         ]
@@ -231,6 +439,7 @@ const removeTestPlanReportForUser = async (
  * @param testPlanAttributes
  * @param testPlanTargetAttributes
  * @param userAttributes
+ * @param testResultAttributes
  * @returns {Promise<void>}
  */
 const updateTestPlanReportStatus = async (
@@ -240,7 +449,8 @@ const updateTestPlanReportStatus = async (
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanAttributes = TEST_PLAN_ATTRIBUTES,
     testPlanTargetAttributes = TEST_PLAN_TARGET_ATTRIBUTES,
-    userAttributes = USER_ATTRIBUTES
+    userAttributes = USER_ATTRIBUTES,
+    testResultAttributes = TEST_RESULT_ATTRIBUTES
 ) => {
     return await updateTestPlanReport(
         testPlanReportId,
@@ -249,7 +459,8 @@ const updateTestPlanReportStatus = async (
         testPlanRunAttributes,
         testPlanAttributes,
         testPlanTargetAttributes,
-        userAttributes
+        userAttributes,
+        testResultAttributes
     );
 };
 
@@ -269,5 +480,6 @@ module.exports = {
     TEST_PLAN_ATTRIBUTES,
     TEST_PLAN_TARGET_ATTRIBUTES,
     TEST_PLAN_RUN_ATTRIBUTES,
-    USER_ATTRIBUTES
+    USER_ATTRIBUTES,
+    TEST_RESULT_ATTRIBUTES
 };
