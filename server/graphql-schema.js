@@ -15,8 +15,8 @@ const graphqlSchema = gql`
     }
 
     type User {
-        id: ID
-        username: String
+        id: ID!
+        username: String!
         roles: [Role]!
     }
 

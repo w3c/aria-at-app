@@ -22,12 +22,15 @@ function unwrapGraphQLResponse(response) {
 }
 
 module.exports = {
-    url: `https://github.com/login/oauth/authorize?scope=${permissionScopesURI}&client_id=${process.env.GITHUB_CLIENT_ID}`,
     graphQLEndpoint: 'https://api.github.com/graphql',
     teamToRole: {
         [process.env.GITHUB_TEAM_TESTER]: 'tester',
         [process.env.GITHUB_TEAM_ADMIN]: 'admin'
     },
+    getUrl: ({ state }) =>
+        `https://github.com/login/oauth/authorize?scope=` +
+        `${permissionScopesURI}&client_id=${process.env.GITHUB_CLIENT_ID}` +
+        `&state=${state}`,
     async authorize(code) {
         const redirectURL = 'https://github.com/login/oauth/access_token';
         const response = await axios.post(

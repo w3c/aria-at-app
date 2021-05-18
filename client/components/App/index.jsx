@@ -66,8 +66,20 @@ class App extends Component {
             return null;
         }
 
+        // Allows for quickly logging in with different roles - changing
+        // roles would otherwise require leaving and joining GitHub teams
+        const matchedFakeRole = location.href.match(/fakeRole=(\w*)/);
+
+        let dataFromFrontend = '';
+        if (matchedFakeRole) {
+            dataFromFrontend += `fakeRole-${matchedFakeRole[1]}`;
+        }
+
         const { route, isSignedIn, isAdmin, isTester, username } = this.props;
-        const signInURL = `${process.env.API_SERVER}/api/auth/oauth?referer=${window.location.origin}&service=github`;
+
+        const signInURL =
+            `${process.env.API_SERVER}/api/auth/oauth` +
+            `?referer=${window.location.origin}&service=github&dataFromFrontend=${dataFromFrontend}`;
 
         return (
             <Fragment>

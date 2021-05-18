@@ -1,6 +1,8 @@
+const MODEL_NAME = 'Browser';
+
 module.exports = function(sequelize, DataTypes) {
-    const Browser = sequelize.define(
-        'Browser',
+    const Model = sequelize.define(
+        MODEL_NAME,
         {
             id: {
                 type: DataTypes.INTEGER,
@@ -10,19 +12,28 @@ module.exports = function(sequelize, DataTypes) {
             },
             name: {
                 type: DataTypes.TEXT,
-                allowNull: true,
-                unique: true
+                allowNull: false
             }
         },
         {
             timestamps: false,
-            tableName: 'browser'
+            tableName: MODEL_NAME
         }
     );
 
-    Browser.CHROME = 'Chrome';
-    Browser.FIREFOX = 'Firefox';
-    Browser.SAFARI = 'Safari';
+    Model.CHROME = 'Chrome';
+    Model.FIREFOX = 'Firefox';
+    Model.SAFARI = 'Safari';
 
-    return Browser;
+    Model.BROWSER_VERSION_ASSOCIATION = { as: 'versions' };
+
+    Model.associate = function(models) {
+        Model.hasMany(models.BrowserVersion, {
+            ...Model.BROWSER_VERSION_ASSOCIATION,
+            foreignKey: 'browser',
+            sourceKey: 'id'
+        });
+    };
+
+    return Model;
 };
