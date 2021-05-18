@@ -27,14 +27,14 @@ module.exports = function(sequelize, DataTypes) {
                 allowNull: false,
                 defaultValue: STATUS.DRAFT
             },
-            revision: { type: DataTypes.TEXT },
-            sourceGitCommit: { type: DataTypes.TEXT },
+            sourceGitCommitHash: { type: DataTypes.TEXT },
+            sourceGitCommitMessage: { type: DataTypes.TEXT },
             exampleUrl: { type: DataTypes.TEXT },
             createdAt: {
                 type: DataTypes.DATE,
                 defaultValue: DataTypes.NOW
             },
-            parsedTest: { type: DataTypes.JSONB }
+            parsed: { type: DataTypes.JSONB }
         },
         {
             timestamps: false,
