@@ -162,7 +162,7 @@ const ariaAtImport = {
                         // Get the test order from the file name
                         const executionOrder = parseInt(test.split('-')[1]);
 
-                        await this.upsertTestPlanParsedTestActions(
+                        await this.upsertTestPlanparsedActions(
                             testFullName,
                             htmlFile,
                             testPlanId,
@@ -235,13 +235,13 @@ const ariaAtImport = {
         const exampleUrl = getReferenceUrl(exampleRefLine);
         const designPattern = getReferenceUrl(practiceGuidelinesRefLine);
 
-        let parsedTest = {
+        let parsed = {
             title: '',
             gitRepo: ariaAtRepo,
             directory: exampleDir,
             minimumInputCount: 0,
             maximumInputCount: 0,
-            testActions: [],
+            tests: [],
             designPattern
         };
 
@@ -261,21 +261,21 @@ const ariaAtImport = {
                   sourceGitCommitMessage: commitMessage,
                   exampleUrl,
                   createdAt: commitDate,
-                  parsedTest
+                  parsed
               });
         return testPlan.id;
     },
 
     /**
-     * Checks TestPlan.parsedTest.testActions to see if it has the relevant test actions to run the test and inserts it if not
+     * Checks TestPlan.parsed.tests to see if it has the relevant test actions to run the test and inserts it if not
      * @param {string} testName - the name of the test
      * @param {string} file - the relative path to the test file in the repository (ideally {@link https://github.com/w3c/aria-at.git})
-     * @param {number} testPlanId - TestPlan.id to be queried to update the TestPlan.parsedTest.testActions if necessary
+     * @param {number} testPlanId - TestPlan.id to be queried to update the TestPlan.parsed.tests if necessary
      * @param {string} commitHash - the hash of the latest version of tests pulled from the repository (ideally {@link https://github.com/w3c/aria-at.git})
      * @param {number} executionOrder - the order in which the test step is executed (within the APG pattern)
      * @returns {number | null} - returns TestPlan.id
      */
-    async upsertTestPlanParsedTestActions(
+    async upsertTestPlanparsedActions(
         testName,
         file,
         testPlanId,
@@ -283,21 +283,21 @@ const ariaAtImport = {
         executionOrder
     ) {
         const testPlanResult = await client.query(
-            'SELECT id, "parsedTest" FROM "TestPlan" WHERE id=$1 AND "sourceGitCommitHash"=$2',
+            'SELECT id, "parsed" FROM "TestPlan" WHERE id=$1 AND "sourceGitCommitHash"=$2',
             [testPlanId, commitHash]
         );
         let testPlan = testPlanResult.rowCount ? testPlanResult.rows[0] : null;
 
-        // check to see if test action object already exists in testActions dataset
+        // check to see if the test object already exists in tests dataset
         if (testPlan) {
-            const testStepsFound = testPlan.parsedTest.testActions.find(
+            const testStepsFound = testPlan.parsed.tests.find(
                 test => test.executionOrder === executionOrder
             );
-            // short circuit method because parsedTest.testActions.[action] is already present
+            // short circuit method because parsed.tests.[action] is already present
             if (testStepsFound) return testPlan.id;
         }
 
-        const testActionsObject = {
+        const testsObject = {
             file,
             executionOrder,
             // single quotes need to be managed to match PostgreSQL standard when inserting into jsonb
@@ -305,15 +305,15 @@ const ariaAtImport = {
         };
 
         const result = await this.upsertRowReturnId(
-            `UPDATE "TestPlan" SET "parsedTest" = jsonb_set("parsedTest"::jsonb, array['testActions'], ("parsedTest" -> 'testActions')::jsonb || '[${JSON.stringify(
-                testActionsObject
+            `UPDATE "TestPlan" SET "parsed" = jsonb_set("parsed"::jsonb, array['tests'], ("parsed" -> 'tests')::jsonb || '[${JSON.stringify(
+                testsObject
             )}]'::jsonb) WHERE id=$1 AND "sourceGitCommitHash"=$2 RETURNING id`,
             [testPlanId, commitHash]
         );
 
         if (result) {
             await this.upsertRowReturnId(
-                `UPDATE "TestPlan" SET "parsedTest" = "parsedTest" || CONCAT('{"maximumInputCount":', COALESCE("parsedTest" ->> 'maximumInputCount', '0')::int + 1, '}')::jsonb WHERE id=$1 AND "sourceGitCommitHash"=$2 RETURNING id`,
+                `UPDATE "TestPlan" SET "parsed" = "parsed" || CONCAT('{"maximumInputCount":', COALESCE("parsed" ->> 'maximumInputCount', '0')::int + 1, '}')::jsonb WHERE id=$1 AND "sourceGitCommitHash"=$2 RETURNING id`,
                 [testPlanId, commitHash]
             );
         }

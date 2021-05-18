@@ -12,7 +12,6 @@ module.exports = function(sequelize, DataTypes) {
             },
             title: { type: DataTypes.TEXT },
             publishStatus: { type: DataTypes.TEXT },
-            revision: { type: DataTypes.TEXT }, // for semver-ed git tags from the imported test plan
             sourceGitCommitHash: { type: DataTypes.TEXT },
             sourceGitCommitMessage: { type: DataTypes.TEXT },
             exampleUrl: { type: DataTypes.TEXT },
@@ -20,7 +19,7 @@ module.exports = function(sequelize, DataTypes) {
                 type: DataTypes.DATE,
                 defaultValue: DataTypes.NOW
             },
-            parsedTest: { type: DataTypes.JSONB }
+            parsed: { type: DataTypes.JSONB }
         },
         {
             timestamps: false,
