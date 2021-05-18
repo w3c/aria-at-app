@@ -100,7 +100,7 @@ describe('AuthController', () => {
             expect(res.statusCode).toBe(303);
             expect(res._isEndCalled()).toBeTruthy();
             expect(res._getRedirectUrl()).toBe(
-                'localhost:5000/signupInstructions'
+                'localhost:5000/signup-instructions'
             );
         });
         it('should return 303 response code to referer on sign up auth type', async () => {

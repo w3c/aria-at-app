@@ -1,5 +1,6 @@
 {
     "fullname": "Foo Bar",
     "username": "foobar",
-    "email": "foo@bar.com"
+    "email": "foo@bar.com",
+    "roles": ["admin", "tester"]
 }
