@@ -32,11 +32,12 @@ const failWithErrors = errors => {
 /**
  * Returns the data from a given query, useful for situations where errors are
  * not expected and no query variables are needed.
- * @param {String} gql - GraphQL query from a gql template string
+ * @param {GraphQLSyntaxTree} gql - GraphQL query from a gql template string.
  * @example gql`query { me { username } }`
- * @param {Object} options
- * @property {Object} user - Replace the default user or set it to null
- * @returns {Any} Data matching the query
+ * @param {object=} options
+ * @param {object=} options.user - Replace the default user or set it to null
+ * to simulate being logged out.
+ * @returns {any} Data matching the query.
  */
 const query = async (gql, { user = defaultUser } = {}) => {
     mockReq = { session: { user } };
