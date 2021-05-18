@@ -80,18 +80,50 @@ const graphqlSchema = gql`
 
     interface Test {
         title: String!
-        totalAssertions: Int!
         # TODO: need complete representation of test data
     }
 
     type TestResult implements Test {
         title: String!
         startedAt: Timestamp!
-        completedAt: Timestamp
-        testPlanRun: TestPlanRun
-        passedAssertions: Int
-        totalAssertions: Int!
-        # TODO: need complete representation of test data & results
+        completedAt: Timestamp!
+        commands: [Command]!
+
+        requiredAssertionsCount: Int!
+        requiredAssertionsPassed: Int!
+        optionalAssertionsCount: Int!
+        optionalAssertionsPassed: Int!
+        unexpectedBehaviorCount: Int!
+
+        passThroughs: [PassThrough]!
+    }
+
+    type UnexpectedBehavior {
+        id: ID!
+        description: String!
+    }
+
+    type PassThrough {
+        atMode: String!
+        nthInput: Int!
+        # Examples are expected to go here when multiple examples can be
+        # associated with one test.
+        commandResults: [CommandResult]!
+    }
+
+    interface Command {
+        name: String!
+        arguments: [String]!
+        # TODO: This is not fully baked yet.
+    }
+
+    type CommandResult implements Command {
+        name: String!
+        arguments: [String]!
+        output: String!
+        passedAssertions: [String]!
+        failedAssertions: [String]!
+        unexpectedBehaviors: [UnexpectedBehavior]!
     }
 
     type TestPlanRun {
