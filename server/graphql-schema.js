@@ -111,19 +111,47 @@ const graphqlSchema = gql`
         commandResults: [CommandResult]!
     }
 
-    interface Command {
-        name: String!
+    type Command {
+        source: String!
+        function: String!
         arguments: [String]!
-        # TODO: This is not fully baked yet.
     }
 
-    type CommandResult implements Command {
-        name: String!
+    interface CommandResult {
+        # Also implements Command
+        source: String!
+        function: String!
         arguments: [String]!
+
+        # Result only
+        nthCommand: Int!
+    }
+
+    type CollectInputResult implements CommandResult {
+        # All Commands include
+        source: String!
+        function: String!
+        arguments: [String]!
+
+        # All CommandResults include
+        nthCommand: Int!
+
+        # CollectInputResult only
         output: String!
-        passedAssertions: [String]!
-        failedAssertions: [String]!
         unexpectedBehaviors: [UnexpectedBehavior]!
+    }
+
+    type AssertionResult implements CommandResult {
+        # All commands include
+        source: String!
+        function: String!
+        arguments: [String]!
+
+        # All CommandResults include
+        nthCommand: Int!
+
+        # AssertionResult only
+        passed: Boolean!
     }
 
     type TestPlanRun {
