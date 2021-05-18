@@ -19,7 +19,7 @@ if (args.help) {
     console.log(`
 Default use:
   No arguments:
-    Fetch most recent aria-at tests to update database. By default, the latest commit on master.
+    Fetch most recent aria-at tests to update database. By default, the latest commit on the default branch.
   Arguments:
     -h, --help
        Show this message.
@@ -33,13 +33,14 @@ Default use:
 const client = new Client();
 
 const ariaAtRepo = 'https://github.com/w3c/aria-at.git';
+const DEFAULT_BRANCH = 'master';
 const tmpDirectory = path.resolve(__dirname, 'tmp');
 const testDirectory = path.resolve(tmpDirectory, 'tests');
 const supportFile = path.resolve(testDirectory, 'support.json');
 
 const ariaAtImport = {
     /**
-     * Get all tests in the master HEAD commit for the default repository
+     * Get all tests in the default HEAD commit for the repository
      */
     async getMostRecentTests() {
         await client.connect();
@@ -65,7 +66,13 @@ const ariaAtImport = {
         } else {
             let latestCommit = fse
                 .readFileSync(
-                    path.join(tmpDirectory, '.git', 'refs', 'heads', 'master'),
+                    path.join(
+                        tmpDirectory,
+                        '.git',
+                        'refs',
+                        'heads',
+                        DEFAULT_BRANCH
+                    ),
                     'utf8'
                 )
                 .trim();
