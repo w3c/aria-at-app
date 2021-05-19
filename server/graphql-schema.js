@@ -82,34 +82,14 @@ const graphqlSchema = gql`
     interface Test {
         title: String!
         commands: [Command]!
-    }
-
-    type TestResult implements Test {
-        title: String!
-        startedAt: Timestamp!
-        completedAt: Timestamp!
-        commands: [Command]!
-
-        requiredAssertionsCount: Int!
-        requiredAssertionsPassed: Int!
-        optionalAssertionsCount: Int!
-        optionalAssertionsPassed: Int!
-        unexpectedBehaviorCount: Int!
-
         passThroughs: [PassThrough]!
     }
 
-    type UnexpectedBehavior {
-        id: ID!
-        description: String!
-    }
-
-    type PassThrough {
+    interface PassThrough {
         atMode: String!
         nthInput: Int!
         # Examples are expected to go here when multiple examples can be
         # associated with one test.
-        commandResults: [CommandResult]!
     }
 
     type Command {
@@ -129,27 +109,41 @@ const graphqlSchema = gql`
         function: String!
         """
         The arguments part of the command format - in the case of "assert role:
-        checkbox" it would be ["checkbox"].
+        checkbox" they would be ["checkbox"]. In the case of "assert state:
+        checked, false" they would be ["checked", "false"].
         """
         arguments: [String]!
     }
 
-    interface CommandResult {
-        # Also implements Command
-        source: String!
-        decorators: [String]!
-        function: String!
-        arguments: [String]!
+    type TestResult implements Test {
+        title: String!
+        instructions: [Instruction]!
+        passThroughs: [PassThrough]!
 
-        # Result only
-        """
-        Not all commands need to have results. This allows a CommandResult to
-        point back to the index of the command that created it.
-        """
-        nthCommand: Int!
+        startedAt: Timestamp!
+        completedAt: Timestamp!
+        isComplete: Boolean!
+
+        requiredAssertionsCount: Int!
+        requiredAssertionsPassed: Int!
+        optionalAssertionsCount: Int!
+        optionalAssertionsPassed: Int!
+        unexpectedBehaviorCount: Int!
+
+        passThroughResults: [PassThroughResult]!
     }
 
-    type CollectInputResult implements CommandResult {
+    type PassThroughResult implements PassThrough {
+        atMode: String!
+        nthInput: Int!
+        # commandResults: [CommandResult]!
+
+        output: String!
+        assertions: [AssertionResult]!
+        unexpectedBehaviors: [UnexpectedBehavior]!
+    }
+
+    type OutputResult implements CommandResult {
         # All Commands include
         source: String!
         decorators: [String]!
@@ -159,9 +153,14 @@ const graphqlSchema = gql`
         # All CommandResults include
         nthCommand: Int!
 
-        # CollectInputResult only
+        # CollectOutputResult only
         output: String!
         unexpectedBehaviors: [UnexpectedBehavior]!
+    }
+
+    input OutputResultInput {
+        output: String!
+        unexpectedBehaviors: [ID]!
     }
 
     type AssertionResult implements CommandResult {
@@ -178,18 +177,29 @@ const graphqlSchema = gql`
         passed: Boolean!
     }
 
+    type UnexpectedBehavior {
+        id: ID!
+        description: String!
+    }
+
     type TestPlanRun {
         id: ID!
         isManuallyTested: Boolean!
         tester: User
-        testPlanReport: TestPlanReport!
         testResults: [TestResult]!
         testResultCount: Int!
     }
 
+    type TestResultConflict {
+        id: ID!
+        test: Test!
+        passThrough: PassThrough!
+        command: Command!
+        commandResults: [CommandResult]!
+    }
+
     enum TestPlanReportStatus {
         DRAFT
-        IN_REVIEW
         FINALIZED
     }
 
@@ -199,7 +209,13 @@ const graphqlSchema = gql`
         coveragePercent: Int!
         testPlan: TestPlan!
         testPlanTarget: TestPlanTarget!
-        canonicalRun: TestPlanRun # Present when finalized
+        conflicts: [TestResultConflict]
+        """
+        Finalizing a test plan report requires resolving any conflicts between
+        runs. At this stage a single set of results is able to represent all
+        results, and is much more convenient to work with.
+        """
+        canonicalRun: TestPlanRun
         testPlanRuns: [TestPlanRun]!
         createdAt: Timestamp!
     }
@@ -223,6 +239,7 @@ const graphqlSchema = gql`
         assignTester(user: ID): NoResponse
         deleteTestPlanRun(user: ID): NoResponse
         updateStatus(status: TestPlanReportStatus): NoResponse
+        resolveConflict(id: ID)
         resultingTestPlanReport: TestPlanReport!
     }
 
