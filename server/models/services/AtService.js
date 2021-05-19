@@ -4,7 +4,7 @@ const {
     AT_VERSION_ATTRIBUTES,
     AT_MODE_ATTRIBUTES
 } = require('./helpers');
-const { Sequelize, At, AtVersion, AtMode } = require('../index');
+const { Sequelize, At, AtVersion, AtMode } = require('../');
 const { Op } = Sequelize;
 
 // Section :- association helpers to be included with Models' results

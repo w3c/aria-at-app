@@ -4,7 +4,7 @@ const {
     ROLE_ATTRIBUTES,
     TEST_PLAN_RUN_ATTRIBUTES
 } = require('./helpers');
-const { Sequelize, User, UserRoles } = require('../index');
+const { Sequelize, User, UserRoles } = require('../');
 const { Op } = Sequelize;
 
 // Section :- association helpers to be included with Models' results

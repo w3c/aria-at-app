@@ -1,6 +1,6 @@
 const ModelService = require('./ModelService');
 const { BROWSER_ATTRIBUTES, BROWSER_VERSION_ATTRIBUTES } = require('./helpers');
-const { Sequelize, Browser, BrowserVersion } = require('../index');
+const { Sequelize, Browser, BrowserVersion } = require('../');
 const { Op } = Sequelize;
 
 // Section :- association helpers to be included with Models' results

@@ -7,7 +7,7 @@ const {
     USER_ATTRIBUTES,
     TEST_RESULT_ATTRIBUTES
 } = require('./helpers');
-const { TestPlanReport, TestPlanRun } = require('../index');
+const { TestPlanReport, TestPlanRun } = require('../');
 
 // Section :- association helpers to be included with Models' results
 const testPlanRunAssociation = (

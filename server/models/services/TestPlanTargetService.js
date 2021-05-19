@@ -1,6 +1,6 @@
 const ModelService = require('./ModelService');
 const { TEST_PLAN_TARGET_ATTRIBUTES } = require('./helpers');
-const { Sequelize, TestPlanTarget } = require('../index');
+const { Sequelize, TestPlanTarget } = require('../');
 const { Op } = Sequelize;
 
 // Section :- association helpers to be included with Models' results

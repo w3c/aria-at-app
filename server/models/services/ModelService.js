@@ -1,4 +1,4 @@
-const { sequelize } = require('../index');
+const { sequelize } = require('../');
 
 /**
  * Created Query Sequelize Example:
