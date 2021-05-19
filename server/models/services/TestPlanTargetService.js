@@ -7,9 +7,9 @@ const { Op } = Sequelize;
 
 // Section :- Basic CRUD functions
 /**
- * @param {number} id
- * @param {string[]} testPlanTargetAttributes
- * @returns {Promise<void>}
+ * @param {number} id - id of TestPlanTarget to be retrieved
+ * @param {string[]} testPlanTargetAttributes - TestPlanTarget attributes to be returned in the result
+ * @returns {Promise<*>}
  */
 const getTestPlanTargetById = async (
     id,
@@ -24,10 +24,14 @@ const getTestPlanTargetById = async (
 };
 
 /**
- * @param search
- * @param filter
- * @param testPlanTargetAttributes
- * @param pagination
+ * @param {string|any} search - use this to combine with {@param filter} to be passed to Sequelize's where clause
+ * @param {object} filter - use this define conditions to be passed to Sequelize's where clause
+ * @param {string[]} testPlanTargetAttributes - TestPlanTarget attributes to be returned in the result
+ * @param {object} pagination - pagination options for query
+ * @param {number} [pagination.page=0] - page to be queried in the pagination result (affected by {@param pagination.enable})
+ * @param {number} [pagination.limit=10] - amount of results to be returned per page (affected by {@param pagination.enable})
+ * @param {string[][]} [pagination.order=[]] - expects a Sequelize structured input dataset for sorting the Sequelize Model results (NOT affected by {@param pagination.enable}). See {@link https://sequelize.org/v5/manual/querying.html#ordering} and {@example [ [ 'username', 'DESC' ], [..., ...], ... ]}
+ * @param {boolean} [pagination.enable=false] - use to enable pagination for a query result as well useful values. Data for all items matching query if not enabled
  * @returns {Promise<*>}
  */
 const getTestPlanTargets = async (
@@ -51,9 +55,9 @@ const getTestPlanTargets = async (
 };
 
 /**
- * @param createParams
- * @param testPlanTargetAttributes
- * @returns {Promise<void>}
+ * @param {object} createParams - values to be used to create the TestPlanTarget record
+ * @param {string[]} testPlanTargetAttributes - TestPlanTarget attributes to be returned in the result
+ * @returns {Promise<*>}
  */
 const createTestPlanTarget = async (
     { title, at, atVersion, browser, browserVersion },
@@ -81,14 +85,11 @@ const createTestPlanTarget = async (
 };
 
 /**
- * @param id
- * @param deleteOptions
+ * @param {number} id - id of the TestPlanTarget record to be removed
+ * @param {object} deleteOptions - Sequelize specific deletion options that could be passed
  * @returns {Promise<boolean>}
  */
-const removeTestPlanTarget = async (
-    id,
-    deleteOptions = { truncate: false }
-) => {
+const removeTestPlanTarget = async (id, deleteOptions) => {
     return await ModelService.removeById(TestPlanTarget, id, deleteOptions);
 };
 
@@ -97,10 +98,5 @@ module.exports = {
     getTestPlanTargetById,
     getTestPlanTargets,
     createTestPlanTarget,
-    removeTestPlanTarget,
-
-    // Custom Functions
-
-    // Constants
-    TEST_PLAN_TARGET_ATTRIBUTES
+    removeTestPlanTarget
 };

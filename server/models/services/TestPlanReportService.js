@@ -25,36 +25,52 @@ const testPlanRunAssociation = (
     ]
 });
 
+/**
+ * @param {string[]} testPlanAttributes - TestPlan attributes
+ * @returns {{association: string, attributes: string[]}}
+ */
 const testPlanAssociation = testPlanAttributes => ({
     association: 'testPlanObject', // resolver will have to remap this to 'testPlan' after the attributes have been successfully pulled; 'testPlan' conflicts on this model as the id
     attributes: testPlanAttributes
 });
 
+/**
+ * @param {string[]} testPlanTargetAttributes - TestPlanTarget attributes
+ * @returns {{association: string, attributes: string[]}}
+ */
 const testPlanTargetAssociation = testPlanTargetAttributes => ({
     association: 'testPlanTargetObject', // resolver will have to remap this to 'testPlanTarget' after the attributes have been successfully pulled; 'testPlanTarget' conflicts on this model as the id
     attributes: testPlanTargetAttributes
 });
 
+/**
+ * @param {string[]} userAttributes - User attributes
+ * @returns {{association: string, attributes: string[]}}
+ */
 const userAssociation = userAttributes => ({
     association: 'testerObject', // resolver will have to remap this to 'tester' after the attributes have been successfully pulled; 'tester' conflicts on this model as the id
     attributes: userAttributes
 });
 
+/**
+ * @param {string[]} testResultAttributes - TestResult attributes
+ * @returns {{association: string, attributes: string[]}}
+ */
 const testResultAssociation = testResultAttributes => ({
     association: 'testResults',
     attributes: testResultAttributes
 });
 
 /**
- * NB. Pass @param {roleAttributes} or @param {testPlanRunAttributes} as '[]' to exclude that related association
- * @param {number} id
- * @param {string[]} testPlanReportAttributes
- * @param {string[]} testPlanRunAttributes
- * @param {string[]} testPlanAttributes
- * @param {string[]} testPlanTargetAttributes
- * @param {string[]} userAttributes
- * @param {string[]} testResultAttributes
- * @returns {Promise<Model|object>}
+ * NB. You can pass any of the attribute arrays as '[]' to exclude that related association
+ * @param {number} id - unique id of the TestPlanReport model being queried
+ * @param {string[]} testPlanReportAttributes - TestPlanReport attributes to be returned in the result
+ * @param {string[]} testPlanRunAttributes - TestPlanRun attributes to be returned in the result
+ * @param {string[]} testPlanAttributes - TestPlan attributes to be returned in the result
+ * @param {string[]} testPlanTargetAttributes - TestPlanTarget attributes to be returned in the result
+ * @param {string[]} userAttributes - User attributes to be returned in the result
+ * @param {string[]} testResultAttributes - TestResult attributes to be returned in the result
+ * @returns {Promise<*>}
  */
 const getTestPlanReportById = async (
     id,
@@ -74,8 +90,8 @@ const getTestPlanReportById = async (
     const testPlanReportPublishStatusFound = testPlanReportAttributes.some(
         key => key === 'publishStatus'
     );
-    const testPlanParsedTestFound = testPlanAttributes.some(
-        key => key === 'parsedTest'
+    const testPlanParsedFound = testPlanAttributes.some(
+        key => key === 'parsed'
     );
     const testPlanRunAttributesFound = testPlanAttributes.length;
 
@@ -84,7 +100,7 @@ const getTestPlanReportById = async (
             ...testPlanReportAttributes,
             'publishStatus'
         ];
-        testPlanAttributes = [...testPlanAttributes, 'parsedTest'];
+        testPlanAttributes = [...testPlanAttributes, 'parsed'];
         testPlanRunAttributes = [...testPlanRunAttributes, 'tester'];
     }
 
@@ -109,17 +125,17 @@ const getTestPlanReportById = async (
     );
 
     if (canonicalRunKeyFound) {
-        // add canonicalRun to result which is built from `testPlanObject.parsedTest`
+        // add canonicalRun to result which is built from `testPlanObject.parsed`
         const testPlanReport = result.get();
 
         // cleanup attributes that weren't actually requested [start]
         if (!testPlanReportPublishStatusFound)
             delete testPlanReport.publishStatus;
 
-        if (!testPlanParsedTestFound) {
+        if (!testPlanParsedFound) {
             // delete only that key in case attributes attributes were requested
             if (Object.keys(testPlanReport.testPlanObject).length > 1)
-                delete testPlanReport.testPlanObject.parsedTest;
+                delete testPlanReport.testPlanObject.parsed;
             else delete testPlanReport.testPlanObject;
         }
 
@@ -132,8 +148,8 @@ const getTestPlanReportById = async (
                 passedAssertions:
                     result.testPlanRuns[0].testResults.length || 0,
                 totalAssertions:
-                    result.testPlanObject.parsedTest.maximumInputCount ||
-                    result.testPlanObject.parsedTest.testActions.length
+                    result.testPlanObject.parsed.maximumInputCount ||
+                    result.testPlanObject.parsed.tests.length
             };
         }
         return testPlanReport;
@@ -143,14 +159,14 @@ const getTestPlanReportById = async (
 };
 
 /**
- * @param search
- * @param filter
- * @param testPlanReportAttributes
- * @param testPlanRunAttributes
- * @param testPlanAttributes
- * @param testPlanTargetAttributes
- * @param userAttributes
- * @param testResultAttributes
+ * @param {string|any} search - use this to combine with {@param filter} to be passed to Sequelize's where clause
+ * @param {object} filter - use this define conditions to be passed to Sequelize's where clause
+ * @param {string[]} testPlanReportAttributes - TestPlanReport attributes to be returned in the result
+ * @param {string[]} testPlanRunAttributes - TestPlanRun attributes to be returned in the result
+ * @param {string[]} testPlanAttributes - TestPlan attributes to be returned in the result
+ * @param {string[]} testPlanTargetAttributes - TestPlanTarget attributes to be returned in the result
+ * @param {string[]} userAttributes - User attributes to be returned in the result
+ * @param {string[]} testResultAttributes - TestResult attributes to be returned in the result
  * @param {object} pagination - pagination options for query
  * @param {number} [pagination.page=0] - page to be queried in the pagination result (affected by {@param pagination.enable})
  * @param {number} [pagination.limit=10] - amount of results to be returned per page (affected by {@param pagination.enable})
@@ -181,8 +197,8 @@ const getTestPlanReports = async (
     const testPlanReportPublishStatusFound = testPlanReportAttributes.some(
         key => key === 'publishStatus'
     );
-    const testPlanParsedTestFound = testPlanAttributes.some(
-        key => key === 'parsedTest'
+    const testPlanParsedFound = testPlanAttributes.some(
+        key => key === 'parsed'
     );
     const testPlanRunAttributesFound = testPlanAttributes.length;
 
@@ -191,7 +207,7 @@ const getTestPlanReports = async (
             ...testPlanReportAttributes,
             'publishStatus'
         ];
-        testPlanAttributes = [...testPlanAttributes, 'parsedTest'];
+        testPlanAttributes = [...testPlanAttributes, 'parsed'];
         testPlanRunAttributes = [...testPlanRunAttributes, 'tester'];
     }
 
@@ -221,7 +237,7 @@ const getTestPlanReports = async (
         const { enable: enablePagination } = pagination;
 
         if (enablePagination) {
-            // add canonicalRun to result which is built from `testPlanObject.parsedTest`
+            // add canonicalRun to result which is built from `testPlanObject.parsed`
             results.data.map(result => {
                 const testPlanReport = result.get();
 
@@ -229,10 +245,10 @@ const getTestPlanReports = async (
                 if (!testPlanReportPublishStatusFound)
                     delete testPlanReport.publishStatus;
 
-                if (!testPlanParsedTestFound) {
+                if (!testPlanParsedFound) {
                     // delete only that key in case attributes attributes were requested
                     if (Object.keys(testPlanReport.testPlanObject).length > 1)
-                        delete testPlanReport.testPlanObject.parsedTest;
+                        delete testPlanReport.testPlanObject.parsed;
                     else delete testPlanReport.testPlanObject;
                 }
 
@@ -246,15 +262,14 @@ const getTestPlanReports = async (
                         passedAssertions:
                             result.testPlanRuns[0].testResults.length || 0,
                         totalAssertions:
-                            result.testPlanObject.parsedTest
-                                .maximumInputCount ||
-                            result.testPlanObject.parsedTest.testActions.length
+                            result.testPlanObject.parsed.maximumInputCount ||
+                            result.testPlanObject.parsed.tests.length
                     };
                 }
                 return testPlanReport;
             });
         } else {
-            // add canonicalRun to result which is built from `testPlanObject.parsedTest`
+            // add canonicalRun to result which is built from `testPlanObject.parsed`
             results.map(result => {
                 const testPlanReport = result.get();
 
@@ -262,10 +277,10 @@ const getTestPlanReports = async (
                 if (!testPlanReportPublishStatusFound)
                     delete testPlanReport.publishStatus;
 
-                if (!testPlanParsedTestFound) {
+                if (!testPlanParsedFound) {
                     // delete only that key in case attributes attributes were requested
                     if (Object.keys(testPlanReport.testPlanObject).length > 1)
-                        delete testPlanReport.testPlanObject.parsedTest;
+                        delete testPlanReport.testPlanObject.parsed;
                     else delete testPlanReport.testPlanObject;
                 }
 
@@ -279,9 +294,8 @@ const getTestPlanReports = async (
                         passedAssertions:
                             result.testPlanRuns[0].testResults.length || 0,
                         totalAssertions:
-                            result.testPlanObject.parsedTest
-                                .maximumInputCount ||
-                            result.testPlanObject.parsedTest.testActions.length
+                            result.testPlanObject.parsed.maximumInputCount ||
+                            result.testPlanObject.parsed.tests.length
                     };
                 }
                 return testPlanReport;
@@ -293,15 +307,15 @@ const getTestPlanReports = async (
 };
 
 /**
- * @param id
- * @param updateParams
- * @param testPlanReportAttributes
- * @param testPlanRunAttributes
- * @param testPlanAttributes
- * @param testPlanTargetAttributes
- * @param userAttributes
- * @param testResultAttributes
- * @returns {Promise<void>}
+ * @param {number} id - unique id of the TestPlanReport model being to be updated
+ * @param {object} updateParams - values to be used to update columns for the record being referenced for {@param id}
+ * @param {string[]} testPlanReportAttributes - TestPlanReport attributes to be returned in the result
+ * @param {string[]} testPlanRunAttributes - TestPlanRun attributes to be returned in the result
+ * @param {string[]} testPlanAttributes - TestPlan attributes to be returned in the result
+ * @param {string[]} testPlanTargetAttributes - TestPlanTarget attributes to be returned in the result
+ * @param {string[]} userAttributes - User attributes to be returned in the result
+ * @param {string[]} testResultAttributes - TestResult attributes to be returned in the result
+ * @returns {Promise<*>}
  */
 const updateTestPlanReport = async (
     id,
@@ -340,15 +354,15 @@ const updateTestPlanReport = async (
 /**
  * AssignTester
  * This assumes a TestPlanReport with testPlanReportId exists and a User with userId exists
- * @param testPlanReportId
- * @param userId
- * @param isManuallyTested
- * @param testPlanReportAttributes
- * @param testPlanRunAttributes
- * @param testPlanAttributes
- * @param testPlanTargetAttributes
- * @param userAttributes
- * @param testResultAttributes
+ * @param {number} testPlanReportId - TestPlanReport id of the testPlan being assigned
+ * @param {number} userId - User id of the user being assigned a TestPlan
+ * @param {boolean} isManuallyTested - indicates whether this test is being executed manually or not
+ * @param {string[]} testPlanReportAttributes - TestPlanReport attributes to be returned in the result
+ * @param {string[]} testPlanRunAttributes - TestPlanRun attributes to be returned in the result
+ * @param {string[]} testPlanAttributes - TestPlan attributes to be returned in the result
+ * @param {string[]} testPlanTargetAttributes - TestPlanTarget attributes to be returned in the result
+ * @param {string[]} userAttributes - User attributes to be returned in the result
+ * @param {string[]} testResultAttributes - TestResult attributes to be returned in the result
  * @returns {Promise<*>}
  */
 const assignTestPlanReportToUser = async (
@@ -388,14 +402,14 @@ const assignTestPlanReportToUser = async (
 /**
  * RemoveReportTester
  * This assumes a TestPlanReport with testPlanReportId exists and a User with userId exists
- * @param testPlanReportId
- * @param userId
- * @param testPlanReportAttributes
- * @param testPlanRunAttributes
- * @param testPlanAttributes
- * @param testPlanTargetAttributes
- * @param userAttributes
- * @param testResultAttributes
+ * @param {number} testPlanReportId - TestPlanReport id that the tester is being removed from
+ * @param {number} userId - unique id of the tester user being removed
+ * @param {string[]} testPlanReportAttributes - TestPlanReport attributes to be returned in the result
+ * @param {string[]} testPlanRunAttributes - TestPlanRun attributes to be returned in the result
+ * @param {string[]} testPlanAttributes - TestPlan attributes to be returned in the result
+ * @param {string[]} testPlanTargetAttributes - TestPlanTarget attributes to be returned in the result
+ * @param {string[]} userAttributes - User attributes to be returned in the result
+ * @param {string[]} testResultAttributes - TestResult attributes to be returned in the result
  * @returns {Promise<*>}
  */
 const removeTestPlanReportForUser = async (
@@ -431,16 +445,16 @@ const removeTestPlanReportForUser = async (
 };
 
 /**
- *
- * @param testPlanReportId
- * @param publishStatus
- * @param testPlanReportAttributes
- * @param testPlanRunAttributes
- * @param testPlanAttributes
- * @param testPlanTargetAttributes
- * @param userAttributes
- * @param testResultAttributes
- * @returns {Promise<void>}
+ * Custom function to update the TestPlanReportStatus; potentially made redundant due to {@method updateTestPlanReport}
+ * @param {number} testPlanReportId - TestPlanReport id of the TestPlanReport being updated
+ * @param {string} publishStatus - must be one of: 'draft', 'in_review' or 'final'
+ * @param {string[]} testPlanReportAttributes - TestPlanReport attributes to be returned in the result
+ * @param {string[]} testPlanRunAttributes - TestPlanRun attributes to be returned in the result
+ * @param {string[]} testPlanAttributes - TestPlan attributes to be returned in the result
+ * @param {string[]} testPlanTargetAttributes - TestPlanTarget attributes to be returned in the result
+ * @param {string[]} userAttributes - User attributes to be returned in the result
+ * @param {string[]} testResultAttributes - TestResult attributes to be returned in the result
+ * @returns {Promise<*>}
  */
 const updateTestPlanReportStatus = async (
     testPlanReportId,
@@ -473,13 +487,5 @@ module.exports = {
     // Custom Functions : Test Queue Mutations
     assignTestPlanReportToUser,
     removeTestPlanReportForUser,
-    updateTestPlanReportStatus,
-
-    // Constants
-    TEST_PLAN_REPORT_ATTRIBUTES,
-    TEST_PLAN_ATTRIBUTES,
-    TEST_PLAN_TARGET_ATTRIBUTES,
-    TEST_PLAN_RUN_ATTRIBUTES,
-    USER_ATTRIBUTES,
-    TEST_RESULT_ATTRIBUTES
+    updateTestPlanReportStatus
 };

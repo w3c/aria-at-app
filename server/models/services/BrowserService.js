@@ -4,11 +4,20 @@ const { Sequelize, Browser, BrowserVersion } = require('../index');
 const { Op } = Sequelize;
 
 // Section :- association helpers to be included with Models' results
+
+/**
+ * @param browserAttributes - Browser attributes
+ * @returns {{association: string, attributes: string[]}}
+ */
 const browserAssociation = browserAttributes => ({
     association: 'browserObject',
-    browserAttributes: browserAttributes
+    attributes: browserAttributes
 });
 
+/**
+ * @param browserVersionAttributes - BrowserVersion attributes
+ * @returns {{association: string, attributes: string[]}}
+ */
 const browserVersionAssociation = browserVersionAttributes => ({
     association: 'versions',
     attributes: browserVersionAttributes
@@ -16,6 +25,13 @@ const browserVersionAssociation = browserVersionAttributes => ({
 
 // Browser
 
+/**
+ * NB. You can pass any of the attribute arrays as '[]' to exclude that related association
+ * @param {number} id - unique id of the Browser model being queried
+ * @param {string[]} browserAttributes  - Browser attributes to be returned in the result
+ * @param {string[]} browserVersionAttributes  - BrowserVersion attributes to be returned in the result
+ * @returns {Promise<*>}
+ */
 const getBrowserById = async (
     id,
     browserAttributes = BROWSER_ATTRIBUTES,
@@ -26,6 +42,18 @@ const getBrowserById = async (
     ]);
 };
 
+/**
+ * @param {string|any} search - use this to combine with {@param filter} to be passed to Sequelize's where clause
+ * @param {object} filter - use this define conditions to be passed to Sequelize's where clause
+ * @param {string[]} browserAttributes  - Browser attributes to be returned in the result
+ * @param {string[]} browserVersionAttributes  - BrowserVersion attributes to be returned in the result
+ * @param {object} pagination - pagination options for query
+ * @param {number} [pagination.page=0] - page to be queried in the pagination result (affected by {@param pagination.enable})
+ * @param {number} [pagination.limit=10] - amount of results to be returned per page (affected by {@param pagination.enable})
+ * @param {string[][]} [pagination.order=[]] - expects a Sequelize structured input dataset for sorting the Sequelize Model results (NOT affected by {@param pagination.enable}). See {@link https://sequelize.org/v5/manual/querying.html#ordering} and {@example [ [ 'username', 'DESC' ], [..., ...], ... ]}
+ * @param {boolean} [pagination.enable=false] - use to enable pagination for a query result as well useful values. Data for all items matching query if not enabled
+ * @returns {Promise<*>}
+ */
 const getBrowsers = async (
     search,
     filter = {},
@@ -47,6 +75,12 @@ const getBrowsers = async (
     );
 };
 
+/**
+ * @param {object} createParams - values to be used to create the Browser record
+ * @param {string[]} browserAttributes  - Browser attributes to be returned in the result
+ * @param {string[]} browserVersionAttributes  - BrowserVersion attributes to be returned in the result
+ * @returns {Promise<*>}
+ */
 const createBrowser = async (
     { name },
     browserAttributes = BROWSER_ATTRIBUTES,
@@ -61,6 +95,13 @@ const createBrowser = async (
     ]);
 };
 
+/**
+ * @param {string} id - id of the Browser record to be updated
+ * @param {object} updateParams - values to be used to update columns for the record being referenced for {@param id}
+ * @param {string[]} browserAttributes  - Browser attributes to be returned in the result
+ * @param {string[]} browserVersionAttributes  - BrowserVersion attributes to be returned in the result
+ * @returns {Promise<*>}
+ */
 const updateBrowser = async (
     id,
     { name },
@@ -74,12 +115,24 @@ const updateBrowser = async (
     ]);
 };
 
+/**
+ * @param {number} id - id of the Browser record to be removed
+ * @param {object} deleteOptions - Sequelize specific deletion options that could be passed
+ * @returns {Promise<boolean>}
+ */
 const removeBrowser = async (id, deleteOptions = { truncate: false }) => {
     return await ModelService.removeById(Browser, id, deleteOptions);
 };
 
 // BrowserVersion
 
+/**
+ * NB. You can pass any of the attribute arrays as '[]' to exclude that related association
+ * @param {object} queryParams - unique values of the BrowserVersion model being queried
+ * @param {string[]} browserVersionAttributes  - BrowserVersion attributes to be returned in the result
+ * @param {string[]} browserAttributes  - Browser attributes to be returned in the result
+ * @returns {Promise<*>}
+ */
 const getBrowserVersionByQuery = async (
     { browser, version },
     browserVersionAttributes = BROWSER_VERSION_ATTRIBUTES,
@@ -93,6 +146,18 @@ const getBrowserVersionByQuery = async (
     );
 };
 
+/**
+ * @param {string|any} search - use this to combine with {@param filter} to be passed to Sequelize's where clause
+ * @param {object} filter - use this define conditions to be passed to Sequelize's where clause
+ * @param {string[]} browserVersionAttributes  - BrowserVersion attributes to be returned in the result
+ * @param {string[]} browserAttributes  - Browser attributes to be returned in the result
+ * @param {object} pagination - pagination options for query
+ * @param {number} [pagination.page=0] - page to be queried in the pagination result (affected by {@param pagination.enable})
+ * @param {number} [pagination.limit=10] - amount of results to be returned per page (affected by {@param pagination.enable})
+ * @param {string[][]} [pagination.order=[]] - expects a Sequelize structured input dataset for sorting the Sequelize Model results (NOT affected by {@param pagination.enable}). See {@link https://sequelize.org/v5/manual/querying.html#ordering} and {@example [ [ 'username', 'DESC' ], [..., ...], ... ]}
+ * @param {boolean} [pagination.enable=false] - use to enable pagination for a query result as well useful values. Data for all items matching query if not enabled
+ * @returns {Promise<*>}
+ */
 const getBrowserVersions = async (
     search,
     filter = {},
@@ -114,6 +179,12 @@ const getBrowserVersions = async (
     );
 };
 
+/**
+ * @param {object} createParams - values to be used to create the BrowserVersion record
+ * @param {string[]} browserVersionAttributes  - BrowserVersion attributes to be returned in the result
+ * @param {string[]} browserAttributes  - Browser attributes to be returned in the result
+ * @returns {Promise<*>}
+ */
 const createBrowserVersion = async (
     { browser, version },
     browserVersionAttributes = BROWSER_VERSION_ATTRIBUTES,
@@ -130,16 +201,23 @@ const createBrowserVersion = async (
     );
 };
 
+/**
+ * @param {object} queryParams - values of the BrowserVersion record to be updated
+ * @param {object} updateParams - values to be used to update columns for the record being referenced for {@param queryParams}
+ * @param {string[]} browserVersionAttributes  - BrowserVersion attributes to be returned in the result
+ * @param {string[]} browserAttributes  - Browser attributes to be returned in the result
+ * @returns {Promise<*>}
+ */
 const updateBrowserVersionByQuery = async (
-    id,
     { browser, version },
+    updateParams = {},
     browserVersionAttributes = BROWSER_VERSION_ATTRIBUTES,
     browserAttributes = BROWSER_ATTRIBUTES
 ) => {
     await ModelService.update(
         BrowserVersion,
         { browser, version },
-        { version }
+        updateParams
     );
 
     return await ModelService.getByQuery(
@@ -150,11 +228,16 @@ const updateBrowserVersionByQuery = async (
     );
 };
 
+/**
+ * @param {object} queryParams - values of the BrowserVersion record to be removed
+ * @param {object} deleteOptions - Sequelize specific deletion options that could be passed
+ * @returns {Promise<boolean>}
+ */
 const removeBrowserVersionByQuery = async (
     { browser, version },
     deleteOptions = { truncate: false }
 ) => {
-    return await ModelService.removeById(
+    return await ModelService.removeByQuery(
         BrowserVersion,
         { browser, version },
         deleteOptions
@@ -174,9 +257,5 @@ module.exports = {
     getBrowserVersions,
     createBrowserVersion,
     updateBrowserVersionByQuery,
-    removeBrowserVersionByQuery,
-
-    // Constants
-    BROWSER_ATTRIBUTES,
-    BROWSER_VERSION_ATTRIBUTES
+    removeBrowserVersionByQuery
 };

@@ -14,6 +14,11 @@ const {
     UserRoles
 } = require('../index');
 
+/**
+ * Use to retrieve all the attributes defined for a Sequelize model
+ * @param {Model} model - Sequelize model
+ * @returns {string[]}
+ */
 const getSequelizeModelAttributes = model => {
     if (!model) throw new Error('Model not defined');
 

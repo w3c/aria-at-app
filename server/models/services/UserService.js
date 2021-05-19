@@ -8,24 +8,33 @@ const { Sequelize, User, UserRoles } = require('../index');
 const { Op } = Sequelize;
 
 // Section :- association helpers to be included with Models' results
+
+/**
+ * @param roleAttributes - Role attributes
+ * @returns {{association: string, attributes: string[], through: {attributes: string[]}}}
+ */
 const roleAssociation = roleAttributes => ({
     association: 'roles',
     attributes: roleAttributes,
     through: { attributes: [] }
 });
 
+/**
+ * @param testPlanRunAttributes - TestPlanRun attributes
+ * @returns {{association: string, attributes: string[]}}
+ */
 const testPlanRunAssociation = testPlanRunAttributes => ({
     association: 'testPlanRuns',
     attributes: testPlanRunAttributes
 });
 
 /**
- * NB. Pass @param {roleAttributes} or @param {testPlanRunAttributes} as '[]' to exclude that related association
- * @param {number} id - ID of user to be retrieved
- * @param {string[]} userAttributes
- * @param {string[]} roleAttributes
- * @param {string[]} testPlanRunAttributes
- * @returns {Promise<void>}
+ * NB. You can pass any of the attribute arrays as '[]' to exclude that related association
+ * @param {number} id - id of User to be retrieved
+ * @param {string[]} userAttributes - User attributes to be returned in the result
+ * @param {string[]} roleAttributes - Role attributes to be returned in the result
+ * @param {string[]} testPlanRunAttributes - TestPlanRun attributes to be returned in the result
+ * @returns {Promise<*>}
  */
 const getUserById = async (
     id,
@@ -40,12 +49,12 @@ const getUserById = async (
 };
 
 /**
- * NB. Pass @param {roleAttributes} or @param {testPlanRunAttributes} as '[]' to exclude that related association
- * @param {string} username - username of user to be retrieved
- * @param {string[]} userAttributes
- * @param {string[]} roleAttributes
- * @param {string[]} testPlanRunAttributes
- * @returns {Promise<void>}
+ * NB. You can pass any of the attribute arrays as '[]' to exclude that related association
+ * @param {string} username - username of User to be retrieved
+ * @param {string[]} userAttributes - User attributes to be returned in the result
+ * @param {string[]} roleAttributes - Role attributes to be returned in the result
+ * @param {string[]} testPlanRunAttributes - TestPlanRun attributes to be returned in the result
+ * @returns {Promise<*>}
  */
 const getUserByUsername = async (
     username,
@@ -60,11 +69,11 @@ const getUserByUsername = async (
 };
 
 /**
- * @param search
- * @param filter
- * @param userAttributes
- * @param roleAttributes
- * @param testPlanRunAttributes
+ * @param {string|any} search - use this to combine with {@param filter} to be passed to Sequelize's where clause
+ * @param {object} filter - use this define conditions to be passed to Sequelize's where clause
+ * @param {string[]} userAttributes - User attributes to be returned in the result
+ * @param {string[]} roleAttributes - Role attributes to be returned in the result
+ * @param {string[]} testPlanRunAttributes - TestPlanRun attributes to be returned in the result
  * @param {object} pagination - pagination options for query
  * @param {number} [pagination.page=0] - page to be queried in the pagination result (affected by {@param pagination.enable})
  * @param {number} [pagination.limit=10] - amount of results to be returned per page (affected by {@param pagination.enable})
@@ -99,11 +108,11 @@ const getUsers = async (
 };
 
 /**
- * @param createParams
- * @param userAttributes
- * @param roleAttributes
- * @param testPlanRunAttributes
- * @returns {Promise<void>}
+ * @param {object} createParams - values to be used to create the User (+ UserRole entry if applicable)
+ * @param {string[]} userAttributes - User attributes to be returned in the result
+ * @param {string[]} roleAttributes - Role attributes to be returned in the result
+ * @param {string[]} testPlanRunAttributes - TestPlanRun attributes to be returned in the result
+ * @returns {Promise<*>}
  */
 const createUser = async (
     { username, role },
@@ -115,7 +124,7 @@ const createUser = async (
     const { id } = userResult;
 
     // eslint-disable-next-line no-use-before-define
-    if (role) await addUserToRole(id, role);
+    if (role) await addUserToRole(id, role); // if role was also passed, create UserRole entry
 
     // to ensure the structure being returned matches what we expect for simple queries and can be controlled
     return await ModelService.getById(User, id, userAttributes, [
@@ -125,12 +134,12 @@ const createUser = async (
 };
 
 /**
- * @param id
- * @param updateParams
- * @param userAttributes
- * @param roleAttributes
- * @param testPlanRunAttributes
- * @returns {Promise<void>}
+ * @param {number} id - id of the User record to be updated
+ * @param {object} updateParams - values to be used to update columns for the record being referenced for {@param id}
+ * @param {string[]} userAttributes - User attributes to be returned in the result
+ * @param {string[]} roleAttributes - Role attributes to be returned in the result
+ * @param {string[]} testPlanRunAttributes - TestPlanRun attributes to be returned in the result
+ * @returns {Promise<*>}
  */
 const updateUser = async (
     id,
@@ -148,11 +157,11 @@ const updateUser = async (
 };
 
 /**
- * @param id
- * @param deleteOptions
+ * @param {number} id - id of the User record to be removed
+ * @param {object} deleteOptions - Sequelize specific deletion options that could be passed
  * @returns {Promise<boolean>}
  */
-const removeUser = async (id, deleteOptions = { truncate: false }) => {
+const removeUser = async (id, deleteOptions) => {
     return await ModelService.removeById(User, id, deleteOptions);
 };
 
@@ -160,8 +169,8 @@ const removeUser = async (id, deleteOptions = { truncate: false }) => {
 
 /**
  * This assumes the id (userId) and the role (roleName) are valid entries that already exist
- * @param id
- * @param role
+ * @param {number} id - id of the User that the role will be added for
+ * @param {string} role - role to be assigned to the User record referenced by {@param id}
  * @returns {Promise<*>}
  */
 const addUserToRole = async (id, role) => {
@@ -169,9 +178,8 @@ const addUserToRole = async (id, role) => {
 };
 
 /**
- *
- * @param id
- * @param role
+ * @param {number} id - id of the User that the role will be removed from
+ * @param {string} role - role to be removed for the User record referenced by {@param id}
  * @returns {Promise<boolean>}
  */
 const deleteUserFromRole = async (id, role) => {
@@ -192,10 +200,5 @@ module.exports = {
 
     // Custom Functions
     addUserToRole,
-    deleteUserFromRole,
-
-    // Constants
-    USER_ATTRIBUTES,
-    ROLE_ATTRIBUTES,
-    TEST_PLAN_RUN_ATTRIBUTES
+    deleteUserFromRole
 };

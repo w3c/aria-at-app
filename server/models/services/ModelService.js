@@ -1,7 +1,7 @@
 const { sequelize } = require('../index');
 
 /**
- * Created Query Example:
+ * Created Query Sequelize Example:
  * UserModel.findOne({
  *   where: { id },
  *   attributes: [ 'username', email ],
@@ -14,12 +14,13 @@ const { sequelize } = require('../index');
  *   ]
  * })
  *
- * Example Usage:
- * return ModelService.getBy(UserModel, id, [ 'username', 'email' ], [
+ * @example
+ * // returns { attribute: 'value', associationData: [ { associationAttribute: 'associationAttributeValue' } ] }
+ * return ModelService.getById(Model, id, [ 'attribute' ], [
  *   {
- *     model: RoleModel,
- *     as: 'roles',
- *     attributes: [ 'name', 'permissions' ]
+ *     model: AssociationModel,
+ *     as: 'associationData',
+ *     attributes: [ 'associationAttribute' ]
  *   }
  * ]
  *
