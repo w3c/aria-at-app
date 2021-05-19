@@ -1,5 +1,7 @@
 const { sequelize } = require('../');
 
+// todo: convert to class structure
+
 /**
  * Created Query Sequelize Example:
  * UserModel.findOne({
