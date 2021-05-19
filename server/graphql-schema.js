@@ -69,7 +69,8 @@ const graphqlSchema = gql`
         title: String!
         publishStatus: TestPlanStatus!
         revision: String!
-        sourceGitCommit: String!
+        sourceGitCommitHash: String!
+        sourceGitCommitMessage: String!
         exampleUrl: String!
         # TODO: consider renaming createdAt and including the date the source
         # code age was authored as well.
@@ -80,7 +81,7 @@ const graphqlSchema = gql`
 
     interface Test {
         title: String!
-        # TODO: need complete representation of test data
+        commands: [Command]!
     }
 
     type TestResult implements Test {
@@ -112,24 +113,46 @@ const graphqlSchema = gql`
     }
 
     type Command {
+        """
+        Raw test authoring format for command, e.g. "assert role: checkbox"
+        """
         source: String!
+        """
+        The parsed decorators of the command format - in the case of "(optional)
+        assert role: checkbox" they would be ["optional"].
+        """
+        decorators: [String]!
+        """
+        The parsed function part of the command format - in the case of "assert
+        role: checkbox" it would be "assert role".
+        """
         function: String!
+        """
+        The arguments part of the command format - in the case of "assert role:
+        checkbox" it would be ["checkbox"].
+        """
         arguments: [String]!
     }
 
     interface CommandResult {
         # Also implements Command
         source: String!
+        decorators: [String]!
         function: String!
         arguments: [String]!
 
         # Result only
+        """
+        Not all commands need to have results. This allows a CommandResult to
+        point back to the index of the command that created it.
+        """
         nthCommand: Int!
     }
 
     type CollectInputResult implements CommandResult {
         # All Commands include
         source: String!
+        decorators: [String]!
         function: String!
         arguments: [String]!
 
@@ -144,6 +167,7 @@ const graphqlSchema = gql`
     type AssertionResult implements CommandResult {
         # All commands include
         source: String!
+        decorators: [String]!
         function: String!
         arguments: [String]!
 
