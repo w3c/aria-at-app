@@ -68,7 +68,7 @@ const graphqlSchema = gql`
         id: ID!
         title: String!
         publishStatus: TestPlanStatus!
-        revision: String!
+        # revision: String!
         sourceGitCommitHash: String!
         sourceGitCommitMessage: String!
         exampleUrl: String!
@@ -81,8 +81,23 @@ const graphqlSchema = gql`
 
     interface Test {
         title: String!
-        commands: [Command]!
+        # TODO: account for running scripts
+        instructions: [Instruction]!
+        assertions: [Assertion]!
         passThroughs: [PassThrough]!
+    }
+
+    type Instruction {
+        manualInstruction: String!
+        # automatedFunction: String!
+        # automatedArguments: String!
+    }
+
+    interface Assertion {
+        # TODO: account for at-specific assertions
+        # TODO: account for optional assertions
+        manualAssertion: String!
+        # automatedMatcher: String!
     }
 
     interface PassThrough {
@@ -92,32 +107,10 @@ const graphqlSchema = gql`
         # associated with one test.
     }
 
-    type Command {
-        """
-        Raw test authoring format for command, e.g. "assert role: checkbox"
-        """
-        source: String!
-        """
-        The parsed decorators of the command format - in the case of "(optional)
-        assert role: checkbox" they would be ["optional"].
-        """
-        decorators: [String]!
-        """
-        The parsed function part of the command format - in the case of "assert
-        role: checkbox" it would be "assert role".
-        """
-        function: String!
-        """
-        The arguments part of the command format - in the case of "assert role:
-        checkbox" they would be ["checkbox"]. In the case of "assert state:
-        checked, false" they would be ["checked", "false"].
-        """
-        arguments: [String]!
-    }
-
     type TestResult implements Test {
         title: String!
         instructions: [Instruction]!
+        assertions: [Assertion]!
         passThroughs: [PassThrough]!
 
         startedAt: Timestamp!
@@ -129,51 +122,35 @@ const graphqlSchema = gql`
         optionalAssertionsCount: Int!
         optionalAssertionsPassed: Int!
         unexpectedBehaviorCount: Int!
-
         passThroughResults: [PassThroughResult]!
     }
 
     type PassThroughResult implements PassThrough {
         atMode: String!
         nthInput: Int!
-        # commandResults: [CommandResult]!
 
         output: String!
-        assertions: [AssertionResult]!
+        assertionResults: [AssertionResult]!
         unexpectedBehaviors: [UnexpectedBehavior]!
     }
 
-    type OutputResult implements CommandResult {
-        # All Commands include
-        source: String!
-        decorators: [String]!
-        function: String!
-        arguments: [String]!
+    # TODO: Determine if TestResultConflictResolution below is a valid approach
+    # input PassThroughResultInput {
+    #     atMode: String!
+    #     nthInput: Int!
+    #     output: String!
+    #     assertionResults: [AssertionResultInput]!
+    #     unexpectedBehaviors: [ID]!
+    # }
 
-        # All CommandResults include
-        nthCommand: Int!
-
-        # CollectOutputResult only
-        output: String!
-        unexpectedBehaviors: [UnexpectedBehavior]!
+    type AssertionResult implements Assertion {
+        manualAssertion: String!
+        # automatedMatcher: String!
+        passed: Boolean!
     }
 
-    input OutputResultInput {
-        output: String!
-        unexpectedBehaviors: [ID]!
-    }
-
-    type AssertionResult implements CommandResult {
-        # All commands include
-        source: String!
-        decorators: [String]!
-        function: String!
-        arguments: [String]!
-
-        # All CommandResults include
-        nthCommand: Int!
-
-        # AssertionResult only
+    input AssertionResultInput {
+        manualAssertion: String!
         passed: Boolean!
     }
 
@@ -182,20 +159,26 @@ const graphqlSchema = gql`
         description: String!
     }
 
+    type TestResultConflict {
+        id: ID!
+        test: Test!
+        passThrough: PassThrough!
+        passThroughResults: [PassThroughResult]!
+    }
+
+    # TODO: Determine if this is a valid approach
+    # input TestResultConflictResolution {
+    #     testPlan: ID
+    #     nthTest: Int!
+    #     passThroughResult: PassThroughResultInput
+    # }
+
     type TestPlanRun {
         id: ID!
         isManuallyTested: Boolean!
         tester: User
         testResults: [TestResult]!
         testResultCount: Int!
-    }
-
-    type TestResultConflict {
-        id: ID!
-        test: Test!
-        passThrough: PassThrough!
-        command: Command!
-        commandResults: [CommandResult]!
     }
 
     enum TestPlanReportStatus {
@@ -239,7 +222,7 @@ const graphqlSchema = gql`
         assignTester(user: ID): NoResponse
         deleteTestPlanRun(user: ID): NoResponse
         updateStatus(status: TestPlanReportStatus): NoResponse
-        resolveConflict(id: ID)
+        resolveConflict(resolution: TestResultConflictResolution): NoResponse
         resultingTestPlanReport: TestPlanReport!
     }
 
