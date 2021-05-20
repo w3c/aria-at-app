@@ -7,7 +7,7 @@ const {
 const { Sequelize, User, UserRoles } = require('../');
 const { Op } = Sequelize;
 
-// Section :- association helpers to be included with Models' results
+// association helpers to be included with Models' results
 
 /**
  * @param roleAttributes - Role attributes
@@ -29,7 +29,7 @@ const testPlanRunAssociation = testPlanRunAttributes => ({
 });
 
 /**
- * NB. You can pass any of the attribute arrays as '[]' to exclude that related association
+ * You can pass any of the attribute arrays as '[]' to exclude that related association
  * @param {number} id - id of User to be retrieved
  * @param {string[]} userAttributes - User attributes to be returned in the result
  * @param {string[]} roleAttributes - Role attributes to be returned in the result
@@ -49,7 +49,7 @@ const getUserById = async (
 };
 
 /**
- * NB. You can pass any of the attribute arrays as '[]' to exclude that related association
+ * You can pass any of the attribute arrays as '[]' to exclude that related association
  * @param {string} username - username of User to be retrieved
  * @param {string[]} userAttributes - User attributes to be returned in the result
  * @param {string[]} roleAttributes - Role attributes to be returned in the result
@@ -75,10 +75,10 @@ const getUserByUsername = async (
  * @param {string[]} roleAttributes - Role attributes to be returned in the result
  * @param {string[]} testPlanRunAttributes - TestPlanRun attributes to be returned in the result
  * @param {object} pagination - pagination options for query
- * @param {number} [pagination.page=0] - page to be queried in the pagination result (affected by {@param pagination.enable})
- * @param {number} [pagination.limit=10] - amount of results to be returned per page (affected by {@param pagination.enable})
- * @param {string[][]} [pagination.order=[]] - expects a Sequelize structured input dataset for sorting the Sequelize Model results (NOT affected by {@param pagination.enable}). See {@link https://sequelize.org/v5/manual/querying.html#ordering} and {@example [ [ 'username', 'DESC' ], [..., ...], ... ]}
- * @param {boolean} [pagination.enable=false] - use to enable pagination for a query result as well useful values. Data for all items matching query if not enabled
+ * @param {number} [pagination.page=0] - page to be queried in the pagination result (affected by {@param pagination.enablePagination})
+ * @param {number} [pagination.limit=10] - amount of results to be returned per page (affected by {@param pagination.enablePagination})
+ * @param {string[][]} [pagination.order=[]] - expects a Sequelize structured input dataset for sorting the Sequelize Model results (NOT affected by {@param pagination.enablePagination}). See {@link https://sequelize.org/v5/manual/querying.html#ordering} and {@example [ [ 'username', 'DESC' ], [..., ...], ... ]}
+ * @param {boolean} [pagination.enablePagination=false] - use to enable pagination for a query result as well useful values. Data for all items matching query if not enabled
  * @returns {Promise<*>}
  */
 const getUsers = async (
@@ -165,7 +165,7 @@ const removeUser = async (id, deleteOptions) => {
     return await ModelService.removeById(User, id, deleteOptions);
 };
 
-// Section :- Custom Functions
+// Custom Functions
 
 /**
  * This assumes the id (userId) and the role (roleName) are valid entries that already exist

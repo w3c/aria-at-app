@@ -1,7 +1,5 @@
 const { sequelize } = require('../');
 
-// todo: convert to class structure
-
 /**
  * Created Query Sequelize Example:
  * UserModel.findOne({
@@ -33,7 +31,7 @@ const { sequelize } = require('../');
  * @returns {Promise<Model>} - Sequelize Model
  */
 const getById = async (model, id, attributes = [], include = []) => {
-    if (!model) throw new Error('Model not defined'); // TODO: pass through custom APIError
+    if (!model) throw new Error('Model not defined');
 
     // findByPk
     return await model.findOne({
@@ -56,7 +54,7 @@ const getByQuery = async (
     attributes = [],
     include = []
 ) => {
-    if (!model) throw new Error('Model not defined'); // TODO: pass through custom APIError
+    if (!model) throw new Error('Model not defined');
 
     return await model.findOne({
         where: { ...queryParams },
@@ -68,33 +66,35 @@ const getByQuery = async (
 /**
  * @link {https://sequelize.org/v5/manual/models-usage.html#-code-findandcountall--code----search-for-multiple-elements-in-the-database--returns-both-data-and-total-count}
  * @param {Model} model - Sequelize Model instance to query for
- * @param {object} filter - values to be used to search Sequelize Model
+ * @param {object} where - values to be used to search Sequelize Model
  * @param {any[]} attributes - attributes of the Sequelize Model to be returned
  * @param {any[]} include - information on Sequelize Model relationships
- * @param {object} pagination - pagination options for query
- * @param {number} [pagination.page=0] - page to be queried in the pagination result (affected by {@param pagination.enable})
- * @param {number} [pagination.limit=10] - amount of results to be returned per page (affected by {@param pagination.enable})
- * @param {string[][]} [pagination.order=[]] - expects a Sequelize structured input dataset for sorting the Sequelize Model results (NOT affected by {@param pagination.enable}). See {@link https://sequelize.org/v5/manual/querying.html#ordering} and {@example [ [ 'username', 'DESC' ], [..., ...], ... ]}
- * @param {boolean} [pagination.enable=false] - use to enable pagination for a query result as well useful values. Data for all items matching query if not enabled
+ * @param {object} pagination - pagination options for query (page and limit; it also includes sorting functionality)
+ * @param {number} [pagination.page=0] - page to be queried in the pagination result (affected by {@param pagination.enablePagination})
+ * @param {number} [pagination.limit=10] - amount of results to be returned per page (affected by {@param pagination.enablePagination})
+ * @param {string[][]} [pagination.order=[]] - expects a Sequelize structured input dataset for sorting the Sequelize Model results (NOT affected by {@param pagination.enablePagination}). See {@link https://sequelize.org/v5/manual/querying.html#ordering} and {@example [ [ 'username', 'DESC' ], [..., ...], ... ]}
+ * @param {boolean} [pagination.enablePagination=false] - use to enable pagination for a query result as well useful values. Data for all items matching query if not enabled
  * @returns {Promise<*>} - collection of queried Sequelize Models or paginated structure if pagination flag is enabled
  */
 const get = async (
     model,
-    filter = {}, // pass to 'where' for top level model
+    where = {}, // passed in search and filtering options
     attributes = [],
     include = [],
     pagination = {}
 ) => {
-    if (!model) throw new Error('Model not defined'); // TODO: pass through custom APIError
-
-    // search and filtering options
-    let where = { ...filter };
+    if (!model) throw new Error('Model not defined');
 
     // pagination and sorting options
-    let { page = 0, limit = 10, order = [], enable = false } = pagination; // page 0->1, 1->2; manage through middleware
+    let {
+        page = 0,
+        limit = 10,
+        order = [],
+        enablePagination = false
+    } = pagination; // page 0->1, 1->2; manage through middleware
     // 'order' structure eg. [ [ 'username', 'DESC' ], [..., ...], ... ]
     if (page < 0) page = 0;
-    if (limit < 0 || !enable) limit = null;
+    if (limit < 0 || !enablePagination) limit = null;
     const offset = limit < 0 ? 0 : page * limit; // skip (1 * 10 results) = 10 to get get to page 2
 
     const queryOptions = {
@@ -104,8 +104,8 @@ const get = async (
         include // included fields being marked as 'required' will affect overall count for pagination
     };
 
-    // enable paginated result structure and related values
-    if (enable) {
+    // enablePagination paginated result structure and related values
+    if (enablePagination) {
         const result = await model.findAndCountAll({
             ...queryOptions,
             limit,
@@ -134,7 +134,7 @@ const get = async (
  * @returns {Promise<*>} - result of the sequelize.create function
  */
 const create = async (model, createParams) => {
-    if (!model) throw new Error('Model not defined'); // TODO: pass through custom APIError
+    if (!model) throw new Error('Model not defined');
     return await model.create({ ...createParams });
 };
 
@@ -145,7 +145,7 @@ const create = async (model, createParams) => {
  * @returns {Promise<*>} - result of the sequelize.update function
  */
 const update = async (model, queryParams, updateParams) => {
-    if (!model) throw new Error('Model not defined'); // TODO: pass through custom APIError
+    if (!model) throw new Error('Model not defined');
 
     return await model.update(
         { ...updateParams },
@@ -162,7 +162,7 @@ const update = async (model, queryParams, updateParams) => {
  * @returns {Promise<boolean>} - returns true if record was deleted
  */
 const removeById = async (model, id, deleteOptions = { truncate: false }) => {
-    if (!model) throw new Error('Model not defined'); // TODO: pass through custom APIError
+    if (!model) throw new Error('Model not defined');
 
     const { truncate } = deleteOptions;
     await model.destroy({
@@ -184,7 +184,7 @@ const removeByQuery = async (
     queryParams,
     deleteOptions = { truncate: false }
 ) => {
-    if (!model) throw new Error('Model not defined'); // TODO: pass through custom APIError
+    if (!model) throw new Error('Model not defined');
 
     const { truncate } = deleteOptions;
     await model.destroy({

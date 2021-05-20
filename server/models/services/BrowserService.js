@@ -3,7 +3,7 @@ const { BROWSER_ATTRIBUTES, BROWSER_VERSION_ATTRIBUTES } = require('./helpers');
 const { Sequelize, Browser, BrowserVersion } = require('../');
 const { Op } = Sequelize;
 
-// Section :- association helpers to be included with Models' results
+// association helpers to be included with Models' results
 
 /**
  * @param browserAttributes - Browser attributes
@@ -26,7 +26,7 @@ const browserVersionAssociation = browserVersionAttributes => ({
 // Browser
 
 /**
- * NB. You can pass any of the attribute arrays as '[]' to exclude that related association
+ * You can pass any of the attribute arrays as '[]' to exclude that related association
  * @param {number} id - unique id of the Browser model being queried
  * @param {string[]} browserAttributes  - Browser attributes to be returned in the result
  * @param {string[]} browserVersionAttributes  - BrowserVersion attributes to be returned in the result
@@ -48,10 +48,10 @@ const getBrowserById = async (
  * @param {string[]} browserAttributes  - Browser attributes to be returned in the result
  * @param {string[]} browserVersionAttributes  - BrowserVersion attributes to be returned in the result
  * @param {object} pagination - pagination options for query
- * @param {number} [pagination.page=0] - page to be queried in the pagination result (affected by {@param pagination.enable})
- * @param {number} [pagination.limit=10] - amount of results to be returned per page (affected by {@param pagination.enable})
- * @param {string[][]} [pagination.order=[]] - expects a Sequelize structured input dataset for sorting the Sequelize Model results (NOT affected by {@param pagination.enable}). See {@link https://sequelize.org/v5/manual/querying.html#ordering} and {@example [ [ 'username', 'DESC' ], [..., ...], ... ]}
- * @param {boolean} [pagination.enable=false] - use to enable pagination for a query result as well useful values. Data for all items matching query if not enabled
+ * @param {number} [pagination.page=0] - page to be queried in the pagination result (affected by {@param pagination.enablePagination})
+ * @param {number} [pagination.limit=10] - amount of results to be returned per page (affected by {@param pagination.enablePagination})
+ * @param {string[][]} [pagination.order=[]] - expects a Sequelize structured input dataset for sorting the Sequelize Model results (NOT affected by {@param pagination.enablePagination}). See {@link https://sequelize.org/v5/manual/querying.html#ordering} and {@example [ [ 'username', 'DESC' ], [..., ...], ... ]}
+ * @param {boolean} [pagination.enablePagination=false] - use to enable pagination for a query result as well useful values. Data for all items matching query if not enabled
  * @returns {Promise<*>}
  */
 const getBrowsers = async (
@@ -127,7 +127,7 @@ const removeBrowser = async (id, deleteOptions = { truncate: false }) => {
 // BrowserVersion
 
 /**
- * NB. You can pass any of the attribute arrays as '[]' to exclude that related association
+ * You can pass any of the attribute arrays as '[]' to exclude that related association
  * @param {object} queryParams - unique values of the BrowserVersion model being queried
  * @param {string[]} browserVersionAttributes  - BrowserVersion attributes to be returned in the result
  * @param {string[]} browserAttributes  - Browser attributes to be returned in the result
@@ -152,10 +152,10 @@ const getBrowserVersionByQuery = async (
  * @param {string[]} browserVersionAttributes  - BrowserVersion attributes to be returned in the result
  * @param {string[]} browserAttributes  - Browser attributes to be returned in the result
  * @param {object} pagination - pagination options for query
- * @param {number} [pagination.page=0] - page to be queried in the pagination result (affected by {@param pagination.enable})
- * @param {number} [pagination.limit=10] - amount of results to be returned per page (affected by {@param pagination.enable})
- * @param {string[][]} [pagination.order=[]] - expects a Sequelize structured input dataset for sorting the Sequelize Model results (NOT affected by {@param pagination.enable}). See {@link https://sequelize.org/v5/manual/querying.html#ordering} and {@example [ [ 'username', 'DESC' ], [..., ...], ... ]}
- * @param {boolean} [pagination.enable=false] - use to enable pagination for a query result as well useful values. Data for all items matching query if not enabled
+ * @param {number} [pagination.page=0] - page to be queried in the pagination result (affected by {@param pagination.enablePagination})
+ * @param {number} [pagination.limit=10] - amount of results to be returned per page (affected by {@param pagination.enablePagination})
+ * @param {string[][]} [pagination.order=[]] - expects a Sequelize structured input dataset for sorting the Sequelize Model results (NOT affected by {@param pagination.enablePagination}). See {@link https://sequelize.org/v5/manual/querying.html#ordering} and {@example [ [ 'username', 'DESC' ], [..., ...], ... ]}
+ * @param {boolean} [pagination.enablePagination=false] - use to enable pagination for a query result as well useful values. Data for all items matching query if not enabled
  * @returns {Promise<*>}
  */
 const getBrowserVersions = async (

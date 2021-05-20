@@ -7,14 +7,14 @@ const {
 } = require('./helpers');
 const { TestPlanRun } = require('../');
 
-// Section :- association helpers to be included with Models' results
+// association helpers to be included with Models' results
 
 /**
  * @param {string[]} testPlanReportAttributes - TestPlanReport attributes
  * @returns {{association: string, attributes: string[]}}
  */
 const testPlanReportAssociation = testPlanReportAttributes => ({
-    association: 'testPlanReport',
+    association: 'testPlanReportObject',
     attributes: testPlanReportAttributes
 });
 
@@ -68,10 +68,10 @@ const getTestPlanRunById = async (
  * @param {string[]} testResultAttributes - TestResult attributes to be returned in the result
  * @param {string[]} userAttributes - User attributes to be returned in the result
  * @param {object} pagination - pagination options for query
- * @param {number} [pagination.page=0] - page to be queried in the pagination result (affected by {@param pagination.enable})
- * @param {number} [pagination.limit=10] - amount of results to be returned per page (affected by {@param pagination.enable})
- * @param {string[][]} [pagination.order=[]] - expects a Sequelize structured input dataset for sorting the Sequelize Model results (NOT affected by {@param pagination.enable}). See {@link https://sequelize.org/v5/manual/querying.html#ordering} and {@example [ [ 'username', 'DESC' ], [..., ...], ... ]}
- * @param {boolean} [pagination.enable=false] - use to enable pagination for a query result as well useful values. Data for all items matching query if not enabled
+ * @param {number} [pagination.page=0] - page to be queried in the pagination result (affected by {@param pagination.enablePagination})
+ * @param {number} [pagination.limit=10] - amount of results to be returned per page (affected by {@param pagination.enablePagination})
+ * @param {string[][]} [pagination.order=[]] - expects a Sequelize structured input dataset for sorting the Sequelize Model results (NOT affected by {@param pagination.enablePagination}). See {@link https://sequelize.org/v5/manual/querying.html#ordering} and {@example [ [ 'username', 'DESC' ], [..., ...], ... ]}
+ * @param {boolean} [pagination.enablePagination=false] - use to enable pagination for a query result as well useful values. Data for all items matching query if not enabled
  * @returns {Promise<*>}
  */
 const getTestPlanRuns = async (

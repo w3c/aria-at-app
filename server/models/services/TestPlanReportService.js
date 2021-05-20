@@ -9,7 +9,14 @@ const {
 } = require('./helpers');
 const { TestPlanReport, TestPlanRun } = require('../');
 
-// Section :- association helpers to be included with Models' results
+// association helpers to be included with Models' results
+
+/**
+ * @param {string[]} testPlanRunAttributes - TestPlanRun attributes
+ * @param {string[]} userAttributes - User attributes
+ * @param {string[]} testResultAttributes - TestResult attributes
+ * @returns {{association: string, attributes: string[]}}
+ */
 const testPlanRunAssociation = (
     testPlanRunAttributes,
     userAttributes,
@@ -62,7 +69,7 @@ const testResultAssociation = testResultAttributes => ({
 });
 
 /**
- * NB. You can pass any of the attribute arrays as '[]' to exclude that related association
+ * You can pass any of the attribute arrays as '[]' to exclude that related association
  * @param {number} id - unique id of the TestPlanReport model being queried
  * @param {string[]} testPlanReportAttributes - TestPlanReport attributes to be returned in the result
  * @param {string[]} testPlanRunAttributes - TestPlanRun attributes to be returned in the result
@@ -81,35 +88,7 @@ const getTestPlanReportById = async (
     userAttributes = USER_ATTRIBUTES,
     testResultAttributes = TEST_RESULT_ATTRIBUTES
 ) => {
-    // check to see if 'canonicalRun' has been requested; custom attribute handling required
-    const canonicalRunKeyFound = testPlanReportAttributes.some(
-        key => key === 'canonicalRun'
-    );
-
-    // required to be used to determine whether or not to actually return 'canonicalRun'; TestPlan.publishStatus MUST be 'final' for 'canonicalRun' to be returned
-    const testPlanReportPublishStatusFound = testPlanReportAttributes.some(
-        key => key === 'publishStatus'
-    );
-    const testPlanParsedFound = testPlanAttributes.some(
-        key => key === 'parsed'
-    );
-    const testPlanRunAttributesFound = testPlanAttributes.length;
-
-    if (canonicalRunKeyFound) {
-        testPlanReportAttributes = [
-            ...testPlanReportAttributes,
-            'publishStatus'
-        ];
-        testPlanAttributes = [...testPlanAttributes, 'parsed'];
-        testPlanRunAttributes = [...testPlanRunAttributes, 'tester'];
-    }
-
-    // filter out 'canonicalRun' so it doesn't pollute attributes being passed to sequelize structure
-    testPlanReportAttributes = testPlanReportAttributes.filter(
-        key => key !== 'canonicalRun'
-    );
-
-    let result = await ModelService.getById(
+    return await ModelService.getById(
         TestPlanReport,
         id,
         testPlanReportAttributes,
@@ -123,39 +102,6 @@ const getTestPlanReportById = async (
             testPlanTargetAssociation(testPlanTargetAttributes)
         ]
     );
-
-    if (canonicalRunKeyFound) {
-        // add canonicalRun to result which is built from `testPlanObject.parsed`
-        const testPlanReport = result.get();
-
-        // cleanup attributes that weren't actually requested [start]
-        if (!testPlanReportPublishStatusFound)
-            delete testPlanReport.publishStatus;
-
-        if (!testPlanParsedFound) {
-            // delete only that key in case attributes attributes were requested
-            if (Object.keys(testPlanReport.testPlanObject).length > 1)
-                delete testPlanReport.testPlanObject.parsed;
-            else delete testPlanReport.testPlanObject;
-        }
-
-        if (!testPlanRunAttributesFound) delete testPlanReport.testPlanRuns;
-        // cleanup attributes that weren't actually requested [end]
-
-        if (testPlanReport.publishStatus === TestPlanReport.FINAL) {
-            testPlanReport.canonicalRun = {
-                title: '',
-                passedAssertions:
-                    result.testPlanRuns[0].testResults.length || 0,
-                totalAssertions:
-                    result.testPlanObject.parsed.maximumInputCount ||
-                    result.testPlanObject.parsed.tests.length
-            };
-        }
-        return testPlanReport;
-    }
-
-    return result;
 };
 
 /**
@@ -168,10 +114,10 @@ const getTestPlanReportById = async (
  * @param {string[]} userAttributes - User attributes to be returned in the result
  * @param {string[]} testResultAttributes - TestResult attributes to be returned in the result
  * @param {object} pagination - pagination options for query
- * @param {number} [pagination.page=0] - page to be queried in the pagination result (affected by {@param pagination.enable})
- * @param {number} [pagination.limit=10] - amount of results to be returned per page (affected by {@param pagination.enable})
- * @param {string[][]} [pagination.order=[]] - expects a Sequelize structured input dataset for sorting the Sequelize Model results (NOT affected by {@param pagination.enable}). See {@link https://sequelize.org/v5/manual/querying.html#ordering} and {@example [ [ 'username', 'DESC' ], [..., ...], ... ]}
- * @param {boolean} [pagination.enable=false] - use to enable pagination for a query result as well useful values. Data for all items matching query if not enabled
+ * @param {number} [pagination.page=0] - page to be queried in the pagination result (affected by {@param pagination.enablePagination})
+ * @param {number} [pagination.limit=10] - amount of results to be returned per page (affected by {@param pagination.enablePagination})
+ * @param {string[][]} [pagination.order=[]] - expects a Sequelize structured input dataset for sorting the Sequelize Model results (NOT affected by {@param pagination.enablePagination}). See {@link https://sequelize.org/v5/manual/querying.html#ordering} and {@example [ [ 'username', 'DESC' ], [..., ...], ... ]}
+ * @param {boolean} [pagination.enablePagination=false] - use to enable pagination for a query result as well useful values. Data for all items matching query if not enabled
  * @returns {Promise<*>}
  */
 const getTestPlanReports = async (
@@ -188,35 +134,7 @@ const getTestPlanReports = async (
     // search and filtering options
     let where = { ...filter };
 
-    // check to see if 'canonicalRun' has been requested; custom attribute handling required
-    const canonicalRunKeyFound = testPlanReportAttributes.some(
-        key => key === 'canonicalRun'
-    );
-
-    // required to be used to determine whether or not to actually return 'canonicalRun'; TestPlan.publishStatus MUST be 'final' for 'canonicalRun' to be returned
-    const testPlanReportPublishStatusFound = testPlanReportAttributes.some(
-        key => key === 'publishStatus'
-    );
-    const testPlanParsedFound = testPlanAttributes.some(
-        key => key === 'parsed'
-    );
-    const testPlanRunAttributesFound = testPlanAttributes.length;
-
-    if (canonicalRunKeyFound) {
-        testPlanReportAttributes = [
-            ...testPlanReportAttributes,
-            'publishStatus'
-        ];
-        testPlanAttributes = [...testPlanAttributes, 'parsed'];
-        testPlanRunAttributes = [...testPlanRunAttributes, 'tester'];
-    }
-
-    // filter out 'canonicalRun' so it doesn't pollute attributes being passed to sequelize structure
-    testPlanReportAttributes = testPlanReportAttributes.filter(
-        key => key !== 'canonicalRun'
-    );
-
-    let results = await ModelService.get(
+    return await ModelService.get(
         TestPlanReport,
         where,
         testPlanReportAttributes,
@@ -231,79 +149,6 @@ const getTestPlanReports = async (
         ],
         pagination
     );
-
-    if (canonicalRunKeyFound) {
-        // structure of results will be different
-        const { enable: enablePagination } = pagination;
-
-        if (enablePagination) {
-            // add canonicalRun to result which is built from `testPlanObject.parsed`
-            results.data.map(result => {
-                const testPlanReport = result.get();
-
-                // cleanup attributes that weren't actually requested [start]
-                if (!testPlanReportPublishStatusFound)
-                    delete testPlanReport.publishStatus;
-
-                if (!testPlanParsedFound) {
-                    // delete only that key in case attributes attributes were requested
-                    if (Object.keys(testPlanReport.testPlanObject).length > 1)
-                        delete testPlanReport.testPlanObject.parsed;
-                    else delete testPlanReport.testPlanObject;
-                }
-
-                if (!testPlanRunAttributesFound)
-                    delete testPlanReport.testPlanRuns;
-                // cleanup attributes that weren't actually requested [end]
-
-                if (testPlanReport.publishStatus === TestPlanReport.FINAL) {
-                    testPlanReport.canonicalRun = {
-                        title: '',
-                        passedAssertions:
-                            result.testPlanRuns[0].testResults.length || 0,
-                        totalAssertions:
-                            result.testPlanObject.parsed.maximumInputCount ||
-                            result.testPlanObject.parsed.tests.length
-                    };
-                }
-                return testPlanReport;
-            });
-        } else {
-            // add canonicalRun to result which is built from `testPlanObject.parsed`
-            results.map(result => {
-                const testPlanReport = result.get();
-
-                // cleanup attributes that weren't actually requested [start]
-                if (!testPlanReportPublishStatusFound)
-                    delete testPlanReport.publishStatus;
-
-                if (!testPlanParsedFound) {
-                    // delete only that key in case attributes attributes were requested
-                    if (Object.keys(testPlanReport.testPlanObject).length > 1)
-                        delete testPlanReport.testPlanObject.parsed;
-                    else delete testPlanReport.testPlanObject;
-                }
-
-                if (!testPlanRunAttributesFound)
-                    delete testPlanReport.testPlanRuns;
-                // cleanup attributes that weren't actually requested [end]
-
-                if (testPlanReport.publishStatus === TestPlanReport.FINAL) {
-                    testPlanReport.canonicalRun = {
-                        title: '',
-                        passedAssertions:
-                            result.testPlanRuns[0].testResults.length || 0,
-                        totalAssertions:
-                            result.testPlanObject.parsed.maximumInputCount ||
-                            result.testPlanObject.parsed.tests.length
-                    };
-                }
-                return testPlanReport;
-            });
-        }
-    }
-
-    return results;
 };
 
 /**
@@ -345,7 +190,7 @@ const updateTestPlanReport = async (
     );
 };
 
-// Section :- Custom Functions
+// Custom Functions
 
 /**
  * AssignTester

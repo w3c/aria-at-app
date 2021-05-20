@@ -7,7 +7,7 @@ const {
 const { Sequelize, At, AtVersion, AtMode } = require('../');
 const { Op } = Sequelize;
 
-// Section :- association helpers to be included with Models' results
+// association helpers to be included with Models' results
 
 /**
  * @param atAttributes - At attributes
@@ -39,7 +39,7 @@ const atModeAssociation = atModeAttributes => ({
 // At
 
 /**
- * NB. You can pass any of the attribute arrays as '[]' to exclude that related association
+ * You can pass any of the attribute arrays as '[]' to exclude that related association
  * @param {number} id - unique id of the At model being queried
  * @param {string[]} atAttributes  - At attributes to be returned in the result
  * @param {string[]} atVersionAttributes  - AtVersion attributes to be returned in the result
@@ -65,10 +65,10 @@ const getAtById = async (
  * @param {string[]} atVersionAttributes  - AtVersion attributes to be returned in the result
  * @param {string[]} atModeAttributes  - AtMode attributes to be returned in the result
  * @param {object} pagination - pagination options for query
- * @param {number} [pagination.page=0] - page to be queried in the pagination result (affected by {@param pagination.enable})
- * @param {number} [pagination.limit=10] - amount of results to be returned per page (affected by {@param pagination.enable})
- * @param {string[][]} [pagination.order=[]] - expects a Sequelize structured input dataset for sorting the Sequelize Model results (NOT affected by {@param pagination.enable}). See {@link https://sequelize.org/v5/manual/querying.html#ordering} and {@example [ [ 'username', 'DESC' ], [..., ...], ... ]}
- * @param {boolean} [pagination.enable=false] - use to enable pagination for a query result as well useful values. Data for all items matching query if not enabled
+ * @param {number} [pagination.page=0] - page to be queried in the pagination result (affected by {@param pagination.enablePagination})
+ * @param {number} [pagination.limit=10] - amount of results to be returned per page (affected by {@param pagination.enablePagination})
+ * @param {string[][]} [pagination.order=[]] - expects a Sequelize structured input dataset for sorting the Sequelize Model results (NOT affected by {@param pagination.enablePagination}). See {@link https://sequelize.org/v5/manual/querying.html#ordering} and {@example [ [ 'username', 'DESC' ], [..., ...], ... ]}
+ * @param {boolean} [pagination.enablePagination=false] - use to enable pagination for a query result as well useful values. Data for all items matching query if not enabled
  * @returns {Promise<*>}
  */
 const getAts = async (
@@ -154,7 +154,7 @@ const removeAt = async (id, deleteOptions = { truncate: false }) => {
 // AtVersion
 
 /**
- * NB. You can pass any of the attribute arrays as '[]' to exclude that related association
+ * You can pass any of the attribute arrays as '[]' to exclude that related association
  * @param {object} queryParams - unique values of the AtVersion model being queried
  * @param {string[]} atVersionAttributes  - AtVersion attributes to be returned in the result
  * @param {string[]} atAttributes  - At attributes to be returned in the result
@@ -179,10 +179,10 @@ const getAtVersionByQuery = async (
  * @param {string[]} atVersionAttributes  - AtVersion attributes to be returned in the result
  * @param {string[]} atAttributes  - At attributes to be returned in the result
  * @param {object} pagination - pagination options for query
- * @param {number} [pagination.page=0] - page to be queried in the pagination result (affected by {@param pagination.enable})
- * @param {number} [pagination.limit=10] - amount of results to be returned per page (affected by {@param pagination.enable})
- * @param {string[][]} [pagination.order=[]] - expects a Sequelize structured input dataset for sorting the Sequelize Model results (NOT affected by {@param pagination.enable}). See {@link https://sequelize.org/v5/manual/querying.html#ordering} and {@example [ [ 'username', 'DESC' ], [..., ...], ... ]}
- * @param {boolean} [pagination.enable=false] - use to enable pagination for a query result as well useful values. Data for all items matching query if not enabled
+ * @param {number} [pagination.page=0] - page to be queried in the pagination result (affected by {@param pagination.enablePagination})
+ * @param {number} [pagination.limit=10] - amount of results to be returned per page (affected by {@param pagination.enablePagination})
+ * @param {string[][]} [pagination.order=[]] - expects a Sequelize structured input dataset for sorting the Sequelize Model results (NOT affected by {@param pagination.enablePagination}). See {@link https://sequelize.org/v5/manual/querying.html#ordering} and {@example [ [ 'username', 'DESC' ], [..., ...], ... ]}
+ * @param {boolean} [pagination.enablePagination=false] - use to enable pagination for a query result as well useful values. Data for all items matching query if not enabled
  * @returns {Promise<*>}
  */
 const getAtVersions = async (
@@ -270,7 +270,7 @@ const removeAtVersionByQuery = async (
 // AtMode
 
 /**
- * NB. You can pass any of the attribute arrays as '[]' to exclude that related association
+ * You can pass any of the attribute arrays as '[]' to exclude that related association
  * @param {object} queryParams - unique values of the AtMode model being queried
  * @param {string[]} atModeAttributes - AtMode attributes to be returned in the result
  * @param {string[]} atAttributes  - At attributes to be returned in the result
@@ -292,10 +292,10 @@ const getAtModeByQuery = async (
  * @param {string[]} atModeAttributes - AtMode attributes to be returned in the result
  * @param {string[]} atAttributes - At attributes to be returned in the result
  * @param {object} pagination - pagination options for query
- * @param {number} [pagination.page=0] - page to be queried in the pagination result (affected by {@param pagination.enable})
- * @param {number} [pagination.limit=10] - amount of results to be returned per page (affected by {@param pagination.enable})
- * @param {string[][]} [pagination.order=[]] - expects a Sequelize structured input dataset for sorting the Sequelize Model results (NOT affected by {@param pagination.enable}). See {@link https://sequelize.org/v5/manual/querying.html#ordering} and {@example [ [ 'username', 'DESC' ], [..., ...], ... ]}
- * @param {boolean} [pagination.enable=false] - use to enable pagination for a query result as well useful values. Data for all items matching query if not enabled
+ * @param {number} [pagination.page=0] - page to be queried in the pagination result (affected by {@param pagination.enablePagination})
+ * @param {number} [pagination.limit=10] - amount of results to be returned per page (affected by {@param pagination.enablePagination})
+ * @param {string[][]} [pagination.order=[]] - expects a Sequelize structured input dataset for sorting the Sequelize Model results (NOT affected by {@param pagination.enablePagination}). See {@link https://sequelize.org/v5/manual/querying.html#ordering} and {@example [ [ 'username', 'DESC' ], [..., ...], ... ]}
+ * @param {boolean} [pagination.enablePagination=false] - use to enable pagination for a query result as well useful values. Data for all items matching query if not enabled
  * @returns {Promise<*>}
  */
 const getAtModes = async (
