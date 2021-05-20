@@ -81,30 +81,31 @@ const graphqlSchema = gql`
 
     interface Test {
         title: String!
+        index: Int!
         # TODO: account for running scripts
         instructions: [Instruction]!
         assertions: [Assertion]!
         passThroughs: [PassThrough]!
+        requiredAssertionsCount: Int!
+        optionalAssertionsCount: Int!
     }
 
     type Instruction {
+        # TODO: account for automation
         manualInstruction: String!
-        # automatedFunction: String!
-        # automatedArguments: String!
     }
 
     interface Assertion {
         # TODO: account for at-specific assertions
         # TODO: account for optional assertions
+        # TODO: account for automation
         manualAssertion: String!
-        # automatedMatcher: String!
     }
 
     interface PassThrough {
         atMode: String!
         nthInput: Int!
-        # Examples are expected to go here when multiple examples can be
-        # associated with one test.
+        # Examples would go here if multiple examples can be linked to one test.
     }
 
     type TestResult implements Test {
@@ -112,17 +113,17 @@ const graphqlSchema = gql`
         instructions: [Instruction]!
         assertions: [Assertion]!
         passThroughs: [PassThrough]!
+        requiredAssertionsCount: Int!
+        optionalAssertionsCount: Int!
 
         startedAt: Timestamp!
         completedAt: Timestamp!
         isComplete: Boolean!
 
-        requiredAssertionsCount: Int!
+        passThroughResults: [PassThroughResult]!
         requiredAssertionsPassed: Int!
-        optionalAssertionsCount: Int!
         optionalAssertionsPassed: Int!
         unexpectedBehaviorCount: Int!
-        passThroughResults: [PassThroughResult]!
     }
 
     type PassThroughResult implements PassThrough {
@@ -134,22 +135,7 @@ const graphqlSchema = gql`
         unexpectedBehaviors: [UnexpectedBehavior]!
     }
 
-    # TODO: Determine if TestResultConflictResolution below is a valid approach
-    # input PassThroughResultInput {
-    #     atMode: String!
-    #     nthInput: Int!
-    #     output: String!
-    #     assertionResults: [AssertionResultInput]!
-    #     unexpectedBehaviors: [ID]!
-    # }
-
     type AssertionResult implements Assertion {
-        manualAssertion: String!
-        # automatedMatcher: String!
-        passed: Boolean!
-    }
-
-    input AssertionResultInput {
         manualAssertion: String!
         passed: Boolean!
     }
@@ -160,7 +146,7 @@ const graphqlSchema = gql`
     }
 
     type TestResultConflict {
-        id: ID!
+        testPlan: TestPlan!
         test: Test!
         passThrough: PassThrough!
         passThroughResults: [PassThroughResult]!
@@ -172,34 +158,52 @@ const graphqlSchema = gql`
     #     nthTest: Int!
     #     passThroughResult: PassThroughResultInput
     # }
+    # input PassThroughResultInput {
+    #     atMode: String!
+    #     nthInput: Int!
+    #     output: String!
+    #     assertionResults: [AssertionResultInput]!
+    #     unexpectedBehaviors: [ID]!
+    # }
+    # input AssertionResultInput {
+    #     manualAssertion: String!
+    #     passed: Boolean!
+    # }
 
     type TestPlanRun {
         id: ID!
-        isManuallyTested: Boolean!
         tester: User
+        isManuallyTested: Boolean!
+        isComplete: Boolean!
         testResults: [TestResult]!
         testResultCount: Int!
     }
 
     enum TestPlanReportStatus {
         DRAFT
+        IN_REVIEW
         FINALIZED
     }
 
     type TestPlanReport {
         id: ID!
-        publishStatus: TestPlanReportStatus!
+        status: TestPlanReportStatus!
+        """
+        Results from new test plan runs are only permitted in a draft state.
+        """
+        isAcceptingResults: Boolean!
         coveragePercent: Int!
         testPlan: TestPlan!
         testPlanTarget: TestPlanTarget!
-        conflicts: [TestResultConflict]
+        conflicts: [TestResultConflict]!
+        conflictCount: Int!
         """
         Finalizing a test plan report requires resolving any conflicts between
         runs. At this stage a single set of results is able to represent all
         results, and is much more convenient to work with.
         """
-        canonicalRun: TestPlanRun
-        testPlanRuns: [TestPlanRun]!
+        finalizedTestPlanRun: TestPlanRun
+        draftTestPlanRuns: [TestPlanRun]!
         createdAt: Timestamp!
     }
 
@@ -222,7 +226,8 @@ const graphqlSchema = gql`
         assignTester(user: ID): NoResponse
         deleteTestPlanRun(user: ID): NoResponse
         updateStatus(status: TestPlanReportStatus): NoResponse
-        resolveConflict(resolution: TestResultConflictResolution): NoResponse
+        # TODO: Determine if this is a valid approach
+        # resolveConflict(resolution: TestResultConflictResolution): NoResponse
         resultingTestPlanReport: TestPlanReport!
     }
 
