@@ -379,19 +379,14 @@ const assignTestPlanReportToUser = async (
         isManuallyTested
     });
 
-    return await ModelService.get(
-        TestPlanReport,
-        {},
+    return await getTestPlanReportById(
+        testPlanReportId,
         testPlanReportAttributes,
-        [
-            testPlanRunAssociation(
-                testPlanRunAttributes,
-                userAttributes,
-                testResultAttributes
-            ),
-            testPlanAssociation(testPlanAttributes),
-            testPlanTargetAssociation(testPlanTargetAttributes)
-        ]
+        testPlanRunAttributes,
+        testPlanAttributes,
+        testPlanTargetAttributes,
+        userAttributes,
+        testResultAttributes
     );
 };
 
@@ -424,19 +419,14 @@ const removeTestPlanReportForUser = async (
         tester: userId
     });
 
-    return await ModelService.get(
-        TestPlanReport,
-        {},
+    return await getTestPlanReportById(
+        testPlanReportId,
         testPlanReportAttributes,
-        [
-            testPlanRunAssociation(
-                testPlanRunAttributes,
-                userAttributes,
-                testResultAttributes
-            ),
-            testPlanAssociation(testPlanAttributes),
-            testPlanTargetAssociation(testPlanTargetAttributes)
-        ]
+        testPlanRunAttributes,
+        testPlanAttributes,
+        testPlanTargetAttributes,
+        userAttributes,
+        testResultAttributes
     );
 };
 
