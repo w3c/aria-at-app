@@ -222,7 +222,7 @@ const updateBrowserVersionByQuery = async (
 
     return await ModelService.getByQuery(
         BrowserVersion,
-        { browser, version },
+        { browser, version: updateParams.version || version },
         browserVersionAttributes,
         [browserAssociation(browserAttributes)]
     );

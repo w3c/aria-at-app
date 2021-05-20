@@ -245,7 +245,7 @@ const updateAtVersionByQuery = async (
 
     return await ModelService.getByQuery(
         AtVersion,
-        { at, version },
+        { at, version: updateParams.version || version },
         atVersionAttributes,
         [atAssociation(atAttributes)]
     );
@@ -272,16 +272,16 @@ const removeAtVersionByQuery = async (
 /**
  * NB. You can pass any of the attribute arrays as '[]' to exclude that related association
  * @param {object} queryParams - unique values of the AtMode model being queried
- * @param {string[]} atModeAttributes  - AtMode attributes to be returned in the result
+ * @param {string[]} atModeAttributes - AtMode attributes to be returned in the result
  * @param {string[]} atAttributes  - At attributes to be returned in the result
  * @returns {Promise<*>}
  */
 const getAtModeByQuery = async (
-    { at, mode },
+    { at, name },
     atModeAttributes = AT_MODE_ATTRIBUTES,
     atAttributes = AT_ATTRIBUTES
 ) => {
-    return ModelService.getByQuery(AtMode, { at, mode }, atModeAttributes, [
+    return ModelService.getByQuery(AtMode, { at, name }, atModeAttributes, [
         atAssociation(atAttributes)
     ]);
 };
@@ -289,8 +289,8 @@ const getAtModeByQuery = async (
 /**
  * @param {string|any} search - use this to combine with {@param filter} to be passed to Sequelize's where clause
  * @param {object} filter - use this define conditions to be passed to Sequelize's where clause
- * @param {string[]} atModeAttributes  - AtMode attributes to be returned in the result
- * @param {string[]} atAttributes  - At attributes to be returned in the result
+ * @param {string[]} atModeAttributes - AtMode attributes to be returned in the result
+ * @param {string[]} atAttributes - At attributes to be returned in the result
  * @param {object} pagination - pagination options for query
  * @param {number} [pagination.page=0] - page to be queried in the pagination result (affected by {@param pagination.enable})
  * @param {number} [pagination.limit=10] - amount of results to be returned per page (affected by {@param pagination.enable})
@@ -308,7 +308,7 @@ const getAtModes = async (
     // search and filtering options
     let where = { ...filter };
     const searchQuery = search ? `%${search}%` : '';
-    if (searchQuery) where = { ...where, mode: { [Op.iLike]: searchQuery } };
+    if (searchQuery) where = { ...where, name: { [Op.iLike]: searchQuery } };
 
     return await ModelService.get(
         AtMode,
@@ -326,16 +326,16 @@ const getAtModes = async (
  * @returns {Promise<*>}
  */
 const createAtMode = async (
-    { at, mode },
+    { at, name },
     atModeAttributes = AT_MODE_ATTRIBUTES,
     atAttributes = AT_ATTRIBUTES
 ) => {
-    await ModelService.create(AtMode, { at, mode });
+    await ModelService.create(AtMode, { at, name });
 
     // to ensure the structure being returned matches what we expect for simple queries and can be controlled
     return await ModelService.getByQuery(
         AtMode,
-        { at, mode },
+        { at, name },
         atModeAttributes,
         [atAssociation(atAttributes)]
     );
@@ -344,21 +344,21 @@ const createAtMode = async (
 /**
  * @param {object} queryParams - values of the AtMode record to be updated
  * @param {object} updateParams - values to be used to update columns for the record being referenced for {@param queryParams}
- * @param {string[]} atModeAttributes  - AtMode attributes to be returned in the result
- * @param {string[]} atAttributes  - At attributes to be returned in the result
+ * @param {string[]} atModeAttributes - AtMode attributes to be returned in the result
+ * @param {string[]} atAttributes - At attributes to be returned in the result
  * @returns {Promise<*>}
  */
 const updateAtModeByQuery = async (
-    { at, mode },
+    { at, name },
     updateParams = {},
     atModeAttributes = AT_MODE_ATTRIBUTES,
     atAttributes = AT_ATTRIBUTES
 ) => {
-    await ModelService.update(AtMode, { at, mode }, updateParams);
+    await ModelService.update(AtMode, { at, name }, updateParams);
 
     return await ModelService.getByQuery(
         AtMode,
-        { at, mode },
+        { at, name: updateParams.name || name },
         atModeAttributes,
         [atAssociation(atAttributes)]
     );
@@ -370,12 +370,12 @@ const updateAtModeByQuery = async (
  * @returns {Promise<boolean>}
  */
 const removeAtModeByQuery = async (
-    { at, mode },
+    { at, name },
     deleteOptions = { truncate: false }
 ) => {
     return await ModelService.removeByQuery(
         AtMode,
-        { at, mode },
+        { at, name },
         deleteOptions
     );
 };

@@ -333,19 +333,15 @@ const updateTestPlanReport = async (
         { publishStatus, coveragePercent, testPlanTarget, testPlan }
     );
 
-    return await ModelService.getById(
-        TestPlanReport,
+    // call custom this.getById if custom attributes are being accounted for
+    return await getTestPlanReportById(
         id,
         testPlanReportAttributes,
-        [
-            testPlanRunAssociation(
-                testPlanRunAttributes,
-                userAttributes,
-                testResultAttributes
-            ),
-            testPlanAssociation(testPlanAttributes),
-            testPlanTargetAssociation(testPlanTargetAttributes)
-        ]
+        testPlanRunAttributes,
+        testPlanAttributes,
+        testPlanTargetAttributes,
+        userAttributes,
+        testResultAttributes
     );
 };
 
