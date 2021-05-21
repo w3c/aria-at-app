@@ -46,5 +46,15 @@ module.exports = function(sequelize, DataTypes) {
     Model.IN_REVIEW = STATUS.IN_REVIEW;
     Model.FINAL = STATUS.FINAL;
 
+    // Model.TEST_PLAN_ASSOCIATION = { foreignKey: 'testPlan' };
+
+    // Model.associate = function(models) {
+    //     Model.hasOne(models.TestPlanReport, {
+    //         ...Model.TEST_PLAN_REPORT_ASSOCIATION,
+    //         targetKey: 'id',
+    //         as: 'testPlanObject'
+    //     });
+    // };
+
     return Model;
 };

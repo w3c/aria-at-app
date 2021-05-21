@@ -2,41 +2,55 @@ const { gql } = require('apollo-server');
 const { query, mutation } = require('../util/graphql-test-utilities');
 
 describe('test queue', () => {
-    it('displays test plan reports', async () => {
+    it.only('displays test plan reports', async () => {
         expect(
             await query(
                 gql`
                     query {
                         testPlans {
-                            latestVersionOrVersionsWithDraftResults {
+                            # queueRelevantVersions {
+                            latestVersion {
                                 title
                                 gitSha
                                 gitMessage
                                 testCount
-                                testPlanReports {
-                                    id
-                                    status
-                                    isAcceptingResults
-                                    canBeFinalized
-                                    conflictCount
-                                    testPlanTarget {
-                                        id
-                                        title
-                                    }
-                                    draftTestPlanRuns {
-                                        id
-                                        tester {
-                                            username
-                                        }
-                                        testResultCount
-                                    }
-                                }
+                                # testPlanReports {
+                                #     id
+                                #     status
+                                #     isAcceptingResults
+                                #     canBeFinalized
+                                #     conflictCount
+                                #     testPlanTarget {
+                                #         id
+                                #         title
+                                #     }
+                                #     draftTestPlanRuns {
+                                #         id
+                                #         tester {
+                                #             username
+                                #         }
+                                #         testResultCount
+                                #     }
+                                # }
                             }
                         }
                     }
                 `
             )
-        ).toMatchInlineSnapshot();
+        ).toMatchInlineSnapshot(`
+            Object {
+              "testPlans": Array [
+                Object {
+                  "latestVersion": Object {
+                    "gitMessage": "Create tests for APG design pattern example: Tri-State Checkbox (#330)",
+                    "gitSha": "e7212c4e5c96497cc8a2682e07ee2decd19d3f85",
+                    "testCount": 26,
+                    "title": "Checkbox Example (Two State)",
+                  },
+                },
+              ],
+            }
+        `);
     });
 
     it('assigns testers to a test plan report', async () => {
