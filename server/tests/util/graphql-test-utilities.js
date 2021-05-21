@@ -46,6 +46,7 @@ const query = async (gql, { user = defaultUser } = {}) => {
     return data;
 };
 
-/* TODO: function for mutations to go here when mutations are supported */
+// GraphQL mutations are actually equivalent to queries.
+const mutation = query;
 
-module.exports = { query };
+module.exports = { query, mutation };

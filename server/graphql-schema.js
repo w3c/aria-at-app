@@ -110,6 +110,7 @@ const graphqlSchema = gql`
 
     type TestResult implements Test {
         title: String!
+        index: Int!
         instructions: [Instruction]!
         assertions: [Assertion]!
         passThroughs: [PassThrough]!
@@ -192,7 +193,12 @@ const graphqlSchema = gql`
         Results from new test plan runs are only permitted in a draft state.
         """
         isAcceptingResults: Boolean!
-        coveragePercent: Int!
+        """
+        Can be finalized if all test plan runs are complete and no conflicts are
+        found.
+        """
+        canBeFinalized: Boolean!
+        supportPercent: Int!
         testPlan: TestPlan!
         testPlanTarget: TestPlanTarget!
         conflicts: [TestResultConflict]!
@@ -239,12 +245,12 @@ const graphqlSchema = gql`
     type Mutation {
         createTestPlanReport(
             input: TestPlanReportInput
-        ): TestPlanReportOperations
+        ): TestPlanReportOperations!
         createTestPlanTarget(
             input: TestPlanTargetInput
-        ): TestPlanTargetOperations
-        testPlanReport(id: ID): TestPlanReportOperations
-        testPlanTarget(id: ID): TestPlanTargetOperations
+        ): TestPlanTargetOperations!
+        testPlanReport(id: ID): TestPlanReportOperations!
+        testPlanTarget(id: ID): TestPlanTargetOperations!
     }
 `;
 

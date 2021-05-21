@@ -1,32 +1,94 @@
 const { gql } = require('apollo-server');
-const { query } = require('../util/graphql-test-utilities');
+const { query, mutation } = require('../util/graphql-test-utilities');
 
 describe('test queue', () => {
-    /* TODO: This test is a placeholder which confirms the test query APIs are
-    working. It should be replaced with actual tests for the test queue as
-    part of the upcoming GraphQL test queue backend task. */
-    it('test query', async () => {
+    it('displays test plan reports', async () => {
         expect(
             await query(
                 gql`
                     query {
-                        me {
-                            username
-                            roles
+                        testPlans {
+                            latestVersionOrVersionsWithDraftResults {
+                                title
+                                gitSha
+                                gitMessage
+                                testCount
+                                testPlanReports {
+                                    id
+                                    status
+                                    isAcceptingResults
+                                    canBeFinalized
+                                    conflictCount
+                                    testPlanTarget {
+                                        id
+                                        title
+                                    }
+                                    draftTestPlanRuns {
+                                        id
+                                        tester {
+                                            username
+                                        }
+                                        testResultCount
+                                    }
+                                }
+                            }
                         }
                     }
                 `
             )
-        ).toMatchInlineSnapshot(`
-            Object {
-              "me": Object {
-                "roles": Array [
-                  "ADMIN",
-                  "TESTER",
-                ],
-                "username": "foobar",
-              },
-            }
-        `);
+        ).toMatchInlineSnapshot();
+    });
+
+    it('assigns testers to a test plan report', async () => {
+        expect(
+            await mutation(gql`
+                mutation {
+                    testPlanReport(id: 123) {
+                        assignTester(user: 445)
+                        resultingTestPlanReport {
+                            draftTestPlanRuns {
+                                tester {
+                                    username
+                                }
+                            }
+                        }
+                    }
+                }
+            `)
+        ).toMatchInlineSnapshot();
+    });
+
+    it('removes testers from a test plan report', async () => {
+        expect(
+            await mutation(gql`
+                mutation {
+                    testPlanReport(id: 123) {
+                        deleteTestPlanRun(user: 445)
+                        resultingTestPlanReport {
+                            draftTestPlanRuns {
+                                tester {
+                                    username
+                                }
+                            }
+                        }
+                    }
+                }
+            `)
+        ).toMatchInlineSnapshot();
+    });
+
+    it('can be finalized', async () => {
+        expect(
+            await mutation(gql`
+                mutation {
+                    testPlanReport(id: 123) {
+                        updateStatus(status: FINALIZED)
+                        resultingTestPlanReport {
+                            supportPercent
+                        }
+                    }
+                }
+            `)
+        ).toMatchInlineSnapshot();
     });
 });
