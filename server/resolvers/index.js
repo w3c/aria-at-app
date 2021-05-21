@@ -3,6 +3,7 @@ const testPlans = require('./testPlansResolver');
 const User = require('./User');
 const TestPlan = require('./TestPlan');
 const TestPlanVersion = require('./TestPlanVersion');
+const TestPlanReport = require('./TestPlanReport');
 
 const resolvers = {
     Query: {
@@ -11,7 +12,8 @@ const resolvers = {
     },
     User,
     TestPlan,
-    TestPlanVersion
+    TestPlanVersion,
+    TestPlanReport
 };
 
 module.exports = resolvers;

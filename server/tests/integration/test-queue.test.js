@@ -20,10 +20,10 @@ describe('test queue', () => {
                                     isAcceptingResults
                                     # canBeFinalized
                                     # conflictCount
-                                    # testPlanTarget {
-                                    #     id
-                                    #     title
-                                    # }
+                                    testPlanTarget {
+                                        id
+                                        title
+                                    }
                                     # draftTestPlanRuns {
                                     #     id
                                     #     tester {
@@ -50,6 +50,10 @@ describe('test queue', () => {
                         "id": "1",
                         "isAcceptingResults": false,
                         "status": "DRAFT",
+                        "testPlanTarget": Object {
+                          "id": "1",
+                          "title": "NVDA 2020.4 with Chrome 91.0.4472",
+                        },
                       },
                     ],
                     "title": "Checkbox Example (Two State)",
