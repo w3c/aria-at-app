@@ -65,18 +65,28 @@ const graphqlSchema = gql`
     }
 
     type TestPlan {
+        """
+        Corresponds to the ARIA-AT directory storing the test plan.
+        """
         id: ID!
+        latestVersion: TestPlanVersion!
+        latestVersionWithResults: TestPlanVersion
+        versions: [TestPlanVersion]!
+        versionsWithResults: [TestPlanVersion]!
+        queueRelevantVersions: [TestPlanVersion]!
+    }
+
+    type TestPlanVersion {
         title: String!
-        publishStatus: TestPlanStatus!
-        # revision: String!
-        sourceGitCommitHash: String!
-        sourceGitCommitMessage: String!
+        status: TestPlanStatus!
+        gitSha: String!
+        gitMessage: String!
         exampleUrl: String!
-        # TODO: consider renaming createdAt and including the date the source
-        # code age was authored as well.
-        createdAt: Timestamp!
+        updatedAt: Timestamp!
         tests: [Test]!
         testCount: Int!
+        testPlanReports: [TestPlanReport]!
+        testPlanReport(id: ID, testPlanTarget: ID): TestPlanReport
     }
 
     interface Test {
@@ -86,8 +96,8 @@ const graphqlSchema = gql`
         instructions: [Instruction]!
         assertions: [Assertion]!
         passThroughs: [PassThrough]!
-        requiredAssertionsCount: Int!
-        optionalAssertionsCount: Int!
+        assertionCount: Int!
+        optionalAssertionCount: Int!
     }
 
     type Instruction {
@@ -104,7 +114,7 @@ const graphqlSchema = gql`
 
     interface PassThrough {
         atMode: String!
-        nthInput: Int!
+        nthCommand: Int!
         # Examples would go here if multiple examples can be linked to one test.
     }
 
@@ -114,22 +124,23 @@ const graphqlSchema = gql`
         instructions: [Instruction]!
         assertions: [Assertion]!
         passThroughs: [PassThrough]!
-        requiredAssertionsCount: Int!
-        optionalAssertionsCount: Int!
+        assertionCount: Int!
+        optionalAssertionCount: Int!
 
         startedAt: Timestamp!
         completedAt: Timestamp!
         isComplete: Boolean!
+        isSkipped: Boolean!
 
         passThroughResults: [PassThroughResult]!
-        requiredAssertionsPassed: Int!
+        assertionsPassed: Int!
         optionalAssertionsPassed: Int!
         unexpectedBehaviorCount: Int!
     }
 
     type PassThroughResult implements PassThrough {
         atMode: String!
-        nthInput: Int!
+        nthCommand: Int!
 
         output: String!
         assertionResults: [AssertionResult]!
@@ -146,6 +157,7 @@ const graphqlSchema = gql`
         description: String!
     }
 
+    # test plan > version > target > report > runs > testResults > passThroughResults
     type TestResultConflict {
         testPlan: TestPlan!
         test: Test!
@@ -199,7 +211,7 @@ const graphqlSchema = gql`
         """
         canBeFinalized: Boolean!
         supportPercent: Int!
-        testPlan: TestPlan!
+        optionalSupportPercent: Int!
         testPlanTarget: TestPlanTarget!
         conflicts: [TestResultConflict]!
         conflictCount: Int!
@@ -220,10 +232,9 @@ const graphqlSchema = gql`
 
     type Query {
         me: User
-        testPlanReports(testPlan: ID): [TestPlanReport]!
-        testPlanReport(id: ID): TestPlanReport
-        testPlanTargets: [TestPlanTarget]!
         testPlans: [TestPlan]!
+        testPlan(id: ID!): TestPlan
+        testPlanTargets: [TestPlanTarget]!
     }
 
     # Mutation-specific types below
