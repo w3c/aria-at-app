@@ -14,24 +14,24 @@ describe('test queue', () => {
                                 gitSha
                                 gitMessage
                                 testCount
-                                # testPlanReports {
-                                #     id
-                                #     status
-                                #     isAcceptingResults
-                                #     canBeFinalized
-                                #     conflictCount
-                                #     testPlanTarget {
-                                #         id
-                                #         title
-                                #     }
-                                #     draftTestPlanRuns {
-                                #         id
-                                #         tester {
-                                #             username
-                                #         }
-                                #         testResultCount
-                                #     }
-                                # }
+                                testPlanReports {
+                                    id
+                                    status
+                                    isAcceptingResults
+                                    canBeFinalized
+                                    conflictCount
+                                    # testPlanTarget {
+                                    #     id
+                                    #     title
+                                    # }
+                                    # draftTestPlanRuns {
+                                    #     id
+                                    #     tester {
+                                    #         username
+                                    #     }
+                                    #     testResultCount
+                                    # }
+                                }
                             }
                         }
                     }
@@ -45,6 +45,7 @@ describe('test queue', () => {
                     "gitMessage": "Create tests for APG design pattern example: Tri-State Checkbox (#330)",
                     "gitSha": "e7212c4e5c96497cc8a2682e07ee2decd19d3f85",
                     "testCount": 26,
+                    "testPlanReports": Array [],
                     "title": "Checkbox Example (Two State)",
                   },
                 },
