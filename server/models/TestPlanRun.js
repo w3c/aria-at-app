@@ -22,10 +22,7 @@ module.exports = function(sequelize, DataTypes) {
 
     Model.TEST_RESULT_ASSOCIATION = { as: 'testResults' };
 
-    Model.TEST_PLAN_REPORT_ASSOCIATION = {
-        foreignKey: 'testPlanReport',
-        as: 'testPlanReportObject'
-    };
+    Model.TEST_PLAN_REPORT_ASSOCIATION = { foreignKey: 'testPlanReport' };
 
     Model.USER_ASSOCIATION = { foreignKey: 'tester' };
 
@@ -38,7 +35,8 @@ module.exports = function(sequelize, DataTypes) {
 
         Model.belongsTo(models.TestPlanReport, {
             ...Model.TEST_PLAN_REPORT_ASSOCIATION,
-            targetKey: 'id'
+            targetKey: 'id',
+            as: 'testPlanReportObject'
         });
 
         Model.belongsTo(models.User, {

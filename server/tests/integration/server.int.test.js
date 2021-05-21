@@ -5,12 +5,12 @@ const endpointUrl = '/api';
 
 const userEndpoint = `${endpointUrl}/user`;
 const authEndpoint = `${endpointUrl}/auth`;
-const atEndpoint = `${endpointUrl}/at`;
-const testEndpoint = `${endpointUrl}/test`;
+// const atEndpoint = `${endpointUrl}/at`;
+// const testEndpoint = `${endpointUrl}/test`;
 const newUser = require('../mock-data/newUser.json');
 const newUserToRole = require('../mock-data/newUserToRole.json');
 
-const { dbCleaner } = require('../util/db-cleaner');
+// const { dbCleaner } = require('../util/db-cleaner');
 const db = require('../../models/index');
 
 afterAll(async done => {
@@ -145,56 +145,56 @@ describe(authEndpoint, () => {
     });
 });
 
-describe(atEndpoint, () => {
-    it(`GET ${atEndpoint}`, async () => {
-        await dbCleaner(async () => {
-            const testVersion = await db.TestVersion.create();
-            const atName = await db.AtName.create({ name: 'at' });
-            await db.AtVersion.create({
-                at_name_id: atName.id,
-                version: '1'
-            });
-
-            await db.At.create({
-                at_name_id: atName.id,
-                test_version_id: testVersion.id,
-                key: 'at'
-            });
-
-            const response = await request(listener).get(`${atEndpoint}`);
-            expect(response.statusCode).toBe(200);
-            expect(response.body).toEqual([
-                {
-                    id: 1,
-                    name: 'JAWS'
-                },
-                {
-                    id: 2,
-                    name: 'NVDA'
-                },
-                {
-                    id: 3,
-                    name: 'VoiceOver for macOS'
-                },
-                {
-                    id: atName.id,
-                    name: 'at'
-                }
-            ]);
-        });
-    });
-});
-
-describe(`${testEndpoint}/import`, () => {
-    it(`POST ${testEndpoint}/import`, async () => {
-        await dbCleaner(async () => {
-            await db.TestVersion.create({
-                git_hash: '1234'
-            });
-            const response = await request(listener)
-                .post(`${testEndpoint}/import`)
-                .send({ git_hash: '1234' });
-            expect(response.statusCode).toBe(200);
-        });
-    });
-});
+// describe(atEndpoint, () => {
+//     it(`GET ${atEndpoint}`, async () => {
+//         await dbCleaner(async () => {
+//             const testVersion = await db.TestVersion.create();
+//             const atName = await db.AtName.create({ name: 'at' });
+//             await db.AtVersion.create({
+//                 at_name_id: atName.id,
+//                 version: '1'
+//             });
+//
+//             await db.At.create({
+//                 at_name_id: atName.id,
+//                 test_version_id: testVersion.id,
+//                 key: 'at'
+//             });
+//
+//             const response = await request(listener).get(`${atEndpoint}`);
+//             expect(response.statusCode).toBe(200);
+//             expect(response.body).toEqual([
+//                 {
+//                     id: 1,
+//                     name: 'JAWS'
+//                 },
+//                 {
+//                     id: 2,
+//                     name: 'NVDA'
+//                 },
+//                 {
+//                     id: 3,
+//                     name: 'VoiceOver for macOS'
+//                 },
+//                 {
+//                     id: atName.id,
+//                     name: 'at'
+//                 }
+//             ]);
+//         });
+//     });
+// });
+//
+// describe(`${testEndpoint}/import`, () => {
+//     it(`POST ${testEndpoint}/import`, async () => {
+//         await dbCleaner(async () => {
+//             await db.TestVersion.create({
+//                 git_hash: '1234'
+//             });
+//             const response = await request(listener)
+//                 .post(`${testEndpoint}/import`)
+//                 .send({ git_hash: '1234' });
+//             expect(response.statusCode).toBe(200);
+//         });
+//     });
+// });
