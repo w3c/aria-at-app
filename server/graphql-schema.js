@@ -69,6 +69,7 @@ const graphqlSchema = gql`
         Corresponds to the ARIA-AT directory storing the test plan.
         """
         id: ID!
+        atGitSha(gitSha: String!): TestPlanVersion
         latestVersion: TestPlanVersion!
         latestVersionWithResults: TestPlanVersion
         versions: [TestPlanVersion]!
@@ -95,9 +96,9 @@ const graphqlSchema = gql`
         # TODO: account for running scripts
         instructions: [Instruction]!
         assertions: [Assertion]!
-        passThroughs: [PassThrough]!
         assertionCount: Int!
         optionalAssertionCount: Int!
+        passThroughs: [PassThrough]!
     }
 
     type Instruction {
@@ -115,7 +116,7 @@ const graphqlSchema = gql`
     interface PassThrough {
         atMode: String!
         nthCommand: Int!
-        # Examples would go here if multiple examples can be linked to one test.
+        # Examples would go here if we support multiple examples for one test.
     }
 
     type TestResult implements Test {
@@ -157,31 +158,9 @@ const graphqlSchema = gql`
         description: String!
     }
 
-    # test plan > version > target > report > runs > testResults > passThroughResults
     type TestResultConflict {
-        testPlan: TestPlan!
-        test: Test!
-        passThrough: PassThrough!
-        passThroughResults: [PassThroughResult]!
+        breadcrumbs: String! # TBD
     }
-
-    # TODO: Determine if this is a valid approach
-    # input TestResultConflictResolution {
-    #     testPlan: ID
-    #     nthTest: Int!
-    #     passThroughResult: PassThroughResultInput
-    # }
-    # input PassThroughResultInput {
-    #     atMode: String!
-    #     nthInput: Int!
-    #     output: String!
-    #     assertionResults: [AssertionResultInput]!
-    #     unexpectedBehaviors: [ID]!
-    # }
-    # input AssertionResultInput {
-    #     manualAssertion: String!
-    #     passed: Boolean!
-    # }
 
     type TestPlanRun {
         id: ID!
@@ -243,8 +222,6 @@ const graphqlSchema = gql`
         assignTester(user: ID): NoResponse
         deleteTestPlanRun(user: ID): NoResponse
         updateStatus(status: TestPlanReportStatus): NoResponse
-        # TODO: Determine if this is a valid approach
-        # resolveConflict(resolution: TestResultConflictResolution): NoResponse
         resultingTestPlanReport: TestPlanReport!
     }
 
