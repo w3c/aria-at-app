@@ -1,4 +1,4 @@
-const testPlanReports = require('./testPlanReports');
+const testPlanReports = require('./testPlanReportsResolver');
 
 const TestPlanVersion = {
     testPlanReports

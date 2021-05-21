@@ -1,6 +1,6 @@
-const me = require('./me');
-const User_roles = require('./User.roles');
-const testPlans = require('./testPlans');
+const me = require('./meResolver');
+const testPlans = require('./testPlansResolver');
+const User = require('./User');
 const TestPlan = require('./TestPlan');
 const TestPlanVersion = require('./TestPlanVersion');
 
@@ -9,9 +9,7 @@ const resolvers = {
         me,
         testPlans
     },
-    User: {
-        roles: User_roles
-    },
+    User,
     TestPlan,
     TestPlanVersion
 };

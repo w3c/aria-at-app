@@ -1,4 +1,4 @@
-const latestVersion = require('./latestVersion');
+const latestVersion = require('./latestVersionResolver');
 
 const TestPlan = {
     latestVersion

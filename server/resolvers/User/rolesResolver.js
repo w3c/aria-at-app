@@ -1,4 +1,4 @@
-const userRoles = parent => {
+const rolesResolver = parent => {
     const roles = [];
 
     if (parent.roles.includes('admin')) {
@@ -11,4 +11,4 @@ const userRoles = parent => {
     return roles;
 };
 
-module.exports = userRoles;
+module.exports = rolesResolver;
