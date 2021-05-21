@@ -24,13 +24,13 @@ describe('test queue', () => {
                                         id
                                         title
                                     }
-                                    # draftTestPlanRuns {
-                                    #     id
-                                    #     tester {
-                                    #         username
-                                    #     }
-                                    #     testResultCount
-                                    # }
+                                    draftTestPlanRuns {
+                                        id
+                                        tester {
+                                            username
+                                        }
+                                        # testResultCount
+                                    }
                                 }
                             }
                         }
@@ -47,6 +47,14 @@ describe('test queue', () => {
                     "testCount": 26,
                     "testPlanReports": Array [
                       Object {
+                        "draftTestPlanRuns": Array [
+                          Object {
+                            "id": "1",
+                            "tester": Object {
+                              "username": "foobar-admin",
+                            },
+                          },
+                        ],
                         "id": "1",
                         "isAcceptingResults": false,
                         "status": "DRAFT",
