@@ -1,7 +1,8 @@
 const me = require('./me');
-const userRoles = require('./User.roles');
+const User_roles = require('./User.roles');
 const testPlans = require('./testPlans');
-const testPlanLatestVersion = require('./testPlanLatestVersion');
+const TestPlan = require('./TestPlan');
+const TestPlanVersion = require('./TestPlanVersion');
 
 const resolvers = {
     Query: {
@@ -9,11 +10,10 @@ const resolvers = {
         testPlans
     },
     User: {
-        roles: userRoles
+        roles: User_roles
     },
-    TestPlan: {
-        latestVersion: testPlanLatestVersion
-    }
+    TestPlan,
+    TestPlanVersion
 };
 
 module.exports = resolvers;

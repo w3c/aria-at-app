@@ -18,8 +18,8 @@ describe('test queue', () => {
                                     id
                                     status
                                     isAcceptingResults
-                                    canBeFinalized
-                                    conflictCount
+                                    # canBeFinalized
+                                    # conflictCount
                                     # testPlanTarget {
                                     #     id
                                     #     title
@@ -45,7 +45,13 @@ describe('test queue', () => {
                     "gitMessage": "Create tests for APG design pattern example: Tri-State Checkbox (#330)",
                     "gitSha": "e7212c4e5c96497cc8a2682e07ee2decd19d3f85",
                     "testCount": 26,
-                    "testPlanReports": Array [],
+                    "testPlanReports": Array [
+                      Object {
+                        "id": "1",
+                        "isAcceptingResults": false,
+                        "status": "DRAFT",
+                      },
+                    ],
                     "title": "Checkbox Example (Two State)",
                   },
                 },

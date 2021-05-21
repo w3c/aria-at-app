@@ -1,4 +1,4 @@
-const testPlanLatestVersion = parent => {
+const TestPlan_latestVersion = parent => {
     return {
         ...parent.dataValues,
         gitSha: parent.dataValues.sourceGitCommitHash,
@@ -7,4 +7,4 @@ const testPlanLatestVersion = parent => {
     };
 };
 
-module.exports = testPlanLatestVersion;
+module.exports = TestPlan_latestVersion;
