@@ -1,5 +1,11 @@
 const MODEL_NAME = 'AtMode';
 
+const MODE = {
+    READING: 'reading',
+    INTERACTION: 'interaction',
+    MODELESS: 'modeless'
+};
+
 module.exports = function(sequelize, DataTypes) {
     const Model = sequelize.define(
         MODEL_NAME,
@@ -15,6 +21,12 @@ module.exports = function(sequelize, DataTypes) {
             },
             name: {
                 type: DataTypes.TEXT,
+                // type: DataTypes.ENUM(
+                //     MODE.READING,
+                //     MODE.INTERACTION,
+                //     MODE.MODELESS
+                // ),
+                defaultValue: MODE.MODELESS,
                 allowNull: false,
                 primaryKey: true
             }
@@ -25,12 +37,17 @@ module.exports = function(sequelize, DataTypes) {
         }
     );
 
+    Model.READING = MODE.READING;
+    Model.INTERACTION = MODE.INTERACTION;
+    Model.MODELESS = MODE.MODELESS;
+
     Model.AT_ASSOCIATION = { foreignKey: 'at' };
 
     Model.associate = function(models) {
         Model.belongsTo(models.At, {
             ...Model.AT_ASSOCIATION,
-            targetKey: 'id'
+            targetKey: 'id',
+            as: 'atObject'
         });
     };
 

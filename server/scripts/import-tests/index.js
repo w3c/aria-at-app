@@ -50,7 +50,6 @@ const ariaAtImport = {
         console.log(`Cloned ${path.basename(ariaAtRepo)} to ${repo.workdir()}`);
 
         let commit;
-        let tags;
         if (args.commit) {
             try {
                 commit = await nodegit.Commit.lookup(repo, args.commit);
@@ -77,13 +76,11 @@ const ariaAtImport = {
                 )
                 .trim();
             commit = await nodegit.Commit.lookup(repo, latestCommit);
-            tags = await nodegit.Tag.list(repo);
         }
 
         let commitDate = commit.date();
         let commitMessage = commit.message();
         let commitHash = commit.id().tostrS();
-        let commitTag = tags.length ? tags[tags.length - 1] : null; // get the latest tag found for the previously set commit
 
         const support = JSON.parse(fse.readFileSync(supportFile));
         const ats = support.ats;
@@ -133,7 +130,6 @@ const ariaAtImport = {
                     commitHash,
                     commitMessage,
                     commitDate,
-                    commitTag,
                     exampleRefLine,
                     practiceGuidelinesRefLine
                 );
@@ -162,7 +158,7 @@ const ariaAtImport = {
                         // Get the test order from the file name
                         const executionOrder = parseInt(test.split('-')[1]);
 
-                        await this.upsertTestPlanparsedActions(
+                        await this.upsertTestPlanParsedTests(
                             testFullName,
                             htmlFile,
                             testPlanId,
@@ -203,7 +199,6 @@ const ariaAtImport = {
      * @param {string} commitHash - the hash of the latest version of tests pulled from the {@param ariaAtRepo} repository
      * @param {string} commitMessage - the message of the latest version of tests pulled from the {@param ariaAtRepo} repository
      * @param {string} commitDate - the date of the latest versions of the tests pulled from the {@param ariaAtRepo} repository
-     * @param {string} commitTag - the latest tag pulled from the based on the commit {@param ariaAtRepo} repository
      * @param {string[]} exampleRefLine - the example url link pulled from the references.csv file related to the test
      * @param {string[]} practiceGuidelinesRefLine - the APG (ARIA Practices Guidelines) link pulled from the references.csv file related to the test
      * @returns {number} - returns TestPlan.id
@@ -215,7 +210,6 @@ const ariaAtImport = {
         commitHash,
         commitMessage,
         commitDate,
-        commitTag,
         exampleRefLine,
         practiceGuidelinesRefLine
     ) {
@@ -256,7 +250,6 @@ const ariaAtImport = {
             : await db.TestPlan.create({
                   title: exampleName,
                   publishStatus: 'draft',
-                  revision: commitTag,
                   sourceGitCommitHash: commitHash,
                   sourceGitCommitMessage: commitMessage,
                   exampleUrl,
@@ -275,7 +268,7 @@ const ariaAtImport = {
      * @param {number} executionOrder - the order in which the test step is executed (within the APG pattern)
      * @returns {number | null} - returns TestPlan.id
      */
-    async upsertTestPlanparsedActions(
+    async upsertTestPlanParsedTests(
         testName,
         file,
         testPlanId,

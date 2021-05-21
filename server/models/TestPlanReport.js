@@ -1,5 +1,11 @@
 const MODEL_NAME = 'TestPlanReport';
 
+const STATUS = {
+    DRAFT: 'draft',
+    IN_REVIEW: 'in_review',
+    FINAL: 'final'
+};
+
 module.exports = function(sequelize, DataTypes) {
     const Model = sequelize.define(
         MODEL_NAME,
@@ -11,8 +17,14 @@ module.exports = function(sequelize, DataTypes) {
                 autoIncrement: true
             },
             publishStatus: {
-                type: DataTypes.TEXT
-                // type: DataTypes.ENUM('draft', 'raw', 'final')
+                type: DataTypes.TEXT,
+                // type: DataTypes.ENUM(
+                //     STATUS.DRAFT,
+                //     STATUS.IN_REVIEW,
+                //     STATUS.FINAL
+                // ),
+                allowNull: false,
+                defaultValue: STATUS.DRAFT
             },
             testPlanTarget: { type: DataTypes.INTEGER },
             testPlan: { type: DataTypes.INTEGER },
@@ -28,6 +40,10 @@ module.exports = function(sequelize, DataTypes) {
         }
     );
 
+    Model.DRAFT = STATUS.DRAFT;
+    Model.IN_REVIEW = STATUS.IN_REVIEW;
+    Model.FINAL = STATUS.FINAL;
+
     Model.TEST_PLAN_ASSOCIATION = { foreignKey: 'testPlan' };
 
     Model.TEST_PLAN_TARGET_ASSOCIATION = { foreignKey: 'testPlanTarget' };
@@ -37,12 +53,14 @@ module.exports = function(sequelize, DataTypes) {
     Model.associate = function(models) {
         Model.belongsTo(models.TestPlan, {
             ...Model.TEST_PLAN_ASSOCIATION,
-            targetKey: 'id'
+            targetKey: 'id',
+            as: 'testPlanObject'
         });
 
         Model.belongsTo(models.TestPlanTarget, {
             ...Model.TEST_PLAN_TARGET_ASSOCIATION,
-            targetKey: 'id'
+            targetKey: 'id',
+            as: 'testPlanTargetObject'
         });
 
         Model.hasMany(models.TestPlanRun, {
