@@ -95,7 +95,7 @@ describe('AtModel Data Checks', () => {
     });
 
     it('should return collection of ats', async () => {
-        const result = await AtService.getAts('', {});
+        const result = await AtService.getAts('');
         expect(result.length).toBeGreaterThanOrEqual(1);
     });
 
@@ -228,7 +228,7 @@ describe('AtVersionModel Data Checks', () => {
     });
 
     it('should return collection of atVersions', async () => {
-        const result = await AtService.getAtVersions('', {});
+        const result = await AtService.getAtVersions('');
         expect(result.length).toBeGreaterThanOrEqual(1);
     });
 
@@ -362,7 +362,7 @@ describe('AtModeModel Data Checks', () => {
     });
 
     it('should return collection of atModes', async () => {
-        const result = await AtService.getAtModes('', {});
+        const result = await AtService.getAtModes('');
         expect(result.length).toBeGreaterThanOrEqual(1);
     });
 

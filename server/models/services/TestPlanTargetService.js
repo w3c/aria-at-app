@@ -1,4 +1,6 @@
 const ModelService = require('./ModelService');
+const AtService = require('./AtService');
+const BrowserService = require('./BrowserService');
 const { TEST_PLAN_TARGET_ATTRIBUTES } = require('./helpers');
 const { Sequelize, TestPlanTarget } = require('../');
 const { Op } = Sequelize;
@@ -61,25 +63,47 @@ const createTestPlanTarget = async (
     { title, at, atVersion, browser, browserVersion },
     testPlanTargetAttributes = TEST_PLAN_TARGET_ATTRIBUTES
 ) => {
-    // TODO: Construct title as <at> <atVersion> with <browser> <browserVersion>
+    let atName;
+    let browserName;
 
-    // TODO: Check if at, atVersion, browser, browserVersion exists and create it not on the fly? Or assume they exist?
+    if (typeof at === 'string') {
+        atName = at;
+        const atResults = await AtService.getAts(null, { name: at });
+        at = atResults.length ? atResults[0].id : 0;
+    } else {
+        // assuming type is number; get name to construct title if required
+        const atResult = await AtService.getAtById(at);
+        atName = atResult ? atResult.name : '';
+    }
+
+    if (typeof browser === 'string') {
+        browserName = browser;
+        const browserResults = await BrowserService.getBrowsers(null, {
+            name: browser
+        });
+        browser = browserResults.length ? browserResults[0].id : 0;
+    } else {
+        // assuming type is number; get name to construct title if required
+        const browserResult = await BrowserService.getBrowserById(browser);
+        browserName = browserResult ? browserResult.name : '';
+    }
+
+    // Construct title as <at> <atVersion> with <browser> <browserVersion>
+    if (!title)
+        title = `${atName} ${atVersion} with ${browserName} ${browserVersion}`;
+
+    // fallback on SequelizeError for invalid at | atVersion | browser | browserVersion
     const testPlanTargetResult = await ModelService.create(TestPlanTarget, {
         title,
-        at, // TODO: If 'at' passed in as string, check if exists in db and get the matching id
+        at,
         atVersion,
-        browser, // TODO: If 'browser' passed in as string, check if exists in db and get the matching id
+        browser,
         browserVersion
     });
     const { id } = testPlanTargetResult;
 
     // to ensure the structure being returned matches what we expect for simple queries and can be controlled
-    return await ModelService.getById(
-        TestPlanTarget,
-        id,
-        testPlanTargetAttributes,
-        []
-    );
+    return await getTestPlanTargetById(id, testPlanTargetAttributes);
 };
 
 /**

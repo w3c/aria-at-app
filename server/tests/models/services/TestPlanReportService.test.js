@@ -1,6 +1,8 @@
 const { sequelize } = require('../../../models');
 const TestPlanReportService = require('../../../models/services/TestPlanReportService');
+const TestPlanTargetService = require('../../../models/services/TestPlanTargetService');
 const UserService = require('../../../models/services/UserService');
+const randomStringGenerator = require('../../util/random-character-generator');
 const { dbCleaner } = require('../../util/db-cleaner');
 
 describe('TestPlanReportModel Data Checks', () => {
@@ -67,6 +69,50 @@ describe('TestPlanReportModel Data Checks', () => {
         });
     });
 
+    it('should update testPlanReport to newly created testPlanTarget', async () => {
+        await dbCleaner(async () => {
+            // A1
+            const _id = 1;
+            const _title = randomStringGenerator();
+            const _at = 2;
+            const _browser = 2;
+            const _atVersion = '2020.4';
+            const _browserVersion = '91.0.4472';
+
+            // A2
+            const testPlanReport = await TestPlanReportService.getTestPlanReportById(
+                _id
+            );
+            const { id, testPlanTarget } = testPlanReport;
+
+            const testPlanTargetResult = await TestPlanTargetService.createTestPlanTarget(
+                {
+                    title: _title,
+                    at: _at,
+                    browser: _browser,
+                    atVersion: _atVersion,
+                    browserVersion: _browserVersion
+                }
+            );
+            const { id: testPlanTargetId } = testPlanTargetResult;
+
+            expect(id).toBeTruthy();
+            expect(testPlanTarget).toBeTruthy();
+            expect(testPlanTargetId).toBeTruthy();
+
+            const updatedTestPlanReport = await TestPlanReportService.updateTestPlanReport(
+                id,
+                { testPlanTarget: testPlanTargetId }
+            );
+            const {
+                testPlanTarget: updatedTestPlanTarget
+            } = updatedTestPlanReport;
+
+            expect(updatedTestPlanTarget).not.toEqual(testPlanTarget);
+            expect(updatedTestPlanTarget).toEqual(testPlanTargetId);
+        });
+    });
+
     it('should assign testPlanReport to tester and remove testPlanReport from tester', async () => {
         await dbCleaner(async () => {
             const _id = 1;
@@ -119,7 +165,7 @@ describe('TestPlanReportModel Data Checks', () => {
     });
 
     it('should return collection of testPlanReports', async () => {
-        const result = await TestPlanReportService.getTestPlanReports('', {});
+        const result = await TestPlanReportService.getTestPlanReports('');
         expect(result.length).toBeGreaterThanOrEqual(1);
     });
 

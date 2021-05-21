@@ -134,7 +134,7 @@ describe('UserModel Data Checks', () => {
     });
 
     it('should return collection of users', async () => {
-        const result = await UserService.getUsers('', {});
+        const result = await UserService.getUsers('');
         expect(result.length).toBeGreaterThanOrEqual(1);
     });
 

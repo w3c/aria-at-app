@@ -3,6 +3,7 @@ const ModelService = require('../../../models/services/ModelService');
 const {
     getSequelizeModelAttributes
 } = require('../../../models/services/helpers');
+const { dbCleaner } = require('../../util/db-cleaner');
 
 // valid ModelService functionality has been covered by all other ModelService tests
 describe('ModelService', () => {
@@ -46,7 +47,9 @@ describe('ModelService', () => {
 
     it('should throw error if model not passed for create', async () => {
         const create = async () => {
-            await ModelService.create(null);
+            await dbCleaner(async () => {
+                await ModelService.create(null);
+            });
         };
 
         await expect(create()).rejects.toThrow(/not defined/gi);
@@ -54,7 +57,9 @@ describe('ModelService', () => {
 
     it('should throw error if model not passed for update', async () => {
         const update = async () => {
-            await ModelService.update(null);
+            await dbCleaner(async () => {
+                await ModelService.update(null);
+            });
         };
 
         await expect(update()).rejects.toThrow(/not defined/gi);
@@ -62,7 +67,9 @@ describe('ModelService', () => {
 
     it('should throw error if model not passed for removeById', async () => {
         const removeById = async () => {
-            await ModelService.removeById(null);
+            await dbCleaner(async () => {
+                await ModelService.removeById(null);
+            });
         };
 
         await expect(removeById()).rejects.toThrow(/not defined/gi);
@@ -70,7 +77,9 @@ describe('ModelService', () => {
 
     it('should throw error if model not passed for removeByQuery', async () => {
         const removeByQuery = async () => {
-            await ModelService.removeByQuery(null);
+            await dbCleaner(async () => {
+                await ModelService.removeByQuery(null);
+            });
         };
 
         await expect(removeByQuery()).rejects.toThrow(/not defined/gi);

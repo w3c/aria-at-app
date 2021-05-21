@@ -85,7 +85,7 @@ describe('BrowserModel Data Checks', () => {
     });
 
     it('should return collection of browsers', async () => {
-        const result = await BrowserService.getBrowsers('', {});
+        const result = await BrowserService.getBrowsers('');
         expect(result.length).toBeGreaterThanOrEqual(1);
     });
 
@@ -223,7 +223,7 @@ describe('BrowserVersionModel Data Checks', () => {
     });
 
     it('should return collection of browserVersions', async () => {
-        const result = await BrowserService.getBrowserVersions('', {});
+        const result = await BrowserService.getBrowserVersions('');
         expect(result.length).toBeGreaterThanOrEqual(1);
     });
 

@@ -38,6 +38,123 @@ describe('TestPlanTargetModel data Checks', () => {
         expect(user).toBeNull();
     });
 
+    it('should create a new testPlanTarget with a constructed title', async () => {
+        await dbCleaner(async () => {
+            // A1
+            const _title = null;
+            const _at = 'NVDA'; // 2
+            const _browser = 'Chrome'; // 2
+            const _atVersion = '2020.4';
+            const _browserVersion = '91.0.4472';
+            const constructedTitle = `${_at} ${_atVersion} with ${_browser} ${_browserVersion}`;
+
+            // A2
+            const testPlanTarget = await TestPlanTargetService.createTestPlanTarget(
+                {
+                    title: _title,
+                    at: _at,
+                    browser: _browser,
+                    atVersion: _atVersion,
+                    browserVersion: _browserVersion
+                }
+            );
+            const {
+                id,
+                title,
+                at,
+                browser,
+                atVersion,
+                browserVersion
+            } = testPlanTarget;
+
+            // A3
+            expect(id).toBeTruthy();
+            expect(title).toEqual(constructedTitle);
+            expect(at).toEqual(2);
+            expect(browser).toEqual(2);
+            expect(atVersion).toEqual(_atVersion);
+            expect(browserVersion).toEqual(_browserVersion);
+        });
+    });
+
+    it('should fail to create a new testPlanTarget with invalid at or browser string entries', async () => {
+        await dbCleaner(async () => {
+            // A1
+            const _title = null;
+            const _at = 'non-existent at';
+            const _browser = 'non-existent browser';
+            const _atVersion = '2020.4';
+            const _browserVersion = '91.0.4472';
+
+            // A2
+            const createTestPlanTarget = async () => {
+                await TestPlanTargetService.createTestPlanTarget({
+                    title: _title,
+                    at: _at,
+                    browser: _browser,
+                    atVersion: _atVersion,
+                    browserVersion: _browserVersion
+                });
+            };
+
+            await expect(createTestPlanTarget()).rejects.toThrow(
+                /violates foreign key/gi
+            );
+        });
+    });
+
+    it('should fail to create a new testPlanTarget with invalid at or browser number entries', async () => {
+        await dbCleaner(async () => {
+            // A1
+            const _title = null;
+            const _at = 594;
+            const _browser = 242;
+            const _atVersion = '2020.4';
+            const _browserVersion = '91.0.4472';
+
+            // A2
+            const createTestPlanTarget = async () => {
+                await TestPlanTargetService.createTestPlanTarget({
+                    title: _title,
+                    at: _at,
+                    browser: _browser,
+                    atVersion: _atVersion,
+                    browserVersion: _browserVersion
+                });
+            };
+
+            await expect(createTestPlanTarget()).rejects.toThrow(
+                /violates foreign key/gi
+            );
+        });
+    });
+
+    it('should fail to create a new testPlanTarget with invalid atVersion or browserVersion number entries', async () => {
+        await dbCleaner(async () => {
+            // A1
+            const _title = null;
+            const _at = 'NVDA'; // 2
+            const _browser = 'Chrome'; // 2
+            const _atVersion = 'non.existent.at.version';
+            const _browserVersion = 'non.existent.browser.version';
+
+            // A2
+            const createTestPlanTarget = async () => {
+                await TestPlanTargetService.createTestPlanTarget({
+                    title: _title,
+                    at: _at,
+                    browser: _browser,
+                    atVersion: _atVersion,
+                    browserVersion: _browserVersion
+                });
+            };
+
+            await expect(createTestPlanTarget()).rejects.toThrow(
+                /violates foreign key/gi
+            );
+        });
+    });
+
     it('should create and remove a new testPlanTarget', async () => {
         await dbCleaner(async () => {
             // A1
@@ -93,10 +210,7 @@ describe('TestPlanTargetModel data Checks', () => {
     it('should return collection of testPlanTargets for title query', async () => {
         const search = 'Chrome';
 
-        const result = await TestPlanTargetService.getTestPlanTargets(
-            search,
-            {}
-        );
+        const result = await TestPlanTargetService.getTestPlanTargets(search);
         const result0thIndex = result[0];
 
         expect(result.length).toBeGreaterThanOrEqual(1);
