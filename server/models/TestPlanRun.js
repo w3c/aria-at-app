@@ -10,7 +10,7 @@ module.exports = function(sequelize, DataTypes) {
                 primaryKey: true,
                 autoIncrement: true
             },
-            isManuallyTested: { type: DataTypes.BOOLEAN, default: false },
+            isManuallyTested: { type: DataTypes.BOOLEAN, defaultValue: false },
             tester: { type: DataTypes.INTEGER, allowNull: true },
             testPlanReport: { type: DataTypes.INTEGER }
         },
