@@ -1,10 +1,23 @@
 const { sequelize } = require('../../../models');
 const ModelService = require('../../../models/services/ModelService');
+const {
+    getSequelizeModelAttributes
+} = require('../../../models/services/helpers');
 
 // valid ModelService functionality has been covered by all other ModelService tests
 describe('ModelService', () => {
     afterAll(async () => {
         await sequelize.close(); // close connection to database
+    });
+
+    it('should throw error if model not passed for getSequelizeModelAttributes', async () => {
+        const callGetSequelizeModelAttributes = async () => {
+            await getSequelizeModelAttributes(null);
+        };
+
+        await expect(callGetSequelizeModelAttributes()).rejects.toThrow(
+            /not defined/gi
+        );
     });
 
     it('should throw error if model not passed for getById', async () => {
