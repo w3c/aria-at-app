@@ -31,7 +31,8 @@ module.exports = function(sequelize, DataTypes) {
     Model.associate = function(models) {
         Model.belongsTo(models.Browser, {
             ...Model.BROWSER_ASSOCIATION,
-            targetKey: 'id'
+            targetKey: 'id',
+            as: 'browserObject'
         });
     };
 
