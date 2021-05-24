@@ -47,7 +47,8 @@ describe('UserModel Data Checks', () => {
         const { roles } = user;
 
         expect(user).toHaveProperty('roles');
-        expect(roles.length).toBeGreaterThanOrEqual(0);
+        expect(roles).toBeInstanceOf(Array);
+        expect(roles.length).toBeGreaterThanOrEqual(1);
         expect(roles).toContainEqual(
             expect.objectContaining({ name: 'admin' })
         );
@@ -81,25 +82,25 @@ describe('UserModel Data Checks', () => {
             });
             const { id, username, createdAt, updatedAt, roles } = user;
 
-            // A3
+            // A2
+            await UserService.deleteUserFromRole(id, _role);
+            const updatedUser = await UserService.getUserById(id);
+
+            // A2
+            await UserService.removeUser(id);
+            const deletedUser = await UserService.getUserById(id);
+
+            // after user created and role added
             expect(id).toBeTruthy();
             expect(username).toEqual(_username);
             expect(createdAt).toBeTruthy();
             expect(updatedAt).toBeTruthy();
             expect(roles).toHaveLength(1);
 
-            // A2
-            await UserService.deleteUserFromRole(id, _role);
-            const updatedUser = await UserService.getUserById(id);
-
-            // A3
+            // after role removed
             expect(updatedUser.roles).toHaveLength(0);
 
-            // A2
-            await UserService.removeUser(id);
-            const deletedUser = await UserService.getUserById(id);
-
-            // A3
+            // after user removed
             expect(deletedUser).toBeNull();
         });
     });
@@ -114,19 +115,19 @@ describe('UserModel Data Checks', () => {
             const user = await UserService.createUser({ username: _username });
             const { id, username, createdAt, updatedAt } = user;
 
-            // A3
-            expect(id).toBeTruthy();
-            expect(username).toEqual(_username);
-            expect(createdAt).toBeTruthy();
-            expect(updatedAt).toBeTruthy();
-
             // A2
             const updatedUser = await UserService.updateUser(id, {
                 username: _updatedUsername
             });
             const updatedUsername = updatedUser.get('username');
 
-            // A3
+            // after user created
+            expect(id).toBeTruthy();
+            expect(username).toEqual(_username);
+            expect(createdAt).toBeTruthy();
+            expect(updatedAt).toBeTruthy();
+
+            // after user updated
             expect(_username).not.toEqual(_updatedUsername);
             expect(username).not.toEqual(updatedUsername);
             expect(updatedUsername).toEqual(_updatedUsername);
@@ -142,23 +143,25 @@ describe('UserModel Data Checks', () => {
         const search = 't';
 
         const result = await UserService.getUsers(search, {});
-        const result0thIndex = result[0];
 
+        expect(result).toBeInstanceOf(Array);
         expect(result.length).toBeGreaterThanOrEqual(1);
-        expect(result0thIndex).toHaveProperty('id');
-        expect(result0thIndex).toHaveProperty('username');
-        expect(result0thIndex.username).toMatch(/t/gi);
+        expect(result).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    id: expect.any(Number),
+                    username: expect.stringMatching(/t/gi)
+                })
+            ])
+        );
     });
 
     it('should return collection of users with paginated structure', async () => {
-        const result = await UserService.getUsers(
-            '',
-            {},
-            ['username'],
-            [],
-            [],
-            { page: -1, limit: -1, enablePagination: true }
-        );
+        const result = await UserService.getUsers('', {}, ['id'], [], [], {
+            page: -1,
+            limit: -1,
+            enablePagination: true
+        });
         expect(result).toHaveProperty('page');
         expect(result).toHaveProperty('data');
         expect(result.data.length).toBeGreaterThanOrEqual(1);

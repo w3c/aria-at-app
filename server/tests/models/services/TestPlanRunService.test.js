@@ -36,7 +36,7 @@ describe('TestPlanRunModel Data Checks', () => {
         expect(testPlanReportObject).toHaveProperty('id');
     });
 
-    it('should not create additional testPlanRun if already exists for tester; return testPlanRun if exists', async () => {
+    it('should not create additional testPlanRun if already exists for tester; return testPlanRun if exists instead', async () => {
         await dbCleaner(async () => {
             const _testPlanReportId = 1;
             const _testerId = 1;
@@ -60,7 +60,7 @@ describe('TestPlanRunModel Data Checks', () => {
         });
     });
 
-    it('should create testPlanRun if since none exists for tester', async () => {
+    it('should create testPlanRun if none exists for tester', async () => {
         await dbCleaner(async () => {
             const _testPlanReportId = 1;
             const _testerId = 2;
@@ -102,11 +102,6 @@ describe('TestPlanRunModel Data Checks', () => {
                 testPlanReport
             } = testPlanRun;
 
-            expect(id).toBeTruthy();
-            expect(isManuallyTested).toEqual(false);
-            expect(tester).toBeTruthy();
-            expect(testPlanReport).toBeTruthy();
-
             const updatedTestPlanRun = await TestPlanRunService.updateTestPlanRun(
                 id,
                 { isManuallyTested: true }
@@ -117,6 +112,13 @@ describe('TestPlanRunModel Data Checks', () => {
                 testPlanReport: updatedTestPlanReport
             } = updatedTestPlanRun;
 
+            // after testPlanRun created
+            expect(id).toBeTruthy();
+            expect(isManuallyTested).toEqual(false);
+            expect(tester).toBeTruthy();
+            expect(testPlanReport).toBeTruthy();
+
+            // after testPlanRun updated
             expect(updatedIsManuallyTested).toEqual(true);
             expect(updatedTester).toEqual(tester);
             expect(updatedTestPlanReport).toEqual(testPlanReport);
@@ -131,13 +133,16 @@ describe('TestPlanRunModel Data Checks', () => {
                 _id
             );
 
-            expect(testPlanRun).not.toBeNull();
-
             await TestPlanRunService.removeTestPlanRun(_id);
 
             const deletedTestPlanRun = await TestPlanRunService.getTestPlanRunById(
                 _id
             );
+
+            // before testPlanRun removed
+            expect(testPlanRun).not.toBeNull();
+
+            // after testPlanRun removed
             expect(deletedTestPlanRun).toBeNull();
         });
     });
