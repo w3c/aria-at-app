@@ -10,7 +10,7 @@ module.exports = function(sequelize, DataTypes) {
                 primaryKey: true,
                 autoIncrement: true
             },
-            isManuallyTested: { type: DataTypes.BOOLEAN, default: false },
+            isManuallyTested: { type: DataTypes.BOOLEAN, defaultValue: false },
             tester: { type: DataTypes.INTEGER, allowNull: true },
             testPlanReport: { type: DataTypes.INTEGER }
         },
@@ -35,12 +35,14 @@ module.exports = function(sequelize, DataTypes) {
 
         Model.belongsTo(models.TestPlanReport, {
             ...Model.TEST_PLAN_REPORT_ASSOCIATION,
-            targetKey: 'id'
+            targetKey: 'id',
+            as: 'testPlanReportObject'
         });
 
         Model.belongsTo(models.User, {
             ...Model.USER_ASSOCIATION,
-            targetKey: 'id'
+            targetKey: 'id',
+            as: 'testerObject'
         });
     };
 

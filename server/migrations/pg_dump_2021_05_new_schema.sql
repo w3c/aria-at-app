@@ -199,11 +199,11 @@ CREATE TABLE public."TestPlan" (
                                    id integer NOT NULL,
                                    title text,
                                    "publishStatus" text,
-                                   revision text,
-                                   "sourceGitCommit" text,
+                                   "sourceGitCommitHash" text,
+                                   "sourceGitCommitMessage" text,
                                    "exampleUrl" text,
                                    "createdAt" timestamp with time zone,
-                                   "parsedTest" jsonb
+                                   parsed jsonb
 );
 
 

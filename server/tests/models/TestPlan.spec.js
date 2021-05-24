@@ -20,11 +20,11 @@ describe('TestPlanModel', () => {
         [
             'title',
             'publishStatus',
-            'revision',
-            'sourceGitCommit',
+            'sourceGitCommitHash',
+            'sourceGitCommitMessage',
             'exampleUrl',
             'createdAt',
-            'parsedTest'
+            'parsed'
         ].forEach(checkPropertyExists(modelInstance));
     });
 });
