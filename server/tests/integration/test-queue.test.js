@@ -8,7 +8,6 @@ describe('test queue', () => {
                 gql`
                     query {
                         testPlans {
-                            # queueRelevantVersions {
                             latestVersion {
                                 title
                                 gitSha
@@ -45,7 +44,7 @@ describe('test queue', () => {
                     "testCount": 26,
                     "testPlanReports": Array [
                       Object {
-                          "conflictCount": 0,
+                        "conflictCount": 0,
                         "draftTestPlanRuns": Array [
                           Object {
                             "id": "1",
@@ -56,7 +55,6 @@ describe('test queue', () => {
                           },
                         ],
                         "id": "1",
-                        "isAcceptingResults": false,
                         "status": "DRAFT",
                         "testPlanTarget": Object {
                           "id": "1",
