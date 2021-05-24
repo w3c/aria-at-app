@@ -1,34 +1,30 @@
+const MODEL_NAME = 'UserRoles';
+
 module.exports = function(sequelize, DataTypes) {
     return sequelize.define(
-        'UserToRole',
+        MODEL_NAME,
         {
-            id: {
-                type: DataTypes.INTEGER,
-                allowNull: false,
-                primaryKey: true,
-                autoIncrement: true
-            },
-            user_id: {
+            userId: {
                 type: DataTypes.INTEGER,
                 allowNull: false,
                 references: {
-                    model: 'users',
+                    model: 'User',
                     key: 'id'
                 },
                 unique: true
             },
-            role_id: {
-                type: DataTypes.INTEGER,
+            roleName: {
+                type: DataTypes.TEXT,
                 allowNull: false,
                 references: {
-                    model: 'role',
-                    key: 'id'
+                    model: 'Role',
+                    key: 'name'
                 }
             }
         },
         {
             timestamps: false,
-            tableName: 'user_to_role'
+            tableName: MODEL_NAME
         }
     );
 };

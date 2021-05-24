@@ -19,7 +19,7 @@ if (args.help) {
     console.log(`
 Default use:
   No arguments:
-    Fetch most recent aria-at tests to update database, by default, the lastest commit on master.
+    Fetch most recent aria-at tests to update database. By default, the latest commit on the default branch.
   Arguments:
     -h, --help
        Show this message.
@@ -33,22 +33,21 @@ Default use:
 const client = new Client();
 
 const ariaAtRepo = 'https://github.com/w3c/aria-at.git';
+const DEFAULT_BRANCH = 'master';
 const tmpDirectory = path.resolve(__dirname, 'tmp');
 const testDirectory = path.resolve(tmpDirectory, 'tests');
 const supportFile = path.resolve(testDirectory, 'support.json');
 
-const ariaat = {
+const ariaAtImport = {
     /**
-     * Get all tests in the master HEAD commit for the detaul repository
+     * Get all tests in the default HEAD commit for the repository
      */
     async getMostRecentTests() {
         await client.connect();
 
         fse.ensureDirSync(tmpDirectory);
         let repo = await nodegit.Clone(ariaAtRepo, tmpDirectory, {});
-        console.log(
-            'Cloned ' + path.basename(ariaAtRepo) + ' to ' + repo.workdir()
-        );
+        console.log(`Cloned ${path.basename(ariaAtRepo)} to ${repo.workdir()}`);
 
         let commit;
         if (args.commit) {
@@ -56,8 +55,7 @@ const ariaat = {
                 commit = await nodegit.Commit.lookup(repo, args.commit);
             } catch (error) {
                 console.log(
-                    'IMPORT FAILED! Cannot checkout repo at comit:',
-                    args.commit
+                    `IMPORT FAILED! Cannot checkout repo at commit: ${args.commit}`
                 );
                 throw error;
             }
@@ -67,7 +65,13 @@ const ariaat = {
         } else {
             let latestCommit = fse
                 .readFileSync(
-                    path.join(tmpDirectory, '.git', 'refs', 'heads', 'master'),
+                    path.join(
+                        tmpDirectory,
+                        '.git',
+                        'refs',
+                        'heads',
+                        DEFAULT_BRANCH
+                    ),
                     'utf8'
                 )
                 .trim();
@@ -75,40 +79,29 @@ const ariaat = {
         }
 
         let commitDate = commit.date();
-        let commitMsg = commit.message();
+        let commitMessage = commit.message();
         let commitHash = commit.id().tostrS();
-
-        const testVersionID = await this.upsertTestVersion(
-            ariaAtRepo,
-            commitHash,
-            commitDate,
-            commitMsg
-        );
 
         const support = JSON.parse(fse.readFileSync(supportFile));
         const ats = support.ats;
-        for (let at of ats) {
-            const atNameID = await this.upsertAtName(at.name);
-            const atID = await this.upsertAt(at.key, atNameID, testVersionID);
-            at.atID = atID;
-        }
+        for (let at of ats) await this.upsertAt(at.name); // TODO: will we need to port support for at.key as well?
 
-        const exampleName = {};
-        for (let example of support.examples) {
-            exampleName[example.directory] = example.name;
-        }
+        const exampleNames = {};
+        for (let example of support.examples)
+            exampleNames[example.directory] = example.name;
 
         let exampleDirs = fse.readdirSync(testDirectory);
         for (let i = 0; i < exampleDirs.length; i++) {
             const exampleDir = exampleDirs[i];
             const subDirFullPath = path.join(testDirectory, exampleDir);
-            const stat = fse.statSync(subDirFullPath);
+            const stat = fse.statSync(subDirFullPath); // folder stats
 
+            // <repo>.git/tests/resources folder shouldn't be factored in the tests
             if (stat.isDirectory() && exampleDir !== 'resources') {
                 const dataPath = path.join(subDirFullPath, 'data');
                 const referencesCsvPath = path.join(dataPath, 'references.csv');
-                let referencesCsv;
 
+                let referencesCsv;
                 try {
                     referencesCsv = fse.readFileSync(referencesCsvPath, {
                         encoding: 'utf-8'
@@ -120,17 +113,23 @@ const ariaat = {
                     throw error;
                 }
 
+                // example url parsed from <repo>.git/tests/<directory>/data/references.csv
                 const exampleRefLine = referencesCsv
                     .split('\n')
                     .filter(line => line.includes('example'));
+
+                // designPattern url parsed from <repo>.git/tests/<directory>/data/references.csv
                 const practiceGuidelinesRefLine = referencesCsv
                     .split('\n')
                     .filter(line => line.includes('designPattern'));
 
-                const exampleID = await this.upsertAPGExample(
+                const testPlanId = await this.upsertTestPlan(
                     exampleDir,
-                    exampleName[exampleDir],
-                    testVersionID,
+                    exampleNames[exampleDir],
+                    ariaAtRepo,
+                    commitHash,
+                    commitMessage,
+                    commitDate,
                     exampleRefLine,
                     practiceGuidelinesRefLine
                 );
@@ -159,44 +158,13 @@ const ariaat = {
                         // Get the test order from the file name
                         const executionOrder = parseInt(test.split('-')[1]);
 
-                        const testID = await this.upsertTest(
+                        await this.upsertTestPlanParsedTests(
                             testFullName,
                             htmlFile,
-                            exampleID,
-                            testVersionID,
+                            testPlanId,
+                            commitHash,
                             executionOrder
                         );
-
-                        const testBaseName = path.basename(test, '.html');
-                        const jsonFile = path.join(
-                            subDirFullPath,
-                            `${testBaseName}.json`
-                        );
-                        const testData = JSON.parse(
-                            fse.readFileSync(jsonFile, 'utf8')
-                        );
-
-                        let appliesToList = [];
-                        for (let a of testData.applies_to) {
-                            if (support.applies_to[a]) {
-                                appliesToList = appliesToList.concat(
-                                    support.applies_to[a]
-                                );
-                            } else {
-                                appliesToList.push(a);
-                            }
-                        }
-
-                        // There is a bug in the test where sometimes "key" is used in the applies to list,
-                        // and sometimes the "name"
-                        for (let name of appliesToList) {
-                            const at = support.ats.find(
-                                a => a.name === name || a.key === name
-                            );
-                            if (at) {
-                                await this.upsertTestToAt(testID, at.atID);
-                            }
-                        }
                     }
                 }
             }
@@ -204,224 +172,181 @@ const ariaat = {
     },
 
     /**
-     * Gets test version ID and adds test version record if it does not exist
-     * @param {string} ariaAtRepo - the repository where these tests exist
-     * @param {string} latestCommit - the commit in refs/heads/master at the time of import
-     * @param {string} commitDate - the date of import in ISO format
-     * @param {string} commitMsg - the message of the import
-     * @return {string} id
+     * Gets At.id and inserts an At record if it doesn't exist
+     * @param {string} atName - name of AT (Assistive Technology)
+     * @returns {number} - returns At.id
      */
-    async upsertTestVersion(ariaAtRepo, latestCommit, commitDate, commitMsg) {
-        const testVersionResult = await client.query(
-            'SELECT id FROM test_version WHERE git_repo=$1 and git_hash=$2',
-            [ariaAtRepo, latestCommit]
-        );
-        let testVersionID = testVersionResult.rowCount
-            ? testVersionResult.rows[0].id
-            : undefined;
-        if (testVersionID) {
-            console.log(
-                `Test version information exists for: ${ariaAtRepo} ${commitDate}`
-            );
-        } else {
-            testVersionID = await this.insertRowReturnId(
-                "INSERT INTO test_version(git_repo, git_hash, datetime, git_commit_msg) VALUES($1, $2, to_date($3, 'YYYY-MM-DDTHH:MI:SS.MSZ'), $4) RETURNING id",
-                [ariaAtRepo, latestCommit, commitDate, commitMsg]
-            );
-        }
-        return testVersionID;
-    },
-
-    /**
-     * Gets at_name.id and adds the at_name record if it does not exist
-     * @param {string} atName - the human readible name for an AT
-     * @return {int} id
-     */
-    async upsertAtName(atName) {
+    async upsertAt(atName) {
         const atResult = await client.query(
-            'SELECT id FROM at_name WHERE name=$1',
+            'SELECT id FROM "At" WHERE name=$1',
             [atName]
         );
-        let atNameID = atResult.rowCount ? atResult.rows[0].id : undefined;
-        if (!atNameID) {
-            atNameID = await this.insertRowReturnId(
-                'INSERT INTO at_name(name) VALUES($1) RETURNING id',
-                [atName]
-            );
-        }
-        return atNameID;
+
+        const at = atResult.rowCount
+            ? atResult.rows[0]
+            : await this.upsertRowReturnId(
+                  'INSERT INTO "At" (name) VALUES($1) RETURNING id',
+                  [atName]
+              );
+        return at.id;
     },
 
     /**
-     * Gets at.id and adds an at record if it does not exist
-     * @param {string} atKey - the key for the AT (supplied from the test repo's support.json file)
-     * @param {string} atName - the human readible name for an AT
-     * @param {int} testVersionID - foreign key into the test_version table
-     * @return {int} id
+     * Gets TestPlan.id and inserts a TestPlan record if it doesn't exist
+     * @param {string} exampleDir - the name of the test directory to be processed
+     * @param {string} exampleName - the name of the example test being processed
+     * @param {string} ariaAtRepo - the repository url the tests are being pulled from (ideally {@link https://github.com/w3c/aria-at.git})
+     * @param {string} commitHash - the hash of the latest version of tests pulled from the {@param ariaAtRepo} repository
+     * @param {string} commitMessage - the message of the latest version of tests pulled from the {@param ariaAtRepo} repository
+     * @param {string} commitDate - the date of the latest versions of the tests pulled from the {@param ariaAtRepo} repository
+     * @param {string[]} exampleRefLine - the example url link pulled from the references.csv file related to the test
+     * @param {string[]} practiceGuidelinesRefLine - the APG (ARIA Practices Guidelines) link pulled from the references.csv file related to the test
+     * @returns {number} - returns TestPlan.id
      */
-    async upsertAt(atKey, atNameID, testVersionID) {
-        const atKeyResult = await client.query(
-            'SELECT id FROM at WHERE key=$1 and test_version_id=$2',
-            [atKey, testVersionID]
-        );
-        let atKeyID = atKeyResult.rowCount ? atKeyResult.rows[0].id : undefined;
-        if (!atKeyID) {
-            atKeyID = await this.insertRowReturnId(
-                'INSERT INTO at(key, at_name_id, test_version_id) VALUES($1, $2, $3) RETURNING id',
-                [atKey, atNameID, testVersionID]
-            );
-        }
-        return atKeyID;
-    },
-
-    /**
-     * Gets apg_example.id and adds the AT key record if it does not exist
-     * @param {string} atKey - the key for the AT (supplied from the test repo's support.json file)
-     * @param {string} atName - the human readible name for an AT
-     * @param {int} testVersionID - foreign key into the test_version table
-     * @return {int} id
-     */
-    async upsertAPGExample(
+    async upsertTestPlan(
         exampleDir,
         exampleName,
-        testVersionID,
+        ariaAtRepo,
+        commitHash,
+        commitMessage,
+        commitDate,
         exampleRefLine,
         practiceGuidelinesRefLine
     ) {
-        const exampleResult = await client.query(
-            'SELECT id, example, design_pattern FROM apg_example WHERE directory=$1 and test_version_id=$2',
-            [exampleDir, testVersionID]
+        const getReferenceUrl = referenceLine => {
+            let url = null;
+            if (referenceLine.length) {
+                const [referenceType, link] = referenceLine[0].split(',');
+                if (validUrl.isUri(link)) url = link;
+                else
+                    console.error(
+                        `WARNING: The ${referenceType} link ${link} is not valid for ${exampleName}. Not writing to database.`
+                    );
+            }
+            return url;
+        };
+
+        const exampleUrl = getReferenceUrl(exampleRefLine);
+        const designPattern = getReferenceUrl(practiceGuidelinesRefLine);
+
+        let parsed = {
+            title: '',
+            gitRepo: ariaAtRepo,
+            directory: exampleDir,
+            minimumInputCount: 0,
+            maximumInputCount: 0,
+            tests: [],
+            designPattern
+        };
+
+        // checking to see if unique testPlan row
+        const testPlanResult = await client.query(
+            'SELECT id, "sourceGitCommitHash" FROM "TestPlan" WHERE "sourceGitCommitHash"=$1 and "exampleUrl"=$2',
+            [commitHash, exampleUrl]
         );
 
-        let example = exampleResult.rowCount
-            ? exampleResult.rows[0]
-            : undefined;
-
-        if (!example) {
-            example = await db.ApgExample.create({
-                directory: exampleDir,
-                name: exampleName,
-                test_version_id: testVersionID
-            });
-        }
-
-        if (exampleRefLine.length > 0 && !example.example) {
-            const exampleLink = exampleRefLine[0].split(',')[1];
-            if (validUrl.isUri(exampleLink)) {
-                await db.ApgExample.update(
-                    {
-                        example: exampleLink
-                    },
-                    {
-                        where: {
-                            id: example.id
-                        }
-                    }
-                );
-            } else {
-                console.error(
-                    `WARNING: The example link is not valid for ${exampleName}. Not writing to database.`
-                );
-            }
-        }
-
-        if (practiceGuidelinesRefLine.length > 0 && !example.design_pattern) {
-            const practiceGuidelinesLink = practiceGuidelinesRefLine[0].split(
-                ','
-            )[1];
-
-            if (validUrl.isUri(practiceGuidelinesLink)) {
-                await db.ApgExample.update(
-                    {
-                        design_pattern: practiceGuidelinesLink
-                    },
-                    {
-                        where: {
-                            id: example.id
-                        }
-                    }
-                );
-            } else {
-                console.error(
-                    `WARNING: The design pattern link is not valid for ${exampleName}. Not writing to database.`
-                );
-            }
-        }
-
-        return example.id;
+        const testPlan = testPlanResult.rowCount
+            ? testPlanResult.rows[0]
+            : await db.TestPlan.create({
+                  title: exampleName,
+                  publishStatus: 'draft',
+                  sourceGitCommitHash: commitHash,
+                  sourceGitCommitMessage: commitMessage,
+                  exampleUrl,
+                  createdAt: commitDate,
+                  parsed
+              });
+        return testPlan.id;
     },
 
     /**
-     * Gets the test id and adds the test record if it does not exist
-     * @param {string} testFullName - the name of the test
-     * @param {string} file - the relative path to the test in the repo
-     * @param {int} exampleID - foreign key into the apg_example table
-     * @param {int} testVersionID - foreign key into the test_version table
-     * @param {int} executionOrder - order of the tests (within APG pattern)
-     * @return {int} id
+     * Checks TestPlan.parsed.tests to see if it has the relevant test actions to run the test and inserts it if not
+     * @param {string} testName - the name of the test
+     * @param {string} file - the relative path to the test file in the repository (ideally {@link https://github.com/w3c/aria-at.git})
+     * @param {number} testPlanId - TestPlan.id to be queried to update the TestPlan.parsed.tests if necessary
+     * @param {string} commitHash - the hash of the latest version of tests pulled from the repository (ideally {@link https://github.com/w3c/aria-at.git})
+     * @param {number} executionOrder - the order in which the test step is executed (within the APG pattern)
+     * @returns {number | null} - returns TestPlan.id
      */
-    async upsertTest(
-        testFullName,
+    async upsertTestPlanParsedTests(
+        testName,
         file,
-        exampleID,
-        testVersionID,
+        testPlanId,
+        commitHash,
         executionOrder
     ) {
-        const testResult = await client.query(
-            'SELECT id FROM test WHERE file=$1 AND test_version_id=$2',
-            [file, testVersionID]
+        const testPlanResult = await client.query(
+            'SELECT id, "parsed" FROM "TestPlan" WHERE id=$1 AND "sourceGitCommitHash"=$2',
+            [testPlanId, commitHash]
         );
-        let testID = testResult.rowCount ? testResult.rows[0].id : undefined;
-        if (!testID) {
-            testID = await this.insertRowReturnId(
-                'INSERT INTO test(name, file, apg_example_id, test_version_id, execution_order) VALUES($1, $2, $3, $4, $5) RETURNING id',
-                [testFullName, file, exampleID, testVersionID, executionOrder]
+        let testPlan = testPlanResult.rowCount ? testPlanResult.rows[0] : null;
+
+        // check to see if the test object already exists in tests dataset
+        if (testPlan) {
+            const testStepsFound = testPlan.parsed.tests.find(
+                test => test.executionOrder === executionOrder
+            );
+            // short circuit method because parsed.tests.[action] is already present
+            if (testStepsFound) return testPlan.id;
+        }
+
+        const testsObject = {
+            file,
+            executionOrder,
+            // single quotes need to be managed to match PostgreSQL standard when inserting into jsonb
+            name: testName.replace(/'/g, "''")
+        };
+
+        const result = await this.upsertRowReturnId(
+            `UPDATE "TestPlan" SET "parsed" = jsonb_set("parsed"::jsonb, array['tests'], ("parsed" -> 'tests')::jsonb || '[${JSON.stringify(
+                testsObject
+            )}]'::jsonb) WHERE id=$1 AND "sourceGitCommitHash"=$2 RETURNING id`,
+            [testPlanId, commitHash]
+        );
+
+        if (result) {
+            await this.upsertRowReturnId(
+                `UPDATE "TestPlan" SET "parsed" = "parsed" || CONCAT('{"maximumInputCount":', COALESCE("parsed" ->> 'maximumInputCount', '0')::int + 1, '}')::jsonb WHERE id=$1 AND "sourceGitCommitHash"=$2 RETURNING id`,
+                [testPlanId, commitHash]
             );
         }
-        return testID;
+
+        return result;
     },
 
     /**
-     * Adds the test to at record if it does not exist
-     * @param {int} testID - foreign key into the test table
-     * @param {int} atID - foreign key into the at table
+     * PostgreSQL query handler to return a single result's id following a successful query
+     * @param {string} query - the PostgreSQL query to be processed
+     * @param {any[]} params - the params to be used when creating the PostgreSQL query
+     * @returns {* | null} - returns id for queried row
      */
-    async upsertTestToAt(testID, atID) {
-        const testToAtResult = await client.query(
-            'SELECT id FROM test_to_at WHERE test_id=$1 AND at_id=$2',
-            [testID, atID]
-        );
-        let testToAtID = testToAtResult.rowCount
-            ? testToAtResult.rows[0].id
-            : undefined;
-        if (!testToAtID) {
-            testToAtID = await this.insertRowReturnId(
-                'INSERT INTO test_to_at(test_id, at_id) VALUES($1, $2) RETURNING id',
-                [testID, atID]
-            );
-        }
-    },
-
-    async insertRowReturnId(query, params) {
+    async upsertRowReturnId(query, params) {
         let result;
         try {
             result = (await client.query(query, params)).rows[0];
         } catch (err) {
             console.log(
-                `ERROR: Insertion query '${query}' with parameters '[${params}]' should return id.`
+                `ERROR: Upsert Query '${query}' with parameters '[${params}]' should return id.`
             );
             throw err;
         }
-        return result.id;
+        if (result && result.id) return result.id;
+        return null;
     },
 
-    async insertRow(query, params) {
+    /**
+     * PostgreSQL query handler to return a single result following a successful query
+     * @param {string} query - the PostgreSQL query to be processed
+     * @param {any[]} params - the params to be used when creating the PostgreSQL query
+     * @returns {* | null} - returns record for queried row
+     */
+    async performQuery(query, params) {
         let result;
         try {
             result = (await client.query(query, params)).rows[0];
         } catch (err) {
             console.log(
-                `ERROR: Insertion query '${query}' with parameters '[${params}]' should return id.`
+                `ERROR: Query '${query}' with parameters '[${params}]' should return id.`
             );
             throw err;
         }
@@ -429,7 +354,7 @@ const ariaat = {
     }
 };
 
-ariaat
+ariaAtImport
     .getMostRecentTests()
     .then(
         () => console.log('Done, no errors'),
