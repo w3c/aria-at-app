@@ -239,7 +239,7 @@ const ariaAtImport = {
             designPattern
         };
 
-        // checking to see if unique testPlan row
+        // checking to see if unique testPlan row (sourceGitCommitHash + directory provides a unique row)
         const testPlanResult = await client.query(
             'SELECT id, "sourceGitCommitHash" FROM "TestPlan" WHERE "sourceGitCommitHash"=$1 and parsed ->> \'directory\'=$2',
             [commitHash, exampleDir]

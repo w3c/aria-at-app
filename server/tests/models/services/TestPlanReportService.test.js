@@ -7,7 +7,7 @@ const { dbCleaner } = require('../../util/db-cleaner');
 
 describe('TestPlanReportModel Data Checks', () => {
     afterAll(async () => {
-        await sequelize.close(); // close connection to database
+        await sequelize.close();
     });
 
     it('should return valid testPlanReport for id query', async () => {

@@ -5,7 +5,7 @@ const { dbCleaner } = require('../../util/db-cleaner');
 
 describe('UserModel Data Checks', () => {
     afterAll(async () => {
-        await sequelize.close(); // close connection to database
+        await sequelize.close();
     });
 
     it('should return valid user for id query', async () => {

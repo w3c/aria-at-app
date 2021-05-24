@@ -4,7 +4,7 @@ const randomStringGenerator = require('../../util/random-character-generator');
 const { dbCleaner } = require('../../util/db-cleaner');
 
 afterAll(async () => {
-    await sequelize.close(); // close connection to database
+    await sequelize.close();
 });
 
 describe('AtModel Data Checks', () => {

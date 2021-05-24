@@ -2,7 +2,7 @@ const { sequelize, Role } = require('../../../models');
 
 describe('RoleModel Data Checks', () => {
     afterAll(async () => {
-        await sequelize.close(); // close connection to database
+        await sequelize.close();
     });
 
     it('should have name valid role name (admin)', () => {
