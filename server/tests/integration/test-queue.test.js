@@ -29,7 +29,7 @@ describe('test queue', () => {
                                         tester {
                                             username
                                         }
-                                        # testResultCount
+                                        testResultCount
                                     }
                                 }
                             }
@@ -50,6 +50,7 @@ describe('test queue', () => {
                         "draftTestPlanRuns": Array [
                           Object {
                             "id": "1",
+                            "testResultCount": 1,
                             "tester": Object {
                               "username": "foobar-admin",
                             },
