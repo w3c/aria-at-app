@@ -96,7 +96,7 @@ const createBrowser = async (
 };
 
 /**
- * @param {string} id - id of the Browser record to be updated
+ * @param {number} id - id of the Browser record to be updated
  * @param {object} updateParams - values to be used to update columns for the record being referenced for {@param id}
  * @param {string[]} browserAttributes  - Browser attributes to be returned in the result
  * @param {string[]} browserVersionAttributes  - BrowserVersion attributes to be returned in the result
