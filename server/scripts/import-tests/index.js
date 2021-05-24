@@ -241,8 +241,8 @@ const ariaAtImport = {
 
         // checking to see if unique testPlan row
         const testPlanResult = await client.query(
-            'SELECT id, "sourceGitCommitHash" FROM "TestPlan" WHERE "sourceGitCommitHash"=$1 and "exampleUrl"=$2',
-            [commitHash, exampleUrl]
+            'SELECT id, "sourceGitCommitHash" FROM "TestPlan" WHERE "sourceGitCommitHash"=$1 and parsed ->> \'directory\'=$2',
+            [commitHash, exampleDir]
         );
 
         const testPlan = testPlanResult.rowCount
