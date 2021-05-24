@@ -17,9 +17,7 @@ describe('test queue', () => {
                                 testPlanReports {
                                     id
                                     status
-                                    isAcceptingResults
-                                    # canBeFinalized
-                                    # conflictCount
+                                    conflictCount
                                     testPlanTarget {
                                         id
                                         title
@@ -47,6 +45,7 @@ describe('test queue', () => {
                     "testCount": 26,
                     "testPlanReports": Array [
                       Object {
+                          "conflictCount": 0,
                         "draftTestPlanRuns": Array [
                           Object {
                             "id": "1",

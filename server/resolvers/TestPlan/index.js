@@ -1,7 +1,7 @@
-const latestVersion = require('./latestVersionResolver');
+const queueRelevantVersions = require('./queueRelevantVersionsResolver');
 
 const TestPlan = {
-    latestVersion
+    queueRelevantVersions
 };
 
 module.exports = TestPlan;
