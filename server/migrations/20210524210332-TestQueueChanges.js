@@ -5,8 +5,8 @@ module.exports = {
         await queryInterface.renameTable('TestPlan', 'TestPlanVersion');
         await queryInterface.renameColumn(
             'TestPlanReport',
-            'TestPlan',
-            'TestPlanVersion'
+            'testPlan',
+            'testPlanVersionId'
         );
     },
 
@@ -14,8 +14,8 @@ module.exports = {
         await queryInterface.renameTable('TestPlanVersion', 'TestPlan');
         await queryInterface.renameColumn(
             'TestPlanReport',
-            'TestPlanVersion',
-            'TestPlan'
+            'testPlanVersionId',
+            'testPlan'
         );
     }
 };

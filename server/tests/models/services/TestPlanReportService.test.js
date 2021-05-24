@@ -20,7 +20,7 @@ describe('TestPlanReportModel Data Checks', () => {
             id,
             publishStatus,
             testPlanTarget,
-            testPlan,
+            testPlanVersion,
             coveragePercent,
             createdAt
         } = testPlanReport;
@@ -28,7 +28,7 @@ describe('TestPlanReportModel Data Checks', () => {
         expect(id).toEqual(_id);
         expect(publishStatus).toMatch(/(draft)|(in_review)|(final)/gi);
         expect(testPlanTarget).toBeTruthy();
-        expect(testPlan).toBeTruthy();
+        expect(testPlanVersion).toBeTruthy();
         expect(coveragePercent).toBeTruthy();
         expect(createdAt).toBeTruthy();
     });

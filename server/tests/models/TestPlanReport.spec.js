@@ -23,7 +23,7 @@ describe('TestPlanReportModel', () => {
         [
             'publishStatus',
             'testPlanTarget',
-            'testPlanVersion',
+            'testPlanVersionId',
             'coveragePercent',
             'createdAt'
         ].forEach(checkPropertyExists(modelInstance));
@@ -31,7 +31,9 @@ describe('TestPlanReportModel', () => {
 
     describe('associations', () => {
         // A1
-        const TEST_PLAN_VERSION_ASSOCIATION = { foreignKey: 'testPlanVersion' };
+        const TEST_PLAN_VERSION_ASSOCIATION = {
+            foreignKey: 'testPlanVersionId'
+        };
         const TEST_PLAN_TARGET_ASSOCIATION = { foreignKey: 'testPlanTarget' };
         const TEST_PLAN_RUN_ASSOCIATION = { as: 'testPlanRuns' };
 

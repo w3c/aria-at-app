@@ -123,7 +123,7 @@ const ariaAtImport = {
                     .split('\n')
                     .filter(line => line.includes('designPattern'));
 
-                const testPlanId = await this.upsertTestPlan(
+                const testPlanVersionId = await this.upsertTestPlanVersion(
                     exampleDir,
                     exampleNames[exampleDir],
                     ariaAtRepo,
@@ -158,10 +158,10 @@ const ariaAtImport = {
                         // Get the test order from the file name
                         const executionOrder = parseInt(test.split('-')[1]);
 
-                        await this.upsertTestPlanParsedTests(
+                        await this.upsertTestPlanVersionParsedTests(
                             testFullName,
                             htmlFile,
-                            testPlanId,
+                            testPlanVersionId,
                             commitHash,
                             executionOrder
                         );
@@ -192,7 +192,7 @@ const ariaAtImport = {
     },
 
     /**
-     * Gets TestPlan.id and inserts a TestPlan record if it doesn't exist
+     * Gets TestPlanVersion.id and inserts a TestPlanVersion record if it doesn't exist
      * @param {string} exampleDir - the name of the test directory to be processed
      * @param {string} exampleName - the name of the example test being processed
      * @param {string} ariaAtRepo - the repository url the tests are being pulled from (ideally {@link https://github.com/w3c/aria-at.git})
@@ -201,9 +201,9 @@ const ariaAtImport = {
      * @param {string} commitDate - the date of the latest versions of the tests pulled from the {@param ariaAtRepo} repository
      * @param {string[]} exampleRefLine - the example url link pulled from the references.csv file related to the test
      * @param {string[]} practiceGuidelinesRefLine - the APG (ARIA Practices Guidelines) link pulled from the references.csv file related to the test
-     * @returns {number} - returns TestPlan.id
+     * @returns {number} - returns TestPlanVersion.id
      */
-    async upsertTestPlan(
+    async upsertTestPlanVersion(
         exampleDir,
         exampleName,
         ariaAtRepo,
@@ -239,15 +239,15 @@ const ariaAtImport = {
             designPattern
         };
 
-        // checking to see if unique testPlan row (sourceGitCommitHash + directory provides a unique row)
-        const testPlanResult = await client.query(
-            'SELECT id, "sourceGitCommitHash" FROM "TestPlan" WHERE "sourceGitCommitHash"=$1 and parsed ->> \'directory\'=$2',
+        // checking to see if unique testPlanVersion row (sourceGitCommitHash + directory provides a unique row)
+        const testPlanVersionResult = await client.query(
+            'SELECT id, "sourceGitCommitHash" FROM "TestPlanVersion" WHERE "sourceGitCommitHash"=$1 and parsed ->> \'directory\'=$2',
             [commitHash, exampleDir]
         );
 
-        const testPlan = testPlanResult.rowCount
-            ? testPlanResult.rows[0]
-            : await db.TestPlan.create({
+        const testPlanVersion = testPlanVersionResult.rowCount
+            ? testPlanVersionResult.rows[0]
+            : await db.TestPlanVersion.create({
                   title: exampleName,
                   publishStatus: 'draft',
                   sourceGitCommitHash: commitHash,
@@ -256,38 +256,40 @@ const ariaAtImport = {
                   createdAt: commitDate,
                   parsed
               });
-        return testPlan.id;
+        return testPlanVersion.id;
     },
 
     /**
-     * Checks TestPlan.parsed.tests to see if it has the relevant test actions to run the test and inserts it if not
+     * Checks TestPlanVersion.parsed.tests to see if it has the relevant test actions to run the test and inserts it if not
      * @param {string} testName - the name of the test
      * @param {string} file - the relative path to the test file in the repository (ideally {@link https://github.com/w3c/aria-at.git})
-     * @param {number} testPlanId - TestPlan.id to be queried to update the TestPlan.parsed.tests if necessary
+     * @param {number} testPlanVersionId - TestPlanVersion.id to be queried to update the TestPlanVersion.parsed.tests if necessary
      * @param {string} commitHash - the hash of the latest version of tests pulled from the repository (ideally {@link https://github.com/w3c/aria-at.git})
      * @param {number} executionOrder - the order in which the test step is executed (within the APG pattern)
-     * @returns {number | null} - returns TestPlan.id
+     * @returns {number | null} - returns TestPlanVersion.id
      */
-    async upsertTestPlanParsedTests(
+    async upsertTestPlanVersionParsedTests(
         testName,
         file,
-        testPlanId,
+        testPlanVersionId,
         commitHash,
         executionOrder
     ) {
-        const testPlanResult = await client.query(
-            'SELECT id, "parsed" FROM "TestPlan" WHERE id=$1 AND "sourceGitCommitHash"=$2',
-            [testPlanId, commitHash]
+        const testPlanVersionResult = await client.query(
+            'SELECT id, "parsed" FROM "TestPlanVersion" WHERE id=$1 AND "sourceGitCommitHash"=$2',
+            [testPlanVersionId, commitHash]
         );
-        let testPlan = testPlanResult.rowCount ? testPlanResult.rows[0] : null;
+        let testPlanVersion = testPlanVersionResult.rowCount
+            ? testPlanVersionResult.rows[0]
+            : null;
 
         // check to see if the test object already exists in tests dataset
-        if (testPlan) {
-            const testStepsFound = testPlan.parsed.tests.find(
+        if (testPlanVersion) {
+            const testStepsFound = testPlanVersion.parsed.tests.find(
                 test => test.executionOrder === executionOrder
             );
             // short circuit method because parsed.tests.[action] is already present
-            if (testStepsFound) return testPlan.id;
+            if (testStepsFound) return testPlanVersion.id;
         }
 
         const testsObject = {
@@ -298,16 +300,16 @@ const ariaAtImport = {
         };
 
         const result = await this.upsertRowReturnId(
-            `UPDATE "TestPlan" SET "parsed" = jsonb_set("parsed"::jsonb, array['tests'], ("parsed" -> 'tests')::jsonb || '[${JSON.stringify(
+            `UPDATE "TestPlanVersion" SET "parsed" = jsonb_set("parsed"::jsonb, array['tests'], ("parsed" -> 'tests')::jsonb || '[${JSON.stringify(
                 testsObject
             )}]'::jsonb) WHERE id=$1 AND "sourceGitCommitHash"=$2 RETURNING id`,
-            [testPlanId, commitHash]
+            [testPlanVersionId, commitHash]
         );
 
         if (result) {
             await this.upsertRowReturnId(
-                `UPDATE "TestPlan" SET "parsed" = "parsed" || CONCAT('{"maximumInputCount":', COALESCE("parsed" ->> 'maximumInputCount', '0')::int + 1, '}')::jsonb WHERE id=$1 AND "sourceGitCommitHash"=$2 RETURNING id`,
-                [testPlanId, commitHash]
+                `UPDATE "TestPlanVersion" SET "parsed" = "parsed" || CONCAT('{"maximumInputCount":', COALESCE("parsed" ->> 'maximumInputCount', '0')::int + 1, '}')::jsonb WHERE id=$1 AND "sourceGitCommitHash"=$2 RETURNING id`,
+                [testPlanVersionId, commitHash]
             );
         }
 
