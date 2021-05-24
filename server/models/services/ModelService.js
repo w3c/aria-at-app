@@ -95,7 +95,7 @@ const get = async (
     // 'order' structure eg. [ [ 'username', 'DESC' ], [..., ...], ... ]
     if (page < 0) page = 0;
     if (limit < 0 || !enablePagination) limit = null;
-    const offset = limit < 0 ? 0 : page * limit; // skip (1 * 10 results) = 10 to get get to page 2
+    const offset = limit < 0 || !limit ? 0 : page * limit; // skip (1 * 10 results) = 10 to get get to page 2
 
     const queryOptions = {
         where,
@@ -109,19 +109,20 @@ const get = async (
         const result = await model.findAndCountAll({
             ...queryOptions,
             limit,
-            offset
+            offset,
+            distinct: true // applies distinct SQL rule to avoid duplicates created by 'includes' affecting count
         });
 
         const { count: totalResultsCount, rows: data } = result;
-        const resultsCount = data.length || 0;
-        const pagesCount = Math.ceil(totalResultsCount / limit) || 1;
+        const resultsCount = data.length;
+        const pagesCount = limit ? Math.ceil(totalResultsCount / limit) : 1;
 
         return {
             page: page + 1,
             pageSize: limit,
+            pagesCount,
             resultsCount,
             totalResultsCount,
-            pagesCount,
             data
         };
     }
