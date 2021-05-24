@@ -126,6 +126,7 @@ const graphqlSchema = gql`
     }
 
     type Query {
+        me: User
         testPlanReports(testPlan: ID): [TestPlanReport]!
         testPlanReport(id: ID): TestPlanReport
         testPlanTargets: [TestPlanTarget]!
