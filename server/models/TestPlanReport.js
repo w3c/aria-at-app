@@ -27,7 +27,7 @@ module.exports = function(sequelize, DataTypes) {
                 defaultValue: STATUS.DRAFT
             },
             testPlanTarget: { type: DataTypes.INTEGER },
-            testPlan: { type: DataTypes.INTEGER },
+            testPlanVersion: { type: DataTypes.INTEGER },
             coveragePercent: { type: DataTypes.NUMERIC },
             createdAt: {
                 type: DataTypes.DATE,
@@ -44,17 +44,17 @@ module.exports = function(sequelize, DataTypes) {
     Model.IN_REVIEW = STATUS.IN_REVIEW;
     Model.FINAL = STATUS.FINAL;
 
-    Model.TEST_PLAN_ASSOCIATION = { foreignKey: 'testPlan' };
+    Model.TEST_PLAN_VERSION_ASSOCIATION = { foreignKey: 'testPlanVersion' };
 
     Model.TEST_PLAN_TARGET_ASSOCIATION = { foreignKey: 'testPlanTarget' };
 
     Model.TEST_PLAN_RUN_ASSOCIATION = { as: 'testPlanRuns' };
 
     Model.associate = function(models) {
-        Model.belongsTo(models.TestPlan, {
-            ...Model.TEST_PLAN_ASSOCIATION,
+        Model.belongsTo(models.TestPlanVersion, {
+            ...Model.TEST_PLAN_VERSION_ASSOCIATION,
             targetKey: 'id',
-            as: 'testPlanObject'
+            as: 'testPlanVersionObject'
         });
 
         Model.belongsTo(models.TestPlanTarget, {

@@ -1,4 +1,4 @@
-const MODEL_NAME = 'TestPlan';
+const MODEL_NAME = 'TestPlanVersion';
 
 const STATUS = {
     DRAFT: 'draft',
