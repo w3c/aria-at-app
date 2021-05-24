@@ -14,6 +14,6 @@ const populateTestDatabase = async () => {
 if (require.main === module)
     populateTestDatabase()
         .then(() => console.info('Successfully Populated'))
-        .finally(() => console.info('Test Data Populated'));
+        .catch(error => console.error('Database Population Error', error));
 
 module.exports = populateTestDatabase;

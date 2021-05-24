@@ -7,7 +7,7 @@ const { dbCleaner } = require('../../util/db-cleaner');
 
 describe('TestPlanReportModel Data Checks', () => {
     afterAll(async () => {
-        await sequelize.close(); // close connection to database
+        await sequelize.close();
     });
 
     it('should return valid testPlanReport for id query', async () => {
@@ -37,6 +37,7 @@ describe('TestPlanReportModel Data Checks', () => {
         const _id = 53935;
 
         const user = await TestPlanReportService.getTestPlanReportById(_id);
+
         expect(user).toBeNull();
     });
 
@@ -50,9 +51,6 @@ describe('TestPlanReportModel Data Checks', () => {
             );
             const { id, publishStatus } = testPlanReport;
 
-            expect(id).toEqual(_id);
-            expect(publishStatus).toMatch(/(draft)|(in_review)/gi);
-
             const updatedTestPlanReport = await TestPlanReportService.updateTestPlanReportStatus(
                 _id,
                 _status
@@ -63,6 +61,11 @@ describe('TestPlanReportModel Data Checks', () => {
                 publishStatus: updatedPublishStatus
             } = updatedTestPlanReport;
 
+            // before testPlanReport status updated to final
+            expect(id).toEqual(_id);
+            expect(publishStatus).toMatch(/(draft)|(in_review)/gi);
+
+            // after testPlanReport status updated to final
             expect(updatedId).toEqual(_id);
             expect(updatedPublishStatus).toEqual(_status);
             expect(updatedPublishStatus).not.toEqual(publishStatus);
@@ -96,10 +99,6 @@ describe('TestPlanReportModel Data Checks', () => {
             );
             const { id: testPlanTargetId } = testPlanTargetResult;
 
-            expect(id).toBeTruthy();
-            expect(testPlanTarget).toBeTruthy();
-            expect(testPlanTargetId).toBeTruthy();
-
             const updatedTestPlanReport = await TestPlanReportService.updateTestPlanReport(
                 id,
                 { testPlanTarget: testPlanTargetId }
@@ -108,6 +107,12 @@ describe('TestPlanReportModel Data Checks', () => {
                 testPlanTarget: updatedTestPlanTarget
             } = updatedTestPlanReport;
 
+            // before testPlanReport updated
+            expect(id).toBeTruthy();
+            expect(testPlanTarget).toBeTruthy();
+
+            // after testPlanReport updated
+            expect(testPlanTargetId).toBeTruthy();
             expect(updatedTestPlanTarget).not.toEqual(testPlanTarget);
             expect(updatedTestPlanTarget).toEqual(testPlanTargetId);
         });
@@ -129,14 +134,6 @@ describe('TestPlanReportModel Data Checks', () => {
 
             const testPlanRunsLength = testPlanRuns.length;
 
-            expect(id).toEqual(_id);
-            expect(userId).toEqual(_userId);
-            expect(testPlanRuns).toBeTruthy();
-            expect(testPlanRunsLength).toBeGreaterThanOrEqual(1);
-            expect(testPlanRuns).toContainEqual(
-                expect.objectContaining({ tester: userId, testPlanReport: _id })
-            );
-
             const removedTesterTestPlanReport = await TestPlanReportService.removeTestPlanReportForUser(
                 _id,
                 _userId
@@ -151,6 +148,16 @@ describe('TestPlanReportModel Data Checks', () => {
                 testPlanRuns: removedTestPlanRuns
             } = removedUser;
 
+            // before testPlanReport is assigned to tester
+            expect(id).toEqual(_id);
+            expect(userId).toEqual(_userId);
+            expect(testPlanRuns).toBeTruthy();
+            expect(testPlanRunsLength).toBeGreaterThanOrEqual(1);
+            expect(testPlanRuns).toContainEqual(
+                expect.objectContaining({ tester: userId, testPlanReport: _id })
+            );
+
+            // after testPlanReport is unassigned from tester
             expect(removedTesterTestPlanReportId).toEqual(_id);
             expect(removedUserId).toEqual(_userId);
             expect(removedTestPlanRuns).toBeTruthy();
@@ -173,7 +180,7 @@ describe('TestPlanReportModel Data Checks', () => {
         const result = await TestPlanReportService.getTestPlanReports(
             '',
             {},
-            ['publishStatus'],
+            ['id'],
             [],
             [],
             [],
@@ -181,6 +188,7 @@ describe('TestPlanReportModel Data Checks', () => {
             [],
             { enablePagination: true }
         );
+
         expect(result).toHaveProperty('page');
         expect(result).toHaveProperty('data');
         expect(result.data.length).toBeGreaterThanOrEqual(1);

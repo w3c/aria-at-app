@@ -5,7 +5,7 @@ const { dbCleaner } = require('../../util/db-cleaner');
 
 describe('TestPlanTargetModel data Checks', () => {
     afterAll(async () => {
-        await sequelize.close(); // close connection to database
+        await sequelize.close();
     });
 
     it('should return valid testPlanTarget for id query', async () => {
@@ -183,7 +183,13 @@ describe('TestPlanTargetModel data Checks', () => {
                 browserVersion
             } = testPlanTarget;
 
-            // A3
+            // A2
+            await TestPlanTargetService.removeTestPlanTarget(id);
+            const deletedTestPlanTarget = await TestPlanTargetService.getTestPlanTargetById(
+                id
+            );
+
+            // after testPlanTarget created
             expect(id).toBeTruthy();
             expect(title).toEqual(_title);
             expect(at).toEqual(_at);
@@ -191,13 +197,7 @@ describe('TestPlanTargetModel data Checks', () => {
             expect(atVersion).toEqual(_atVersion);
             expect(browserVersion).toEqual(_browserVersion);
 
-            // A2
-            await TestPlanTargetService.removeTestPlanTarget(id);
-            const deletedTestPlanTarget = await TestPlanTargetService.getTestPlanTargetById(
-                id
-            );
-
-            // A3
+            // after testPlanTarget removed
             expect(deletedTestPlanTarget).toBeNull();
         });
     });
@@ -211,19 +211,28 @@ describe('TestPlanTargetModel data Checks', () => {
         const search = 'Chrome';
 
         const result = await TestPlanTargetService.getTestPlanTargets(search);
-        const result0thIndex = result[0];
 
+        expect(result).toBeInstanceOf(Array);
         expect(result.length).toBeGreaterThanOrEqual(1);
-        expect(result0thIndex).toHaveProperty('id');
-        expect(result0thIndex).toHaveProperty('title');
-        expect(result0thIndex.title).toMatch(/Chrome/gi);
+        expect(result).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    id: expect.any(Number),
+                    title: expect.stringMatching(/Chrome/gi),
+                    at: expect.any(Number),
+                    browser: expect.any(Number),
+                    atVersion: expect.any(String),
+                    browserVersion: expect.any(String)
+                })
+            ])
+        );
     });
 
     it('should return collection of testPlanTargets with paginated structure', async () => {
         const result = await TestPlanTargetService.getTestPlanTargets(
             '',
             {},
-            ['title'],
+            ['id'],
             { enablePagination: true }
         );
         expect(result).toHaveProperty('page');

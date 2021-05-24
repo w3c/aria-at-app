@@ -8,7 +8,7 @@ const { dbCleaner } = require('../../util/db-cleaner');
 // valid ModelService functionality has been covered by all other ModelService tests
 describe('ModelService', () => {
     afterAll(async () => {
-        await sequelize.close(); // close connection to database
+        await sequelize.close();
     });
 
     it('should throw error if model not passed for getSequelizeModelAttributes', async () => {
