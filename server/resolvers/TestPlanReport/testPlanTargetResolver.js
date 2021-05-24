@@ -1,5 +1,5 @@
 const testPlanTargetResolver = parent => {
-    return parent.testPlanTargetObject.dataValues;
+    return parent.testPlanTargetObject;
 };
 
 module.exports = testPlanTargetResolver;

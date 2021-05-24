@@ -1,7 +1,9 @@
 const testPlanReports = require('./testPlanReportsResolver');
+const testCount = require('./testCountResolver');
 
 const TestPlanVersion = {
-    testPlanReports
+    testPlanReports,
+    testCount
 };
 
 module.exports = TestPlanVersion;

@@ -1,7 +1,5 @@
 const draftTestPlanRunsResolver = parent => {
-    return parent.testPlanRuns.map(raw => {
-        return raw.dataValues;
-    });
+    return parent.testPlanRuns;
 };
 
 module.exports = draftTestPlanRunsResolver;

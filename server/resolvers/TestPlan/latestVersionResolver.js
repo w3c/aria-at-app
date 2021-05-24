@@ -1,9 +1,9 @@
 const latestVersionResolver = parent => {
     return {
         ...parent.dataValues,
-        gitSha: parent.dataValues.sourceGitCommitHash,
-        gitMessage: parent.dataValues.sourceGitCommitMessage.split('\n')[0],
-        testCount: parent.dataValues.parsed.tests.length
+        gitSha: parent.sourceGitCommitHash,
+        gitMessage: parent.sourceGitCommitMessage.split('\n')[0],
+        tests: parent.parsed.tests.map((_, index) => `test ${index}`)
     };
 };
 

@@ -1,5 +1,5 @@
 const tester = parent => {
-    return parent.testerObject.dataValues;
+    return parent.testerObject;
 };
 
 module.exports = tester;
