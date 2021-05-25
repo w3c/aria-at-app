@@ -1,9 +1,9 @@
 const MODEL_NAME = 'TestPlanReport';
 
 const STATUS = {
-    DRAFT: 'draft',
-    IN_REVIEW: 'in_review',
-    FINAL: 'final'
+    DRAFT: 'DRAFT',
+    IN_REVIEW: 'IN_REVIEW',
+    FINAL: 'FINAL'
 };
 
 module.exports = function(sequelize, DataTypes) {
