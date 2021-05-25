@@ -47,7 +47,7 @@ const testPlanVersionAssociation = testPlanVersionAttributes => ({
  * @returns {{association: string, attributes: string[]}}
  */
 const testPlanTargetAssociation = testPlanTargetAttributes => ({
-    association: 'testPlanTargetObject', // resolver will have to remap this to 'testPlanTarget' after the attributes have been successfully pulled; 'testPlanTarget' conflicts on this model as the id
+    association: 'testPlanTarget',
     attributes: testPlanTargetAttributes
 });
 
@@ -165,7 +165,7 @@ const getTestPlanReports = async (
  */
 const updateTestPlanReport = async (
     id,
-    { publishStatus, coveragePercent, testPlanTarget, testPlanVersion },
+    { publishStatus, coveragePercent, testPlanTargetId, testPlanVersionId },
     testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
@@ -176,7 +176,7 @@ const updateTestPlanReport = async (
     await ModelService.update(
         TestPlanReport,
         { id },
-        { publishStatus, coveragePercent, testPlanTarget, testPlanVersion }
+        { publishStatus, coveragePercent, testPlanTargetId, testPlanVersionId }
     );
 
     // call custom this.getById if custom attributes are being accounted for

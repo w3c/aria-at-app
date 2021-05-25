@@ -8,6 +8,11 @@ module.exports = {
             'testPlan',
             'testPlanVersionId'
         );
+        await queryInterface.renameColumn(
+            'TestPlanReport',
+            'testPlanTarget',
+            'testPlanTargetId'
+        );
     },
 
     down: async (queryInterface /* , Sequelize */) => {
@@ -16,6 +21,11 @@ module.exports = {
             'TestPlanReport',
             'testPlanVersionId',
             'testPlan'
+        );
+        await queryInterface.renameColumn(
+            'TestPlanReport',
+            'testPlanTargetId',
+            'testPlanTarget'
         );
     }
 };

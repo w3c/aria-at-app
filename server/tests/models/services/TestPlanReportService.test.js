@@ -19,16 +19,16 @@ describe('TestPlanReportModel Data Checks', () => {
         const {
             id,
             publishStatus,
-            testPlanTarget,
-            testPlanVersion,
+            testPlanTargetId,
+            testPlanVersionId,
             coveragePercent,
             createdAt
         } = testPlanReport;
 
         expect(id).toEqual(_id);
         expect(publishStatus).toMatch(/(draft)|(in_review)|(final)/gi);
-        expect(testPlanTarget).toBeTruthy();
-        expect(testPlanVersion).toBeTruthy();
+        expect(testPlanTargetId).toBeTruthy();
+        expect(testPlanVersionId).toBeTruthy();
         expect(coveragePercent).toBeTruthy();
         expect(createdAt).toBeTruthy();
     });
@@ -83,38 +83,37 @@ describe('TestPlanReportModel Data Checks', () => {
             const _browserVersion = '91.0.4472';
 
             // A2
-            const testPlanReport = await TestPlanReportService.getTestPlanReportById(
-                _id
-            );
-            const { id, testPlanTarget } = testPlanReport;
-
-            const testPlanTargetResult = await TestPlanTargetService.createTestPlanTarget(
-                {
-                    title: _title,
-                    at: _at,
-                    browser: _browser,
-                    atVersion: _atVersion,
-                    browserVersion: _browserVersion
-                }
-            );
-            const { id: testPlanTargetId } = testPlanTargetResult;
-
-            const updatedTestPlanReport = await TestPlanReportService.updateTestPlanReport(
-                id,
-                { testPlanTarget: testPlanTargetId }
-            );
             const {
-                testPlanTarget: updatedTestPlanTarget
-            } = updatedTestPlanReport;
+                id: initialReportId,
+                testPlanTargetId: initialTargetId
+            } = await TestPlanReportService.getTestPlanReportById(_id);
 
+            const {
+                id: newTargetId
+            } = await TestPlanTargetService.createTestPlanTarget({
+                title: _title,
+                at: _at,
+                browser: _browser,
+                atVersion: _atVersion,
+                browserVersion: _browserVersion
+            });
+
+            const {
+                testPlanTargetId: updatedTargetId
+            } = await TestPlanReportService.updateTestPlanReport(
+                initialReportId,
+                { testPlanTargetId: newTargetId }
+            );
+
+            // A3
             // before testPlanReport updated
-            expect(id).toBeTruthy();
-            expect(testPlanTarget).toBeTruthy();
+            expect(initialReportId).toBeTruthy();
+            expect(initialTargetId).toBeTruthy();
 
             // after testPlanReport updated
-            expect(testPlanTargetId).toBeTruthy();
-            expect(updatedTestPlanTarget).not.toEqual(testPlanTarget);
-            expect(updatedTestPlanTarget).toEqual(testPlanTargetId);
+            expect(updatedTargetId).toBeTruthy();
+            expect(updatedTargetId).not.toEqual(initialTargetId);
+            expect(updatedTargetId).toEqual(newTargetId);
         });
     });
 

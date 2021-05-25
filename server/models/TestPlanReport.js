@@ -26,7 +26,7 @@ module.exports = function(sequelize, DataTypes) {
                 allowNull: false,
                 defaultValue: STATUS.DRAFT
             },
-            testPlanTarget: { type: DataTypes.INTEGER },
+            testPlanTargetId: { type: DataTypes.INTEGER },
             testPlanVersionId: { type: DataTypes.INTEGER },
             coveragePercent: { type: DataTypes.NUMERIC },
             createdAt: {
@@ -46,7 +46,7 @@ module.exports = function(sequelize, DataTypes) {
 
     Model.TEST_PLAN_VERSION_ASSOCIATION = { foreignKey: 'testPlanVersionId' };
 
-    Model.TEST_PLAN_TARGET_ASSOCIATION = { foreignKey: 'testPlanTarget' };
+    Model.TEST_PLAN_TARGET_ASSOCIATION = { foreignKey: 'testPlanTargetId' };
 
     Model.TEST_PLAN_RUN_ASSOCIATION = { as: 'testPlanRuns' };
 
@@ -60,7 +60,7 @@ module.exports = function(sequelize, DataTypes) {
         Model.belongsTo(models.TestPlanTarget, {
             ...Model.TEST_PLAN_TARGET_ASSOCIATION,
             targetKey: 'id',
-            as: 'testPlanTargetObject'
+            as: 'testPlanTarget'
         });
 
         Model.hasMany(models.TestPlanRun, {

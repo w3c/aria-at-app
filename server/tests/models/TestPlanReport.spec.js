@@ -22,7 +22,7 @@ describe('TestPlanReportModel', () => {
         // A3
         [
             'publishStatus',
-            'testPlanTarget',
+            'testPlanTargetId',
             'testPlanVersionId',
             'coveragePercent',
             'createdAt'
@@ -34,7 +34,7 @@ describe('TestPlanReportModel', () => {
         const TEST_PLAN_VERSION_ASSOCIATION = {
             foreignKey: 'testPlanVersionId'
         };
-        const TEST_PLAN_TARGET_ASSOCIATION = { foreignKey: 'testPlanTarget' };
+        const TEST_PLAN_TARGET_ASSOCIATION = { foreignKey: 'testPlanTargetId' };
         const TEST_PLAN_RUN_ASSOCIATION = { as: 'testPlanRuns' };
 
         // A2
