@@ -21,41 +21,41 @@ SET row_security = off;
 -- Data for Name: AtMode; Type: TABLE DATA; Schema: public; Owner: atr
 --
 
-INSERT INTO public."AtMode" (at, name) VALUES (2, 'reading');
-INSERT INTO public."AtMode" (at, name) VALUES (2, 'interaction');
-INSERT INTO public."AtMode" (at, name) VALUES (3, 'modeless');
-INSERT INTO public."AtMode" (at, name) VALUES (1, 'reading');
-INSERT INTO public."AtMode" (at, name) VALUES (1, 'interaction');
+INSERT INTO public."AtMode" ("atId", name) VALUES (2, 'reading');
+INSERT INTO public."AtMode" ("atId", name) VALUES (2, 'interaction');
+INSERT INTO public."AtMode" ("atId", name) VALUES (3, 'modeless');
+INSERT INTO public."AtMode" ("atId", name) VALUES (1, 'reading');
+INSERT INTO public."AtMode" ("atId", name) VALUES (1, 'interaction');
 
 
 --
 -- Data for Name: AtVersion; Type: TABLE DATA; Schema: public; Owner: atr
 --
 
-INSERT INTO public."AtVersion" (at, version) VALUES (2, '2019.3');
-INSERT INTO public."AtVersion" (at, version) VALUES (2, '2020.1');
-INSERT INTO public."AtVersion" (at, version) VALUES (2, '2020.2');
-INSERT INTO public."AtVersion" (at, version) VALUES (2, '2020.3');
-INSERT INTO public."AtVersion" (at, version) VALUES (2, '2020.4');
-INSERT INTO public."AtVersion" (at, version) VALUES (1, '2021.2103.174');
-INSERT INTO public."AtVersion" (at, version) VALUES (3, 'MacOS');
+INSERT INTO public."AtVersion" ("atId", version) VALUES (2, '2019.3');
+INSERT INTO public."AtVersion" ("atId", version) VALUES (2, '2020.1');
+INSERT INTO public."AtVersion" ("atId", version) VALUES (2, '2020.2');
+INSERT INTO public."AtVersion" ("atId", version) VALUES (2, '2020.3');
+INSERT INTO public."AtVersion" ("atId", version) VALUES (2, '2020.4');
+INSERT INTO public."AtVersion" ("atId", version) VALUES (1, '2021.2103.174');
+INSERT INTO public."AtVersion" ("atId", version) VALUES (3, 'MacOS');
 
 
 --
 -- Data for Name: BrowserVersion; Type: TABLE DATA; Schema: public; Owner: atr
 --
 
-INSERT INTO public."BrowserVersion" (browser, version) VALUES (1, '86.0');
-INSERT INTO public."BrowserVersion" (browser, version) VALUES (1, '86.0.1');
-INSERT INTO public."BrowserVersion" (browser, version) VALUES (1, '87.0');
-INSERT INTO public."BrowserVersion" (browser, version) VALUES (1, '88.0');
-INSERT INTO public."BrowserVersion" (browser, version) VALUES (1, '88.0.1');
-INSERT INTO public."BrowserVersion" (browser, version) VALUES (2, '90.0.4430');
-INSERT INTO public."BrowserVersion" (browser, version) VALUES (2, '91.0.4472');
-INSERT INTO public."BrowserVersion" (browser, version) VALUES (3, '13.0');
-INSERT INTO public."BrowserVersion" (browser, version) VALUES (3, '13.1');
-INSERT INTO public."BrowserVersion" (browser, version) VALUES (3, '14.0');
-INSERT INTO public."BrowserVersion" (browser, version) VALUES (3, '14.1');
+INSERT INTO public."BrowserVersion" ("browserId", version) VALUES (1, '86.0');
+INSERT INTO public."BrowserVersion" ("browserId", version) VALUES (1, '86.0.1');
+INSERT INTO public."BrowserVersion" ("browserId", version) VALUES (1, '87.0');
+INSERT INTO public."BrowserVersion" ("browserId", version) VALUES (1, '88.0');
+INSERT INTO public."BrowserVersion" ("browserId", version) VALUES (1, '88.0.1');
+INSERT INTO public."BrowserVersion" ("browserId", version) VALUES (2, '90.0.4430');
+INSERT INTO public."BrowserVersion" ("browserId", version) VALUES (2, '91.0.4472');
+INSERT INTO public."BrowserVersion" ("browserId", version) VALUES (3, '13.0');
+INSERT INTO public."BrowserVersion" ("browserId", version) VALUES (3, '13.1');
+INSERT INTO public."BrowserVersion" ("browserId", version) VALUES (3, '14.0');
+INSERT INTO public."BrowserVersion" ("browserId", version) VALUES (3, '14.1');
 
 
 --

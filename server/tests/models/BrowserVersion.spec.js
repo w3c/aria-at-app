@@ -18,12 +18,12 @@ describe('BrowserVersionModel', () => {
 
     describe('properties', () => {
         // A3
-        ['browser', 'version'].forEach(checkPropertyExists(modelInstance));
+        ['browserId', 'version'].forEach(checkPropertyExists(modelInstance));
     });
 
     describe('associations', () => {
         // A1
-        const BROWSER_ASSOCIATION = { foreignKey: 'browser' };
+        const BROWSER_ASSOCIATION = { foreignKey: 'browserId' };
 
         // A2
         beforeAll(() => {

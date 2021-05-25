@@ -74,6 +74,19 @@ module.exports = {
                 { transaction }
             );
 
+            await queryInterface.renameColumn('AtMode', 'at', 'atId', {
+                transaction
+            });
+            await queryInterface.renameColumn('AtVersion', 'at', 'atId', {
+                transaction
+            });
+            await queryInterface.renameColumn(
+                'BrowserVersion',
+                'browser',
+                'browserId',
+                { transaction }
+            );
+
             await queryInterface.dropTable('TestResult', { transaction });
         });
     },
@@ -150,7 +163,20 @@ module.exports = {
                 transaction
             });
 
-            queryInterface.createTable({
+            await queryInterface.renameColumn('AtMode', 'atId', 'at', {
+                transaction
+            });
+            await queryInterface.renameColumn('AtVersion', 'atId', 'at', {
+                transaction
+            });
+            await queryInterface.renameColumn(
+                'BrowserVersion',
+                'browserId',
+                'browser',
+                { transaction }
+            );
+
+            queryInterface.createTable('TestResult', {
                 startedAt: {
                     type: Sequelize.DataTypes.DATE,
                     defaultValue: Sequelize.DataTypes.NOW
