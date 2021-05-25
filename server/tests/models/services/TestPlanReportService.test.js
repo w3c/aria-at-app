@@ -25,7 +25,7 @@ describe('TestPlanReportModel Data Checks', () => {
         } = testPlanReport;
 
         expect(id).toEqual(_id);
-        expect(status).toMatch(/(DRAFT)|(IN_REVIEW)|(FINALIZED)/g);
+        expect(status).toMatch(/^(DRAFT|IN_REVIEW|FINALIZED)$/);
         expect(testPlanTargetId).toBeTruthy();
         expect(testPlanVersionId).toBeTruthy();
         expect(createdAt).toBeTruthy();
@@ -34,9 +34,11 @@ describe('TestPlanReportModel Data Checks', () => {
     it('should not be valid testPlanReport query', async () => {
         const _id = 53935;
 
-        const user = await TestPlanReportService.getTestPlanReportById(_id);
+        const testPlanReport = await TestPlanReportService.getTestPlanReportById(
+            _id
+        );
 
-        expect(user).toBeNull();
+        expect(testPlanReport).toBeNull();
     });
 
     it('should update testPlanReport status to final', async () => {
