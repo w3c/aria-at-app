@@ -1,4 +1,5 @@
 const ModelService = require('./ModelService');
+const TestPlanRunService = require('./TestPlanRunService');
 const {
     TEST_PLAN_REPORT_ATTRIBUTES,
     TEST_PLAN_ATTRIBUTES,
@@ -218,7 +219,7 @@ const assignTestPlanReportToUser = async (
     testResultAttributes = TEST_RESULT_ATTRIBUTES
 ) => {
     // TestPlanRun has to be created for that user
-    await ModelService.create(TestPlanRun, {
+    await TestPlanRunService.createTestPlanRun({
         testPlanReport: testPlanReportId,
         tester: userId,
         isManuallyTested

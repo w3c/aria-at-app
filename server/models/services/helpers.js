@@ -26,6 +26,7 @@ const getSequelizeModelAttributes = model => {
 };
 
 module.exports = {
+    getSequelizeModelAttributes,
     AT_ATTRIBUTES: getSequelizeModelAttributes(At),
     AT_MODE_ATTRIBUTES: getSequelizeModelAttributes(AtMode),
     AT_VERSION_ATTRIBUTES: getSequelizeModelAttributes(AtVersion),

@@ -5,18 +5,14 @@ const endpointUrl = '/api';
 
 const userEndpoint = `${endpointUrl}/user`;
 const authEndpoint = `${endpointUrl}/auth`;
-const atEndpoint = `${endpointUrl}/at`;
-const testEndpoint = `${endpointUrl}/test`;
 const newUser = require('../mock-data/newUser.json');
 const newUserToRole = require('../mock-data/newUserToRole.json');
 
-const { dbCleaner } = require('../util/db-cleaner');
 const db = require('../../models/index');
 
-afterAll(async done => {
+afterAll(async () => {
     // Closing the DB connection allows Jest to exit successfully.
     await db.sequelize.close();
-    done();
 });
 
 // mocking the middleware used by the express app
@@ -28,17 +24,21 @@ describe('session middleware tests', () => {
     // setup and teardown of a listener to test the middleware
     const supertest = require('supertest');
     let server, agent;
-    beforeEach(done => {
-        server = app.listen(4000, err => {
-            if (err) return done(err);
+    beforeEach(() => {
+        return new Promise((resolve, reject) => {
+            server = app.listen(4000, err => {
+                if (err) return reject(err);
 
-            agent = supertest(server);
-            done();
+                agent = supertest(server);
+                resolve();
+            });
         });
     });
 
-    afterEach(done => {
-        server && server.close(done);
+    afterEach(() => {
+        return new Promise(resolve => {
+            server && server.close(resolve);
+        });
     });
 
     it('uses session middleware', async () => {
@@ -87,7 +87,7 @@ describe('session middleware tests', () => {
 });
 
 jest.mock('../../routes/users');
-describe(userEndpoint, () => {
+describe(`${userEndpoint}`, () => {
     it(`POST ${userEndpoint}`, async () => {
         const response = await request(listener)
             .post(userEndpoint)
@@ -132,7 +132,7 @@ describe(userEndpoint, () => {
 });
 
 jest.mock('../../routes/auth');
-describe(authEndpoint, () => {
+describe(`${authEndpoint}`, () => {
     it(`GET ${authEndpoint}/oauth`, async () => {
         const response = await request(listener).get(`${authEndpoint}/oauth`);
         expect(response.statusCode).toBe(303);
@@ -142,59 +142,5 @@ describe(authEndpoint, () => {
             `${authEndpoint}/authorize?code=12345&service=github`
         );
         expect(response.statusCode).toBe(303);
-    });
-});
-
-describe(atEndpoint, () => {
-    it(`GET ${atEndpoint}`, async () => {
-        await dbCleaner(async () => {
-            const testVersion = await db.TestVersion.create();
-            const atName = await db.AtName.create({ name: 'at' });
-            await db.AtVersion.create({
-                at_name_id: atName.id,
-                version: '1'
-            });
-
-            await db.At.create({
-                at_name_id: atName.id,
-                test_version_id: testVersion.id,
-                key: 'at'
-            });
-
-            const response = await request(listener).get(`${atEndpoint}`);
-            expect(response.statusCode).toBe(200);
-            expect(response.body).toEqual([
-                {
-                    id: 1,
-                    name: 'JAWS'
-                },
-                {
-                    id: 2,
-                    name: 'NVDA'
-                },
-                {
-                    id: 3,
-                    name: 'VoiceOver for macOS'
-                },
-                {
-                    id: atName.id,
-                    name: 'at'
-                }
-            ]);
-        });
-    });
-});
-
-describe(`${testEndpoint}/import`, () => {
-    it(`POST ${testEndpoint}/import`, async () => {
-        await dbCleaner(async () => {
-            await db.TestVersion.create({
-                git_hash: '1234'
-            });
-            const response = await request(listener)
-                .post(`${testEndpoint}/import`)
-                .send({ git_hash: '1234' });
-            expect(response.statusCode).toBe(200);
-        });
     });
 });

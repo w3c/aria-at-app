@@ -114,6 +114,20 @@ const createTestPlanRun = async (
     testResultAttributes = TEST_RESULT_ATTRIBUTES,
     userAttributes = USER_ATTRIBUTES
 ) => {
+    // shouldn't have duplicate entries for a tester
+    const existingTestPlanRuns = await getTestPlanRuns(
+        '',
+        {
+            tester,
+            testPlanReport
+        },
+        testPlanRunAttributes,
+        testPlanReportAttributes,
+        testResultAttributes,
+        userAttributes
+    );
+    if (existingTestPlanRuns.length) return existingTestPlanRuns[0];
+
     const testPlanRunResult = await ModelService.create(TestPlanRun, {
         isManuallyTested,
         tester,
