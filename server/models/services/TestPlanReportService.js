@@ -209,7 +209,7 @@ const updateTestPlanReport = async (
  */
 const assignTestPlanReportToUser = async (
     testPlanReportId,
-    userId,
+    testerUserId,
     isManuallyTested = false,
     testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
@@ -220,8 +220,8 @@ const assignTestPlanReportToUser = async (
 ) => {
     // TestPlanRun has to be created for that user
     await TestPlanRunService.createTestPlanRun({
-        testPlanReport: testPlanReportId,
-        testerUserId: userId,
+        testPlanReportId,
+        testerUserId,
         isManuallyTested
     });
 
@@ -251,7 +251,7 @@ const assignTestPlanReportToUser = async (
  */
 const removeTestPlanReportForUser = async (
     testPlanReportId,
-    userId,
+    testerUserId,
     testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
@@ -261,8 +261,8 @@ const removeTestPlanReportForUser = async (
 ) => {
     // TestPlanRun had have been created for that user
     await ModelService.removeByQuery(TestPlanRun, {
-        testPlanReport: testPlanReportId,
-        testerUserId: userId
+        testPlanReportId,
+        testerUserId
     });
 
     return await getTestPlanReportById(

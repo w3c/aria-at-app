@@ -56,6 +56,12 @@ module.exports = {
                 'testerUserId',
                 { transaction }
             );
+            await queryInterface.renameColumn(
+                'TestPlanRun',
+                'testPlanReport',
+                'testPlanReportId',
+                { transaction }
+            );
         });
     },
 
@@ -113,6 +119,12 @@ module.exports = {
                 'TestPlanRun',
                 'testerUserId',
                 'tester',
+                { transaction }
+            );
+            await queryInterface.renameColumn(
+                'TestPlanRun',
+                'testPlanReportId',
+                'testPlanReport',
                 { transaction }
             );
         });

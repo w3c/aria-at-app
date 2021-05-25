@@ -12,7 +12,7 @@ module.exports = function(sequelize, DataTypes) {
             },
             isManuallyTested: { type: DataTypes.BOOLEAN, defaultValue: false },
             testerUserId: { type: DataTypes.INTEGER, allowNull: true },
-            testPlanReport: { type: DataTypes.INTEGER }
+            testPlanReportId: { type: DataTypes.INTEGER }
         },
         {
             timestamps: false,
@@ -22,7 +22,7 @@ module.exports = function(sequelize, DataTypes) {
 
     Model.TEST_RESULT_ASSOCIATION = { as: 'testResults' };
 
-    Model.TEST_PLAN_REPORT_ASSOCIATION = { foreignKey: 'testPlanReport' };
+    Model.TEST_PLAN_REPORT_ASSOCIATION = { foreignKey: 'testPlanReportId' };
 
     Model.USER_ASSOCIATION = { foreignKey: 'testerUserId' };
 
@@ -36,7 +36,7 @@ module.exports = function(sequelize, DataTypes) {
         Model.belongsTo(models.TestPlanReport, {
             ...Model.TEST_PLAN_REPORT_ASSOCIATION,
             targetKey: 'id',
-            as: 'testPlanReportObject'
+            as: 'testPlanReport'
         });
 
         Model.belongsTo(models.User, {

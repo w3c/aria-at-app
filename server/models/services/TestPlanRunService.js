@@ -14,7 +14,7 @@ const { TestPlanRun } = require('../');
  * @returns {{association: string, attributes: string[]}}
  */
 const testPlanReportAssociation = testPlanReportAttributes => ({
-    association: 'testPlanReportObject',
+    association: 'testPlanReport',
     attributes: testPlanReportAttributes
 });
 
@@ -108,7 +108,7 @@ const getTestPlanRuns = async (
  * @returns {Promise<*>}
  */
 const createTestPlanRun = async (
-    { isManuallyTested, testerUserId, testPlanReport },
+    { isManuallyTested, testerUserId, testPlanReportId },
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
     testResultAttributes = TEST_RESULT_ATTRIBUTES,
@@ -119,7 +119,7 @@ const createTestPlanRun = async (
         '',
         {
             testerUserId,
-            testPlanReport
+            testPlanReportId
         },
         testPlanRunAttributes,
         testPlanReportAttributes,
@@ -131,7 +131,7 @@ const createTestPlanRun = async (
     const testPlanRunResult = await ModelService.create(TestPlanRun, {
         isManuallyTested,
         testerUserId,
-        testPlanReport
+        testPlanReportId
     });
     const { id } = testPlanRunResult;
 

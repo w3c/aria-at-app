@@ -153,7 +153,7 @@ describe('TestPlanReportModel Data Checks', () => {
             expect(testPlanRuns).toContainEqual(
                 expect.objectContaining({
                     testerUserId: userId,
-                    testPlanReport: _id
+                    testPlanReportId: _id
                 })
             );
 
@@ -165,7 +165,7 @@ describe('TestPlanReportModel Data Checks', () => {
             expect(removedTestPlanRuns).not.toContainEqual(
                 expect.objectContaining({
                     testerUserId: removedUserId,
-                    testPlanReport: _id
+                    testPlanReportId: _id
                 })
             );
         });

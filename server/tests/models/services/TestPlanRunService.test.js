@@ -15,13 +15,13 @@ describe('TestPlanRunModel Data Checks', () => {
             id,
             isManuallyTested,
             testerUserId,
-            testPlanReport
+            testPlanReportId
         } = testPlanRun;
 
         expect(id).toEqual(_id);
         expect(isManuallyTested).toBeTruthy();
         expect(testerUserId).toBeTruthy();
-        expect(testPlanReport).toBeTruthy();
+        expect(testPlanReportId).toBeTruthy();
     });
 
     it('should not be valid testPlanRun query', async () => {
@@ -31,14 +31,14 @@ describe('TestPlanRunModel Data Checks', () => {
         expect(user).toBeNull();
     });
 
-    it('should contain valid testPlanRun with testPlanReportObject', async () => {
+    it('should contain valid testPlanRun', async () => {
         const _id = 1;
 
         const testPlanRun = await TestPlanRunService.getTestPlanRunById(_id);
-        const { testPlanReportObject } = testPlanRun;
+        const { testPlanReport } = testPlanRun;
 
-        expect(testPlanReportObject).toBeTruthy();
-        expect(testPlanReportObject).toHaveProperty('id');
+        expect(testPlanReport).toBeTruthy();
+        expect(testPlanReport).toHaveProperty('id');
     });
 
     it('should not create additional testPlanRun if already exists for tester; return testPlanRun if exists instead', async () => {
@@ -51,7 +51,7 @@ describe('TestPlanRunModel Data Checks', () => {
 
             const testPlanRun = await TestPlanRunService.createTestPlanRun({
                 testerUserId: _testerUserId,
-                testPlanReport: _testPlanReportId
+                testPlanReportId: _testPlanReportId
             });
             const newTestPlanRuns = await TestPlanRunService.getTestPlanRuns(
                 ''
@@ -60,7 +60,7 @@ describe('TestPlanRunModel Data Checks', () => {
 
             expect(testPlanRun).toHaveProperty('id');
             expect(testPlanRun).toHaveProperty('testerUserId');
-            expect(testPlanRun).toHaveProperty('testPlanReport');
+            expect(testPlanRun).toHaveProperty('testPlanReportId');
             expect(testPlanRunsLength).toEqual(newTestPlanRunsLength);
         });
     });
@@ -75,7 +75,7 @@ describe('TestPlanRunModel Data Checks', () => {
 
             const testPlanRun = await TestPlanRunService.createTestPlanRun({
                 testerUserId: _testerUserId,
-                testPlanReport: _testPlanReportId
+                testPlanReportId: _testPlanReportId
             });
             const newTestPlanRuns = await TestPlanRunService.getTestPlanRuns(
                 ''
@@ -84,7 +84,7 @@ describe('TestPlanRunModel Data Checks', () => {
 
             expect(testPlanRun).toHaveProperty('id');
             expect(testPlanRun).toHaveProperty('testerUserId');
-            expect(testPlanRun).toHaveProperty('testPlanReport');
+            expect(testPlanRun).toHaveProperty('testPlanReportId');
             expect(newTestPlanRunsLength).toBeGreaterThan(testPlanRunsLength);
             expect(newTestPlanRunsLength).toEqual(testPlanRunsLength + 1);
         });
@@ -97,14 +97,14 @@ describe('TestPlanRunModel Data Checks', () => {
 
             const testPlanRun = await TestPlanRunService.createTestPlanRun({
                 testerUserId: _testerUserId,
-                testPlanReport: _testPlanReportId
+                testPlanReportId: _testPlanReportId
             });
 
             const {
                 id,
                 isManuallyTested,
                 testerUserId,
-                testPlanReport
+                testPlanReportId
             } = testPlanRun;
 
             const updatedTestPlanRun = await TestPlanRunService.updateTestPlanRun(
@@ -114,19 +114,19 @@ describe('TestPlanRunModel Data Checks', () => {
             const {
                 isManuallyTested: updatedIsManuallyTested,
                 testerUserId: updatedTesterUserId,
-                testPlanReport: updatedTestPlanReport
+                testPlanReportId: updatedTestPlanReportId
             } = updatedTestPlanRun;
 
             // after testPlanRun created
             expect(id).toBeTruthy();
             expect(isManuallyTested).toEqual(false);
             expect(testerUserId).toBeTruthy();
-            expect(testPlanReport).toBeTruthy();
+            expect(testPlanReportId).toBeTruthy();
 
             // after testPlanRun updated
             expect(updatedIsManuallyTested).toEqual(true);
             expect(updatedTesterUserId).toEqual(testerUserId);
-            expect(updatedTestPlanReport).toEqual(testPlanReport);
+            expect(updatedTestPlanReportId).toEqual(testPlanReportId);
         });
     });
 

@@ -84,7 +84,7 @@ INSERT INTO public."User" (id, username, "createdAt", "updatedAt") VALUES (2, 'f
 -- Data for Name: TestPlanRun; Type: TABLE DATA; Schema: public; Owner: atr
 --
 
-INSERT INTO public."TestPlanRun" (id, "isManuallyTested", "testerUserId", "testPlanReport") VALUES (1, true, 1, 1);
+INSERT INTO public."TestPlanRun" (id, "isManuallyTested", "testerUserId", "testPlanReportId") VALUES (1, true, 1, 1);
 
 
 --
