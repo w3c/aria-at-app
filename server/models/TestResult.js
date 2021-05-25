@@ -27,7 +27,8 @@ module.exports = function(sequelize, DataTypes) {
     Model.associate = function(models) {
         Model.belongsTo(models.TestPlanRun, {
             ...Model.TEST_PLAN_RUN_ASSOCIATION,
-            targetKey: 'id'
+            targetKey: 'id',
+            as: 'testPlanRunObject'
         });
     };
 
