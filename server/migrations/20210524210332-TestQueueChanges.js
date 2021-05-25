@@ -13,6 +13,18 @@ module.exports = {
                 'status',
                 { transaction }
             );
+            await queryInterface.renameColumn(
+                'TestPlanVersion',
+                'sourceGitCommitHash',
+                'gitSha',
+                { transaction }
+            );
+            await queryInterface.renameColumn(
+                'TestPlanVersion',
+                'sourceGitCommitMessage',
+                'gitMessage',
+                { transaction }
+            );
 
             await queryInterface.renameColumn(
                 'TestPlanReport',
@@ -47,9 +59,21 @@ module.exports = {
             });
 
             await queryInterface.renameColumn(
-                'TestPlanVersion',
+                'TestPlan',
                 'status',
                 'publishStatus',
+                { transaction }
+            );
+            await queryInterface.renameColumn(
+                'TestPlan',
+                'gitSha',
+                'sourceGitCommitHash',
+                { transaction }
+            );
+            await queryInterface.renameColumn(
+                'TestPlan',
+                'gitMessage',
+                'sourceGitCommitMessage',
                 { transaction }
             );
 

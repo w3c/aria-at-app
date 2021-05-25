@@ -20,8 +20,8 @@ describe('TestPlanVersionModel', () => {
         [
             'title',
             'status',
-            'sourceGitCommitHash',
-            'sourceGitCommitMessage',
+            'gitSha',
+            'gitMessage',
             'exampleUrl',
             'createdAt',
             'parsed'

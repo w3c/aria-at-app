@@ -27,8 +27,8 @@ module.exports = function(sequelize, DataTypes) {
                 allowNull: false,
                 defaultValue: STATUS.DRAFT
             },
-            sourceGitCommitHash: { type: DataTypes.TEXT },
-            sourceGitCommitMessage: { type: DataTypes.TEXT },
+            gitSha: { type: DataTypes.TEXT },
+            gitMessage: { type: DataTypes.TEXT },
             exampleUrl: { type: DataTypes.TEXT },
             createdAt: {
                 type: DataTypes.DATE,

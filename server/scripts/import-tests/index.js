@@ -239,9 +239,9 @@ const ariaAtImport = {
             designPattern
         };
 
-        // checking to see if unique testPlanVersion row (sourceGitCommitHash + directory provides a unique row)
+        // checking to see if unique testPlanVersion row (gitSha + directory provides a unique row)
         const testPlanVersionResult = await client.query(
-            'SELECT id, "sourceGitCommitHash" FROM "TestPlanVersion" WHERE "sourceGitCommitHash"=$1 and parsed ->> \'directory\'=$2',
+            'SELECT id, "gitSha" FROM "TestPlanVersion" WHERE "gitSha"=$1 and parsed ->> \'directory\'=$2',
             [commitHash, exampleDir]
         );
 
@@ -250,8 +250,8 @@ const ariaAtImport = {
             : await db.TestPlanVersion.create({
                   title: exampleName,
                   status: 'draft',
-                  sourceGitCommitHash: commitHash,
-                  sourceGitCommitMessage: commitMessage,
+                  gitSha: commitHash,
+                  gitMessage: commitMessage,
                   exampleUrl,
                   createdAt: commitDate,
                   parsed
@@ -276,7 +276,7 @@ const ariaAtImport = {
         executionOrder
     ) {
         const testPlanVersionResult = await client.query(
-            'SELECT id, "parsed" FROM "TestPlanVersion" WHERE id=$1 AND "sourceGitCommitHash"=$2',
+            'SELECT id, "parsed" FROM "TestPlanVersion" WHERE id=$1 AND "gitSha"=$2',
             [testPlanVersionId, commitHash]
         );
         let testPlanVersion = testPlanVersionResult.rowCount
@@ -302,13 +302,13 @@ const ariaAtImport = {
         const result = await this.upsertRowReturnId(
             `UPDATE "TestPlanVersion" SET "parsed" = jsonb_set("parsed"::jsonb, array['tests'], ("parsed" -> 'tests')::jsonb || '[${JSON.stringify(
                 testsObject
-            )}]'::jsonb) WHERE id=$1 AND "sourceGitCommitHash"=$2 RETURNING id`,
+            )}]'::jsonb) WHERE id=$1 AND "gitSha"=$2 RETURNING id`,
             [testPlanVersionId, commitHash]
         );
 
         if (result) {
             await this.upsertRowReturnId(
-                `UPDATE "TestPlanVersion" SET "parsed" = "parsed" || CONCAT('{"maximumInputCount":', COALESCE("parsed" ->> 'maximumInputCount', '0')::int + 1, '}')::jsonb WHERE id=$1 AND "sourceGitCommitHash"=$2 RETURNING id`,
+                `UPDATE "TestPlanVersion" SET "parsed" = "parsed" || CONCAT('{"maximumInputCount":', COALESCE("parsed" ->> 'maximumInputCount', '0')::int + 1, '}')::jsonb WHERE id=$1 AND "gitSha"=$2 RETURNING id`,
                 [testPlanVersionId, commitHash]
             );
         }
