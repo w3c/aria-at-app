@@ -19,7 +19,7 @@ describe('TestPlanVersionModel', () => {
         // A3
         [
             'title',
-            'publishStatus',
+            'status',
             'sourceGitCommitHash',
             'sourceGitCommitMessage',
             'exampleUrl',

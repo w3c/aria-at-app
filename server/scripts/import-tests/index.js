@@ -249,7 +249,7 @@ const ariaAtImport = {
             ? testPlanVersionResult.rows[0]
             : await db.TestPlanVersion.create({
                   title: exampleName,
-                  publishStatus: 'draft',
+                  status: 'draft',
                   sourceGitCommitHash: commitHash,
                   sourceGitCommitMessage: commitMessage,
                   exampleUrl,

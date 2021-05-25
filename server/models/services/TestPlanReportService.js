@@ -165,7 +165,7 @@ const getTestPlanReports = async (
  */
 const updateTestPlanReport = async (
     id,
-    { publishStatus, testPlanTargetId, testPlanVersionId },
+    { status, testPlanTargetId, testPlanVersionId },
     testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
@@ -176,7 +176,7 @@ const updateTestPlanReport = async (
     await ModelService.update(
         TestPlanReport,
         { id },
-        { publishStatus, testPlanTargetId, testPlanVersionId }
+        { status, testPlanTargetId, testPlanVersionId }
     );
 
     // call custom this.getById if custom attributes are being accounted for
@@ -279,7 +279,7 @@ const removeTestPlanReportForUser = async (
 /**
  * Custom function to update the TestPlanReportStatus; potentially made redundant due to {@method updateTestPlanReport}
  * @param {number} testPlanReportId - TestPlanReport id of the TestPlanReport being updated
- * @param {string} publishStatus - must be one of: 'draft', 'in_review' or 'final'
+ * @param {string} status - must be one of: 'draft', 'in_review' or 'final'
  * @param {string[]} testPlanReportAttributes - TestPlanReport attributes to be returned in the result
  * @param {string[]} testPlanRunAttributes - TestPlanRun attributes to be returned in the result
  * @param {string[]} testPlanVersionAttributes - TestPlanVersion attributes to be returned in the result
@@ -290,7 +290,7 @@ const removeTestPlanReportForUser = async (
  */
 const updateTestPlanReportStatus = async (
     testPlanReportId,
-    publishStatus,
+    status,
     testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
@@ -300,7 +300,7 @@ const updateTestPlanReportStatus = async (
 ) => {
     return await updateTestPlanReport(
         testPlanReportId,
-        { publishStatus },
+        { status },
         testPlanReportAttributes,
         testPlanRunAttributes,
         testPlanVersionAttributes,

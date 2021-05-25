@@ -18,14 +18,14 @@ describe('TestPlanReportModel Data Checks', () => {
         );
         const {
             id,
-            publishStatus,
+            status,
             testPlanTargetId,
             testPlanVersionId,
             createdAt
         } = testPlanReport;
 
         expect(id).toEqual(_id);
-        expect(publishStatus).toMatch(/(draft)|(in_review)|(final)/gi);
+        expect(status).toMatch(/(draft)|(in_review)|(final)/gi);
         expect(testPlanTargetId).toBeTruthy();
         expect(testPlanVersionId).toBeTruthy();
         expect(createdAt).toBeTruthy();
@@ -47,7 +47,7 @@ describe('TestPlanReportModel Data Checks', () => {
             const testPlanReport = await TestPlanReportService.getTestPlanReportById(
                 _id
             );
-            const { id, publishStatus } = testPlanReport;
+            const { id, status } = testPlanReport;
 
             const updatedTestPlanReport = await TestPlanReportService.updateTestPlanReportStatus(
                 _id,
@@ -56,17 +56,17 @@ describe('TestPlanReportModel Data Checks', () => {
 
             const {
                 id: updatedId,
-                publishStatus: updatedPublishStatus
+                status: updatedStatus
             } = updatedTestPlanReport;
 
             // before testPlanReport status updated to final
             expect(id).toEqual(_id);
-            expect(publishStatus).toMatch(/(draft)|(in_review)/gi);
+            expect(status).toMatch(/(draft)|(in_review)/gi);
 
             // after testPlanReport status updated to final
             expect(updatedId).toEqual(_id);
-            expect(updatedPublishStatus).toEqual(_status);
-            expect(updatedPublishStatus).not.toEqual(publishStatus);
+            expect(updatedStatus).toEqual(_status);
+            expect(updatedStatus).not.toEqual(status);
         });
     });
 

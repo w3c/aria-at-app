@@ -16,7 +16,7 @@ module.exports = function(sequelize, DataTypes) {
                 primaryKey: true,
                 autoIncrement: true
             },
-            publishStatus: {
+            status: {
                 type: DataTypes.TEXT,
                 // type: DataTypes.ENUM(
                 //     STATUS.DRAFT,

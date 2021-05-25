@@ -6,6 +6,20 @@ module.exports = {
             await queryInterface.renameTable('TestPlan', 'TestPlanVersion', {
                 transaction
             });
+
+            await queryInterface.renameColumn(
+                'TestPlanVersion',
+                'publishStatus',
+                'status',
+                { transaction }
+            );
+
+            await queryInterface.renameColumn(
+                'TestPlanReport',
+                'publishStatus',
+                'status',
+                { transaction }
+            );
             await queryInterface.renameColumn(
                 'TestPlanReport',
                 'testPlan',
@@ -31,6 +45,20 @@ module.exports = {
             await queryInterface.renameTable('TestPlanVersion', 'TestPlan', {
                 transaction
             });
+
+            await queryInterface.renameColumn(
+                'TestPlanVersion',
+                'status',
+                'publishStatus',
+                { transaction }
+            );
+
+            await queryInterface.renameColumn(
+                'TestPlanReport',
+                'status',
+                'publishStatus',
+                { transaction }
+            );
             await queryInterface.renameColumn(
                 'TestPlanReport',
                 'testPlanVersionId',

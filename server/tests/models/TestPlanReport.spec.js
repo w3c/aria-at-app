@@ -21,7 +21,7 @@ describe('TestPlanReportModel', () => {
     describe('properties', () => {
         // A3
         [
-            'publishStatus',
+            'status',
             'testPlanTargetId',
             'testPlanVersionId',
             'createdAt'
