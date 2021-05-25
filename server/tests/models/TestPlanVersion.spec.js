@@ -23,7 +23,7 @@ describe('TestPlanVersionModel', () => {
             'gitSha',
             'gitMessage',
             'exampleUrl',
-            'createdAt',
+            'updatedAt',
             'parsed'
         ].forEach(checkPropertyExists(modelInstance));
     });

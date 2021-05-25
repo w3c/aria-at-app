@@ -25,6 +25,12 @@ module.exports = {
                 'gitMessage',
                 { transaction }
             );
+            await queryInterface.renameColumn(
+                'TestPlanVersion',
+                'createdAt',
+                'updatedAt',
+                { transaction }
+            );
 
             await queryInterface.renameColumn(
                 'TestPlanReport',
@@ -113,6 +119,12 @@ module.exports = {
                 'TestPlan',
                 'gitMessage',
                 'sourceGitCommitMessage',
+                { transaction }
+            );
+            await queryInterface.renameColumn(
+                'TestPlanVersion',
+                'updatedAt',
+                'createdAt',
                 { transaction }
             );
 

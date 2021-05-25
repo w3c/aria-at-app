@@ -30,7 +30,7 @@ module.exports = function(sequelize, DataTypes) {
             gitSha: { type: DataTypes.TEXT },
             gitMessage: { type: DataTypes.TEXT },
             exampleUrl: { type: DataTypes.TEXT },
-            createdAt: {
+            updatedAt: {
                 type: DataTypes.DATE,
                 defaultValue: DataTypes.NOW
             },

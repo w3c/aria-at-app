@@ -253,7 +253,7 @@ const ariaAtImport = {
                   gitSha: commitHash,
                   gitMessage: commitMessage,
                   exampleUrl,
-                  createdAt: commitDate,
+                  updatedAt: commitDate,
                   parsed
               });
         return testPlanVersion.id;
