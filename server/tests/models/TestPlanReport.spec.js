@@ -24,7 +24,6 @@ describe('TestPlanReportModel', () => {
             'publishStatus',
             'testPlanTargetId',
             'testPlanVersionId',
-            'coveragePercent',
             'createdAt'
         ].forEach(checkPropertyExists(modelInstance));
     });

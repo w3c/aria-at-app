@@ -165,7 +165,7 @@ const getTestPlanReports = async (
  */
 const updateTestPlanReport = async (
     id,
-    { publishStatus, coveragePercent, testPlanTargetId, testPlanVersionId },
+    { publishStatus, testPlanTargetId, testPlanVersionId },
     testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
@@ -176,7 +176,7 @@ const updateTestPlanReport = async (
     await ModelService.update(
         TestPlanReport,
         { id },
-        { publishStatus, coveragePercent, testPlanTargetId, testPlanVersionId }
+        { publishStatus, testPlanTargetId, testPlanVersionId }
     );
 
     // call custom this.getById if custom attributes are being accounted for

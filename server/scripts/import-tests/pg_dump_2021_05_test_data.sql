@@ -69,7 +69,7 @@ INSERT INTO public."TestPlanTarget" (id, title, at, browser, "atVersion", "brows
 -- Data for Name: TestPlanReport; Type: TABLE DATA; Schema: public; Owner: atr
 --
 
-INSERT INTO public."TestPlanReport" (id, "publishStatus", "testPlanTargetId", "testPlanVersionId", "coveragePercent", "createdAt") VALUES (1, 'draft', 1, 1, 0, '2021-05-14 14:18:23.602-05');
+INSERT INTO public."TestPlanReport" (id, "publishStatus", "testPlanTargetId", "testPlanVersionId", "createdAt") VALUES (1, 'draft', 1, 1, '2021-05-14 14:18:23.602-05');
 
 
 --

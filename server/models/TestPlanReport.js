@@ -28,7 +28,6 @@ module.exports = function(sequelize, DataTypes) {
             },
             testPlanTargetId: { type: DataTypes.INTEGER },
             testPlanVersionId: { type: DataTypes.INTEGER },
-            coveragePercent: { type: DataTypes.NUMERIC },
             createdAt: {
                 type: DataTypes.DATE,
                 defaultValue: DataTypes.NOW
