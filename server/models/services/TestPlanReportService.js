@@ -198,7 +198,6 @@ const updateTestPlanReport = async (
  * This assumes a TestPlanReport with testPlanReportId exists and a User with userId exists
  * @param {number} testPlanReportId - TestPlanReport id of the testPlan being assigned
  * @param {number} userId - User id of the user being assigned a TestPlan
- * @param {boolean} isManuallyTested - indicates whether this test is being executed manually or not
  * @param {string[]} testPlanReportAttributes - TestPlanReport attributes to be returned in the result
  * @param {string[]} testPlanRunAttributes - TestPlanRun attributes to be returned in the result
  * @param {string[]} testPlanVersionAttributes - TestPlanVersion attributes to be returned in the result
@@ -210,7 +209,6 @@ const updateTestPlanReport = async (
 const assignTestPlanReportToUser = async (
     testPlanReportId,
     testerUserId,
-    isManuallyTested = false,
     testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
@@ -221,8 +219,7 @@ const assignTestPlanReportToUser = async (
     // TestPlanRun has to be created for that user
     await TestPlanRunService.createTestPlanRun({
         testPlanReportId,
-        testerUserId,
-        isManuallyTested
+        testerUserId
     });
 
     return await getTestPlanReportById(

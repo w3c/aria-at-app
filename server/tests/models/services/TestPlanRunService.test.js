@@ -11,15 +11,9 @@ describe('TestPlanRunModel Data Checks', () => {
         const _id = 1;
 
         const testPlanRun = await TestPlanRunService.getTestPlanRunById(_id);
-        const {
-            id,
-            isManuallyTested,
-            testerUserId,
-            testPlanReportId
-        } = testPlanRun;
+        const { id, testerUserId, testPlanReportId } = testPlanRun;
 
         expect(id).toEqual(_id);
-        expect(isManuallyTested).toBeTruthy();
         expect(testerUserId).toBeTruthy();
         expect(testPlanReportId).toBeTruthy();
     });
@@ -91,43 +85,39 @@ describe('TestPlanRunModel Data Checks', () => {
     });
 
     it('should create and update a new testPlanRun', async () => {
-        await dbCleaner(async () => {
-            const _testPlanReportId = 1;
-            const _testerUserId = 2;
+        throw new Error('Edit results here once available');
+        // await dbCleaner(async () => {
+        //     const _testPlanReportId = 1;
+        //     const _testerUserId = 2;
 
-            const testPlanRun = await TestPlanRunService.createTestPlanRun({
-                testerUserId: _testerUserId,
-                testPlanReportId: _testPlanReportId
-            });
+        //     const testPlanRun = await TestPlanRunService.createTestPlanRun({
+        //         testerUserId: _testerUserId,
+        //         testPlanReportId: _testPlanReportId
+        //     });
 
-            const {
-                id,
-                isManuallyTested,
-                testerUserId,
-                testPlanReportId
-            } = testPlanRun;
+        //     const { id, testerUserId, testPlanReportId } = testPlanRun;
 
-            const updatedTestPlanRun = await TestPlanRunService.updateTestPlanRun(
-                id,
-                { isManuallyTested: true }
-            );
-            const {
-                isManuallyTested: updatedIsManuallyTested,
-                testerUserId: updatedTesterUserId,
-                testPlanReportId: updatedTestPlanReportId
-            } = updatedTestPlanRun;
+        //     const updatedTestPlanRun = await TestPlanRunService.updateTestPlanRun(
+        //         id,
+        //         { isManuallyTested: true }
+        //     );
+        //     const {
+        //         isManuallyTested: updatedIsManuallyTested,
+        //         testerUserId: updatedTesterUserId,
+        //         testPlanReportId: updatedTestPlanReportId
+        //     } = updatedTestPlanRun;
 
-            // after testPlanRun created
-            expect(id).toBeTruthy();
-            expect(isManuallyTested).toEqual(false);
-            expect(testerUserId).toBeTruthy();
-            expect(testPlanReportId).toBeTruthy();
+        //     // after testPlanRun created
+        //     expect(id).toBeTruthy();
+        //     expect(isManuallyTested).toEqual(false);
+        //     expect(testerUserId).toBeTruthy();
+        //     expect(testPlanReportId).toBeTruthy();
 
-            // after testPlanRun updated
-            expect(updatedIsManuallyTested).toEqual(true);
-            expect(updatedTesterUserId).toEqual(testerUserId);
-            expect(updatedTestPlanReportId).toEqual(testPlanReportId);
-        });
+        //     // after testPlanRun updated
+        //     expect(updatedIsManuallyTested).toEqual(true);
+        //     expect(updatedTesterUserId).toEqual(testerUserId);
+        //     expect(updatedTestPlanReportId).toEqual(testPlanReportId);
+        // });
     });
 
     it('should remove existing testPlanRun', async () => {

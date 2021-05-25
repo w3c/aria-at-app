@@ -20,7 +20,7 @@ describe('TestPlanRunModel', () => {
 
     describe('properties', () => {
         // A3
-        ['isManuallyTested', 'testerUserId', 'testPlanReportId'].forEach(
+        ['testerUserId', 'testPlanReportId'].forEach(
             checkPropertyExists(modelInstance)
         );
     });

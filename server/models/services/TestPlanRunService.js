@@ -108,7 +108,7 @@ const getTestPlanRuns = async (
  * @returns {Promise<*>}
  */
 const createTestPlanRun = async (
-    { isManuallyTested, testerUserId, testPlanReportId },
+    { testerUserId, testPlanReportId },
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
     testResultAttributes = TEST_RESULT_ATTRIBUTES,
@@ -129,7 +129,6 @@ const createTestPlanRun = async (
     if (existingTestPlanRuns.length) return existingTestPlanRuns[0];
 
     const testPlanRunResult = await ModelService.create(TestPlanRun, {
-        isManuallyTested,
         testerUserId,
         testPlanReportId
     });
@@ -154,17 +153,13 @@ const createTestPlanRun = async (
  */
 const updateTestPlanRun = async (
     id,
-    { isManuallyTested, testerUserId },
+    { testerUserId },
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
     testResultAttributes = TEST_RESULT_ATTRIBUTES,
     userAttributes = USER_ATTRIBUTES
 ) => {
-    await ModelService.update(
-        TestPlanRun,
-        { id },
-        { isManuallyTested, testerUserId }
-    );
+    await ModelService.update(TestPlanRun, { id }, { testerUserId });
 
     return await ModelService.getById(TestPlanRun, id, testPlanRunAttributes, [
         testPlanReportAssociation(testPlanReportAttributes),

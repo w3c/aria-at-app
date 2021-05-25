@@ -62,6 +62,11 @@ module.exports = {
                 'testPlanReportId',
                 { transaction }
             );
+            await queryInterface.removeColumn(
+                'TestPlanRun',
+                'isManuallyTested',
+                { transaction }
+            );
         });
     },
 
@@ -125,6 +130,12 @@ module.exports = {
                 'TestPlanRun',
                 'testPlanReportId',
                 'testPlanReport',
+                { transaction }
+            );
+            await queryInterface.addColumn(
+                'TestPlanRun',
+                'isManuallyTested',
+                Sequelize.DataTypes.BOOLEAN,
                 { transaction }
             );
         });
