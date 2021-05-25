@@ -30,7 +30,7 @@ module.exports = function(sequelize, DataTypes) {
     Model.associate = function(models) {
         Model.hasMany(models.BrowserVersion, {
             ...Model.BROWSER_VERSION_ASSOCIATION,
-            foreignKey: 'browser',
+            foreignKey: 'browserId',
             sourceKey: 'id'
         });
     };

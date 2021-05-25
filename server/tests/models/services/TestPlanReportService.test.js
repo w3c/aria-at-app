@@ -18,18 +18,16 @@ describe('TestPlanReportModel Data Checks', () => {
         );
         const {
             id,
-            publishStatus,
-            testPlanTarget,
-            testPlan,
-            coveragePercent,
+            status,
+            testPlanTargetId,
+            testPlanVersionId,
             createdAt
         } = testPlanReport;
 
         expect(id).toEqual(_id);
-        expect(publishStatus).toMatch(/(draft)|(in_review)|(final)/gi);
-        expect(testPlanTarget).toBeTruthy();
-        expect(testPlan).toBeTruthy();
-        expect(coveragePercent).toBeTruthy();
+        expect(status).toMatch(/(DRAFT)|(IN_REVIEW)|(FINALIZED)/g);
+        expect(testPlanTargetId).toBeTruthy();
+        expect(testPlanVersionId).toBeTruthy();
         expect(createdAt).toBeTruthy();
     });
 
@@ -44,12 +42,12 @@ describe('TestPlanReportModel Data Checks', () => {
     it('should update testPlanReport status to final', async () => {
         await dbCleaner(async () => {
             const _id = 1;
-            const _status = 'final';
+            const _status = 'FINALIZED';
 
             const testPlanReport = await TestPlanReportService.getTestPlanReportById(
                 _id
             );
-            const { id, publishStatus } = testPlanReport;
+            const { id, status } = testPlanReport;
 
             const updatedTestPlanReport = await TestPlanReportService.updateTestPlanReportStatus(
                 _id,
@@ -58,17 +56,17 @@ describe('TestPlanReportModel Data Checks', () => {
 
             const {
                 id: updatedId,
-                publishStatus: updatedPublishStatus
+                status: updatedStatus
             } = updatedTestPlanReport;
 
             // before testPlanReport status updated to final
             expect(id).toEqual(_id);
-            expect(publishStatus).toMatch(/(draft)|(in_review)/gi);
+            expect(status).toMatch(/(DRAFT)|(IN_REVIEW)/g);
 
             // after testPlanReport status updated to final
             expect(updatedId).toEqual(_id);
-            expect(updatedPublishStatus).toEqual(_status);
-            expect(updatedPublishStatus).not.toEqual(publishStatus);
+            expect(updatedStatus).toEqual(_status);
+            expect(updatedStatus).not.toEqual(status);
         });
     });
 
@@ -83,38 +81,37 @@ describe('TestPlanReportModel Data Checks', () => {
             const _browserVersion = '91.0.4472';
 
             // A2
-            const testPlanReport = await TestPlanReportService.getTestPlanReportById(
-                _id
-            );
-            const { id, testPlanTarget } = testPlanReport;
-
-            const testPlanTargetResult = await TestPlanTargetService.createTestPlanTarget(
-                {
-                    title: _title,
-                    at: _at,
-                    browser: _browser,
-                    atVersion: _atVersion,
-                    browserVersion: _browserVersion
-                }
-            );
-            const { id: testPlanTargetId } = testPlanTargetResult;
-
-            const updatedTestPlanReport = await TestPlanReportService.updateTestPlanReport(
-                id,
-                { testPlanTarget: testPlanTargetId }
-            );
             const {
-                testPlanTarget: updatedTestPlanTarget
-            } = updatedTestPlanReport;
+                id: initialReportId,
+                testPlanTargetId: initialTargetId
+            } = await TestPlanReportService.getTestPlanReportById(_id);
 
+            const {
+                id: newTargetId
+            } = await TestPlanTargetService.createTestPlanTarget({
+                title: _title,
+                at: _at,
+                browser: _browser,
+                atVersion: _atVersion,
+                browserVersion: _browserVersion
+            });
+
+            const {
+                testPlanTargetId: updatedTargetId
+            } = await TestPlanReportService.updateTestPlanReport(
+                initialReportId,
+                { testPlanTargetId: newTargetId }
+            );
+
+            // A3
             // before testPlanReport updated
-            expect(id).toBeTruthy();
-            expect(testPlanTarget).toBeTruthy();
+            expect(initialReportId).toBeTruthy();
+            expect(initialTargetId).toBeTruthy();
 
             // after testPlanReport updated
-            expect(testPlanTargetId).toBeTruthy();
-            expect(updatedTestPlanTarget).not.toEqual(testPlanTarget);
-            expect(updatedTestPlanTarget).toEqual(testPlanTargetId);
+            expect(updatedTargetId).toBeTruthy();
+            expect(updatedTargetId).not.toEqual(initialTargetId);
+            expect(updatedTargetId).toEqual(newTargetId);
         });
     });
 
@@ -154,7 +151,10 @@ describe('TestPlanReportModel Data Checks', () => {
             expect(testPlanRuns).toBeTruthy();
             expect(testPlanRunsLength).toBeGreaterThanOrEqual(1);
             expect(testPlanRuns).toContainEqual(
-                expect.objectContaining({ tester: userId, testPlanReport: _id })
+                expect.objectContaining({
+                    testerUserId: userId,
+                    testPlanReportId: _id
+                })
             );
 
             // after testPlanReport is unassigned from tester
@@ -164,8 +164,8 @@ describe('TestPlanReportModel Data Checks', () => {
             expect(removedTestPlanRuns.length).toEqual(testPlanRunsLength - 1);
             expect(removedTestPlanRuns).not.toContainEqual(
                 expect.objectContaining({
-                    tester: removedUserId,
-                    testPlanReport: _id
+                    testerUserId: removedUserId,
+                    testPlanReportId: _id
                 })
             );
         });
@@ -181,7 +181,6 @@ describe('TestPlanReportModel Data Checks', () => {
             '',
             {},
             ['id'],
-            [],
             [],
             [],
             [],

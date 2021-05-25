@@ -5,25 +5,25 @@ const {
     checkPropertyExists
 } = require('sequelize-test-helpers');
 
-const TestPlanModel = require('../../models/TestPlan');
+const TestPlanVersionModel = require('../../models/TestPlanVersion');
 
-describe('TestPlanModel', () => {
+describe('TestPlanVersionModel', () => {
     // A1
-    const Model = TestPlanModel(sequelize, dataTypes);
+    const Model = TestPlanVersionModel(sequelize, dataTypes);
     const modelInstance = new Model();
 
     // A2
-    checkModelName(Model)('TestPlan');
+    checkModelName(Model)('TestPlanVersion');
 
     describe('properties', () => {
         // A3
         [
             'title',
-            'publishStatus',
-            'sourceGitCommitHash',
-            'sourceGitCommitMessage',
+            'status',
+            'gitSha',
+            'gitMessage',
             'exampleUrl',
-            'createdAt',
+            'updatedAt',
             'parsed'
         ].forEach(checkPropertyExists(modelInstance));
     });

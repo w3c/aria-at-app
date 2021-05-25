@@ -1,9 +1,9 @@
-const MODEL_NAME = 'TestPlan';
+const MODEL_NAME = 'TestPlanVersion';
 
 const STATUS = {
-    DRAFT: 'draft',
-    IN_REVIEW: 'in_review',
-    FINAL: 'final'
+    DRAFT: 'DRAFT',
+    IN_REVIEW: 'IN_REVIEW',
+    FINALIZED: 'FINALIZED'
 };
 
 module.exports = function(sequelize, DataTypes) {
@@ -17,20 +17,20 @@ module.exports = function(sequelize, DataTypes) {
                 autoIncrement: true
             },
             title: { type: DataTypes.TEXT },
-            publishStatus: {
+            status: {
                 type: DataTypes.TEXT,
                 // type: DataTypes.ENUM(
                 //     STATUS.DRAFT,
                 //     STATUS.IN_REVIEW,
-                //     STATUS.FINAL
+                //     STATUS.FINALIZED
                 // ),
                 allowNull: false,
                 defaultValue: STATUS.DRAFT
             },
-            sourceGitCommitHash: { type: DataTypes.TEXT },
-            sourceGitCommitMessage: { type: DataTypes.TEXT },
+            gitSha: { type: DataTypes.TEXT },
+            gitMessage: { type: DataTypes.TEXT },
             exampleUrl: { type: DataTypes.TEXT },
-            createdAt: {
+            updatedAt: {
                 type: DataTypes.DATE,
                 defaultValue: DataTypes.NOW
             },
@@ -44,7 +44,7 @@ module.exports = function(sequelize, DataTypes) {
 
     Model.DRAFT = STATUS.DRAFT;
     Model.IN_REVIEW = STATUS.IN_REVIEW;
-    Model.FINAL = STATUS.FINAL;
+    Model.FINALIZED = STATUS.FINALIZED;
 
     Model.associate = function(models) {
         Model.hasMany(models.TestPlanReport, {

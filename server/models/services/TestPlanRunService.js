@@ -2,7 +2,6 @@ const ModelService = require('./ModelService');
 const {
     TEST_PLAN_RUN_ATTRIBUTES,
     TEST_PLAN_REPORT_ATTRIBUTES,
-    TEST_RESULT_ATTRIBUTES,
     USER_ATTRIBUTES
 } = require('./helpers');
 const { TestPlanRun } = require('../');
@@ -14,17 +13,8 @@ const { TestPlanRun } = require('../');
  * @returns {{association: string, attributes: string[]}}
  */
 const testPlanReportAssociation = testPlanReportAttributes => ({
-    association: 'testPlanReportObject',
+    association: 'testPlanReport',
     attributes: testPlanReportAttributes
-});
-
-/**
- * @param {string[]} testResultAttributes - TestResult attributes
- * @returns {{association: string, attributes: string[]}}
- */
-const testResultAssociation = testResultAttributes => ({
-    association: 'testResults',
-    attributes: testResultAttributes
 });
 
 /**
@@ -32,7 +22,7 @@ const testResultAssociation = testResultAttributes => ({
  * @returns {{association: string, attributes: string[]}}
  */
 const userAssociation = userAttributes => ({
-    association: 'testerObject', // resolver will have to remap this to 'tester' after the attributes have been successfully pulled; 'tester' conflicts on this model as the id
+    association: 'tester',
     attributes: userAttributes
 });
 
@@ -42,7 +32,6 @@ const userAssociation = userAttributes => ({
  * @param {number} id - id of TestPlanRun to be retrieved
  * @param {string[]} testPlanRunAttributes - TestPlanRun attributes to be returned in the result
  * @param {string[]} testPlanReportAttributes - TestPlanReport attributes to be returned in the result
- * @param {string[]} testResultAttributes - TestResult attributes to be returned in the result
  * @param {string[]} userAttributes - User attributes to be returned in the result
  * @returns {Promise<*>}
  */
@@ -50,12 +39,10 @@ const getTestPlanRunById = async (
     id,
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
-    testResultAttributes = TEST_RESULT_ATTRIBUTES,
     userAttributes = USER_ATTRIBUTES
 ) => {
     return ModelService.getById(TestPlanRun, id, testPlanRunAttributes, [
         testPlanReportAssociation(testPlanReportAttributes),
-        testResultAssociation(testResultAttributes),
         userAssociation(userAttributes)
     ]);
 };
@@ -65,7 +52,6 @@ const getTestPlanRunById = async (
  * @param {object} filter - use this define conditions to be passed to Sequelize's where clause
  * @param {string[]} testPlanRunAttributes - TestPlanRun attributes to be returned in the result
  * @param {string[]} testPlanReportAttributes - TestPlanReport attributes to be returned in the result
- * @param {string[]} testResultAttributes - TestResult attributes to be returned in the result
  * @param {string[]} userAttributes - User attributes to be returned in the result
  * @param {object} pagination - pagination options for query
  * @param {number} [pagination.page=0] - page to be queried in the pagination result (affected by {@param pagination.enablePagination})
@@ -79,7 +65,6 @@ const getTestPlanRuns = async (
     filter = {},
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
-    testResultAttributes = TEST_RESULT_ATTRIBUTES,
     userAttributes = USER_ATTRIBUTES,
     pagination = {}
 ) => {
@@ -92,7 +77,6 @@ const getTestPlanRuns = async (
         testPlanRunAttributes,
         [
             testPlanReportAssociation(testPlanReportAttributes),
-            testResultAssociation(testResultAttributes),
             userAssociation(userAttributes)
         ],
         pagination
@@ -103,42 +87,38 @@ const getTestPlanRuns = async (
  * @param {object} createParams - values to be used to create the TestPlanRun
  * @param {string[]} testPlanRunAttributes - TestPlanRun attributes to be returned in the result
  * @param {string[]} testPlanReportAttributes - TestPlanReport attributes to be returned in the result
- * @param {string[]} testResultAttributes - TestResult attributes to be returned in the result
  * @param {string[]} userAttributes - User attributes to be returned in the result
  * @returns {Promise<*>}
  */
 const createTestPlanRun = async (
-    { isManuallyTested, tester, testPlanReport },
+    { testerUserId, testPlanReportId, results },
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
-    testResultAttributes = TEST_RESULT_ATTRIBUTES,
     userAttributes = USER_ATTRIBUTES
 ) => {
     // shouldn't have duplicate entries for a tester
     const existingTestPlanRuns = await getTestPlanRuns(
         '',
         {
-            tester,
-            testPlanReport
+            testerUserId,
+            testPlanReportId
         },
         testPlanRunAttributes,
         testPlanReportAttributes,
-        testResultAttributes,
         userAttributes
     );
     if (existingTestPlanRuns.length) return existingTestPlanRuns[0];
 
     const testPlanRunResult = await ModelService.create(TestPlanRun, {
-        isManuallyTested,
-        tester,
-        testPlanReport
+        testerUserId,
+        testPlanReportId,
+        results
     });
     const { id } = testPlanRunResult;
 
     // to ensure the structure being returned matches what we expect for simple queries and can be controlled
     return await ModelService.getById(TestPlanRun, id, testPlanRunAttributes, [
         testPlanReportAssociation(testPlanReportAttributes),
-        testResultAssociation(testResultAttributes),
         userAssociation(userAttributes)
     ]);
 };
@@ -148,27 +128,20 @@ const createTestPlanRun = async (
  * @param {object} updateParams - values to be used to update columns for the record being referenced for {@param id}
  * @param {string[]} testPlanRunAttributes - TestPlanRun attributes to be returned in the result
  * @param {string[]} testPlanReportAttributes - TestPlanReport attributes to be returned in the result
- * @param {string[]} testResultAttributes - TestResult attributes to be returned in the result
  * @param {string[]} userAttributes - User attributes to be returned in the result
  * @returns {Promise<*>}
  */
 const updateTestPlanRun = async (
     id,
-    { isManuallyTested, tester },
+    { results },
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
-    testResultAttributes = TEST_RESULT_ATTRIBUTES,
     userAttributes = USER_ATTRIBUTES
 ) => {
-    await ModelService.update(
-        TestPlanRun,
-        { id },
-        { isManuallyTested, tester }
-    );
+    await ModelService.update(TestPlanRun, { id }, { results });
 
     return await ModelService.getById(TestPlanRun, id, testPlanRunAttributes, [
         testPlanReportAssociation(testPlanReportAttributes),
-        testResultAssociation(testResultAttributes),
         userAssociation(userAttributes)
     ]);
 };

@@ -144,7 +144,7 @@ describe('AtModel Data Checks', () => {
         );
     });
 
-    it('should return collection of users for name query', async () => {
+    it('should return collection of ats for name query', async () => {
         // A1
         const search = 'nvd';
 
@@ -192,28 +192,28 @@ describe('AtModel Data Checks', () => {
 });
 
 describe('AtVersionModel Data Checks', () => {
-    it('should return valid atVersion with atObject for query', async () => {
+    it('should return valid atVersion with at for query', async () => {
         // A1
-        const _at = 1;
+        const _atId = 1;
         const _version = '2021.2103.174';
 
         // A2
         const atVersion = await AtService.getAtVersionByQuery({
-            at: _at,
+            atId: _atId,
             version: _version
         });
-        const { at, version, atObject } = atVersion;
+        const { atId, version, at } = atVersion;
 
         // A3
-        expect(at).toBeTruthy();
+        expect(atId).toBeTruthy();
         expect(version).toBeTruthy();
-        expect(atObject).toBeTruthy();
+        expect(at).toBeTruthy();
         expect(atVersion).toEqual(
             expect.objectContaining({
-                at: _at,
+                atId: _atId,
                 version: _version,
-                atObject: expect.objectContaining({
-                    id: _at,
+                at: expect.objectContaining({
+                    id: _atId,
                     name: expect.any(String)
                 })
             })
@@ -222,12 +222,12 @@ describe('AtVersionModel Data Checks', () => {
 
     it('should not be valid atVersion query', async () => {
         // A1
-        const _at = 53935;
+        const _atId = 53935;
         const _version = randomStringGenerator();
 
         // A2
         const atVersion = await AtService.getAtVersionByQuery({
-            at: _at,
+            atId: _atId,
             version: _version
         });
 
@@ -238,28 +238,28 @@ describe('AtVersionModel Data Checks', () => {
     it('should create and remove a new atVersion', async () => {
         await dbCleaner(async () => {
             // A1
-            const _at = 1;
+            const _atId = 1;
             const _version = randomStringGenerator();
 
             // A2
             const atVersion = await AtService.createAtVersion({
-                at: _at,
+                atId: _atId,
                 version: _version
             });
-            const { at, version, atObject } = atVersion;
+            const { atId, version, at } = atVersion;
 
             // A2
-            await AtService.removeAtVersionByQuery({ at, version });
+            await AtService.removeAtVersionByQuery({ atId, version });
             const deletedAtVersion = await AtService.getAtVersionByQuery({
-                at,
+                atId,
                 version
             });
 
             // after atVersion created
-            expect(at).toEqual(_at);
+            expect(atId).toEqual(_atId);
             expect(version).toEqual(_version);
-            expect(atObject).toHaveProperty('id');
-            expect(atObject).toHaveProperty('name');
+            expect(at).toHaveProperty('id');
+            expect(at).toHaveProperty('name');
 
             // after atVersion removed
             expect(deletedAtVersion).toBeNull();
@@ -269,29 +269,29 @@ describe('AtVersionModel Data Checks', () => {
     it('should create and update a new atVersion', async () => {
         await dbCleaner(async () => {
             // A1
-            const _at = 1;
+            const _atId = 1;
             const _version = randomStringGenerator();
             const _updatedVersion = randomStringGenerator();
 
             // A2
             const atVersion = await AtService.createAtVersion({
-                at: _at,
+                atId: _atId,
                 version: _version
             });
-            const { at, version, atObject } = atVersion;
+            const { atId, version, at } = atVersion;
 
             // A2
             const updatedAtVersion = await AtService.updateAtVersionByQuery(
-                { at, version },
+                { atId, version },
                 { version: _updatedVersion }
             );
             const { version: updatedVersion } = updatedAtVersion;
 
             // after atVersion created
-            expect(at).toEqual(_at);
+            expect(atId).toEqual(_atId);
             expect(version).toEqual(_version);
-            expect(atObject).toHaveProperty('id');
-            expect(atObject).toHaveProperty('name');
+            expect(at).toHaveProperty('id');
+            expect(at).toHaveProperty('name');
 
             // after atVersion updated
             expect(_version).not.toEqual(_updatedVersion);
@@ -303,16 +303,16 @@ describe('AtVersionModel Data Checks', () => {
     it('should return same atVersion if no update params passed', async () => {
         await dbCleaner(async () => {
             // A1
-            const _at = 1;
+            const _atId = 1;
             const _version = '2021.2103.174';
 
             // A2
             const originalAtVersion = await AtService.getAtVersionByQuery({
-                at: _at,
+                atId: _atId,
                 version: _version
             });
             const updatedAtVersion = await AtService.updateAtVersionByQuery({
-                at: _at,
+                atId: _atId,
                 version: _version
             });
 
@@ -330,9 +330,9 @@ describe('AtVersionModel Data Checks', () => {
         expect(result).toEqual(
             expect.arrayContaining([
                 expect.objectContaining({
-                    at: expect.any(Number),
+                    atId: expect.any(Number),
                     version: expect.any(String),
-                    atObject: expect.objectContaining({
+                    at: expect.objectContaining({
                         id: expect.any(Number),
                         name: expect.any(String)
                     })
@@ -354,9 +354,9 @@ describe('AtVersionModel Data Checks', () => {
         expect(result).toEqual(
             expect.arrayContaining([
                 expect.objectContaining({
-                    at: expect.any(Number),
+                    atId: expect.any(Number),
                     version: expect.stringMatching(/2019/gi),
-                    atObject: expect.objectContaining({
+                    at: expect.objectContaining({
                         id: expect.any(Number),
                         name: expect.any(String)
                     })
@@ -391,28 +391,28 @@ describe('AtVersionModel Data Checks', () => {
 });
 
 describe('AtModeModel Data Checks', () => {
-    it('should return valid atMode with atObject for query', async () => {
+    it('should return valid atMode with at for query', async () => {
         // A1
-        const _at = 1;
+        const _atId = 1;
         const _name = 'reading';
 
         // A2
         const atMode = await AtService.getAtModeByQuery({
-            at: _at,
+            atId: _atId,
             name: _name
         });
-        const { at, name, atObject } = atMode;
+        const { atId, name, at } = atMode;
 
         // A3
-        expect(at).toBeTruthy();
+        expect(atId).toBeTruthy();
         expect(name).toBeTruthy();
-        expect(atObject).toBeTruthy();
+        expect(at).toBeTruthy();
         expect(atMode).toEqual(
             expect.objectContaining({
-                at: _at,
+                atId: _atId,
                 name: _name,
-                atObject: expect.objectContaining({
-                    id: _at,
+                at: expect.objectContaining({
+                    id: _atId,
                     name: expect.any(String)
                 })
             })
@@ -421,12 +421,12 @@ describe('AtModeModel Data Checks', () => {
 
     it('should not be valid atMode query', async () => {
         // A1
-        const _at = 53935;
+        const _atId = 53935;
         const _name = randomStringGenerator();
 
         // A2
         const atMode = await AtService.getAtModeByQuery({
-            at: _at,
+            atId: _atId,
             name: _name
         });
 
@@ -437,28 +437,28 @@ describe('AtModeModel Data Checks', () => {
     it('should create and remove a new atMode', async () => {
         await dbCleaner(async () => {
             // A1
-            const _at = 1;
+            const _atId = 1;
             const _name = randomStringGenerator();
 
             // A2
             const atMode = await AtService.createAtMode({
-                at: _at,
+                atId: _atId,
                 name: _name
             });
-            const { at, name, atObject } = atMode;
+            const { atId, name, at } = atMode;
 
             // A2
-            await AtService.removeAtModeByQuery({ at, name });
+            await AtService.removeAtModeByQuery({ atId, name });
             const deletedAtMode = await AtService.getAtModeByQuery({
-                at,
+                atId,
                 name
             });
 
             // after atMode created
-            expect(at).toEqual(_at);
+            expect(atId).toEqual(_atId);
             expect(name).toEqual(_name);
-            expect(atObject).toHaveProperty('id');
-            expect(atObject).toHaveProperty('name');
+            expect(at).toHaveProperty('id');
+            expect(at).toHaveProperty('name');
 
             // after atMode removed
             expect(deletedAtMode).toBeNull();
@@ -468,20 +468,20 @@ describe('AtModeModel Data Checks', () => {
     it('should create and update a new atMode', async () => {
         await dbCleaner(async () => {
             // A1
-            const _at = 1;
+            const _atId = 1;
             const _name = randomStringGenerator();
             const _updatedName = randomStringGenerator();
 
             // A2
             const atMode = await AtService.createAtMode({
-                at: _at,
+                atId: _atId,
                 name: _name
             });
-            const { at, name, atObject } = atMode;
+            const { atId, name, at } = atMode;
 
             // A2
             const updatedMode = await AtService.updateAtModeByQuery(
-                { at, name },
+                { atId, name },
                 {
                     name: _updatedName
                 }
@@ -489,10 +489,10 @@ describe('AtModeModel Data Checks', () => {
             const { name: updatedName } = updatedMode;
 
             // after atMode created
-            expect(at).toEqual(_at);
+            expect(atId).toEqual(_atId);
             expect(name).toEqual(_name);
-            expect(atObject).toHaveProperty('id');
-            expect(atObject).toHaveProperty('name');
+            expect(at).toHaveProperty('id');
+            expect(at).toHaveProperty('name');
 
             // after atMode updated
             expect(_name).not.toEqual(_updatedName);
@@ -504,16 +504,16 @@ describe('AtModeModel Data Checks', () => {
     it('should return same atMode if no update params passed', async () => {
         await dbCleaner(async () => {
             // A1
-            const _at = 1;
+            const _atId = 1;
             const _name = 'reading';
 
             // A2
             const originalAtMode = await AtService.getAtModeByQuery({
-                at: _at,
+                atId: _atId,
                 name: _name
             });
             const updatedAtMode = await AtService.updateAtModeByQuery({
-                at: _at,
+                atId: _atId,
                 name: _name
             });
 
@@ -531,9 +531,9 @@ describe('AtModeModel Data Checks', () => {
         expect(result).toEqual(
             expect.arrayContaining([
                 expect.objectContaining({
-                    at: expect.any(Number),
+                    atId: expect.any(Number),
                     name: expect.any(String),
-                    atObject: expect.objectContaining({
+                    at: expect.objectContaining({
                         id: expect.any(Number),
                         name: expect.any(String)
                     })
@@ -554,9 +554,9 @@ describe('AtModeModel Data Checks', () => {
         expect(result).toEqual(
             expect.arrayContaining([
                 expect.objectContaining({
-                    at: expect.any(Number),
+                    atId: expect.any(Number),
                     name: expect.stringMatching(/read/gi),
-                    atObject: expect.objectContaining({
+                    at: expect.objectContaining({
                         id: expect.any(Number),
                         name: expect.any(String)
                     })
