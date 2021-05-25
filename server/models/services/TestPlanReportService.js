@@ -5,8 +5,7 @@ const {
     TEST_PLAN_VERSION_ATTRIBUTES,
     TEST_PLAN_TARGET_ATTRIBUTES,
     TEST_PLAN_RUN_ATTRIBUTES,
-    USER_ATTRIBUTES,
-    TEST_RESULT_ATTRIBUTES
+    USER_ATTRIBUTES
 } = require('./helpers');
 const { TestPlanReport, TestPlanRun } = require('../');
 
@@ -15,21 +14,14 @@ const { TestPlanReport, TestPlanRun } = require('../');
 /**
  * @param {string[]} testPlanRunAttributes - TestPlanRun attributes
  * @param {string[]} userAttributes - User attributes
- * @param {string[]} testResultAttributes - TestResult attributes
  * @returns {{association: string, attributes: string[]}}
  */
-const testPlanRunAssociation = (
-    testPlanRunAttributes,
-    userAttributes,
-    testResultAttributes
-) => ({
+const testPlanRunAssociation = (testPlanRunAttributes, userAttributes) => ({
     association: 'testPlanRuns',
     attributes: testPlanRunAttributes,
     include: [
         // eslint-disable-next-line no-use-before-define
-        userAssociation(userAttributes),
-        // eslint-disable-next-line no-use-before-define
-        testResultAssociation(testResultAttributes)
+        userAssociation(userAttributes)
     ]
 });
 
@@ -61,15 +53,6 @@ const userAssociation = userAttributes => ({
 });
 
 /**
- * @param {string[]} testResultAttributes - TestResult attributes
- * @returns {{association: string, attributes: string[]}}
- */
-const testResultAssociation = testResultAttributes => ({
-    association: 'testResults',
-    attributes: testResultAttributes
-});
-
-/**
  * You can pass any of the attribute arrays as '[]' to exclude that related association
  * @param {number} id - unique id of the TestPlanReport model being queried
  * @param {string[]} testPlanReportAttributes - TestPlanReport attributes to be returned in the result
@@ -77,7 +60,6 @@ const testResultAssociation = testResultAttributes => ({
  * @param {string[]} testPlanVersionAttributes - TestPlanVersion attributes to be returned in the result
  * @param {string[]} testPlanTargetAttributes - TestPlanTarget attributes to be returned in the result
  * @param {string[]} userAttributes - User attributes to be returned in the result
- * @param {string[]} testResultAttributes - TestResult attributes to be returned in the result
  * @returns {Promise<*>}
  */
 const getTestPlanReportById = async (
@@ -86,19 +68,14 @@ const getTestPlanReportById = async (
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
     testPlanTargetAttributes = TEST_PLAN_TARGET_ATTRIBUTES,
-    userAttributes = USER_ATTRIBUTES,
-    testResultAttributes = TEST_RESULT_ATTRIBUTES
+    userAttributes = USER_ATTRIBUTES
 ) => {
     return await ModelService.getById(
         TestPlanReport,
         id,
         testPlanReportAttributes,
         [
-            testPlanRunAssociation(
-                testPlanRunAttributes,
-                userAttributes,
-                testResultAttributes
-            ),
+            testPlanRunAssociation(testPlanRunAttributes, userAttributes),
             testPlanVersionAssociation(testPlanVersionAttributes),
             testPlanTargetAssociation(testPlanTargetAttributes)
         ]
@@ -113,7 +90,6 @@ const getTestPlanReportById = async (
  * @param {string[]} testPlanVersionAttributes - TestPlanVersion attributes to be returned in the result
  * @param {string[]} testPlanTargetAttributes - TestPlanTarget attributes to be returned in the result
  * @param {string[]} userAttributes - User attributes to be returned in the result
- * @param {string[]} testResultAttributes - TestResult attributes to be returned in the result
  * @param {object} pagination - pagination options for query
  * @param {number} [pagination.page=0] - page to be queried in the pagination result (affected by {@param pagination.enablePagination})
  * @param {number} [pagination.limit=10] - amount of results to be returned per page (affected by {@param pagination.enablePagination})
@@ -129,7 +105,6 @@ const getTestPlanReports = async (
     testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
     testPlanTargetAttributes = TEST_PLAN_TARGET_ATTRIBUTES,
     userAttributes = USER_ATTRIBUTES,
-    testResultAttributes = TEST_RESULT_ATTRIBUTES,
     pagination = {}
 ) => {
     // search and filtering options
@@ -140,11 +115,7 @@ const getTestPlanReports = async (
         where,
         testPlanReportAttributes,
         [
-            testPlanRunAssociation(
-                testPlanRunAttributes,
-                userAttributes,
-                testResultAttributes
-            ),
+            testPlanRunAssociation(testPlanRunAttributes, userAttributes),
             testPlanVersionAssociation(testPlanVersionAttributes),
             testPlanTargetAssociation(testPlanTargetAttributes)
         ],
@@ -160,7 +131,6 @@ const getTestPlanReports = async (
  * @param {string[]} testPlanVersionAttributes - TestPlanVersion attributes to be returned in the result
  * @param {string[]} testPlanTargetAttributes - TestPlanTarget attributes to be returned in the result
  * @param {string[]} userAttributes - User attributes to be returned in the result
- * @param {string[]} testResultAttributes - TestResult attributes to be returned in the result
  * @returns {Promise<*>}
  */
 const updateTestPlanReport = async (
@@ -170,8 +140,7 @@ const updateTestPlanReport = async (
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
     testPlanTargetAttributes = TEST_PLAN_TARGET_ATTRIBUTES,
-    userAttributes = USER_ATTRIBUTES,
-    testResultAttributes = TEST_RESULT_ATTRIBUTES
+    userAttributes = USER_ATTRIBUTES
 ) => {
     await ModelService.update(
         TestPlanReport,
@@ -186,8 +155,7 @@ const updateTestPlanReport = async (
         testPlanRunAttributes,
         testPlanVersionAttributes,
         testPlanTargetAttributes,
-        userAttributes,
-        testResultAttributes
+        userAttributes
     );
 };
 
@@ -203,7 +171,6 @@ const updateTestPlanReport = async (
  * @param {string[]} testPlanVersionAttributes - TestPlanVersion attributes to be returned in the result
  * @param {string[]} testPlanTargetAttributes - TestPlanTarget attributes to be returned in the result
  * @param {string[]} userAttributes - User attributes to be returned in the result
- * @param {string[]} testResultAttributes - TestResult attributes to be returned in the result
  * @returns {Promise<*>}
  */
 const assignTestPlanReportToUser = async (
@@ -213,8 +180,7 @@ const assignTestPlanReportToUser = async (
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
     testPlanTargetAttributes = TEST_PLAN_TARGET_ATTRIBUTES,
-    userAttributes = USER_ATTRIBUTES,
-    testResultAttributes = TEST_RESULT_ATTRIBUTES
+    userAttributes = USER_ATTRIBUTES
 ) => {
     // TestPlanRun has to be created for that user
     await TestPlanRunService.createTestPlanRun({
@@ -228,8 +194,7 @@ const assignTestPlanReportToUser = async (
         testPlanRunAttributes,
         testPlanVersionAttributes,
         testPlanTargetAttributes,
-        userAttributes,
-        testResultAttributes
+        userAttributes
     );
 };
 
@@ -243,7 +208,6 @@ const assignTestPlanReportToUser = async (
  * @param {string[]} testPlanVersionAttributes - TestPlanVersion attributes to be returned in the result
  * @param {string[]} testPlanTargetAttributes - TestPlanTarget attributes to be returned in the result
  * @param {string[]} userAttributes - User attributes to be returned in the result
- * @param {string[]} testResultAttributes - TestResult attributes to be returned in the result
  * @returns {Promise<*>}
  */
 const removeTestPlanReportForUser = async (
@@ -253,8 +217,7 @@ const removeTestPlanReportForUser = async (
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
     testPlanTargetAttributes = TEST_PLAN_TARGET_ATTRIBUTES,
-    userAttributes = USER_ATTRIBUTES,
-    testResultAttributes = TEST_RESULT_ATTRIBUTES
+    userAttributes = USER_ATTRIBUTES
 ) => {
     // TestPlanRun had have been created for that user
     await ModelService.removeByQuery(TestPlanRun, {
@@ -268,8 +231,7 @@ const removeTestPlanReportForUser = async (
         testPlanRunAttributes,
         testPlanVersionAttributes,
         testPlanTargetAttributes,
-        userAttributes,
-        testResultAttributes
+        userAttributes
     );
 };
 
@@ -282,7 +244,6 @@ const removeTestPlanReportForUser = async (
  * @param {string[]} testPlanVersionAttributes - TestPlanVersion attributes to be returned in the result
  * @param {string[]} testPlanTargetAttributes - TestPlanTarget attributes to be returned in the result
  * @param {string[]} userAttributes - User attributes to be returned in the result
- * @param {string[]} testResultAttributes - TestResult attributes to be returned in the result
  * @returns {Promise<*>}
  */
 const updateTestPlanReportStatus = async (
@@ -292,8 +253,7 @@ const updateTestPlanReportStatus = async (
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
     testPlanTargetAttributes = TEST_PLAN_TARGET_ATTRIBUTES,
-    userAttributes = USER_ATTRIBUTES,
-    testResultAttributes = TEST_RESULT_ATTRIBUTES
+    userAttributes = USER_ATTRIBUTES
 ) => {
     return await updateTestPlanReport(
         testPlanReportId,
@@ -302,8 +262,7 @@ const updateTestPlanReportStatus = async (
         testPlanRunAttributes,
         testPlanVersionAttributes,
         testPlanTargetAttributes,
-        userAttributes,
-        testResultAttributes
+        userAttributes
     );
 };
 

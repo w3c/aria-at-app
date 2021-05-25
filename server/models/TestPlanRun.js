@@ -11,7 +11,8 @@ module.exports = function(sequelize, DataTypes) {
                 autoIncrement: true
             },
             testerUserId: { type: DataTypes.INTEGER, allowNull: true },
-            testPlanReportId: { type: DataTypes.INTEGER }
+            testPlanReportId: { type: DataTypes.INTEGER },
+            results: { type: DataTypes.JSONB }
         },
         {
             timestamps: false,
@@ -26,12 +27,6 @@ module.exports = function(sequelize, DataTypes) {
     Model.USER_ASSOCIATION = { foreignKey: 'testerUserId' };
 
     Model.associate = function(models) {
-        Model.hasMany(models.TestResult, {
-            ...Model.TEST_RESULT_ASSOCIATION,
-            foreignKey: 'testPlanRun',
-            sourceKey: 'id'
-        });
-
         Model.belongsTo(models.TestPlanReport, {
             ...Model.TEST_PLAN_REPORT_ASSOCIATION,
             targetKey: 'id',

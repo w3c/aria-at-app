@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = {
-    up: (queryInterface /* , Sequelize */) => {
+    up: (queryInterface, Sequelize) => {
         return queryInterface.sequelize.transaction(async transaction => {
             await queryInterface.renameTable('TestPlan', 'TestPlanVersion', {
                 transaction
@@ -67,6 +67,14 @@ module.exports = {
                 'isManuallyTested',
                 { transaction }
             );
+            await queryInterface.addColumn(
+                'TestPlanRun',
+                'results',
+                Sequelize.DataTypes.JSONB,
+                { transaction }
+            );
+
+            await queryInterface.dropTable('TestResult', { transaction });
         });
     },
 
@@ -138,6 +146,23 @@ module.exports = {
                 Sequelize.DataTypes.BOOLEAN,
                 { transaction }
             );
+            await queryInterface.removeColumn('TestPlanRun', 'results', {
+                transaction
+            });
+
+            queryInterface.createTable({
+                startedAt: {
+                    type: Sequelize.DataTypes.DATE,
+                    defaultValue: Sequelize.DataTypes.NOW
+                },
+                completedAt: {
+                    type: Sequelize.DataTypes.DATE,
+                    defaultValue: null,
+                    allowNull: true
+                },
+                testPlanRun: { type: Sequelize.DataTypes.INTEGER },
+                data: { type: Sequelize.DataTypes.JSONB }
+            });
         });
     }
 };

@@ -6,7 +6,6 @@ const {
 } = require('sequelize-test-helpers');
 
 const TestPlanRunModel = require('../../models/TestPlanRun');
-const TestResultModel = require('../../models/TestResult');
 const TestPlanReportModel = require('../../models/TestPlanReport');
 const UserModel = require('../../models/User');
 
@@ -20,30 +19,20 @@ describe('TestPlanRunModel', () => {
 
     describe('properties', () => {
         // A3
-        ['testerUserId', 'testPlanReportId'].forEach(
+        ['testerUserId', 'testPlanReportId', 'results'].forEach(
             checkPropertyExists(modelInstance)
         );
     });
 
     describe('associations', () => {
         // A1
-        const TEST_RESULT_ASSOCIATION = { as: 'testResults' };
         const TEST_PLAN_REPORT_ASSOCIATION = { foreignKey: 'testPlanReportId' };
         const USER_ASSOCIATION = { foreignKey: 'testerUserId' };
 
         // A2
         beforeAll(() => {
-            Model.hasMany(TestResultModel, TEST_RESULT_ASSOCIATION);
             Model.belongsTo(TestPlanReportModel, TEST_PLAN_REPORT_ASSOCIATION);
             Model.belongsTo(UserModel, USER_ASSOCIATION);
-        });
-
-        it('defined a hasMany association with TestResult', () => {
-            // A3
-            expect(Model.hasMany).toHaveBeenCalledWith(
-                TestResultModel,
-                expect.objectContaining(Model.TEST_RESULT_ASSOCIATION)
-            );
         });
 
         it('defined a belongsTo association with TestPlanReport', () => {
