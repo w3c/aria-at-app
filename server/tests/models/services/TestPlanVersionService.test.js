@@ -20,7 +20,6 @@ describe('TestPlanReportModel Data Checks', () => {
             status,
             gitSha,
             gitMessage,
-            exampleUrl,
             updatedAt,
             parsed,
             testPlanReports
@@ -31,7 +30,6 @@ describe('TestPlanReportModel Data Checks', () => {
         expect(status).toMatch(/^(DRAFT|IN_REVIEW|FINALIZED)$/);
         expect(gitSha).toBeTruthy();
         expect(gitMessage).toBeTruthy();
-        expect(exampleUrl).toBeTruthy();
         expect(updatedAt).toBeTruthy();
         expect(parsed).toBeTruthy();
         expect(testPlanReports).toBeInstanceOf(Array);
