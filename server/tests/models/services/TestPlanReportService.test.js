@@ -151,7 +151,10 @@ describe('TestPlanReportModel Data Checks', () => {
             expect(testPlanRuns).toBeTruthy();
             expect(testPlanRunsLength).toBeGreaterThanOrEqual(1);
             expect(testPlanRuns).toContainEqual(
-                expect.objectContaining({ tester: userId, testPlanReport: _id })
+                expect.objectContaining({
+                    testerUserId: userId,
+                    testPlanReport: _id
+                })
             );
 
             // after testPlanReport is unassigned from tester
@@ -161,7 +164,7 @@ describe('TestPlanReportModel Data Checks', () => {
             expect(removedTestPlanRuns.length).toEqual(testPlanRunsLength - 1);
             expect(removedTestPlanRuns).not.toContainEqual(
                 expect.objectContaining({
-                    tester: removedUserId,
+                    testerUserId: removedUserId,
                     testPlanReport: _id
                 })
             );

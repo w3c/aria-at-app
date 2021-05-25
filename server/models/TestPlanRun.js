@@ -11,7 +11,7 @@ module.exports = function(sequelize, DataTypes) {
                 autoIncrement: true
             },
             isManuallyTested: { type: DataTypes.BOOLEAN, defaultValue: false },
-            tester: { type: DataTypes.INTEGER, allowNull: true },
+            testerUserId: { type: DataTypes.INTEGER, allowNull: true },
             testPlanReport: { type: DataTypes.INTEGER }
         },
         {
@@ -24,7 +24,7 @@ module.exports = function(sequelize, DataTypes) {
 
     Model.TEST_PLAN_REPORT_ASSOCIATION = { foreignKey: 'testPlanReport' };
 
-    Model.USER_ASSOCIATION = { foreignKey: 'tester' };
+    Model.USER_ASSOCIATION = { foreignKey: 'testerUserId' };
 
     Model.associate = function(models) {
         Model.hasMany(models.TestResult, {
@@ -42,7 +42,7 @@ module.exports = function(sequelize, DataTypes) {
         Model.belongsTo(models.User, {
             ...Model.USER_ASSOCIATION,
             targetKey: 'id',
-            as: 'testerObject'
+            as: 'tester'
         });
     };
 

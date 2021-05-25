@@ -20,7 +20,7 @@ describe('TestPlanRunModel', () => {
 
     describe('properties', () => {
         // A3
-        ['isManuallyTested', 'tester', 'testPlanReport'].forEach(
+        ['isManuallyTested', 'testerUserId', 'testPlanReport'].forEach(
             checkPropertyExists(modelInstance)
         );
     });
@@ -29,7 +29,7 @@ describe('TestPlanRunModel', () => {
         // A1
         const TEST_RESULT_ASSOCIATION = { as: 'testResults' };
         const TEST_PLAN_REPORT_ASSOCIATION = { foreignKey: 'testPlanReport' };
-        const USER_ASSOCIATION = { foreignKey: 'tester' };
+        const USER_ASSOCIATION = { foreignKey: 'testerUserId' };
 
         // A2
         beforeAll(() => {

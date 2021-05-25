@@ -56,7 +56,7 @@ const testPlanTargetAssociation = testPlanTargetAttributes => ({
  * @returns {{association: string, attributes: string[]}}
  */
 const userAssociation = userAttributes => ({
-    association: 'testerObject', // resolver will have to remap this to 'tester' after the attributes have been successfully pulled; 'tester' conflicts on this model as the id
+    association: 'tester',
     attributes: userAttributes
 });
 
@@ -221,7 +221,7 @@ const assignTestPlanReportToUser = async (
     // TestPlanRun has to be created for that user
     await TestPlanRunService.createTestPlanRun({
         testPlanReport: testPlanReportId,
-        tester: userId,
+        testerUserId: userId,
         isManuallyTested
     });
 
@@ -262,7 +262,7 @@ const removeTestPlanReportForUser = async (
     // TestPlanRun had have been created for that user
     await ModelService.removeByQuery(TestPlanRun, {
         testPlanReport: testPlanReportId,
-        tester: userId
+        testerUserId: userId
     });
 
     return await getTestPlanReportById(

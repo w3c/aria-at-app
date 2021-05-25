@@ -49,6 +49,13 @@ module.exports = {
                 'coveragePercent',
                 { transaction }
             );
+
+            await queryInterface.renameColumn(
+                'TestPlanRun',
+                'tester',
+                'testerUserId',
+                { transaction }
+            );
         });
     },
 
@@ -99,6 +106,13 @@ module.exports = {
                 'TestPlanReport',
                 'coveragePercent',
                 Sequelize.DataTypes.NUMERIC,
+                { transaction }
+            );
+
+            await queryInterface.renameColumn(
+                'TestPlanRun',
+                'testerUserId',
+                'tester',
                 { transaction }
             );
         });

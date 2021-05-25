@@ -32,7 +32,7 @@ const testResultAssociation = testResultAttributes => ({
  * @returns {{association: string, attributes: string[]}}
  */
 const userAssociation = userAttributes => ({
-    association: 'testerObject', // resolver will have to remap this to 'tester' after the attributes have been successfully pulled; 'tester' conflicts on this model as the id
+    association: 'tester',
     attributes: userAttributes
 });
 
@@ -108,7 +108,7 @@ const getTestPlanRuns = async (
  * @returns {Promise<*>}
  */
 const createTestPlanRun = async (
-    { isManuallyTested, tester, testPlanReport },
+    { isManuallyTested, testerUserId, testPlanReport },
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
     testResultAttributes = TEST_RESULT_ATTRIBUTES,
@@ -118,7 +118,7 @@ const createTestPlanRun = async (
     const existingTestPlanRuns = await getTestPlanRuns(
         '',
         {
-            tester,
+            testerUserId,
             testPlanReport
         },
         testPlanRunAttributes,
@@ -130,7 +130,7 @@ const createTestPlanRun = async (
 
     const testPlanRunResult = await ModelService.create(TestPlanRun, {
         isManuallyTested,
-        tester,
+        testerUserId,
         testPlanReport
     });
     const { id } = testPlanRunResult;
@@ -154,7 +154,7 @@ const createTestPlanRun = async (
  */
 const updateTestPlanRun = async (
     id,
-    { isManuallyTested, tester },
+    { isManuallyTested, testerUserId },
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
     testResultAttributes = TEST_RESULT_ATTRIBUTES,
@@ -163,7 +163,7 @@ const updateTestPlanRun = async (
     await ModelService.update(
         TestPlanRun,
         { id },
-        { isManuallyTested, tester }
+        { isManuallyTested, testerUserId }
     );
 
     return await ModelService.getById(TestPlanRun, id, testPlanRunAttributes, [
