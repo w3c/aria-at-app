@@ -25,7 +25,7 @@ describe('TestPlanReportModel Data Checks', () => {
         } = testPlanReport;
 
         expect(id).toEqual(_id);
-        expect(status).toMatch(/(draft)|(in_review)|(final)/gi);
+        expect(status).toMatch(/(DRAFT)|(IN_REVIEW)|(FINALIZED)/g);
         expect(testPlanTargetId).toBeTruthy();
         expect(testPlanVersionId).toBeTruthy();
         expect(createdAt).toBeTruthy();
@@ -42,7 +42,7 @@ describe('TestPlanReportModel Data Checks', () => {
     it('should update testPlanReport status to final', async () => {
         await dbCleaner(async () => {
             const _id = 1;
-            const _status = 'final';
+            const _status = 'FINALIZED';
 
             const testPlanReport = await TestPlanReportService.getTestPlanReportById(
                 _id
@@ -61,7 +61,7 @@ describe('TestPlanReportModel Data Checks', () => {
 
             // before testPlanReport status updated to final
             expect(id).toEqual(_id);
-            expect(status).toMatch(/(draft)|(in_review)/gi);
+            expect(status).toMatch(/(DRAFT)|(IN_REVIEW)/g);
 
             // after testPlanReport status updated to final
             expect(updatedId).toEqual(_id);

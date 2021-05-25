@@ -1,7 +1,7 @@
 [
   {
     "id": 1,
-    "status": "draft",
+    "status": "DRAFT",
     "testPlanTargetId": 1,
     "testPlanVersionId": 1
   }

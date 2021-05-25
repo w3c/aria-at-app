@@ -1,12 +1,12 @@
 [
   {
     "id": 1,
-    "status": "draft",
-    "revision": "",
-    "sourceGitCommit": "",
+    "status": "DRAFT",
+    "gitSha": "",
+    "gitMessage": "",
     "exampleUrl": "",
     "createdAt": "",
-    "parsedTest": {
+    "parsed": {
       "title": "",
       "minimumInputCount": "",
       "maximumInputCount": "",

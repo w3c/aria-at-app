@@ -238,7 +238,7 @@ const removeTestPlanReportForUser = async (
 /**
  * Custom function to update the TestPlanReportStatus; potentially made redundant due to {@method updateTestPlanReport}
  * @param {number} testPlanReportId - TestPlanReport id of the TestPlanReport being updated
- * @param {string} status - must be one of: 'draft', 'in_review' or 'final'
+ * @param {string} status - must be one of: 'DRAFT', 'IN_REVIEW' or 'FINALIZED'
  * @param {string[]} testPlanReportAttributes - TestPlanReport attributes to be returned in the result
  * @param {string[]} testPlanRunAttributes - TestPlanRun attributes to be returned in the result
  * @param {string[]} testPlanVersionAttributes - TestPlanVersion attributes to be returned in the result

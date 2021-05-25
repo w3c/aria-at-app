@@ -3,7 +3,7 @@ const MODEL_NAME = 'TestPlanReport';
 const STATUS = {
     DRAFT: 'DRAFT',
     IN_REVIEW: 'IN_REVIEW',
-    FINAL: 'FINAL'
+    FINALIZED: 'FINALIZED'
 };
 
 module.exports = function(sequelize, DataTypes) {
@@ -21,7 +21,7 @@ module.exports = function(sequelize, DataTypes) {
                 // type: DataTypes.ENUM(
                 //     STATUS.DRAFT,
                 //     STATUS.IN_REVIEW,
-                //     STATUS.FINAL
+                //     STATUS.FINALIZED
                 // ),
                 allowNull: false,
                 defaultValue: STATUS.DRAFT
@@ -41,7 +41,7 @@ module.exports = function(sequelize, DataTypes) {
 
     Model.DRAFT = STATUS.DRAFT;
     Model.IN_REVIEW = STATUS.IN_REVIEW;
-    Model.FINAL = STATUS.FINAL;
+    Model.FINALIZED = STATUS.FINALIZED;
 
     Model.TEST_PLAN_VERSION_ASSOCIATION = { foreignKey: 'testPlanVersionId' };
 
