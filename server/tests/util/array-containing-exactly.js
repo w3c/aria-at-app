@@ -21,8 +21,8 @@ class ArrayContainingExactly {
         const result =
             this.sample.length === other.length &&
             Array.isArray(other) &&
-            this.sample.every(item =>
-                other.some(another => equals(item, another))
+            this.sample.every((item) =>
+                other.some((another) => equals(item, another))
             );
 
         return result;

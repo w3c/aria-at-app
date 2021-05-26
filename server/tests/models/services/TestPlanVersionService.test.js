@@ -11,9 +11,8 @@ describe('TestPlanReportModel Data Checks', () => {
     it('should return valid testPlanVersion for id query', async () => {
         const _id = 1;
 
-        const testPlanVersion = await TestPlanVersionService.getTestPlanVersionById(
-            _id
-        );
+        const testPlanVersion =
+            await TestPlanVersionService.getTestPlanVersionById(_id);
         const {
             id,
             title,
@@ -23,7 +22,7 @@ describe('TestPlanReportModel Data Checks', () => {
             updatedAt,
             metadata,
             tests,
-            testPlanReports
+            testPlanReports,
         } = testPlanVersion;
 
         expect(id).toEqual(_id);
@@ -44,9 +43,8 @@ describe('TestPlanReportModel Data Checks', () => {
     it('should not be valid testPlanVersion query', async () => {
         const _id = 90210;
 
-        const testPlanVersion = await TestPlanVersionService.getTestPlanVersionById(
-            _id
-        );
+        const testPlanVersion =
+            await TestPlanVersionService.getTestPlanVersionById(_id);
 
         expect(testPlanVersion).toBeNull();
     });
@@ -66,8 +64,8 @@ describe('TestPlanReportModel Data Checks', () => {
             const _updatedStatus = 'FINALIZED';
 
             // A2
-            const testPlanVersion = await TestPlanVersionService.createTestPlanVersion(
-                {
+            const testPlanVersion =
+                await TestPlanVersionService.createTestPlanVersion({
                     title: _title,
                     status: _status,
                     gitSha: _gitSha,
@@ -75,9 +73,8 @@ describe('TestPlanReportModel Data Checks', () => {
                     exampleUrl: _exampleUrl,
                     updatedAt: _updatedAt,
                     metadata: _metadata,
-                    tests: _tests
-                }
-            );
+                    tests: _tests,
+                });
             const {
                 id: createdId,
                 title: createdTitle,
@@ -87,18 +84,18 @@ describe('TestPlanReportModel Data Checks', () => {
                 exampleUrl: createdExampleUrl,
                 updatedAt: createdUpdatedAt,
                 metadata: createdMetadata,
-                tests: createdTests
+                tests: createdTests,
             } = testPlanVersion;
 
             // A2
-            const updatedTestPlanVersion = await TestPlanVersionService.updateTestPlanVersion(
-                createdId,
-                { status: _updatedStatus }
-            );
+            const updatedTestPlanVersion =
+                await TestPlanVersionService.updateTestPlanVersion(createdId, {
+                    status: _updatedStatus,
+                });
             const {
                 title: updatedTitle,
                 status: updatedStatus,
-                updatedAt: updatedUpdatedAt
+                updatedAt: updatedUpdatedAt,
             } = updatedTestPlanVersion;
 
             // A3
@@ -142,8 +139,8 @@ describe('TestPlanReportModel Data Checks', () => {
             expect.arrayContaining([
                 expect.objectContaining({
                     id: expect.any(Number),
-                    title: expect.stringMatching(/checkbo/gi)
-                })
+                    title: expect.stringMatching(/checkbo/gi),
+                }),
             ])
         );
     });
@@ -160,7 +157,7 @@ describe('TestPlanReportModel Data Checks', () => {
             {
                 page: -1,
                 limit: -1,
-                enablePagination: true
+                enablePagination: true,
             }
         );
         expect(result).toHaveProperty('page');

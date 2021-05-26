@@ -8,7 +8,7 @@ import {
     saveRunConfiguration,
     getActiveRunConfiguration,
     getTestVersions,
-    getActiveRuns
+    getActiveRuns,
 } from '../../actions/runs';
 import ConfigureTechnologyRow from '@components/ConfigureTechnologyRow';
 import ConfigurationModal from '@components/ConfigurationModal';
@@ -46,7 +46,7 @@ function getDefaultsTechCombinations(testVersion, activeRunConfiguration) {
     let initialRunRows = [];
     for (let combo of activeRunConfiguration.active_at_browser_pairs) {
         let at = testVersion.supported_ats.find(
-            at => at.at_name_id === combo.at_name_id
+            (at) => at.at_name_id === combo.at_name_id
         );
         let at_id = at ? at.at_id : undefined;
 
@@ -57,7 +57,7 @@ function getDefaultsTechCombinations(testVersion, activeRunConfiguration) {
                 browser_id: combo.browser_id,
                 browser_version: combo.browser_version,
                 editable: false,
-                deleted: false
+                deleted: false,
             });
         }
     }
@@ -82,13 +82,13 @@ class ConfigureActiveRuns extends Component {
             showChangeModal: false,
             configurationChanges: [],
             newConfiguration: {},
-            resultsDeleted: false
+            resultsDeleted: false,
         };
 
         if (activeRunConfiguration && testVersionId && testVersions) {
             this.state.runTechnologyRows = getDefaultsTechCombinations(
                 testVersions.filter(
-                    version =>
+                    (version) =>
                         activeRunConfiguration.active_test_version.id ===
                         version.id
                 )[0],
@@ -101,9 +101,8 @@ class ConfigureActiveRuns extends Component {
         }
 
         this.handleVersionChange = this.handleVersionChange.bind(this);
-        this.handleTechnologyRowChange = this.handleTechnologyRowChange.bind(
-            this
-        );
+        this.handleTechnologyRowChange =
+            this.handleTechnologyRowChange.bind(this);
         this.deleteTechnologyRow = this.deleteTechnologyRow.bind(this);
         this.addTechnologyRow = this.addTechnologyRow.bind(this);
         this.selectExample = this.selectExample.bind(this);
@@ -121,7 +120,7 @@ class ConfigureActiveRuns extends Component {
             dispatch,
             testVersions,
             activeRunConfiguration,
-            activeRunsById
+            activeRunsById,
         } = this.props;
         if (!testVersions) {
             dispatch(getTestVersions());
@@ -164,7 +163,7 @@ class ConfigureActiveRuns extends Component {
             return {
                 selectedVersion: testVersionId,
                 exampleSelected,
-                runTechnologyRows
+                runTechnologyRows,
             };
         }
         return null;
@@ -178,20 +177,20 @@ class ConfigureActiveRuns extends Component {
         this.setState({
             exampleSelected: {
                 ...this.state.exampleSelected,
-                [apgExampleId]: !selected // Clicking remove means remove the apgExample
-            }
+                [apgExampleId]: !selected, // Clicking remove means remove the apgExample
+            },
         });
     }
 
     showChanges() {
         this.setState({
-            showChangeModal: true
+            showChangeModal: true,
         });
     }
 
     closeChanges() {
         this.setState({
-            showChangeModal: false
+            showChangeModal: false,
         });
     }
 
@@ -211,7 +210,7 @@ class ConfigureActiveRuns extends Component {
         if (oldVersionId !== newVersionId) {
             configurationChanges = configurationChanges.concat(
                 Object.values(activeRunsById).filter(
-                    run =>
+                    (run) =>
                         run.run_status === 'draft' || run.run_status === 'raw'
                 )
             );
@@ -221,7 +220,7 @@ class ConfigureActiveRuns extends Component {
         activeRunConfiguration.active_at_browser_pairs.reduce(
             (acc, oldPair) => {
                 let pairFound = newConfig.at_browser_pairs.find(
-                    pair =>
+                    (pair) =>
                         oldPair.at_name_id === pair.at_name_id &&
                         oldPair.at_version === pair.at_version &&
                         oldPair.browser_version === pair.browser_version &&
@@ -239,7 +238,7 @@ class ConfigureActiveRuns extends Component {
         let runsToDeleteTechPair = [];
         pairsDelete.reduce((acc, row) => {
             let runFound = Object.values(activeRunsById).find(
-                run =>
+                (run) =>
                     run.at_name_id === row.at_name_id &&
                     run.at_version === row.at_version &&
                     run.browser_id === row.browser_id &&
@@ -250,15 +249,14 @@ class ConfigureActiveRuns extends Component {
             return acc;
         }, runsToDeleteTechPair);
 
-        configurationChanges = configurationChanges.concat(
-            runsToDeleteTechPair
-        );
+        configurationChanges =
+            configurationChanges.concat(runsToDeleteTechPair);
 
         // Find all runs associated with example change
         let examplesDelete = [];
         activeRunConfiguration.active_apg_examples.reduce((acc, oldExample) => {
             let exampleFound = newConfig.apg_example_ids.find(
-                example => example === oldExample
+                (example) => example === oldExample
             );
             if (!exampleFound) {
                 acc.push(oldExample);
@@ -269,7 +267,7 @@ class ConfigureActiveRuns extends Component {
         let runsDeleteApgExamples = [];
         examplesDelete.reduce((acc, exampleId) => {
             let runsFound = Object.values(activeRunsById).filter(
-                run =>
+                (run) =>
                     run.apg_example_id === exampleId &&
                     run.run_status === 'draft'
             );
@@ -285,7 +283,7 @@ class ConfigureActiveRuns extends Component {
         let uniqueConfigChanges = [];
         configurationChanges.reduce((acc, run) => {
             let runFound = uniqueConfigChanges.find(
-                duplicateRun => run.id === duplicateRun.id
+                (duplicateRun) => run.id === duplicateRun.id
             );
             if (!runFound) acc.push(run);
             return acc;
@@ -297,7 +295,7 @@ class ConfigureActiveRuns extends Component {
     configureActiveRuns() {
         const { testVersions } = this.props;
         let versionData = testVersions.filter(
-            version => version.id === this.state.selectedVersion
+            (version) => version.id === this.state.selectedVersion
         )[0];
 
         const atBrowserPairs = [];
@@ -324,7 +322,7 @@ class ConfigureActiveRuns extends Component {
                 continue;
             }
 
-            let existingPair = atBrowserPairs.find(p => {
+            let existingPair = atBrowserPairs.find((p) => {
                 return (
                     p.at_name_id === atIdToAtNameId[runTechnologyPair.at_id] &&
                     p.at_version === runTechnologyPair.at_version &&
@@ -336,7 +334,7 @@ class ConfigureActiveRuns extends Component {
                 let deduplicatedRows = [...this.state.runTechnologyRows];
                 deduplicatedRows.splice(index, 1);
                 this.setState({
-                    runTechnologyRows: deduplicatedRows
+                    runTechnologyRows: deduplicatedRows,
                 });
             } else {
                 if (!runTechnologyPair.deleted) {
@@ -344,7 +342,7 @@ class ConfigureActiveRuns extends Component {
                         at_name_id: atIdToAtNameId[runTechnologyPair.at_id],
                         at_version: runTechnologyPair.at_version,
                         browser_id: runTechnologyPair.browser_id,
-                        browser_version: runTechnologyPair.browser_version
+                        browser_version: runTechnologyPair.browser_version,
                     });
                 }
             }
@@ -360,20 +358,20 @@ class ConfigureActiveRuns extends Component {
         const config = {
             test_version_id: this.state.selectedVersion,
             apg_example_ids: apgExampleIds,
-            at_browser_pairs: atBrowserPairs
+            at_browser_pairs: atBrowserPairs,
         };
 
         const configurationChanges = this.calculateConfigChanges(config);
 
         let stateConfiguration = {
-            newConfiguration: config
+            newConfiguration: config,
         };
 
         if (configurationChanges.length > 0) {
             stateConfiguration = {
                 configurationChanges,
                 newConfiguration: config,
-                resultsDeleted: true
+                resultsDeleted: true,
             };
 
             this.setState(stateConfiguration, () => {
@@ -382,7 +380,7 @@ class ConfigureActiveRuns extends Component {
         } else {
             stateConfiguration = {
                 newConfiguration: config,
-                resultsDeleted: false
+                resultsDeleted: false,
             };
             this.setState(stateConfiguration, () => {
                 this.saveNewConfiguration();
@@ -402,7 +400,7 @@ class ConfigureActiveRuns extends Component {
         const { testVersions, activeRunConfiguration } = this.props;
 
         let versionData = testVersions.filter(
-            version => version.id === parseInt(event.currentTarget.value)
+            (version) => version.id === parseInt(event.currentTarget.value)
         )[0];
 
         if (versionData) {
@@ -416,7 +414,7 @@ class ConfigureActiveRuns extends Component {
                 runTechnologyRows: getDefaultsTechCombinations(
                     versionData,
                     activeRunConfiguration
-                )
+                ),
             });
         }
     }
@@ -431,7 +429,7 @@ class ConfigureActiveRuns extends Component {
             }
         }
         this.setState({
-            runTechnologyRows: newRunTechnologies
+            runTechnologyRows: newRunTechnologies,
         });
     }
 
@@ -445,7 +443,7 @@ class ConfigureActiveRuns extends Component {
         }
 
         this.setState({
-            runTechnologyRows: newRunTechnologies
+            runTechnologyRows: newRunTechnologies,
         });
     }
 
@@ -460,16 +458,16 @@ class ConfigureActiveRuns extends Component {
         }
 
         this.setState({
-            runTechnologyRows: newRunTechnologies
+            runTechnologyRows: newRunTechnologies,
         });
     }
 
     undoDeleteTechnologyRow(index) {
-        this.setState(prevProps => {
+        this.setState((prevProps) => {
             let newRunTechnologies = [...prevProps.runTechnologyRows];
             newRunTechnologies[index].deleted = false;
             return {
-                runTechnologyRows: newRunTechnologies
+                runTechnologyRows: newRunTechnologies,
             };
         });
     }
@@ -477,8 +475,8 @@ class ConfigureActiveRuns extends Component {
     renderTestVersionSelect() {
         const { testVersions, activeRunConfiguration } = this.props;
 
-        const getTestVersions = function() {
-            const testVersionOption = version => (
+        const getTestVersions = function () {
+            const testVersionOption = (version) => (
                 <option key={version.id} value={version.id}>
                     {moment(version.date).format('MMMM Do YYYY') +
                         ' - ' +
@@ -494,15 +492,15 @@ class ConfigureActiveRuns extends Component {
                 0
                     ? testVersions
                           .filter(
-                              version =>
+                              (version) =>
                                   version.date >
                                   activeRunConfiguration.active_test_version
                                       .date
                           )
-                          .map(version => {
+                          .map((version) => {
                               return testVersionOption(version);
                           })
-                    : testVersions.map(version => {
+                    : testVersions.map((version) => {
                           return testVersionOption(version);
                       });
             return versionList;
@@ -531,14 +529,14 @@ class ConfigureActiveRuns extends Component {
         if (!activeRunsById) return planStatus;
 
         const runsForExample = Object.values(activeRunsById).filter(
-            run => run.apg_example_id === apgExampleId
+            (run) => run.apg_example_id === apgExampleId
         );
         const testsWithResults = [];
 
         // Find any results for the runs for this test plan
         runsForExample.reduce((acc, run) => {
             const anyResults = run.tests.filter(
-                test => Object.keys(test.results) > 0
+                (test) => Object.keys(test.results) > 0
             );
             acc.push(...anyResults);
             return acc;
@@ -566,7 +564,7 @@ class ConfigureActiveRuns extends Component {
         }
 
         let versionData = testVersions.filter(
-            version => version.id === this.state.selectedVersion
+            (version) => version.id === this.state.selectedVersion
         )[0];
 
         let runs = [];
@@ -580,12 +578,12 @@ class ConfigureActiveRuns extends Component {
                 }
 
                 let { at_name, at_name_id } = versionData.supported_ats.find(
-                    at => {
+                    (at) => {
                         return row.at_id === at.at_id;
                     }
                 );
 
-                let browser_name = activeRunConfiguration.browsers.find(b => {
+                let browser_name = activeRunConfiguration.browsers.find((b) => {
                     return row.browser_id === b.id;
                 }).name;
 
@@ -595,17 +593,18 @@ class ConfigureActiveRuns extends Component {
                     at_name_id: at_name_id,
                     browser_name: browser_name,
                     at_id: row.at_id,
-                    browser_id: row.browser_id
+                    browser_id: row.browser_id,
                 });
             }
         }
 
         let enableSaveButton = true;
-        const deletedExistingTechnologyRows = this.state.runTechnologyRows.filter(
-            run => run.editable === false && run.deleted === true
-        );
+        const deletedExistingTechnologyRows =
+            this.state.runTechnologyRows.filter(
+                (run) => run.editable === false && run.deleted === true
+            );
         if (
-            this.state.runTechnologyRows.filter(run => {
+            this.state.runTechnologyRows.filter((run) => {
                 return run.at_id && run.browser_id;
             }).length -
                 deletedExistingTechnologyRows.length ===
@@ -615,7 +614,7 @@ class ConfigureActiveRuns extends Component {
         }
 
         if (
-            versionData.apg_examples.filter(e => {
+            versionData.apg_examples.filter((e) => {
                 return this.state.exampleSelected[e.id];
             }).length === 0
         ) {
@@ -730,7 +729,7 @@ class ConfigureActiveRuns extends Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {versionData.apg_examples.map(example => {
+                        {versionData.apg_examples.map((example) => {
                             let exampleTableTitle =
                                 example.name || example.directory;
                             let id = `designpattern-${example.id}`;
@@ -804,10 +803,10 @@ ConfigureActiveRuns.propTypes = {
     activeRunConfiguration: PropTypes.object,
     activeRunsById: PropTypes.object,
     testVersions: PropTypes.array,
-    dispatch: PropTypes.func
+    dispatch: PropTypes.func,
 };
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
     const { activeRunConfiguration, testVersions, activeRunsById } = state.runs;
     return { testVersions, activeRunConfiguration, activeRunsById };
 };

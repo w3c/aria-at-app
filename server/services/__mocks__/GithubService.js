@@ -5,7 +5,7 @@ const GithubService = {
     getUrl: () => 'localhost:5000/login',
     getUser() {
         return { username: 'foobar', name: 'Foo Bar', email: 'foo@bar.com' };
-    }
+    },
 };
 
 module.exports = GithubService;

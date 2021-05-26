@@ -9,7 +9,7 @@ import {
     SAVE_RUN_CONFIGURATION,
     SAVE_RUN_STATUS,
     SAVE_USERS_TO_RUNS,
-    TEST_VERSIONS
+    TEST_VERSIONS,
 } from '../actions/types';
 
 const initialState = {
@@ -17,7 +17,7 @@ const initialState = {
     activeRunConfiguration: undefined,
     activeRunsById: undefined,
     publishedRunsById: undefined,
-    testVersions: undefined
+    testVersions: undefined,
 };
 
 export default (state = initialState, action) => {
@@ -26,7 +26,7 @@ export default (state = initialState, action) => {
             const runs = action.payload;
             return {
                 ...state,
-                activeRunsById: runs
+                activeRunsById: runs,
             };
         }
         case CONFLICTS_BY_TEST_RESULTS: {
@@ -36,35 +36,35 @@ export default (state = initialState, action) => {
                 ...state,
                 conflictsByTestId: {
                     ...state.conflictsByTestId,
-                    ...conflictsByTestId
-                }
+                    ...conflictsByTestId,
+                },
             };
         }
         case PUBLISHED_RUNS: {
             const runs = action.payload;
             return {
                 ...state,
-                publishedRunsById: runs
+                publishedRunsById: runs,
             };
         }
         case RUN_CONFIGURATION: {
             const config = action.payload;
             return {
                 ...state,
-                activeRunConfiguration: config
+                activeRunConfiguration: config,
             };
         }
         case SAVE_RESULT: {
             const result = action.payload;
             const tests = state.activeRunsById[result.run_id].tests;
-            const testIndex = tests.findIndex(t => t.id === result.test_id);
+            const testIndex = tests.findIndex((t) => t.id === result.test_id);
             const newTests = [...tests];
             const newTest = {
                 ...tests[testIndex],
                 results: {
                     ...tests[testIndex].results,
-                    [result.user_id]: result
-                }
+                    [result.user_id]: result,
+                },
             };
             newTests[testIndex] = newTest;
 
@@ -74,9 +74,9 @@ export default (state = initialState, action) => {
                     ...state.activeRunsById,
                     [result.run_id]: {
                         ...state.activeRunsById[result.run_id],
-                        tests: newTests
-                    }
-                }
+                        tests: newTests,
+                    },
+                },
             };
         }
         case SAVE_RUN_CONFIGURATION: {
@@ -86,17 +86,17 @@ export default (state = initialState, action) => {
                 activeRunsById: runs,
                 activeRunConfiguration: {
                     active_test_version: state.testVersions.find(
-                        v => v.id === config.test_version_id
+                        (v) => v.id === config.test_version_id
                     ),
                     active_at_browser_pairs: config.at_browser_pairs,
                     active_apg_examples: config.apg_example_ids,
-                    browsers: state.activeRunConfiguration.browsers
-                }
+                    browsers: state.activeRunConfiguration.browsers,
+                },
             };
         }
         case DELETE_TEST_RESULTS: {
             const { userId, runId } = action.payload;
-            const newTests = state.activeRunsById[runId].tests.map(t => {
+            const newTests = state.activeRunsById[runId].tests.map((t) => {
                 let newTest = { ...t };
                 newTest.results = { ...t.results };
                 if (newTest.results[userId]) {
@@ -111,9 +111,9 @@ export default (state = initialState, action) => {
                     ...state.activeRunsById,
                     [runId]: {
                         ...state.activeRunsById[runId],
-                        tests: newTests
-                    }
-                }
+                        tests: newTests,
+                    },
+                },
             };
         }
         case DELETE_USERS_FROM_RUN: {
@@ -125,9 +125,9 @@ export default (state = initialState, action) => {
                     ...state.activeRunsById,
                     [runId]: {
                         ...runToUpdate,
-                        testers: usersForRun
-                    }
-                }
+                        testers: usersForRun,
+                    },
+                },
             };
         }
         case SAVE_RUN_STATUS: {
@@ -137,7 +137,7 @@ export default (state = initialState, action) => {
             const updatedRun = {
                 ...state.activeRunsById[runId],
                 run_status,
-                run_status_id
+                run_status_id,
             };
 
             if (oldStatus !== 'final' && run_status !== 'final') {
@@ -145,8 +145,8 @@ export default (state = initialState, action) => {
                     ...state,
                     activeRunsById: {
                         ...state.activeRunsById,
-                        [runId]: updatedRun
-                    }
+                        [runId]: updatedRun,
+                    },
                 };
             } else if (oldStatus !== 'final' && run_status === 'final') {
                 let updatedPublishedRunsById = undefined;
@@ -156,7 +156,7 @@ export default (state = initialState, action) => {
                 if (state.publishedRuns) {
                     updatedPublishedRunsById = {
                         ...state.publishedRunsById,
-                        [runId]: updatedRun
+                        [runId]: updatedRun,
                     };
                 }
 
@@ -164,9 +164,9 @@ export default (state = initialState, action) => {
                     ...state,
                     activeRunsById: {
                         ...state.activeRunsById,
-                        [runId]: updatedRun
+                        [runId]: updatedRun,
                     },
-                    publishedRunsById: updatedPublishedRunsById
+                    publishedRunsById: updatedPublishedRunsById,
                 };
             } else if (oldStatus === 'final' && run_status !== 'final') {
                 const updatedPublishedRunsById = { ...state.publishedRunsById };
@@ -178,13 +178,13 @@ export default (state = initialState, action) => {
                 if (state.activeRunsById) {
                     updatedActiveRunsById = {
                         ...state.activeRunsById,
-                        [runId]: updatedRun
+                        [runId]: updatedRun,
                     };
                 }
                 return {
                     ...state,
                     activeRunsById: updatedActiveRunsById,
-                    publishedRunsById: updatedPublishedRunsById
+                    publishedRunsById: updatedPublishedRunsById,
                 };
             } else {
                 return { ...state };
@@ -199,14 +199,14 @@ export default (state = initialState, action) => {
             }
             return {
                 ...state,
-                activeRunsById: updatedActiveRunsById
+                activeRunsById: updatedActiveRunsById,
             };
         }
         case TEST_VERSIONS: {
             const runs = action.payload;
             return {
                 ...state,
-                testVersions: runs
+                testVersions: runs,
             };
         }
         default:

@@ -40,9 +40,9 @@ describe('render', () => {
                             at_name: 'at_name',
                             at_version: 'at_version',
                             browser_name: 'browser_name',
-                            browser_version: 'browser_version'
-                        }
-                    }
+                            browser_version: 'browser_version',
+                        },
+                    },
                 },
                 user: {
                     email: 'jane@maine.com',
@@ -51,7 +51,7 @@ describe('render', () => {
                     isSignedIn: true,
                     loadedUserData: true,
                     roles: ['tester'],
-                    username: 'jane'
+                    username: 'jane',
                 },
                 users: {
                     usersById: {
@@ -60,10 +60,10 @@ describe('render', () => {
                             email: 'jane@maine.com',
                             fullname: 'Jane Rain',
                             id: 10,
-                            username: 'jane'
-                        }
-                    }
-                }
+                            username: 'jane',
+                        },
+                    },
+                },
             };
             wrapper = setup(initialState);
             wrapper.setState({ currentTestIndex: 1 });

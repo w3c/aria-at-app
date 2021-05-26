@@ -2,14 +2,14 @@
 
 module.exports = {
     up: (queryInterface, Sequelize) => {
-        return queryInterface.sequelize.transaction(async t => {
+        return queryInterface.sequelize.transaction(async (t) => {
             await queryInterface.removeColumn(
                 'run',
                 'browser_version_to_at_and_at_versions_id',
                 { transaction: t }
             );
             await queryInterface.dropTable('BrowserVersionToAtAndAtVersions', {
-                transaction: t
+                transaction: t,
             });
             await queryInterface.createTable(
                 'browser_version_to_at_version',
@@ -18,37 +18,37 @@ module.exports = {
                         allowNull: false,
                         autoIncrement: true,
                         primaryKey: true,
-                        type: Sequelize.INTEGER
+                        type: Sequelize.INTEGER,
                     },
                     browser_version_id: {
                         type: Sequelize.INTEGER,
                         references: {
                             model: 'browser_version',
-                            key: 'id'
+                            key: 'id',
                         },
-                        allowNull: false
+                        allowNull: false,
                     },
                     at_version_id: {
                         type: Sequelize.INTEGER,
                         references: {
                             model: 'at_version',
-                            key: 'id'
+                            key: 'id',
                         },
-                        allowNull: false
+                        allowNull: false,
                     },
                     active: {
                         type: Sequelize.BOOLEAN,
                         defaultValue: false,
-                        allowNull: false
+                        allowNull: false,
                     },
                     createdAt: {
                         allowNull: false,
-                        type: Sequelize.DATE
+                        type: Sequelize.DATE,
                     },
                     updatedAt: {
                         allowNull: false,
-                        type: Sequelize.DATE
-                    }
+                        type: Sequelize.DATE,
+                    },
                 },
                 { transaction: t }
             );
@@ -59,22 +59,22 @@ module.exports = {
                     type: Sequelize.INTEGER,
                     references: {
                         model: 'browser_version_to_at_version',
-                        key: 'id'
-                    }
+                        key: 'id',
+                    },
                 },
                 { transaction: t }
             );
         });
     },
     down: (queryInterface, Sequelize) => {
-        return queryInterface.sequelize.transaction(async t => {
+        return queryInterface.sequelize.transaction(async (t) => {
             await queryInterface.removeColumn(
                 'run',
                 'browser_version_to_at_versions_id',
                 { transaction: t }
             );
             await queryInterface.dropTable('browser_version_to_at_version', {
-                transaction: t
+                transaction: t,
             });
             await queryInterface.createTable(
                 'BrowserVersionToAtAndAtVersions',
@@ -83,45 +83,45 @@ module.exports = {
                         allowNull: false,
                         autoIncrement: true,
                         primaryKey: true,
-                        type: Sequelize.INTEGER
+                        type: Sequelize.INTEGER,
                     },
                     browser_version_id: {
                         type: Sequelize.INTEGER,
                         references: {
                             model: 'browser_version',
-                            key: 'id'
+                            key: 'id',
                         },
-                        allowNull: false
+                        allowNull: false,
                     },
                     at_version_id: {
                         type: Sequelize.INTEGER,
                         references: {
                             model: 'at_version',
-                            key: 'id'
+                            key: 'id',
                         },
-                        allowNull: false
+                        allowNull: false,
                     },
                     at_id: {
                         type: Sequelize.INTEGER,
                         references: {
                             model: 'at',
-                            key: 'id'
+                            key: 'id',
                         },
-                        allowNull: false
+                        allowNull: false,
                     },
                     active: {
                         type: Sequelize.BOOLEAN,
                         defaultValue: false,
-                        allowNull: false
+                        allowNull: false,
                     },
                     createdAt: {
                         allowNull: false,
-                        type: Sequelize.DATE
+                        type: Sequelize.DATE,
                     },
                     updatedAt: {
                         allowNull: false,
-                        type: Sequelize.DATE
-                    }
+                        type: Sequelize.DATE,
+                    },
                 },
                 { transaction: t }
             );
@@ -132,11 +132,11 @@ module.exports = {
                     type: Sequelize.INTEGER,
                     references: {
                         model: 'BrowserVersionToAtAndAtVersions',
-                        key: 'id'
-                    }
+                        key: 'id',
+                    },
                 },
                 { transaction: t }
             );
         });
-    }
+    },
 };

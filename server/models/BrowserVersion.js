@@ -1,6 +1,6 @@
 const MODEL_NAME = 'BrowserVersion';
 
-module.exports = function(sequelize, DataTypes) {
+module.exports = function (sequelize, DataTypes) {
     const Model = sequelize.define(
         MODEL_NAME,
         {
@@ -10,29 +10,29 @@ module.exports = function(sequelize, DataTypes) {
                 primaryKey: true,
                 references: {
                     model: 'Browser',
-                    key: 'id'
-                }
+                    key: 'id',
+                },
             },
             version: {
                 type: DataTypes.TEXT,
                 allowNull: false,
                 primaryKey: true,
-                unique: true
-            }
+                unique: true,
+            },
         },
         {
             timestamps: false,
-            tableName: MODEL_NAME
+            tableName: MODEL_NAME,
         }
     );
 
     Model.BROWSER_ASSOCIATION = { foreignKey: 'browserId' };
 
-    Model.associate = function(models) {
+    Model.associate = function (models) {
         Model.belongsTo(models.Browser, {
             ...Model.BROWSER_ASSOCIATION,
             targetKey: 'id',
-            as: 'browser'
+            as: 'browser',
         });
     };
 

@@ -1,7 +1,7 @@
 import { GET_USERS, SET_USER_ATS } from '../actions/types';
 
 const initialState = {
-    usersById: {}
+    usersById: {},
 };
 
 export default (state = initialState, action) => {
@@ -14,7 +14,7 @@ export default (state = initialState, action) => {
             }, {});
             return {
                 ...state,
-                usersById
+                usersById,
             };
         }
         case SET_USER_ATS: {
@@ -27,8 +27,8 @@ export default (state = initialState, action) => {
                 ...state,
                 usersById: {
                     ...state.usersById,
-                    [userId]: updateUser
-                }
+                    [userId]: updateUser,
+                },
             };
         }
         default:

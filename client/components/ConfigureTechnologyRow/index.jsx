@@ -9,9 +9,8 @@ class ConfigureTechnologyRow extends Component {
     constructor(props) {
         super(props);
 
-        this.handleBrowserVersionChange = this.handleBrowserVersionChange.bind(
-            this
-        );
+        this.handleBrowserVersionChange =
+            this.handleBrowserVersionChange.bind(this);
         this.handleAtVersionChange = this.handleAtVersionChange.bind(this);
         this.handleBrowserChange = this.handleBrowserChange.bind(this);
         this.handleAtChange = this.handleAtChange.bind(this);
@@ -41,11 +40,8 @@ class ConfigureTechnologyRow extends Component {
     }
 
     handleBrowserVersionChange(event) {
-        const {
-            runTechnologies,
-            index,
-            handleTechnologyRowChange
-        } = this.props;
+        const { runTechnologies, index, handleTechnologyRowChange } =
+            this.props;
 
         let version = event.currentTarget.value.trim();
         let newRunTechnologies = { ...runTechnologies };
@@ -55,11 +51,8 @@ class ConfigureTechnologyRow extends Component {
     }
 
     handleAtVersionChange(event) {
-        const {
-            runTechnologies,
-            index,
-            handleTechnologyRowChange
-        } = this.props;
+        const { runTechnologies, index, handleTechnologyRowChange } =
+            this.props;
 
         let version = event.currentTarget.value.trim();
         let newRunTechnologies = { ...runTechnologies };
@@ -69,11 +62,8 @@ class ConfigureTechnologyRow extends Component {
     }
 
     handleBrowserChange(event) {
-        const {
-            runTechnologies,
-            index,
-            handleTechnologyRowChange
-        } = this.props;
+        const { runTechnologies, index, handleTechnologyRowChange } =
+            this.props;
 
         let browserId = parseInt(event.currentTarget.value);
         let newRunTechnologies = { ...runTechnologies };
@@ -84,11 +74,8 @@ class ConfigureTechnologyRow extends Component {
     }
 
     handleAtChange(event) {
-        const {
-            runTechnologies,
-            index,
-            handleTechnologyRowChange
-        } = this.props;
+        const { runTechnologies, index, handleTechnologyRowChange } =
+            this.props;
 
         let atId = parseInt(event.currentTarget.value);
         let newRunTechnologies = { ...runTechnologies };
@@ -115,7 +102,7 @@ class ConfigureTechnologyRow extends Component {
             runTechnologies,
             index,
             editable,
-            deleted
+            deleted,
         } = this.props;
 
         return !editable ? (
@@ -123,7 +110,7 @@ class ConfigureTechnologyRow extends Component {
                 <td>
                     {
                         availableAts.find(
-                            at => at.at_id === runTechnologies.at_id
+                            (at) => at.at_id === runTechnologies.at_id
                         ).at_name
                     }
                 </td>
@@ -131,7 +118,8 @@ class ConfigureTechnologyRow extends Component {
                 <td>
                     {
                         availableBrowsers.find(
-                            browser => browser.id === runTechnologies.browser_id
+                            (browser) =>
+                                browser.id === runTechnologies.browser_id
                         ).name
                     }
                 </td>
@@ -142,8 +130,9 @@ class ConfigureTechnologyRow extends Component {
                             <Button
                                 className="remove-at-browser"
                                 variant="danger"
-                                aria-label={`Delete at/browser combination ${index +
-                                    1}`}
+                                aria-label={`Delete at/browser combination ${
+                                    index + 1
+                                }`}
                                 onClick={this.deleteRun}
                                 disabled={deleted === true}
                                 ref={this.deleteRef}
@@ -231,8 +220,9 @@ class ConfigureTechnologyRow extends Component {
                 <td>
                     <Button
                         variant="danger"
-                        aria-label={`Delete at/browser combination ${index +
-                            1}`}
+                        aria-label={`Delete at/browser combination ${
+                            index + 1
+                        }`}
                         onClick={this.deleteRun}
                     >
                         <FontAwesomeIcon icon={faTrash}></FontAwesomeIcon>
@@ -253,7 +243,7 @@ ConfigureTechnologyRow.propTypes = {
     deleteTechnologyRow: PropTypes.func,
     editable: PropTypes.bool,
     deleted: PropTypes.bool,
-    undoDeleteTechnologyRow: PropTypes.func
+    undoDeleteTechnologyRow: PropTypes.func,
 };
 
 export default ConfigureTechnologyRow;

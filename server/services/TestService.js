@@ -49,8 +49,8 @@ async function deleteTestResultsForRunAndUser({ userId, runId }) {
     return await db.TestResult.destroy({
         where: {
             user_id: userId,
-            run_id: runId
-        }
+            run_id: runId,
+        },
     });
 }
 
@@ -71,13 +71,8 @@ async function deleteTestResultsForRunAndUser({ userId, runId }) {
  */
 async function saveTestResults(testResult) {
     try {
-        const {
-            test_id,
-            run_id,
-            user_id,
-            result,
-            serialized_form
-        } = testResult;
+        const { test_id, run_id, user_id, result, serialized_form } =
+            testResult;
         let statusId, testResultId;
 
         let resultRows = await db.sequelize.query(`
@@ -209,18 +204,18 @@ async function getIssuesByTestId({ accessToken, test_id }) {
     try {
         const issues = await db.TestIssue.findAll({
             where: {
-                test_id
-            }
+                test_id,
+            },
         });
 
         const results = await GithubService.getIssues({
             accessToken,
-            issues
+            issues,
         });
 
         const response = {
             test_id,
-            issues: []
+            issues: [],
         };
 
         for (let result of results) {
@@ -240,8 +235,8 @@ async function createIssue({ accessToken, run_id, test_id, title, body }) {
             accessToken,
             issue: {
                 title,
-                body
-            }
+                body,
+            },
         });
 
         if (issue) {
@@ -251,7 +246,7 @@ async function createIssue({ accessToken, run_id, test_id, title, body }) {
                 test_id,
                 title,
                 body,
-                issue_number
+                issue_number,
             };
 
             const created = await db.TestIssue.create(record);
@@ -259,7 +254,7 @@ async function createIssue({ accessToken, run_id, test_id, title, body }) {
             if (created && created.dataValues) {
                 return {
                     test_id,
-                    issues: [issue]
+                    issues: [issue],
                 };
             }
             throw new Error(`TestIssue was not created, ${created}`);
@@ -275,5 +270,5 @@ module.exports = {
     importTests,
     saveTestResults,
     getIssuesByTestId,
-    createIssue
+    createIssue,
 };

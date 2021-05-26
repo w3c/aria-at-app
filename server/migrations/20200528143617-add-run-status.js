@@ -7,15 +7,15 @@ module.exports = {
                 type: Sequelize.INTEGER,
                 allowNull: false,
                 primaryKey: true,
-                autoIncrement: true
+                autoIncrement: true,
             },
             name: {
                 type: Sequelize.TEXT,
-                allowNull: false
-            }
+                allowNull: false,
+            },
         });
     },
-    down: queryInterface => {
+    down: (queryInterface) => {
         return queryInterface.dropTable('run_status');
-    }
+    },
 };

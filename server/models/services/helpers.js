@@ -10,7 +10,7 @@ const {
     TestPlanRun,
     TestPlanTarget,
     User,
-    UserRoles
+    UserRoles,
 } = require('../index');
 
 /**
@@ -18,10 +18,10 @@ const {
  * @param {Model} model - Sequelize model
  * @returns {string[]}
  */
-const getSequelizeModelAttributes = model => {
+const getSequelizeModelAttributes = (model) => {
     if (!model) throw new Error('Model not defined');
 
-    return Object.keys(model.rawAttributes).map(key => key);
+    return Object.keys(model.rawAttributes).map((key) => key);
 };
 
 module.exports = {
@@ -37,5 +37,5 @@ module.exports = {
     TEST_PLAN_RUN_ATTRIBUTES: getSequelizeModelAttributes(TestPlanRun),
     TEST_PLAN_TARGET_ATTRIBUTES: getSequelizeModelAttributes(TestPlanTarget),
     USER_ATTRIBUTES: getSequelizeModelAttributes(User),
-    USER_ROLES_ATTRIBUTES: getSequelizeModelAttributes(UserRoles)
+    USER_ROLES_ATTRIBUTES: getSequelizeModelAttributes(UserRoles),
 };

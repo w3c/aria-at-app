@@ -13,16 +13,10 @@ describe('TestPlanReportModel Data Checks', () => {
     it('should return valid testPlanReport for id query', async () => {
         const _id = 1;
 
-        const testPlanReport = await TestPlanReportService.getTestPlanReportById(
-            _id
-        );
-        const {
-            id,
-            status,
-            testPlanTargetId,
-            testPlanVersionId,
-            createdAt
-        } = testPlanReport;
+        const testPlanReport =
+            await TestPlanReportService.getTestPlanReportById(_id);
+        const { id, status, testPlanTargetId, testPlanVersionId, createdAt } =
+            testPlanReport;
 
         expect(id).toEqual(_id);
         expect(status).toMatch(/^(DRAFT|IN_REVIEW|FINALIZED)$/);
@@ -34,9 +28,8 @@ describe('TestPlanReportModel Data Checks', () => {
     it('should not be valid testPlanReport query', async () => {
         const _id = 53935;
 
-        const testPlanReport = await TestPlanReportService.getTestPlanReportById(
-            _id
-        );
+        const testPlanReport =
+            await TestPlanReportService.getTestPlanReportById(_id);
 
         expect(testPlanReport).toBeNull();
     });
@@ -46,20 +39,18 @@ describe('TestPlanReportModel Data Checks', () => {
             const _id = 1;
             const _status = 'FINALIZED';
 
-            const testPlanReport = await TestPlanReportService.getTestPlanReportById(
-                _id
-            );
+            const testPlanReport =
+                await TestPlanReportService.getTestPlanReportById(_id);
             const { id, status } = testPlanReport;
 
-            const updatedTestPlanReport = await TestPlanReportService.updateTestPlanReportStatus(
-                _id,
-                _status
-            );
+            const updatedTestPlanReport =
+                await TestPlanReportService.updateTestPlanReportStatus(
+                    _id,
+                    _status
+                );
 
-            const {
-                id: updatedId,
-                status: updatedStatus
-            } = updatedTestPlanReport;
+            const { id: updatedId, status: updatedStatus } =
+                updatedTestPlanReport;
 
             // before testPlanReport status updated to final
             expect(id).toEqual(_id);
@@ -83,27 +74,23 @@ describe('TestPlanReportModel Data Checks', () => {
             const _browserVersion = '91.0.4472';
 
             // A2
-            const {
-                id: initialReportId,
-                testPlanTargetId: initialTargetId
-            } = await TestPlanReportService.getTestPlanReportById(_id);
+            const { id: initialReportId, testPlanTargetId: initialTargetId } =
+                await TestPlanReportService.getTestPlanReportById(_id);
 
-            const {
-                id: newTargetId
-            } = await TestPlanTargetService.createTestPlanTarget({
-                title: _title,
-                at: _at,
-                browser: _browser,
-                atVersion: _atVersion,
-                browserVersion: _browserVersion
-            });
+            const { id: newTargetId } =
+                await TestPlanTargetService.createTestPlanTarget({
+                    title: _title,
+                    at: _at,
+                    browser: _browser,
+                    atVersion: _atVersion,
+                    browserVersion: _browserVersion,
+                });
 
-            const {
-                testPlanTargetId: updatedTargetId
-            } = await TestPlanReportService.updateTestPlanReport(
-                initialReportId,
-                { testPlanTargetId: newTargetId }
-            );
+            const { testPlanTargetId: updatedTargetId } =
+                await TestPlanReportService.updateTestPlanReport(
+                    initialReportId,
+                    { testPlanTargetId: newTargetId }
+                );
 
             // A3
             // before testPlanReport updated
@@ -122,10 +109,11 @@ describe('TestPlanReportModel Data Checks', () => {
             const _id = 1;
             const _userId = 2;
 
-            const testPlanReport = await TestPlanReportService.assignTestPlanReportToUser(
-                _id,
-                _userId
-            );
+            const testPlanReport =
+                await TestPlanReportService.assignTestPlanReportToUser(
+                    _id,
+                    _userId
+                );
             const { id } = testPlanReport;
 
             const user = await UserService.getUserById(_userId);
@@ -133,19 +121,17 @@ describe('TestPlanReportModel Data Checks', () => {
 
             const testPlanRunsLength = testPlanRuns.length;
 
-            const removedTesterTestPlanReport = await TestPlanReportService.removeTestPlanReportForUser(
-                _id,
-                _userId
-            );
-            const {
-                id: removedTesterTestPlanReportId
-            } = removedTesterTestPlanReport;
+            const removedTesterTestPlanReport =
+                await TestPlanReportService.removeTestPlanReportForUser(
+                    _id,
+                    _userId
+                );
+            const { id: removedTesterTestPlanReportId } =
+                removedTesterTestPlanReport;
 
             const removedUser = await UserService.getUserById(_userId);
-            const {
-                id: removedUserId,
-                testPlanRuns: removedTestPlanRuns
-            } = removedUser;
+            const { id: removedUserId, testPlanRuns: removedTestPlanRuns } =
+                removedUser;
 
             // before testPlanReport is assigned to tester
             expect(id).toEqual(_id);
@@ -155,7 +141,7 @@ describe('TestPlanReportModel Data Checks', () => {
             expect(testPlanRuns).toContainEqual(
                 expect.objectContaining({
                     testerUserId: userId,
-                    testPlanReportId: _id
+                    testPlanReportId: _id,
                 })
             );
 
@@ -167,7 +153,7 @@ describe('TestPlanReportModel Data Checks', () => {
             expect(removedTestPlanRuns).not.toContainEqual(
                 expect.objectContaining({
                     testerUserId: removedUserId,
-                    testPlanReportId: _id
+                    testPlanReportId: _id,
                 })
             );
         });

@@ -2,7 +2,7 @@ const ModelService = require('./ModelService');
 const {
     USER_ATTRIBUTES,
     ROLE_ATTRIBUTES,
-    TEST_PLAN_RUN_ATTRIBUTES
+    TEST_PLAN_RUN_ATTRIBUTES,
 } = require('./helpers');
 const { Sequelize, User, UserRoles } = require('../');
 const { Op } = Sequelize;
@@ -13,19 +13,19 @@ const { Op } = Sequelize;
  * @param roleAttributes - Role attributes
  * @returns {{association: string, attributes: string[], through: {attributes: string[]}}}
  */
-const roleAssociation = roleAttributes => ({
+const roleAssociation = (roleAttributes) => ({
     association: 'roles',
     attributes: roleAttributes,
-    through: { attributes: [] }
+    through: { attributes: [] },
 });
 
 /**
  * @param testPlanRunAttributes - TestPlanRun attributes
  * @returns {{association: string, attributes: string[]}}
  */
-const testPlanRunAssociation = testPlanRunAttributes => ({
+const testPlanRunAssociation = (testPlanRunAttributes) => ({
     association: 'testPlanRuns',
-    attributes: testPlanRunAttributes
+    attributes: testPlanRunAttributes,
 });
 
 /**
@@ -44,7 +44,7 @@ const getUserById = async (
 ) => {
     return await ModelService.getById(User, id, userAttributes, [
         roleAssociation(roleAttributes),
-        testPlanRunAssociation(testPlanRunAttributes)
+        testPlanRunAssociation(testPlanRunAttributes),
     ]);
 };
 
@@ -64,7 +64,7 @@ const getUserByUsername = async (
 ) => {
     return await ModelService.getByQuery(User, { username }, userAttributes, [
         roleAssociation(roleAttributes),
-        testPlanRunAssociation(testPlanRunAttributes)
+        testPlanRunAssociation(testPlanRunAttributes),
     ]);
 };
 
@@ -101,7 +101,7 @@ const getUsers = async (
         userAttributes,
         [
             roleAssociation(roleAttributes),
-            testPlanRunAssociation(testPlanRunAttributes)
+            testPlanRunAssociation(testPlanRunAttributes),
         ],
         pagination
     );
@@ -129,7 +129,7 @@ const createUser = async (
     // to ensure the structure being returned matches what we expect for simple queries and can be controlled
     return await ModelService.getById(User, id, userAttributes, [
         roleAssociation(roleAttributes),
-        testPlanRunAssociation(testPlanRunAttributes)
+        testPlanRunAssociation(testPlanRunAttributes),
     ]);
 };
 
@@ -152,7 +152,7 @@ const updateUser = async (
 
     return await ModelService.getById(User, id, userAttributes, [
         roleAssociation(roleAttributes),
-        testPlanRunAssociation(testPlanRunAttributes)
+        testPlanRunAssociation(testPlanRunAttributes),
     ]);
 };
 
@@ -185,7 +185,7 @@ const addUserToRole = async (id, role) => {
 const deleteUserFromRole = async (id, role) => {
     return await ModelService.removeByQuery(UserRoles, {
         userId: id,
-        roleName: role
+        roleName: role,
     });
 };
 
@@ -200,5 +200,5 @@ module.exports = {
 
     // Custom Functions
     addUserToRole,
-    deleteUserFromRole
+    deleteUserFromRole,
 };

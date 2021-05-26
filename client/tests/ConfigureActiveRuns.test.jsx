@@ -41,17 +41,17 @@ describe('render', () => {
                 {
                     directory: 'checkbox',
                     id: 1,
-                    name: 'Checkbox Example (Two State)'
-                }
+                    name: 'Checkbox Example (Two State)',
+                },
             ],
             supported_ats: [
                 {
                     at_id: 1,
                     at_key: 'vader-voice',
                     at_name: 'Vader Voice',
-                    at_name_id: 1
-                }
-            ]
+                    at_name_id: 1,
+                },
+            ],
         };
         let testVersion2 = {
             date: '2020-05-07T04:00:00.000Z',
@@ -65,17 +65,17 @@ describe('render', () => {
                 {
                     directory: 'checkbox',
                     id: 1,
-                    name: 'Checkbox Example (Two State)'
-                }
+                    name: 'Checkbox Example (Two State)',
+                },
             ],
             supported_ats: [
                 {
                     at_id: 1,
                     at_key: 'vader-voice',
                     at_name: 'Vader Voice',
-                    at_name_id: 1
-                }
-            ]
+                    at_name_id: 1,
+                },
+            ],
         };
         beforeEach(() => {
             const initialState = {
@@ -89,11 +89,11 @@ describe('render', () => {
                         browsers: [
                             {
                                 id: 1,
-                                name: 'Firefox'
-                            }
-                        ]
-                    }
-                }
+                                name: 'Firefox',
+                            },
+                        ],
+                    },
+                },
             };
             wrapper = setup(initialState);
             wrapper.setState({ currentTestIndex: 1 });

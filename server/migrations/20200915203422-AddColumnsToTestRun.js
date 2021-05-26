@@ -2,7 +2,7 @@
 
 module.exports = {
     up: (queryInterface, Sequelize) => {
-        return queryInterface.sequelize.transaction(t => {
+        return queryInterface.sequelize.transaction((t) => {
             return Promise.all([
                 queryInterface.addColumn(
                     'run',
@@ -11,8 +11,8 @@ module.exports = {
                         type: Sequelize.INTEGER,
                         references: {
                             model: 'BrowserVersionToAtAndAtVersions',
-                            key: 'id'
-                        }
+                            key: 'id',
+                        },
                     },
                     { transaction: t }
                 ),
@@ -20,7 +20,7 @@ module.exports = {
                     'run',
                     'test_version_id',
                     {
-                        type: Sequelize.INTEGER
+                        type: Sequelize.INTEGER,
                     },
                     { transaction: t }
                 ),
@@ -29,7 +29,7 @@ module.exports = {
                     'created_at',
                     {
                         type: Sequelize.DATE,
-                        defaultValue: Sequelize.NOW
+                        defaultValue: Sequelize.NOW,
                     },
                     { transaction: t }
                 ),
@@ -38,33 +38,33 @@ module.exports = {
                     'updated_at',
                     {
                         type: Sequelize.DATE,
-                        defaultValue: Sequelize.NOW
+                        defaultValue: Sequelize.NOW,
                     },
                     { transaction: t }
-                )
+                ),
             ]);
         });
     },
-    down: queryInterface => {
-        return queryInterface.sequelize.transaction(t => {
+    down: (queryInterface) => {
+        return queryInterface.sequelize.transaction((t) => {
             return Promise.all([
                 queryInterface.removeColumn(
                     'run',
                     'browser_version_to_at_and_at_versions_id',
                     {
-                        transaction: t
+                        transaction: t,
                     }
                 ),
                 queryInterface.removeColumn('run', 'test_version_id', {
-                    transaction: t
+                    transaction: t,
                 }),
                 queryInterface.removeColumn('run', 'created_at', {
-                    transaction: t
+                    transaction: t,
                 }),
                 queryInterface.removeColumn('run', 'updated_at', {
-                    transaction: t
-                })
+                    transaction: t,
+                }),
             ]);
         });
-    }
+    },
 };

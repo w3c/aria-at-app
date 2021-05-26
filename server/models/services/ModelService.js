@@ -37,7 +37,7 @@ const getById = async (model, id, attributes = [], include = []) => {
     return await model.findOne({
         where: { id },
         attributes,
-        include
+        include,
     });
 };
 
@@ -59,7 +59,7 @@ const getByQuery = async (
     return await model.findOne({
         where: { ...queryParams },
         attributes,
-        include
+        include,
     });
 };
 
@@ -90,7 +90,7 @@ const get = async (
         page = 0,
         limit = 10,
         order = [],
-        enablePagination = false
+        enablePagination = false,
     } = pagination; // page 0->1, 1->2; manage through middleware
     // 'order' structure eg. [ [ 'username', 'DESC' ], [..., ...], ... ]
     if (page < 0) page = 0;
@@ -101,7 +101,7 @@ const get = async (
         where,
         order,
         attributes,
-        include // included fields being marked as 'required' will affect overall count for pagination
+        include, // included fields being marked as 'required' will affect overall count for pagination
     };
 
     // enablePagination paginated result structure and related values
@@ -110,7 +110,7 @@ const get = async (
             ...queryOptions,
             limit,
             offset,
-            distinct: true // applies distinct SQL rule to avoid duplicates created by 'includes' affecting count
+            distinct: true, // applies distinct SQL rule to avoid duplicates created by 'includes' affecting count
         });
 
         const { count: totalResultsCount, rows: data } = result;
@@ -123,7 +123,7 @@ const get = async (
             pagesCount,
             resultsCount,
             totalResultsCount,
-            data
+            data,
         };
     }
     return await model.findAll({ ...queryOptions });
@@ -168,7 +168,7 @@ const removeById = async (model, id, deleteOptions = { truncate: false }) => {
     const { truncate } = deleteOptions;
     await model.destroy({
         where: { id },
-        truncate
+        truncate,
     });
     return true;
 };
@@ -190,7 +190,7 @@ const removeByQuery = async (
     const { truncate } = deleteOptions;
     await model.destroy({
         where: { ...queryParams },
-        truncate
+        truncate,
     });
     return true;
 };
@@ -200,7 +200,7 @@ const removeByQuery = async (
  * @param {string} query - raw SQL query string to be executed
  * @returns {Promise<*>} - results of the raw SQL query after being ran
  */
-const rawQuery = async query => {
+const rawQuery = async (query) => {
     const [results /*, metadata*/] = await sequelize.query(query);
     return results;
 };
@@ -213,5 +213,5 @@ module.exports = {
     update,
     removeById,
     removeByQuery,
-    rawQuery
+    rawQuery,
 };

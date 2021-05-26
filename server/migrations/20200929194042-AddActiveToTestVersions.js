@@ -2,7 +2,7 @@
 
 module.exports = {
     up: (queryInterface, Sequelize) => {
-        return queryInterface.sequelize.transaction(t => {
+        return queryInterface.sequelize.transaction((t) => {
             return Promise.all([
                 queryInterface.addColumn(
                     'test_version',
@@ -10,21 +10,21 @@ module.exports = {
                     {
                         type: Sequelize.BOOLEAN,
                         defaultValue: false,
-                        allowNull: false
+                        allowNull: false,
                     },
                     { transaction: t }
-                )
+                ),
             ]);
         });
     },
 
-    down: queryInterface => {
-        return queryInterface.sequelize.transaction(t => {
+    down: (queryInterface) => {
+        return queryInterface.sequelize.transaction((t) => {
             return Promise.all([
                 queryInterface.removeColumn('test_version', 'active', {
-                    transaction: t
-                })
+                    transaction: t,
+                }),
             ]);
         });
-    }
+    },
 };

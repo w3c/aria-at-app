@@ -78,7 +78,7 @@ describe('UserModel Data Checks', () => {
             // A2
             const user = await UserService.createUser({
                 username: _username,
-                role: _role
+                role: _role,
             });
             const { id, username, createdAt, updatedAt, roles } = user;
 
@@ -117,7 +117,7 @@ describe('UserModel Data Checks', () => {
 
             // A2
             const updatedUser = await UserService.updateUser(id, {
-                username: _updatedUsername
+                username: _updatedUsername,
             });
             const updatedUsername = updatedUser.get('username');
 
@@ -150,8 +150,8 @@ describe('UserModel Data Checks', () => {
             expect.arrayContaining([
                 expect.objectContaining({
                     id: expect.any(Number),
-                    username: expect.stringMatching(/t/gi)
-                })
+                    username: expect.stringMatching(/t/gi),
+                }),
             ])
         );
     });
@@ -160,7 +160,7 @@ describe('UserModel Data Checks', () => {
         const result = await UserService.getUsers('', {}, ['id'], [], [], {
             page: -1,
             limit: -1,
-            enablePagination: true
+            enablePagination: true,
         });
         expect(result).toHaveProperty('page');
         expect(result).toHaveProperty('data');

@@ -6,31 +6,31 @@ module.exports = {
             id: {
                 type: Sequelize.INTEGER,
                 primaryKey: true,
-                autoIncrement: true
+                autoIncrement: true,
             },
             test_id: {
                 type: Sequelize.INTEGER,
                 allowNull: false,
                 references: {
                     model: 'test',
-                    key: 'id'
-                }
+                    key: 'id',
+                },
             },
             run_id: {
                 type: Sequelize.INTEGER,
                 allowNull: false,
                 references: {
                     model: 'run',
-                    key: 'id'
-                }
+                    key: 'id',
+                },
             },
             issue_number: {
                 type: Sequelize.INTEGER,
-                allowNull: false
-            }
+                allowNull: false,
+            },
         });
     },
-    down: queryInterface => {
+    down: (queryInterface) => {
         return queryInterface.dropTable('test_issue');
-    }
+    },
 };

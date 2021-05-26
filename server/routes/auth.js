@@ -3,7 +3,7 @@ const {
     oauth,
     authorize,
     currentUser,
-    signout
+    signout,
 } = require('../controllers/AuthController');
 
 const router = Router();

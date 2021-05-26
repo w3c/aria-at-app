@@ -11,30 +11,30 @@ describe('user reducer tests', () => {
     test('returns object upon receiving an action of type `LOG_IN`', () => {
         const apiPayload = {
             username: 'foo',
-            name: 'Foo Bar'
+            name: 'Foo Bar',
         };
         const newState = userReducer(undefined, {
             type: CHECK_SIGNED_IN,
-            payload: apiPayload
+            payload: apiPayload,
         });
         expect(newState).toEqual({
             isSignedIn: true,
             loadedUserData: true,
-            ...apiPayload
+            ...apiPayload,
         });
     });
     test('returns object without username and name and isSignedIn false with `SIGN_OUT` type', () => {
         const apiPayload = {
             username: 'foo',
-            name: 'Foo Bar'
+            name: 'Foo Bar',
         };
         const loggedInState = userReducer(undefined, {
             type: CHECK_SIGNED_IN,
-            payload: apiPayload
+            payload: apiPayload,
         });
 
         const newState = userReducer(loggedInState, {
-            type: SIGN_OUT
+            type: SIGN_OUT,
         });
 
         expect(newState).toEqual({ isSignedIn: false, loadedUserData: true });
@@ -50,7 +50,7 @@ describe('ats reducer tests', () => {
         const apiPayload = { names: ['Foo', 'Bar'] };
         const newState = atsReducer(undefined, {
             type: ATS,
-            payload: apiPayload
+            payload: apiPayload,
         });
         expect(newState).toEqual({ names: ['Foo', 'Bar'] });
     });
@@ -66,8 +66,8 @@ describe('users reducer tests', () => {
             userId: 1,
             ats: [
                 { at_name_id: 1, active: true },
-                { at_name_id: 2, active: true }
-            ]
+                { at_name_id: 2, active: true },
+            ],
         };
         const newState = usersReducer(
             {
@@ -75,13 +75,13 @@ describe('users reducer tests', () => {
                     1: {
                         id: 1,
                         username: 'foobar',
-                        configured_ats: [{ at_name_id: 1, active: false }]
-                    }
-                }
+                        configured_ats: [{ at_name_id: 1, active: false }],
+                    },
+                },
             },
             {
                 type: SET_USER_ATS,
-                payload: apiPayload
+                payload: apiPayload,
             }
         );
         expect(newState).toEqual({
@@ -91,10 +91,10 @@ describe('users reducer tests', () => {
                     username: 'foobar',
                     configured_ats: [
                         { at_name_id: 1, active: true },
-                        { at_name_id: 2, active: true }
-                    ]
-                }
-            }
+                        { at_name_id: 2, active: true },
+                    ],
+                },
+            },
         });
     });
 });

@@ -19,7 +19,7 @@ async function deleteTestResultsForRunAndUser(req, res) {
         const { userId, runId } = req.body;
         const deletedCount = await TestService.deleteTestResultsForRunAndUser({
             userId,
-            runId
+            runId,
         });
         res.status(201).json({ count: deletedCount });
     } catch (error) {
@@ -47,7 +47,7 @@ async function getIssuesByTestId(req, res) {
     try {
         const issues = await TestService.getIssuesByTestId({
             accessToken,
-            test_id
+            test_id,
         });
         res.status(200).json(issues);
     } catch (error) {
@@ -66,7 +66,7 @@ async function createIssue(req, res) {
             run_id,
             test_id,
             title,
-            body
+            body,
         });
         res.status(201).json(result);
     } catch (error) {
@@ -81,5 +81,5 @@ module.exports = {
     importTests,
     saveTestResults,
     getIssuesByTestId,
-    createIssue
+    createIssue,
 };

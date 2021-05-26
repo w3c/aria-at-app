@@ -10,7 +10,7 @@ function dbCleaner(fn) {
                 .then(() => {
                     db.sequelize.query('ROLLBACK;').then(resolve);
                 })
-                .catch(err => {
+                .catch((err) => {
                     db.sequelize.query('ROLLBACK;').then(() => {
                         reject(err);
                     });
@@ -20,5 +20,5 @@ function dbCleaner(fn) {
 }
 
 module.exports = {
-    dbCleaner
+    dbCleaner,
 };

@@ -1,6 +1,6 @@
 const MODEL_NAME = 'UserRoles';
 
-module.exports = function(sequelize, DataTypes) {
+module.exports = function (sequelize, DataTypes) {
     return sequelize.define(
         MODEL_NAME,
         {
@@ -9,22 +9,22 @@ module.exports = function(sequelize, DataTypes) {
                 allowNull: false,
                 references: {
                     model: 'User',
-                    key: 'id'
+                    key: 'id',
                 },
-                unique: true
+                unique: true,
             },
             roleName: {
                 type: DataTypes.TEXT,
                 allowNull: false,
                 references: {
                     model: 'Role',
-                    key: 'name'
-                }
-            }
+                    key: 'name',
+                },
+            },
         },
         {
             timestamps: false,
-            tableName: MODEL_NAME
+            tableName: MODEL_NAME,
         }
     );
 };

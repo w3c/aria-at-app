@@ -10,5 +10,5 @@ export default combineReducers({
     issues,
     runs,
     user,
-    users
+    users,
 });

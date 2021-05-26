@@ -1,6 +1,6 @@
 const { gql } = require('apollo-server');
 const { dbCleaner } = require('../util/db-cleaner');
-const { query, mutation } = require('../util/graphql-test-utilities');
+const { query, mutate } = require('../util/graphql-test-utilities');
 
 describe('test queue', () => {
     it('displays test plan reports', async () => {
@@ -71,10 +71,10 @@ describe('test queue', () => {
         `);
     });
 
-    it.only('assigns testers to a test plan report', async () => {
+    it('assigns testers to a test plan report', async () => {
         await dbCleaner(async () => {
             // A1
-            const newTesterId = 2;
+            const newTesterId = '2';
             const previous = await query(gql`
                 query {
                     testPlanReport(id: 1) {
@@ -86,29 +86,32 @@ describe('test queue', () => {
                     }
                 }
             `);
-            const previousTesterIds = previous.testPlanReport.draftTestPlanRuns.map(
-                testPlanRun => testPlanRun.tester.id
-            );
+            const previousTesterIds =
+                previous.testPlanReport.draftTestPlanRuns.map(
+                    (testPlanRun) => testPlanRun.tester.id
+                );
 
             // A2
-            const result = await mutation(gql`
+            const result = await mutate(gql`
                 mutation {
                     testPlanReport(id: 1) {
-                        assignTester(user: 2)
-                        resultingTestPlanReport {
-                            draftTestPlanRuns {
-                                tester {
-                                    id
-                                    username
+                        assignTester(user: 2) {
+                            resultingTestPlanReport {
+                                draftTestPlanRuns {
+                                    tester {
+                                        id
+                                        username
+                                    }
                                 }
                             }
                         }
                     }
                 }
             `);
-            const resultingTesterIds = result.testPlanReport.resultingTestPlanReport.draftTestPlanRuns.map(
-                testPlanRun => testPlanRun.tester.id
-            );
+            const resultingTesterIds =
+                result.testPlanReport.assignTester.resultingTestPlanReport.draftTestPlanRuns.map(
+                    (testPlanRun) => testPlanRun.tester.id
+                );
 
             // A3
             expect(previousTesterIds).not.toEqual(
@@ -122,7 +125,7 @@ describe('test queue', () => {
 
     it('removes testers from a test plan report', async () => {
         expect(
-            await mutation(gql`
+            await mutate(gql`
                 mutation {
                     testPlanReport(id: 123) {
                         deleteTestPlanRun(user: 445)
@@ -141,7 +144,7 @@ describe('test queue', () => {
 
     it('can be finalized', async () => {
         expect(
-            await mutation(gql`
+            await mutate(gql`
                 mutation {
                     testPlanReport(id: 123) {
                         updateStatus(status: FINALIZED)

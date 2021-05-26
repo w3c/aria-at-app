@@ -5,7 +5,7 @@ const permissionScopes = [
     'user:email',
     'read:org',
     'read:discussion',
-    'public_repo'
+    'public_repo',
 ];
 const permissionScopesURI = encodeURI(
     permissionScopes.reduce((a, b) => `${a} ${b}`)
@@ -25,7 +25,7 @@ module.exports = {
     graphQLEndpoint: 'https://api.github.com/graphql',
     teamToRole: {
         [process.env.GITHUB_TEAM_TESTER]: 'tester',
-        [process.env.GITHUB_TEAM_ADMIN]: 'admin'
+        [process.env.GITHUB_TEAM_ADMIN]: 'admin',
     },
     getUrl: ({ state }) =>
         `https://github.com/login/oauth/authorize?scope=` +
@@ -38,10 +38,10 @@ module.exports = {
             {
                 client_id: process.env.GITHUB_CLIENT_ID,
                 client_secret: process.env.GITHUB_CLIENT_SECRET,
-                code
+                code,
             },
             {
-                headers: { Accept: 'application/json' }
+                headers: { Accept: 'application/json' },
             }
         );
         return response.data.access_token;
@@ -54,17 +54,17 @@ module.exports = {
         const response = await axios.post(
             this.graphQLEndpoint,
             {
-                query
+                query,
             },
             {
-                headers: { Authorization: `bearer ${options.accessToken}` }
+                headers: { Authorization: `bearer ${options.accessToken}` },
             }
         );
 
         const {
             data: {
-                viewer: { login, name, email }
-            }
+                viewer: { login, name, email },
+            },
         } = response.data;
         return { username: login, name, email };
     },
@@ -90,10 +90,10 @@ module.exports = {
         const response = await axios.post(
             this.graphQLEndpoint,
             {
-                query
+                query,
             },
             {
-                headers: { Authorization: `bearer ${options.accessToken}` }
+                headers: { Authorization: `bearer ${options.accessToken}` },
             }
         );
 
@@ -101,7 +101,7 @@ module.exports = {
         //  we should filter out any teams that aren't in teamToRole
         const userTeams = response.data.data.organization.teams.edges
             .map(({ node: { name } }) => name)
-            .filter(teamName => teamName in this.teamToRole);
+            .filter((teamName) => teamName in this.teamToRole);
 
         return userTeams;
     },
@@ -148,10 +148,10 @@ module.exports = {
         const response = await axios.post(
             this.graphQLEndpoint,
             {
-                query
+                query,
             },
             {
-                headers: { Authorization: `bearer ${accessToken}` }
+                headers: { Authorization: `bearer ${accessToken}` },
             }
         );
 
@@ -201,17 +201,17 @@ module.exports = {
         const variables = {
             repositoryId,
             title,
-            body
+            body,
         };
 
         const response = await axios.post(
             this.graphQLEndpoint,
             {
                 query,
-                variables
+                variables,
             },
             {
-                headers: { Authorization: `bearer ${options.accessToken}` }
+                headers: { Authorization: `bearer ${options.accessToken}` },
             }
         );
 
@@ -222,5 +222,5 @@ module.exports = {
         }
 
         return null;
-    }
+    },
 };

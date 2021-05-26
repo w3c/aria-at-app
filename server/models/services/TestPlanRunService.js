@@ -2,7 +2,7 @@ const ModelService = require('./ModelService');
 const {
     TEST_PLAN_RUN_ATTRIBUTES,
     TEST_PLAN_REPORT_ATTRIBUTES,
-    USER_ATTRIBUTES
+    USER_ATTRIBUTES,
 } = require('./helpers');
 const { TestPlanRun } = require('../');
 
@@ -12,18 +12,18 @@ const { TestPlanRun } = require('../');
  * @param {string[]} testPlanReportAttributes - TestPlanReport attributes
  * @returns {{association: string, attributes: string[]}}
  */
-const testPlanReportAssociation = testPlanReportAttributes => ({
+const testPlanReportAssociation = (testPlanReportAttributes) => ({
     association: 'testPlanReport',
-    attributes: testPlanReportAttributes
+    attributes: testPlanReportAttributes,
 });
 
 /**
  * @param {string[]} userAttributes - User attributes
  * @returns {{association: string, attributes: string[]}}
  */
-const userAssociation = userAttributes => ({
+const userAssociation = (userAttributes) => ({
     association: 'tester',
-    attributes: userAttributes
+    attributes: userAttributes,
 });
 
 // TestPlanRun
@@ -43,7 +43,7 @@ const getTestPlanRunById = async (
 ) => {
     return ModelService.getById(TestPlanRun, id, testPlanRunAttributes, [
         testPlanReportAssociation(testPlanReportAttributes),
-        userAssociation(userAttributes)
+        userAssociation(userAttributes),
     ]);
 };
 
@@ -77,7 +77,7 @@ const getTestPlanRuns = async (
         testPlanRunAttributes,
         [
             testPlanReportAssociation(testPlanReportAttributes),
-            userAssociation(userAttributes)
+            userAssociation(userAttributes),
         ],
         pagination
     );
@@ -101,7 +101,7 @@ const createTestPlanRun = async (
         '',
         {
             testerUserId,
-            testPlanReportId
+            testPlanReportId,
         },
         testPlanRunAttributes,
         testPlanReportAttributes,
@@ -112,14 +112,14 @@ const createTestPlanRun = async (
     const testPlanRunResult = await ModelService.create(TestPlanRun, {
         testerUserId,
         testPlanReportId,
-        testResults
+        testResults,
     });
     const { id } = testPlanRunResult;
 
     // to ensure the structure being returned matches what we expect for simple queries and can be controlled
     return await ModelService.getById(TestPlanRun, id, testPlanRunAttributes, [
         testPlanReportAssociation(testPlanReportAttributes),
-        userAssociation(userAttributes)
+        userAssociation(userAttributes),
     ]);
 };
 
@@ -142,7 +142,7 @@ const updateTestPlanRun = async (
 
     return await ModelService.getById(TestPlanRun, id, testPlanRunAttributes, [
         testPlanReportAssociation(testPlanReportAttributes),
-        userAssociation(userAttributes)
+        userAssociation(userAttributes),
     ]);
 };
 
@@ -161,5 +161,5 @@ module.exports = {
     getTestPlanRuns,
     createTestPlanRun,
     updateTestPlanRun,
-    removeTestPlanRun
+    removeTestPlanRun,
 };

@@ -1,5 +1,5 @@
 const {
-    getTestPlanReportById
+    getTestPlanReportById,
 } = require('../models/services/TestPlanReportService');
 
 const resultingTestPlanReportResolver = (_, { id }) => {

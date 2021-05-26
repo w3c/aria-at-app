@@ -10,7 +10,7 @@ import {
     generateApgExamples,
     calculateTotalPercentageForTechPair,
     calculatePercentage,
-    formatNoResults
+    formatNoResults,
 } from './utils';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome } from '@fortawesome/free-solid-svg-icons';
@@ -21,15 +21,13 @@ class ReportsPage extends Component {
         super();
         this.state = {
             techPairs: [],
-            apgExamples: []
+            apgExamples: [],
         };
 
-        this.generateInitialStateFromRuns = this.generateInitialStateFromRuns.bind(
-            this
-        );
-        this.generateTechPairTableHeaders = this.generateTechPairTableHeaders.bind(
-            this
-        );
+        this.generateInitialStateFromRuns =
+            this.generateInitialStateFromRuns.bind(this);
+        this.generateTechPairTableHeaders =
+            this.generateTechPairTableHeaders.bind(this);
         this.generateTableRows = this.generateTableRows.bind(this);
         this.generateProgressBar = this.generateProgressBar.bind(this);
     }
@@ -99,7 +97,7 @@ class ReportsPage extends Component {
         let topLevelRowData = [
             <th key="High level pattern" scope="row">
                 All Test Plans
-            </th>
+            </th>,
         ];
 
         techPairs.forEach(({ browser, at }, index) => {
@@ -204,10 +202,10 @@ class ReportsPage extends Component {
 ReportsPage.propTypes = {
     dispatch: PropTypes.func,
     publishedRunsById: PropTypes.object,
-    testVersion: PropTypes.object
+    testVersion: PropTypes.object,
 };
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
     const { publishedRunsById, testVersions } = state.runs;
     let testVersion = null;
     if (publishedRunsById && testVersions) {
@@ -215,7 +213,7 @@ const mapStateToProps = state => {
 
         if (runs.length > 0) {
             testVersion = (testVersions || []).find(
-                v => v.id === runs[0].test_version_id
+                (v) => v.id === runs[0].test_version_id
             );
         }
     }

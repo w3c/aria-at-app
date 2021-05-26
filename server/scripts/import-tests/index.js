@@ -11,8 +11,8 @@ const validUrl = require('valid-url');
 const args = require('minimist')(process.argv.slice(2), {
     alias: {
         h: 'help',
-        c: 'commit'
-    }
+        c: 'commit',
+    },
 });
 
 if (args.help) {
@@ -104,7 +104,7 @@ const ariaAtImport = {
                 let referencesCsv;
                 try {
                     referencesCsv = fse.readFileSync(referencesCsvPath, {
-                        encoding: 'utf-8'
+                        encoding: 'utf-8',
                     });
                 } catch (error) {
                     console.error(
@@ -116,12 +116,12 @@ const ariaAtImport = {
                 // example url parsed from <repo>.git/tests/<directory>/data/references.csv
                 const exampleRefLine = referencesCsv
                     .split('\n')
-                    .filter(line => line.includes('example'));
+                    .filter((line) => line.includes('example'));
 
                 // designPattern url parsed from <repo>.git/tests/<directory>/data/references.csv
                 const practiceGuidelinesRefLine = referencesCsv
                     .split('\n')
-                    .filter(line => line.includes('designPattern'));
+                    .filter((line) => line.includes('designPattern'));
 
                 const tests = [];
                 const testFiles = fse.readdirSync(subDirFullPath);
@@ -142,8 +142,8 @@ const ariaAtImport = {
                             fse.readFileSync(testFullPath, 'utf8'),
                             { script: true }
                         );
-                        const testFullName = root.querySelector('title')
-                            .innerHTML;
+                        const testFullName =
+                            root.querySelector('title').innerHTML;
 
                         // Get the testFile order from the file name
                         const executionOrder = parseInt(testFile.split('-')[1]);
@@ -152,7 +152,7 @@ const ariaAtImport = {
                             testFullName,
                             htmlFile,
                             commitHash,
-                            executionOrder
+                            executionOrder,
                         });
                     }
                 }
@@ -214,7 +214,7 @@ const ariaAtImport = {
         practiceGuidelinesRefLine,
         tests
     ) {
-        const getReferenceUrl = referenceLine => {
+        const getReferenceUrl = (referenceLine) => {
             let url = null;
             if (referenceLine.length) {
                 const [referenceType, link] = referenceLine[0].split(',');
@@ -233,7 +233,7 @@ const ariaAtImport = {
         let metadata = {
             gitRepo: ariaAtRepo,
             directory: exampleDir,
-            designPattern
+            designPattern,
         };
 
         // checking to see if unique testPlanVersion row (gitSha + directory provides a unique row)
@@ -252,7 +252,7 @@ const ariaAtImport = {
             exampleUrl,
             updatedAt: commitDate,
             metadata,
-            tests
+            tests,
         });
     },
 
@@ -293,14 +293,14 @@ const ariaAtImport = {
             throw err;
         }
         return result;
-    }
+    },
 };
 
 ariaAtImport
     .getMostRecentTests()
     .then(
         () => console.log('Done, no errors'),
-        err => {
+        (err) => {
             console.error(`Error found: ${err.stack}`);
             process.exitCode = 1;
         }

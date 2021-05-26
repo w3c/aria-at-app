@@ -4,14 +4,8 @@ import PropTypes from 'prop-types';
 
 class DeleteResultsModal extends Component {
     render() {
-        const {
-            show,
-            handleClose,
-            deleteResults,
-            admin,
-            user,
-            run
-        } = this.props;
+        const { show, handleClose, deleteResults, admin, user, run } =
+            this.props;
 
         const deleteDetails = run
             ? `${run.apg_example_name} - ${run.at_name} ${run.at_version} ${run.browser_name} ${run.browser_version}`
@@ -72,7 +66,7 @@ DeleteResultsModal.propTypes = {
     handleClose: PropTypes.func,
     run: PropTypes.object,
     show: PropTypes.bool,
-    user: PropTypes.string
+    user: PropTypes.string,
 };
 
 export default DeleteResultsModal;

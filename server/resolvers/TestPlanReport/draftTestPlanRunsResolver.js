@@ -1,4 +1,4 @@
-const draftTestPlanRunsResolver = parent => {
+const draftTestPlanRunsResolver = (parent) => {
     return parent.testPlanRuns;
 };
 

@@ -182,10 +182,10 @@ class Home extends Component {
 
 Home.propTypes = {
     dispatch: PropTypes.func,
-    isSignedIn: PropTypes.bool
+    isSignedIn: PropTypes.bool,
 };
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
     return { isSignedIn: state.user.isSignedIn };
 };
 

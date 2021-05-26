@@ -4,11 +4,11 @@ const { GithubService, UsersService } = services;
 const OAUTH = 'oauth';
 const allowsFakeRole = process.env.ALLOW_FAKE_ROLE === 'true';
 
-const capitalizeServiceString = service =>
+const capitalizeServiceString = (service) =>
     `${service.charAt(0).toUpperCase()}${service.slice(1)}`;
 
 function destroySession(req, res) {
-    req.session.destroy(err => {
+    req.session.destroy((err) => {
         if (err) {
             res.status(500);
         } else {
@@ -45,7 +45,7 @@ module.exports = {
         let authorizationError;
         try {
             userToAuthorize = await authService.getUser({
-                accessToken: req.session.accessToken
+                accessToken: req.session.accessToken,
             });
         } catch (error) {
             authorizationError = error;
@@ -61,7 +61,7 @@ module.exports = {
                 user = await UsersService.getUser({
                     fullname,
                     username,
-                    email
+                    email,
                 });
             }
 
@@ -70,7 +70,7 @@ module.exports = {
                 try {
                     user = await UsersService.signupUser({
                         accessToken: req.session.accessToken,
-                        user: userToAuthorize
+                        user: userToAuthorize,
                     });
                 } catch (error) {
                     console.error(`Error: ${error}`);
@@ -82,7 +82,7 @@ module.exports = {
                 authorized = true;
                 userToAuthorize = await UsersService.getUserAndUpdateRoles({
                     accessToken: req.session.accessToken,
-                    user
+                    user,
                 });
             }
         }
@@ -132,5 +132,5 @@ module.exports = {
 
     signout(req, res) {
         destroySession(req, res);
-    }
+    },
 };

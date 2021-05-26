@@ -11,80 +11,80 @@ import {
     SAVE_RUN_CONFIGURATION,
     SAVE_RUN_STATUS,
     SAVE_USERS_TO_RUNS,
-    TEST_VERSIONS
+    TEST_VERSIONS,
 } from './types';
 
-export const activeRunsDispatch = payload => ({
+export const activeRunsDispatch = (payload) => ({
     type: ACTIVE_RUNS,
-    payload
+    payload,
 });
 
-export const publishedRunsDispatch = payload => ({
+export const publishedRunsDispatch = (payload) => ({
     type: PUBLISHED_RUNS,
-    payload
+    payload,
 });
 
-export const deleteTestResultsDispatch = payload => ({
+export const deleteTestResultsDispatch = (payload) => ({
     type: DELETE_TEST_RESULTS,
-    payload
+    payload,
 });
 
-export const deleteUsersFromRunDispatch = payload => ({
+export const deleteUsersFromRunDispatch = (payload) => ({
     type: DELETE_USERS_FROM_RUN,
-    payload
+    payload,
 });
 
-export const getConflictsByTestResultsDispatch = payload => ({
+export const getConflictsByTestResultsDispatch = (payload) => ({
     type: CONFLICTS_BY_TEST_RESULTS,
-    payload
+    payload,
 });
 
-export const runConfigurationDispatch = payload => ({
+export const runConfigurationDispatch = (payload) => ({
     type: RUN_CONFIGURATION,
-    payload
+    payload,
 });
 
-export const saveResultDispatch = payload => ({
+export const saveResultDispatch = (payload) => ({
     type: SAVE_RESULT,
-    payload
+    payload,
 });
 
-export const saveRunConfigurationDispatch = payload => ({
+export const saveRunConfigurationDispatch = (payload) => ({
     type: SAVE_RUN_CONFIGURATION,
-    payload
+    payload,
 });
 
-export const saveRunStatusDispatch = payload => ({
+export const saveRunStatusDispatch = (payload) => ({
     type: SAVE_RUN_STATUS,
-    payload
+    payload,
 });
 
-export const saveUsersToRunsDispatch = payload => ({
+export const saveUsersToRunsDispatch = (payload) => ({
     type: SAVE_USERS_TO_RUNS,
-    payload
+    payload,
 });
 
-export const testVersionsDispatch = payload => ({
+export const testVersionsDispatch = (payload) => ({
     type: TEST_VERSIONS,
-    payload
+    payload,
 });
 
 export function getActiveRuns() {
-    return async function(dispatch) {
+    return async function (dispatch) {
         const response = await axios.get('/api/run/active');
         return dispatch(activeRunsDispatch(response.data));
     };
 }
 
 export function getPublishedRuns() {
-    return async function(dispatch) {
+    return async function (dispatch) {
         const response = await axios.get('/api/run/published');
         return dispatch(publishedRunsDispatch(response.data));
     };
 }
 
 export function getActiveRunConfiguration() {
-    return async function(dispatch) {
+    return async function (dispatch) {
         const response = await axios.get('/api/run/config');
         return dispatch(runConfigurationDispatch(response.data));
     };
@@ -104,7 +104,7 @@ export function getActiveRunConfiguration() {
  * @return {Object { test_id, conflicts }}
  */
 export function getConflictsByTestResults(test, userId) {
-    return async function(dispatch) {
+    return async function (dispatch) {
         // const response = await axios.get(
         //     `/api/test/conflicts`
         // );
@@ -115,90 +115,90 @@ export function getConflictsByTestResults(test, userId) {
         return dispatch(
             getConflictsByTestResultsDispatch({
                 test_id: test.id,
-                conflicts
+                conflicts,
             })
         );
     };
 }
 
 export function deleteTestResults(userId, runId) {
-    return async function(dispatch) {
+    return async function (dispatch) {
         await axios.delete('/api/test/result/delete', {
-            data: { userId, runId }
+            data: { userId, runId },
         });
         return dispatch(
             deleteTestResultsDispatch({
                 userId,
-                runId
+                runId,
             })
         );
     };
 }
 
 export function deleteUsersFromRun(users, runId) {
-    return async function(dispatch) {
+    return async function (dispatch) {
         const response = await axios.delete('/api/user/run', {
-            data: { users, runId }
+            data: { users, runId },
         });
         return dispatch(
             deleteUsersFromRunDispatch({
                 ...response.data,
-                runId
+                runId,
             })
         );
     };
 }
 
 export function saveResult(result) {
-    return async function(dispatch) {
+    return async function (dispatch) {
         const response = await axios.post('/api/test/result', {
-            data: result
+            data: result,
         });
         return dispatch(saveResultDispatch(response.data));
     };
 }
 
 export function saveRunConfiguration(config) {
-    return async function(dispatch) {
+    return async function (dispatch) {
         const response = await axios.post('/api/run', {
-            data: config
+            data: config,
         });
         return dispatch(
             saveRunConfigurationDispatch({
                 runs: response.data,
-                config
+                config,
             })
         );
     };
 }
 
 export function saveRunStatus(status, runId) {
-    return async function(dispatch) {
+    return async function (dispatch) {
         const response = await axios.post('/api/run/status', {
-            data: { run_status: status, id: runId }
+            data: { run_status: status, id: runId },
         });
         return dispatch(
             saveRunStatusDispatch({
                 runId,
                 run_status: status,
-                run_status_id: response.data.run_status_id
+                run_status_id: response.data.run_status_id,
             })
         );
     };
 }
 
 export function saveUsersToRuns(users, runs) {
-    return async function(dispatch) {
+    return async function (dispatch) {
         const response = await axios.post('/api/user/run', {
             users,
-            runs
+            runs,
         });
         return dispatch(saveUsersToRunsDispatch({ ...response.data }));
     };
 }
 
 export function getTestVersions() {
-    return async function(dispatch) {
+    return async function (dispatch) {
         const response = await axios.get('/api/test-versions');
         return dispatch(testVersionsDispatch(response.data));
     };

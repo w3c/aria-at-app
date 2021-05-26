@@ -10,20 +10,21 @@ let mockReq;
 const server = new ApolloServer({
     typeDefs,
     context: () => getGraphQLContext({ req: mockReq }),
-    resolvers
+    resolvers,
 });
 
-const { query: testClientQuery } = createTestClient(server);
+const { query: testClientQuery, mutate: testClientMutate } =
+    createTestClient(server);
 
-const failWithErrors = errors => {
+const failWithErrors = (errors) => {
     let formatted = '';
-    errors.forEach(error => {
+    errors.forEach((error) => {
         formatted +=
             `GraphQL error in ${JSON.stringify(error.path)}:\n\n` +
             `${error.message}\n\n` +
             `(${JSON.stringify({
                 extensions: error.extensions,
-                location: error.location
+                location: error.location,
             })})\n`;
     });
     throw new Error(formatted);
@@ -46,7 +47,11 @@ const query = async (gql, { user = defaultUser } = {}) => {
     return data;
 };
 
-// GraphQL mutations are actually equivalent to queries.
-const mutation = query;
+const mutate = async (gql, { user = defaultUser } = {}) => {
+    mockReq = { session: { user } };
+    const { data, errors } = await testClientMutate({ mutation: gql });
+    if (errors) failWithErrors(errors);
+    return data;
+};
 
-module.exports = { query, mutation };
+module.exports = { query, mutate };

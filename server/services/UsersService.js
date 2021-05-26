@@ -9,15 +9,15 @@ async function getUser(user) {
             where: {
                 fullname,
                 username,
-                email
-            }
+                email,
+            },
         });
         if (users.length === 1) {
             const rolesForUser = await users[0].getRoles();
-            const roles = rolesForUser.map(r => r.dataValues.name);
+            const roles = rolesForUser.map((r) => r.dataValues.name);
             return {
                 ...users[0].dataValues,
-                roles
+                roles,
             };
         }
     } catch (error) {
@@ -50,7 +50,7 @@ async function addUserToRole(userToRole) {
 async function deleteUserFromRole(userToRole) {
     try {
         await db.UserToRole.destroy({
-            where: userToRole
+            where: userToRole,
         });
     } catch (error) {
         console.error(`Error: ${error}`);
@@ -79,7 +79,7 @@ async function assignUsersToRuns(users, runs) {
             for (let run of runs) {
                 entries.push({
                     user_id: id,
-                    run_id: run
+                    run_id: run,
                 });
             }
         }
@@ -89,9 +89,9 @@ async function assignUsersToRuns(users, runs) {
         let currentUsersToRuns = await db.TesterToRun.findAll({
             where: {
                 run_id: {
-                    [db.Sequelize.Op.in]: runs
-                }
-            }
+                    [db.Sequelize.Op.in]: runs,
+                },
+            },
         });
 
         let usersByRun = {};
@@ -131,19 +131,19 @@ async function removeUsersFromRun(users, runId) {
             await db.TesterToRun.destroy({
                 where: {
                     user_id: id,
-                    run_id: runId
-                }
+                    run_id: runId,
+                },
             });
         }
 
         let currentUsersToRun = db.TesterToRun.findAll({
             attributes: ['user_id'],
             where: {
-                run_id: runId
-            }
+                run_id: runId,
+            },
         });
 
-        return currentUsersToRun.map(r => r.user_id);
+        return currentUsersToRun.map((r) => r.user_id);
     } catch (error) {
         console.error(`Error: ${error}`);
         throw error;
@@ -178,17 +178,17 @@ async function removeUsersFromRun(users, runId) {
 async function getAllTesters() {
     try {
         let currentUsers = (await db.Users.findAll()).map(
-            userData => userData.dataValues
+            (userData) => userData.dataValues
         );
 
         for (let user of currentUsers) {
             let ats = await db.UserToAt.findAll({
                 where: { user_id: user.id, active: true },
-                include: db.AtName
+                include: db.AtName,
             });
 
-            user.configured_ats = ats.map(r => ({
-                at_name_id: r.dataValues.at_name_id
+            user.configured_ats = ats.map((r) => ({
+                at_name_id: r.dataValues.at_name_id,
             }));
         }
 
@@ -205,11 +205,11 @@ async function saveUserAndRoles(options) {
     if (Object.keys(options).length === 0) return saved;
     const {
         user: { username, name, email },
-        accessToken
+        accessToken,
     } = options;
     const teams = await GithubService.getUserTeams({
         accessToken,
-        userLogin: username
+        userLogin: username,
     });
 
     if (teams.length > 0) {
@@ -218,7 +218,7 @@ async function saveUserAndRoles(options) {
             newUser = await addUser({
                 fullname: name,
                 username,
-                email
+                email,
             });
             userId = newUser.id;
         } catch (error) {
@@ -235,12 +235,14 @@ async function saveUserAndRoles(options) {
             throw error;
         }
 
-        roleRows.map(r => (rolesMap[r.dataValues.name] = { ...r.dataValues }));
+        roleRows.map(
+            (r) => (rolesMap[r.dataValues.name] = { ...r.dataValues })
+        );
         for (let team of teams) {
             try {
                 const newUserToRole = await addUserToRole({
                     user_id: userId,
-                    role_id: rolesMap[GithubService.teamToRole[team]].id
+                    role_id: rolesMap[GithubService.teamToRole[team]].id,
                 });
                 if (newUserToRole) saved = true;
             } catch (error) {
@@ -261,13 +263,13 @@ async function getUserAndUpdateRoles(options) {
     let dbUser = await getUser(user);
     const teams = await GithubService.getUserTeams({
         accessToken,
-        userLogin: user.username
+        userLogin: user.username,
     });
-    const githubUserRoles = teams.map(t => GithubService.teamToRole[t]);
+    const githubUserRoles = teams.map((t) => GithubService.teamToRole[t]);
 
     const roleRows = await db.Role.findAll();
     const rolesMap = {};
-    roleRows.map(r => (rolesMap[r.dataValues.name] = { ...r.dataValues }));
+    roleRows.map((r) => (rolesMap[r.dataValues.name] = { ...r.dataValues }));
 
     let newRoleList = [];
     for (let role in rolesMap) {
@@ -284,7 +286,7 @@ async function getUserAndUpdateRoles(options) {
         if (userHasRole && !userInTeam) {
             await deleteUserFromRole({
                 user_id: dbUser.id,
-                role_id: rolesMap[role].id
+                role_id: rolesMap[role].id,
             });
         }
 
@@ -292,7 +294,7 @@ async function getUserAndUpdateRoles(options) {
         if (!userHasRole && userInTeam) {
             await addUserToRole({
                 user_id: dbUser.id,
-                role_id: rolesMap[role].id
+                role_id: rolesMap[role].id,
             });
             newRoleList.push(role);
         }
@@ -307,7 +309,7 @@ async function signupUser(options) {
     const user = await getUser({
         fullname,
         username,
-        email
+        email,
     });
     if (user) {
         return user;
@@ -320,15 +322,15 @@ async function saveUserAts(options) {
 
     const existingUserAtsIds = (
         await db.UserToAt.findAll({ where: { user_id: userId } })
-    ).map(userAt => userAt.dataValues.at_name_id);
+    ).map((userAt) => userAt.dataValues.at_name_id);
     const userAtsInactive = existingUserAtsIds.filter(
-        existingUserAtsId => !ats.find(at => at.id === existingUserAtsId)
+        (existingUserAtsId) => !ats.find((at) => at.id === existingUserAtsId)
     );
     const userAtsActiveCreate = ats.filter(
-        at => existingUserAtsIds.indexOf(at.id) === -1
+        (at) => existingUserAtsIds.indexOf(at.id) === -1
     );
-    const userAtsActiveUpdate = ats.filter(at =>
-        existingUserAtsIds.find(id => id === at.id)
+    const userAtsActiveUpdate = ats.filter((at) =>
+        existingUserAtsIds.find((id) => id === at.id)
     );
     let savedUserAts = [];
 
@@ -351,12 +353,12 @@ async function saveUserAts(options) {
             userAtsActiveCreate.map(({ id: at_name_id }) => ({
                 user_id: userId,
                 at_name_id,
-                active: true
+                active: true,
             }))
         );
         savedUserAts.push(
-            ...createdUserAt.map(userToAt => ({
-                at_name_id: userToAt.dataValues.at_name_id
+            ...createdUserAt.map((userToAt) => ({
+                at_name_id: userToAt.dataValues.at_name_id,
             }))
         );
     } catch (error) {
@@ -372,7 +374,7 @@ async function saveUserAts(options) {
                 { where: { at_name_id: at.id, user_id: userId } }
             );
             savedUserAts.push({
-                at_name_id: at.id
+                at_name_id: at.id,
             });
         } catch (error) {
             console.error(`Error: ${error}`);
@@ -391,5 +393,5 @@ module.exports = {
     getAllTesters,
     signupUser,
     saveUserAts,
-    getUserAndUpdateRoles
+    getUserAndUpdateRoles,
 };

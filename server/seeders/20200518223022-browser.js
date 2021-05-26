@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = {
-    up: queryInterface => {
+    up: (queryInterface) => {
         return queryInterface.bulkInsert(
             'Browser',
             [{ name: 'Firefox' }, { name: 'Chrome' }, { name: 'Safari' }],
@@ -9,7 +9,7 @@ module.exports = {
         );
     },
 
-    down: queryInterface => {
+    down: (queryInterface) => {
         return queryInterface.bulkDelete('Browser', null, {});
-    }
+    },
 };

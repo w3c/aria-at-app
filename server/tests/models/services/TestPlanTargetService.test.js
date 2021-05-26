@@ -11,17 +11,10 @@ describe('TestPlanTargetModel data Checks', () => {
     it('should return valid testPlanTarget for id query', async () => {
         const _id = 1;
 
-        const testPlanTarget = await TestPlanTargetService.getTestPlanTargetById(
-            _id
-        );
-        const {
-            id,
-            title,
-            at,
-            browser,
-            atVersion,
-            browserVersion
-        } = testPlanTarget;
+        const testPlanTarget =
+            await TestPlanTargetService.getTestPlanTargetById(_id);
+        const { id, title, at, browser, atVersion, browserVersion } =
+            testPlanTarget;
 
         expect(id).toEqual(_id);
         expect(title).toEqual('NVDA 2020.4 with Chrome 91.0.4472');
@@ -49,23 +42,16 @@ describe('TestPlanTargetModel data Checks', () => {
             const constructedTitle = `${_at} ${_atVersion} with ${_browser} ${_browserVersion}`;
 
             // A2
-            const testPlanTarget = await TestPlanTargetService.createTestPlanTarget(
-                {
+            const testPlanTarget =
+                await TestPlanTargetService.createTestPlanTarget({
                     title: _title,
                     at: _at,
                     browser: _browser,
                     atVersion: _atVersion,
-                    browserVersion: _browserVersion
-                }
-            );
-            const {
-                id,
-                title,
-                at,
-                browser,
-                atVersion,
-                browserVersion
-            } = testPlanTarget;
+                    browserVersion: _browserVersion,
+                });
+            const { id, title, at, browser, atVersion, browserVersion } =
+                testPlanTarget;
 
             // A3
             expect(id).toBeTruthy();
@@ -93,7 +79,7 @@ describe('TestPlanTargetModel data Checks', () => {
                     at: _at,
                     browser: _browser,
                     atVersion: _atVersion,
-                    browserVersion: _browserVersion
+                    browserVersion: _browserVersion,
                 });
             };
 
@@ -119,7 +105,7 @@ describe('TestPlanTargetModel data Checks', () => {
                     at: _at,
                     browser: _browser,
                     atVersion: _atVersion,
-                    browserVersion: _browserVersion
+                    browserVersion: _browserVersion,
                 });
             };
 
@@ -145,7 +131,7 @@ describe('TestPlanTargetModel data Checks', () => {
                     at: _at,
                     browser: _browser,
                     atVersion: _atVersion,
-                    browserVersion: _browserVersion
+                    browserVersion: _browserVersion,
                 });
             };
 
@@ -165,29 +151,21 @@ describe('TestPlanTargetModel data Checks', () => {
             const _browserVersion = '91.0.4472';
 
             // A2
-            const testPlanTarget = await TestPlanTargetService.createTestPlanTarget(
-                {
+            const testPlanTarget =
+                await TestPlanTargetService.createTestPlanTarget({
                     title: _title,
                     at: _at,
                     browser: _browser,
                     atVersion: _atVersion,
-                    browserVersion: _browserVersion
-                }
-            );
-            const {
-                id,
-                title,
-                at,
-                browser,
-                atVersion,
-                browserVersion
-            } = testPlanTarget;
+                    browserVersion: _browserVersion,
+                });
+            const { id, title, at, browser, atVersion, browserVersion } =
+                testPlanTarget;
 
             // A2
             await TestPlanTargetService.removeTestPlanTarget(id);
-            const deletedTestPlanTarget = await TestPlanTargetService.getTestPlanTargetById(
-                id
-            );
+            const deletedTestPlanTarget =
+                await TestPlanTargetService.getTestPlanTargetById(id);
 
             // after testPlanTarget created
             expect(id).toBeTruthy();
@@ -222,8 +200,8 @@ describe('TestPlanTargetModel data Checks', () => {
                     at: expect.any(Number),
                     browser: expect.any(Number),
                     atVersion: expect.any(String),
-                    browserVersion: expect.any(String)
-                })
+                    browserVersion: expect.any(String),
+                }),
             ])
         );
     });

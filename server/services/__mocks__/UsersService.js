@@ -3,7 +3,7 @@ const users = require('../../tests/mock-data/users.json');
 
 const getUserAndUpdateRoles = jest.fn().mockImplementation(({ user }) => ({
     ...user,
-    roles: ['tester', 'admin']
+    roles: ['tester', 'admin'],
 }));
 
 const UsersService = {
@@ -21,10 +21,10 @@ const UsersService = {
         return [
             {
                 ...users[0],
-                configured_ats: [{ at_name_id: 1 }]
-            }
+                configured_ats: [{ at_name_id: 1 }],
+            },
         ];
-    }
+    },
 };
 
 module.exports = UsersService;

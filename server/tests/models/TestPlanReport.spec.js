@@ -2,7 +2,7 @@ const {
     sequelize,
     dataTypes,
     checkModelName,
-    checkPropertyExists
+    checkPropertyExists,
 } = require('sequelize-test-helpers');
 
 const TestPlanReportModel = require('../../models/TestPlanReport');
@@ -24,14 +24,14 @@ describe('TestPlanReportModel', () => {
             'status',
             'testPlanTargetId',
             'testPlanVersionId',
-            'createdAt'
+            'createdAt',
         ].forEach(checkPropertyExists(modelInstance));
     });
 
     describe('associations', () => {
         // A1
         const TEST_PLAN_VERSION_ASSOCIATION = {
-            foreignKey: 'testPlanVersionId'
+            foreignKey: 'testPlanVersionId',
         };
         const TEST_PLAN_TARGET_ASSOCIATION = { foreignKey: 'testPlanTargetId' };
         const TEST_PLAN_RUN_ASSOCIATION = { as: 'testPlanRuns' };

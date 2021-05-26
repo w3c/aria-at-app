@@ -3,10 +3,10 @@ const MODEL_NAME = 'TestPlanReport';
 const STATUS = {
     DRAFT: 'DRAFT',
     IN_REVIEW: 'IN_REVIEW',
-    FINALIZED: 'FINALIZED'
+    FINALIZED: 'FINALIZED',
 };
 
-module.exports = function(sequelize, DataTypes) {
+module.exports = function (sequelize, DataTypes) {
     const Model = sequelize.define(
         MODEL_NAME,
         {
@@ -14,7 +14,7 @@ module.exports = function(sequelize, DataTypes) {
                 type: DataTypes.INTEGER,
                 allowNull: false,
                 primaryKey: true,
-                autoIncrement: true
+                autoIncrement: true,
             },
             status: {
                 type: DataTypes.TEXT,
@@ -24,18 +24,18 @@ module.exports = function(sequelize, DataTypes) {
                 //     STATUS.FINALIZED
                 // ),
                 allowNull: false,
-                defaultValue: STATUS.DRAFT
+                defaultValue: STATUS.DRAFT,
             },
             testPlanTargetId: { type: DataTypes.INTEGER },
             testPlanVersionId: { type: DataTypes.INTEGER },
             createdAt: {
                 type: DataTypes.DATE,
-                defaultValue: DataTypes.NOW
-            }
+                defaultValue: DataTypes.NOW,
+            },
         },
         {
             timestamps: false,
-            tableName: MODEL_NAME
+            tableName: MODEL_NAME,
         }
     );
 
@@ -49,23 +49,23 @@ module.exports = function(sequelize, DataTypes) {
 
     Model.TEST_PLAN_RUN_ASSOCIATION = { as: 'testPlanRuns' };
 
-    Model.associate = function(models) {
+    Model.associate = function (models) {
         Model.belongsTo(models.TestPlanVersion, {
             ...Model.TEST_PLAN_VERSION_ASSOCIATION,
             targetKey: 'id',
-            as: 'testPlanVersion'
+            as: 'testPlanVersion',
         });
 
         Model.belongsTo(models.TestPlanTarget, {
             ...Model.TEST_PLAN_TARGET_ASSOCIATION,
             targetKey: 'id',
-            as: 'testPlanTarget'
+            as: 'testPlanTarget',
         });
 
         Model.hasMany(models.TestPlanRun, {
             ...Model.TEST_PLAN_RUN_ASSOCIATION,
             foreignKey: 'testPlanReportId',
-            sourceKey: 'id'
+            sourceKey: 'id',
         });
     };
 

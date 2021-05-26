@@ -18,10 +18,10 @@ class ReviewConflictsModal extends Component {
         return conflicts.map((conflict, index) => {
             if (conflict.assertion) {
                 let yourAnswer = conflict.answers.find(
-                    a => a.user === testerId
+                    (a) => a.user === testerId
                 );
                 let otherAnswers = conflict.answers.filter(
-                    a => a.user !== testerId
+                    (a) => a.user !== testerId
                 );
                 return (
                     <Fragment key={nextId()}>
@@ -32,7 +32,7 @@ class ReviewConflictsModal extends Component {
                             <li>
                                 {`${you}'s result: ${yourAnswer.answer} (for output "${yourAnswer.output}")`}
                             </li>
-                            {otherAnswers.map(answer => {
+                            {otherAnswers.map((answer) => {
                                 let other = usersById[answer.user].username;
                                 return (
                                     <li key={nextId()}>
@@ -45,22 +45,23 @@ class ReviewConflictsModal extends Component {
                 );
             } else {
                 let yourUnexpecteds = conflict.answers.find(
-                    a => a.user === testerId
+                    (a) => a.user === testerId
                 );
                 let otherUnexpecteds = conflict.answers.filter(
-                    a => a.user !== testerId
+                    (a) => a.user !== testerId
                 );
                 return (
                     <Fragment key={nextId()}>
-                        <h5>{`Difference ${index +
-                            1} - Unexpected behavior when testing command "${
+                        <h5>{`Difference ${
+                            index + 1
+                        } - Unexpected behavior when testing command "${
                             conflict.command
                         }"`}</h5>
                         <ul>
                             <li>
                                 {`${you}'s result: ${yourUnexpecteds.answer} (for output "${yourUnexpecteds.output}")`}
                             </li>
-                            {otherUnexpecteds.map(answer => {
+                            {otherUnexpecteds.map((answer) => {
                                 let other = usersById[answer.user].username;
                                 return (
                                     <li key={nextId()}>
@@ -76,13 +77,8 @@ class ReviewConflictsModal extends Component {
     }
 
     render() {
-        const {
-            show,
-            onHide,
-            handleRaiseIssueClick,
-            test,
-            testerId
-        } = this.props;
+        const { show, onHide, handleRaiseIssueClick, test, testerId } =
+            this.props;
 
         if (!test.results) {
             return null;
@@ -139,10 +135,10 @@ ReviewConflictsModal.propTypes = {
     show: PropTypes.bool,
     test: PropTypes.object,
     usersById: PropTypes.object,
-    testerId: PropTypes.number
+    testerId: PropTypes.number,
 };
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
     const { usersById } = state.users;
     return { usersById };
 };

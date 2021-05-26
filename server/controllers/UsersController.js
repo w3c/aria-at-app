@@ -77,5 +77,5 @@ module.exports = {
     assignUsersToRuns,
     removeUsersFromRun,
     getAllTesters,
-    setUserAts
+    setUserAts,
 };

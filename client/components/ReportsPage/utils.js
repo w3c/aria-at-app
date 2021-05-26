@@ -12,13 +12,13 @@ function generateTestsWithMetaData(runs, techPairs) {
             optionalAssertions: 0,
             passingOptionalAssertions: 0,
             unexpectedBehaviors: 0,
-            testsWithResults: []
+            testsWithResults: [],
         };
 
         if (runForTechPair) {
-            runForTechPair.tests.forEach(test => {
+            runForTechPair.tests.forEach((test) => {
                 const results = Object.values(test.results || {});
-                const result = results.find(r => r.status === 'complete');
+                const result = results.find((r) => r.status === 'complete');
                 const noConflicts = checkForConflict(results).length === 0;
 
                 if (result && noConflicts) {
@@ -39,7 +39,8 @@ function generateTestsWithMetaData(runs, techPairs) {
                     testsWithMetaData.optionalAssertions += optionalAssertions;
                     testsWithMetaData.passingOptionalAssertions +=
                         optionalAssertionsSummary.pass;
-                    testsWithMetaData.unexpectedBehaviors += unexpectedBehaviors;
+                    testsWithMetaData.unexpectedBehaviors +=
+                        unexpectedBehaviors;
 
                     testsWithMetaData.testsWithResults.push({
                         testName: test.name,
@@ -51,7 +52,7 @@ function generateTestsWithMetaData(runs, techPairs) {
                             optionalAssertionsSummary.pass,
                         unexpectedBehaviors,
                         executionOrder: test.execution_order,
-                        runId: runForTechPair.id
+                        runId: runForTechPair.id,
                     });
                 }
             });
@@ -97,9 +98,9 @@ function generateTestsWithMetaData(runs, techPairs) {
  */
 export function generateApgExamples(publishedRunsById, techPairs) {
     const runs = Object.values(publishedRunsById);
-    const apgExamples = [...new Set(runs.map(r => r.apg_example_name))];
-    return apgExamples.map(example => {
-        const exampleRuns = runs.filter(r => r.apg_example_name === example);
+    const apgExamples = [...new Set(runs.map((r) => r.apg_example_name))];
+    return apgExamples.map((example) => {
+        const exampleRuns = runs.filter((r) => r.apg_example_name === example);
         return {
             exampleName: example,
             id: exampleRuns[0].apg_example_id,
@@ -109,7 +110,7 @@ export function generateApgExamples(publishedRunsById, techPairs) {
             testsWithMetaDataIndexedByTechPair: generateTestsWithMetaData(
                 exampleRuns,
                 techPairs
-            )
+            ),
         };
     });
 }
@@ -141,9 +142,9 @@ export function generateApgExample(publishedRunsById, techPairs, apgExampleId) {
 export function generateTechPairs(publishedRunsById) {
     let techPairs = [];
     const runs = Object.values(publishedRunsById);
-    runs.forEach(run => {
+    runs.forEach((run) => {
         const match = techPairs.find(
-            pair =>
+            (pair) =>
                 pair.browser === run.browser_name &&
                 pair.at === run.at_name &&
                 pair.browserVersion === run.browser_version &&
@@ -154,7 +155,7 @@ export function generateTechPairs(publishedRunsById) {
                 browser: run.browser_name,
                 browserVersion: run.browser_version,
                 at: run.at_name,
-                atVersion: run.at_version
+                atVersion: run.at_version,
             });
         }
     });

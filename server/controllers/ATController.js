@@ -12,5 +12,5 @@ async function getATs(req, res) {
 }
 
 module.exports = {
-    getATs
+    getATs,
 };

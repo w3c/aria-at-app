@@ -21,12 +21,12 @@ export default [
             {
                 path: '/',
                 exact: true,
-                component: Home
+                component: Home,
             },
             {
                 path: '/signup-instructions',
                 exact: true,
-                component: SignupInstructions
+                component: SignupInstructions,
             },
             {
                 path: '/account/settings',
@@ -37,7 +37,7 @@ export default [
                             <Route component={UserSettings} />
                         </ConfirmAuth>
                     );
-                }
+                },
             },
             {
                 path: '/test-queue',
@@ -48,7 +48,7 @@ export default [
                             <Route component={TestQueue} />
                         </ConfirmAuth>
                     );
-                }
+                },
             },
             {
                 path: '/admin/configure-runs',
@@ -59,34 +59,34 @@ export default [
                             <Route component={ConfigureActiveRuns} />
                         </ConfirmAuth>
                     );
-                }
+                },
             },
             {
                 path: '/results/run/:runId(\\d+)',
-                component: RunResultsPage
+                component: RunResultsPage,
             },
             {
                 path: '/run/:runId(\\d+)',
-                component: TestRun
+                component: TestRun,
             },
             {
                 path: '/reports/test-plans/:testPlanId(\\d+)',
-                component: TestPlanReportPage
+                component: TestPlanReportPage,
             },
             {
                 path: '/reports',
-                component: ReportsPage
+                component: ReportsPage,
             },
             {
                 path: '/404',
                 exact: true,
-                component: NotFound
+                component: NotFound,
             },
             {
                 component: () => {
                     return <Redirect to={{ pathname: '/404' }} />;
-                }
-            }
-        ]
-    }
+                },
+            },
+        ],
+    },
 ];

@@ -83,7 +83,7 @@ WHERE
 `;
 
 module.exports = {
-    up: queryInterface => {
+    up: (queryInterface) => {
         return queryInterface.sequelize.query(updateViewQuery);
     },
     async down(queryInterface) {
@@ -98,5 +98,5 @@ module.exports = {
             await transaction.rollback();
             throw err;
         }
-    }
+    },
 };

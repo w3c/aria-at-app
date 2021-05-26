@@ -1,7 +1,7 @@
 process.env = {
     ...process.env,
     GITHUB_TEAM_TESTER: 'Team 1',
-    GITHUB_TEAM_ADMIN: 'Team 2'
+    GITHUB_TEAM_ADMIN: 'Team 2',
 };
 const moxios = require('moxios');
 const GithubService = require('../../services/GithubService');
@@ -39,8 +39,8 @@ describe('GithubService', () => {
                 request.respondWith({
                     status: 200,
                     response: {
-                        access_token: token
-                    }
+                        access_token: token,
+                    },
                 });
             });
             const accessToken = await GithubService.authorize(code);
@@ -61,19 +61,19 @@ describe('GithubService', () => {
                 data: {
                     viewer: {
                         login: 'evmiguel',
-                        name: 'Erika Miguel'
-                    }
-                }
+                        name: 'Erika Miguel',
+                    },
+                },
             };
             const userObj = {
                 username: 'evmiguel',
-                name: 'Erika Miguel'
+                name: 'Erika Miguel',
             };
             moxios.wait(() => {
                 const request = moxios.requests.mostRecent();
                 request.respondWith({
                     status: 200,
-                    response: responseObj
+                    response: responseObj,
                 });
             });
 

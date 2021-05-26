@@ -12,7 +12,7 @@ class TestResult extends Component {
         return (
             <dd>
                 <ul>
-                    {outcomes.map(outcome => (
+                    {outcomes.map((outcome) => (
                         <li key={nextId()}>{outcome}</li>
                     ))}
                 </ul>
@@ -24,7 +24,7 @@ class TestResult extends Component {
         const { testResult, label } = this.props;
         const keys = ['pass', 'fail'];
         const commandReports = testResult.result.details.commands.map(
-            command => {
+            (command) => {
                 let [passing, failing] = command.assertions.reduce(
                     (accum, a) =>
                         accum.map((assertions, index) =>
@@ -39,7 +39,7 @@ class TestResult extends Component {
                 return {
                     command,
                     passing,
-                    failing
+                    failing,
                 };
             }
         );
@@ -54,16 +54,16 @@ class TestResult extends Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {commandReports.map(report => {
+                        {commandReports.map((report) => {
                             const {
                                 command: {
                                     command,
                                     output,
                                     support,
-                                    unexpected_behaviors
+                                    unexpected_behaviors,
                                 },
                                 passing,
-                                failing
+                                failing,
                             } = report;
                             return (
                                 <tr key={nextId()}>
@@ -79,7 +79,7 @@ class TestResult extends Component {
                                             {this.renderOutcomeList(failing)}
                                             <dt>Unexpected Behaviors: </dt>
                                             {this.renderOutcomeList([
-                                                ...unexpected_behaviors
+                                                ...unexpected_behaviors,
                                             ])}
                                         </dl>
                                     </td>
@@ -95,7 +95,7 @@ class TestResult extends Component {
 
 TestResult.propTypes = {
     testResult: PropTypes.object,
-    label: PropTypes.string
+    label: PropTypes.string,
 };
 
 export default TestResult;

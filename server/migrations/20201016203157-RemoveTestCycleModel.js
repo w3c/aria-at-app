@@ -1,40 +1,40 @@
 'use strict';
 
 module.exports = {
-    up: queryInterface => {
-        return queryInterface.sequelize.transaction(t => {
+    up: (queryInterface) => {
+        return queryInterface.sequelize.transaction((t) => {
             return Promise.all([
                 queryInterface.dropTable('test_cycle', {
                     cascade: true,
-                    transaction: t
+                    transaction: t,
                 }),
                 queryInterface.sequelize.query('DROP VIEW run_data', {
-                    transaction: t
+                    transaction: t,
                 }),
                 queryInterface.removeColumn('run', 'test_cycle_id', {
-                    transaction: t
+                    transaction: t,
                 }),
                 queryInterface.removeColumn('run', 'at_version_id', {
-                    transaction: t
+                    transaction: t,
                 }),
                 queryInterface.removeColumn('run', 'at_id', {
-                    transaction: t
+                    transaction: t,
                 }),
                 queryInterface.removeColumn('run', 'browser_version_id', {
-                    transaction: t
-                })
+                    transaction: t,
+                }),
             ]);
         });
     },
 
     down: (queryInterface, Sequelize) => {
-        return queryInterface.sequelize.transaction(t => {
+        return queryInterface.sequelize.transaction((t) => {
             return Promise.all([
                 queryInterface.addColumn(
                     'run',
                     'test_cycle_id',
                     {
-                        type: Sequelize.INTEGER
+                        type: Sequelize.INTEGER,
                     },
                     { transaction: t }
                 ),
@@ -42,7 +42,7 @@ module.exports = {
                     'run',
                     'at_version_id',
                     {
-                        type: Sequelize.INTEGER
+                        type: Sequelize.INTEGER,
                     },
                     { transaction: t }
                 ),
@@ -50,7 +50,7 @@ module.exports = {
                     'run',
                     'at_id',
                     {
-                        type: Sequelize.INTEGER
+                        type: Sequelize.INTEGER,
                     },
                     { transaction: t }
                 ),
@@ -58,7 +58,7 @@ module.exports = {
                     'run',
                     'browser_version_id',
                     {
-                        type: Sequelize.INTEGER
+                        type: Sequelize.INTEGER,
                     },
                     { transaction: t }
                 ),
@@ -69,32 +69,32 @@ module.exports = {
                             type: Sequelize.INTEGER,
                             allowNull: false,
                             primaryKey: true,
-                            autoIncrement: true
+                            autoIncrement: true,
                         },
                         name: {
                             type: Sequelize.TEXT,
-                            allowNull: true
+                            allowNull: true,
                         },
                         test_version_id: {
                             type: Sequelize.INTEGER,
                             allowNull: false,
                             references: {
                                 model: 'test_version',
-                                key: 'id'
-                            }
+                                key: 'id',
+                            },
                         },
                         created_user_id: {
                             type: Sequelize.INTEGER,
                             allowNull: false,
                             references: {
                                 model: 'users',
-                                key: 'id'
-                            }
+                                key: 'id',
+                            },
                         },
                         date: {
                             type: Sequelize.DATEONLY,
-                            allowNull: true
-                        }
+                            allowNull: true,
+                        },
                     },
                     { transaction: t }
                 ),
@@ -125,8 +125,8 @@ module.exports = {
                       WHERE ((run.browser_version_id = browser_version.id) AND (browser_version.browser_id = browser.id) AND (run.at_id = at.id) AND (at.at_name_id = at_name.id) AND (run.at_version_id = at_version.id) AND (run.apg_example_id = apg_example.id));
                     `,
                     { transaction: t }
-                )
+                ),
             ]);
         });
-    }
+    },
 };

@@ -2,7 +2,7 @@ import { CHECK_SIGNED_IN, SIGN_OUT, SIGNED_IN_FAIL } from '../actions/types';
 
 const initialState = {
     isSignedIn: false,
-    loadedUserData: false
+    loadedUserData: false,
 };
 
 export default (state = initialState, action) => {
@@ -12,14 +12,14 @@ export default (state = initialState, action) => {
                 ...state,
                 isSignedIn: true,
                 loadedUserData: true,
-                ...action.payload
+                ...action.payload,
             };
         }
         case SIGNED_IN_FAIL: {
             return {
                 ...state,
                 isSignedIn: false,
-                loadedUserData: true
+                loadedUserData: true,
             };
         }
         case SIGN_OUT: {
@@ -28,7 +28,7 @@ export default (state = initialState, action) => {
             delete clone.name;
             return {
                 ...clone,
-                isSignedIn: false
+                isSignedIn: false,
             };
         }
         default:

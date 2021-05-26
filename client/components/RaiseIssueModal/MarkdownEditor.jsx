@@ -8,7 +8,7 @@ const converter = new Converter({
     tables: true,
     simplifiedAutoLink: true,
     strikethrough: true,
-    tasklists: true
+    tasklists: true,
 });
 
 export default function MarkdownEditor({ onChange, defaultValue, name }) {
@@ -28,13 +28,13 @@ export default function MarkdownEditor({ onChange, defaultValue, name }) {
             onChange={setValue}
             selectedTab={selectedTab}
             onTabChange={setSelectedTab}
-            generateMarkdownPreview={markdown =>
+            generateMarkdownPreview={(markdown) =>
                 Promise.resolve(converter.makeHtml(markdown))
             }
             toolbarCommands={[
                 ['header', 'bold', 'italic', 'strikethrough'],
                 ['quote', 'code', 'link'],
-                ['unordered-list', 'ordered-list', 'checked-list']
+                ['unordered-list', 'ordered-list', 'checked-list'],
             ]}
         />
     );
@@ -43,5 +43,5 @@ export default function MarkdownEditor({ onChange, defaultValue, name }) {
 MarkdownEditor.propTypes = {
     onChange: PropTypes.func,
     defaultValue: PropTypes.string,
-    name: PropTypes.string
+    name: PropTypes.string,
 };

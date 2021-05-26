@@ -11,7 +11,7 @@ import {
     faRedo,
     faExclamationCircle,
     faCheck,
-    faPen
+    faPen,
 } from '@fortawesome/free-solid-svg-icons';
 import nextId from 'react-id-generator';
 import { Alert, Button, Col, Container, Modal, Row } from 'react-bootstrap';
@@ -19,7 +19,7 @@ import queryString from 'query-string';
 import {
     getActiveRunConfiguration,
     getActiveRuns,
-    saveResult
+    saveResult,
 } from '../../actions/runs';
 import RaiseIssueModal from '@components/RaiseIssueModal';
 import ReviewConflictsModal from '@components/ReviewConflictsModal';
@@ -43,7 +43,7 @@ class TestRun extends Component {
             showRaiseIssueModal: false,
             showConfirmModal: false,
             showConflictsModal: false,
-            saveButtonClicked: false
+            saveButtonClicked: false,
         };
         this.buttonAction = null;
 
@@ -51,9 +51,8 @@ class TestRun extends Component {
         this.displayNextTest = this.displayNextTest.bind(this);
         this.displayPreviousTest = this.displayPreviousTest.bind(this);
         this.displayTestByIndex = this.displayTestByIndex.bind(this);
-        this.saveTestResultOrProgress = this.saveTestResultOrProgress.bind(
-            this
-        );
+        this.saveTestResultOrProgress =
+            this.saveTestResultOrProgress.bind(this);
         this.deleteResultFromTest = this.deleteResultFromTest.bind(this);
         this.toggleTestNavigator = this.toggleTestNavigator.bind(this);
 
@@ -65,12 +64,10 @@ class TestRun extends Component {
         this.handleRedoClick = this.handleRedoClick.bind(this);
         this.handleEditClick = this.handleEditClick.bind(this);
         this.handleRaiseIssueClick = this.handleRaiseIssueClick.bind(this);
-        this.handleConflictsModalClick = this.handleConflictsModalClick.bind(
-            this
-        );
-        this.handleRaiseIssueFromConflictClick = this.handleRaiseIssueFromConflictClick.bind(
-            this
-        );
+        this.handleConflictsModalClick =
+            this.handleConflictsModalClick.bind(this);
+        this.handleRaiseIssueFromConflictClick =
+            this.handleRaiseIssueFromConflictClick.bind(this);
         this.handleTestClick = this.handleTestClick.bind(this);
 
         // Modal actions
@@ -119,14 +116,14 @@ class TestRun extends Component {
                 this.setState({
                     runComplete: true,
                     resultsStatus: '',
-                    saveButtonClicked: false
+                    saveButtonClicked: false,
                 });
             }
         } else {
             this.setState({
                 currentTestIndex: newIndex,
                 resultsStatus: '',
-                saveButtonClicked: false
+                saveButtonClicked: false,
             });
         }
     }
@@ -135,7 +132,7 @@ class TestRun extends Component {
         this.setState({
             currentTestIndex: index,
             resultsStatus: '',
-            saveButtonClicked: false
+            saveButtonClicked: false,
         });
     }
 
@@ -143,13 +140,13 @@ class TestRun extends Component {
         this.setState({
             currentTestIndex: this.state.currentTestIndex - 1,
             resultsStatus: '',
-            saveButtonClicked: false
+            saveButtonClicked: false,
         });
     }
 
     toggleTestNavigator() {
         this.setState({
-            showTestNavigator: !this.state.showTestNavigator
+            showTestNavigator: !this.state.showTestNavigator,
         });
     }
 
@@ -162,7 +159,7 @@ class TestRun extends Component {
                 run_id: run.id,
                 user_id: openAsUser || userId,
                 result: results,
-                serialized_form: serializedForm
+                serialized_form: serializedForm,
             })
         );
         return true;
@@ -176,7 +173,7 @@ class TestRun extends Component {
                 test_id: test.id,
                 run_id: run.id,
                 user_id: openAsUser || userId,
-                serialized_form: serializedForm
+                serialized_form: serializedForm,
             })
         );
         return true;
@@ -184,7 +181,7 @@ class TestRun extends Component {
 
     handleModalCloseClick() {
         this.setState({
-            showConfirmModal: false
+            showConfirmModal: false,
         });
     }
 
@@ -192,7 +189,7 @@ class TestRun extends Component {
         const action = this.buttonAction;
         this.buttonAction = null;
         this.setState({
-            showConfirmModal: false
+            showConfirmModal: false,
         });
         this.performButtonAction(action);
     }
@@ -207,7 +204,7 @@ class TestRun extends Component {
             case 'saveTest': {
                 this.iframe.current.triggerSubmit();
                 this.setState({
-                    saveButtonClicked: true
+                    saveButtonClicked: true,
                 });
                 break;
             }
@@ -304,7 +301,7 @@ class TestRun extends Component {
     confirm(action) {
         this.buttonAction = action;
         this.setState({
-            showConfirmModal: true
+            showConfirmModal: true,
         });
     }
 
@@ -335,20 +332,20 @@ class TestRun extends Component {
     handleRaiseIssueClick() {
         this.setState({
             showRaiseIssueModal: !this.state.showRaiseIssueModal,
-            showConflictsModal: false
+            showConflictsModal: false,
         });
     }
 
     handleConflictsModalClick() {
         this.setState({
-            showConflictsModal: !this.state.showConflictsModal
+            showConflictsModal: !this.state.showConflictsModal,
         });
     }
 
     handleRaiseIssueFromConflictClick() {
         this.setState({
             showConflictsModal: false,
-            showRaiseIssueModal: true
+            showRaiseIssueModal: true,
         });
     }
 
@@ -421,7 +418,7 @@ class TestRun extends Component {
         const { userId } = this.props;
         this.testHasResult = test.results && test.results[testerId];
 
-        const isFirstTest = run.tests.findIndex(t => t.id === test.id) === 0;
+        const isFirstTest = run.tests.findIndex((t) => t.id === test.id) === 0;
 
         this.testResultsCompleted =
             this.testHasResult && test.results[testerId].status === 'complete';
@@ -442,7 +439,7 @@ class TestRun extends Component {
             run,
             test,
             testIndex,
-            testerId
+            testerId,
         };
 
         let testContent = null;
@@ -500,7 +497,7 @@ class TestRun extends Component {
                 prevButton,
                 editButton,
                 ...forwardButtons,
-                continueButton
+                continueButton,
             ];
         } else {
             const saveResultsButton = (
@@ -587,7 +584,7 @@ class TestRun extends Component {
             test,
             testIndex,
             userId,
-            testerId
+            testerId,
         });
 
         const result =
@@ -639,13 +636,8 @@ class TestRun extends Component {
     }
 
     render() {
-        const {
-            run,
-            activeRunConfiguration,
-            userId,
-            usersById,
-            openAsUser
-        } = this.props;
+        const { run, activeRunConfiguration, userId, usersById, openAsUser } =
+            this.props;
 
         if (!run || !activeRunConfiguration) {
             return <div data-test="test-run-loading">Loading</div>;
@@ -658,7 +650,7 @@ class TestRun extends Component {
             at_name,
             at_version,
             browser_name,
-            browser_version
+            browser_version,
         } = run;
 
         let test,
@@ -728,7 +720,7 @@ class TestRun extends Component {
                         git_hash,
                         at_key,
                         userId,
-                        testerId: openAsUser || userId
+                        testerId: openAsUser || userId,
                     },
                     heading
                 );
@@ -894,7 +886,7 @@ TestRun.propTypes = {
     run: PropTypes.object,
     testSuiteVersionData: PropTypes.object,
     usersById: PropTypes.object,
-    history: PropTypes.object
+    history: PropTypes.object,
 };
 
 const mapStateToProps = (state, ownProps) => {
@@ -922,7 +914,7 @@ const mapStateToProps = (state, ownProps) => {
         run,
         usersById,
         openAsUser,
-        userId
+        userId,
     };
 };
 

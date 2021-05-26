@@ -1,6 +1,6 @@
 const MODEL_NAME = 'Role';
 
-module.exports = function(sequelize, DataTypes) {
+module.exports = function (sequelize, DataTypes) {
     const Model = sequelize.define(
         MODEL_NAME,
         {
@@ -8,25 +8,25 @@ module.exports = function(sequelize, DataTypes) {
                 type: DataTypes.TEXT,
                 primaryKey: true,
                 allowNull: false,
-                unique: true
-            }
+                unique: true,
+            },
         },
         {
             timestamps: false,
-            tableName: MODEL_NAME
+            tableName: MODEL_NAME,
         }
     );
 
     Model.USER_ASSOCIATION = {
         through: 'UserRoles',
-        as: 'users'
+        as: 'users',
     };
 
-    Model.associate = function(models) {
+    Model.associate = function (models) {
         Model.belongsToMany(models.User, {
             ...Model.USER_ASSOCIATION,
             foreignKey: 'roleName',
-            otherKey: 'userId'
+            otherKey: 'userId',
         });
     };
 
