@@ -1,5 +1,5 @@
 const gitMessageResolver = parent => {
-    return parent.sourceGitCommitMessage.split('\n')[0];
+    return parent.gitMessage.split('\n')[0];
 };
 
 module.exports = gitMessageResolver;

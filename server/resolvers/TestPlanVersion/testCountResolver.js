@@ -1,5 +1,5 @@
 const testCountResolver = parent => {
-    return parent.parsed.tests.length;
+    return parent.tests.length;
 };
 
 module.exports = testCountResolver;

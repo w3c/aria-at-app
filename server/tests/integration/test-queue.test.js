@@ -48,7 +48,7 @@ describe('test queue', () => {
                         "draftTestPlanRuns": Array [
                           Object {
                             "id": "1",
-                            "testResultCount": 1,
+                            "testResultCount": 2,
                             "tester": Object {
                               "username": "foobar-admin",
                             },
