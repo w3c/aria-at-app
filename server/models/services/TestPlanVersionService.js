@@ -205,7 +205,16 @@ const createTestPlanVersion = async (
  */
 const updateTestPlanVersion = async (
     id,
-    { title, status, gitSha, gitMessage, exampleUrl, updatedAt, parsed },
+    {
+        title,
+        status,
+        gitSha,
+        gitMessage,
+        exampleUrl,
+        updatedAt,
+        metadata,
+        tests
+    },
     testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
     testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
     testPlanTargetAttributes = TEST_PLAN_TARGET_ATTRIBUTES,
@@ -215,7 +224,16 @@ const updateTestPlanVersion = async (
     await ModelService.update(
         TestPlanVersion,
         { id },
-        { title, status, gitSha, gitMessage, exampleUrl, updatedAt, parsed }
+        {
+            title,
+            status,
+            gitSha,
+            gitMessage,
+            exampleUrl,
+            updatedAt,
+            metadata,
+            tests
+        }
     );
 
     return await getTestPlanVersionById(
