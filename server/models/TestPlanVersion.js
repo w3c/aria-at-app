@@ -47,5 +47,15 @@ module.exports = function(sequelize, DataTypes) {
     Model.IN_REVIEW = STATUS.IN_REVIEW;
     Model.FINALIZED = STATUS.FINALIZED;
 
+    Model.TEST_PLAN_REPORT_ASSOCIATION = { as: 'testPlanReports' };
+
+    Model.associate = function(models) {
+        Model.hasMany(models.TestPlanReport, {
+            ...Model.TEST_PLAN_REPORT_ASSOCIATION,
+            foreignKey: 'testPlanVersionId',
+            sourceKey: 'id'
+        });
+    };
+
     return Model;
 };
