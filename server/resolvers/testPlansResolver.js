@@ -1,4 +1,6 @@
-const { getTestPlanById } = require('../models/services/TestPlanService');
+const {
+    getTestPlanVersionById
+} = require('../models/services/TestPlanVersionService');
 
 /**
  * Peeks at the requested TestPlan fields to determine which version type has
@@ -42,7 +44,7 @@ const { getTestPlanById } = require('../models/services/TestPlanService');
 // };
 
 const testPlans = async () => {
-    const testPlan = await getTestPlanById(1);
+    const testPlan = await getTestPlanVersionById(1);
     return [{ latestVersion: testPlan }];
 };
 
