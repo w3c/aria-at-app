@@ -31,6 +31,21 @@ module.exports = {
                 'updatedAt',
                 { transaction }
             );
+            await queryInterface.removeColumn('TestPlanVersion', 'parsed', {
+                transaction
+            });
+            await queryInterface.addColumn(
+                'TestPlanVersion',
+                'tests',
+                Sequelize.DataTypes.ARRAY(Sequelize.DataTypes.JSONB),
+                { transaction }
+            );
+            await queryInterface.addColumn(
+                'TestPlanVersion',
+                'metadata',
+                Sequelize.DataTypes.JSONB,
+                { transaction }
+            );
 
             await queryInterface.renameColumn(
                 'TestPlanReport',
@@ -75,8 +90,8 @@ module.exports = {
             );
             await queryInterface.addColumn(
                 'TestPlanRun',
-                'results',
-                Sequelize.DataTypes.JSONB,
+                'testResults',
+                Sequelize.DataTypes.ARRAY(Sequelize.DataTypes.JSONB),
                 { transaction }
             );
 
@@ -122,11 +137,23 @@ module.exports = {
                 { transaction }
             );
             await queryInterface.renameColumn(
-                'TestPlanVersion',
+                'TestPlan',
                 'updatedAt',
                 'createdAt',
                 { transaction }
             );
+            await queryInterface.removeColumn('TestPlan', 'tests', {
+                transaction
+            });
+            await queryInterface.addColumn(
+                'TestPlan',
+                'parsed',
+                Sequelize.DataTypes.JSONB,
+                { transaction }
+            );
+            await queryInterface.removeColumn('TestPlan', 'metadata', {
+                transaction
+            });
 
             await queryInterface.renameColumn(
                 'TestPlanReport',
@@ -171,7 +198,7 @@ module.exports = {
                 Sequelize.DataTypes.BOOLEAN,
                 { transaction }
             );
-            await queryInterface.removeColumn('TestPlanRun', 'results', {
+            await queryInterface.removeColumn('TestPlanRun', 'testResults', {
                 transaction
             });
 

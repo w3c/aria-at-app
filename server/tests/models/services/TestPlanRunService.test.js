@@ -11,12 +11,12 @@ describe('TestPlanRunModel Data Checks', () => {
         const _id = 1;
 
         const testPlanRun = await TestPlanRunService.getTestPlanRunById(_id);
-        const { id, testerUserId, testPlanReportId, results } = testPlanRun;
+        const { id, testerUserId, testPlanReportId, testResults } = testPlanRun;
 
         expect(id).toEqual(_id);
         expect(testerUserId).toBeTruthy();
         expect(testPlanReportId).toBeTruthy();
-        expect(results).toBeTruthy();
+        expect(testResults).toBeTruthy();
     });
 
     it('should not be valid testPlanRun query', async () => {
@@ -89,24 +89,29 @@ describe('TestPlanRunModel Data Checks', () => {
         await dbCleaner(async () => {
             const _testPlanReportId = 1;
             const _testerUserId = 2;
-            const _results = [{ rawMockData: true }, { rawMockData: true }];
+            const _testResults = [{ test: 'goesHere' }, { test: 'goesHere' }];
 
             const testPlanRun = await TestPlanRunService.createTestPlanRun({
                 testerUserId: _testerUserId,
                 testPlanReportId: _testPlanReportId,
-                results: _results
+                testResults: _testResults
             });
 
-            const { id, testerUserId, testPlanReportId, results } = testPlanRun;
+            const {
+                id,
+                testerUserId,
+                testPlanReportId,
+                testResults
+            } = testPlanRun;
 
             const updatedTestPlanRun = await TestPlanRunService.updateTestPlanRun(
                 id,
-                { results: [{ rawMockData: true }] }
+                { testResults: [{ test: 'goesHere' }] }
             );
             const {
                 testerUserId: updatedTesterUserId,
                 testPlanReportId: updatedTestPlanReportId,
-                results: updatedResults
+                testResults: updatedTestResults
             } = updatedTestPlanRun;
 
             // after testPlanRun created
@@ -117,7 +122,7 @@ describe('TestPlanRunModel Data Checks', () => {
             // after testPlanRun updated
             expect(updatedTesterUserId).toEqual(testerUserId);
             expect(updatedTestPlanReportId).toEqual(testPlanReportId);
-            expect(updatedResults.length).not.toEqual(results.length);
+            expect(updatedTestResults.length).not.toEqual(testResults.length);
         });
     });
 

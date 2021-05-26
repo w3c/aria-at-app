@@ -91,7 +91,7 @@ const getTestPlanRuns = async (
  * @returns {Promise<*>}
  */
 const createTestPlanRun = async (
-    { testerUserId, testPlanReportId, results },
+    { testerUserId, testPlanReportId, testResults },
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
     userAttributes = USER_ATTRIBUTES
@@ -112,7 +112,7 @@ const createTestPlanRun = async (
     const testPlanRunResult = await ModelService.create(TestPlanRun, {
         testerUserId,
         testPlanReportId,
-        results
+        testResults
     });
     const { id } = testPlanRunResult;
 
@@ -133,12 +133,12 @@ const createTestPlanRun = async (
  */
 const updateTestPlanRun = async (
     id,
-    { results },
+    { testResults },
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
     userAttributes = USER_ATTRIBUTES
 ) => {
-    await ModelService.update(TestPlanRun, { id }, { results });
+    await ModelService.update(TestPlanRun, { id }, { testResults });
 
     return await ModelService.getById(TestPlanRun, id, testPlanRunAttributes, [
         testPlanReportAssociation(testPlanReportAttributes),
