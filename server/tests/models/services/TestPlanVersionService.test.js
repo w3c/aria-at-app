@@ -93,9 +93,7 @@ describe('TestPlanReportModel Data Checks', () => {
             // A2
             const updatedTestPlanVersion = await TestPlanVersionService.updateTestPlanVersion(
                 createdId,
-                {
-                    status: _updatedStatus
-                }
+                { status: _updatedStatus }
             );
             const {
                 title: updatedTitle,

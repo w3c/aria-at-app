@@ -45,9 +45,7 @@ module.exports = {
                     transaction: t
                 }),
                 queryInterface.removeColumn('at', 'active', { transaction: t }),
-                queryInterface.removeColumn('run', 'active', {
-                    transaction: t
-                })
+                queryInterface.removeColumn('run', 'active', { transaction: t })
             ]);
         });
     }
