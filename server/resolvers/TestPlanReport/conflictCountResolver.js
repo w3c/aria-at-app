@@ -1,6 +1,8 @@
+const { findTestPlanReportConflicts } = require('../utilities');
+
 const conflictCountResolver = (parent) => {
-    if (parent.testPlanRuns.length <= 1) return 0;
-    throw new Error('Not fully implemented');
+    const conflicts = findTestPlanReportConflicts(parent);
+    return conflicts.length;
 };
 
 module.exports = conflictCountResolver;

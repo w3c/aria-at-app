@@ -220,11 +220,11 @@ const graphqlSchema = gql`
     # Mutation-specific types below
 
     type TestPlanReportOperations {
-        assignTester(user: ID): TestPlanReportOperationResult
-        deleteTestPlanRun(user: ID): TestPlanReportOperationResult
+        assignTester(user: ID!): TestPlanReportOperationResult!
+        deleteTestPlanRun(user: ID!): TestPlanReportOperationResult!
         updateStatus(
-            status: TestPlanReportStatus
-        ): TestPlanReportOperationResult
+            status: TestPlanReportStatus!
+        ): TestPlanReportOperationResult!
     }
 
     type TestPlanReportOperationResult {

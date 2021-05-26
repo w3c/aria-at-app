@@ -74,10 +74,11 @@ describe('test queue', () => {
     it('assigns testers to a test plan report', async () => {
         await dbCleaner(async () => {
             // A1
+            const testReportId = '1';
             const newTesterId = '2';
             const previous = await query(gql`
                 query {
-                    testPlanReport(id: 1) {
+                    testPlanReport(id: ${testReportId}) {
                         draftTestPlanRuns {
                             tester {
                                 id
@@ -94,8 +95,8 @@ describe('test queue', () => {
             // A2
             const result = await mutate(gql`
                 mutation {
-                    testPlanReport(id: 1) {
-                        assignTester(user: 2) {
+                    testPlanReport(id: ${testReportId}) {
+                        assignTester(user: ${newTesterId}) {
                             resultingTestPlanReport {
                                 draftTestPlanRuns {
                                     tester {
@@ -108,8 +109,13 @@ describe('test queue', () => {
                     }
                 }
             `);
-            const resultingTesterIds =
-                result.testPlanReport.assignTester.resultingTestPlanReport.draftTestPlanRuns.map(
+
+            // prettier-ignore
+            const resultTesterIds = result
+                .testPlanReport
+                .assignTester
+                .resultingTestPlanReport
+                .draftTestPlanRuns.map(
                     (testPlanRun) => testPlanRun.tester.id
                 );
 
@@ -117,43 +123,98 @@ describe('test queue', () => {
             expect(previousTesterIds).not.toEqual(
                 expect.arrayContaining([newTesterId])
             );
-            expect(resultingTesterIds).toEqual(
+            expect(resultTesterIds).toEqual(
                 expect.arrayContaining([newTesterId])
             );
         });
     });
 
     it('removes testers from a test plan report', async () => {
-        expect(
-            await mutate(gql`
+        await dbCleaner(async () => {
+            // A1
+            const testPlanReportId = '1';
+            const previousTesterId = '1';
+            const previous = await query(gql`
+                query {
+                    testPlanReport(id: ${testPlanReportId}) {
+                        draftTestPlanRuns {
+                            tester {
+                                id
+                            }
+                        }
+                    }
+                }
+            `);
+            const previousTesterIds =
+                previous.testPlanReport.draftTestPlanRuns.map(
+                    (run) => run.tester.id
+                );
+
+            // A2
+            const result = await mutate(gql`
                 mutation {
-                    testPlanReport(id: 123) {
-                        deleteTestPlanRun(user: 445)
-                        resultingTestPlanReport {
-                            draftTestPlanRuns {
-                                tester {
-                                    username
+                    testPlanReport(id: ${testPlanReportId}) {
+                        deleteTestPlanRun(user: ${previousTesterId}) {
+                            resultingTestPlanReport {
+                                draftTestPlanRuns {
+                                    tester {
+                                        username
+                                    }
                                 }
                             }
                         }
                     }
                 }
-            `)
-        ).toMatchInlineSnapshot();
+            `);
+
+            // prettier-ignore
+            const resultTesterIds = result
+                .testPlanReport
+                .deleteTestPlanRun
+                .resultingTestPlanReport
+                .draftTestPlanRuns.map(
+                    (run) => run.tester.id
+                );
+
+            // A3
+            expect(previousTesterIds).toEqual(
+                expect.arrayContaining([previousTesterId])
+            );
+            expect(resultTesterIds).not.toEqual(
+                expect.arrayContaining([previousTesterId])
+            );
+        });
     });
 
     it('can be finalized', async () => {
-        expect(
-            await mutate(gql`
+        await dbCleaner(async () => {
+            const testPlanReportId = '1';
+            const previous = await query(gql`
+                query {
+                    testPlanReport(id: ${testPlanReportId}) {
+                        status
+                    }
+                }
+            `);
+            const previousStatus = previous.testPlanReport.status;
+
+            const result = await mutate(gql`
                 mutation {
-                    testPlanReport(id: 123) {
-                        updateStatus(status: FINALIZED)
-                        resultingTestPlanReport {
-                            supportPercent
+                    testPlanReport(id: ${testPlanReportId}) {
+                        updateStatus(status: FINALIZED) {
+                            resultingTestPlanReport {
+                                status
+                            }
                         }
                     }
                 }
-            `)
-        ).toMatchInlineSnapshot();
+            `);
+            const resultStatus =
+                result.testPlanReport.updateStatus.resultingTestPlanReport
+                    .status;
+
+            expect(previousStatus).not.toBe('FINALIZED');
+            expect(resultStatus).toBe('FINALIZED');
+        });
     });
 });
