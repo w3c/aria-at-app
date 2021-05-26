@@ -28,13 +28,13 @@ module.exports = function(sequelize, DataTypes) {
     Model.associate = function(models) {
         Model.hasMany(models.AtVersion, {
             ...Model.AT_VERSION_ASSOCIATION,
-            foreignKey: 'at',
+            foreignKey: 'atId',
             sourceKey: 'id'
         });
 
         Model.hasMany(models.AtMode, {
             ...Model.AT_MODE_ASSOCIATION,
-            foreignKey: 'at',
+            foreignKey: 'atId',
             sourceKey: 'id'
         });
     };

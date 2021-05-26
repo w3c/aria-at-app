@@ -14,7 +14,7 @@ const { Op } = Sequelize;
  * @returns {{association: string, attributes: string[]}}
  */
 const atAssociation = atAttributes => ({
-    association: 'atObject',
+    association: 'at',
     attributes: atAttributes
 });
 
@@ -161,13 +161,13 @@ const removeAt = async (id, deleteOptions = { truncate: false }) => {
  * @returns {Promise<*>}
  */
 const getAtVersionByQuery = async (
-    { at, version },
+    { atId, version },
     atVersionAttributes = AT_VERSION_ATTRIBUTES,
     atAttributes = AT_ATTRIBUTES
 ) => {
     return ModelService.getByQuery(
         AtVersion,
-        { at, version },
+        { atId, version },
         atVersionAttributes,
         [atAssociation(atAttributes)]
     );
@@ -213,16 +213,16 @@ const getAtVersions = async (
  * @returns {Promise<*>}
  */
 const createAtVersion = async (
-    { at, version },
+    { atId, version },
     atVersionAttributes = AT_VERSION_ATTRIBUTES,
     atAttributes = AT_ATTRIBUTES
 ) => {
-    await ModelService.create(AtVersion, { at, version });
+    await ModelService.create(AtVersion, { atId, version });
 
     // to ensure the structure being returned matches what we expect for simple queries and can be controlled
     return await ModelService.getByQuery(
         AtVersion,
-        { at, version },
+        { atId, version },
         atVersionAttributes,
         [atAssociation(atAttributes)]
     );
@@ -236,16 +236,16 @@ const createAtVersion = async (
  * @returns {Promise<*>}
  */
 const updateAtVersionByQuery = async (
-    { at, version },
+    { atId, version },
     updateParams = {},
     atVersionAttributes = AT_VERSION_ATTRIBUTES,
     atAttributes = AT_ATTRIBUTES
 ) => {
-    await ModelService.update(AtVersion, { at, version }, updateParams);
+    await ModelService.update(AtVersion, { atId, version }, updateParams);
 
     return await ModelService.getByQuery(
         AtVersion,
-        { at, version: updateParams.version || version },
+        { atId, version: updateParams.version || version },
         atVersionAttributes,
         [atAssociation(atAttributes)]
     );
@@ -257,12 +257,12 @@ const updateAtVersionByQuery = async (
  * @returns {Promise<boolean>}
  */
 const removeAtVersionByQuery = async (
-    { at, version },
+    { atId, version },
     deleteOptions = { truncate: false }
 ) => {
     return await ModelService.removeByQuery(
         AtVersion,
-        { at, version },
+        { atId, version },
         deleteOptions
     );
 };
@@ -277,11 +277,11 @@ const removeAtVersionByQuery = async (
  * @returns {Promise<*>}
  */
 const getAtModeByQuery = async (
-    { at, name },
+    { atId, name },
     atModeAttributes = AT_MODE_ATTRIBUTES,
     atAttributes = AT_ATTRIBUTES
 ) => {
-    return ModelService.getByQuery(AtMode, { at, name }, atModeAttributes, [
+    return ModelService.getByQuery(AtMode, { atId, name }, atModeAttributes, [
         atAssociation(atAttributes)
     ]);
 };
@@ -326,16 +326,16 @@ const getAtModes = async (
  * @returns {Promise<*>}
  */
 const createAtMode = async (
-    { at, name },
+    { atId, name },
     atModeAttributes = AT_MODE_ATTRIBUTES,
     atAttributes = AT_ATTRIBUTES
 ) => {
-    await ModelService.create(AtMode, { at, name });
+    await ModelService.create(AtMode, { atId, name });
 
     // to ensure the structure being returned matches what we expect for simple queries and can be controlled
     return await ModelService.getByQuery(
         AtMode,
-        { at, name },
+        { atId, name },
         atModeAttributes,
         [atAssociation(atAttributes)]
     );
@@ -349,16 +349,16 @@ const createAtMode = async (
  * @returns {Promise<*>}
  */
 const updateAtModeByQuery = async (
-    { at, name },
+    { atId, name },
     updateParams = {},
     atModeAttributes = AT_MODE_ATTRIBUTES,
     atAttributes = AT_ATTRIBUTES
 ) => {
-    await ModelService.update(AtMode, { at, name }, updateParams);
+    await ModelService.update(AtMode, { atId, name }, updateParams);
 
     return await ModelService.getByQuery(
         AtMode,
-        { at, name: updateParams.name || name },
+        { atId, name: updateParams.name || name },
         atModeAttributes,
         [atAssociation(atAttributes)]
     );
@@ -370,12 +370,12 @@ const updateAtModeByQuery = async (
  * @returns {Promise<boolean>}
  */
 const removeAtModeByQuery = async (
-    { at, name },
+    { atId, name },
     deleteOptions = { truncate: false }
 ) => {
     return await ModelService.removeByQuery(
         AtMode,
-        { at, name },
+        { atId, name },
         deleteOptions
     );
 };

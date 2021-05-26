@@ -5,11 +5,10 @@ const {
     Browser,
     BrowserVersion,
     Role,
-    TestPlan,
+    TestPlanVersion,
     TestPlanReport,
     TestPlanRun,
     TestPlanTarget,
-    TestResult,
     User,
     UserRoles
 } = require('../index');
@@ -33,11 +32,10 @@ module.exports = {
     BROWSER_ATTRIBUTES: getSequelizeModelAttributes(Browser),
     BROWSER_VERSION_ATTRIBUTES: getSequelizeModelAttributes(BrowserVersion),
     ROLE_ATTRIBUTES: getSequelizeModelAttributes(Role),
-    TEST_PLAN_ATTRIBUTES: getSequelizeModelAttributes(TestPlan),
+    TEST_PLAN_VERSION_ATTRIBUTES: getSequelizeModelAttributes(TestPlanVersion),
     TEST_PLAN_REPORT_ATTRIBUTES: getSequelizeModelAttributes(TestPlanReport),
     TEST_PLAN_RUN_ATTRIBUTES: getSequelizeModelAttributes(TestPlanRun),
     TEST_PLAN_TARGET_ATTRIBUTES: getSequelizeModelAttributes(TestPlanTarget),
-    TEST_RESULT_ATTRIBUTES: getSequelizeModelAttributes(TestResult),
     USER_ATTRIBUTES: getSequelizeModelAttributes(User),
     USER_ROLES_ATTRIBUTES: getSequelizeModelAttributes(UserRoles)
 };

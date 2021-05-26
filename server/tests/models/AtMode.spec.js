@@ -18,12 +18,12 @@ describe('AtModeModel', () => {
 
     describe('properties', () => {
         // A3
-        ['at', 'name'].forEach(checkPropertyExists(modelInstance));
+        ['atId', 'name'].forEach(checkPropertyExists(modelInstance));
     });
 
     describe('associations', () => {
         // A1
-        const AT_ASSOCIATION = { foreignKey: 'at' };
+        const AT_ASSOCIATION = { foreignKey: 'atId' };
 
         // A2
         beforeAll(() => {
