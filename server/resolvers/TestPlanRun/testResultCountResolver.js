@@ -1,4 +1,4 @@
-const testResultCount = (parent) => {
+const testResultCount = parent => {
     return parent.testResults.length;
 };
 

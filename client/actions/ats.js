@@ -1,13 +1,13 @@
 import { ATS } from './types';
 import axios from 'axios';
 
-const setAts = (payload) => ({
+const setAts = payload => ({
     type: ATS,
-    payload,
+    payload
 });
 
 export function handleGetValidAts() {
-    return async function (dispatch) {
+    return async function(dispatch) {
         const response = await axios.get('/api/at');
         return dispatch(setAts(response.data));
     };

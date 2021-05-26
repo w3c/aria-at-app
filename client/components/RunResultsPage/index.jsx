@@ -9,7 +9,7 @@ import {
     Row,
     Table,
     Button,
-    Breadcrumb,
+    Breadcrumb
 } from 'react-bootstrap';
 import { getPublishedRuns, getTestVersions } from '../../actions/runs';
 import checkForConflict from '../../utils/checkForConflict';
@@ -20,7 +20,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faHome,
     faExclamationCircle,
-    faExternalLinkAlt,
+    faExternalLinkAlt
 } from '@fortawesome/free-solid-svg-icons';
 import './RunResultsPage.css';
 
@@ -29,7 +29,7 @@ class RunResultsPage extends Component {
         super(props);
 
         this.state = {
-            showRaiseIssueModal: {},
+            showRaiseIssueModal: {}
         };
 
         this.handleRaiseIssueClick = this.handleRaiseIssueClick.bind(this);
@@ -63,8 +63,8 @@ class RunResultsPage extends Component {
     handleRaiseIssueClick(i) {
         this.setState({
             showRaiseIssueModal: Object.assign(this.state.showRaiseIssueModal, {
-                [i]: !this.state.showRaiseIssueModal[i],
-            }),
+                [i]: !this.state.showRaiseIssueModal[i]
+            })
         });
     }
 
@@ -72,16 +72,14 @@ class RunResultsPage extends Component {
         const details = test.result.result.details;
         let required =
             details.summary[1].pass + details.summary[1].fail > 0
-                ? `${details.summary[1].pass} / ${
-                      details.summary[1].fail + details.summary[1].pass
-                  }`
+                ? `${details.summary[1].pass} / ${details.summary[1].fail +
+                      details.summary[1].pass}`
                 : '-';
 
         let optional =
             details.summary[2].pass + details.summary[2].fail > 0
-                ? `${details.summary[2].pass} / ${
-                      details.summary[2].fail + details.summary[1].pass
-                  }`
+                ? `${details.summary[2].pass} / ${details.summary[2].fail +
+                      details.summary[1].pass}`
                 : '-';
 
         return (
@@ -97,8 +95,13 @@ class RunResultsPage extends Component {
     }
 
     render() {
-        const { run, allTests, testVersion, runsLoaded, isSignedIn } =
-            this.props;
+        const {
+            run,
+            allTests,
+            testVersion,
+            runsLoaded,
+            isSignedIn
+        } = this.props;
 
         if (runsLoaded && !run) {
             return <Redirect to={{ pathname: '/404' }} />;
@@ -120,7 +123,7 @@ class RunResultsPage extends Component {
             at_version,
             browser_name,
             browser_version,
-            run_status,
+            run_status
         } = run;
 
         const { git_hash } = testVersion;
@@ -149,7 +152,7 @@ class RunResultsPage extends Component {
             if (result) {
                 tests.push({
                     ...test,
-                    result,
+                    result
                 });
             } else {
                 skippedTests.push(test);
@@ -160,7 +163,7 @@ class RunResultsPage extends Component {
         // Accross all tests for priorities 1-2
         let support = {
             1: [0, 0],
-            2: [0, 0],
+            2: [0, 0]
         };
         let totalUnexpecteds = 0;
         for (let test of tests) {
@@ -234,7 +237,7 @@ class RunResultsPage extends Component {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {tests.map((test) =>
+                                    {tests.map(test =>
                                         this.renderResultRow(test)
                                     )}
                                     <tr>
@@ -274,7 +277,7 @@ class RunResultsPage extends Component {
                                 </p>
                             </div>
                             <ol className="skipped-tests">
-                                {skippedTests.map((s) => {
+                                {skippedTests.map(s => {
                                     return (
                                         <li key={nextId()}>
                                             <a
@@ -295,7 +298,7 @@ class RunResultsPage extends Component {
                                     <Fragment key={nextId()}>
                                         <div className="test-result-heading">
                                             <h2
-                                                ref={(ref) => {
+                                                ref={ref => {
                                                     this.$refs[
                                                         `test-${t.execution_order}`
                                                     ] = ref;
@@ -387,7 +390,7 @@ RunResultsPage.propTypes = {
     run: PropTypes.object,
     testVersion: PropTypes.object,
     runsLoaded: PropTypes.bool,
-    isSignedIn: PropTypes.bool,
+    isSignedIn: PropTypes.bool
 };
 
 const mapStateToProps = (state, ownProps) => {
@@ -404,7 +407,7 @@ const mapStateToProps = (state, ownProps) => {
     }
     if (run) {
         testVersion = (testVersions || []).find(
-            (v) => v.id === run.test_version_id
+            v => v.id === run.test_version_id
         );
         allTests = run.tests;
     }
@@ -414,7 +417,7 @@ const mapStateToProps = (state, ownProps) => {
         allTests,
         testVersion,
         runsLoaded,
-        isSignedIn,
+        isSignedIn
     };
 };
 

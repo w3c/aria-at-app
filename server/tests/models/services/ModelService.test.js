@@ -1,7 +1,7 @@
 const { sequelize } = require('../../../models');
 const ModelService = require('../../../models/services/ModelService');
 const {
-    getSequelizeModelAttributes,
+    getSequelizeModelAttributes
 } = require('../../../models/services/helpers');
 const { dbCleaner } = require('../../util/db-cleaner');
 

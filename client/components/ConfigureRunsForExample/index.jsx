@@ -8,7 +8,7 @@ class ConfigureRunsForExample extends Component {
 
         this.state = {
             userDropdownSelection: -2,
-            runSelected: {},
+            runSelected: {}
         };
 
         this.handleRunCheck = this.handleRunCheck.bind(this);
@@ -21,13 +21,13 @@ class ConfigureRunsForExample extends Component {
             removeAllTestersFromRun,
             example,
             usersById,
-            runs,
+            runs
         } = this.props;
         let value = parseInt(event.currentTarget.value);
 
         if (value === -2) {
             this.setState({
-                userDropdownSelection: -2,
+                userDropdownSelection: -2
             });
             return;
         }
@@ -41,7 +41,7 @@ class ConfigureRunsForExample extends Component {
             removeAllTestersFromRun(example.id, runIds);
 
             this.setState({
-                userDropdownSelection: -2,
+                userDropdownSelection: -2
             });
             return;
         }
@@ -50,7 +50,7 @@ class ConfigureRunsForExample extends Component {
         for (let runId of Object.keys(this.state.runSelected)) {
             if (this.state.runSelected[runId]) {
                 runId = parseInt(runId);
-                const run = runs.find((r) => r.id === runId);
+                const run = runs.find(r => r.id === runId);
 
                 // Do not add to run if tester already assigned to run
                 if (run.testers && run.testers.includes(value)) continue;
@@ -58,7 +58,7 @@ class ConfigureRunsForExample extends Component {
                 // Make sure the user can be assigned to this run
                 const atNameId = run.at_name_id;
                 const userAts = usersById[value].configured_ats;
-                if (userAts.find((ua) => ua.at_name_id === atNameId)) {
+                if (userAts.find(ua => ua.at_name_id === atNameId)) {
                     runIds.push(runId);
                 }
             }
@@ -68,7 +68,7 @@ class ConfigureRunsForExample extends Component {
             assignTesters(example.id, runIds, value);
         }
         this.setState({
-            userDropdownSelection: value,
+            userDropdownSelection: value
         });
     }
 
@@ -76,14 +76,14 @@ class ConfigureRunsForExample extends Component {
         const value = event.target.checked;
         const runIndex = parseInt(event.target.name);
         this.setState({
-            runSelected: { ...this.state.runSelected, [runIndex]: value },
+            runSelected: { ...this.state.runSelected, [runIndex]: value }
         });
     }
 
     render() {
         const { usersById, runs = [], tableId } = this.props;
 
-        runs.sort(function (a, b) {
+        runs.sort(function(a, b) {
             if (a.at_id === b.at_id) {
                 return b.browser_id - a.browser_id;
             }
@@ -92,7 +92,7 @@ class ConfigureRunsForExample extends Component {
 
         // If no runs are selected, disabled the assign drop down
         let disableAssignDropdown = !Object.values(this.state.runSelected).find(
-            (v) => v
+            v => v
         );
 
         return (
@@ -106,13 +106,13 @@ class ConfigureRunsForExample extends Component {
                             </tr>
                         </thead>
                         <tbody>
-                            {runs.map((run) => {
+                            {runs.map(run => {
                                 let checked = this.state.runSelected[run.id]
                                     ? true
                                     : false;
 
                                 let names = run.testers
-                                    ? run.testers.map((t) => {
+                                    ? run.testers.map(t => {
                                           let user = usersById[t];
                                           return user.username;
                                       })
@@ -164,7 +164,7 @@ class ConfigureRunsForExample extends Component {
                                             Clear Assignees
                                         </option>
                                         ;
-                                        {Object.keys(usersById).map((id) => {
+                                        {Object.keys(usersById).map(id => {
                                             return (
                                                 <option key={id} value={id}>
                                                     {usersById[id].username}
@@ -195,7 +195,7 @@ ConfigureRunsForExample.propTypes = {
     removeAllTestersFromRun: PropTypes.func,
     testersByRunId: PropTypes.object,
     runs: PropTypes.array,
-    tableId: PropTypes.string,
+    tableId: PropTypes.string
 };
 
 export default ConfigureRunsForExample;

@@ -48,18 +48,18 @@ IssueCard.propTypes = {
     number: PropTypes.number,
     author: PropTypes.shape({
         avatarUrl: PropTypes.string,
-        login: PropTypes.string,
+        login: PropTypes.string
     }),
     state: PropTypes.string,
     title: PropTypes.string,
     body: PropTypes.string,
-    bodyHTML: PropTypes.string,
+    bodyHTML: PropTypes.string
 };
 
 export default function IssueCards({ issues }) {
-    return issues.map((issue) => <IssueCard key={nextId()} {...issue} />);
+    return issues.map(issue => <IssueCard key={nextId()} {...issue} />);
 }
 
 IssueCards.propTypes = {
-    issues: PropTypes.array,
+    issues: PropTypes.array
 };

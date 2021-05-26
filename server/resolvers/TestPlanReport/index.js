@@ -3,5 +3,5 @@ const conflictCount = require('./conflictCountResolver');
 
 module.exports = {
     draftTestPlanRuns,
-    conflictCount,
+    conflictCount
 };

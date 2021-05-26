@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faCheck,
     faTrashAlt,
-    faUserPlus,
+    faUserPlus
 } from '@fortawesome/free-solid-svg-icons';
 import nextId from 'react-id-generator';
 import { Button, Dropdown } from 'react-bootstrap';
@@ -16,7 +16,7 @@ import {
     deleteTestResults,
     deleteUsersFromRun,
     saveUsersToRuns,
-    saveRunStatus,
+    saveRunStatus
 } from '../../actions/runs';
 import './TestQueueRun.css';
 
@@ -24,18 +24,21 @@ class TestQueueRun extends Component {
     constructor(props) {
         super(props);
 
-        const { totalConflicts, testsWithResults } =
-            this.countCompleteTestsAndConflicts();
+        const {
+            totalConflicts,
+            testsWithResults
+        } = this.countCompleteTestsAndConflicts();
         this.state = {
             totalConflicts,
-            testsWithResults,
+            testsWithResults
         };
 
         this.handleUnassignSelfClick = this.handleUnassignSelfClick.bind(this);
         this.handleAssignSelfClick = this.handleAssignSelfClick.bind(this);
         this.toggleTesterAssign = this.toggleTesterAssign.bind(this);
-        this.handleDeleteResultsForUser =
-            this.handleDeleteResultsForUser.bind(this);
+        this.handleDeleteResultsForUser = this.handleDeleteResultsForUser.bind(
+            this
+        );
         this.updateRunStatus = this.updateRunStatus.bind(this);
 
         this.startTestingButton = React.createRef();
@@ -49,9 +52,8 @@ class TestQueueRun extends Component {
         for (let test of testsForRun) {
             if (
                 test.results &&
-                Object.values(test.results).filter(
-                    (r) => r.status === 'complete'
-                ).length
+                Object.values(test.results).filter(r => r.status === 'complete')
+                    .length
             ) {
                 testsWithResults++;
                 if (checkForConflict(test.results).length) {
@@ -77,7 +79,7 @@ class TestQueueRun extends Component {
         const { dispatch, userId, runId } = this.props;
         dispatch(saveUsersToRuns([userId], [runId]));
         this.setState({
-            alertMessage: 'You have been assigned to this test run.',
+            alertMessage: 'You have been assigned to this test run.'
         });
     }
 
@@ -94,7 +96,7 @@ class TestQueueRun extends Component {
         let statusMap = {
             Draft: 'raw',
             'In Review': 'draft',
-            Final: 'final',
+            Final: 'final'
         };
         const { dispatch, runId } = this.props;
         dispatch(saveRunStatus(statusMap[status], runId));
@@ -107,7 +109,7 @@ class TestQueueRun extends Component {
         // Recount the number of tests with results
         const { testsWithResults } = this.countCompleteTestsAndConflicts();
         this.setState({
-            testsWithResults,
+            testsWithResults
         });
     }
 
@@ -119,12 +121,14 @@ class TestQueueRun extends Component {
         }
 
         if (this.props.testsForRun.length !== prevProps.testsForRun.length) {
-            const { totalConflicts, testsWithResults } =
-                this.countCompleteTestsAndConflicts();
+            const {
+                totalConflicts,
+                testsWithResults
+            } = this.countCompleteTestsAndConflicts();
 
             this.setState({
                 totalConflicts,
-                testsWithResults,
+                testsWithResults
             });
         }
     }
@@ -158,8 +162,8 @@ class TestQueueRun extends Component {
         const { testers, userId } = this.props;
 
         let userInfo = testers
-            .filter((uid) => uid !== userId)
-            .map((uid) => this.renderTestsCompletedByUser(uid));
+            .filter(uid => uid !== userId)
+            .map(uid => this.renderTestsCompletedByUser(uid));
         if (currentUserAssigned) {
             userInfo.unshift(this.renderTestsCompletedByUser(userId));
         }
@@ -183,7 +187,7 @@ class TestQueueRun extends Component {
                     Open run as...
                 </Dropdown.Toggle>
                 <Dropdown.Menu role="menu">
-                    {testers.map((t) => {
+                    {testers.map(t => {
                         return (
                             <Dropdown.Item
                                 role="menuitem"
@@ -268,12 +272,10 @@ class TestQueueRun extends Component {
         for (let uid of Object.keys(usersById)) {
             const tester = usersById[uid];
 
-            if (
-                tester.configured_ats.find((ua) => ua.at_name_id === atNameId)
-            ) {
+            if (tester.configured_ats.find(ua => ua.at_name_id === atNameId)) {
                 canAssignTesters.push({
                     ...tester,
-                    assigned: testers.includes(tester.id),
+                    assigned: testers.includes(tester.id)
                 });
             }
         }
@@ -295,7 +297,7 @@ class TestQueueRun extends Component {
                         <FontAwesomeIcon icon={faUserPlus} />
                     </Dropdown.Toggle>
                     <Dropdown.Menu>
-                        {canAssignTesters.map((t) => {
+                        {canAssignTesters.map(t => {
                             let classname = t.assigned
                                 ? 'assigned'
                                 : 'not-assigned';
@@ -358,7 +360,7 @@ class TestQueueRun extends Component {
                             Delete for...
                         </Dropdown.Toggle>
                         <Dropdown.Menu>
-                            {testersWithResults.map((t) => {
+                            {testersWithResults.map(t => {
                                 return (
                                     <Dropdown.Item
                                         role="menuitem"
@@ -408,7 +410,7 @@ class TestQueueRun extends Component {
             testers,
             testsForRun,
             apgExampleName,
-            showDeleteResultsModal,
+            showDeleteResultsModal
         } = this.props;
 
         let currentUserAssigned = testers.includes(userId);
@@ -424,7 +426,7 @@ class TestQueueRun extends Component {
 
         this.testsCompletedByUser = testers.reduce((acc, uid) => {
             acc[uid] = testsForRun.filter(
-                (t) =>
+                t =>
                     t.results &&
                     t.results[uid] &&
                     t.results[uid].status === 'complete'
@@ -432,7 +434,7 @@ class TestQueueRun extends Component {
             return acc;
         }, {});
 
-        this.testsCompletedOrInProgressByThisUser = testsForRun.filter((t) => {
+        this.testsCompletedOrInProgressByThisUser = testsForRun.filter(t => {
             return t.results && t.results[userId];
         }).length;
 
@@ -573,7 +575,7 @@ TestQueueRun.propTypes = {
     browserName: PropTypes.string,
     dispatch: PropTypes.func,
     testsForRun: PropTypes.array,
-    showDeleteResultsModal: PropTypes.func,
+    showDeleteResultsModal: PropTypes.func
 };
 
 const mapStateToProps = (state, ownProps) => {
@@ -594,7 +596,7 @@ const mapStateToProps = (state, ownProps) => {
         testsForRun: tests,
         activeRunsById,
         usersById,
-        userId,
+        userId
     };
 };
 

@@ -29,7 +29,7 @@ class CurrentGitCommit extends Component {
 CurrentGitCommit.propTypes = {
     label: PropTypes.string,
     gitHash: PropTypes.string,
-    gitCommitMessage: PropTypes.string,
+    gitCommitMessage: PropTypes.string
 };
 
 export default CurrentGitCommit;

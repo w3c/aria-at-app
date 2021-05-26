@@ -1,1 +1,1 @@
-module.exports = (o) => Promise.resolve(o);
+module.exports = o => Promise.resolve(o);

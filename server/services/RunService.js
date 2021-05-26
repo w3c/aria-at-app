@@ -115,13 +115,13 @@ async function configureRuns(
         await db.TestVersion.update(
             { active: false },
             {
-                where: {},
+                where: {}
             }
         );
         await db.TestVersion.update(
             { active: true },
             {
-                where: { id: test_version_id },
+                where: { id: test_version_id }
             }
         );
 
@@ -132,8 +132,8 @@ async function configureRuns(
             {
                 where: {
                     ...test_version_id,
-                    id: apg_example_ids,
-                },
+                    id: apg_example_ids
+                }
             }
         );
 
@@ -143,16 +143,16 @@ async function configureRuns(
             const browserVersionRows = await db.BrowserVersion.findCreateFind({
                 where: {
                     browser_id: techPair.browser_id,
-                    version: techPair.browser_version,
-                },
+                    version: techPair.browser_version
+                }
             });
             techPair.browser_version_id = browserVersionRows[0].id;
 
             const atVersionRows = await db.AtVersion.findCreateFind({
                 where: {
                     version: techPair.at_version,
-                    at_name_id: techPair.at_name_id,
-                },
+                    at_name_id: techPair.at_name_id
+                }
             });
 
             techPair.at_version_id = atVersionRows[0].id;
@@ -174,8 +174,8 @@ async function configureRuns(
         const techPairs = await db.BrowserVersionToAtVersion.findAll({
             include: [
                 { model: db.AtVersion, include: [db.AtName] },
-                { model: db.BrowserVersion, include: [db.Browser] },
-            ],
+                { model: db.BrowserVersion, include: [db.Browser] }
+            ]
         });
 
         let updateActiveTechPairs = [];
@@ -186,7 +186,7 @@ async function configureRuns(
             // Find whether or the database techpairs match the
             // configuration
             /// where bowser_version_to_at_version has the save values as at_browser_pairs
-            let matchIndex = addTechPairs.findIndex((t) => {
+            let matchIndex = addTechPairs.findIndex(t => {
                 return (
                     t.at_version_id === techPair.at_version_id &&
                     t.browser_version_id === techPair.browser_version_id
@@ -207,7 +207,7 @@ async function configureRuns(
         }
 
         if (updateActiveTechPairs.length) {
-            let ids = updateActiveTechPairs.map((t) => t.id);
+            let ids = updateActiveTechPairs.map(t => t.id);
             await db.BrowserVersionToAtVersion.update(
                 { active: true },
                 { where: { id: ids } }
@@ -215,7 +215,7 @@ async function configureRuns(
         }
 
         if (updateInactiveTechPairs.length) {
-            let ids = updateInactiveTechPairs.map((t) => t.id);
+            let ids = updateInactiveTechPairs.map(t => t.id);
             await db.BrowserVersionToAtVersion.update(
                 { active: false },
                 { where: { id: ids } }
@@ -223,11 +223,11 @@ async function configureRuns(
         }
 
         if (addTechPairs.length) {
-            let dbTechPairs = addTechPairs.map((t) => {
+            let dbTechPairs = addTechPairs.map(t => {
                 return {
                     browser_version_id: t.browser_version_id,
                     at_version_id: t.at_version_id,
-                    active: true,
+                    active: true
                 };
             });
 
@@ -235,7 +235,7 @@ async function configureRuns(
                 dbTechPairs
             );
             activeTechPairIds = activeTechPairIds.concat(
-                newRows.map((r) => r.id)
+                newRows.map(r => r.id)
             );
         }
 
@@ -246,14 +246,14 @@ async function configureRuns(
                 where: { id },
                 include: [
                     { model: db.AtVersion, include: [db.AtName] },
-                    { model: db.BrowserVersion, include: [db.Browser] },
-                ],
+                    { model: db.BrowserVersion, include: [db.Browser] }
+                ]
             });
             activeTechPairData.push({
                 id,
                 browser_version_id: techPair.browser_version_id,
                 at_version_id: techPair.at_version_id,
-                at_name_id: techPair.AtVersion.at_name_id,
+                at_name_id: techPair.AtVersion.at_name_id
             });
         }
 
@@ -261,7 +261,7 @@ async function configureRuns(
 
         const existingRuns = await db.Run.findAll({
             where: {
-                test_version_id,
+                test_version_id
             },
             include: [
                 db.ApgExample,
@@ -269,17 +269,17 @@ async function configureRuns(
                     model: db.BrowserVersionToAtVersion,
                     include: [
                         { model: db.AtVersion, include: [db.AtName] },
-                        { model: db.BrowserVersion, include: [db.Browser] },
-                    ],
+                        { model: db.BrowserVersion, include: [db.Browser] }
+                    ]
                 },
-                db.Users,
-            ],
+                db.Users
+            ]
         });
 
         // Capture value of currently active runs for copying testers
         const currentActiveRuns = await db.Run.findAll({
             where: { active: true },
-            include: [db.Users, db.ApgExample],
+            include: [db.Users, db.ApgExample]
         });
 
         await db.Run.update(
@@ -287,9 +287,9 @@ async function configureRuns(
             {
                 where: {
                     test_version_id: {
-                        [db.Sequelize.Op.not]: test_version_id,
-                    },
-                },
+                        [db.Sequelize.Op.not]: test_version_id
+                    }
+                }
             }
         );
 
@@ -303,7 +303,7 @@ async function configureRuns(
                     at_version_id: techPair.at_version_id,
                     browser_version_id: techPair.browser_version_id,
                     browser_version_to_at_version_id: techPair.id,
-                    at_name_id: techPair.at_name_id,
+                    at_name_id: techPair.at_name_id
                 });
             }
         }
@@ -311,7 +311,7 @@ async function configureRuns(
         const updateActiveRuns = [];
         const updateInactiveRuns = [];
         for (let existingRun of existingRuns) {
-            let matchIndex = addRuns.findIndex((r) => {
+            let matchIndex = addRuns.findIndex(r => {
                 return (
                     r.apg_example_id === existingRun.ApgExample.id &&
                     r.browser_version_to_at_version_id ===
@@ -332,28 +332,28 @@ async function configureRuns(
         }
 
         if (updateActiveRuns.length) {
-            let ids = updateActiveRuns.map((t) => t.id);
+            let ids = updateActiveRuns.map(t => t.id);
             await db.Run.update({ active: true }, { where: { id: ids } });
         }
 
         if (updateInactiveRuns.length) {
-            let ids = updateInactiveRuns.map((t) => t.id);
+            let ids = updateInactiveRuns.map(t => t.id);
             await db.Run.update({ active: false }, { where: { id: ids } });
         }
 
         let runStatus = await db.RunStatus.findOne({
-            where: { name: 'raw' },
+            where: { name: 'raw' }
         });
 
         if (addRuns.length) {
-            let dbRuns = addRuns.map((r) => {
+            let dbRuns = addRuns.map(r => {
                 return {
                     browser_version_to_at_versions_id:
                         r.browser_version_to_at_version_id,
                     apg_example_id: r.apg_example_id,
                     test_version_id,
                     active: true,
-                    run_status_id: runStatus.id,
+                    run_status_id: runStatus.id
                 };
             });
 
@@ -367,14 +367,14 @@ async function configureRuns(
                 // Add tester to the runs that match on ApgExample, ATVersion, and BrowserVersion
                 let testerToRuns = [];
                 let runStatusFinal = await db.RunStatus.findOne({
-                    where: { name: db.RunStatus.FINAL },
+                    where: { name: db.RunStatus.FINAL }
                 });
                 for (let run of newRuns) {
                     let runWithApgExample = await db.Run.findByPk(run.id, {
-                        include: db.ApgExample,
+                        include: db.ApgExample
                     });
                     let matchIndex = currentActiveRuns.findIndex(
-                        (r) =>
+                        r =>
                             r.browser_version_to_at_versions_id ===
                                 run.browser_version_to_at_versions_id &&
                             r.ApgExample.name ===
@@ -411,14 +411,14 @@ async function sequelizeRunsToJsonRuns(sequelizeRuns) {
     if (sequelizeRuns.length > 0) {
         ats = await db.At.findAll({
             where: {
-                test_version_id: sequelizeRuns[0].test_version_id,
-            },
+                test_version_id: sequelizeRuns[0].test_version_id
+            }
         });
     }
 
     return sequelizeRuns.reduce((acc, run) => {
         let atNameId = run.BrowserVersionToAtVersion.AtVersion.AtName.id;
-        let at = ats.find((at) => at.at_name_id == atNameId);
+        let at = ats.find(at => at.at_name_id == atNameId);
         acc[run.id] = {
             id: run.id,
             browser_id: run.BrowserVersionToAtVersion.BrowserVersion.browser_id,
@@ -439,11 +439,9 @@ async function sequelizeRunsToJsonRuns(sequelizeRuns) {
             run_status_id: run.run_status_id,
             run_status: run.RunStatus.name,
             test_version_id: run.test_version_id,
-            testers: run.Users.map((u) => u.id),
-            tests: run.ApgExample.Tests.filter((test) =>
-                (test.TestToAts || []).some(
-                    (testToAt) => testToAt.at_id == at.id
-                )
+            testers: run.Users.map(u => u.id),
+            tests: run.ApgExample.Tests.filter(test =>
+                (test.TestToAts || []).some(testToAt => testToAt.at_id == at.id)
             )
                 .sort((a, b) =>
                     a.execution_order > b.execution_order ? 1 : -1
@@ -455,20 +453,20 @@ async function sequelizeRunsToJsonRuns(sequelizeRuns) {
                         name: test.name,
                         execution_order: test.execution_order,
                         results: test.TestResults.filter(
-                            (testResult) => testResult.run_id == run.id
+                            testResult => testResult.run_id == run.id
                         ).reduce((acc, testResult) => {
                             acc[testResult.user_id] = {
                                 id: testResult.id,
                                 user_id: testResult.user_id,
                                 status: testResult.TestStatus.name,
                                 result: testResult.result,
-                                serialized_form: testResult.serialized_form,
+                                serialized_form: testResult.serialized_form
                             };
                             return acc;
-                        }, {}),
+                        }, {})
                     });
                     return acc;
-                }, []),
+                }, [])
         };
         return acc;
     }, {});
@@ -493,20 +491,20 @@ async function getActiveRuns() {
                             db.TestToAt,
                             {
                                 model: db.TestResult,
-                                include: db.TestStatus,
-                            },
-                        ],
-                    },
+                                include: db.TestStatus
+                            }
+                        ]
+                    }
                 },
                 {
                     model: db.BrowserVersionToAtVersion,
                     include: [
                         { model: db.AtVersion, include: [db.AtName] },
-                        { model: db.BrowserVersion, include: [db.Browser] },
-                    ],
+                        { model: db.BrowserVersion, include: [db.Browser] }
+                    ]
                 },
-                db.Users,
-            ],
+                db.Users
+            ]
         });
         return await sequelizeRunsToJsonRuns(activeRuns);
     } catch (error) {
@@ -531,18 +529,18 @@ async function getPublishedRuns() {
         const mostRecentPublishedRun = await db.Run.findOne({
             order: [['updated_at', 'desc nulls last']],
             include: [
-                { model: db.RunStatus, where: { name: publishedStatuses } },
-            ],
+                { model: db.RunStatus, where: { name: publishedStatuses } }
+            ]
         });
         if (mostRecentPublishedRun) {
             const publishedRuns = await db.Run.findAll({
                 where: {
-                    test_version_id: mostRecentPublishedRun.test_version_id,
+                    test_version_id: mostRecentPublishedRun.test_version_id
                 },
                 include: [
                     {
                         model: db.RunStatus,
-                        where: { name: publishedStatuses },
+                        where: { name: publishedStatuses }
                     },
                     {
                         model: db.ApgExample,
@@ -552,20 +550,20 @@ async function getPublishedRuns() {
                                 db.TestToAt,
                                 {
                                     model: db.TestResult,
-                                    include: db.TestStatus,
-                                },
-                            ],
-                        },
+                                    include: db.TestStatus
+                                }
+                            ]
+                        }
                     },
                     {
                         model: db.BrowserVersionToAtVersion,
                         include: [
                             { model: db.AtVersion, include: [db.AtName] },
-                            { model: db.BrowserVersion, include: [db.Browser] },
-                        ],
+                            { model: db.BrowserVersion, include: [db.Browser] }
+                        ]
                     },
-                    db.Users,
-                ],
+                    db.Users
+                ]
             });
 
             return await sequelizeRunsToJsonRuns(publishedRuns);
@@ -585,7 +583,7 @@ function sequelizeTestVersionToJsonTestSuiteVersion(sequelizeTestVersion) {
                 at_name_id: at.at_name_id,
                 at_name: at.AtName.name,
                 at_key: at.key,
-                at_id: at.id,
+                at_id: at.id
             });
             return acc;
         }, []);
@@ -594,7 +592,7 @@ function sequelizeTestVersionToJsonTestSuiteVersion(sequelizeTestVersion) {
                 acc.push({
                     id: apgExample.id,
                     name: apgExample.name,
-                    directory: apgExample.directory,
+                    directory: apgExample.directory
                 });
                 return acc;
             },
@@ -608,7 +606,7 @@ function sequelizeTestVersionToJsonTestSuiteVersion(sequelizeTestVersion) {
             git_commit_msg: sequelizeTestVersion.git_commit_msg,
             date: sequelizeTestVersion.datetime,
             supported_ats: supportedAts,
-            apg_examples: apgExamples,
+            apg_examples: apgExamples
         };
     } else {
         return {};
@@ -625,34 +623,35 @@ async function getActiveRunsConfiguration() {
     try {
         const activeTestVersion = await db.TestVersion.findOne({
             where: { active: true },
-            include: [db.ApgExample, { model: db.At, include: db.AtName }],
+            include: [db.ApgExample, { model: db.At, include: db.AtName }]
         });
-        const activeTestVersionJson =
-            sequelizeTestVersionToJsonTestSuiteVersion(activeTestVersion);
+        const activeTestVersionJson = sequelizeTestVersionToJsonTestSuiteVersion(
+            activeTestVersion
+        );
         let activeApgExampleIds = [];
         if (activeTestVersion) {
             activeApgExampleIds = activeTestVersion.ApgExamples.filter(
-                (apgExample) => apgExample.active
-            ).map((apgExample) => apgExample.id);
+                apgExample => apgExample.active
+            ).map(apgExample => apgExample.id);
         }
         const activeAtBrowserPairs = await db.BrowserVersionToAtVersion.findAll(
             {
                 where: { active: true },
-                include: [db.AtVersion, db.BrowserVersion],
+                include: [db.AtVersion, db.BrowserVersion]
             }
         ).reduce((acc, tech) => {
             acc.push({
                 at_name_id: tech.AtVersion.at_name_id,
                 at_version: tech.AtVersion.version,
                 browser_id: tech.BrowserVersion.browser_id,
-                browser_version: tech.BrowserVersion.version,
+                browser_version: tech.BrowserVersion.version
             });
             return acc;
         }, []);
         const browsers = await db.Browser.findAll().reduce((acc, browser) => {
             acc.push({
                 id: browser.id,
-                name: browser.name,
+                name: browser.name
             });
             return acc;
         }, []);
@@ -660,7 +659,7 @@ async function getActiveRunsConfiguration() {
             active_test_version: activeTestVersionJson,
             active_apg_examples: activeApgExampleIds,
             active_at_browser_pairs: activeAtBrowserPairs,
-            browsers: browsers,
+            browsers: browsers
         };
     } catch (error) {
         console.error(`Error: ${error}`);
@@ -678,7 +677,7 @@ async function getTestVersions() {
     try {
         return await db.TestVersion.findAll({
             where: {},
-            include: [db.ApgExample, { model: db.At, include: db.AtName }],
+            include: [db.ApgExample, { model: db.At, include: db.AtName }]
         }).reduce((acc, testVersion) => {
             acc.push(sequelizeTestVersionToJsonTestSuiteVersion(testVersion));
             return acc;
@@ -705,8 +704,8 @@ async function saveRunStatus(run) {
         const status = await db.RunStatus.findOne({
             attributes: ['id'],
             where: {
-                name: run_status,
-            },
+                name: run_status
+            }
         });
 
         if (!status) {
@@ -717,8 +716,8 @@ async function saveRunStatus(run) {
             { run_status_id: status.dataValues.id },
             {
                 where: {
-                    id,
-                },
+                    id
+                }
             }
         );
 
@@ -736,5 +735,5 @@ module.exports = {
     getPublishedRuns,
     getActiveRunsConfiguration,
     getTestVersions,
-    saveRunStatus,
+    saveRunStatus
 };

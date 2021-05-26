@@ -21,7 +21,7 @@ class StatusBar extends Component {
                 visible: false
             }
              */
-            ],
+            ]
         };
     }
 
@@ -51,7 +51,7 @@ class StatusBar extends Component {
                 action,
                 icon,
                 message,
-                variant,
+                variant
             });
         }
 
@@ -72,12 +72,12 @@ class StatusBar extends Component {
                 action,
                 icon,
                 message,
-                variant,
+                variant
             });
         }
 
         this.setState({
-            statuses,
+            statuses
         });
     }
 
@@ -108,13 +108,13 @@ StatusBar.propTypes = {
     handlePreviousTestClick: PropTypes.func,
     handleRaiseIssueClick: PropTypes.func,
     handleRedoClick: PropTypes.func,
-    handleConflictsModalClick: PropTypes.func,
+    handleConflictsModalClick: PropTypes.func
 };
 
 const mapStateToProps = (state, ownProps) => {
     const {
         runs: { conflictsByTestId, activeRunsById },
-        issues: { issuesByTestId },
+        issues: { issuesByTestId }
     } = state;
     const conflicts = conflictsByTestId[ownProps.test.id] || [];
     const issues = (issuesByTestId[ownProps.test.id] || []).filter(

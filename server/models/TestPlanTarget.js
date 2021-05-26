@@ -1,6 +1,6 @@
 const MODEL_NAME = 'TestPlanTarget';
 
-module.exports = function (sequelize, DataTypes) {
+module.exports = function(sequelize, DataTypes) {
     const Model = sequelize.define(
         MODEL_NAME,
         {
@@ -8,7 +8,7 @@ module.exports = function (sequelize, DataTypes) {
                 type: DataTypes.INTEGER,
                 allowNull: false,
                 primaryKey: true,
-                autoIncrement: true,
+                autoIncrement: true
             },
             title: { type: DataTypes.TEXT },
             at: { type: DataTypes.INTEGER },
@@ -17,20 +17,20 @@ module.exports = function (sequelize, DataTypes) {
                 type: DataTypes.TEXT,
                 references: {
                     model: 'AtVersion',
-                    key: 'version',
-                },
+                    key: 'version'
+                }
             },
             browserVersion: {
                 type: DataTypes.TEXT,
                 references: {
                     model: 'BrowserVersion',
-                    key: 'version',
-                },
-            },
+                    key: 'version'
+                }
+            }
         },
         {
             timestamps: false,
-            tableName: MODEL_NAME,
+            tableName: MODEL_NAME
         }
     );
 
@@ -42,25 +42,25 @@ module.exports = function (sequelize, DataTypes) {
 
     Model.BROWSER_VERSION_ASSOCIATION = { foreignKey: 'browserVersion' };
 
-    Model.associate = function (models) {
+    Model.associate = function(models) {
         Model.belongsTo(models.At, {
             ...Model.AT_ASSOCIATION,
-            targetKey: 'id',
+            targetKey: 'id'
         });
 
         Model.belongsTo(models.AtVersion, {
             ...Model.AT_VERSION_ASSOCIATION,
-            targetKey: 'version',
+            targetKey: 'version'
         });
 
         Model.belongsTo(models.Browser, {
             ...Model.BROWSER_ASSOCIATION,
-            targetKey: 'id',
+            targetKey: 'id'
         });
 
         Model.belongsTo(models.BrowserVersion, {
             ...Model.BROWSER_VERSION_ASSOCIATION,
-            targetKey: 'version',
+            targetKey: 'version'
         });
     };
 

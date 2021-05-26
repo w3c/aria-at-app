@@ -30,7 +30,7 @@ app.use('/test-versions', testVersionRoutes);
 const server = new ApolloServer({
     typeDefs: graphqlSchema,
     context: getGraphQLContext,
-    resolvers,
+    resolvers
 });
 server.start().then(() => {
     server.applyMiddleware({ app });

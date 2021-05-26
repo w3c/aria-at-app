@@ -2,7 +2,7 @@ const {
     sequelize,
     dataTypes,
     checkModelName,
-    checkPropertyExists,
+    checkPropertyExists
 } = require('sequelize-test-helpers');
 
 const TestPlanVersionModel = require('../../models/TestPlanVersion');
@@ -26,7 +26,7 @@ describe('TestPlanVersionModel', () => {
             'exampleUrl',
             'updatedAt',
             'metadata',
-            'tests',
+            'tests'
         ].forEach(checkPropertyExists(modelInstance));
     });
 

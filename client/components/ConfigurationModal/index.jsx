@@ -8,7 +8,7 @@ class ConfigurationModal extends Component {
             show,
             handleClose,
             saveRunConfiguration,
-            configurationChanges,
+            configurationChanges
         } = this.props;
         return (
             <Modal show={show} onHide={handleClose}>
@@ -24,7 +24,7 @@ class ConfigurationModal extends Component {
                             </b>
                         </p>
                         <ul>
-                            {configurationChanges.map((runDeleted) => (
+                            {configurationChanges.map(runDeleted => (
                                 <li
                                     key={runDeleted.id}
                                 >{`${runDeleted.apg_example_name} - ${runDeleted.at_name} ${runDeleted.at_version} with ${runDeleted.browser_name} ${runDeleted.browser_version}`}</li>
@@ -50,7 +50,7 @@ ConfigurationModal.propTypes = {
     handleClose: PropTypes.func,
     saveRunConfiguration: PropTypes.func,
     configurationChanges: PropTypes.array,
-    resultsDeleted: PropTypes.bool,
+    resultsDeleted: PropTypes.bool
 };
 
 export default ConfigurationModal;

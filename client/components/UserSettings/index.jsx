@@ -22,15 +22,15 @@ class UserSettings extends Component {
             Object.assign(
                 {},
                 ...this.props.ats
-                    .map((at) => {
+                    .map(at => {
                         let userAt = this.props.currentUserAts.filter(
-                            (userAt) => at.id === userAt.at_name_id
+                            userAt => at.id === userAt.at_name_id
                         );
                         return [
                             at.name,
                             {
-                                checked: userAt.length ? true : false,
-                            },
+                                checked: userAt.length ? true : false
+                            }
                         ];
                     })
                     .map(([k, v]) => ({ [k]: v }))
@@ -56,12 +56,12 @@ class UserSettings extends Component {
             const { id, checked } = event.target;
             // Need to do this check because some SyntheticEvents have a null target
             if (id) {
-                this.setState((prevState) => {
+                this.setState(prevState => {
                     return {
                         ...prevState,
                         [id]: {
-                            checked,
-                        },
+                            checked
+                        }
                     };
                 });
             }
@@ -71,9 +71,9 @@ class UserSettings extends Component {
     onSubmit(event) {
         const { dispatch, ats, userId } = this.props;
         const selectedAts = Object.entries(this.state)
-            .filter((atEntry) => atEntry[1].checked)
-            .map((atEntry) => atEntry[0])
-            .map((atName) => ats.filter((at) => at.name === atName).shift());
+            .filter(atEntry => atEntry[1].checked)
+            .map(atEntry => atEntry[0])
+            .map(atName => ats.filter(at => at.name === atName).shift());
         dispatch(handleSetUserAts(userId, selectedAts));
         this.currentAtsRef.current.focus();
         event.preventDefault();
@@ -86,7 +86,7 @@ class UserSettings extends Component {
             username,
             email,
             loadedUserData,
-            currentUserAts,
+            currentUserAts
         } = this.props;
         const currentAtDisplay = (
             <div>
@@ -95,12 +95,12 @@ class UserSettings extends Component {
                 </p>
                 <ul>
                     {ats
-                        .filter((at) =>
+                        .filter(at =>
                             currentUserAts.find(
                                 ({ at_name_id }) => at.id === at_name_id
                             )
                         )
-                        .map((at) => (
+                        .map(at => (
                             <li key={at.id}>{at.name}</li>
                         ))}
                 </ul>
@@ -145,7 +145,7 @@ class UserSettings extends Component {
                             aria-labelledby="at-group-label"
                         >
                             {ats &&
-                                ats.map((at) => {
+                                ats.map(at => {
                                     return (
                                         <Form.Check
                                             id={at.name}
@@ -198,12 +198,18 @@ UserSettings.propTypes = {
     userId: PropTypes.number,
     ats: PropTypes.array,
     dispatch: PropTypes.func,
-    currentUserAts: PropTypes.array,
+    currentUserAts: PropTypes.array
 };
 
-const mapStateToProps = (state) => {
-    const { loadedUserData, isSignedIn, username, fullname, email, id } =
-        state.user;
+const mapStateToProps = state => {
+    const {
+        loadedUserData,
+        isSignedIn,
+        username,
+        fullname,
+        email,
+        id
+    } = state.user;
     const { usersById } = state.users;
 
     let currentUserAts = [];
@@ -219,7 +225,7 @@ const mapStateToProps = (state) => {
         email,
         ats: state.ats,
         userId: id,
-        currentUserAts,
+        currentUserAts
     };
 };
 

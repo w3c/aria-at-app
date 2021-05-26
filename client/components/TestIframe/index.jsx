@@ -43,7 +43,7 @@ class TestIframe extends Component {
         const { saveTestResultOrProgress } = this.props;
         await saveTestResultOrProgress({
             results,
-            serializedForm,
+            serializedForm
         });
     }
 
@@ -60,8 +60,8 @@ class TestIframe extends Component {
     // before the harness dynamically sets up the
     // test html
     async waitForTestHarnessReload() {
-        return new Promise((resolve) => {
-            const handleLoadMessage = (message) => {
+        return new Promise(resolve => {
+            const handleLoadMessage = message => {
                 if (!this.validateMessage(message, 'loaded')) return;
                 window.removeEventListener('message', handleLoadMessage);
                 resolve();
@@ -89,7 +89,7 @@ class TestIframe extends Component {
         if (JSON.stringify(serializedForm) !== this.emptyForm) {
             const { saveTestResultOrProgress } = this.props;
             await saveTestResultOrProgress({
-                serializedForm,
+                serializedForm
             });
             saved = true;
         }
@@ -100,7 +100,7 @@ class TestIframe extends Component {
     triggerSubmit() {
         this.iframeEl.current.contentWindow.postMessage(
             {
-                type: 'submit',
+                type: 'submit'
             },
             window.location.origin
         );
@@ -170,5 +170,5 @@ TestIframe.propTypes = {
     git_hash: PropTypes.string,
     file: PropTypes.string,
     at_key: PropTypes.string,
-    serializedForm: PropTypes.array,
+    serializedForm: PropTypes.array
 };

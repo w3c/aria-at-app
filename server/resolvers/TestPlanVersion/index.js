@@ -3,7 +3,7 @@ const gitMessage = require('./gitMessageResolver');
 
 const TestPlanVersion = {
     testCount,
-    gitMessage,
+    gitMessage
 };
 
 module.exports = TestPlanVersion;

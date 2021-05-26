@@ -1,5 +1,5 @@
 const {
-    createTestPlanRun,
+    createTestPlanRun
 } = require('../../models/services/TestPlanRunService');
 
 const assignTesterResolver = async (
@@ -8,7 +8,7 @@ const assignTesterResolver = async (
 ) => {
     await createTestPlanRun({
         testPlanReportId,
-        testerUserId,
+        testerUserId
     });
     return { parentContext: { id: testPlanReportId } };
 };

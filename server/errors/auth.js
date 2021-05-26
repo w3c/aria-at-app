@@ -12,5 +12,5 @@ class ForbiddenError extends Error {
 
 module.exports = {
     AuthorizationError,
-    ForbiddenError,
+    ForbiddenError
 };

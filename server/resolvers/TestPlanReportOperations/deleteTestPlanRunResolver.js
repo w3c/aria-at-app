@@ -1,5 +1,5 @@
 const {
-    removeTestPlanRunByQuery,
+    removeTestPlanRunByQuery
 } = require('../../models/services/TestPlanRunService');
 
 const deleteTestPlanRunResolver = async (
@@ -8,7 +8,7 @@ const deleteTestPlanRunResolver = async (
 ) => {
     await removeTestPlanRunByQuery({
         testPlanReportId,
-        testerUserId,
+        testerUserId
     });
     return { parentContext: { id: testPlanReportId } };
 };

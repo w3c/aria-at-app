@@ -4,7 +4,7 @@ const {
     TEST_PLAN_REPORT_ATTRIBUTES,
     TEST_PLAN_TARGET_ATTRIBUTES,
     TEST_PLAN_RUN_ATTRIBUTES,
-    USER_ATTRIBUTES,
+    USER_ATTRIBUTES
 } = require('./helpers');
 const { Sequelize, TestPlanVersion } = require('../');
 const { Op } = Sequelize;
@@ -30,17 +30,17 @@ const testPlanReportAssociation = (
         // eslint-disable-next-line no-use-before-define
         testPlanTargetAssociation(testPlanTargetAttributes),
         // eslint-disable-next-line no-use-before-define
-        testPlanRunAssociation(testPlanRunAttributes, userAttributes),
-    ],
+        testPlanRunAssociation(testPlanRunAttributes, userAttributes)
+    ]
 });
 
 /**
  * @param {string[]} testPlanTargetAttributes - TestPlanTarget attributes
  * @returns {{association: string, attributes: string[]}}
  */
-const testPlanTargetAssociation = (testPlanTargetAttributes) => ({
+const testPlanTargetAssociation = testPlanTargetAttributes => ({
     association: 'testPlanTarget',
-    attributes: testPlanTargetAttributes,
+    attributes: testPlanTargetAttributes
 });
 
 /**
@@ -53,17 +53,17 @@ const testPlanRunAssociation = (testPlanRunAttributes, userAttributes) => ({
     attributes: testPlanRunAttributes,
     include: [
         // eslint-disable-next-line no-use-before-define
-        userAssociation(userAttributes),
-    ],
+        userAssociation(userAttributes)
+    ]
 });
 
 /**
  * @param {string[]} userAttributes - User attributes
  * @returns {{association: string, attributes: string[]}}
  */
-const userAssociation = (userAttributes) => ({
+const userAssociation = userAttributes => ({
     association: 'tester',
-    attributes: userAttributes,
+    attributes: userAttributes
 });
 
 /**
@@ -94,7 +94,7 @@ const getTestPlanVersionById = async (
                 testPlanTargetAttributes,
                 testPlanRunAttributes,
                 userAttributes
-            ),
+            )
         ]
     );
 };
@@ -139,7 +139,7 @@ const getTestPlanVersions = async (
                 testPlanTargetAttributes,
                 testPlanRunAttributes,
                 userAttributes
-            ),
+            )
         ],
         pagination
     );
@@ -163,7 +163,7 @@ const createTestPlanVersion = async (
         exampleUrl,
         updatedAt,
         metadata,
-        tests,
+        tests
     },
     testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
     testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
@@ -179,7 +179,7 @@ const createTestPlanVersion = async (
         exampleUrl,
         updatedAt,
         metadata,
-        tests,
+        tests
     });
     const { id } = testPlanVersionResult;
 
@@ -233,5 +233,5 @@ module.exports = {
     getTestPlanVersionById,
     getTestPlanVersions,
     createTestPlanVersion,
-    updateTestPlanVersion,
+    updateTestPlanVersion
 };

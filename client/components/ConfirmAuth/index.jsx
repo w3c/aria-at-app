@@ -46,13 +46,13 @@ function mapStateToProps(state) {
 ConfirmAuth.propTypes = {
     children: PropTypes.oneOfType([
         PropTypes.arrayOf(PropTypes.node),
-        PropTypes.node,
+        PropTypes.node
     ]).isRequired,
     isAuthorized: PropTypes.bool,
     isSignedIn: PropTypes.bool,
     loadedUserData: PropTypes.bool,
     roles: PropTypes.array,
-    requiredPermission: PropTypes.string,
+    requiredPermission: PropTypes.string
 };
 
 export default connect(mapStateToProps, null)(ConfirmAuth);

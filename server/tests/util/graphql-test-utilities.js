@@ -10,21 +10,22 @@ let mockReq;
 const server = new ApolloServer({
     typeDefs,
     context: () => getGraphQLContext({ req: mockReq }),
-    resolvers,
+    resolvers
 });
 
-const { query: testClientQuery, mutate: testClientMutate } =
-    createTestClient(server);
+const { query: testClientQuery, mutate: testClientMutate } = createTestClient(
+    server
+);
 
-const failWithErrors = (errors) => {
+const failWithErrors = errors => {
     let formatted = '';
-    errors.forEach((error) => {
+    errors.forEach(error => {
         formatted +=
             `GraphQL error in ${JSON.stringify(error.path)}:\n\n` +
             `${error.message}\n\n` +
             `(${JSON.stringify({
                 extensions: error.extensions,
-                location: error.location,
+                location: error.location
             })})\n`;
     });
     throw new Error(formatted);

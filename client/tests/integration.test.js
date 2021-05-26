@@ -23,22 +23,22 @@ describe('sign in actions dispatchers', () => {
                 name: 'Foo Bar',
                 email: 'foo@bar.com',
                 id: undefined,
-                roles: undefined,
+                roles: undefined
             },
             runs: {
                 activeRunsById: undefined,
                 publishedRunsById: undefined,
                 activeRunConfiguration: undefined,
                 conflictsByTestId: {},
-                testVersions: undefined,
+                testVersions: undefined
             },
             issues: {
-                issuesByTestId: {},
+                issuesByTestId: {}
             },
             ats: [],
             users: {
-                usersById: {},
-            },
+                usersById: {}
+            }
         };
 
         moxios.wait(() => {
@@ -48,8 +48,8 @@ describe('sign in actions dispatchers', () => {
                 response: {
                     username: expectedState.user.username,
                     name: expectedState.user.name,
-                    email: expectedState.user.email,
-                },
+                    email: expectedState.user.email
+                }
             });
         });
 
@@ -63,28 +63,28 @@ describe('sign in actions dispatchers', () => {
         const expectedState = {
             user: {
                 isSignedIn: false,
-                loadedUserData: false,
+                loadedUserData: false
             },
             runs: {
                 activeRunsById: undefined,
                 publishedRunsById: undefined,
                 activeRunConfiguration: undefined,
                 conflictsByTestId: {},
-                testVersions: undefined,
+                testVersions: undefined
             },
             issues: {
-                issuesByTestId: {},
+                issuesByTestId: {}
             },
             ats: [],
             users: {
-                usersById: {},
-            },
+                usersById: {}
+            }
         };
 
         moxios.wait(() => {
             const request = moxios.requests.mostRecent();
             request.respondWith({
-                status: 200,
+                status: 200
             });
         });
 
@@ -107,24 +107,24 @@ describe('ats action dispatchers', () => {
         const expectedState = {
             user: {
                 isSignedIn: false,
-                loadedUserData: false,
+                loadedUserData: false
             },
             runs: {
                 activeRunsById: undefined,
                 publishedRunsById: undefined,
                 activeRunConfiguration: undefined,
                 conflictsByTestId: {},
-                testVersions: undefined,
+                testVersions: undefined
             },
             issues: {
-                issuesByTestId: {},
+                issuesByTestId: {}
             },
             ats: {
-                names: ['JAWS', 'NVDA', 'VoiceOver'],
+                names: ['JAWS', 'NVDA', 'VoiceOver']
             },
             users: {
-                usersById: {},
-            },
+                usersById: {}
+            }
         };
 
         moxios.wait(() => {
@@ -132,8 +132,8 @@ describe('ats action dispatchers', () => {
             request.respondWith({
                 status: 200,
                 response: {
-                    names: expectedState.ats.names,
-                },
+                    names: expectedState.ats.names
+                }
             });
         });
 
@@ -149,17 +149,17 @@ describe('users action dispatchers', () => {
         expectedState = {
             user: {
                 isSignedIn: false,
-                loadedUserData: false,
+                loadedUserData: false
             },
             runs: {
                 activeRunsById: undefined,
                 publishedRunsById: undefined,
                 activeRunConfiguration: undefined,
                 conflictsByTestId: {},
-                testVersions: undefined,
+                testVersions: undefined
             },
             issues: {
-                issuesByTestId: {},
+                issuesByTestId: {}
             },
             ats: [],
             users: {
@@ -169,15 +169,15 @@ describe('users action dispatchers', () => {
                         username: 'foobar',
                         configured_ats: [
                             {
-                                at_name_id: 1,
+                                at_name_id: 1
                             },
                             {
-                                at_name_id: 2,
-                            },
-                        ],
-                    },
-                },
-            },
+                                at_name_id: 2
+                            }
+                        ]
+                    }
+                }
+            }
         };
         moxios.install();
     });
@@ -196,9 +196,9 @@ describe('users action dispatchers', () => {
                     {
                         id: 1,
                         username: 'foobar',
-                        configured_ats: [],
-                    },
-                ],
+                        configured_ats: []
+                    }
+                ]
             });
         });
 
@@ -210,12 +210,12 @@ describe('users action dispatchers', () => {
                 status: 200,
                 response: [
                     {
-                        at_name_id: 1,
+                        at_name_id: 1
                     },
                     {
-                        at_name_id: 2,
-                    },
-                ],
+                        at_name_id: 2
+                    }
+                ]
             });
         });
         await store.dispatch(

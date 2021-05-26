@@ -9,18 +9,18 @@ const { Op } = Sequelize;
  * @param browserAttributes - Browser attributes
  * @returns {{association: string, attributes: string[]}}
  */
-const browserAssociation = (browserAttributes) => ({
+const browserAssociation = browserAttributes => ({
     association: 'browser',
-    attributes: browserAttributes,
+    attributes: browserAttributes
 });
 
 /**
  * @param browserVersionAttributes - BrowserVersion attributes
  * @returns {{association: string, attributes: string[]}}
  */
-const browserVersionAssociation = (browserVersionAttributes) => ({
+const browserVersionAssociation = browserVersionAttributes => ({
     association: 'versions',
-    attributes: browserVersionAttributes,
+    attributes: browserVersionAttributes
 });
 
 // Browser
@@ -38,7 +38,7 @@ const getBrowserById = async (
     browserVersionAttributes = BROWSER_VERSION_ATTRIBUTES
 ) => {
     return ModelService.getById(Browser, id, browserAttributes, [
-        browserVersionAssociation(browserVersionAttributes),
+        browserVersionAssociation(browserVersionAttributes)
     ]);
 };
 
@@ -91,7 +91,7 @@ const createBrowser = async (
 
     // to ensure the structure being returned matches what we expect for simple queries and can be controlled
     return await ModelService.getById(Browser, id, browserAttributes, [
-        browserVersionAssociation(browserVersionAttributes),
+        browserVersionAssociation(browserVersionAttributes)
     ]);
 };
 
@@ -111,7 +111,7 @@ const updateBrowser = async (
     await ModelService.update(Browser, { id }, { name });
 
     return await ModelService.getById(Browser, id, browserAttributes, [
-        browserVersionAssociation(browserVersionAttributes),
+        browserVersionAssociation(browserVersionAttributes)
     ]);
 };
 
@@ -257,5 +257,5 @@ module.exports = {
     getBrowserVersions,
     createBrowserVersion,
     updateBrowserVersionByQuery,
-    removeBrowserVersionByQuery,
+    removeBrowserVersionByQuery
 };

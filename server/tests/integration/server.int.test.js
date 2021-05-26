@@ -18,7 +18,7 @@ afterAll(async () => {
 // mocking the middleware used by the express app
 const { session } = require('../../middleware/session.js');
 jest.mock('../../middleware/session.js', () => ({
-    session: jest.fn(),
+    session: jest.fn()
 }));
 describe('session middleware tests', () => {
     // setup and teardown of a listener to test the middleware
@@ -26,7 +26,7 @@ describe('session middleware tests', () => {
     let server, agent;
     beforeEach(() => {
         return new Promise((resolve, reject) => {
-            server = app.listen(4000, (err) => {
+            server = app.listen(4000, err => {
                 if (err) return reject(err);
 
                 agent = supertest(server);
@@ -36,7 +36,7 @@ describe('session middleware tests', () => {
     });
 
     afterEach(() => {
-        return new Promise((resolve) => {
+        return new Promise(resolve => {
             server && server.close(resolve);
         });
     });
@@ -76,7 +76,7 @@ describe('session middleware tests', () => {
                 req.session = {
                     destroy(cb) {
                         cb();
-                    },
+                    }
                 };
                 next();
             });
@@ -113,18 +113,18 @@ describe(`${userEndpoint}`, () => {
             .send({
                 user: {
                     id: 1,
-                    username: 'foobar',
+                    username: 'foobar'
                 },
                 ats: [
                     {
                         at_name_id: 1,
-                        active: false,
+                        active: false
                     },
                     {
                         at_name_id: 2,
-                        active: true,
-                    },
-                ],
+                        active: true
+                    }
+                ]
             });
         expect(response.statusCode).toBe(200);
         expect(response.body).toBeTruthy();

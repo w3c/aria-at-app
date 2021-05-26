@@ -87,10 +87,9 @@ describe('test queue', () => {
                     }
                 }
             `);
-            const previousTesterIds =
-                previous.testPlanReport.draftTestPlanRuns.map(
-                    (testPlanRun) => testPlanRun.tester.id
-                );
+            const previousTesterIds = previous.testPlanReport.draftTestPlanRuns.map(
+                testPlanRun => testPlanRun.tester.id
+            );
 
             // A2
             const result = await mutate(gql`
@@ -145,10 +144,9 @@ describe('test queue', () => {
                     }
                 }
             `);
-            const previousTesterIds =
-                previous.testPlanReport.draftTestPlanRuns.map(
-                    (run) => run.tester.id
-                );
+            const previousTesterIds = previous.testPlanReport.draftTestPlanRuns.map(
+                run => run.tester.id
+            );
 
             // A2
             const result = await mutate(gql`

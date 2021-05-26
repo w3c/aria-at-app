@@ -21,7 +21,7 @@ describe('AtModel Data Checks', () => {
         expect(at).toEqual(
             expect.objectContaining({
                 name,
-                id: expect.any(Number),
+                id: expect.any(Number)
             })
         );
     });
@@ -97,7 +97,7 @@ describe('AtModel Data Checks', () => {
 
             // A2 - update at
             const updatedAt = await AtService.updateAt(id, {
-                name: _updatedName,
+                name: _updatedName
             });
             const { name: updatedName } = updatedAt;
 
@@ -138,8 +138,8 @@ describe('AtModel Data Checks', () => {
                     id: expect.any(Number),
                     name: expect.any(String),
                     versions: expect.any(Array),
-                    modes: expect.any(Array),
-                }),
+                    modes: expect.any(Array)
+                })
             ])
         );
     });
@@ -160,8 +160,8 @@ describe('AtModel Data Checks', () => {
                     id: expect.any(Number),
                     name: expect.stringMatching(/nvd/gi),
                     versions: expect.any(Array),
-                    modes: expect.any(Array),
-                }),
+                    modes: expect.any(Array)
+                })
             ])
         );
     });
@@ -169,7 +169,7 @@ describe('AtModel Data Checks', () => {
     it('should return collection of ats with paginated structure', async () => {
         // A1
         const result = await AtService.getAts('', {}, ['name'], [], [], {
-            enablePagination: true,
+            enablePagination: true
         });
 
         // A3
@@ -183,9 +183,9 @@ describe('AtModel Data Checks', () => {
                 pagesCount: expect.any(Number),
                 data: expect.arrayContaining([
                     expect.objectContaining({
-                        name: expect.any(String),
-                    }),
-                ]),
+                        name: expect.any(String)
+                    })
+                ])
             })
         );
     });
@@ -200,7 +200,7 @@ describe('AtVersionModel Data Checks', () => {
         // A2
         const atVersion = await AtService.getAtVersionByQuery({
             atId: _atId,
-            version: _version,
+            version: _version
         });
         const { atId, version, at } = atVersion;
 
@@ -214,8 +214,8 @@ describe('AtVersionModel Data Checks', () => {
                 version: _version,
                 at: expect.objectContaining({
                     id: _atId,
-                    name: expect.any(String),
-                }),
+                    name: expect.any(String)
+                })
             })
         );
     });
@@ -228,7 +228,7 @@ describe('AtVersionModel Data Checks', () => {
         // A2
         const atVersion = await AtService.getAtVersionByQuery({
             atId: _atId,
-            version: _version,
+            version: _version
         });
 
         // A3
@@ -244,7 +244,7 @@ describe('AtVersionModel Data Checks', () => {
             // A2
             const atVersion = await AtService.createAtVersion({
                 atId: _atId,
-                version: _version,
+                version: _version
             });
             const { atId, version, at } = atVersion;
 
@@ -252,7 +252,7 @@ describe('AtVersionModel Data Checks', () => {
             await AtService.removeAtVersionByQuery({ atId, version });
             const deletedAtVersion = await AtService.getAtVersionByQuery({
                 atId,
-                version,
+                version
             });
 
             // after atVersion created
@@ -276,7 +276,7 @@ describe('AtVersionModel Data Checks', () => {
             // A2
             const atVersion = await AtService.createAtVersion({
                 atId: _atId,
-                version: _version,
+                version: _version
             });
             const { atId, version, at } = atVersion;
 
@@ -309,11 +309,11 @@ describe('AtVersionModel Data Checks', () => {
             // A2
             const originalAtVersion = await AtService.getAtVersionByQuery({
                 atId: _atId,
-                version: _version,
+                version: _version
             });
             const updatedAtVersion = await AtService.updateAtVersionByQuery({
                 atId: _atId,
-                version: _version,
+                version: _version
             });
 
             // A3
@@ -334,9 +334,9 @@ describe('AtVersionModel Data Checks', () => {
                     version: expect.any(String),
                     at: expect.objectContaining({
                         id: expect.any(Number),
-                        name: expect.any(String),
-                    }),
-                }),
+                        name: expect.any(String)
+                    })
+                })
             ])
         );
     });
@@ -358,9 +358,9 @@ describe('AtVersionModel Data Checks', () => {
                     version: expect.stringMatching(/2019/gi),
                     at: expect.objectContaining({
                         id: expect.any(Number),
-                        name: expect.any(String),
-                    }),
-                }),
+                        name: expect.any(String)
+                    })
+                })
             ])
         );
     });
@@ -368,7 +368,7 @@ describe('AtVersionModel Data Checks', () => {
     it('should return collection of atVersions with paginated structure', async () => {
         // A1
         const result = await AtService.getAtVersions('', {}, ['version'], [], {
-            enablePagination: true,
+            enablePagination: true
         });
 
         // A3
@@ -382,9 +382,9 @@ describe('AtVersionModel Data Checks', () => {
                 pagesCount: expect.any(Number),
                 data: expect.arrayContaining([
                     expect.objectContaining({
-                        version: expect.any(String),
-                    }),
-                ]),
+                        version: expect.any(String)
+                    })
+                ])
             })
         );
     });
@@ -399,7 +399,7 @@ describe('AtModeModel Data Checks', () => {
         // A2
         const atMode = await AtService.getAtModeByQuery({
             atId: _atId,
-            name: _name,
+            name: _name
         });
         const { atId, name, at } = atMode;
 
@@ -413,8 +413,8 @@ describe('AtModeModel Data Checks', () => {
                 name: _name,
                 at: expect.objectContaining({
                     id: _atId,
-                    name: expect.any(String),
-                }),
+                    name: expect.any(String)
+                })
             })
         );
     });
@@ -427,7 +427,7 @@ describe('AtModeModel Data Checks', () => {
         // A2
         const atMode = await AtService.getAtModeByQuery({
             atId: _atId,
-            name: _name,
+            name: _name
         });
 
         // A3
@@ -443,7 +443,7 @@ describe('AtModeModel Data Checks', () => {
             // A2
             const atMode = await AtService.createAtMode({
                 atId: _atId,
-                name: _name,
+                name: _name
             });
             const { atId, name, at } = atMode;
 
@@ -451,7 +451,7 @@ describe('AtModeModel Data Checks', () => {
             await AtService.removeAtModeByQuery({ atId, name });
             const deletedAtMode = await AtService.getAtModeByQuery({
                 atId,
-                name,
+                name
             });
 
             // after atMode created
@@ -475,7 +475,7 @@ describe('AtModeModel Data Checks', () => {
             // A2
             const atMode = await AtService.createAtMode({
                 atId: _atId,
-                name: _name,
+                name: _name
             });
             const { atId, name, at } = atMode;
 
@@ -483,7 +483,7 @@ describe('AtModeModel Data Checks', () => {
             const updatedMode = await AtService.updateAtModeByQuery(
                 { atId, name },
                 {
-                    name: _updatedName,
+                    name: _updatedName
                 }
             );
             const { name: updatedName } = updatedMode;
@@ -510,11 +510,11 @@ describe('AtModeModel Data Checks', () => {
             // A2
             const originalAtMode = await AtService.getAtModeByQuery({
                 atId: _atId,
-                name: _name,
+                name: _name
             });
             const updatedAtMode = await AtService.updateAtModeByQuery({
                 atId: _atId,
-                name: _name,
+                name: _name
             });
 
             // A3
@@ -535,9 +535,9 @@ describe('AtModeModel Data Checks', () => {
                     name: expect.any(String),
                     at: expect.objectContaining({
                         id: expect.any(Number),
-                        name: expect.any(String),
-                    }),
-                }),
+                        name: expect.any(String)
+                    })
+                })
             ])
         );
     });
@@ -558,9 +558,9 @@ describe('AtModeModel Data Checks', () => {
                     name: expect.stringMatching(/read/gi),
                     at: expect.objectContaining({
                         id: expect.any(Number),
-                        name: expect.any(String),
-                    }),
-                }),
+                        name: expect.any(String)
+                    })
+                })
             ])
         );
     });
@@ -568,7 +568,7 @@ describe('AtModeModel Data Checks', () => {
     it('should return collection of atModes with paginated structure', async () => {
         // A1
         const result = await AtService.getAtModes('', {}, ['name'], [], {
-            enablePagination: true,
+            enablePagination: true
         });
 
         // A3
@@ -582,9 +582,9 @@ describe('AtModeModel Data Checks', () => {
                 pagesCount: expect.any(Number),
                 data: expect.arrayContaining([
                     expect.objectContaining({
-                        name: expect.any(String),
-                    }),
-                ]),
+                        name: expect.any(String)
+                    })
+                ])
             })
         );
     });

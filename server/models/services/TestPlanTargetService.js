@@ -79,7 +79,7 @@ const createTestPlanTarget = async (
     if (typeof browser === 'string') {
         browserName = browser;
         const browserResults = await BrowserService.getBrowsers(null, {
-            name: browser,
+            name: browser
         });
         browser = browserResults.length ? browserResults[0].id : 0;
     } else {
@@ -98,7 +98,7 @@ const createTestPlanTarget = async (
         at,
         atVersion,
         browser,
-        browserVersion,
+        browserVersion
     });
     const { id } = testPlanTargetResult;
 
@@ -120,5 +120,5 @@ module.exports = {
     getTestPlanTargetById,
     getTestPlanTargets,
     createTestPlanTarget,
-    removeTestPlanTarget,
+    removeTestPlanTarget
 };

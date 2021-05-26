@@ -21,9 +21,9 @@ class TestQueue extends Component {
             showDeleteResultsModal: false,
             resultsDelete: {
                 username: '',
-                run: null,
+                run: null
             },
-            deleteFunction: null,
+            deleteFunction: null
         };
 
         this.deleteResults = this.deleteResults.bind(this);
@@ -37,7 +37,7 @@ class TestQueue extends Component {
             activeRunsById,
             usersById,
             ats,
-            activeRunConfiguration,
+            activeRunConfiguration
         } = this.props;
 
         if (!activeRunsById) {
@@ -67,9 +67,9 @@ class TestQueue extends Component {
             showDeleteResultsModal: true,
             resultsDelete: {
                 username,
-                run,
+                run
             },
-            deleteFunction,
+            deleteFunction
         });
     }
 
@@ -83,7 +83,7 @@ class TestQueue extends Component {
             at_name: atName,
             at_version: atVersion,
             browser_name: browserName,
-            browser_version: browserVersion,
+            browser_version: browserVersion
         } = activeRunsById[runIds[0]];
 
         let tableId = nextId('table_name_');
@@ -109,7 +109,7 @@ class TestQueue extends Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {runIds.map((runId) => {
+                        {runIds.map(runId => {
                             return (
                                 <TestQueueRun
                                     key={runId}
@@ -138,7 +138,7 @@ class TestQueue extends Component {
             admin,
             activeRunsById,
             activeRunConfiguration,
-            ats,
+            ats
         } = this.props;
 
         const loading = <div data-test="test-queue-loading">Loading</div>;
@@ -160,10 +160,10 @@ class TestQueue extends Component {
         let configuredAtNameIds;
         if (!admin) {
             configuredAtNameIds = currentUser.configured_ats.map(
-                (a) => a.at_name_id
+                a => a.at_name_id
             );
         } else {
-            configuredAtNameIds = ats.map((at) => at.id);
+            configuredAtNameIds = ats.map(at => at.id);
         }
 
         if (!admin && !configuredAtNameIds.length) {
@@ -195,7 +195,7 @@ class TestQueue extends Component {
                 at_name,
                 browser_name,
                 browser_version,
-                at_version,
+                at_version
             } = run;
 
             // If you are not an admin, you cannot see runs you cannot perform
@@ -205,7 +205,7 @@ class TestQueue extends Component {
                 }
             }
 
-            let atBrowserRun = atBrowserRunSets.filter((r) => {
+            let atBrowserRun = atBrowserRunSets.filter(r => {
                 return (
                     r.at_name === at_name &&
                     r.at_version === at_version &&
@@ -222,7 +222,7 @@ class TestQueue extends Component {
                     at_version,
                     browser_name,
                     browser_version,
-                    runs: [run.id],
+                    runs: [run.id]
                 });
             }
         }
@@ -263,13 +263,11 @@ class TestQueue extends Component {
                 </Helmet>
                 <h1>Test Queue</h1>
                 <p>
-                    {
-                        // This style of setting the paragraph string
-                        //  allows the react/no-unescaped-entities error
-                        //  to disappear in eslint.
-                        `Assign yourself a test plan or start executing one that it's
-                        already assigned to you.`
-                    }
+                    {// This style of setting the paragraph string
+                    //  allows the react/no-unescaped-entities error
+                    //  to disappear in eslint.
+                    `Assign yourself a test plan or start executing one that it's
+                        already assigned to you.`}
                 </p>
                 <CurrentGitCommit
                     label="Current Git Commit"
@@ -281,7 +279,7 @@ class TestQueue extends Component {
                             .git_commit_msg
                     }
                 />
-                {atBrowserRunSets.map((abr) =>
+                {atBrowserRunSets.map(abr =>
                     this.renderAtBrowserList(abr.runs)
                 )}
                 <DeleteResultsModal
@@ -305,10 +303,10 @@ TestQueue.propTypes = {
     usersById: PropTypes.object,
     userId: PropTypes.number,
     testsFetched: PropTypes.bool,
-    dispatch: PropTypes.func,
+    dispatch: PropTypes.func
 };
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
     const { activeRunsById, activeRunConfiguration } = state.runs;
     const { usersById } = state.users;
     const userId = state.user.id;
@@ -324,7 +322,7 @@ const mapStateToProps = (state) => {
         usersById,
         userId,
         admin,
-        ats: state.ats,
+        ats: state.ats
     };
 };
 

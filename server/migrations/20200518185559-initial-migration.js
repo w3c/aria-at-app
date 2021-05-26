@@ -2,20 +2,20 @@ const Promise = require('bluebird');
 const fs = require('fs');
 
 module.exports = {
-    up: (queryInterface) => {
+    up: queryInterface => {
         return Promise.resolve()
-            .then(function () {
+            .then(function() {
                 return fs.readFileSync(
                     __dirname + '/pg_dump_from_flyway_migrations.dump',
                     'utf-8'
                 );
             })
-            .then(function (initialSchema) {
+            .then(function(initialSchema) {
                 return queryInterface.sequelize.query(initialSchema);
             });
     },
 
-    down: (queryInterface) => {
+    down: queryInterface => {
         return queryInterface.dropAllTables();
-    },
+    }
 };

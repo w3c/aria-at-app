@@ -11,7 +11,7 @@ import {
     generateApgExample,
     formatFraction,
     formatInteger,
-    formatNoResults,
+    formatNoResults
 } from '../ReportsPage/utils';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome } from '@fortawesome/free-solid-svg-icons';
@@ -21,7 +21,7 @@ class TestPlanReportPage extends Component {
         super();
         this.state = {
             techPairs: null,
-            apgExample: null,
+            apgExample: null
         };
 
         this.generateTables = this.generateTables.bind(this);
@@ -65,7 +65,7 @@ class TestPlanReportPage extends Component {
             passingRequiredAssertions,
             optionalAssertions,
             passingOptionalAssertions,
-            unexpectedBehaviors,
+            unexpectedBehaviors
         } = testsWithMetaData;
         let rows = [];
         rows.push(
@@ -94,7 +94,7 @@ class TestPlanReportPage extends Component {
 
         apgExample.testNames.forEach((testName, testIndex) => {
             const testWithResults = testsWithMetaData.testsWithResults.find(
-                (t) => t.testName === testName
+                t => t.testName === testName
             );
             rows.push(
                 <tr key={`${testIndex}-row`}>
@@ -254,7 +254,7 @@ TestPlanReportPage.propTypes = {
     dispatch: PropTypes.func,
     publishedRunsById: PropTypes.object,
     testPlanId: PropTypes.number,
-    testVersion: PropTypes.object,
+    testVersion: PropTypes.object
 };
 
 const mapStateToProps = (state, ownProps) => {
@@ -266,7 +266,7 @@ const mapStateToProps = (state, ownProps) => {
 
         if (runs.length > 0) {
             testVersion = (testVersions || []).find(
-                (v) => v.id === runs[0].test_version_id
+                v => v.id === runs[0].test_version_id
             );
         }
     }

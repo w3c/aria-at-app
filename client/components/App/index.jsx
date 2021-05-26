@@ -48,7 +48,7 @@ class App extends Component {
         const { location } = this.props;
 
         let navProps = {
-            to: href,
+            to: href
         };
 
         if (location.pathname === href) {
@@ -177,10 +177,10 @@ App.propTypes = {
     username: PropTypes.string,
     location: PropTypes.object,
     route: PropTypes.object,
-    loadedUserData: PropTypes.bool,
+    loadedUserData: PropTypes.bool
 };
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
     const { isSignedIn, loadedUserData, roles, username } = state.user;
     let isAdmin = roles ? roles.includes('admin') : false;
     let isTester = isAdmin || (roles && roles.includes('tester'));

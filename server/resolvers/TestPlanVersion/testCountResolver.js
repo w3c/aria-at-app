@@ -1,4 +1,4 @@
-const testCountResolver = (parent) => {
+const testCountResolver = parent => {
     return parent.tests.length;
 };
 

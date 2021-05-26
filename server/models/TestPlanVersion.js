@@ -3,10 +3,10 @@ const MODEL_NAME = 'TestPlanVersion';
 const STATUS = {
     DRAFT: 'DRAFT',
     IN_REVIEW: 'IN_REVIEW',
-    FINALIZED: 'FINALIZED',
+    FINALIZED: 'FINALIZED'
 };
 
-module.exports = function (sequelize, DataTypes) {
+module.exports = function(sequelize, DataTypes) {
     const Model = sequelize.define(
         MODEL_NAME,
         {
@@ -14,7 +14,7 @@ module.exports = function (sequelize, DataTypes) {
                 type: DataTypes.INTEGER,
                 allowNull: false,
                 primaryKey: true,
-                autoIncrement: true,
+                autoIncrement: true
             },
             title: { type: DataTypes.TEXT },
             status: {
@@ -25,21 +25,21 @@ module.exports = function (sequelize, DataTypes) {
                 //     STATUS.FINALIZED
                 // ),
                 allowNull: false,
-                defaultValue: STATUS.DRAFT,
+                defaultValue: STATUS.DRAFT
             },
             gitSha: { type: DataTypes.TEXT },
             gitMessage: { type: DataTypes.TEXT },
             exampleUrl: { type: DataTypes.TEXT },
             updatedAt: {
                 type: DataTypes.DATE,
-                defaultValue: DataTypes.NOW,
+                defaultValue: DataTypes.NOW
             },
             tests: { type: DataTypes.ARRAY(DataTypes.JSONB) },
-            metadata: { type: DataTypes.JSONB },
+            metadata: { type: DataTypes.JSONB }
         },
         {
             timestamps: false,
-            tableName: MODEL_NAME,
+            tableName: MODEL_NAME
         }
     );
 
@@ -49,11 +49,11 @@ module.exports = function (sequelize, DataTypes) {
 
     Model.TEST_PLAN_REPORT_ASSOCIATION = { as: 'testPlanReports' };
 
-    Model.associate = function (models) {
+    Model.associate = function(models) {
         Model.hasMany(models.TestPlanReport, {
             ...Model.TEST_PLAN_REPORT_ASSOCIATION,
             foreignKey: 'testPlanVersionId',
-            sourceKey: 'id',
+            sourceKey: 'id'
         });
     };
 

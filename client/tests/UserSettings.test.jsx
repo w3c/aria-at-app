@@ -41,8 +41,8 @@ describe('render', () => {
                     isSignedIn: true,
                     loadedUserData: true,
                     username: 'foobar',
-                    name: 'Foo Bar',
-                },
+                    name: 'Foo Bar'
+                }
             };
             wrapper = setup(initialState);
         });
@@ -57,9 +57,12 @@ describe('render', () => {
             );
             expect(component.length).toBe(1);
             expect(component.text()).toContain('User Details');
-            expect(component.find('a').at(0).props().href).toContain(
-                'https://github.com'
-            );
+            expect(
+                component
+                    .find('a')
+                    .at(0)
+                    .props().href
+            ).toContain('https://github.com');
         });
     });
 });

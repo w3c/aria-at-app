@@ -1,4 +1,4 @@
-const rolesResolver = (parent) => {
+const rolesResolver = parent => {
     const roles = [];
 
     if (parent.roles.includes('admin')) {

@@ -1,6 +1,6 @@
 const { findTestPlanReportConflicts } = require('../utilities');
 
-const conflictCountResolver = (parent) => {
+const conflictCountResolver = parent => {
     const conflicts = findTestPlanReportConflicts(parent);
     return conflicts.length;
 };

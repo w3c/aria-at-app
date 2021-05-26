@@ -5,5 +5,5 @@ const updateStatus = require('./updateStatusResolver');
 module.exports = {
     assignTester,
     deleteTestPlanRun,
-    updateStatus,
+    updateStatus
 };

@@ -71,14 +71,14 @@ describe('AuthController', () => {
             query: {
                 referer: 'localhost:5000',
                 service: 'github',
-                code: '1345908724adsf32',
-            },
+                code: '1345908724adsf32'
+            }
         });
         req.session = {
-            destroy: (callback) => {
+            destroy: callback => {
                 callback();
             },
-            referer: 'localhost:5000',
+            referer: 'localhost:5000'
         };
     });
     describe('AuthController.oauth', () => {

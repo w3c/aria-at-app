@@ -12,5 +12,5 @@ async function getTestVersions(req, res) {
 }
 
 module.exports = {
-    getTestVersions,
+    getTestVersions
 };

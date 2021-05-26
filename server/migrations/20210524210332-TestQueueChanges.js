@@ -2,9 +2,9 @@
 
 module.exports = {
     up: (queryInterface, Sequelize) => {
-        return queryInterface.sequelize.transaction(async (transaction) => {
+        return queryInterface.sequelize.transaction(async transaction => {
             await queryInterface.renameTable('TestPlan', 'TestPlanVersion', {
-                transaction,
+                transaction
             });
 
             await queryInterface.renameColumn(
@@ -32,7 +32,7 @@ module.exports = {
                 { transaction }
             );
             await queryInterface.removeColumn('TestPlanVersion', 'parsed', {
-                transaction,
+                transaction
             });
             await queryInterface.addColumn(
                 'TestPlanVersion',
@@ -96,10 +96,10 @@ module.exports = {
             );
 
             await queryInterface.renameColumn('AtMode', 'at', 'atId', {
-                transaction,
+                transaction
             });
             await queryInterface.renameColumn('AtVersion', 'at', 'atId', {
-                transaction,
+                transaction
             });
             await queryInterface.renameColumn(
                 'BrowserVersion',
@@ -113,9 +113,9 @@ module.exports = {
     },
 
     down: async (queryInterface, Sequelize) => {
-        return queryInterface.sequelize.transaction(async (transaction) => {
+        return queryInterface.sequelize.transaction(async transaction => {
             await queryInterface.renameTable('TestPlanVersion', 'TestPlan', {
-                transaction,
+                transaction
             });
 
             await queryInterface.renameColumn(
@@ -143,7 +143,7 @@ module.exports = {
                 { transaction }
             );
             await queryInterface.removeColumn('TestPlan', 'tests', {
-                transaction,
+                transaction
             });
             await queryInterface.addColumn(
                 'TestPlan',
@@ -152,7 +152,7 @@ module.exports = {
                 { transaction }
             );
             await queryInterface.removeColumn('TestPlan', 'metadata', {
-                transaction,
+                transaction
             });
 
             await queryInterface.renameColumn(
@@ -199,14 +199,14 @@ module.exports = {
                 { transaction }
             );
             await queryInterface.removeColumn('TestPlanRun', 'testResults', {
-                transaction,
+                transaction
             });
 
             await queryInterface.renameColumn('AtMode', 'atId', 'at', {
-                transaction,
+                transaction
             });
             await queryInterface.renameColumn('AtVersion', 'atId', 'at', {
-                transaction,
+                transaction
             });
             await queryInterface.renameColumn(
                 'BrowserVersion',
@@ -218,16 +218,16 @@ module.exports = {
             queryInterface.createTable('TestResult', {
                 startedAt: {
                     type: Sequelize.DataTypes.DATE,
-                    defaultValue: Sequelize.DataTypes.NOW,
+                    defaultValue: Sequelize.DataTypes.NOW
                 },
                 completedAt: {
                     type: Sequelize.DataTypes.DATE,
                     defaultValue: null,
-                    allowNull: true,
+                    allowNull: true
                 },
                 testPlanRun: { type: Sequelize.DataTypes.INTEGER },
-                data: { type: Sequelize.DataTypes.JSONB },
+                data: { type: Sequelize.DataTypes.JSONB }
             });
         });
-    },
+    }
 };

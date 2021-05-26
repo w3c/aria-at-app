@@ -21,7 +21,7 @@ describe('BrowserModel Data Checks', () => {
         expect(browser).toEqual(
             expect.objectContaining({
                 name,
-                id: expect.any(Number),
+                id: expect.any(Number)
             })
         );
     });
@@ -84,7 +84,7 @@ describe('BrowserModel Data Checks', () => {
 
             // A2
             const updatedBrowser = await BrowserService.updateBrowser(id, {
-                name: _updatedName,
+                name: _updatedName
             });
             const { name: updatedName } = updatedBrowser;
 
@@ -124,8 +124,8 @@ describe('BrowserModel Data Checks', () => {
                 expect.objectContaining({
                     id: expect.any(Number),
                     name: expect.any(String),
-                    versions: expect.any(Array),
-                }),
+                    versions: expect.any(Array)
+                })
             ])
         );
     });
@@ -145,8 +145,8 @@ describe('BrowserModel Data Checks', () => {
                 expect.objectContaining({
                     id: expect.any(Number),
                     name: expect.stringMatching(/chr/gi),
-                    versions: expect.any(Array),
-                }),
+                    versions: expect.any(Array)
+                })
             ])
         );
     });
@@ -154,7 +154,7 @@ describe('BrowserModel Data Checks', () => {
     it('should return collection of browsers with paginated structure', async () => {
         // A1
         const result = await BrowserService.getBrowsers('', {}, ['name'], [], {
-            enablePagination: true,
+            enablePagination: true
         });
 
         // A3
@@ -168,9 +168,9 @@ describe('BrowserModel Data Checks', () => {
                 pagesCount: expect.any(Number),
                 data: expect.arrayContaining([
                     expect.objectContaining({
-                        name: expect.any(String),
-                    }),
-                ]),
+                        name: expect.any(String)
+                    })
+                ])
             })
         );
     });
@@ -185,7 +185,7 @@ describe('BrowserVersionModel Data Checks', () => {
         // A2
         const browserVersion = await BrowserService.getBrowserVersionByQuery({
             browserId: _browserId,
-            version: _version,
+            version: _version
         });
         const { browserId, version, browser } = browserVersion;
 
@@ -199,8 +199,8 @@ describe('BrowserVersionModel Data Checks', () => {
                 version: _version,
                 browser: expect.objectContaining({
                     id: _browserId,
-                    name: expect.any(String),
-                }),
+                    name: expect.any(String)
+                })
             })
         );
     });
@@ -213,7 +213,7 @@ describe('BrowserVersionModel Data Checks', () => {
         // A2
         const browserVersion = await BrowserService.getBrowserVersionByQuery({
             browserId: _browserId,
-            version: _version,
+            version: _version
         });
 
         // A3
@@ -229,21 +229,22 @@ describe('BrowserVersionModel Data Checks', () => {
             // A2
             const browserVersion = await BrowserService.createBrowserVersion({
                 browserId: _browserId,
-                version: _version,
+                version: _version
             });
             const { browserId, version, browser } = browserVersion;
 
             // A2
             await BrowserService.removeBrowserVersionByQuery({
                 browserId,
-                version,
+                version
             });
 
-            const deletedBrowserVersion =
-                await BrowserService.getBrowserVersionByQuery({
+            const deletedBrowserVersion = await BrowserService.getBrowserVersionByQuery(
+                {
                     browserId,
-                    version,
-                });
+                    version
+                }
+            );
 
             // after BrowserVersion created
             expect(browserId).toEqual(_browserId);
@@ -266,16 +267,15 @@ describe('BrowserVersionModel Data Checks', () => {
             // A2
             const browserVersion = await BrowserService.createBrowserVersion({
                 browserId: _browserId,
-                version: _version,
+                version: _version
             });
             const { browserId, version, browser } = browserVersion;
 
             // A2
-            const updatedBrowserVersion =
-                await BrowserService.updateBrowserVersionByQuery(
-                    { browserId, version },
-                    { version: _updatedVersion }
-                );
+            const updatedBrowserVersion = await BrowserService.updateBrowserVersionByQuery(
+                { browserId, version },
+                { version: _updatedVersion }
+            );
             const { version: updatedVersion } = updatedBrowserVersion;
 
             // after BrowserVersion created
@@ -298,16 +298,18 @@ describe('BrowserVersionModel Data Checks', () => {
             const _version = '86.0';
 
             // A2
-            const originalBrowserVersion =
-                await BrowserService.getBrowserVersionByQuery({
+            const originalBrowserVersion = await BrowserService.getBrowserVersionByQuery(
+                {
                     browserId: _browserId,
-                    version: _version,
-                });
-            const updatedBrowserVersion =
-                await BrowserService.updateBrowserVersionByQuery({
+                    version: _version
+                }
+            );
+            const updatedBrowserVersion = await BrowserService.updateBrowserVersionByQuery(
+                {
                     browserId: _browserId,
-                    version: _version,
-                });
+                    version: _version
+                }
+            );
 
             // A3
             expect(originalBrowserVersion).toMatchObject(updatedBrowserVersion);
@@ -327,9 +329,9 @@ describe('BrowserVersionModel Data Checks', () => {
                     version: expect.any(String),
                     browser: expect.objectContaining({
                         id: expect.any(Number),
-                        name: expect.any(String),
-                    }),
-                }),
+                        name: expect.any(String)
+                    })
+                })
             ])
         );
     });
@@ -351,9 +353,9 @@ describe('BrowserVersionModel Data Checks', () => {
                     version: expect.stringMatching(/87/gi),
                     browser: expect.objectContaining({
                         id: expect.any(Number),
-                        name: expect.any(String),
-                    }),
-                }),
+                        name: expect.any(String)
+                    })
+                })
             ])
         );
     });
@@ -379,9 +381,9 @@ describe('BrowserVersionModel Data Checks', () => {
                 pagesCount: expect.any(Number),
                 data: expect.arrayContaining([
                     expect.objectContaining({
-                        version: expect.any(String),
-                    }),
-                ]),
+                        version: expect.any(String)
+                    })
+                ])
             })
         );
     });

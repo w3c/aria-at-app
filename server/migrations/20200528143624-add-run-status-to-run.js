@@ -7,12 +7,12 @@ module.exports = {
             allowNull: true,
             references: {
                 model: 'run_status',
-                key: 'id',
-            },
+                key: 'id'
+            }
         });
     },
 
-    down: (queryInterface) => {
+    down: queryInterface => {
         return queryInterface.removeColumn('run', 'run_status_id');
-    },
+    }
 };

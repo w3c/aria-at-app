@@ -2,7 +2,7 @@ const {
     sequelize,
     dataTypes,
     checkModelName,
-    checkPropertyExists,
+    checkPropertyExists
 } = require('sequelize-test-helpers');
 
 const RoleModel = require('../../models/Role');

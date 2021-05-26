@@ -11,19 +11,19 @@ describe('render', () => {
                 at_id: 1,
                 at_version: 1,
                 browser_id: 1,
-                browser_version: 1,
+                browser_version: 1
             };
             const availableAts = [
                 {
                     at_id: 1,
-                    at_name: 'foo',
-                },
+                    at_name: 'foo'
+                }
             ];
             const availableBrowsers = [
                 {
                     id: 1,
-                    name: 'bar',
-                },
+                    name: 'bar'
+                }
             ];
 
             const component = shallow(

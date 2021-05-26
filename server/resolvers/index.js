@@ -13,17 +13,17 @@ const resolvers = {
     Query: {
         me,
         testPlans,
-        testPlanReport,
+        testPlanReport
     },
     Mutation: {
-        testPlanReport: mutateTestPlanReport,
+        testPlanReport: mutateTestPlanReport
     },
     User,
     TestPlanVersion,
     TestPlanReport,
     TestPlanReportOperations,
     TestPlanReportOperationResult,
-    TestPlanRun,
+    TestPlanRun
 };
 
 module.exports = resolvers;

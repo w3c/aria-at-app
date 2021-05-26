@@ -2,7 +2,7 @@ const ModelService = require('./ModelService');
 const {
     AT_ATTRIBUTES,
     AT_VERSION_ATTRIBUTES,
-    AT_MODE_ATTRIBUTES,
+    AT_MODE_ATTRIBUTES
 } = require('./helpers');
 const { Sequelize, At, AtVersion, AtMode } = require('../');
 const { Op } = Sequelize;
@@ -13,27 +13,27 @@ const { Op } = Sequelize;
  * @param atAttributes - At attributes
  * @returns {{association: string, attributes: string[]}}
  */
-const atAssociation = (atAttributes) => ({
+const atAssociation = atAttributes => ({
     association: 'at',
-    attributes: atAttributes,
+    attributes: atAttributes
 });
 
 /**
  * @param atVersionAttributes - AtVersion attributes
  * @returns {{association: string, attributes: string[]}}
  */
-const atVersionAssociation = (atVersionAttributes) => ({
+const atVersionAssociation = atVersionAttributes => ({
     association: 'versions',
-    attributes: atVersionAttributes,
+    attributes: atVersionAttributes
 });
 
 /**
  * @param atModeAttributes - AtMode attributes
  * @returns {{association: string, attributes: string[]}}
  */
-const atModeAssociation = (atModeAttributes) => ({
+const atModeAssociation = atModeAttributes => ({
     association: 'modes',
-    attributes: atModeAttributes,
+    attributes: atModeAttributes
 });
 
 // At
@@ -54,7 +54,7 @@ const getAtById = async (
 ) => {
     return ModelService.getById(At, id, atAttributes, [
         atVersionAssociation(atVersionAttributes),
-        atModeAssociation(atModeAttributes),
+        atModeAssociation(atModeAttributes)
     ]);
 };
 
@@ -90,7 +90,7 @@ const getAts = async (
         atAttributes,
         [
             atVersionAssociation(atVersionAttributes),
-            atModeAssociation(atModeAttributes),
+            atModeAssociation(atModeAttributes)
         ],
         pagination
     );
@@ -115,7 +115,7 @@ const createAt = async (
     // to ensure the structure being returned matches what we expect for simple queries and can be controlled
     return await ModelService.getById(At, id, atAttributes, [
         atVersionAssociation(atVersionAttributes),
-        atModeAssociation(atModeAttributes),
+        atModeAssociation(atModeAttributes)
     ]);
 };
 
@@ -138,7 +138,7 @@ const updateAt = async (
 
     return await ModelService.getById(At, id, atAttributes, [
         atVersionAssociation(atVersionAttributes),
-        atModeAssociation(atModeAttributes),
+        atModeAssociation(atModeAttributes)
     ]);
 };
 
@@ -282,7 +282,7 @@ const getAtModeByQuery = async (
     atAttributes = AT_ATTRIBUTES
 ) => {
     return ModelService.getByQuery(AtMode, { atId, name }, atModeAttributes, [
-        atAssociation(atAttributes),
+        atAssociation(atAttributes)
     ]);
 };
 
@@ -400,5 +400,5 @@ module.exports = {
     getAtModes,
     createAtMode,
     updateAtModeByQuery,
-    removeAtModeByQuery,
+    removeAtModeByQuery
 };

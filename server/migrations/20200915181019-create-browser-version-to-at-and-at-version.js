@@ -6,48 +6,48 @@ module.exports = {
                 allowNull: false,
                 autoIncrement: true,
                 primaryKey: true,
-                type: Sequelize.INTEGER,
+                type: Sequelize.INTEGER
             },
             browser_version_id: {
                 type: Sequelize.INTEGER,
                 references: {
                     model: 'browser_version',
-                    key: 'id',
+                    key: 'id'
                 },
-                allowNull: false,
+                allowNull: false
             },
             at_version_id: {
                 type: Sequelize.INTEGER,
                 references: {
                     model: 'at_version',
-                    key: 'id',
+                    key: 'id'
                 },
-                allowNull: false,
+                allowNull: false
             },
             at_id: {
                 type: Sequelize.INTEGER,
                 references: {
                     model: 'at',
-                    key: 'id',
+                    key: 'id'
                 },
-                allowNull: false,
+                allowNull: false
             },
             active: {
                 type: Sequelize.BOOLEAN,
                 defaultValue: false,
-                allowNull: false,
+                allowNull: false
             },
             createdAt: {
                 allowNull: false,
-                type: Sequelize.DATE,
+                type: Sequelize.DATE
             },
             updatedAt: {
                 allowNull: false,
-                type: Sequelize.DATE,
-            },
+                type: Sequelize.DATE
+            }
         });
     },
-    down: (queryInterface) => {
+    down: queryInterface => {
         return queryInterface.dropTable('BrowserVersionToAtAndAtVersions');
-    },
+    }
 };

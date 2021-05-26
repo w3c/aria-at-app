@@ -40,18 +40,18 @@ describe('render', () => {
                             at_version: 'at_version',
                             browser_name: 'browser_name',
                             browser_version: 'browser_version',
-                            tests: [{ name: 'Test 1' }],
-                        },
+                            tests: [{ name: 'Test 1' }]
+                        }
                     },
                     activeRunConfiguration: {
                         active_test_version: {
                             git_commit_msg: 'commit message',
                             git_hash: '123412345',
                             git_repo: 'https://github.com/foo/foo.git',
-                            id: 1,
-                        },
-                    },
-                },
+                            id: 1
+                        }
+                    }
+                }
             };
             wrapper = setup(initialState);
             wrapper.setState({ currentTestIndex: 1 });

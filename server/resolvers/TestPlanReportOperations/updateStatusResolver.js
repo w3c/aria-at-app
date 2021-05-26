@@ -1,6 +1,6 @@
 const {
     getTestPlanReportById,
-    updateTestPlanReport,
+    updateTestPlanReport
 } = require('../../models/services/TestPlanReportService');
 const { findTestPlanReportConflicts } = require('../utilities');
 
@@ -17,7 +17,7 @@ const updateStatusResolver = async (
 
     // TODO: consider middleware
     // TODO: this logic is not correct
-    if (testPlanReport.testPlanRuns.find((run) => !run.testResults)) {
+    if (testPlanReport.testPlanRuns.find(run => !run.testResults)) {
         throw new Error(
             'Cannot finalize test plan due to incomplete test runs'
         );

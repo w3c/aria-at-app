@@ -12,12 +12,12 @@ module.exports = {
                 exclude: /(node_modules)/,
                 loader: 'babel-loader',
                 options: {
-                    babelrcRoots: ['.', '../..'],
-                },
+                    babelrcRoots: ['.', '../..']
+                }
             },
             {
                 test: /\.css$/,
-                use: ['style-loader', 'css-loader'],
+                use: ['style-loader', 'css-loader']
             },
             {
                 test: /\.s[ac]ss$/i,
@@ -27,37 +27,37 @@ module.exports = {
                     // Translates CSS into CommonJS
                     'css-loader',
                     // Compiles Sass to CSS
-                    'sass-loader',
-                ],
+                    'sass-loader'
+                ]
             },
             {
                 test: /\.(png|jpe?g|gif)$/i,
                 use: [
                     {
-                        loader: 'file-loader',
-                    },
-                ],
-            },
-        ],
+                        loader: 'file-loader'
+                    }
+                ]
+            }
+        ]
     },
     output: {
         path: path.resolve(__dirname, './dist/'),
-        filename: 'bundle.js',
+        filename: 'bundle.js'
     },
     resolve: {
         alias: {
             '@': path.resolve(__dirname, '..'),
             '@client': __dirname,
             '@components': path.resolve(__dirname, 'components'),
-            '@server': path.resolve(__dirname, '../server'),
+            '@server': path.resolve(__dirname, '../server')
         },
-        extensions: ['*', '.js', '.jsx'],
+        extensions: ['*', '.js', '.jsx']
     },
     plugins: [
         new CopyWebpackPlugin([
             {
-                from: 'static',
-            },
+                from: 'static'
+            }
         ]),
         new webpack.DefinePlugin({
             'process.env.API_SERVER': JSON.stringify(process.env.API_SERVER),
@@ -67,12 +67,12 @@ module.exports = {
             ),
             'process.env.GITHUB_REPO_NAME': JSON.stringify(
                 process.env.GITHUB_REPO_NAME
-            ),
-        }),
+            )
+        })
     ],
     performance: {
         hints: false,
         maxEntrypointSize: 512000,
-        maxAssetSize: 512000,
-    },
+        maxAssetSize: 512000
+    }
 };

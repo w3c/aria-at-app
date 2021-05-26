@@ -61,5 +61,5 @@ module.exports = {
     getActiveRuns,
     getPublishedRuns,
     getActiveRunsConfiguration,
-    saveRunStatus,
+    saveRunStatus
 };

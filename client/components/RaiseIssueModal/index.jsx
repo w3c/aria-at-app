@@ -68,7 +68,7 @@ class RaiseIssueModal extends Component {
             showCreateIssue: false,
             showCreateIssueResult: false,
             title,
-            body,
+            body
         };
 
         this.onHide = this.onHide.bind(this);
@@ -92,7 +92,7 @@ class RaiseIssueModal extends Component {
         this.setState({
             body,
             showCreateIssue: !this.props.issues.length,
-            isReady: true,
+            isReady: true
         });
     }
 
@@ -108,7 +108,7 @@ class RaiseIssueModal extends Component {
             showCreateIssue: false,
             showCreateIssueResult: false,
             body,
-            title,
+            title
         });
 
         this.props.onHide();
@@ -116,7 +116,7 @@ class RaiseIssueModal extends Component {
 
     onCreateNewIssueClick() {
         this.setState({
-            showCreateIssue: true,
+            showCreateIssue: true
         });
     }
 
@@ -128,7 +128,7 @@ class RaiseIssueModal extends Component {
             run_id: run.id,
             test_id: test.id,
             title,
-            body,
+            body
         };
         const issuesCount = issues.length;
 
@@ -136,14 +136,14 @@ class RaiseIssueModal extends Component {
 
         if (issuesCount < this.props.issuesByTestId[test.id].length) {
             this.setState({
-                showCreateIssueResult: true,
+                showCreateIssueResult: true
             });
         }
     }
 
     onIssueChange(event) {
         this.setState({
-            [event.target.name]: event.target.value,
+            [event.target.name]: event.target.value
         });
     }
 
@@ -161,7 +161,7 @@ class RaiseIssueModal extends Component {
                 <Button variant="primary" onClick={onCreateNewIssueClick}>
                     My issue is not in this list
                 </Button>
-            </Fragment>,
+            </Fragment>
         ];
     }
 
@@ -173,7 +173,7 @@ class RaiseIssueModal extends Component {
         const onBackClick = () => {
             this.setState({
                 showCreateIssue: false,
-                showCreateIssueResult: false,
+                showCreateIssueResult: false
             });
         };
         return [
@@ -212,7 +212,7 @@ class RaiseIssueModal extends Component {
                 <Button variant="primary" onClick={onCreateNewIssueSubmit}>
                     Submit new issue
                 </Button>
-            </Fragment>,
+            </Fragment>
         ];
     }
 
@@ -237,7 +237,7 @@ class RaiseIssueModal extends Component {
                 onClick={onHide}
             >
                 Done
-            </Button>,
+            </Button>
         ];
     }
 
@@ -304,13 +304,13 @@ RaiseIssueModal.propTypes = {
     testIndex: PropTypes.number,
     userId: PropTypes.number,
     testerId: PropTypes.number,
-    userDescriptor: PropTypes.string,
+    userDescriptor: PropTypes.string
 };
 
 const mapStateToProps = (state, ownProps) => {
     const {
         runs: { conflictsByTestId },
-        issues: { issuesByTestId },
+        issues: { issuesByTestId }
     } = state;
 
     const conflicts = conflictsByTestId[ownProps.test.id];

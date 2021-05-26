@@ -1,6 +1,6 @@
 const MODEL_NAME = 'Browser';
 
-module.exports = function (sequelize, DataTypes) {
+module.exports = function(sequelize, DataTypes) {
     const Model = sequelize.define(
         MODEL_NAME,
         {
@@ -8,16 +8,16 @@ module.exports = function (sequelize, DataTypes) {
                 type: DataTypes.INTEGER,
                 allowNull: false,
                 primaryKey: true,
-                autoIncrement: true,
+                autoIncrement: true
             },
             name: {
                 type: DataTypes.TEXT,
-                allowNull: false,
-            },
+                allowNull: false
+            }
         },
         {
             timestamps: false,
-            tableName: MODEL_NAME,
+            tableName: MODEL_NAME
         }
     );
 
@@ -27,11 +27,11 @@ module.exports = function (sequelize, DataTypes) {
 
     Model.BROWSER_VERSION_ASSOCIATION = { as: 'versions' };
 
-    Model.associate = function (models) {
+    Model.associate = function(models) {
         Model.hasMany(models.BrowserVersion, {
             ...Model.BROWSER_VERSION_ASSOCIATION,
             foreignKey: 'browserId',
-            sourceKey: 'id',
+            sourceKey: 'id'
         });
     };
 

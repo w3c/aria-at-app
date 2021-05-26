@@ -4,7 +4,7 @@ const {
     TEST_PLAN_VERSION_ATTRIBUTES,
     TEST_PLAN_TARGET_ATTRIBUTES,
     TEST_PLAN_RUN_ATTRIBUTES,
-    USER_ATTRIBUTES,
+    USER_ATTRIBUTES
 } = require('./helpers');
 const { TestPlanReport } = require('../');
 
@@ -20,35 +20,35 @@ const testPlanRunAssociation = (testPlanRunAttributes, userAttributes) => ({
     attributes: testPlanRunAttributes,
     include: [
         // eslint-disable-next-line no-use-before-define
-        userAssociation(userAttributes),
-    ],
+        userAssociation(userAttributes)
+    ]
 });
 
 /**
  * @param {string[]} testPlanVersionAttributes - TestPlanVersion attributes
  * @returns {{association: string, attributes: string[]}}
  */
-const testPlanVersionAssociation = (testPlanVersionAttributes) => ({
+const testPlanVersionAssociation = testPlanVersionAttributes => ({
     association: 'testPlanVersion',
-    attributes: testPlanVersionAttributes,
+    attributes: testPlanVersionAttributes
 });
 
 /**
  * @param {string[]} testPlanTargetAttributes - TestPlanTarget attributes
  * @returns {{association: string, attributes: string[]}}
  */
-const testPlanTargetAssociation = (testPlanTargetAttributes) => ({
+const testPlanTargetAssociation = testPlanTargetAttributes => ({
     association: 'testPlanTarget',
-    attributes: testPlanTargetAttributes,
+    attributes: testPlanTargetAttributes
 });
 
 /**
  * @param {string[]} userAttributes - User attributes
  * @returns {{association: string, attributes: string[]}}
  */
-const userAssociation = (userAttributes) => ({
+const userAssociation = userAttributes => ({
     association: 'tester',
-    attributes: userAttributes,
+    attributes: userAttributes
 });
 
 /**
@@ -76,7 +76,7 @@ const getTestPlanReportById = async (
         [
             testPlanRunAssociation(testPlanRunAttributes, userAttributes),
             testPlanVersionAssociation(testPlanVersionAttributes),
-            testPlanTargetAssociation(testPlanTargetAttributes),
+            testPlanTargetAssociation(testPlanTargetAttributes)
         ]
     );
 };
@@ -116,7 +116,7 @@ const getTestPlanReports = async (
         [
             testPlanRunAssociation(testPlanRunAttributes, userAttributes),
             testPlanVersionAssociation(testPlanVersionAttributes),
-            testPlanTargetAssociation(testPlanTargetAttributes),
+            testPlanTargetAssociation(testPlanTargetAttributes)
         ],
         pagination
     );
@@ -162,5 +162,5 @@ module.exports = {
     // Basic CRUD
     getTestPlanReportById,
     getTestPlanReports,
-    updateTestPlanReport,
+    updateTestPlanReport
 };

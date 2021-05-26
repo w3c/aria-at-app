@@ -18,7 +18,7 @@ class ATAlert extends Component {
 }
 
 ATAlert.propTypes = {
-    message: PropTypes.string,
+    message: PropTypes.string
 };
 
 export default ATAlert;

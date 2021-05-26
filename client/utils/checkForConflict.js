@@ -5,9 +5,9 @@
  * @return {boolean}
  */
 
-export default function (results, userId) {
+export default function(results, userId) {
     let allResults = Object.values(results).filter(
-        (r) => r.status === 'complete'
+        r => r.status === 'complete'
     );
 
     // If there is only one result or no results
@@ -22,7 +22,7 @@ export default function (results, userId) {
 
     let baseResult = userId ? results[userId] : allResults[0];
     let baseUserId = baseResult.user_id;
-    let otherResults = allResults.filter((r) => r.user_id !== baseUserId);
+    let otherResults = allResults.filter(r => r.user_id !== baseUserId);
 
     // if (allResultsPass([baseResult, ...otherResults]) { return undefined; }
 
@@ -49,7 +49,7 @@ export default function (results, userId) {
                     differentAnswers.push({
                         output: otherCommand.output,
                         answer: otherAnswer,
-                        user: otherResult.user_id,
+                        user: otherResult.user_id
                     });
                 }
             }
@@ -62,10 +62,10 @@ export default function (results, userId) {
                         {
                             output: baseCommand.output,
                             answer: baseAnswer,
-                            user: baseUserId,
+                            user: baseUserId
                         },
-                        ...differentAnswers,
-                    ],
+                        ...differentAnswers
+                    ]
                 });
             }
         }
@@ -85,7 +85,7 @@ export default function (results, userId) {
                     answer: otherCommand.unexpected_behaviors.length
                         ? otherCommand.unexpected_behaviors.join(' and ')
                         : 'No unexpected behaviors recorded',
-                    user: otherResult.user_id,
+                    user: otherResult.user_id
                 });
             }
             // If they are the same length, confirm they are the same
@@ -100,7 +100,7 @@ export default function (results, userId) {
                                       ' and '
                                   )
                                 : 'No unexpected behaviors recorded',
-                            user: otherResult.user_id,
+                            user: otherResult.user_id
                         });
                         // If we find any conflicts in the unexpected list, then the lists conflict
                         break;
@@ -118,10 +118,10 @@ export default function (results, userId) {
                             answer: baseCommand.unexpected_behaviors.length
                                 ? baseCommand.unexpected_behaviors.join(' and ')
                                 : 'No unexpected behaviors recorded',
-                            user: baseUserId,
+                            user: baseUserId
                         },
-                        ...differentAnswers,
-                    ],
+                        ...differentAnswers
+                    ]
                 });
             }
         }

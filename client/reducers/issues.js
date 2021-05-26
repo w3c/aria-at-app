@@ -1,7 +1,7 @@
 import { CREATE_ISSUE_SUCCESS, ISSUES_BY_TEST_ID } from '../actions/types';
 
 const initialState = {
-    issuesByTestId: {},
+    issuesByTestId: {}
 };
 
 export default (state = initialState, action) => {
@@ -13,8 +13,8 @@ export default (state = initialState, action) => {
                 ...state,
                 issuesByTestId: {
                     ...state.issuesByTestId,
-                    ...issuesByTestId,
-                },
+                    ...issuesByTestId
+                }
             };
         }
         case CREATE_ISSUE_SUCCESS: {
@@ -30,7 +30,7 @@ export default (state = initialState, action) => {
 
             return {
                 ...state,
-                issuesByTestId,
+                issuesByTestId
             };
         }
         default:

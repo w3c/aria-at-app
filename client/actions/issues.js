@@ -1,14 +1,14 @@
 import axios from 'axios';
 import { CREATE_ISSUE_SUCCESS, ISSUES_BY_TEST_ID } from './types';
 
-export const getIssuesByTestIdDispatch = (payload) => ({
+export const getIssuesByTestIdDispatch = payload => ({
     type: ISSUES_BY_TEST_ID,
-    payload,
+    payload
 });
 
-export const createIssueSuccessDispatch = (payload) => ({
+export const createIssueSuccessDispatch = payload => ({
     type: CREATE_ISSUE_SUCCESS,
-    payload,
+    payload
 });
 
 /**
@@ -18,7 +18,7 @@ export const createIssueSuccessDispatch = (payload) => ({
  * @return {Array}          An array of Github Issue objects.
  */
 export function getIssuesByTestId(test_id) {
-    return async function (dispatch) {
+    return async function(dispatch) {
         const response = await axios.get(`/api/test/issues?test_id=${test_id}`);
         return dispatch(getIssuesByTestIdDispatch(response.data));
     };
@@ -30,9 +30,9 @@ export function getIssuesByTestId(test_id) {
  * @return {Issue}       The Issue object returned by Github
  */
 export function createIssue(data) {
-    return async function (dispatch) {
+    return async function(dispatch) {
         const response = await axios.post('/api/test/issue', {
-            data,
+            data
         });
         return dispatch(createIssueSuccessDispatch(response.data));
     };
