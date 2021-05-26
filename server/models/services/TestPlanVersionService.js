@@ -155,7 +155,16 @@ const getTestPlanVersions = async (
  * @returns {Promise<*>}
  */
 const createTestPlanVersion = async (
-    { title, status, gitSha, gitMessage, exampleUrl, updatedAt, parsed },
+    {
+        title,
+        status,
+        gitSha,
+        gitMessage,
+        exampleUrl,
+        updatedAt,
+        metadata,
+        tests
+    },
     testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
     testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
     testPlanTargetAttributes = TEST_PLAN_TARGET_ATTRIBUTES,
@@ -169,7 +178,8 @@ const createTestPlanVersion = async (
         gitMessage,
         exampleUrl,
         updatedAt,
-        parsed
+        metadata,
+        tests
     });
     const { id } = testPlanVersionResult;
 

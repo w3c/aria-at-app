@@ -21,7 +21,8 @@ describe('TestPlanReportModel Data Checks', () => {
             gitSha,
             gitMessage,
             updatedAt,
-            parsed,
+            metadata,
+            tests,
             testPlanReports
         } = testPlanVersion;
 
@@ -31,7 +32,8 @@ describe('TestPlanReportModel Data Checks', () => {
         expect(gitSha).toBeTruthy();
         expect(gitMessage).toBeTruthy();
         expect(updatedAt).toBeTruthy();
-        expect(parsed).toBeTruthy();
+        expect(metadata).toBeTruthy();
+        expect(tests).toBeTruthy();
         expect(testPlanReports).toBeInstanceOf(Array);
         expect(testPlanReports.length).not.toBe(0);
         expect(testPlanReports).toContainEqual(
@@ -58,7 +60,8 @@ describe('TestPlanReportModel Data Checks', () => {
             const _gitMessage = randomStringGenerator();
             const _exampleUrl = randomStringGenerator();
             const _updatedAt = new Date();
-            const _parsed = [{ rawMockData: true }];
+            const _metadata = { directory: 'checkbox' };
+            const _tests = [{ test: 'goes here' }];
 
             const _updatedStatus = 'FINALIZED';
 
@@ -71,7 +74,8 @@ describe('TestPlanReportModel Data Checks', () => {
                     gitMessage: _gitMessage,
                     exampleUrl: _exampleUrl,
                     updatedAt: _updatedAt,
-                    parsed: _parsed
+                    metadata: _metadata,
+                    tests: _tests
                 }
             );
             const {
@@ -82,7 +86,8 @@ describe('TestPlanReportModel Data Checks', () => {
                 gitMessage: createdGitMessage,
                 exampleUrl: createdExampleUrl,
                 updatedAt: createdUpdatedAt,
-                parsed: createdParsed
+                metadata: createdMetadata,
+                tests: createdTests
             } = testPlanVersion;
 
             // A2
@@ -105,7 +110,8 @@ describe('TestPlanReportModel Data Checks', () => {
             expect(createdGitMessage).toBe(_gitMessage);
             expect(createdExampleUrl).toBe(_exampleUrl);
             expect(createdUpdatedAt).toEqual(_updatedAt);
-            expect(createdParsed).toEqual(_parsed);
+            expect(createdMetadata).toEqual(_metadata);
+            expect(createdTests).toEqual(_tests);
 
             // After updated status
             expect(updatedTitle).toBe(createdTitle);
