@@ -257,63 +257,6 @@ const ariaAtImport = {
     },
 
     /**
-     * Checks TestPlanVersion.parsed.tests to see if it has the relevant test actions to run the test and inserts it if not
-     * @param {string} testName - the name of the test
-     * @param {string} file - the relative path to the test file in the repository (ideally {@link https://github.com/w3c/aria-at.git})
-     * @param {number} testPlanVersionId - TestPlanVersion.id to be queried to update the TestPlanVersion.parsed.tests if necessary
-     * @param {string} commitHash - the hash of the latest version of tests pulled from the repository (ideally {@link https://github.com/w3c/aria-at.git})
-     * @param {number} executionOrder - the order in which the test step is executed (within the APG pattern)
-     * @returns {number | null} - returns TestPlanVersion.id
-     */
-    // async upsertTestPlanVersionTests(
-    //     testName,
-    //     file,
-    //     testPlanVersionId,
-    //     commitHash,
-    //     executionOrder
-    // ) {
-    //     const testPlanVersionResult = await client.query(
-    //         'SELECT id, "parsed" FROM "TestPlanVersion" WHERE id=$1 AND "gitSha"=$2',
-    //         [testPlanVersionId, commitHash]
-    //     );
-    //     let testPlanVersion = testPlanVersionResult.rowCount
-    //         ? testPlanVersionResult.rows[0]
-    //         : null;
-
-    //     // check to see if the test object already exists in tests dataset
-    //     if (testPlanVersion) {
-    //         const testFound = !!testPlanVersion.tests.find(
-    //             test => test.executionOrder === executionOrder
-    //         );
-    //         // short circuit because test is already present
-    //         if (testFound) return testPlanVersion.id;
-    //     }
-
-    //     const testsObject = {
-    //         file,
-    //         executionOrder,
-    //         // single quotes need to be managed to match PostgreSQL standard when inserting into jsonb
-    //         name: testName.replace(/'/g, "''")
-    //     };
-
-    //     const result = await this.upsertRowReturnId(
-    //         `UPDATE "TestPlanVersion" SET "parsed" = jsonb_set("parsed"::jsonb, array['tests'], ("parsed" -> 'tests')::jsonb || '[${JSON.stringify(
-    //             testsObject
-    //         )}]'::jsonb) WHERE id=$1 AND "gitSha"=$2 RETURNING id`,
-    //         [testPlanVersionId, commitHash]
-    //     );
-
-    //     if (result) {
-    //         await this.upsertRowReturnId(
-    //             `UPDATE "TestPlanVersion" SET "parsed" = "parsed" || CONCAT('{"maximumInputCount":', COALESCE("parsed" ->> 'maximumInputCount', '0')::int + 1, '}')::jsonb WHERE id=$1 AND "gitSha"=$2 RETURNING id`,
-    //             [testPlanVersionId, commitHash]
-    //         );
-    //     }
-
-    //     return result;
-    // },
-
-    /**
      * PostgreSQL query handler to return a single result's id following a successful query
      * @param {string} query - the PostgreSQL query to be processed
      * @param {any[]} params - the params to be used when creating the PostgreSQL query
