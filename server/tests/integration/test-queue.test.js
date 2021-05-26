@@ -1,8 +1,9 @@
 const { gql } = require('apollo-server');
+const { dbCleaner } = require('../util/db-cleaner');
 const { query, mutation } = require('../util/graphql-test-utilities');
 
 describe('test queue', () => {
-    it.only('displays test plan reports', async () => {
+    it('displays test plan reports', async () => {
         expect(
             await query(
                 gql`
@@ -70,23 +71,53 @@ describe('test queue', () => {
         `);
     });
 
-    it('assigns testers to a test plan report', async () => {
-        expect(
-            await mutation(gql`
+    it.only('assigns testers to a test plan report', async () => {
+        await dbCleaner(async () => {
+            // A1
+            const newTesterId = 2;
+            const previous = await query(gql`
+                query {
+                    testPlanReport(id: 1) {
+                        draftTestPlanRuns {
+                            tester {
+                                id
+                            }
+                        }
+                    }
+                }
+            `);
+            const previousTesterIds = previous.testPlanReport.draftTestPlanRuns.map(
+                testPlanRun => testPlanRun.tester.id
+            );
+
+            // A2
+            const result = await mutation(gql`
                 mutation {
-                    testPlanReport(id: 123) {
-                        assignTester(user: 445)
+                    testPlanReport(id: 1) {
+                        assignTester(user: 2)
                         resultingTestPlanReport {
                             draftTestPlanRuns {
                                 tester {
+                                    id
                                     username
                                 }
                             }
                         }
                     }
                 }
-            `)
-        ).toMatchInlineSnapshot();
+            `);
+            const resultingTesterIds = result.testPlanReport.resultingTestPlanReport.draftTestPlanRuns.map(
+                testPlanRun => testPlanRun.tester.id
+            );
+
+            // A3
+            expect(previousTesterIds).not.toEqual(
+                expect.arrayContaining([newTesterId])
+            );
+            expect(resultingTesterIds).toEqual(
+                expect.arrayContaining([newTesterId])
+            );
+        });
     });
 
     it('removes testers from a test plan report', async () => {

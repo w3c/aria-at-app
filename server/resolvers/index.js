@@ -1,18 +1,26 @@
 const me = require('./meResolver');
-const testPlans = require('./testPlansResolver');
+const testPlans = require('./testPlanVersionsResolver');
+const testPlanReport = require('./testPlanReportResolver');
+const mutateTestPlanReport = require('./mutateTestPlanReportResolver');
 const User = require('./User');
 const TestPlanVersion = require('./TestPlanVersion');
 const TestPlanReport = require('./TestPlanReport');
+const TestPlanReportOperations = require('./TestPlanReportOperations');
 const TestPlanRun = require('./TestPlanRun');
 
 const resolvers = {
     Query: {
         me,
-        testPlans
+        testPlans,
+        testPlanReport
+    },
+    Mutation: {
+        testPlanReport: mutateTestPlanReport
     },
     User,
     TestPlanVersion,
     TestPlanReport,
+    TestPlanReportOperations,
     TestPlanRun
 };
 

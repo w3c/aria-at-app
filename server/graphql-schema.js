@@ -213,6 +213,7 @@ const graphqlSchema = gql`
         me: User
         testPlans: [TestPlan]!
         testPlan(id: ID!): TestPlan
+        testPlanReport(id: ID!): TestPlanReport
         testPlanTargets: [TestPlanTarget]!
     }
 
@@ -232,13 +233,13 @@ const graphqlSchema = gql`
 
     type Mutation {
         createTestPlanReport(
-            input: TestPlanReportInput
+            input: TestPlanReportInput!
         ): TestPlanReportOperations!
         createTestPlanTarget(
-            input: TestPlanTargetInput
+            input: TestPlanTargetInput!
         ): TestPlanTargetOperations!
-        testPlanReport(id: ID): TestPlanReportOperations!
-        testPlanTarget(id: ID): TestPlanTargetOperations!
+        testPlanReport(id: ID!): TestPlanReportOperations!
+        testPlanTarget(id: ID!): TestPlanTargetOperations!
     }
 `;
 
