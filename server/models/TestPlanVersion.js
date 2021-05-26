@@ -34,7 +34,8 @@ module.exports = function(sequelize, DataTypes) {
                 type: DataTypes.DATE,
                 defaultValue: DataTypes.NOW
             },
-            parsed: { type: DataTypes.JSONB }
+            tests: { type: DataTypes.ARRAY(DataTypes.JSONB) },
+            metadata: { type: DataTypes.JSONB }
         },
         {
             timestamps: false,

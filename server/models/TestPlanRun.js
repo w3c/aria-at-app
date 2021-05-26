@@ -12,7 +12,7 @@ module.exports = function(sequelize, DataTypes) {
             },
             testerUserId: { type: DataTypes.INTEGER, allowNull: true },
             testPlanReportId: { type: DataTypes.INTEGER },
-            results: { type: DataTypes.JSONB }
+            testResults: { type: DataTypes.ARRAY(DataTypes.JSONB) }
         },
         {
             timestamps: false,

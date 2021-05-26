@@ -6,11 +6,11 @@
     "gitMessage": "",
     "exampleUrl": "",
     "updatedAt": "",
-    "parsed": {
-      "title": "",
-      "minimumInputCount": "",
-      "maximumInputCount": "",
-      "sourceSteps": ""
-    }
+    "metadata": {
+      "directory": ""
+    },
+    "tests": [{
+      "title": ""
+    }]
   }
 ]

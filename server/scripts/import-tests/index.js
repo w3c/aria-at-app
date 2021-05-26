@@ -123,27 +123,17 @@ const ariaAtImport = {
                     .split('\n')
                     .filter(line => line.includes('designPattern'));
 
-                const testPlanVersionId = await this.upsertTestPlanVersion(
-                    exampleDir,
-                    exampleNames[exampleDir],
-                    ariaAtRepo,
-                    commitHash,
-                    commitMessage,
-                    commitDate,
-                    exampleRefLine,
-                    practiceGuidelinesRefLine
-                );
+                const tests = [];
+                const testFiles = fse.readdirSync(subDirFullPath);
 
-                let tests = fse.readdirSync(subDirFullPath);
-
-                for (let j = 0; j < tests.length; j++) {
-                    const test = tests[j];
-                    const testFullPath = path.join(subDirFullPath, test);
+                for (let j = 0; j < testFiles.length; j++) {
+                    const testFile = testFiles[j];
+                    const testFullPath = path.join(subDirFullPath, testFile);
                     if (
-                        path.extname(test) === '.html' &&
-                        test !== 'index.html'
+                        path.extname(testFile) === '.html' &&
+                        testFile !== 'index.html'
                     ) {
-                        // Get the test name from the html file
+                        // Get the testFile name from the html file
                         const htmlFile = path.relative(
                             tmpDirectory,
                             testFullPath
@@ -155,18 +145,28 @@ const ariaAtImport = {
                         const testFullName = root.querySelector('title')
                             .innerHTML;
 
-                        // Get the test order from the file name
-                        const executionOrder = parseInt(test.split('-')[1]);
+                        // Get the testFile order from the file name
+                        const executionOrder = parseInt(testFile.split('-')[1]);
 
-                        await this.upsertTestPlanVersionParsedTests(
+                        tests.push({
                             testFullName,
                             htmlFile,
-                            testPlanVersionId,
                             commitHash,
                             executionOrder
-                        );
+                        });
                     }
                 }
+                await this.upsertTestPlanVersion(
+                    exampleDir,
+                    exampleNames[exampleDir],
+                    ariaAtRepo,
+                    commitHash,
+                    commitMessage,
+                    commitDate,
+                    exampleRefLine,
+                    practiceGuidelinesRefLine,
+                    tests
+                );
             }
         }
     },
@@ -211,7 +211,8 @@ const ariaAtImport = {
         commitMessage,
         commitDate,
         exampleRefLine,
-        practiceGuidelinesRefLine
+        practiceGuidelinesRefLine,
+        tests
     ) {
         const getReferenceUrl = referenceLine => {
             let url = null;
@@ -229,91 +230,30 @@ const ariaAtImport = {
         const exampleUrl = getReferenceUrl(exampleRefLine);
         const designPattern = getReferenceUrl(practiceGuidelinesRefLine);
 
-        let parsed = {
-            title: '',
+        let metadata = {
             gitRepo: ariaAtRepo,
             directory: exampleDir,
-            minimumInputCount: 0,
-            maximumInputCount: 0,
-            tests: [],
             designPattern
         };
 
         // checking to see if unique testPlanVersion row (gitSha + directory provides a unique row)
         const testPlanVersionResult = await client.query(
-            'SELECT id, "gitSha" FROM "TestPlanVersion" WHERE "gitSha"=$1 and parsed ->> \'directory\'=$2',
+            'SELECT id, "gitSha" FROM "TestPlanVersion" WHERE "gitSha"=$1 and metadata ->> \'directory\'=$2',
             [commitHash, exampleDir]
         );
 
-        const testPlanVersion = testPlanVersionResult.rowCount
-            ? testPlanVersionResult.rows[0]
-            : await db.TestPlanVersion.create({
-                  title: exampleName,
-                  status: 'DRAFT',
-                  gitSha: commitHash,
-                  gitMessage: commitMessage,
-                  exampleUrl,
-                  updatedAt: commitDate,
-                  parsed
-              });
-        return testPlanVersion.id;
-    },
+        if (testPlanVersionResult.rowCount) return;
 
-    /**
-     * Checks TestPlanVersion.parsed.tests to see if it has the relevant test actions to run the test and inserts it if not
-     * @param {string} testName - the name of the test
-     * @param {string} file - the relative path to the test file in the repository (ideally {@link https://github.com/w3c/aria-at.git})
-     * @param {number} testPlanVersionId - TestPlanVersion.id to be queried to update the TestPlanVersion.parsed.tests if necessary
-     * @param {string} commitHash - the hash of the latest version of tests pulled from the repository (ideally {@link https://github.com/w3c/aria-at.git})
-     * @param {number} executionOrder - the order in which the test step is executed (within the APG pattern)
-     * @returns {number | null} - returns TestPlanVersion.id
-     */
-    async upsertTestPlanVersionParsedTests(
-        testName,
-        file,
-        testPlanVersionId,
-        commitHash,
-        executionOrder
-    ) {
-        const testPlanVersionResult = await client.query(
-            'SELECT id, "parsed" FROM "TestPlanVersion" WHERE id=$1 AND "gitSha"=$2',
-            [testPlanVersionId, commitHash]
-        );
-        let testPlanVersion = testPlanVersionResult.rowCount
-            ? testPlanVersionResult.rows[0]
-            : null;
-
-        // check to see if the test object already exists in tests dataset
-        if (testPlanVersion) {
-            const testStepsFound = testPlanVersion.parsed.tests.find(
-                test => test.executionOrder === executionOrder
-            );
-            // short circuit method because parsed.tests.[action] is already present
-            if (testStepsFound) return testPlanVersion.id;
-        }
-
-        const testsObject = {
-            file,
-            executionOrder,
-            // single quotes need to be managed to match PostgreSQL standard when inserting into jsonb
-            name: testName.replace(/'/g, "''")
-        };
-
-        const result = await this.upsertRowReturnId(
-            `UPDATE "TestPlanVersion" SET "parsed" = jsonb_set("parsed"::jsonb, array['tests'], ("parsed" -> 'tests')::jsonb || '[${JSON.stringify(
-                testsObject
-            )}]'::jsonb) WHERE id=$1 AND "gitSha"=$2 RETURNING id`,
-            [testPlanVersionId, commitHash]
-        );
-
-        if (result) {
-            await this.upsertRowReturnId(
-                `UPDATE "TestPlanVersion" SET "parsed" = "parsed" || CONCAT('{"maximumInputCount":', COALESCE("parsed" ->> 'maximumInputCount', '0')::int + 1, '}')::jsonb WHERE id=$1 AND "gitSha"=$2 RETURNING id`,
-                [testPlanVersionId, commitHash]
-            );
-        }
-
-        return result;
+        await db.TestPlanVersion.create({
+            title: exampleName,
+            status: 'DRAFT',
+            gitSha: commitHash,
+            gitMessage: commitMessage,
+            exampleUrl,
+            updatedAt: commitDate,
+            metadata,
+            tests
+        });
     },
 
     /**
