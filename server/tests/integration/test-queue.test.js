@@ -4,71 +4,71 @@ const { query, mutate } = require('../util/graphql-test-utilities');
 
 describe('test queue', () => {
     it('displays test plan reports', async () => {
-        expect(
-            await query(
-                gql`
-                    query {
-                        testPlans {
-                            latestVersion {
-                                title
-                                gitSha
-                                gitMessage
-                                testCount
-                                testPlanReports {
+        const result = await query(
+            gql`
+                query {
+                    testPlans {
+                        latestVersion {
+                            title
+                            gitSha
+                            gitMessage
+                            testCount
+                            testPlanReports {
+                                id
+                                status
+                                conflictCount
+                                testPlanTarget {
                                     id
-                                    status
-                                    conflictCount
-                                    testPlanTarget {
-                                        id
-                                        title
+                                    title
+                                }
+                                draftTestPlanRuns {
+                                    id
+                                    tester {
+                                        username
                                     }
-                                    draftTestPlanRuns {
-                                        id
-                                        tester {
-                                            username
-                                        }
-                                        testResultCount
-                                    }
+                                    testResultCount
                                 }
                             }
                         }
                     }
-                `
-            )
-        ).toMatchInlineSnapshot(`
-            Object {
-              "testPlans": Array [
-                Object {
-                  "latestVersion": Object {
-                    "gitMessage": "Create tests for APG design pattern example: Tri-State Checkbox (#330)",
-                    "gitSha": "e7212c4e5c96497cc8a2682e07ee2decd19d3f85",
-                    "testCount": 26,
-                    "testPlanReports": Array [
-                      Object {
-                        "conflictCount": 0,
-                        "draftTestPlanRuns": Array [
-                          Object {
-                            "id": "1",
-                            "testResultCount": 2,
-                            "tester": Object {
-                              "username": "foobar-admin",
-                            },
-                          },
-                        ],
-                        "id": "1",
-                        "status": "DRAFT",
-                        "testPlanTarget": Object {
-                          "id": "1",
-                          "title": "NVDA 2020.4 with Chrome 91.0.4472",
-                        },
-                      },
-                    ],
-                    "title": "Checkbox Example (Two State)",
-                  },
-                },
-              ],
-            }
-        `);
+                }
+            `
+        );
+
+        expect(result).toEqual({
+            testPlans: expect.arrayContaining([
+                {
+                    latestVersion: {
+                        gitSha: expect.any(String),
+                        gitMessage: expect.any(String),
+                        title: expect.any(String),
+                        testCount: expect.any(Number),
+                        testPlanReports: expect.arrayContaining([
+                            {
+                                id: expect.anything(),
+                                status: expect.stringMatching(
+                                    /^(DRAFT|IN_REVIEW|FINALIZED)$/
+                                ),
+                                conflictCount: expect.any(Number),
+                                testPlanTarget: {
+                                    id: expect.anything(),
+                                    title: expect.any(String)
+                                },
+                                draftTestPlanRuns: [
+                                    {
+                                        id: expect.anything(),
+                                        testResultCount: expect.any(Number),
+                                        tester: expect.objectContaining({
+                                            username: expect.any(String)
+                                        })
+                                    }
+                                ]
+                            }
+                        ])
+                    }
+                }
+            ])
+        });
     });
 
     it('assigns testers to a test plan report', async () => {
