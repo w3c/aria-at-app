@@ -179,26 +179,26 @@ describe('BrowserModel Data Checks', () => {
 describe('BrowserVersionModel Data Checks', () => {
     it('should return valid browserVersion with browserObject for query', async () => {
         // A1
-        const _browser = 1;
+        const _browserId = 1;
         const _version = '86.0';
 
         // A2
         const browserVersion = await BrowserService.getBrowserVersionByQuery({
-            browser: _browser,
+            browserId: _browserId,
             version: _version
         });
-        const { browser, version, browserObject } = browserVersion;
+        const { browserId, version, browser } = browserVersion;
 
         // A3
-        expect(browser).toBeTruthy();
+        expect(browserId).toBeTruthy();
         expect(version).toBeTruthy();
-        expect(browserObject).toBeTruthy();
+        expect(browser).toBeTruthy();
         expect(browserVersion).toEqual(
             expect.objectContaining({
-                browser: _browser,
+                browserId: _browserId,
                 version: _version,
-                browserObject: expect.objectContaining({
-                    id: _browser,
+                browser: expect.objectContaining({
+                    id: _browserId,
                     name: expect.any(String)
                 })
             })
@@ -207,12 +207,12 @@ describe('BrowserVersionModel Data Checks', () => {
 
     it('should not be valid browserVersion query', async () => {
         // A1
-        const _browser = 53935;
+        const _browserId = 53935;
         const _version = randomStringGenerator();
 
         // A2
         const browserVersion = await BrowserService.getBrowserVersionByQuery({
-            browser: _browser,
+            browserId: _browserId,
             version: _version
         });
 
@@ -223,34 +223,34 @@ describe('BrowserVersionModel Data Checks', () => {
     it('should create and remove a new browserVersion', async () => {
         await dbCleaner(async () => {
             // A1
-            const _browser = 1;
+            const _browserId = 1;
             const _version = randomStringGenerator();
 
             // A2
             const browserVersion = await BrowserService.createBrowserVersion({
-                browser: _browser,
+                browserId: _browserId,
                 version: _version
             });
-            const { browser, version, browserObject } = browserVersion;
+            const { browserId, version, browser } = browserVersion;
 
             // A2
             await BrowserService.removeBrowserVersionByQuery({
-                browser,
+                browserId,
                 version
             });
 
             const deletedBrowserVersion = await BrowserService.getBrowserVersionByQuery(
                 {
-                    browser,
+                    browserId,
                     version
                 }
             );
 
             // after BrowserVersion created
-            expect(browser).toEqual(_browser);
+            expect(browserId).toEqual(_browserId);
             expect(version).toEqual(_version);
-            expect(browserObject).toHaveProperty('id');
-            expect(browserObject).toHaveProperty('name');
+            expect(browser).toHaveProperty('id');
+            expect(browser).toHaveProperty('name');
 
             // after browserVersion removed
             expect(deletedBrowserVersion).toBeNull();
@@ -260,29 +260,29 @@ describe('BrowserVersionModel Data Checks', () => {
     it('should create and update a new browserVersion', async () => {
         await dbCleaner(async () => {
             // A1
-            const _browser = 1;
+            const _browserId = 1;
             const _version = randomStringGenerator();
             const _updatedVersion = randomStringGenerator();
 
             // A2
             const browserVersion = await BrowserService.createBrowserVersion({
-                browser: _browser,
+                browserId: _browserId,
                 version: _version
             });
-            const { browser, version, browserObject } = browserVersion;
+            const { browserId, version, browser } = browserVersion;
 
             // A2
             const updatedBrowserVersion = await BrowserService.updateBrowserVersionByQuery(
-                { browser, version },
+                { browserId, version },
                 { version: _updatedVersion }
             );
             const { version: updatedVersion } = updatedBrowserVersion;
 
             // after BrowserVersion created
-            expect(browser).toEqual(_browser);
+            expect(browserId).toEqual(_browserId);
             expect(version).toEqual(_version);
-            expect(browserObject).toHaveProperty('id');
-            expect(browserObject).toHaveProperty('name');
+            expect(browser).toHaveProperty('id');
+            expect(browser).toHaveProperty('name');
 
             // after browserVersion updated
             expect(_version).not.toEqual(_updatedVersion);
@@ -294,19 +294,19 @@ describe('BrowserVersionModel Data Checks', () => {
     it('should return same browserVersion if no update params passed', async () => {
         await dbCleaner(async () => {
             // A1
-            const _browser = 1;
+            const _browserId = 1;
             const _version = '86.0';
 
             // A2
             const originalBrowserVersion = await BrowserService.getBrowserVersionByQuery(
                 {
-                    browser: _browser,
+                    browserId: _browserId,
                     version: _version
                 }
             );
             const updatedBrowserVersion = await BrowserService.updateBrowserVersionByQuery(
                 {
-                    browser: _browser,
+                    browserId: _browserId,
                     version: _version
                 }
             );
@@ -325,9 +325,9 @@ describe('BrowserVersionModel Data Checks', () => {
         expect(result).toEqual(
             expect.arrayContaining([
                 expect.objectContaining({
-                    browser: expect.any(Number),
+                    browserId: expect.any(Number),
                     version: expect.any(String),
-                    browserObject: expect.objectContaining({
+                    browser: expect.objectContaining({
                         id: expect.any(Number),
                         name: expect.any(String)
                     })
@@ -349,9 +349,9 @@ describe('BrowserVersionModel Data Checks', () => {
         expect(result).toEqual(
             expect.arrayContaining([
                 expect.objectContaining({
-                    browser: expect.any(Number),
+                    browserId: expect.any(Number),
                     version: expect.stringMatching(/87/gi),
-                    browserObject: expect.objectContaining({
+                    browser: expect.objectContaining({
                         id: expect.any(Number),
                         name: expect.any(String)
                     })

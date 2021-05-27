@@ -10,7 +10,7 @@ const { Op } = Sequelize;
  * @returns {{association: string, attributes: string[]}}
  */
 const browserAssociation = browserAttributes => ({
-    association: 'browserObject',
+    association: 'browser',
     attributes: browserAttributes
 });
 
@@ -86,8 +86,8 @@ const createBrowser = async (
     browserAttributes = BROWSER_ATTRIBUTES,
     browserVersionAttributes = BROWSER_VERSION_ATTRIBUTES
 ) => {
-    const atResult = await ModelService.create(Browser, { name });
-    const { id } = atResult;
+    const browserResult = await ModelService.create(Browser, { name });
+    const { id } = browserResult;
 
     // to ensure the structure being returned matches what we expect for simple queries and can be controlled
     return await ModelService.getById(Browser, id, browserAttributes, [
@@ -134,13 +134,13 @@ const removeBrowser = async (id, deleteOptions = { truncate: false }) => {
  * @returns {Promise<*>}
  */
 const getBrowserVersionByQuery = async (
-    { browser, version },
+    { browserId, version },
     browserVersionAttributes = BROWSER_VERSION_ATTRIBUTES,
     browserAttributes = BROWSER_ATTRIBUTES
 ) => {
     return ModelService.getByQuery(
         BrowserVersion,
-        { browser, version },
+        { browserId, version },
         browserVersionAttributes,
         [browserAssociation(browserAttributes)]
     );
@@ -186,16 +186,16 @@ const getBrowserVersions = async (
  * @returns {Promise<*>}
  */
 const createBrowserVersion = async (
-    { browser, version },
+    { browserId, version },
     browserVersionAttributes = BROWSER_VERSION_ATTRIBUTES,
     browserAttributes = BROWSER_ATTRIBUTES
 ) => {
-    await ModelService.create(BrowserVersion, { browser, version });
+    await ModelService.create(BrowserVersion, { browserId, version });
 
     // to ensure the structure being returned matches what we expect for simple queries and can be controlled
     return await ModelService.getByQuery(
         BrowserVersion,
-        { browser, version },
+        { browserId, version },
         browserVersionAttributes,
         [browserAssociation(browserAttributes)]
     );
@@ -209,20 +209,20 @@ const createBrowserVersion = async (
  * @returns {Promise<*>}
  */
 const updateBrowserVersionByQuery = async (
-    { browser, version },
+    { browserId, version },
     updateParams = {},
     browserVersionAttributes = BROWSER_VERSION_ATTRIBUTES,
     browserAttributes = BROWSER_ATTRIBUTES
 ) => {
     await ModelService.update(
         BrowserVersion,
-        { browser, version },
+        { browserId, version },
         updateParams
     );
 
     return await ModelService.getByQuery(
         BrowserVersion,
-        { browser, version: updateParams.version || version },
+        { browserId, version: updateParams.version || version },
         browserVersionAttributes,
         [browserAssociation(browserAttributes)]
     );
@@ -234,12 +234,12 @@ const updateBrowserVersionByQuery = async (
  * @returns {Promise<boolean>}
  */
 const removeBrowserVersionByQuery = async (
-    { browser, version },
+    { browserId, version },
     deleteOptions = { truncate: false }
 ) => {
     return await ModelService.removeByQuery(
         BrowserVersion,
-        { browser, version },
+        { browserId, version },
         deleteOptions
     );
 };

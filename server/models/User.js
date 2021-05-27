@@ -37,7 +37,7 @@ module.exports = function(sequelize, DataTypes) {
 
         Model.hasMany(models.TestPlanRun, {
             ...Model.TEST_PLAN_RUN_ASSOCIATION,
-            foreignKey: 'tester',
+            foreignKey: 'testerUserId',
             sourceKey: 'id'
         });
     };

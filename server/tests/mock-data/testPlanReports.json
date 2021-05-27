@@ -1,8 +1,8 @@
 [
   {
     "id": 1,
-    "publishStatus": "draft",
-    "testedConfiguration": 1,
-    "testPlan": 1
+    "status": "DRAFT",
+    "testPlanTargetId": 1,
+    "testPlanVersionId": 1
   }
 ]

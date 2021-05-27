@@ -8,10 +8,9 @@ const GithubService = require('../../services/GithubService');
 
 const db = require('../../models/index');
 
-afterAll(async done => {
+afterAll(async () => {
     // Closing the DB connection allows Jest to exit successfully.
     await db.sequelize.close();
-    done();
 });
 
 describe('GithubService', () => {
