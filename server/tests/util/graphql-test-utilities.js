@@ -13,7 +13,9 @@ const server = new ApolloServer({
     resolvers
 });
 
-const { query: testClientQuery } = createTestClient(server);
+const { query: testClientQuery, mutate: testClientMutate } = createTestClient(
+    server
+);
 
 const failWithErrors = errors => {
     let formatted = '';
@@ -46,6 +48,11 @@ const query = async (gql, { user = defaultUser } = {}) => {
     return data;
 };
 
-/* TODO: function for mutations to go here when mutations are supported */
+const mutate = async (gql, { user = defaultUser } = {}) => {
+    mockReq = { session: { user } };
+    const { data, errors } = await testClientMutate({ mutation: gql });
+    if (errors) failWithErrors(errors);
+    return data;
+};
 
-module.exports = { query };
+module.exports = { query, mutate };

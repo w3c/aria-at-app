@@ -1,5 +1,4 @@
 const ModelService = require('./ModelService');
-const TestPlanRunService = require('./TestPlanRunService');
 const {
     TEST_PLAN_REPORT_ATTRIBUTES,
     TEST_PLAN_VERSION_ATTRIBUTES,
@@ -7,7 +6,7 @@ const {
     TEST_PLAN_RUN_ATTRIBUTES,
     USER_ATTRIBUTES
 } = require('./helpers');
-const { TestPlanReport, TestPlanRun } = require('../');
+const { TestPlanReport } = require('../');
 
 // association helpers to be included with Models' results
 
@@ -159,121 +158,9 @@ const updateTestPlanReport = async (
     );
 };
 
-// Custom Functions
-
-/**
- * AssignTester
- * This assumes a TestPlanReport with testPlanReportId exists and a User with userId exists
- * @param {number} testPlanReportId - TestPlanReport id of the testPlan being assigned
- * @param {number} userId - User id of the user being assigned a TestPlan
- * @param {string[]} testPlanReportAttributes - TestPlanReport attributes to be returned in the result
- * @param {string[]} testPlanRunAttributes - TestPlanRun attributes to be returned in the result
- * @param {string[]} testPlanVersionAttributes - TestPlanVersion attributes to be returned in the result
- * @param {string[]} testPlanTargetAttributes - TestPlanTarget attributes to be returned in the result
- * @param {string[]} userAttributes - User attributes to be returned in the result
- * @returns {Promise<*>}
- */
-const assignTestPlanReportToUser = async (
-    testPlanReportId,
-    testerUserId,
-    testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
-    testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
-    testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
-    testPlanTargetAttributes = TEST_PLAN_TARGET_ATTRIBUTES,
-    userAttributes = USER_ATTRIBUTES
-) => {
-    // TestPlanRun has to be created for that user
-    await TestPlanRunService.createTestPlanRun({
-        testPlanReportId,
-        testerUserId
-    });
-
-    return await getTestPlanReportById(
-        testPlanReportId,
-        testPlanReportAttributes,
-        testPlanRunAttributes,
-        testPlanVersionAttributes,
-        testPlanTargetAttributes,
-        userAttributes
-    );
-};
-
-/**
- * RemoveReportTester
- * This assumes a TestPlanReport with testPlanReportId exists and a User with userId exists
- * @param {number} testPlanReportId - TestPlanReport id that the tester is being removed from
- * @param {number} userId - unique id of the tester user being removed
- * @param {string[]} testPlanReportAttributes - TestPlanReport attributes to be returned in the result
- * @param {string[]} testPlanRunAttributes - TestPlanRun attributes to be returned in the result
- * @param {string[]} testPlanVersionAttributes - TestPlanVersion attributes to be returned in the result
- * @param {string[]} testPlanTargetAttributes - TestPlanTarget attributes to be returned in the result
- * @param {string[]} userAttributes - User attributes to be returned in the result
- * @returns {Promise<*>}
- */
-const removeTestPlanReportForUser = async (
-    testPlanReportId,
-    testerUserId,
-    testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
-    testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
-    testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
-    testPlanTargetAttributes = TEST_PLAN_TARGET_ATTRIBUTES,
-    userAttributes = USER_ATTRIBUTES
-) => {
-    // TestPlanRun had have been created for that user
-    await ModelService.removeByQuery(TestPlanRun, {
-        testPlanReportId,
-        testerUserId
-    });
-
-    return await getTestPlanReportById(
-        testPlanReportId,
-        testPlanReportAttributes,
-        testPlanRunAttributes,
-        testPlanVersionAttributes,
-        testPlanTargetAttributes,
-        userAttributes
-    );
-};
-
-/**
- * Custom function to update the TestPlanReportStatus; potentially made redundant due to {@method updateTestPlanReport}
- * @param {number} testPlanReportId - TestPlanReport id of the TestPlanReport being updated
- * @param {string} status - must be one of: 'DRAFT', 'IN_REVIEW' or 'FINALIZED'
- * @param {string[]} testPlanReportAttributes - TestPlanReport attributes to be returned in the result
- * @param {string[]} testPlanRunAttributes - TestPlanRun attributes to be returned in the result
- * @param {string[]} testPlanVersionAttributes - TestPlanVersion attributes to be returned in the result
- * @param {string[]} testPlanTargetAttributes - TestPlanTarget attributes to be returned in the result
- * @param {string[]} userAttributes - User attributes to be returned in the result
- * @returns {Promise<*>}
- */
-const updateTestPlanReportStatus = async (
-    testPlanReportId,
-    status,
-    testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
-    testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
-    testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
-    testPlanTargetAttributes = TEST_PLAN_TARGET_ATTRIBUTES,
-    userAttributes = USER_ATTRIBUTES
-) => {
-    return await updateTestPlanReport(
-        testPlanReportId,
-        { status },
-        testPlanReportAttributes,
-        testPlanRunAttributes,
-        testPlanVersionAttributes,
-        testPlanTargetAttributes,
-        userAttributes
-    );
-};
-
 module.exports = {
     // Basic CRUD
     getTestPlanReportById,
     getTestPlanReports,
-    updateTestPlanReport,
-
-    // Custom Functions : Test Queue Mutations
-    assignTestPlanReportToUser,
-    removeTestPlanReportForUser,
-    updateTestPlanReportStatus
+    updateTestPlanReport
 };

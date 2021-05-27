@@ -65,40 +65,108 @@ const graphqlSchema = gql`
     }
 
     type TestPlan {
+        """
+        Corresponds to the ARIA-AT directory storing the test plan.
+        """
         id: ID!
+        atGitSha(gitSha: String!): TestPlanVersion
+        latestVersion: TestPlanVersion!
+        latestVersionWithResults: TestPlanVersion
+        versions: [TestPlanVersion]!
+        versionsWithResults: [TestPlanVersion]!
+        queueRelevantVersions: [TestPlanVersion]!
+    }
+
+    type TestPlanVersion {
         title: String!
-        publishStatus: TestPlanStatus!
-        revision: String!
-        sourceGitCommit: String!
+        status: TestPlanStatus!
+        gitSha: String!
+        gitMessage: String!
         exampleUrl: String!
-        # TODO: consider renaming createdAt and including the date the source
-        # code age was authored as well.
-        createdAt: Timestamp!
+        updatedAt: Timestamp!
         tests: [Test]!
         testCount: Int!
+        testPlanReports: [TestPlanReport]!
+        testPlanReport(id: ID, testPlanTarget: ID): TestPlanReport
     }
 
     interface Test {
         title: String!
-        totalAssertions: Int!
-        # TODO: need complete representation of test data
+        index: Int!
+        # TODO: account for running scripts
+        instructions: [Instruction]!
+        assertions: [Assertion]!
+        assertionCount: Int!
+        optionalAssertionCount: Int!
+        passThroughs: [PassThrough]!
+    }
+
+    type Instruction {
+        # TODO: account for automation
+        manualInstruction: String!
+    }
+
+    interface Assertion {
+        # TODO: account for at-specific assertions
+        # TODO: account for optional assertions
+        # TODO: account for automation
+        manualAssertion: String!
+    }
+
+    interface PassThrough {
+        atMode: String!
+        nthCommand: Int!
+        # Examples would go here if we support multiple examples for one test.
     }
 
     type TestResult implements Test {
         title: String!
+        index: Int!
+        instructions: [Instruction]!
+        assertions: [Assertion]!
+        passThroughs: [PassThrough]!
+        assertionCount: Int!
+        optionalAssertionCount: Int!
+
         startedAt: Timestamp!
-        completedAt: Timestamp
-        testPlanRun: TestPlanRun
-        passedAssertions: Int
-        totalAssertions: Int!
-        # TODO: need complete representation of test data & results
+        completedAt: Timestamp!
+        isComplete: Boolean!
+        isSkipped: Boolean!
+
+        passThroughResults: [PassThroughResult]!
+        assertionsPassed: Int!
+        optionalAssertionsPassed: Int!
+        unexpectedBehaviorCount: Int!
+    }
+
+    type PassThroughResult implements PassThrough {
+        atMode: String!
+        nthCommand: Int!
+
+        output: String!
+        assertionResults: [AssertionResult]!
+        unexpectedBehaviors: [UnexpectedBehavior]!
+    }
+
+    type AssertionResult implements Assertion {
+        manualAssertion: String!
+        passed: Boolean!
+    }
+
+    type UnexpectedBehavior {
+        id: ID!
+        description: String!
+    }
+
+    type TestResultConflict {
+        breadcrumbs: String! # TBD
     }
 
     type TestPlanRun {
         id: ID!
-        isManuallyTested: Boolean!
         tester: User
-        testPlanReport: TestPlanReport!
+        isManuallyTested: Boolean!
+        isComplete: Boolean!
         testResults: [TestResult]!
         testResultCount: Int!
     }
@@ -111,12 +179,23 @@ const graphqlSchema = gql`
 
     type TestPlanReport {
         id: ID!
-        publishStatus: TestPlanReportStatus!
-        coveragePercent: Int!
-        testPlan: TestPlan!
+        status: TestPlanReportStatus!
+        """
+        Results from new test plan runs are only permitted in a draft state.
+        """
+        isAcceptingResults: Boolean!
+        supportPercent: Int!
+        optionalSupportPercent: Int!
         testPlanTarget: TestPlanTarget!
-        canonicalRun: TestPlanRun # Present when finalized
-        testPlanRuns: [TestPlanRun]!
+        conflicts: [TestResultConflict]!
+        conflictCount: Int!
+        """
+        Finalizing a test plan report requires resolving any conflicts between
+        runs. At this stage a single set of results is able to represent all
+        results, and is much more convenient to work with.
+        """
+        finalizedTestPlanRun: TestPlanRun
+        draftTestPlanRuns: [TestPlanRun]!
         createdAt: Timestamp!
     }
 
@@ -127,18 +206,23 @@ const graphqlSchema = gql`
 
     type Query {
         me: User
-        testPlanReports(testPlan: ID): [TestPlanReport]!
-        testPlanReport(id: ID): TestPlanReport
-        testPlanTargets: [TestPlanTarget]!
         testPlans: [TestPlan]!
+        testPlan(id: ID!): TestPlan
+        testPlanReport(id: ID!): TestPlanReport
+        testPlanTargets: [TestPlanTarget]!
     }
 
     # Mutation-specific types below
 
     type TestPlanReportOperations {
-        assignTester(user: ID): NoResponse
-        deleteTestPlanRun(user: ID): NoResponse
-        updateStatus(status: TestPlanReportStatus): NoResponse
+        assignTester(user: ID!): TestPlanReportOperationResult!
+        deleteTestPlanRun(user: ID!): TestPlanReportOperationResult!
+        updateStatus(
+            status: TestPlanReportStatus!
+        ): TestPlanReportOperationResult!
+    }
+
+    type TestPlanReportOperationResult {
         resultingTestPlanReport: TestPlanReport!
     }
 
@@ -149,13 +233,13 @@ const graphqlSchema = gql`
 
     type Mutation {
         createTestPlanReport(
-            input: TestPlanReportInput
-        ): TestPlanReportOperations
+            input: TestPlanReportInput!
+        ): TestPlanReportOperations!
         createTestPlanTarget(
-            input: TestPlanTargetInput
-        ): TestPlanTargetOperations
-        testPlanReport(id: ID): TestPlanReportOperations
-        testPlanTarget(id: ID): TestPlanTargetOperations
+            input: TestPlanTargetInput!
+        ): TestPlanTargetOperations!
+        testPlanReport(id: ID!): TestPlanReportOperations!
+        testPlanTarget(id: ID!): TestPlanTargetOperations!
     }
 `;
 
