@@ -54,7 +54,7 @@ describe('test queue', () => {
                                     id: expect.anything(),
                                     title: expect.any(String)
                                 },
-                                draftTestPlanRuns: [
+                                draftTestPlanRuns: expect.arrayContaining([
                                     {
                                         id: expect.anything(),
                                         testResultCount: expect.any(Number),
@@ -62,7 +62,7 @@ describe('test queue', () => {
                                             username: expect.any(String)
                                         })
                                     }
-                                ]
+                                ])
                             }
                         ])
                     }
