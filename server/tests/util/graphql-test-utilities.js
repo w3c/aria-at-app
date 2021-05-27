@@ -20,13 +20,14 @@ const { query: testClientQuery, mutate: testClientMutate } = createTestClient(
 const failWithErrors = errors => {
     let formatted = '';
     errors.forEach(error => {
+        const formattedType = error.name ? `${error.name}: ` : '';
         formatted +=
             `GraphQL error in ${JSON.stringify(error.path)}:\n\n` +
-            `${error.message}\n\n` +
+            `${formattedType}${error.message}\n\n` +
             `(${JSON.stringify({
                 extensions: error.extensions,
                 location: error.location
-            })})\n`;
+            })})`;
     });
     throw new Error(formatted);
 };

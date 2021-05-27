@@ -180,13 +180,10 @@ const graphqlSchema = gql`
     type TestPlanReport {
         id: ID!
         status: TestPlanReportStatus!
-        """
-        Results from new test plan runs are only permitted in a draft state.
-        """
-        isAcceptingResults: Boolean!
         supportPercent: Int!
         optionalSupportPercent: Int!
         testPlanTarget: TestPlanTarget!
+        testPlanVersion: TestPlanVersion!
         conflicts: [TestResultConflict]!
         conflictCount: Int!
         """

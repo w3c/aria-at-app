@@ -1,3 +1,5 @@
+const { AuthenticationError } = require('apollo-server');
+
 const {
     getTestPlanReportById,
     updateTestPlanReport
@@ -7,8 +9,13 @@ const isCompleteResolver = require('../TestPlanRun/isCompleteResolver');
 
 const updateStatusResolver = async (
     { parentContext: { id: testPlanReportId } },
-    { status: status }
+    { status: status },
+    { user }
 ) => {
+    if (!user.roles.includes('ADMIN')) {
+        throw new AuthenticationError();
+    }
+
     const testPlanReport = await getTestPlanReportById(testPlanReportId);
 
     const conflicts = conflictsResolver(testPlanReport);

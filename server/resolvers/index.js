@@ -2,7 +2,6 @@ const me = require('./meResolver');
 const testPlans = require('./testPlanVersionsResolver');
 const testPlanReport = require('./testPlanReportResolver');
 const mutateTestPlanReport = require('./mutateTestPlanReportResolver');
-const User = require('./User');
 const TestPlanVersion = require('./TestPlanVersion');
 const TestPlanReport = require('./TestPlanReport');
 const TestPlanReportOperations = require('./TestPlanReportOperations');
@@ -18,7 +17,6 @@ const resolvers = {
     Mutation: {
         testPlanReport: mutateTestPlanReport
     },
-    User,
     TestPlanVersion,
     TestPlanReport,
     TestPlanReportOperations,
