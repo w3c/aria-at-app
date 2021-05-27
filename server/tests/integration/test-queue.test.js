@@ -1,6 +1,12 @@
 const { gql } = require('apollo-server');
 const { dbCleaner } = require('../util/db-cleaner');
 const { query, mutate } = require('../util/graphql-test-utilities');
+const db = require('../../models/index');
+
+afterAll(async () => {
+    // Closing the DB connection allows Jest to exit successfully.
+    await db.sequelize.close();
+});
 
 describe('test queue', () => {
     it('displays test plan reports', async () => {
