@@ -106,9 +106,7 @@ describe('TestPlanRunModel Data Checks', () => {
 
             const updatedTestPlanRun = await TestPlanRunService.updateTestPlanRun(
                 id,
-                {
-                    testResults: [{ test: 'goesHere' }]
-                }
+                { testResults: [{ test: 'goesHere' }] }
             );
             const {
                 testerUserId: updatedTesterUserId,
