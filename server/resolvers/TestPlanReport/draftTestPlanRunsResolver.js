@@ -1,5 +1,5 @@
-const draftTestPlanRunsResolver = parent => {
-    return parent.testPlanRuns;
+const draftTestPlanRunsResolver = testPlanReport => {
+    return testPlanReport.testPlanRuns;
 };
 
 module.exports = draftTestPlanRunsResolver;

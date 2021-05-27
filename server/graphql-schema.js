@@ -184,11 +184,6 @@ const graphqlSchema = gql`
         Results from new test plan runs are only permitted in a draft state.
         """
         isAcceptingResults: Boolean!
-        """
-        Can be finalized if all test plan runs are complete and no conflicts are
-        found.
-        """
-        canBeFinalized: Boolean!
         supportPercent: Int!
         optionalSupportPercent: Int!
         testPlanTarget: TestPlanTarget!

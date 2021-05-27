@@ -1,5 +1,5 @@
-const testCountResolver = parent => {
-    return parent.tests.length;
+const testCountResolver = testPlanVersion => {
+    return testPlanVersion.tests.length;
 };
 
 module.exports = testCountResolver;

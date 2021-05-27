@@ -1,10 +1,10 @@
-const rolesResolver = parent => {
+const rolesResolver = user => {
     const roles = [];
 
-    if (parent.roles.includes('admin')) {
+    if (user.roles.includes('admin')) {
         roles.push('ADMIN');
     }
-    if (parent.roles.includes('tester') || parent.roles.includes('admin')) {
+    if (user.roles.includes('tester') || user.roles.includes('admin')) {
         roles.push('TESTER'); // Admins are always testers
     }
 

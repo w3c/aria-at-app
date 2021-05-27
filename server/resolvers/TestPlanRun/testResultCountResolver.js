@@ -1,5 +1,5 @@
-const testResultCount = parent => {
-    return parent.testResults.length;
+const testResultCount = testPlanRun => {
+    return testPlanRun.testResults.length;
 };
 
 module.exports = testResultCount;

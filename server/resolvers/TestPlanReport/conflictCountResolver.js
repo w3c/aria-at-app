@@ -1,7 +1,7 @@
 const conflictsResolver = require('./conflictsResolver');
 
-const conflictCountResolver = (...resolverArgs) => {
-    const conflicts = conflictsResolver(...resolverArgs);
+const conflictCountResolver = testPlanReport => {
+    const conflicts = conflictsResolver(testPlanReport);
     return conflicts.length;
 };
 
