@@ -58,7 +58,7 @@ const graphqlSchema = gql`
         browserVersion: String!
     }
 
-    enum TestPlanStatus {
+    enum TestPlanVersionStatus {
         DRAFT
         IN_REVIEW
         FINALIZED
@@ -69,24 +69,43 @@ const graphqlSchema = gql`
         Corresponds to the ARIA-AT directory storing the test plan.
         """
         id: ID!
-        atGitSha(gitSha: String!): TestPlanVersion
-        latestVersion: TestPlanVersion!
-        latestVersionWithResults: TestPlanVersion
-        versions: [TestPlanVersion]!
-        versionsWithResults: [TestPlanVersion]!
-        queueRelevantVersions: [TestPlanVersion]!
+        # TODO: determine if isObsolete is needed.
+        # """
+        # Whether the directory still exists in the ARIA-AT repo.
+        # """
+        # isObsolete: Boolean!
+        """
+        A least one argument is required. Determines what type of test plan to
+        load. Will load the latest version matching the criteria.
+        """
+        version(
+            status: TestPlanVersionStatus
+            testPlanReportStatus: TestPlanReportStatus
+            atGitSha: String
+            atSemanticVersion: String
+        ): TestPlanVersion
+        """
+        Loads multiple historic versions of the test plan, accepting filter
+        criteria.
+        """
+        versions(
+            status: TestPlanVersionsStatus
+            testPlanReportStatus: TestPlanReportStatus
+        ): [TestPlanVersion]
     }
 
     type TestPlanVersion {
+        id: ID!
         title: String!
-        status: TestPlanStatus!
+        status: TestPlanVersionStatus!
         gitSha: String!
         gitMessage: String!
-        exampleUrl: String!
+        semanticVersion: String
         updatedAt: Timestamp!
+        exampleUrl: String!
         tests: [Test]!
         testCount: Int!
-        testPlanReports: [TestPlanReport]!
+        testPlanReports(status: TestPlanReportStatus): [TestPlanReport]!
         testPlanReport(id: ID, testPlanTarget: ID): TestPlanReport
     }
 
@@ -114,6 +133,7 @@ const graphqlSchema = gql`
     }
 
     interface PassThrough {
+        index: Int!
         atMode: String!
         nthCommand: Int!
         # Examples would go here if we support multiple examples for one test.
@@ -140,6 +160,7 @@ const graphqlSchema = gql`
     }
 
     type PassThroughResult implements PassThrough {
+        index: Int!
         atMode: String!
         nthCommand: Int!
 
@@ -180,10 +201,6 @@ const graphqlSchema = gql`
     type TestPlanReport {
         id: ID!
         status: TestPlanReportStatus!
-        """
-        Results from new test plan runs are only permitted in a draft state.
-        """
-        isAcceptingResults: Boolean!
         supportPercent: Int!
         optionalSupportPercent: Int!
         testPlanTarget: TestPlanTarget!
@@ -204,12 +221,42 @@ const graphqlSchema = gql`
         testPlanTarget: ID!
     }
 
+    """
+    A reference to a specific position in the graph.
+    """
+    input TraversalInput {
+        testPlan: ID
+        testPlanVersion: ID
+        test: Int
+        passThrough: Int
+        testPlanReport: ID
+        testPlanRun: ID
+        testResult: Int
+    }
+
+    """
+    Loads data at a specific position in the graph, useful for exploring data,
+    identifying the location of conflicts, or, as in the test queue, flattening
+    a deep tree of data into an array of simple, flat objects.
+    """
+    type Traversal {
+        traversalInput: TraversalInput!
+        testPlan: TestPlan
+        testPlanVersion: TestPlanVersion
+        test: Test
+        passThrough: PassThrough
+        testPlanReport: TestPlanReport
+        testPlanRun: TestPlanRun
+        testResult: TestResult
+    }
+
     type Query {
         me: User
         testPlans: [TestPlan]!
         testPlan(id: ID!): TestPlan
         testPlanReport(id: ID!): TestPlanReport
         testPlanTargets: [TestPlanTarget]!
+        loadTraversal(traversal: TraversalInput!): Traversal!
     }
 
     # Mutation-specific types below

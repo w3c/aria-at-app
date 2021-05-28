@@ -49,6 +49,10 @@ Additionally it adds the the ability for you use chrome dev tools and a
 navigate to [chrome://inspect/#devices](chrome://inspect/#devices) and open the
 dedicated dev tools for node.
 
+## GraphQL Playground
+
+To use the GraphQL playground, go to `/api/graphql` while the dev server is running.
+
 ## Testing
 
 ### Running all tests
