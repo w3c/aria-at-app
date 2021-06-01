@@ -5,7 +5,7 @@ const {
 // TODO: Revisit when the versioning approach is more defined
 const testPlans = async () => {
     const testPlan = await getTestPlanVersionById(1);
-    return [{ latestVersion: testPlan }];
+    return [{ testPlanVersion: testPlan }];
 };
 
 module.exports = testPlans;

@@ -66,10 +66,10 @@ describe('UserModel Data Checks', () => {
         expect(roles).toBeInstanceOf(Array);
         expect(roles.length).toBeGreaterThanOrEqual(1);
         expect(roles).toContainEqual(
-            expect.objectContaining({ name: 'admin' })
+            expect.objectContaining({ name: 'ADMIN' })
         );
         expect(roles).toContainEqual(
-            expect.objectContaining({ name: 'tester' })
+            expect.objectContaining({ name: 'TESTER' })
         );
     });
 
@@ -89,7 +89,7 @@ describe('UserModel Data Checks', () => {
         await dbCleaner(async () => {
             // A1
             const _username = randomStringGenerator();
-            const _role = 'admin';
+            const _role = 'ADMIN';
 
             // A2
             const user = await UserService.createUser({

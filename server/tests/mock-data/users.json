@@ -1,18 +1,18 @@
 [
     {
         "id": 1,
-        "username": "foobar",
+        "username": "esmeralda-baggins",
         "roles": [
             {
-                "name": "admin"
+                "name": "ADMIN"
             },
             {
-                "name": "tester"
+                "name": "TESTER"
             }
         ]
     },
     {
         "id": 2,
-        "username": "boofar"
+        "username": "tom-proudfeet"
     }
 ]

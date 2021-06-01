@@ -9,8 +9,8 @@ describe('RoleModel Data Checks', () => {
         await sequelize.close();
     });
 
-    it('should have valid role named `admin`', async () => {
-        const _name = 'admin';
+    it('should have valid role named `ADMIN`', async () => {
+        const _name = 'ADMIN';
 
         const role = await RoleService.getRoleByName(_name);
         const { name } = role;
@@ -19,7 +19,7 @@ describe('RoleModel Data Checks', () => {
     });
 
     it('should contain valid role with users array', async () => {
-        const _name = 'admin';
+        const _name = 'ADMIN';
 
         const role = await RoleService.getRoleByName(_name);
         const { name } = role;
@@ -37,7 +37,7 @@ describe('RoleModel Data Checks', () => {
     });
 
     it('should contain valid role with no users array', async () => {
-        const _name = 'admin';
+        const _name = 'ADMIN';
 
         const role = await RoleService.getRoleByName(_name, null, []);
         const { name } = role;
@@ -46,8 +46,8 @@ describe('RoleModel Data Checks', () => {
         expect(role).not.toHaveProperty('users');
     });
 
-    it('should have valid role named `tester`', async () => {
-        const _name = 'tester';
+    it('should have valid role named `TESTER`', async () => {
+        const _name = 'TESTER';
 
         const role = await RoleService.getRoleByName(_name);
         const { name } = role;
@@ -55,15 +55,15 @@ describe('RoleModel Data Checks', () => {
         expect(name).toEqual(_name);
     });
 
-    it('should only have 2 named roles (admin & tester)', async () => {
+    it('should only have 2 named roles (ADMIN & TESTER)', async () => {
         const roles = await RoleService.getRoles('');
 
         expect(roles.length).toEqual(2);
         expect(roles).toContainEqual(
-            expect.objectContaining({ name: 'admin' })
+            expect.objectContaining({ name: 'ADMIN' })
         );
         expect(roles).toContainEqual(
-            expect.objectContaining({ name: 'tester' })
+            expect.objectContaining({ name: 'TESTER' })
         );
     });
 
@@ -148,7 +148,7 @@ describe('RoleModel Data Checks', () => {
 
     it('should return same role if no update params passed', async () => {
         await dbCleaner(async () => {
-            const _name = 'admin';
+            const _name = 'ADMIN';
 
             const originalRole = await RoleService.getRoleByName(_name);
             const updatedRole = await RoleService.updateRole(_name);
