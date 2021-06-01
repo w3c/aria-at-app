@@ -78,7 +78,7 @@ const graphqlSchema = gql`
         A least one argument is required. Determines what type of test plan to
         load. Will load the latest version matching the criteria.
         """
-        testPlanVersion(
+        latestTestPlanVersion(
             status: TestPlanVersionStatus
             testPlanReportStatus: TestPlanReportStatus
             atGitSha: String
@@ -102,7 +102,7 @@ const graphqlSchema = gql`
         gitMessage: String!
         semanticVersion: String
         # TODO: determine if isLatest is needed
-        # isLatest: Boolean
+        # isLatest: Boolean!
         updatedAt: Timestamp!
         exampleUrl: String!
         tests: [Test]!
@@ -227,23 +227,11 @@ const graphqlSchema = gql`
     input LocationOfDataInput {
         testPlan: ID
         testPlanVersion: ID
-        """
-        The index of the test
-        """
         test: Int
-        """
-        The index of the passThrough
-        """
         passThrough: Int
         testPlanReport: ID
         testPlanRun: ID
-        """
-        The index of the testResult
-        """
         testResult: Int
-        """
-        The index of the passThroughResult
-        """
         passThroughResult: Int
     }
     type LocationOfData {
@@ -275,11 +263,6 @@ const graphqlSchema = gql`
         testPlan(id: ID!): TestPlan
         testPlanReport(id: ID!): TestPlanReport
         testPlanTargets: [TestPlanTarget]!
-        """
-        Loads data at a specific position in the graph, useful for exploring data,
-        identifying the location of conflicts, or, as in the test queue, flattening
-        a deep tree of data into an array of simple, flat objects.
-        """
         populateLocationOfData(
             locationOfData: LocationOfDataInput!
         ): PopulatedLocationOfData!

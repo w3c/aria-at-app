@@ -14,7 +14,7 @@ describe('test queue', () => {
             gql`
                 query {
                     testPlans {
-                        testPlanVersion {
+                        latestTestPlanVersion {
                             title
                             gitSha
                             gitMessage
@@ -44,7 +44,7 @@ describe('test queue', () => {
         expect(result).toEqual({
             testPlans: expect.arrayContaining([
                 {
-                    testPlanVersion: {
+                    latestTestPlanVersion: {
                         gitSha: expect.any(String),
                         gitMessage: expect.any(String),
                         title: expect.any(String),
