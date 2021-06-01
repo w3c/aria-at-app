@@ -8,7 +8,7 @@ afterAll(async () => {
 });
 
 describe('BrowserModel Data Checks', () => {
-    it('should return valid browser for id query', async () => {
+    it('should return valid browser for id query with all associations', async () => {
         // A1
         const _id = 1;
 
@@ -24,6 +24,26 @@ describe('BrowserModel Data Checks', () => {
                 id: expect.any(Number)
             })
         );
+        expect(browser).toHaveProperty('versions');
+    });
+
+    it('should return valid browser for id query with no associations', async () => {
+        // A1
+        const _id = 1;
+
+        // A2
+        const browser = await BrowserService.getBrowserById(_id, null, []);
+        const { id, name } = browser;
+
+        // A3
+        expect(id).toEqual(_id);
+        expect(browser).toEqual(
+            expect.objectContaining({
+                name,
+                id: expect.any(Number)
+            })
+        );
+        expect(browser).not.toHaveProperty('versions');
     });
 
     it('should not be valid browser query', async () => {
@@ -177,7 +197,7 @@ describe('BrowserModel Data Checks', () => {
 });
 
 describe('BrowserVersionModel Data Checks', () => {
-    it('should return valid browserVersion with browserObject for query', async () => {
+    it('should return valid browserVersion with browser for query with all associations', async () => {
         // A1
         const _browserId = 1;
         const _version = '86.0';
@@ -203,6 +223,35 @@ describe('BrowserVersionModel Data Checks', () => {
                 })
             })
         );
+        expect(browserVersion).toHaveProperty('browser');
+    });
+
+    it('should return valid browserVersion for query with no associations', async () => {
+        // A1
+        const _browserId = 1;
+        const _version = '86.0';
+
+        // A2
+        const browserVersion = await BrowserService.getBrowserVersionByQuery(
+            {
+                browserId: _browserId,
+                version: _version
+            },
+            null,
+            []
+        );
+        const { browserId, version } = browserVersion;
+
+        // A3
+        expect(browserId).toBeTruthy();
+        expect(version).toBeTruthy();
+        expect(browserVersion).toEqual(
+            expect.objectContaining({
+                browserId: _browserId,
+                version: _version
+            })
+        );
+        expect(browserVersion).not.toHaveProperty('browser');
     });
 
     it('should not be valid browserVersion query', async () => {

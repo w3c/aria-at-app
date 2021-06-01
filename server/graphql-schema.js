@@ -206,6 +206,7 @@ const graphqlSchema = gql`
         supportPercent: Int!
         optionalSupportPercent: Int!
         testPlanTarget: TestPlanTarget!
+        testPlanVersion: TestPlanVersion!
         conflicts: [TestResultConflict]!
         conflictCount: Int!
         """

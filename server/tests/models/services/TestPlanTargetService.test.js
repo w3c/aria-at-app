@@ -235,8 +235,21 @@ describe('TestPlanTargetModel data Checks', () => {
             ['id'],
             { enablePagination: true }
         );
-        expect(result).toHaveProperty('page');
-        expect(result).toHaveProperty('data');
+
         expect(result.data.length).toBeGreaterThanOrEqual(1);
+        expect(result).toEqual(
+            expect.objectContaining({
+                page: 1,
+                pageSize: expect.any(Number),
+                resultsCount: expect.any(Number),
+                totalResultsCount: expect.any(Number),
+                pagesCount: expect.any(Number),
+                data: expect.arrayContaining([
+                    expect.objectContaining({
+                        id: expect.any(Number)
+                    })
+                ])
+            })
+        );
     });
 });

@@ -8,7 +8,7 @@ describe('TestPlanReportModel Data Checks', () => {
         await sequelize.close();
     });
 
-    it('should return valid testPlanVersion for id query', async () => {
+    it('should return valid testPlanVersion for id query with all associations', async () => {
         const _id = 1;
 
         const testPlanVersion = await TestPlanVersionService.getTestPlanVersionById(
@@ -39,6 +39,40 @@ describe('TestPlanReportModel Data Checks', () => {
         expect(testPlanReports).toContainEqual(
             expect.objectContaining({ id: expect.any(Number) })
         );
+        expect(testPlanVersion).toHaveProperty('testPlanReports');
+    });
+
+    it('should return valid testPlanVersion for id query with no associations', async () => {
+        const _id = 1;
+
+        const testPlanVersion = await TestPlanVersionService.getTestPlanVersionById(
+            _id,
+            null,
+            [],
+            [],
+            [],
+            []
+        );
+        const {
+            id,
+            title,
+            status,
+            gitSha,
+            gitMessage,
+            updatedAt,
+            metadata,
+            tests
+        } = testPlanVersion;
+
+        expect(id).toEqual(_id);
+        expect(title).toBeTruthy();
+        expect(status).toMatch(/^(DRAFT|IN_REVIEW|FINALIZED)$/);
+        expect(gitSha).toBeTruthy();
+        expect(gitMessage).toBeTruthy();
+        expect(updatedAt).toBeTruthy();
+        expect(metadata).toBeTruthy();
+        expect(tests).toBeTruthy();
+        expect(testPlanVersion).not.toHaveProperty('testPlanReports');
     });
 
     it('should not be valid testPlanVersion query', async () => {
@@ -158,13 +192,24 @@ describe('TestPlanReportModel Data Checks', () => {
             [],
             [],
             {
-                page: -1,
-                limit: -1,
                 enablePagination: true
             }
         );
-        expect(result).toHaveProperty('page');
-        expect(result).toHaveProperty('data');
+
         expect(result.data.length).toBeGreaterThanOrEqual(1);
+        expect(result).toEqual(
+            expect.objectContaining({
+                page: 1,
+                pageSize: expect.any(Number),
+                resultsCount: expect.any(Number),
+                totalResultsCount: expect.any(Number),
+                pagesCount: expect.any(Number),
+                data: expect.arrayContaining([
+                    expect.objectContaining({
+                        id: expect.any(Number)
+                    })
+                ])
+            })
+        );
     });
 });
