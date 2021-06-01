@@ -13,18 +13,21 @@ const server = new ApolloServer({
     resolvers
 });
 
-const { query: testClientQuery } = createTestClient(server);
+const { query: testClientQuery, mutate: testClientMutate } = createTestClient(
+    server
+);
 
 const failWithErrors = errors => {
     let formatted = '';
     errors.forEach(error => {
+        const formattedType = error.name ? `${error.name}: ` : '';
         formatted +=
             `GraphQL error in ${JSON.stringify(error.path)}:\n\n` +
-            `${error.message}\n\n` +
+            `${formattedType}${error.message}\n\n` +
             `(${JSON.stringify({
                 extensions: error.extensions,
                 location: error.location
-            })})\n`;
+            })})`;
     });
     throw new Error(formatted);
 };
@@ -46,6 +49,11 @@ const query = async (gql, { user = defaultUser } = {}) => {
     return data;
 };
 
-/* TODO: function for mutations to go here when mutations are supported */
+const mutate = async (gql, { user = defaultUser } = {}) => {
+    mockReq = { session: { user } };
+    const { data, errors } = await testClientMutate({ mutation: gql });
+    if (errors) failWithErrors(errors);
+    return data;
+};
 
-module.exports = { query };
+module.exports = { query, mutate };
