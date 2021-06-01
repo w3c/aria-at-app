@@ -169,6 +169,32 @@ describe('TestPlanRunModel Data Checks', () => {
         });
     });
 
+    it('should remove existing testPlanRun by query', async () => {
+        await dbCleaner(async () => {
+            const _id = 1;
+
+            const testPlanRun = await TestPlanRunService.getTestPlanRunById(
+                _id
+            );
+            const { testerUserId, testPlanReportId } = testPlanRun;
+
+            await TestPlanRunService.removeTestPlanRunByQuery({
+                testerUserId,
+                testPlanReportId
+            });
+
+            const deletedTestPlanRun = await TestPlanRunService.getTestPlanRunById(
+                _id
+            );
+
+            // before testPlanRun removed
+            expect(testPlanRun).not.toBeNull();
+
+            // after testPlanRun removed
+            expect(deletedTestPlanRun).toBeNull();
+        });
+    });
+
     it('should return collection of testPlanRuns', async () => {
         const result = await TestPlanRunService.getTestPlanRuns('', {});
         expect(result.length).toBeGreaterThanOrEqual(1);
