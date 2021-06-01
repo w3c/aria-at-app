@@ -8,7 +8,7 @@ describe('UserModel Data Checks', () => {
         await sequelize.close();
     });
 
-    it('should return valid user for id query', async () => {
+    it('should return valid user for id query with all associations', async () => {
         const _id = 1;
 
         const user = await UserService.getUserById(_id);
@@ -18,6 +18,22 @@ describe('UserModel Data Checks', () => {
         expect(username).toEqual('foobar-admin');
         expect(createdAt).toBeTruthy();
         expect(updatedAt).toBeTruthy();
+        expect(user).toHaveProperty('roles');
+        expect(user).toHaveProperty('testPlanRuns');
+    });
+
+    it('should return valid user for id query with no associations', async () => {
+        const _id = 1;
+
+        const user = await UserService.getUserById(_id, null, [], []);
+        const { id, username, createdAt, updatedAt } = user;
+
+        expect(id).toEqual(_id);
+        expect(username).toEqual('foobar-admin');
+        expect(createdAt).toBeTruthy();
+        expect(updatedAt).toBeTruthy();
+        expect(user).not.toHaveProperty('roles');
+        expect(user).not.toHaveProperty('testPlanRuns');
     });
 
     it('should return valid user for username query', async () => {
@@ -162,8 +178,21 @@ describe('UserModel Data Checks', () => {
             limit: -1,
             enablePagination: true
         });
-        expect(result).toHaveProperty('page');
-        expect(result).toHaveProperty('data');
+
         expect(result.data.length).toBeGreaterThanOrEqual(1);
+        expect(result).toEqual(
+            expect.objectContaining({
+                page: 1,
+                pageSize: null,
+                resultsCount: expect.any(Number),
+                totalResultsCount: expect.any(Number),
+                pagesCount: expect.any(Number),
+                data: expect.arrayContaining([
+                    expect.objectContaining({
+                        id: expect.any(Number)
+                    })
+                ])
+            })
+        );
     });
 });

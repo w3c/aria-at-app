@@ -8,7 +8,7 @@ afterAll(async () => {
 });
 
 describe('AtModel Data Checks', () => {
-    it('should return valid at for id query', async () => {
+    it('should return valid at for id query with all associations', async () => {
         // A1
         const _id = 1;
 
@@ -24,6 +24,28 @@ describe('AtModel Data Checks', () => {
                 id: expect.any(Number)
             })
         );
+        expect(at).toHaveProperty('versions');
+        expect(at).toHaveProperty('modes');
+    });
+
+    it('should return valid at for id query with no associations', async () => {
+        // A1
+        const _id = 1;
+
+        // A2
+        const at = await AtService.getAtById(_id, null, [], []);
+        const { id, name } = at;
+
+        // A3
+        expect(id).toEqual(_id);
+        expect(at).toEqual(
+            expect.objectContaining({
+                name,
+                id: expect.any(Number)
+            })
+        );
+        expect(at).not.toHaveProperty('versions');
+        expect(at).not.toHaveProperty('modes');
     });
 
     it('should not be valid at query', async () => {
@@ -192,7 +214,7 @@ describe('AtModel Data Checks', () => {
 });
 
 describe('AtVersionModel Data Checks', () => {
-    it('should return valid atVersion with at for query', async () => {
+    it('should return valid atVersion with at for query with all associations', async () => {
         // A1
         const _atId = 1;
         const _version = '2021.2103.174';
@@ -218,6 +240,35 @@ describe('AtVersionModel Data Checks', () => {
                 })
             })
         );
+        expect(atVersion).toHaveProperty('at');
+    });
+
+    it('should return valid atVersion for query with no associations', async () => {
+        // A1
+        const _atId = 1;
+        const _version = '2021.2103.174';
+
+        // A2
+        const atVersion = await AtService.getAtVersionByQuery(
+            {
+                atId: _atId,
+                version: _version
+            },
+            null,
+            []
+        );
+        const { atId, version } = atVersion;
+
+        // A3
+        expect(atId).toBeTruthy();
+        expect(version).toBeTruthy();
+        expect(atVersion).toEqual(
+            expect.objectContaining({
+                atId: _atId,
+                version: _version
+            })
+        );
+        expect(atVersion).not.toHaveProperty('at');
     });
 
     it('should not be valid atVersion query', async () => {
@@ -391,7 +442,7 @@ describe('AtVersionModel Data Checks', () => {
 });
 
 describe('AtModeModel Data Checks', () => {
-    it('should return valid atMode with at for query', async () => {
+    it('should return valid atMode with at for query with all associations', async () => {
         // A1
         const _atId = 1;
         const _name = 'reading';
@@ -417,6 +468,35 @@ describe('AtModeModel Data Checks', () => {
                 })
             })
         );
+        expect(atMode).toHaveProperty('at');
+    });
+
+    it('should return valid atMode for query with no associations', async () => {
+        // A1
+        const _atId = 1;
+        const _name = 'reading';
+
+        // A2
+        const atMode = await AtService.getAtModeByQuery(
+            {
+                atId: _atId,
+                name: _name
+            },
+            null,
+            []
+        );
+        const { atId, name } = atMode;
+
+        // A3
+        expect(atId).toBeTruthy();
+        expect(name).toBeTruthy();
+        expect(atMode).toEqual(
+            expect.objectContaining({
+                atId: _atId,
+                name: _name
+            })
+        );
+        expect(atMode).not.toHaveProperty('at');
     });
 
     it('should not be valid atMode query', async () => {

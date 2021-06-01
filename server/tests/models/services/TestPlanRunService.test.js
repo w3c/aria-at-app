@@ -7,7 +7,7 @@ describe('TestPlanRunModel Data Checks', () => {
         await sequelize.close();
     });
 
-    it('should return valid testPlanRun for id query', async () => {
+    it('should return valid testPlanRun for id query with all associations', async () => {
         const _id = 1;
 
         const testPlanRun = await TestPlanRunService.getTestPlanRunById(_id);
@@ -17,6 +17,27 @@ describe('TestPlanRunModel Data Checks', () => {
         expect(testerUserId).toBeTruthy();
         expect(testPlanReportId).toBeTruthy();
         expect(testResults).toBeTruthy();
+        expect(testPlanRun).toHaveProperty('testPlanReport');
+        expect(testPlanRun).toHaveProperty('tester');
+    });
+
+    it('should return valid testPlanRun for id query with no associations', async () => {
+        const _id = 1;
+
+        const testPlanRun = await TestPlanRunService.getTestPlanRunById(
+            _id,
+            null,
+            [],
+            []
+        );
+        const { id, testerUserId, testPlanReportId, testResults } = testPlanRun;
+
+        expect(id).toEqual(_id);
+        expect(testerUserId).toBeTruthy();
+        expect(testPlanReportId).toBeTruthy();
+        expect(testResults).toBeTruthy();
+        expect(testPlanRun).not.toHaveProperty('testPlanReport');
+        expect(testPlanRun).not.toHaveProperty('tester');
     });
 
     it('should not be valid testPlanRun query', async () => {
@@ -188,8 +209,21 @@ describe('TestPlanRunModel Data Checks', () => {
             [],
             { enablePagination: true }
         );
-        expect(result).toHaveProperty('page');
-        expect(result).toHaveProperty('data');
+
         expect(result.data.length).toBeGreaterThanOrEqual(1);
+        expect(result).toEqual(
+            expect.objectContaining({
+                page: 1,
+                pageSize: expect.any(Number),
+                resultsCount: expect.any(Number),
+                totalResultsCount: expect.any(Number),
+                pagesCount: expect.any(Number),
+                data: expect.arrayContaining([
+                    expect.objectContaining({
+                        id: expect.any(Number)
+                    })
+                ])
+            })
+        );
     });
 });

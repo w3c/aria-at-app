@@ -1,47 +1,204 @@
-const { sequelize, Role } = require('../../../models');
+const { sequelize } = require('../../../models');
+const RoleService = require('../../../models/services/RoleService');
+const UserService = require('../../../models/services/UserService');
+const randomStringGenerator = require('../../util/random-character-generator');
+const { dbCleaner } = require('../../util/db-cleaner');
 
 describe('RoleModel Data Checks', () => {
     afterAll(async () => {
         await sequelize.close();
     });
 
-    it('should have name valid role name (admin)', () => {
-        return Role.findOne({
-            where: { name: 'admin' }
-        }).then(role => {
-            const name = role.get('name');
+    it('should have valid role named `admin`', async () => {
+        const _name = 'admin';
 
-            expect(name).toEqual('admin');
-        });
+        const role = await RoleService.getRoleByName(_name);
+        const { name } = role;
+
+        expect(name).toEqual(_name);
     });
 
-    it('should have name valid role name (tester)', () => {
-        return Role.findOne({
-            where: { name: 'tester' }
-        }).then(role => {
-            const name = role.get('name');
+    it('should contain valid role with users array', async () => {
+        const _name = 'admin';
 
-            expect(name).toEqual('tester');
-        });
+        const role = await RoleService.getRoleByName(_name);
+        const { name } = role;
+
+        expect(name).toEqual(_name);
+        expect(role).toHaveProperty('users');
+        expect(role.users).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    id: expect.any(Number),
+                    username: expect.any(String)
+                })
+            ])
+        );
     });
 
-    it('should only have 2 roles (admin & tester)', () => {
-        return Role.findAll({}).then(roles => {
-            expect(roles.length).toEqual(2);
-            expect(roles).toContainEqual(
-                expect.objectContaining({ name: 'admin' })
+    it('should contain valid role with no users array', async () => {
+        const _name = 'admin';
+
+        const role = await RoleService.getRoleByName(_name, null, []);
+        const { name } = role;
+
+        expect(name).toEqual(_name);
+        expect(role).not.toHaveProperty('users');
+    });
+
+    it('should have valid role named `tester`', async () => {
+        const _name = 'tester';
+
+        const role = await RoleService.getRoleByName(_name);
+        const { name } = role;
+
+        expect(name).toEqual(_name);
+    });
+
+    it('should only have 2 named roles (admin & tester)', async () => {
+        const roles = await RoleService.getRoles('');
+
+        expect(roles.length).toEqual(2);
+        expect(roles).toContainEqual(
+            expect.objectContaining({ name: 'admin' })
+        );
+        expect(roles).toContainEqual(
+            expect.objectContaining({ name: 'tester' })
+        );
+    });
+
+    it('should not return role for unknown role name', async () => {
+        const _name = 'guest';
+
+        const role = await RoleService.getRoleByName(_name);
+
+        expect(role).toBeNull();
+    });
+
+    it('should create, update and add a user to a new role', async () => {
+        await dbCleaner(async () => {
+            const _name = randomStringGenerator();
+            const _updatedName = randomStringGenerator();
+            const _user = 2;
+
+            const role = await RoleService.createRole({ name: _name });
+            const { name, users } = role;
+
+            const updatedRole = await RoleService.updateRole(_name, {
+                name: _updatedName
+            });
+            const { name: updatedName, users: updatedUsers } = updatedRole;
+
+            await UserService.addUserToRole(_user, updatedName);
+
+            const addedUserRole = await RoleService.getRoleByName(updatedName);
+            const {
+                name: addedUserRoleName,
+                users: addedUserRoleUsers
+            } = addedUserRole;
+
+            // after role created
+            expect(name).toEqual(_name);
+            expect(users).toHaveLength(0);
+
+            // after role name updated
+            expect(name).not.toEqual(updatedName);
+            expect(updatedName).toEqual(_updatedName);
+            expect(updatedUsers).toHaveLength(0);
+
+            // after role added to user
+            expect(addedUserRoleName).toEqual(updatedName);
+            expect(addedUserRoleUsers).toHaveLength(1);
+            expect(addedUserRoleUsers).toEqual(
+                expect.arrayContaining([
+                    expect.objectContaining({
+                        id: _user
+                    })
+                ])
             );
-            expect(roles).toContainEqual(
-                expect.objectContaining({ name: 'tester' })
-            );
         });
     });
 
-    it('should fail if no valid role name exists', () => {
-        return Role.findOne({
-            where: { name: 'guest' }
-        }).then(role => {
-            expect(role).toBeNull();
+    it('should create and remove new a role', async () => {
+        await dbCleaner(async () => {
+            const _name = randomStringGenerator();
+
+            const rolesBeforeCreated = await RoleService.getRoles('');
+            const rolesBeforeCreatedLength = rolesBeforeCreated.length;
+
+            await RoleService.createRole({ name: _name });
+
+            const rolesAfterCreated = await RoleService.getRoles('');
+            const rolesAfterCreatedLength = rolesAfterCreated.length;
+
+            await RoleService.removeRole(_name);
+
+            const rolesAfterDeleted = await RoleService.getRoles('');
+            const rolesAfterDeletedLength = rolesAfterDeleted.length;
+
+            // after role created
+            expect(rolesAfterCreatedLength).toEqual(
+                rolesBeforeCreatedLength + 1
+            );
+
+            // after role removed
+            expect(rolesAfterDeletedLength).toEqual(rolesBeforeCreatedLength);
         });
+    });
+
+    it('should return same role if no update params passed', async () => {
+        await dbCleaner(async () => {
+            const _name = 'admin';
+
+            const originalRole = await RoleService.getRoleByName(_name);
+            const updatedRole = await RoleService.updateRole(_name);
+
+            expect(originalRole).toHaveProperty('name');
+            expect(updatedRole).toHaveProperty('name');
+            expect(originalRole).toMatchObject(updatedRole);
+        });
+    });
+
+    it('should return collection of roles', async () => {
+        const result = await RoleService.getRoles('');
+        expect(result.length).toBeGreaterThanOrEqual(1);
+    });
+
+    it('should return collection of roles for name query', async () => {
+        const search = 'tes';
+
+        const result = await RoleService.getRoles(search, {});
+
+        expect(result).toBeInstanceOf(Array);
+        expect(result.length).toBeGreaterThanOrEqual(1);
+        expect(result).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    name: expect.stringMatching(/tes/gi)
+                })
+            ])
+        );
+    });
+
+    it('should return collection of roles with paginated structure', async () => {
+        const result = await RoleService.getRoles('', {}, ['name'], [], {
+            enablePagination: true
+        });
+
+        expect(result.data.length).toBeGreaterThanOrEqual(1);
+        expect(result).toEqual(
+            expect.objectContaining({
+                page: 1,
+                pageSize: expect.any(Number),
+                resultsCount: expect.any(Number),
+                totalResultsCount: expect.any(Number),
+                pagesCount: expect.any(Number),
+                data: expect.arrayContaining([
+                    expect.objectContaining({
+                        name: expect.any(String)
+                    })
+                ])
+            })
+        );
     });
 });
