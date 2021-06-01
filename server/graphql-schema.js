@@ -78,7 +78,7 @@ const graphqlSchema = gql`
         A least one argument is required. Determines what type of test plan to
         load. Will load the latest version matching the criteria.
         """
-        version(
+        testPlanVersion(
             status: TestPlanVersionStatus
             testPlanReportStatus: TestPlanReportStatus
             atGitSha: String
@@ -88,8 +88,8 @@ const graphqlSchema = gql`
         Loads multiple historic versions of the test plan, accepting filter
         criteria.
         """
-        versions(
-            status: TestPlanVersionsStatus
+        testPlanVersions(
+            status: TestPlanVersionStatus
             testPlanReportStatus: TestPlanReportStatus
         ): [TestPlanVersion]
     }
@@ -232,6 +232,17 @@ const graphqlSchema = gql`
         testPlanReport: ID
         testPlanRun: ID
         testResult: Int
+        passThroughResult: Int
+    }
+    type TraversalInputType {
+        testPlan: ID
+        testPlanVersion: ID
+        test: Int
+        passThrough: Int
+        testPlanReport: ID
+        testPlanRun: ID
+        testResult: Int
+        passThroughResult: Int
     }
 
     """
@@ -240,7 +251,7 @@ const graphqlSchema = gql`
     a deep tree of data into an array of simple, flat objects.
     """
     type Traversal {
-        traversalInput: TraversalInput!
+        traversalInput: TraversalInputType!
         testPlan: TestPlan
         testPlanVersion: TestPlanVersion
         test: Test
@@ -248,6 +259,7 @@ const graphqlSchema = gql`
         testPlanReport: TestPlanReport
         testPlanRun: TestPlanRun
         testResult: TestResult
+        passThroughResult: PassThroughResult
     }
 
     type Query {

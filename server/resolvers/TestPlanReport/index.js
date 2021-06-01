@@ -1,4 +1,4 @@
-const draftTestPlanRuns = require('./draftRunsResolver');
+const draftTestPlanRuns = require('./draftTestPlanRunsResolver');
 const conflicts = require('./conflictsResolver');
 const conflictCount = require('./conflictCountResolver');
 
