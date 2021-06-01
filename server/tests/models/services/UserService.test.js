@@ -15,7 +15,7 @@ describe('UserModel Data Checks', () => {
         const { id, username, createdAt, updatedAt } = user;
 
         expect(id).toEqual(_id);
-        expect(username).toEqual('foobar-admin');
+        expect(username).toEqual('esmeralda-baggins');
         expect(createdAt).toBeTruthy();
         expect(updatedAt).toBeTruthy();
         expect(user).toHaveProperty('roles');
@@ -29,7 +29,7 @@ describe('UserModel Data Checks', () => {
         const { id, username, createdAt, updatedAt } = user;
 
         expect(id).toEqual(_id);
-        expect(username).toEqual('foobar-admin');
+        expect(username).toEqual('esmeralda-baggins');
         expect(createdAt).toBeTruthy();
         expect(updatedAt).toBeTruthy();
         expect(user).not.toHaveProperty('roles');
@@ -38,7 +38,7 @@ describe('UserModel Data Checks', () => {
 
     it('should return valid user for username query', async () => {
         const _id = 1;
-        const _username = 'foobar-admin';
+        const _username = 'esmeralda-baggins';
 
         const user = await UserService.getUserByUsername(_username);
         const { id, username, createdAt, updatedAt } = user;

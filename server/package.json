@@ -11,6 +11,7 @@
     "lint": "eslint --ext js,jsx .",
     "db-import-tests:dev": "DOTENV_CONFIG_PATH=../config/dev.env node -r dotenv/config ./scripts/import-tests/index.js",
     "db-import-tests:test": "DOTENV_CONFIG_PATH=../config/test.env node -r dotenv/config ./scripts/import-tests/index.js",
+    "db-populate-sample-data:dev": "DOTENV_CONFIG_PATH=../config/dev.env node -r dotenv/config ./scripts/import-tests/populate-test-data.js",
     "db-populate-sample-data:test": "DOTENV_CONFIG_PATH=../config/test.env node -r dotenv/config ./scripts/import-tests/populate-test-data.js"
   },
   "repository": {

@@ -4,9 +4,7 @@ const {
 const {
     getTestPlanReportById
 } = require('../models/services/TestPlanReportService');
-const {
-    getTestPlanRunById
-} = require('../models/services/TestPlanReportService');
+const { getTestPlanRunById } = require('../models/services/TestPlanRunService');
 
 const populateLocationOfDataResolver = async (_, { locationOfData }) => {
     const {
@@ -36,11 +34,11 @@ const populateLocationOfDataResolver = async (_, { locationOfData }) => {
 
     if (testPlanRunId) {
         testPlanRun = await getTestPlanRunById(testPlanRunId);
-        testPlanReport = testPlanRun.testPlanReport;
-        testPlanVersion = testPlanReport.testPlanVersion;
+        testPlanReport = testPlanRun && testPlanRun.testPlanReport;
+        testPlanVersion = testPlanReport && testPlanReport.testPlanVersion;
     } else if (testPlanReportId) {
         testPlanReport = await getTestPlanReportById(testPlanReportId);
-        testPlanVersion = testPlanReport.testPlanVersion;
+        testPlanVersion = testPlanReport && testPlanReport.testPlanVersion;
     } else if (testPlanVersionId) {
         testPlanVersion = await getTestPlanVersionById(testPlanVersionId);
     }
@@ -48,7 +46,9 @@ const populateLocationOfDataResolver = async (_, { locationOfData }) => {
     if (!testPlanVersion) {
         // TODO: This error can be removed when a TestPlan table is added.
         throw new Error(
-            'LocationOfData without a test plan version is not yet implemented.'
+            'LocationOfData without an associated test plan version is not ' +
+                'yet implemented. Note you may see this error if the data ' +
+                'you requested could not be found.'
         );
     }
     testPlan = { id: testPlanVersion.metadata.directory };
@@ -63,7 +63,7 @@ const populateLocationOfDataResolver = async (_, { locationOfData }) => {
         idsContradict(testPlanRunId, testPlanRun)
     ) {
         throw new Error(
-            'You provided IDs for both a parent and child model, implying a' +
+            'You provided IDs for both a parent and child model, implying a ' +
                 'relationship, but no relationship was found'
         );
     }

@@ -2,7 +2,9 @@ const ModelService = require('./ModelService');
 const {
     TEST_PLAN_RUN_ATTRIBUTES,
     TEST_PLAN_REPORT_ATTRIBUTES,
-    USER_ATTRIBUTES
+    USER_ATTRIBUTES,
+    TEST_PLAN_VERSION_ATTRIBUTES,
+    TEST_PLAN_TARGET_ATTRIBUTES
 } = require('./helpers');
 const { TestPlanRun } = require('../');
 
@@ -10,11 +12,41 @@ const { TestPlanRun } = require('../');
 
 /**
  * @param {string[]} testPlanReportAttributes - TestPlanReport attributes
+ * @param {string[]} testPlanVersionAttributes - TestPlanVersion attributes
+ * @param {string[]} testPlanTargetAttributes - TestPlanTarget attributes
  * @returns {{association: string, attributes: string[]}}
  */
-const testPlanReportAssociation = testPlanReportAttributes => ({
+const testPlanReportAssociation = (
+    testPlanReportAttributes,
+    testPlanVersionAttributes,
+    testPlanTargetAttributes
+) => ({
     association: 'testPlanReport',
-    attributes: testPlanReportAttributes
+    attributes: testPlanReportAttributes,
+    include: [
+        // eslint-disable-next-line no-use-before-define
+        testPlanVersionAssociation(testPlanVersionAttributes),
+        // eslint-disable-next-line no-use-before-define
+        testPlanTargetAssociation(testPlanTargetAttributes)
+    ]
+});
+
+/**
+ * @param {string[]} testPlanVersionAttributes - TestPlanVersion attributes
+ * @returns {{association: string, attributes: string[]}}
+ */
+const testPlanVersionAssociation = testPlanVersionAttributes => ({
+    association: 'testPlanVersion',
+    attributes: testPlanVersionAttributes
+});
+
+/**
+ * @param {string[]} testPlanTargetAttributes - TestPlanTarget attributes
+ * @returns {{association: string, attributes: string[]}}
+ */
+const testPlanTargetAssociation = testPlanTargetAttributes => ({
+    association: 'testPlanTarget',
+    attributes: testPlanTargetAttributes
 });
 
 /**
@@ -39,10 +71,16 @@ const getTestPlanRunById = async (
     id,
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
+    testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
+    testPlanTargetAttributes = TEST_PLAN_TARGET_ATTRIBUTES,
     userAttributes = USER_ATTRIBUTES
 ) => {
     return ModelService.getById(TestPlanRun, id, testPlanRunAttributes, [
-        testPlanReportAssociation(testPlanReportAttributes),
+        testPlanReportAssociation(
+            testPlanReportAttributes,
+            testPlanVersionAttributes,
+            testPlanTargetAttributes
+        ),
         userAssociation(userAttributes)
     ]);
 };

@@ -76,8 +76,8 @@ INSERT INTO public."TestPlanReport" (id, "status", "testPlanTargetId", "testPlan
 -- Data for Name: User; Type: TABLE DATA; Schema: public; Owner: atr
 --
 
-INSERT INTO public."User" (id, username, "createdAt", "updatedAt") VALUES (1, 'foobar-admin', '2021-05-14 13:57:16.232-05', '2021-05-14 13:57:20.473-05');
-INSERT INTO public."User" (id, username, "createdAt", "updatedAt") VALUES (2, 'foobar-tester', '2021-05-14 13:57:16.232-05', '2021-05-14 13:57:20.473-05');
+INSERT INTO public."User" (id, username, "createdAt", "updatedAt") VALUES (1, 'esmeralda-baggins', '2021-05-14 13:57:16.232-05', '2021-05-14 13:57:20.473-05');
+INSERT INTO public."User" (id, username, "createdAt", "updatedAt") VALUES (2, 'tom-proudfeet', '2021-05-14 13:57:16.232-05', '2021-05-14 13:57:20.473-05');
 
 
 --
@@ -93,9 +93,9 @@ INSERT INTO public."TestPlanRun" (id, "testerUserId", "testPlanReportId", "testR
 -- Data for Name: UserRoles; Type: TABLE DATA; Schema: public; Owner: atr
 --
 
-INSERT INTO public."UserRoles" ("userId", "roleName") VALUES (1, 'admin');
-INSERT INTO public."UserRoles" ("userId", "roleName") VALUES (1, 'tester');
-INSERT INTO public."UserRoles" ("userId", "roleName") VALUES (2, 'tester');
+INSERT INTO public."UserRoles" ("userId", "roleName") VALUES (1, 'ADMIN');
+INSERT INTO public."UserRoles" ("userId", "roleName") VALUES (1, 'TESTER');
+INSERT INTO public."UserRoles" ("userId", "roleName") VALUES (2, 'TESTER');
 
 
 --
