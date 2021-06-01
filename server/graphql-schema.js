@@ -101,6 +101,8 @@ const graphqlSchema = gql`
         gitSha: String!
         gitMessage: String!
         semanticVersion: String
+        # TODO: determine if isLatest is needed
+        # isLatest: Boolean
         updatedAt: Timestamp!
         exampleUrl: String!
         tests: [Test]!
@@ -221,20 +223,29 @@ const graphqlSchema = gql`
         testPlanTarget: ID!
     }
 
-    """
-    A reference to a specific position in the graph.
-    """
-    input TraversalInput {
+    input LocationOfDataInput {
         testPlan: ID
         testPlanVersion: ID
+        """
+        The index of the test
+        """
         test: Int
+        """
+        The index of the passThrough
+        """
         passThrough: Int
         testPlanReport: ID
         testPlanRun: ID
+        """
+        The index of the testResult
+        """
         testResult: Int
+        """
+        The index of the passThroughResult
+        """
         passThroughResult: Int
     }
-    type TraversalInputType {
+    type LocationOfData {
         testPlan: ID
         testPlanVersion: ID
         test: Int
@@ -245,13 +256,8 @@ const graphqlSchema = gql`
         passThroughResult: Int
     }
 
-    """
-    Loads data at a specific position in the graph, useful for exploring data,
-    identifying the location of conflicts, or, as in the test queue, flattening
-    a deep tree of data into an array of simple, flat objects.
-    """
-    type Traversal {
-        traversalInput: TraversalInputType!
+    type PopulatedLocationOfData {
+        locationOfData: LocationOfData!
         testPlan: TestPlan
         testPlanVersion: TestPlanVersion
         test: Test
@@ -268,7 +274,14 @@ const graphqlSchema = gql`
         testPlan(id: ID!): TestPlan
         testPlanReport(id: ID!): TestPlanReport
         testPlanTargets: [TestPlanTarget]!
-        loadTraversal(traversal: TraversalInput!): Traversal!
+        """
+        Loads data at a specific position in the graph, useful for exploring data,
+        identifying the location of conflicts, or, as in the test queue, flattening
+        a deep tree of data into an array of simple, flat objects.
+        """
+        populateLocationOfData(
+            locationOfData: LocationOfDataInput!
+        ): PopulatedLocationOfData!
     }
 
     # Mutation-specific types below

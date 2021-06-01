@@ -8,7 +8,7 @@ const {
     getTestPlanRunById
 } = require('../models/services/TestPlanReportService');
 
-const loadTraversal = async (_, { traversal }) => {
+const populateLocationOfDataResolver = async (_, { locationOfData }) => {
     const {
         testPlan: testPlanId,
         testPlanVersion: testPlanVersionId,
@@ -18,7 +18,7 @@ const loadTraversal = async (_, { traversal }) => {
         passThrough: passThroughIndex,
         testResult: testResultIndex,
         passThroughResult: passThroughResultIndex
-    } = traversal;
+    } = locationOfData;
 
     if (
         testIndex ||
@@ -48,7 +48,7 @@ const loadTraversal = async (_, { traversal }) => {
     if (!testPlanVersion) {
         // TODO: This error can be removed when a TestPlan table is added.
         throw new Error(
-            'Traversals without a test plan version are not yet implemented.'
+            'LocationOfData without a test plan version is not yet implemented.'
         );
     }
     testPlan = { id: testPlanVersion.metadata.directory };
@@ -69,7 +69,7 @@ const loadTraversal = async (_, { traversal }) => {
     }
 
     return {
-        traversalInput: {
+        locationOfData: {
             testPlan: testPlan && testPlan.id,
             testPlanVersion: testPlanVersion && testPlanVersion.id,
             testPlanReport: testPlanReport && testPlanReport.id,
@@ -82,4 +82,4 @@ const loadTraversal = async (_, { traversal }) => {
     };
 };
 
-module.exports = loadTraversal;
+module.exports = populateLocationOfDataResolver;
