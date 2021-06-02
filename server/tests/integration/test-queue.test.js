@@ -328,7 +328,7 @@ describe('test queue', () => {
                 );
                 const createdTestPlanTargets = created.filter(
                     ({ locationOfData }) =>
-                        locationOfData.testPlanTarget &&
+                        locationOfData.testPlanTargetId &&
                         !(locationOfData.browserId || locationOfData.atId)
                 );
                 const createdTestPlanReports = created.filter(
