@@ -292,6 +292,9 @@ describe('test queue', () => {
                                     }
                                     browserVersion
                                 }
+                                testPlanVersion {
+                                    id
+                                }
                             }
                             created {
                                 locationOfData {
@@ -307,7 +310,11 @@ describe('test queue', () => {
                     }
                 `);
                 const {
-                    populatedData: { testPlanReport, testPlanTarget },
+                    populatedData: {
+                        testPlanReport,
+                        testPlanTarget,
+                        testPlanVersion
+                    },
                     created
                 } = result.findOrCreateTestPlanReport;
                 const createdBrowserVersions = created.filter(
@@ -331,6 +338,7 @@ describe('test queue', () => {
                 return {
                     testPlanReport,
                     testPlanTarget,
+                    testPlanVersion,
                     created,
                     createdBrowserVersions,
                     createdAtVersions,
@@ -344,21 +352,30 @@ describe('test queue', () => {
             const second = await mutationToTest();
 
             // A3
-            expect(first.testPlanReport).objectContaining({
-                id: expect.anything(),
-                status: 'DRAFT',
-                inTestQueue: true
-            });
-            expect(first.testPlanTarget).objectContaining({
-                at: expect.objectContaining({
-                    id: atId
-                }),
-                atVersion: unknownAtVersion,
-                browser: expect.objectContaining({
-                    id: browserId
-                }),
-                browserVersion: unknownBrowserVersion
-            });
+            expect(first.testPlanReport).toEqual(
+                expect.objectContaining({
+                    id: expect.anything(),
+                    status: 'DRAFT',
+                    inTestQueue: true
+                })
+            );
+            expect(first.testPlanVersion).toEqual(
+                expect.objectContaining({
+                    testPlanVersionId
+                })
+            );
+            expect(first.testPlanTarget).toEqual(
+                expect.objectContaining({
+                    at: expect.objectContaining({
+                        id: atId
+                    }),
+                    atVersion: unknownAtVersion,
+                    browser: expect.objectContaining({
+                        id: browserId
+                    }),
+                    browserVersion: unknownBrowserVersion
+                })
+            );
             expect(first.created.length).toBe(4);
             expect(first.createdBrowserVersions.length).toBe(1);
             expect(first.createdBrowserVersions.browserVersion).toBe(
@@ -369,12 +386,16 @@ describe('test queue', () => {
             expect(first.createdTestPlanTargets.length).toBe(1);
             expect(first.createdTestPlanReports.length).toBe(1);
 
-            expect(second.testPlanReport).objectContaining({
-                id: first.testPlanReport.id
-            });
-            expect(second.testPlanTarget).objectContaining({
-                id: first.testPlanTarget.id
-            });
+            expect(second.testPlanReport).toEqual(
+                expect.objectContaining({
+                    id: first.testPlanReport.id
+                })
+            );
+            expect(second.testPlanTarget).toEqual(
+                expect.objectContaining({
+                    id: first.testPlanTarget.id
+                })
+            );
             expect(second.created.length).toBe(0);
         });
     });
