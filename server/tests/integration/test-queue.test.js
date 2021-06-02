@@ -101,8 +101,8 @@ describe('test queue', () => {
             const result = await mutate(gql`
                 mutation {
                     testPlanReport(id: ${testReportId}) {
-                        assignTester(user: ${newTesterId}) {
-                            resultingTestPlanReport {
+                        assignTester(userId: ${newTesterId}) {
+                            testPlanReport {
                                 draftTestPlanRuns {
                                     tester {
                                         id
@@ -119,10 +119,8 @@ describe('test queue', () => {
             const resultTesterIds = result
                 .testPlanReport
                 .assignTester
-                .resultingTestPlanReport
-                .draftTestPlanRuns.map(
-                    (testPlanRun) => testPlanRun.tester.id
-                );
+                .testPlanReport
+                .draftTestPlanRuns.map(testPlanRun => testPlanRun.tester.id);
 
             // A3
             expect(previousTesterIds).not.toEqual(
@@ -158,8 +156,8 @@ describe('test queue', () => {
             const result = await mutate(gql`
                 mutation {
                     testPlanReport(id: ${testPlanReportId}) {
-                        deleteTestPlanRun(user: ${previousTesterId}) {
-                            resultingTestPlanReport {
+                        deleteTestPlanRun(userId: ${previousTesterId}) {
+                            testPlanReport {
                                 draftTestPlanRuns {
                                     tester {
                                         username
@@ -175,10 +173,8 @@ describe('test queue', () => {
             const resultTesterIds = result
                 .testPlanReport
                 .deleteTestPlanRun
-                .resultingTestPlanReport
-                .draftTestPlanRuns.map(
-                    (run) => run.tester.id
-                );
+                .testPlanReport
+                .draftTestPlanRuns.map((run) => run.tester.id);
 
             // A3
             expect(previousTesterIds).toEqual(
@@ -206,7 +202,7 @@ describe('test queue', () => {
                 mutation {
                     testPlanReport(id: ${testPlanReportId}) {
                         updateStatus(status: FINALIZED) {
-                            resultingTestPlanReport {
+                            testPlanReport {
                                 status
                             }
                         }
@@ -214,11 +210,172 @@ describe('test queue', () => {
                 }
             `);
             const resultStatus =
-                result.testPlanReport.updateStatus.resultingTestPlanReport
-                    .status;
+                result.testPlanReport.updateStatus.testPlanReport.status;
 
             expect(previousStatus).not.toBe('FINALIZED');
             expect(resultStatus).toBe('FINALIZED');
+        });
+    });
+
+    it('queries for information needed to add reports', async () => {
+        const result = await query(gql`
+            ats {
+                id
+                name
+                atVersions
+            }
+            browsers {
+                id
+                name
+                browserVersions
+            }
+            testPlans {
+                latestTestPlanVersion(status: FINALIZED) {
+                    id
+                    title
+                }
+            }
+        `);
+
+        expect(result).toEqual(
+            expect.objectContaining({
+                ats: expect.arrayContaining([
+                    expect.objectContaining({
+                        id: expect.anything(),
+                        name: 'NVDA',
+                        atVersions: expect.arrayContaining(['2020.1'])
+                    })
+                ]),
+                browsers: expect.araryContaining([
+                    expect.objectContaining({
+                        id: expect.anything(),
+                        name: 'Firefox',
+                        browserVersions: expect.arrayContaining(['88.0'])
+                    })
+                ])
+            })
+        );
+    });
+
+    it('supports adding reports', async () => {
+        await dbCleaner(async () => {
+            // A1
+            const testPlanId = 1;
+            const atId = 1;
+            const unknownAtVersion = '2221.1';
+            const browserId = 1;
+            const unknownBrowserVersion = '9999.0';
+            const mutationToTest = async () => {
+                const result = await mutate(gql`
+                    mutation {
+                        findOrCreateTestPlanReport(input: {
+                            testPlanId: ${testPlanId}
+                            testPlanTarget: {
+                                atId: ${atId}
+                                atVersion: ${unknownAtVersion}
+                                browserId: ${browserId}
+                                browserVersion: ${unknownBrowserVersion}
+                            }
+                        }) {
+                            populatedData {
+                                testPlanReport {
+                                    id
+                                    status
+                                }
+                                testPlanTarget {
+                                    at {
+                                        id
+                                    }
+                                    atVersion
+                                    browser {
+                                        id
+                                    }
+                                    browserVersion
+                                }
+                            }
+                            created {
+                                locationOfData {
+                                    testPlanReportId
+                                    testPlanTargetId
+                                    browserId
+                                    browserVersion
+                                    atId
+                                    atVersion
+                                }
+                            }
+                        }
+                    }
+                `);
+                const {
+                    populatedData: { testPlanReport, testPlanTarget },
+                    created
+                } = result.findOrCreateTestPlanReport;
+                const createdBrowserVersions = created.filter(
+                    ({ locationOfData }) => {
+                        return locationOfData.browserVersion;
+                    }
+                );
+                const createdAtVersions = created.filter(
+                    ({ locationOfData }) => locationOfData.atVersion
+                );
+                const createdTestPlanTargets = created.filter(
+                    ({ locationOfData }) =>
+                        locationOfData.testPlanTarget &&
+                        !(locationOfData.browserId || locationOfData.atId)
+                );
+                const createdTestPlanReports = created.filter(
+                    ({ locationOfData }) =>
+                        locationOfData.testPlanReportId &&
+                        !locationOfData.testPlanTargetId
+                );
+                return {
+                    testPlanReport,
+                    testPlanTarget,
+                    created,
+                    createdBrowserVersions,
+                    createdAtVersions,
+                    createdTestPlanTargets,
+                    createdTestPlanReports
+                };
+            };
+
+            // A2
+            const first = await mutationToTest();
+            const second = await mutationToTest();
+
+            // A3
+            expect(first.testPlanReport).objectContaining({
+                id: expect.anything(),
+                status: 'DRAFT',
+                inTestQueue: true
+            });
+            expect(first.testPlanTarget).objectContaining({
+                at: expect.objectContaining({
+                    id: atId
+                }),
+                atVersion: unknownAtVersion,
+                browser: expect.objectContaining({
+                    id: browserId
+                }),
+                browserVersion: unknownBrowserVersion
+            });
+            expect(first.created.length).toBe(4);
+            expect(first.createdBrowserVersions.length).toBe(1);
+            expect(first.createdBrowserVersions.browserVersion).toBe(
+                unknownBrowserVersion
+            );
+            expect(first.createdAtVersions.length).toBe(1);
+            expect(first.createdAtVersions.atVersion).toBe(unknownAtVersion);
+            expect(first.createdTestPlanTargets.length).toBe(1);
+            expect(first.createdTestPlanReports.length).toBe(1);
+
+            expect(second.testPlanReport).objectContaining({
+                id: first.testPlanReport.id
+            });
+            expect(second.testPlanTarget).objectContaining({
+                id: first.testPlanTarget.id
+            });
+            expect(second.created.length).toBe(0);
         });
     });
 });

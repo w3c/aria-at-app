@@ -32,6 +32,7 @@ const graphqlSchema = gql`
     }
 
     type At {
+        id: ID!
         name: String!
         modes: [AtMode]!
         versions: [String]!
@@ -52,9 +53,9 @@ const graphqlSchema = gql`
     }
 
     input TestPlanTargetInput {
-        at: ID!
+        atId: ID!
         atVersion: String!
-        browser: ID!
+        browserId: ID!
         browserVersion: String!
     }
 
@@ -108,7 +109,6 @@ const graphqlSchema = gql`
         tests: [Test]!
         testCount: Int!
         testPlanReports(status: TestPlanReportStatus): [TestPlanReport]!
-        testPlanReport(id: ID, testPlanTarget: ID): TestPlanReport
     }
 
     interface Test {
@@ -203,6 +203,7 @@ const graphqlSchema = gql`
     type TestPlanReport {
         id: ID!
         status: TestPlanReportStatus!
+        inTestQueue: Boolean!
         supportPercent: Int!
         optionalSupportPercent: Int!
         testPlanTarget: TestPlanTarget!
@@ -220,32 +221,42 @@ const graphqlSchema = gql`
     }
 
     input TestPlanReportInput {
-        testPlan: ID!
-        testPlanTarget: ID!
+        testPlanVersionId: ID!
+        testPlanTarget: TestPlanTargetInput
     }
 
     input LocationOfDataInput {
-        testPlan: ID
-        testPlanVersion: ID
-        test: Int
-        passThrough: Int
-        testPlanReport: ID
-        testPlanRun: ID
-        testResult: Int
-        passThroughResult: Int
+        testPlanId: ID
+        testPlanVersionId: ID
+        testIndex: Int
+        passThroughIndex: Int
+        testPlanReportId: ID
+        testPlanTargetId: ID
+        browserId: ID
+        browserVersion: String
+        atId: ID
+        atVersion: String
+        testPlanRunId: ID
+        testResultIndex: Int
+        passThroughResultIndex: Int
     }
     type LocationOfData {
-        testPlan: ID
-        testPlanVersion: ID
-        test: Int
-        passThrough: Int
-        testPlanReport: ID
-        testPlanRun: ID
-        testResult: Int
-        passThroughResult: Int
+        testPlanId: ID
+        testPlanVersionId: ID
+        testIndex: Int
+        passThroughIndex: Int
+        testPlanReportId: ID
+        testPlanTargetId: ID
+        browserId: ID
+        browserVersion: String
+        atId: ID
+        atVersion: String
+        testPlanRunId: ID
+        testResultIndex: Int
+        passThroughResultIndex: Int
     }
 
-    type PopulatedLocationOfData {
+    type PopulatedData {
         locationOfData: LocationOfData!
         testPlan: TestPlan
         testPlanVersion: TestPlanVersion
@@ -261,41 +272,31 @@ const graphqlSchema = gql`
         me: User
         testPlans: [TestPlan]!
         testPlan(id: ID!): TestPlan
-        testPlanReport(id: ID!): TestPlanReport
+        testPlanReport(id: ID): TestPlanReport
+        testPlanReports(inTestQueue: Boolean!): [TestPlanReport]!
         testPlanTargets: [TestPlanTarget]!
-        populateLocationOfData(
-            locationOfData: LocationOfDataInput!
-        ): PopulatedLocationOfData!
+        populateData(locationOfData: LocationOfDataInput!): PopulatedData!
     }
 
     # Mutation-specific types below
 
     type TestPlanReportOperations {
-        assignTester(user: ID!): TestPlanReportOperationResult!
-        deleteTestPlanRun(user: ID!): TestPlanReportOperationResult!
-        updateStatus(
-            status: TestPlanReportStatus!
-        ): TestPlanReportOperationResult!
+        assignTester(userId: ID!): PopulatedData!
+        deleteTestPlanRun(userId: ID!): PopulatedData!
+        updateStatus(status: TestPlanReportStatus!): PopulatedData!
+        removeFromTestQueue: PopulatedData!
     }
 
-    type TestPlanReportOperationResult {
-        resultingTestPlanReport: TestPlanReport!
-    }
-
-    type TestPlanTargetOperations {
-        delete: NoResponse # UI should warn this will delete any runs as well
-        resultingTestPlanTarget: TestPlanTarget
+    type findOrCreateResult {
+        populatedData: PopulatedData!
+        created: [PopulatedData]!
     }
 
     type Mutation {
-        createTestPlanReport(
+        findOrCreateTestPlanReport(
             input: TestPlanReportInput!
-        ): TestPlanReportOperations!
-        createTestPlanTarget(
-            input: TestPlanTargetInput!
-        ): TestPlanTargetOperations!
+        ): findOrCreateResult!
         testPlanReport(id: ID!): TestPlanReportOperations!
-        testPlanTarget(id: ID!): TestPlanTargetOperations!
     }
 `;
 
