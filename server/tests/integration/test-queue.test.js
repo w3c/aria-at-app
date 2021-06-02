@@ -281,6 +281,7 @@ describe('test queue', () => {
                                 testPlanReport {
                                     id
                                     status
+                                    inTestQueue
                                 }
                                 testPlanTarget {
                                     at {
@@ -361,7 +362,7 @@ describe('test queue', () => {
             );
             expect(first.testPlanVersion).toEqual(
                 expect.objectContaining({
-                    testPlanVersionId
+                    id: testPlanVersionId
                 })
             );
             expect(first.testPlanTarget).toEqual(
@@ -378,11 +379,11 @@ describe('test queue', () => {
             );
             expect(first.created.length).toBe(4);
             expect(first.createdBrowserVersions.length).toBe(1);
-            expect(first.createdBrowserVersions.browserVersion).toBe(
+            expect(first.createdBrowserVersions[0].browserVersion).toBe(
                 unknownBrowserVersion
             );
             expect(first.createdAtVersions.length).toBe(1);
-            expect(first.createdAtVersions.atVersion).toBe(unknownAtVersion);
+            expect(first.createdAtVersions[0].atVersion).toBe(unknownAtVersion);
             expect(first.createdTestPlanTargets.length).toBe(1);
             expect(first.createdTestPlanReports.length).toBe(1);
 
@@ -394,6 +395,11 @@ describe('test queue', () => {
             expect(second.testPlanTarget).toEqual(
                 expect.objectContaining({
                     id: first.testPlanTarget.id
+                })
+            );
+            expect(second.testPlanVersion).toEqual(
+                expect.objectContaining({
+                    id: first.testPlanVersion.id
                 })
             );
             expect(second.created.length).toBe(0);
