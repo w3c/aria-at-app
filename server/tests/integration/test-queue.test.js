@@ -260,7 +260,7 @@ describe('test queue', () => {
     it('supports adding reports', async () => {
         await dbCleaner(async () => {
             // A1
-            const testPlanId = 1;
+            const testPlanVersionId = 1;
             const atId = 1;
             const unknownAtVersion = '2221.1';
             const browserId = 1;
@@ -269,7 +269,7 @@ describe('test queue', () => {
                 const result = await mutate(gql`
                     mutation {
                         findOrCreateTestPlanReport(input: {
-                            testPlanId: ${testPlanId}
+                            testPlanVersionId: ${testPlanVersionId}
                             testPlanTarget: {
                                 atId: ${atId}
                                 atVersion: ${unknownAtVersion}

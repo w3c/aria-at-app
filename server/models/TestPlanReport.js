@@ -26,6 +26,10 @@ module.exports = function(sequelize, DataTypes) {
                 allowNull: false,
                 defaultValue: STATUS.DRAFT
             },
+            isInQueue: {
+                type: DataTypes.BOOLEAN,
+                allowNull: false
+            },
             testPlanTargetId: { type: DataTypes.INTEGER },
             testPlanVersionId: { type: DataTypes.INTEGER },
             createdAt: {
