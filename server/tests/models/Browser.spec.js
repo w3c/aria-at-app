@@ -23,7 +23,7 @@ describe('BrowserModel', () => {
 
     describe('associations', () => {
         // A1
-        const BROWSER_VERSION_ASSOCIATION = { as: 'versions' };
+        const BROWSER_VERSION_ASSOCIATION = { as: 'browserVersions' };
 
         // A2
         beforeAll(() => {

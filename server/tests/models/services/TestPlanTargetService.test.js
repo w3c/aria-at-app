@@ -17,17 +17,17 @@ describe('TestPlanTargetModel data Checks', () => {
         const {
             id,
             title,
-            at,
-            browser,
+            atId,
+            browserId,
             atVersion,
             browserVersion
         } = testPlanTarget;
 
         expect(id).toEqual(_id);
         expect(title).toEqual('NVDA 2020.4 with Chrome 91.0.4472');
-        expect(at).toBeTruthy();
+        expect(atId).toBeTruthy();
         expect(atVersion).toBeTruthy();
-        expect(browser).toBeTruthy();
+        expect(browserId).toBeTruthy();
         expect(browserVersion).toBeTruthy();
     });
 
@@ -135,8 +135,8 @@ describe('TestPlanTargetModel data Checks', () => {
             const _title = null;
             const _at = 'NVDA'; // 2
             const _browser = 'Chrome'; // 2
-            const _atVersion = 'non.existent.at.version';
-            const _browserVersion = 'non.existent.browser.version';
+            const _atVersion = 'non.existent.at.atVersion';
+            const _browserVersion = 'non.existent.browser.browserVersion';
 
             // A2
             const createTestPlanTarget = async () => {

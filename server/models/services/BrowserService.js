@@ -19,7 +19,7 @@ const browserAssociation = browserAttributes => ({
  * @returns {{association: string, attributes: string[]}}
  */
 const browserVersionAssociation = browserVersionAttributes => ({
-    association: 'versions',
+    association: 'browserVersions',
     attributes: browserVersionAttributes
 });
 

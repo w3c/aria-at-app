@@ -6,12 +6,14 @@ const testPlanReport = require('./testPlanReportResolver');
 const testPlanReports = require('./TestPlanReportsResolver');
 const findOrCreateTestPlanReport = require('./findOrCreateTestPlanReportResolver');
 const mutateTestPlanReport = require('./mutateTestPlanReportResolver');
-const populateLocationOfData = require('./populateLocationOfDataResolver');
+const populateData = require('./populateDataResolver');
+const At = require('./At');
+const Browser = require('./Browser');
 const TestPlanVersion = require('./TestPlanVersion');
 const TestPlanReport = require('./TestPlanReport');
 const TestPlanReportOperations = require('./TestPlanReportOperations');
-const TestPlanReportOperationResult = require('./TestPlanReportOperationResult');
 const TestPlanRun = require('./TestPlanRun');
+const PopulatedData = require('./PopulatedData');
 
 const resolvers = {
     Query: {
@@ -21,17 +23,19 @@ const resolvers = {
         testPlans,
         testPlanReport,
         testPlanReports,
-        populateLocationOfData
+        populateData
     },
     Mutation: {
         testPlanReport: mutateTestPlanReport,
         findOrCreateTestPlanReport
     },
+    At,
+    Browser,
     TestPlanVersion,
     TestPlanReport,
     TestPlanReportOperations,
-    TestPlanReportOperationResult,
-    TestPlanRun
+    TestPlanRun,
+    PopulatedData
 };
 
 module.exports = resolvers;

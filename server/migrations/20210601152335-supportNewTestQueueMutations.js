@@ -3,11 +3,26 @@
 module.exports = {
     up: (queryInterface /* , Sequelize */) => {
         return queryInterface.sequelize.transaction(async transaction => {
-            await queryInterface.renameColumn('TestPlanTarget', 'at', 'atId');
+            await queryInterface.renameColumn('TestPlanTarget', 'at', 'atId', {
+                transaction
+            });
             await queryInterface.renameColumn(
                 'TestPlanTarget',
                 'browser',
-                'browserId'
+                'browserId',
+                { transaction }
+            );
+            await queryInterface.renameColumn(
+                'BrowserVersion',
+                'version',
+                'browserVersion',
+                { transaction }
+            );
+            await queryInterface.renameColumn(
+                'AtVersion',
+                'version',
+                'atVersion',
+                { transaction }
             );
             await queryInterface.bulkUpdate(
                 'Role',
@@ -38,11 +53,26 @@ module.exports = {
 
     down: (queryInterface /* , Sequelize */) => {
         return queryInterface.sequelize.transaction(async transaction => {
-            await queryInterface.renameColumn('TestPlanTarget', 'atId', 'at');
+            await queryInterface.renameColumn('TestPlanTarget', 'atId', 'at', {
+                transaction
+            });
             await queryInterface.renameColumn(
                 'TestPlanTarget',
                 'browserId',
-                'browser'
+                'browser',
+                { transaction }
+            );
+            await queryInterface.renameColumn(
+                'BrowserVersion',
+                'browserVersion',
+                'version',
+                { transaction }
+            );
+            await queryInterface.renameColumn(
+                'AtVersion',
+                'atVersion',
+                'version',
+                { transaction }
             );
             await queryInterface.bulkUpdate(
                 'Role',

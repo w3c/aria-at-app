@@ -1,14 +1,14 @@
 const {
     getTestPlanVersionById
-} = require('../models/services/TestPlanVersionService');
+} = require('../../models/services/TestPlanVersionService');
 const {
     getTestPlanReportById
-} = require('../models/services/TestPlanReportService');
-const { getTestPlanRunById } = require('../models/services/TestPlanRunService');
+} = require('../../models/services/TestPlanReportService');
+const {
+    getTestPlanRunById
+} = require('../../models/services/TestPlanRunService');
 
-const PopulatedLocationOfData = async ({
-    parentContext: { locationOfData }
-}) => {
+const PopulatedData = async ({ parentContext: { locationOfData } }) => {
     const {
         testPlanId,
         testPlanVersionId,
@@ -110,4 +110,4 @@ const PopulatedLocationOfData = async ({
     };
 };
 
-module.exports = PopulatedLocationOfData;
+module.exports = PopulatedData;

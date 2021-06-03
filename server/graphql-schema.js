@@ -21,8 +21,9 @@ const graphqlSchema = gql`
     }
 
     type Browser {
+        id: ID!
         name: String!
-        versions: [String]!
+        browserVersions: [String]!
     }
 
     enum AtMode {
@@ -35,7 +36,7 @@ const graphqlSchema = gql`
         id: ID!
         name: String!
         modes: [AtMode]!
-        versions: [String]!
+        atVersions: [String]!
     }
 
     """
@@ -222,7 +223,7 @@ const graphqlSchema = gql`
 
     input TestPlanReportInput {
         testPlanVersionId: ID!
-        testPlanTarget: TestPlanTargetInput
+        testPlanTarget: TestPlanTargetInput!
     }
 
     input LocationOfDataInput {
@@ -260,6 +261,11 @@ const graphqlSchema = gql`
         locationOfData: LocationOfData!
         testPlan: TestPlan
         testPlanVersion: TestPlanVersion
+        testPlanTarget: TestPlanTarget
+        at: At
+        browser: Browser
+        atVersion: String
+        browserVersion: String
         test: Test
         passThrough: PassThrough
         testPlanReport: TestPlanReport

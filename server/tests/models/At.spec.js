@@ -24,7 +24,7 @@ describe('AtModel', () => {
 
     describe('associations', () => {
         // A1
-        const AT_VERSION_ASSOCIATION = { as: 'versions' };
+        const AT_VERSION_ASSOCIATION = { as: 'atVersions' };
         const AT_MODE_ASSOCIATION = { as: 'modes' };
 
         // A2

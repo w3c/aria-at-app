@@ -185,13 +185,13 @@ const getOrCreateTestPlanReport = async (
         {
             get: getAtVersion,
             create: createAtVersion,
-            values: { atId, version: atVersion },
+            values: { atId, atVersion },
             returnAttributes: [null]
         },
         {
             get: getBrowserVersion,
             create: createBrowserVersion,
-            values: { browserId, version: browserVersion },
+            values: { browserId, browserVersion },
             returnAttributes: [null]
         },
         {
@@ -224,14 +224,14 @@ const getOrCreateTestPlanReport = async (
         createdLocationsOfData.push({
             testPlanReportId,
             testPlanTargetId,
-            atVersion: accumulatedResults[0][0].version
+            atVersion: accumulatedResults[0][0].atVersion
         });
     }
     if (accumulatedResults[1][1]) {
         createdLocationsOfData.push({
             testPlanReportId,
             testPlanTargetId,
-            browserVersion: accumulatedResults[1][0].version
+            browserVersion: accumulatedResults[1][0].browserVersion
         });
     }
     if (accumulatedResults[2][1]) {

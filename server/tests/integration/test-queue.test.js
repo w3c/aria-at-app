@@ -209,22 +209,24 @@ describe('test queue', () => {
         });
     });
 
-    it('queries for information needed to add reports', async () => {
+    it.only('queries for information needed to add reports', async () => {
         const result = await query(gql`
-            ats {
-                id
-                name
-                atVersions
-            }
-            browsers {
-                id
-                name
-                browserVersions
-            }
-            testPlans {
-                latestTestPlanVersion(status: FINALIZED) {
+            query {
+                ats {
                     id
-                    title
+                    name
+                    atVersions
+                }
+                browsers {
+                    id
+                    name
+                    browserVersions
+                }
+                testPlans {
+                    latestTestPlanVersion(status: FINALIZED) {
+                        id
+                        title
+                    }
                 }
             }
         `);
@@ -238,7 +240,7 @@ describe('test queue', () => {
                         atVersions: expect.arrayContaining(['2020.1'])
                     })
                 ]),
-                browsers: expect.araryContaining([
+                browsers: expect.arrayContaining([
                     expect.objectContaining({
                         id: expect.anything(),
                         name: 'Firefox',

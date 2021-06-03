@@ -13,7 +13,7 @@ module.exports = function(sequelize, DataTypes) {
                     key: 'id'
                 }
             },
-            version: {
+            browserVersion: {
                 type: DataTypes.TEXT,
                 allowNull: false,
                 primaryKey: true,

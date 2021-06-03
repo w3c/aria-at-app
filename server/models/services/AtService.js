@@ -23,7 +23,7 @@ const atAssociation = atAttributes => ({
  * @returns {{association: string, attributes: string[]}}
  */
 const atVersionAssociation = atVersionAttributes => ({
-    association: 'versions',
+    association: 'atVersions',
     attributes: atVersionAttributes
 });
 
@@ -161,13 +161,13 @@ const removeAt = async (id, deleteOptions = { truncate: false }) => {
  * @returns {Promise<*>}
  */
 const getAtVersionByQuery = async (
-    { atId, version },
+    { atId, atVersion },
     atVersionAttributes = AT_VERSION_ATTRIBUTES,
     atAttributes = AT_ATTRIBUTES
 ) => {
     return ModelService.getByQuery(
         AtVersion,
-        { atId, version },
+        { atId, atVersion },
         atVersionAttributes,
         [atAssociation(atAttributes)]
     );
@@ -195,7 +195,8 @@ const getAtVersions = async (
     // search and filtering options
     let where = { ...filter };
     const searchQuery = search ? `%${search}%` : '';
-    if (searchQuery) where = { ...where, version: { [Op.iLike]: searchQuery } };
+    if (searchQuery)
+        where = { ...where, atVersion: { [Op.iLike]: searchQuery } };
 
     return await ModelService.get(
         AtVersion,

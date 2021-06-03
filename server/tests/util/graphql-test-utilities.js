@@ -21,13 +21,27 @@ const failWithErrors = errors => {
     let formatted = '';
     errors.forEach(error => {
         const formattedType = error.name ? `${error.name}: ` : '';
+        const formattedPath = error.path
+            ? ` in ${JSON.stringify(error.path)} `
+            : '';
+        let formattedException = '';
+        if (error.extensions.exception) {
+            formattedException = 'Exception content:\n\n';
+            Object.entries(error.extensions.exception).forEach(
+                ([key, value]) => {
+                    formattedException += `${key}:\n${value}\n\n`;
+                }
+            );
+            delete error.extensions.exception;
+        }
         formatted +=
-            `GraphQL error in ${JSON.stringify(error.path)}:\n\n` +
+            `GraphQL error${formattedPath}:\n\n` +
             `${formattedType}${error.message}\n\n` +
             `(${JSON.stringify({
                 extensions: error.extensions,
                 location: error.location
-            })})`;
+            })})\n\n` +
+            formattedException;
     });
     throw new Error(formatted);
 };

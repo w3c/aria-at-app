@@ -21,7 +21,7 @@ module.exports = function(sequelize, DataTypes) {
         }
     );
 
-    Model.AT_VERSION_ASSOCIATION = { as: 'versions' };
+    Model.AT_VERSION_ASSOCIATION = { as: 'atVersions' };
 
     Model.AT_MODE_ASSOCIATION = { as: 'modes' };
 
