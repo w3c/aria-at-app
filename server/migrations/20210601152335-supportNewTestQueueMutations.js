@@ -1,16 +1,13 @@
 'use strict';
 
 module.exports = {
-    up: (queryInterface, Sequelize) => {
+    up: (queryInterface /* , Sequelize */) => {
         return queryInterface.sequelize.transaction(async transaction => {
-            await queryInterface.addColumn(
-                'TestPlanReport',
-                'inTestQueue',
-                {
-                    type: Sequelize.DataTypes.BOOLEAN,
-                    defaultValue: true
-                },
-                { transaction }
+            await queryInterface.renameColumn('TestPlanTarget', 'at', 'atId');
+            await queryInterface.renameColumn(
+                'TestPlanTarget',
+                'browser',
+                'browserId'
             );
             await queryInterface.bulkUpdate(
                 'Role',
@@ -41,7 +38,12 @@ module.exports = {
 
     down: (queryInterface /* , Sequelize */) => {
         return queryInterface.sequelize.transaction(async transaction => {
-            await queryInterface.removeColumn('TestPlanReport', 'inTestQueue');
+            await queryInterface.renameColumn('TestPlanTarget', 'atId', 'at');
+            await queryInterface.renameColumn(
+                'TestPlanTarget',
+                'browserId',
+                'browser'
+            );
             await queryInterface.bulkUpdate(
                 'Role',
                 { name: 'admin' },

@@ -13,28 +13,26 @@ describe('test queue', () => {
         const result = await query(
             gql`
                 query {
-                    testPlans {
-                        latestTestPlanVersion {
+                    testPlanReports(statuses: [DRAFT, IN_REVIEW]) {
+                        id
+                        status
+                        conflictCount
+                        testPlanTarget {
+                            id
+                            title
+                        }
+                        testPlanVersion {
                             title
                             gitSha
                             gitMessage
                             testCount
-                            testPlanReports {
-                                id
-                                status
-                                conflictCount
-                                testPlanTarget {
-                                    id
-                                    title
-                                }
-                                draftTestPlanRuns {
-                                    id
-                                    tester {
-                                        username
-                                    }
-                                    testResultCount
-                                }
+                        }
+                        draftTestPlanRuns {
+                            id
+                            tester {
+                                username
                             }
+                            testResultCount
                         }
                     }
                 }
@@ -42,36 +40,30 @@ describe('test queue', () => {
         );
 
         expect(result).toEqual({
-            testPlans: expect.arrayContaining([
+            testPlanReports: expect.arrayContaining([
                 {
-                    latestTestPlanVersion: {
+                    id: expect.anything(),
+                    status: expect.stringMatching(/^(DRAFT|IN_REVIEW)$/),
+                    conflictCount: expect.any(Number),
+                    testPlanTarget: {
+                        id: expect.anything(),
+                        title: expect.any(String)
+                    },
+                    testPlanVersion: {
                         gitSha: expect.any(String),
                         gitMessage: expect.any(String),
                         title: expect.any(String),
-                        testCount: expect.any(Number),
-                        testPlanReports: expect.arrayContaining([
-                            {
-                                id: expect.anything(),
-                                status: expect.stringMatching(
-                                    /^(DRAFT|IN_REVIEW|FINALIZED)$/
-                                ),
-                                conflictCount: expect.any(Number),
-                                testPlanTarget: {
-                                    id: expect.anything(),
-                                    title: expect.any(String)
-                                },
-                                draftTestPlanRuns: expect.arrayContaining([
-                                    {
-                                        id: expect.anything(),
-                                        testResultCount: expect.any(Number),
-                                        tester: expect.objectContaining({
-                                            username: expect.any(String)
-                                        })
-                                    }
-                                ])
-                            }
-                        ])
-                    }
+                        testCount: expect.any(Number)
+                    },
+                    draftTestPlanRuns: expect.arrayContaining([
+                        {
+                            id: expect.anything(),
+                            testResultCount: expect.any(Number),
+                            tester: expect.objectContaining({
+                                username: expect.any(String)
+                            })
+                        }
+                    ])
                 }
             ])
         });
@@ -281,7 +273,6 @@ describe('test queue', () => {
                                 testPlanReport {
                                     id
                                     status
-                                    inTestQueue
                                 }
                                 testPlanTarget {
                                     at {
@@ -319,9 +310,7 @@ describe('test queue', () => {
                     created
                 } = result.findOrCreateTestPlanReport;
                 const createdBrowserVersions = created.filter(
-                    ({ locationOfData }) => {
-                        return locationOfData.browserVersion;
-                    }
+                    ({ locationOfData }) => locationOfData.browserVersion
                 );
                 const createdAtVersions = created.filter(
                     ({ locationOfData }) => locationOfData.atVersion

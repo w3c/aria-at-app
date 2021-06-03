@@ -21,7 +21,7 @@ describe('TestPlanReportModel Data Checks', () => {
         } = testPlanReport;
 
         expect(id).toEqual(_id);
-        expect(status).toMatch(/^(DRAFT|IN_REVIEW|FINALIZED)$/);
+        expect(status).toMatch(/^(DRAFT|IN_REVIEW|FINALIZED|REMOVED)$/);
         expect(testPlanTargetId).toBeTruthy();
         expect(testPlanVersionId).toBeTruthy();
         expect(createdAt).toBeTruthy();
@@ -101,5 +101,9 @@ describe('TestPlanReportModel Data Checks', () => {
                 ])
             })
         );
+    });
+
+    it('should getOrCreate TestPlanReport', () => {
+        expect(true).toBe(false);
     });
 });

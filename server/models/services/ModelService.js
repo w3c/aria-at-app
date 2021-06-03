@@ -154,6 +154,103 @@ const update = async (model, queryParams, updateParams) => {
     );
 };
 
+// TODO: update description
+/**
+ * Upcerts/finds or creates multiple records for multiple models as part of a
+ * single transaction.
+ *
+ * Accepts an array of functions so that you can use the results of previous
+ * operations, e.g. the ids, in your queries.
+ *
+ * Each function should return a array containing a model, fields to find or
+ * create, and options.
+ *
+ * The update option is an object of fields to update on the model, but not to
+ * be used for determining whether the record already exists.
+ *
+ * Returns an array of results, where each item is an array containing the model
+ * instance and a boolean for whether it was newly created.
+ *
+ * @example
+ * const results = await nestedFindOrCreate([
+ *   () => [AtVersion, { atId: 1, version: "2221.1" }],
+ *   () => [BrowserVersion, { browserId: 1, version: "9999.0" }],
+ *   () => [
+ *     TestPlanTarget,
+ *     {
+ *       atId: 1,
+ *       browserId: 1,
+ *       atVersion: "2221.1",
+ *       browserVersion: "9999.0",
+ *     },
+ *   ],
+ *   ([_, __, [testPlanTarget]]) => [
+ *     TestPlanReport,
+ *     { testPlanTargetId: testPlanTarget.id, testPlanVersionId: 1 },
+ *     { update: [updateTestPlanReport, { status: "DRAFT" }] },
+ *   ],
+ * ]);
+ *
+ * const [
+ *   [atVersion, isNewAtVersion],
+ *   [browserVersion, isNewBrowserVersion],
+ *   [testPlanTarget, isNewTestPlanTarget],
+ *   [testPlanReport, isNewTestPlanReport],
+ * ] = results;
+ *
+ * @param {[object|function]} getOptionsArray
+ * @returns {Promise<[[*,Boolean]]>}
+ */
+const nestedGetOrCreate = async getOptionsArray => {
+    return await sequelize.transaction(async transaction => {
+        let accumulatedResults = [];
+        for (const getOptions of getOptionsArray) {
+            const [
+                get,
+                create,
+                update,
+                values,
+                updateValues,
+                returnAttributes
+            ] =
+                typeof getOptions === 'function'
+                    ? getOptions(accumulatedResults)
+                    : getOptions;
+
+            const pagination = null;
+
+            const found = await get(values, ...returnAttributes, pagination, {
+                transaction
+            });
+
+            if (found) {
+                if (updateValues) {
+                    await update(
+                        found.id,
+                        updateValues,
+                        ...returnAttributes,
+                        pagination,
+                        { transaction }
+                    );
+                }
+                accumulatedResults.push([found, false]);
+                continue;
+            }
+
+            const created = await create(
+                { ...values, ...updateValues },
+                ...returnAttributes,
+                pagination,
+                { transaction }
+            );
+
+            accumulatedResults.push([created, true]);
+        }
+
+        return accumulatedResults;
+    });
+};
+
 /**
  * See {@link https://sequelize.org/v5/class/lib/model.js~Model.html#static-method-destroy}
  * @param {Model} model - Sequelize Model instance to query for
@@ -211,6 +308,7 @@ module.exports = {
     get,
     create,
     update,
+    nestedGetOrCreate,
     removeById,
     removeByQuery,
     rawQuery

@@ -65,6 +65,10 @@ describe('ModelService', () => {
         await expect(update()).rejects.toThrow(/not defined/gi);
     });
 
+    it('should support nested upcerts', () => {
+        expect(true).toBe(false);
+    });
+
     it('should throw error if model not passed for removeById', async () => {
         const removeById = async () => {
             await dbCleaner(async () => {

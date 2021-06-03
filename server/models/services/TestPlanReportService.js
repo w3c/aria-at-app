@@ -7,6 +7,12 @@ const {
     USER_ATTRIBUTES
 } = require('./helpers');
 const { TestPlanReport } = require('../');
+const { getAtVersion, createAtVersion } = require('./AtService');
+const { getBrowserVersion, createBrowserVersion } = require('./BrowserService');
+const {
+    getTestPlanTarget,
+    createTestPlanTarget
+} = require('./TestPlanTargetService');
 
 // association helpers to be included with Models' results
 
@@ -122,6 +128,10 @@ const getTestPlanReports = async (
     );
 };
 
+const createTestPlanReport = async () => {
+    throw new Error('not implemented');
+};
+
 /**
  * @param {number} id - unique id of the TestPlanReport model being to be updated
  * @param {object} updateParams - values to be used to update columns for the record being referenced for {@param id}
@@ -158,9 +168,78 @@ const updateTestPlanReport = async (
     );
 };
 
+const getOrCreateTestPlanReport = async (
+    {
+        testPlanVersionId,
+        testPlanTarget: { atId, atVersion, browserId, browserVersion }
+    },
+    { status } = {},
+    testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
+    testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
+    testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
+    testPlanTargetAttributes = TEST_PLAN_TARGET_ATTRIBUTES,
+    userAttributes = USER_ATTRIBUTES,
+    pagination = {}
+) => {
+    const accumulatedResults = ModelService.nestedGetOrCreate([
+        {
+            get: getAtVersion,
+            create: createAtVersion,
+            values: { atId, version: atVersion },
+            returnAttributes: [null]
+        },
+        {
+            get: getBrowserVersion,
+            create: createBrowserVersion,
+            values: { browserId, version: browserVersion },
+            returnAttributes: [null]
+        },
+        {
+            get: getTestPlanTarget,
+            create: createTestPlanTarget,
+            values: { atId, browserId, atVersion, browserVersion },
+            returnAttributes: [null]
+        },
+        accumulatedResults => {
+            const [testPlanTarget] = accumulatedResults[2];
+            return {
+                get: getTestPlanTarget,
+                create: createTestPlanReport,
+                update: updateTestPlanReport,
+                values: {
+                    testPlanTargetId: testPlanTarget.id,
+                    testPlanVersionId: testPlanVersionId
+                },
+                updateValues: { status },
+                returnAttributes: [null, [], [], [], []]
+            };
+        }
+    ]);
+
+    const created = [];
+    accumulatedResults.forEach(([record, isNew]) => {
+        if (isNew) created.push(record);
+    });
+
+    const testPlanReportId = accumulatedResults[3][0].id;
+
+    const testPlanReport = await getTestPlanReportById(
+        testPlanReportId,
+        testPlanReportAttributes,
+        testPlanRunAttributes,
+        testPlanVersionAttributes,
+        testPlanTargetAttributes,
+        userAttributes,
+        pagination
+    );
+
+    return [testPlanReport, created];
+};
+
 module.exports = {
     // Basic CRUD
     getTestPlanReportById,
     getTestPlanReports,
-    updateTestPlanReport
+    updateTestPlanReport,
+    getOrCreateTestPlanReport
 };

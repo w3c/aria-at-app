@@ -60,31 +60,31 @@ const getTestPlanTargets = async (
  * @returns {Promise<*>}
  */
 const createTestPlanTarget = async (
-    { title, at, atVersion, browser, browserVersion },
+    { title, atId, atVersion, browserId, browserVersion },
     testPlanTargetAttributes = TEST_PLAN_TARGET_ATTRIBUTES
 ) => {
     let atName;
     let browserName;
 
-    if (typeof at === 'string') {
-        atName = at;
-        const atResults = await AtService.getAts(null, { name: at });
-        at = atResults.length ? atResults[0].id : 0;
+    if (typeof atId === 'string') {
+        atName = atId;
+        const atResults = await AtService.getAts(null, { name: atId });
+        atId = atResults.length ? atResults[0].id : 0;
     } else {
         // assuming type is number; get name to construct title if required
-        const atResult = await AtService.getAtById(at);
+        const atResult = await AtService.getAtById(atId);
         atName = atResult ? atResult.name : '';
     }
 
     if (typeof browser === 'string') {
-        browserName = browser;
+        browserName = browserId;
         const browserResults = await BrowserService.getBrowsers(null, {
-            name: browser
+            name: browserId
         });
-        browser = browserResults.length ? browserResults[0].id : 0;
+        browserId = browserResults.length ? browserResults[0].id : 0;
     } else {
         // assuming type is number; get name to construct title if required
-        const browserResult = await BrowserService.getBrowserById(browser);
+        const browserResult = await BrowserService.getBrowserById(browserId);
         browserName = browserResult ? browserResult.name : '';
     }
 
@@ -95,9 +95,9 @@ const createTestPlanTarget = async (
     // fallback on SequelizeError for invalid at | atVersion | browser | browserVersion
     const testPlanTargetResult = await ModelService.create(TestPlanTarget, {
         title,
-        at,
+        atId,
         atVersion,
-        browser,
+        browserId,
         browserVersion
     });
     const { id } = testPlanTargetResult;

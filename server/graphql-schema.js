@@ -197,13 +197,13 @@ const graphqlSchema = gql`
     enum TestPlanReportStatus {
         DRAFT
         IN_REVIEW
+        REMOVED
         FINALIZED
     }
 
     type TestPlanReport {
         id: ID!
         status: TestPlanReportStatus!
-        inTestQueue: Boolean!
         supportPercent: Int!
         optionalSupportPercent: Int!
         testPlanTarget: TestPlanTarget!
@@ -273,7 +273,7 @@ const graphqlSchema = gql`
         testPlans: [TestPlan]!
         testPlan(id: ID!): TestPlan
         testPlanReport(id: ID): TestPlanReport
-        testPlanReports(inTestQueue: Boolean!): [TestPlanReport]!
+        testPlanReports(statuses: [TestPlanReportStatus]): [TestPlanReport]!
         testPlanTargets: [TestPlanTarget]!
         populateData(locationOfData: LocationOfDataInput!): PopulatedData!
     }
@@ -284,11 +284,13 @@ const graphqlSchema = gql`
         assignTester(userId: ID!): PopulatedData!
         deleteTestPlanRun(userId: ID!): PopulatedData!
         updateStatus(status: TestPlanReportStatus!): PopulatedData!
-        removeFromTestQueue: PopulatedData!
     }
 
     type findOrCreateResult {
         populatedData: PopulatedData!
+        """
+        There will be one array item per database record created.
+        """
         created: [PopulatedData]!
     }
 
