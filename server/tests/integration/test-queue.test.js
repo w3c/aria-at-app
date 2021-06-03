@@ -345,8 +345,7 @@ describe('test queue', () => {
             expect(first.testPlanReport).toEqual(
                 expect.objectContaining({
                     id: expect.anything(),
-                    status: 'DRAFT',
-                    inTestQueue: true
+                    status: 'DRAFT'
                 })
             );
             expect(first.testPlanVersion).toEqual(

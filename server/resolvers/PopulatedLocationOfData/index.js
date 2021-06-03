@@ -14,6 +14,11 @@ const PopulatedLocationOfData = async ({
         testPlanVersionId,
         testPlanReportId,
         testPlanRunId,
+        testPlanTargetId,
+        atId,
+        browserId,
+        atVersion: providedAtVersion,
+        browserVersion: providedBrowserVersion,
         testIndex,
         passThroughIndex,
         testResultIndex,
@@ -45,6 +50,12 @@ const PopulatedLocationOfData = async ({
         testPlanVersion = await getTestPlanVersionById(testPlanVersionId);
     }
 
+    const testPlanTarget = testPlanReport && testPlanReport.testPlanTarget;
+    const at = testPlanTarget && testPlanTarget.at;
+    const browser = testPlanTarget && testPlanTarget.browser;
+    const atVersion = testPlanTarget && testPlanTarget.atVersion;
+    const browserVersion = testPlanTarget && testPlanTarget.browserVersion;
+
     if (!testPlanVersion) {
         // TODO: This error can be removed when a TestPlan table is added.
         throw new Error(
@@ -62,7 +73,12 @@ const PopulatedLocationOfData = async ({
         idsContradict(testPlanId, testPlan) ||
         idsContradict(testPlanVersionId, testPlanVersion) ||
         idsContradict(testPlanReportId, testPlanReport) ||
-        idsContradict(testPlanRunId, testPlanRun)
+        idsContradict(testPlanRunId, testPlanRun) ||
+        idsContradict(testPlanTargetId, testPlanTarget) ||
+        idsContradict(atId, at) ||
+        idsContradict(browserId, browser) ||
+        (providedAtVersion && providedAtVersion !== atVersion) ||
+        (providedBrowserVersion && providedBrowserVersion !== browserVersion)
     ) {
         throw new Error(
             'You provided IDs for both a parent and child model, implying a ' +
@@ -72,15 +88,25 @@ const PopulatedLocationOfData = async ({
 
     return {
         locationOfData: {
-            testPlan: testPlan && testPlan.id,
-            testPlanVersion: testPlanVersion && testPlanVersion.id,
-            testPlanReport: testPlanReport && testPlanReport.id,
-            testPlanRun: testPlanRun && testPlanRun.id
+            testPlanId: testPlan && testPlan.id,
+            testPlanVersionId: testPlanVersion && testPlanVersion.id,
+            testPlanReportId: testPlanReport && testPlanReport.id,
+            testPlanRunId: testPlanRun && testPlanRun.id,
+            testPlanTargetId: testPlanTarget && testPlanTarget.id,
+            atId: at && at.id,
+            browserId: browser && browser.id,
+            atVersion,
+            browserVersion
         },
         testPlan,
         testPlanVersion,
         testPlanReport,
-        testPlanRun
+        testPlanRun,
+        testPlanTarget,
+        at,
+        browser,
+        atVersion,
+        browserVersion
     };
 };
 

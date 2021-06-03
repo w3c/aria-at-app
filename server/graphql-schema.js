@@ -270,6 +270,8 @@ const graphqlSchema = gql`
 
     type Query {
         me: User
+        ats: [At]
+        browsers: [Browser]
         testPlans: [TestPlan]!
         testPlan(id: ID!): TestPlan
         testPlanReport(id: ID): TestPlanReport

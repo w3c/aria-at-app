@@ -216,12 +216,30 @@ const getOrCreateTestPlanReport = async (
         }
     ]);
 
-    const created = [];
-    accumulatedResults.forEach(([record, isNew]) => {
-        if (isNew) created.push(record);
-    });
-
+    const testPlanTargetId = accumulatedResults[2][0].id;
     const testPlanReportId = accumulatedResults[3][0].id;
+
+    const createdLocationsOfData = [];
+    if (accumulatedResults[0][1]) {
+        createdLocationsOfData.push({
+            testPlanReportId,
+            testPlanTargetId,
+            atVersion: accumulatedResults[0][0].version
+        });
+    }
+    if (accumulatedResults[1][1]) {
+        createdLocationsOfData.push({
+            testPlanReportId,
+            testPlanTargetId,
+            browserVersion: accumulatedResults[1][0].version
+        });
+    }
+    if (accumulatedResults[2][1]) {
+        createdLocationsOfData.push({ testPlanReportId, testPlanTargetId });
+    }
+    if (accumulatedResults[3][1]) {
+        createdLocationsOfData.push({ testPlanReportId });
+    }
 
     const testPlanReport = await getTestPlanReportById(
         testPlanReportId,
@@ -233,7 +251,7 @@ const getOrCreateTestPlanReport = async (
         pagination
     );
 
-    return [testPlanReport, created];
+    return [testPlanReport, createdLocationsOfData];
 };
 
 module.exports = {
