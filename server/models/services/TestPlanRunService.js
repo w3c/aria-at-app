@@ -83,7 +83,10 @@ const userAssociation = userAttributes => ({
 /**
  * @param {number} id - id of TestPlanRun to be retrieved
  * @param {string[]} testPlanRunAttributes - TestPlanRun attributes to be returned in the result
+ * @param {string[]} nestedTestPlanRunAttributes - TestPlanRun attributes associated to the TestPlanReport model to be returned
  * @param {string[]} testPlanReportAttributes - TestPlanReport attributes to be returned in the result
+ * @param {string[]} testPlanVersionAttributes - TestPlanVersion attributes to be returned in the result
+ * @param {string[]} testPlanTargetAttributes - TestPlanTarget attributes to be returned in the result
  * @param {string[]} userAttributes - User attributes to be returned in the result
  * @param {object} options - Generic options for sequelize
  * @param {*} options.transaction - Sequelize transaction
@@ -92,6 +95,7 @@ const userAssociation = userAttributes => ({
 const getTestPlanRunById = async (
     id,
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
+    nestedTestPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
     testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
     testPlanTargetAttributes = TEST_PLAN_TARGET_ATTRIBUTES,
@@ -105,7 +109,7 @@ const getTestPlanRunById = async (
         [
             testPlanReportAssociation(
                 testPlanReportAttributes,
-                testPlanRunAttributes,
+                nestedTestPlanRunAttributes,
                 testPlanVersionAttributes,
                 testPlanTargetAttributes,
                 userAttributes
@@ -120,8 +124,12 @@ const getTestPlanRunById = async (
  * @param {string|any} search - use this to combine with {@param filter} to be passed to Sequelize's where clause
  * @param {object} filter - use this define conditions to be passed to Sequelize's where clause
  * @param {string[]} testPlanRunAttributes - TestPlanRun attributes to be returned in the result
+ * @param {string[]} nestedTestPlanRunAttributes - TestPlanRun attributes associated to the TestPlanReport model to be returned
  * @param {string[]} testPlanReportAttributes - TestPlanReport attributes to be returned in the result
+ * @param {string[]} testPlanVersionAttributes - TestPlanVersion attributes to be returned in the result
+ * @param {string[]} testPlanTargetAttributes - TestPlanTarget attributes to be returned in the result
  * @param {string[]} userAttributes - User attributes to be returned in the result
+
  * @param {object} pagination - pagination options for query
  * @param {number} [pagination.page=0] - page to be queried in the pagination result (affected by {@param pagination.enablePagination})
  * @param {number} [pagination.limit=10] - amount of results to be returned per page (affected by {@param pagination.enablePagination})
@@ -135,7 +143,10 @@ const getTestPlanRuns = async (
     search,
     filter = {},
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
+    nestedTestPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
+    testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
+    testPlanTargetAttributes = TEST_PLAN_TARGET_ATTRIBUTES,
     userAttributes = USER_ATTRIBUTES,
     pagination = {},
     options = {}
@@ -148,7 +159,13 @@ const getTestPlanRuns = async (
         where,
         testPlanRunAttributes,
         [
-            testPlanReportAssociation(testPlanReportAttributes),
+            testPlanReportAssociation(
+                testPlanReportAttributes,
+                nestedTestPlanRunAttributes,
+                testPlanVersionAttributes,
+                testPlanTargetAttributes,
+                userAttributes
+            ),
             userAssociation(userAttributes)
         ],
         pagination,
@@ -159,7 +176,10 @@ const getTestPlanRuns = async (
 /**
  * @param {object} createParams - values to be used to create the TestPlanRun
  * @param {string[]} testPlanRunAttributes - TestPlanRun attributes to be returned in the result
+ * @param {string[]} nestedTestPlanRunAttributes - TestPlanRun attributes associated to the TestPlanReport model to be returned
  * @param {string[]} testPlanReportAttributes - TestPlanReport attributes to be returned in the result
+ * @param {string[]} testPlanVersionAttributes - TestPlanVersion attributes to be returned in the result
+ * @param {string[]} testPlanTargetAttributes - TestPlanTarget attributes to be returned in the result
  * @param {string[]} userAttributes - User attributes to be returned in the result
  * @param {object} options - Generic options for sequelize
  * @param {*} options.transaction - Sequelize transaction
@@ -168,7 +188,10 @@ const getTestPlanRuns = async (
 const createTestPlanRun = async (
     { testerUserId, testPlanReportId, testResults },
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
+    nestedTestPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
+    testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
+    testPlanTargetAttributes = TEST_PLAN_TARGET_ATTRIBUTES,
     userAttributes = USER_ATTRIBUTES,
     options = {}
 ) => {
@@ -180,7 +203,10 @@ const createTestPlanRun = async (
             testPlanReportId
         },
         testPlanRunAttributes,
+        nestedTestPlanRunAttributes,
         testPlanReportAttributes,
+        testPlanVersionAttributes,
+        testPlanTargetAttributes,
         userAttributes,
         options
     );
@@ -203,7 +229,13 @@ const createTestPlanRun = async (
         id,
         testPlanRunAttributes,
         [
-            testPlanReportAssociation(testPlanReportAttributes),
+            testPlanReportAssociation(
+                testPlanReportAttributes,
+                nestedTestPlanRunAttributes,
+                testPlanVersionAttributes,
+                testPlanTargetAttributes,
+                userAttributes
+            ),
             userAssociation(userAttributes)
         ],
         options
@@ -214,7 +246,10 @@ const createTestPlanRun = async (
  * @param {number} id - id of the TestPlanRun record to be updated
  * @param {object} updateParams - values to be used to update columns for the record being referenced for {@param id}
  * @param {string[]} testPlanRunAttributes - TestPlanRun attributes to be returned in the result
+ * @param {string[]} nestedTestPlanRunAttributes - TestPlanRun attributes associated to the TestPlanReport model to be returned
  * @param {string[]} testPlanReportAttributes - TestPlanReport attributes to be returned in the result
+ * @param {string[]} testPlanVersionAttributes - TestPlanVersion attributes to be returned in the result
+ * @param {string[]} testPlanTargetAttributes - TestPlanTarget attributes to be returned in the result
  * @param {string[]} userAttributes - User attributes to be returned in the result
  * @param {object} options - Generic options for sequelize
  * @param {*} options.transaction - Sequelize transaction
@@ -224,7 +259,10 @@ const updateTestPlanRun = async (
     id,
     { testResults },
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
+    nestedTestPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
+    testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
+    testPlanTargetAttributes = TEST_PLAN_TARGET_ATTRIBUTES,
     userAttributes = USER_ATTRIBUTES,
     options = {}
 ) => {
@@ -235,7 +273,13 @@ const updateTestPlanRun = async (
         id,
         testPlanRunAttributes,
         [
-            testPlanReportAssociation(testPlanReportAttributes),
+            testPlanReportAssociation(
+                testPlanReportAttributes,
+                nestedTestPlanRunAttributes,
+                testPlanVersionAttributes,
+                testPlanTargetAttributes,
+                userAttributes
+            ),
             userAssociation(userAttributes)
         ],
         options
