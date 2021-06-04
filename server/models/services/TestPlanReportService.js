@@ -221,33 +221,42 @@ const updateTestPlanReport = async (
 const getOrCreateTestPlanReport = async (
     {
         testPlanVersionId,
-        testPlanTarget: { atId, atVersion, browserId, browserVersion }
+        testPlanTarget: {
+            atId,
+            atVersion: providedAtVersion,
+            browserId,
+            browserVersion: providedBrowserVersion
+        }
     },
     { status } = {},
     testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
     testPlanTargetAttributes = TEST_PLAN_TARGET_ATTRIBUTES,
-    userAttributes = USER_ATTRIBUTES,
-    pagination = {}
+    userAttributes = USER_ATTRIBUTES
 ) => {
     const accumulatedResults = await ModelService.nestedGetOrCreate([
         {
             get: getAtVersions,
             create: createAtVersion,
-            values: { atId, atVersion },
-            returnAttributes: [null]
+            values: { atId, atVersion: providedAtVersion },
+            returnAttributes: [null, []]
         },
         {
             get: getBrowserVersions,
             create: createBrowserVersion,
-            values: { browserId, browserVersion },
-            returnAttributes: [null]
+            values: { browserId, browserVersion: providedBrowserVersion },
+            returnAttributes: [null, []]
         },
         {
             get: getTestPlanTargets,
             create: createTestPlanTarget,
-            values: { atId, browserId, atVersion, browserVersion },
+            values: {
+                atId,
+                browserId,
+                atVersion: providedAtVersion,
+                browserVersion: providedBrowserVersion
+            },
             returnAttributes: [null]
         },
         accumulatedResults => {
@@ -268,27 +277,21 @@ const getOrCreateTestPlanReport = async (
 
     const testPlanTargetId = accumulatedResults[2][0].id;
     const testPlanReportId = accumulatedResults[3][0].id;
+    const atVersion = accumulatedResults[0][0].atVersion;
+    const browserVersion = accumulatedResults[1][0].browserVersion;
 
-    const createdLocationsOfData = [];
+    const created = [];
     if (accumulatedResults[0][1]) {
-        createdLocationsOfData.push({
-            testPlanReportId,
-            testPlanTargetId,
-            atVersion: accumulatedResults[0][0].atVersion
-        });
+        created.push({ testPlanReportId, testPlanTargetId, atVersion });
     }
     if (accumulatedResults[1][1]) {
-        createdLocationsOfData.push({
-            testPlanReportId,
-            testPlanTargetId,
-            browserVersion: accumulatedResults[1][0].browserVersion
-        });
+        created.push({ testPlanReportId, testPlanTargetId, browserVersion });
     }
     if (accumulatedResults[2][1]) {
-        createdLocationsOfData.push({ testPlanReportId, testPlanTargetId });
+        created.push({ testPlanReportId, testPlanTargetId });
     }
     if (accumulatedResults[3][1]) {
-        createdLocationsOfData.push({ testPlanReportId });
+        created.push({ testPlanReportId });
     }
 
     const testPlanReport = await getTestPlanReportById(
@@ -297,11 +300,10 @@ const getOrCreateTestPlanReport = async (
         testPlanRunAttributes,
         testPlanVersionAttributes,
         testPlanTargetAttributes,
-        userAttributes,
-        pagination
+        userAttributes
     );
 
-    return [testPlanReport, createdLocationsOfData];
+    return [testPlanReport, created];
 };
 
 module.exports = {

@@ -1,13 +1,13 @@
 const {
     getOrCreateTestPlanReport
 } = require('../models/services/TestPlanReportService');
-const populateDataResolver = require('./populateDataResolver');
+const populatedDataResolver = require('./PopulatedData');
 
 const findOrCreateTestPlanReportResolver = async (_, { input }) => {
     const [result, createdLocationsOfData] = await getOrCreateTestPlanReport(
         input,
         { status: 'DRAFT' },
-        [],
+        null,
         [],
         [],
         [],
@@ -17,12 +17,12 @@ const findOrCreateTestPlanReportResolver = async (_, { input }) => {
     const locationOfData = { testPlanReportId: result.id };
 
     return {
-        populatedData: await populateDataResolver({
+        populatedData: await populatedDataResolver({
             parentContext: { locationOfData }
         }),
         created: await Promise.all(
             createdLocationsOfData.map(locationOfData =>
-                populateDataResolver({ parentContext: { locationOfData } })
+                populatedDataResolver({ parentContext: { locationOfData } })
             )
         )
     };

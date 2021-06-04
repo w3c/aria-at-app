@@ -178,107 +178,120 @@ const update = async (model, queryParams, updateParams, options = {}) => {
 
 // TODO: update description
 /**
- * Upcerts/finds or creates multiple records for multiple models as part of a
+ * Gets or creates multiple records for multiple models as part of a
  * single transaction.
  *
- * Accepts an array of functions so that you can use the results of previous
- * operations, e.g. the ids, in your queries.
+ * Accepts an array of objects specifying the get and create functions for the
+ * model, the values to get or create, and the attributes to use when returning
+ * the final result.
  *
- * Each function should return a array containing a model, fields to find or
- * create, and options.
+ * If you need the result of previous operations, e.g. the ids, you can pass a
+ * function instead of an object.
  *
- * The update option is an object of fields to update on the model, but not to
- * be used for determining whether the record already exists.
+ * If you need to update fields but do not want to use them in the get query,
+ * you can specify an update function and updateValues.
  *
  * Returns an array of results, where each item is an array containing the model
  * instance and a boolean for whether it was newly created.
  *
  * @example
- * const results = await nestedFindOrCreate([
- *   () => [AtVersion, { atId: 1, version: "2221.1" }],
- *   () => [BrowserVersion, { browserId: 1, version: "9999.0" }],
- *   () => [
- *     TestPlanTarget,
+ * const results = await ModelService.nestedGetOrCreate([
  *     {
- *       atId: 1,
- *       browserId: 1,
- *       atVersion: "2221.1",
- *       browserVersion: "9999.0",
+ *         get: getAtVersions,
+ *         create: createAtVersion,
+ *         values: { atId, atVersion },
+ *         returnAttributes: [null, []]
  *     },
- *   ],
- *   ([_, __, [testPlanTarget]]) => [
- *     TestPlanReport,
- *     { testPlanTargetId: testPlanTarget.id, testPlanVersionId: 1 },
- *     { update: [updateTestPlanReport, { status: "DRAFT" }] },
- *   ],
+ *     {
+ *         get: getBrowserVersions,
+ *         create: createBrowserVersion,
+ *         values: { browserId, browserVersion },
+ *         returnAttributes: [null, []]
+ *     },
+ *     {
+ *         get: getTestPlanTargets,
+ *         create: createTestPlanTarget,
+ *         values: { atId, browserId, atVersion, browserVersion },
+ *         returnAttributes: [null]
+ *     },
+ *     accumulatedResults => {
+ *         const [testPlanTarget] = accumulatedResults[2];
+ *         return {
+ *             get: getTestPlanReports,
+ *             create: createTestPlanReport,
+ *             update: updateTestPlanReport,
+ *             values: {
+ *                 testPlanTargetId: testPlanTarget.id,
+ *                 testPlanVersionId: testPlanVersionId
+ *             },
+ *             updateValues: { status },
+ *             returnAttributes: [null, [], [], [], []]
+ *         };
+ *     }
  * ]);
  *
  * const [
- *   [atVersion, isNewAtVersion],
- *   [browserVersion, isNewBrowserVersion],
- *   [testPlanTarget, isNewTestPlanTarget],
- *   [testPlanReport, isNewTestPlanReport],
+ *     [atVersion, isNewAtVersion],
+ *     [browserVersion, isNewBrowserVersion],
+ *     [testPlanTarget, isNewTestPlanTarget],
+ *     [testPlanReport, isNewTestPlanReport],
  * ] = results;
  *
  * @param {[object|function]} getOptionsArray
  * @returns {Promise<[[*,Boolean]]>}
  */
 const nestedGetOrCreate = async getOptionsArray => {
-    // return await sequelize.transaction(async transaction => {
-    let accumulatedResults = [];
-    getOptionsArray.forEach(async getOptions => {
-        const {
-            get,
-            create,
-            update,
-            values,
-            updateValues,
-            returnAttributes
-        } = isFunction(getOptions)
-            ? getOptions(accumulatedResults)
-            : getOptions;
+    return await sequelize.transaction(async transaction => {
+        let accumulatedResults = [];
+        for (const getOptions of getOptionsArray) {
+            const {
+                get,
+                create,
+                update,
+                values,
+                updateValues,
+                returnAttributes
+            } = isFunction(getOptions)
+                ? getOptions(accumulatedResults)
+                : getOptions;
 
-        const search = null;
-        const pagination = {};
+            const search = null;
+            const pagination = {};
 
-        const found = await get(
-            search,
-            values,
-            ...returnAttributes,
-            pagination
-            // { transaction }
-        );
+            const found = await get(
+                search,
+                values,
+                ...returnAttributes,
+                pagination,
+                { transaction }
+            );
 
-        if (found.length) {
-            if (updateValues) {
-                await update(
-                    found[0].id,
-                    updateValues,
-                    ...returnAttributes,
-                    pagination
-                    // { transaction }
-                );
+            if (found.length) {
+                if (updateValues) {
+                    await update(
+                        found[0].id,
+                        updateValues,
+                        ...returnAttributes,
+                        pagination,
+                        { transaction }
+                    );
+                }
+                accumulatedResults.push([found[0], false]);
+                continue;
             }
-            accumulatedResults.push([found[0], false]);
-            return;
+
+            const created = await create(
+                { ...values, ...updateValues },
+                ...returnAttributes,
+                pagination,
+                { transaction }
+            );
+
+            accumulatedResults.push([created, true]);
         }
 
-        console.log('creating...');
-
-        const created = await create(
-            { ...values, ...updateValues },
-            ...returnAttributes,
-            pagination
-            // { transaction }
-        );
-
-        console.log('created', created);
-
-        accumulatedResults.push([created, true]);
+        return accumulatedResults;
     });
-
-    return accumulatedResults;
-    // });
 };
 
 /**
