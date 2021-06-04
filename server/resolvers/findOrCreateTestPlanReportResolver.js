@@ -11,6 +11,8 @@ const findOrCreateTestPlanReportResolver = async (_, { input }) => {
         [],
         [],
         [],
+        [],
+        [],
         []
     );
 
@@ -21,8 +23,10 @@ const findOrCreateTestPlanReportResolver = async (_, { input }) => {
             parentContext: { locationOfData }
         }),
         created: await Promise.all(
-            createdLocationsOfData.map(locationOfData =>
-                populatedDataResolver({ parentContext: { locationOfData } })
+            createdLocationsOfData.map(each =>
+                populatedDataResolver({
+                    parentContext: { locationOfData: each }
+                })
             )
         )
     };

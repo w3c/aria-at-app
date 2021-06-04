@@ -2,6 +2,14 @@ const { gql } = require('apollo-server');
 const { dbCleaner } = require('../util/db-cleaner');
 const { query, mutate } = require('../util/graphql-test-utilities');
 const db = require('../../models/index');
+const {
+    removeBrowserVersionByQuery
+} = require('../../models/services/BrowserService');
+const { removeAtVersionByQuery } = require('../../models/services/AtService');
+const {
+    removeTestPlanTarget
+} = require('../../models/services/TestPlanTargetService');
+const { TestPlanReport } = require('../../models');
 
 afterAll(async () => {
     // Closing the DB connection allows Jest to exit successfully.
@@ -251,16 +259,16 @@ describe('test queue', () => {
         );
     });
 
-    it('supports adding reports', async () => {
-        await dbCleaner(async () => {
-            // A1
-            const testPlanVersionId = 1;
-            const atId = 1;
-            const unknownAtVersion = '2221.1';
-            const browserId = 1;
-            const unknownBrowserVersion = '9999.0';
-            const mutationToTest = async () => {
-                const result = await mutate(gql`
+    it.only('supports adding reports', async () => {
+        // DB cleaner is not supported because this mutation uses a transaction
+        // A1
+        const testPlanVersionId = '1';
+        const atId = '1';
+        const unknownAtVersion = '2221.1';
+        const browserId = '1';
+        const unknownBrowserVersion = '9999.0';
+        const mutationToTest = async () => {
+            const result = await mutate(gql`
                     mutation {
                         findOrCreateTestPlanReport(input: {
                             testPlanVersionId: ${testPlanVersionId}
@@ -277,6 +285,7 @@ describe('test queue', () => {
                                     status
                                 }
                                 testPlanTarget {
+                                    id
                                     at {
                                         id
                                     }
@@ -303,96 +312,110 @@ describe('test queue', () => {
                         }
                     }
                 `);
-                const {
-                    populatedData: {
-                        testPlanReport,
-                        testPlanTarget,
-                        testPlanVersion
-                    },
-                    created
-                } = result.findOrCreateTestPlanReport;
-                const createdBrowserVersions = created.filter(
-                    ({ locationOfData }) => locationOfData.browserVersion
-                );
-                const createdAtVersions = created.filter(
-                    ({ locationOfData }) => locationOfData.atVersion
-                );
-                const createdTestPlanTargets = created.filter(
-                    ({ locationOfData }) =>
-                        locationOfData.testPlanTargetId &&
-                        !(locationOfData.browserId || locationOfData.atId)
-                );
-                const createdTestPlanReports = created.filter(
-                    ({ locationOfData }) =>
-                        locationOfData.testPlanReportId &&
-                        !locationOfData.testPlanTargetId
-                );
-                return {
+            const {
+                populatedData: {
                     testPlanReport,
                     testPlanTarget,
-                    testPlanVersion,
-                    created,
-                    createdBrowserVersions,
-                    createdAtVersions,
-                    createdTestPlanTargets,
-                    createdTestPlanReports
-                };
+                    testPlanVersion
+                },
+                created
+            } = result.findOrCreateTestPlanReport;
+            const createdBrowserVersions = created.filter(
+                ({ locationOfData }) => locationOfData.browserVersion
+            );
+            const createdAtVersions = created.filter(
+                ({ locationOfData }) => locationOfData.atVersion
+            );
+            const createdTestPlanTargets = created.filter(
+                ({ locationOfData }) =>
+                    locationOfData.testPlanTargetId &&
+                    !(locationOfData.browserVersion || locationOfData.atVersion)
+            );
+            const createdTestPlanReports = created.filter(
+                ({ locationOfData }) =>
+                    locationOfData.testPlanReportId &&
+                    !locationOfData.testPlanTargetId
+            );
+            return {
+                testPlanReport,
+                testPlanTarget,
+                testPlanVersion,
+                created,
+                createdBrowserVersions,
+                createdAtVersions,
+                createdTestPlanTargets,
+                createdTestPlanReports
             };
+        };
 
-            // A2
-            const first = await mutationToTest();
-            const second = await mutationToTest();
-
-            // A3
-            expect(first.testPlanReport).toEqual(
-                expect.objectContaining({
-                    id: expect.anything(),
-                    status: 'DRAFT'
-                })
-            );
-            expect(first.testPlanVersion).toEqual(
-                expect.objectContaining({
-                    id: testPlanVersionId
-                })
-            );
-            expect(first.testPlanTarget).toEqual(
-                expect.objectContaining({
-                    at: expect.objectContaining({
-                        id: atId
-                    }),
-                    atVersion: unknownAtVersion,
-                    browser: expect.objectContaining({
-                        id: browserId
-                    }),
-                    browserVersion: unknownBrowserVersion
-                })
-            );
-            expect(first.created.length).toBe(4);
-            expect(first.createdBrowserVersions.length).toBe(1);
-            expect(first.createdBrowserVersions[0].browserVersion).toBe(
-                unknownBrowserVersion
-            );
-            expect(first.createdAtVersions.length).toBe(1);
-            expect(first.createdAtVersions[0].atVersion).toBe(unknownAtVersion);
-            expect(first.createdTestPlanTargets.length).toBe(1);
-            expect(first.createdTestPlanReports.length).toBe(1);
-
-            expect(second.testPlanReport).toEqual(
-                expect.objectContaining({
-                    id: first.testPlanReport.id
-                })
-            );
-            expect(second.testPlanTarget).toEqual(
-                expect.objectContaining({
-                    id: first.testPlanTarget.id
-                })
-            );
-            expect(second.testPlanVersion).toEqual(
-                expect.objectContaining({
-                    id: first.testPlanVersion.id
-                })
-            );
-            expect(second.created.length).toBe(0);
+        // A2
+        const first = await mutationToTest();
+        const second = await mutationToTest();
+        // DB cleaner is not supported because this mutation uses a transaction
+        await TestPlanReport.destroy({
+            where: { id: first.testPlanReport.id }
         });
+        await removeTestPlanTarget(first.testPlanTarget.id);
+        await removeBrowserVersionByQuery({
+            browserId: 1,
+            browserVersion: unknownBrowserVersion
+        });
+        await removeAtVersionByQuery({
+            atId: 1,
+            atVersion: unknownAtVersion
+        });
+
+        // A3
+        expect(first.testPlanReport).toEqual(
+            expect.objectContaining({
+                id: expect.anything(),
+                status: 'DRAFT'
+            })
+        );
+        expect(first.testPlanVersion).toEqual(
+            expect.objectContaining({
+                id: testPlanVersionId
+            })
+        );
+        expect(first.testPlanTarget).toEqual(
+            expect.objectContaining({
+                at: expect.objectContaining({
+                    id: atId
+                }),
+                atVersion: unknownAtVersion,
+                browser: expect.objectContaining({
+                    id: browserId
+                }),
+                browserVersion: unknownBrowserVersion
+            })
+        );
+        expect(first.created.length).toBe(4);
+        expect(first.createdBrowserVersions.length).toBe(1);
+        expect(
+            first.createdBrowserVersions[0].locationOfData.browserVersion
+        ).toBe(unknownBrowserVersion);
+        expect(first.createdAtVersions.length).toBe(1);
+        expect(first.createdAtVersions[0].locationOfData.atVersion).toBe(
+            unknownAtVersion
+        );
+        expect(first.createdTestPlanTargets.length).toBe(1);
+        expect(first.createdTestPlanReports.length).toBe(1);
+
+        expect(second.testPlanReport).toEqual(
+            expect.objectContaining({
+                id: first.testPlanReport.id
+            })
+        );
+        expect(second.testPlanTarget).toEqual(
+            expect.objectContaining({
+                id: first.testPlanTarget.id
+            })
+        );
+        expect(second.testPlanVersion).toEqual(
+            expect.objectContaining({
+                id: first.testPlanVersion.id
+            })
+        );
+        expect(second.created.length).toBe(0);
     });
 });

@@ -346,7 +346,7 @@ const getOrCreateTestPlanReport = async (
                     testPlanVersionId: testPlanVersionId
                 },
                 updateValues: { status },
-                returnAttributes: [null, [], [], [], []]
+                returnAttributes: [null, [], [], [], [], [], []]
             };
         }
     ]);

@@ -87,17 +87,7 @@ const PopulatedData = async ({ parentContext: { locationOfData } }) => {
     }
 
     return {
-        locationOfData: {
-            testPlanId: testPlan && testPlan.id,
-            testPlanVersionId: testPlanVersion && testPlanVersion.id,
-            testPlanReportId: testPlanReport && testPlanReport.id,
-            testPlanRunId: testPlanRun && testPlanRun.id,
-            testPlanTargetId: testPlanTarget && testPlanTarget.id,
-            atId: at && at.id,
-            browserId: browser && browser.id,
-            atVersion,
-            browserVersion
-        },
+        locationOfData,
         testPlan,
         testPlanVersion,
         testPlanReport,
