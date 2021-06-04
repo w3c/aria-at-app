@@ -44,7 +44,7 @@ const atModeAssociation = atModeAttributes => ({
  * @param {string[]} atAttributes  - At attributes to be returned in the result
  * @param {string[]} atVersionAttributes  - AtVersion attributes to be returned in the result
  * @param {string[]} atModeAttributes  - AtMode attributes to be returned in the result
- * @param {object} options - Generic options for sequelize
+ * @param {object} options - Generic options for Sequelize
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
@@ -78,7 +78,7 @@ const getAtById = async (
  * @param {number} [pagination.limit=10] - amount of results to be returned per page (affected by {@param pagination.enablePagination})
  * @param {string[][]} [pagination.order=[]] - expects a Sequelize structured input dataset for sorting the Sequelize Model results (NOT affected by {@param pagination.enablePagination}). See {@link https://sequelize.org/v5/manual/querying.html#ordering} and {@example [ [ 'username', 'DESC' ], [..., ...], ... ]}
  * @param {boolean} [pagination.enablePagination=false] - use to enable pagination for a query result as well useful values. Data for all items matching query if not enabled
- * @param {object} options - Generic options for sequelize
+ * @param {object} options - Generic options for Sequelize
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
@@ -114,7 +114,7 @@ const getAts = async (
  * @param {string[]} atAttributes  - At attributes to be returned in the result
  * @param {string[]} atVersionAttributes  - AtVersion attributes to be returned in the result
  * @param {string[]} atModeAttributes  - AtMode attributes to be returned in the result
- * @param {object} options - Generic options for sequelize
+ * @param {object} options - Generic options for Sequelize
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
@@ -147,7 +147,7 @@ const createAt = async (
  * @param {string[]} atAttributes  - At attributes to be returned in the result
  * @param {string[]} atVersionAttributes  - AtVersion attributes to be returned in the result
  * @param {string[]} atModeAttributes  - AtMode attributes to be returned in the result
- * @param {object} options - Generic options for sequelize
+ * @param {object} options - Generic options for Sequelize
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
@@ -189,7 +189,7 @@ const removeAt = async (id, deleteOptions = { truncate: false }) => {
  * @param {object} queryParams - unique values of the AtVersion model being queried
  * @param {string[]} atVersionAttributes  - AtVersion attributes to be returned in the result
  * @param {string[]} atAttributes  - At attributes to be returned in the result
- * @param {object} options - Generic options for sequelize
+ * @param {object} options - Generic options for Sequelize
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
@@ -218,7 +218,7 @@ const getAtVersionByQuery = async (
  * @param {number} [pagination.limit=10] - amount of results to be returned per page (affected by {@param pagination.enablePagination})
  * @param {string[][]} [pagination.order=[]] - expects a Sequelize structured input dataset for sorting the Sequelize Model results (NOT affected by {@param pagination.enablePagination}). See {@link https://sequelize.org/v5/manual/querying.html#ordering} and {@example [ [ 'username', 'DESC' ], [..., ...], ... ]}
  * @param {boolean} [pagination.enablePagination=false] - use to enable pagination for a query result as well useful values. Data for all items matching query if not enabled
- * @param {object} options - Generic options for sequelize
+ * @param {object} options - Generic options for Sequelize
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
@@ -250,7 +250,7 @@ const getAtVersions = async (
  * @param {object} createParams - values to be used to create the AtVersion record
  * @param {string[]} atVersionAttributes  - AtVersion attributes to be returned in the result
  * @param {string[]} atAttributes  - At attributes to be returned in the result
- * @param {object} options - Generic options for sequelize
+ * @param {object} options - Generic options for Sequelize
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
@@ -277,7 +277,7 @@ const createAtVersion = async (
  * @param {object} updateParams - values to be used to update columns for the record being referenced for {@param queryParams}
  * @param {string[]} atVersionAttributes  - AtVersion attributes to be returned in the result
  * @param {string[]} atAttributes  - At attributes to be returned in the result
- * @param {object} options - Generic options for sequelize
+ * @param {object} options - Generic options for Sequelize
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
@@ -322,7 +322,7 @@ const removeAtVersionByQuery = async (
  * @param {object} queryParams - unique values of the AtMode model being queried
  * @param {string[]} atModeAttributes - AtMode attributes to be returned in the result
  * @param {string[]} atAttributes  - At attributes to be returned in the result
- * @param {object} options - Generic options for sequelize
+ * @param {object} options - Generic options for Sequelize
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
@@ -351,7 +351,7 @@ const getAtModeByQuery = async (
  * @param {number} [pagination.limit=10] - amount of results to be returned per page (affected by {@param pagination.enablePagination})
  * @param {string[][]} [pagination.order=[]] - expects a Sequelize structured input dataset for sorting the Sequelize Model results (NOT affected by {@param pagination.enablePagination}). See {@link https://sequelize.org/v5/manual/querying.html#ordering} and {@example [ [ 'username', 'DESC' ], [..., ...], ... ]}
  * @param {boolean} [pagination.enablePagination=false] - use to enable pagination for a query result as well useful values. Data for all items matching query if not enabled
- * @param {object} options - Generic options for sequelize
+ * @param {object} options - Generic options for Sequelize
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
@@ -382,7 +382,7 @@ const getAtModes = async (
  * @param {object} createParams - values to be used to create the AtMode record
  * @param {string[]} atModeAttributes  - AtMode attributes to be returned in the result
  * @param {string[]} atAttributes  - At attributes to be returned in the result
- * @param {object} options - Generic options for sequelize
+ * @param {object} options - Generic options for Sequelize
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
@@ -409,7 +409,7 @@ const createAtMode = async (
  * @param {object} updateParams - values to be used to update columns for the record being referenced for {@param queryParams}
  * @param {string[]} atModeAttributes - AtMode attributes to be returned in the result
  * @param {string[]} atAttributes - At attributes to be returned in the result
- * @param {object} options - Generic options for sequelize
+ * @param {object} options - Generic options for Sequelize
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */

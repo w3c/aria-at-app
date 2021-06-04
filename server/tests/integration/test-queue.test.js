@@ -251,7 +251,7 @@ describe('test queue', () => {
         );
     });
 
-    it('supports adding reports', async () => {
+    it.only('supports adding reports', async () => {
         await dbCleaner(async () => {
             // A1
             const testPlanVersionId = 1;

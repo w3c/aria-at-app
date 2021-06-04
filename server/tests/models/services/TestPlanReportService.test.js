@@ -103,6 +103,10 @@ describe('TestPlanReportModel Data Checks', () => {
         );
     });
 
+    it('should create TestPlanReport', () => {
+        expect(true).toBe(false);
+    });
+
     it('should getOrCreate TestPlanReport', () => {
         expect(true).toBe(false);
     });

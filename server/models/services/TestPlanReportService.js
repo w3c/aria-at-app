@@ -68,7 +68,7 @@ const userAssociation = userAttributes => ({
  * @param {string[]} testPlanVersionAttributes - TestPlanVersion attributes to be returned in the result
  * @param {string[]} testPlanTargetAttributes - TestPlanTarget attributes to be returned in the result
  * @param {string[]} userAttributes - User attributes to be returned in the result
- * @param {object} options - Generic options for sequelize
+ * @param {object} options - Generic options for Sequelize
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
@@ -107,7 +107,7 @@ const getTestPlanReportById = async (
  * @param {number} [pagination.limit=10] - amount of results to be returned per page (affected by {@param pagination.enablePagination})
  * @param {string[][]} [pagination.order=[]] - expects a Sequelize structured input dataset for sorting the Sequelize Model results (NOT affected by {@param pagination.enablePagination}). See {@link https://sequelize.org/v5/manual/querying.html#ordering} and {@example [ [ 'username', 'DESC' ], [..., ...], ... ]}
  * @param {boolean} [pagination.enablePagination=false] - use to enable pagination for a query result as well useful values. Data for all items matching query if not enabled
- * @param {object} options - Generic options for sequelize
+ * @param {object} options - Generic options for Sequelize
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
@@ -139,8 +139,42 @@ const getTestPlanReports = async (
     );
 };
 
-const createTestPlanReport = async () => {
-    throw new Error('not implemented');
+/**
+ * @param {object} createParams - values to be used to create the TestPlanReport
+ * @param {string[]} userAttributes - User attributes to be returned in the result
+ * @param {string[]} roleAttributes - Role attributes to be returned in the result
+ * @param {string[]} testPlanRunAttributes - TestPlanRun attributes to be returned in the result
+ * @param {object} options - Generic options for Sequelize
+ * @param {*} options.transaction - Sequelize transaction
+ * @returns {Promise<*>}
+ */
+const createTestPlanReport = async (
+    { status, testPlanTargetId, testPlanVersionId },
+    testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
+    testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
+    testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
+    testPlanTargetAttributes = TEST_PLAN_TARGET_ATTRIBUTES,
+    userAttributes = USER_ATTRIBUTES,
+    options
+) => {
+    const testPlanReportResult = await ModelService.create(
+        TestPlanReport,
+        { status, testPlanTargetId, testPlanVersionId },
+        options
+    );
+
+    // to ensure the structure being returned matches what we expect for simple queries and can be controlled
+    return await ModelService.getById(
+        TestPlanReport,
+        testPlanReportResult.id,
+        testPlanReportAttributes,
+        [
+            testPlanRunAssociation(testPlanRunAttributes, userAttributes),
+            testPlanVersionAssociation(testPlanVersionAttributes),
+            testPlanTargetAssociation(testPlanTargetAttributes)
+        ],
+        options
+    );
 };
 
 /**
@@ -151,7 +185,7 @@ const createTestPlanReport = async () => {
  * @param {string[]} testPlanVersionAttributes - TestPlanVersion attributes to be returned in the result
  * @param {string[]} testPlanTargetAttributes - TestPlanTarget attributes to be returned in the result
  * @param {string[]} userAttributes - User attributes to be returned in the result
- * @param {object} options - Generic options for sequelize
+ * @param {object} options - Generic options for Sequelize
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
@@ -219,7 +253,7 @@ const getOrCreateTestPlanReport = async (
         accumulatedResults => {
             const [testPlanTarget] = accumulatedResults[2];
             return {
-                get: getTestPlanTargets,
+                get: getTestPlanReports,
                 create: createTestPlanReport,
                 update: updateTestPlanReport,
                 values: {

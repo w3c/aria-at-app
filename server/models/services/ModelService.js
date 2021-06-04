@@ -29,7 +29,7 @@ const { sequelize } = require('../');
  * @param {number | string} id - ID of the Sequelize Model to query for
  * @param {any[]} attributes - attributes of the Sequelize Model to be returned
  * @param {any[]} include - information on Sequelize Model relationships
- * @param {object} options - Generic options for sequelize
+ * @param {object} options - Generic options for Sequelize
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<Model>} - Sequelize Model
  */
@@ -56,7 +56,7 @@ const getById = async (
  * @param {object} queryParams - values to be used to query Sequelize Model
  * @param {any[]} attributes - attributes of the Sequelize Model to be returned
  * @param {any[]} include - information on Sequelize Model relationships
- * @param {object} options - Generic options for sequelize
+ * @param {object} options - Generic options for Sequelize
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<Model>} - Sequelize Model
  */
@@ -88,7 +88,7 @@ const getByQuery = async (
  * @param {number} [pagination.limit=10] - amount of results to be returned per page (affected by {@param pagination.enablePagination})
  * @param {string[][]} [pagination.order=[]] - expects a Sequelize structured input dataset for sorting the Sequelize Model results (NOT affected by {@param pagination.enablePagination}). See {@link https://sequelize.org/v5/manual/querying.html#ordering} and {@example [ [ 'username', 'DESC' ], [..., ...], ... ]}
  * @param {boolean} [pagination.enablePagination=false] - use to enable pagination for a query result as well useful values. Data for all items matching query if not enabled
- * @param {object} options - Generic options for sequelize
+ * @param {object} options - Generic options for Sequelize
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>} - collection of queried Sequelize Models or paginated structure if pagination flag is enabled
  */
@@ -150,7 +150,7 @@ const get = async (
 /**
  * @param {Model} model - Sequelize Model instance to query for
  * @param {object} createParams - properties to be used to create the {@param model} Sequelize Model that is being used
- * @param {object} options - Generic options for sequelize
+ * @param {object} options - Generic options for Sequelize
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>} - result of the sequelize.create function
  */
@@ -163,7 +163,7 @@ const create = async (model, createParams, options = {}) => {
  * @param {Model} model - Sequelize Model instance to query for
  * @param {object} queryParams - query to be used to find the Sequelize Model to be updated
  * @param {object} updateParams - values to be updated when the Sequelize Model is found
- * @param {object} options - Generic options for sequelize
+ * @param {object} options - Generic options for Sequelize
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>} - result of the sequelize.update function
  */
@@ -224,61 +224,61 @@ const update = async (model, queryParams, updateParams, options = {}) => {
  * @returns {Promise<[[*,Boolean]]>}
  */
 const nestedGetOrCreate = async getOptionsArray => {
-    return await sequelize.transaction(async transaction => {
-        let accumulatedResults = [];
-        getOptionsArray.forEach(async getOptions => {
-            const {
-                get,
-                create,
-                update,
-                values,
-                updateValues,
-                returnAttributes
-            } = isFunction(getOptions)
-                ? getOptions(accumulatedResults)
-                : getOptions;
+    // return await sequelize.transaction(async transaction => {
+    let accumulatedResults = [];
+    getOptionsArray.forEach(async getOptions => {
+        const {
+            get,
+            create,
+            update,
+            values,
+            updateValues,
+            returnAttributes
+        } = isFunction(getOptions)
+            ? getOptions(accumulatedResults)
+            : getOptions;
 
-            const search = null;
-            const pagination = {};
+        const search = null;
+        const pagination = {};
 
-            const found = await get(
-                search,
-                values,
-                ...returnAttributes,
-                pagination,
-                { transaction }
-            );
+        const found = await get(
+            search,
+            values,
+            ...returnAttributes,
+            pagination
+            // { transaction }
+        );
 
-            if (found.length) {
-                if (updateValues) {
-                    await update(
-                        found[0].id,
-                        updateValues,
-                        ...returnAttributes,
-                        pagination,
-                        { transaction }
-                    );
-                }
-                accumulatedResults.push([found[0], false]);
-                return;
+        if (found.length) {
+            if (updateValues) {
+                await update(
+                    found[0].id,
+                    updateValues,
+                    ...returnAttributes,
+                    pagination
+                    // { transaction }
+                );
             }
+            accumulatedResults.push([found[0], false]);
+            return;
+        }
 
-            console.log('creating...');
+        console.log('creating...');
 
-            const created = await create(
-                { ...values, ...updateValues },
-                ...returnAttributes,
-                pagination,
-                { transaction }
-            );
+        const created = await create(
+            { ...values, ...updateValues },
+            ...returnAttributes,
+            pagination
+            // { transaction }
+        );
 
-            console.log('created', created);
+        console.log('created', created);
 
-            accumulatedResults.push([created, true]);
-        });
-
-        return accumulatedResults;
+        accumulatedResults.push([created, true]);
     });
+
+    return accumulatedResults;
+    // });
 };
 
 /**
