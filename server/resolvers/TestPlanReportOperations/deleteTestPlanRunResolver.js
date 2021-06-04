@@ -1,12 +1,12 @@
 const { AuthenticationError } = require('apollo-server');
-
 const {
     removeTestPlanRunByQuery
 } = require('../../models/services/TestPlanRunService');
+const populatedDataResolver = require('../PopulatedData');
 
 const deleteTestPlanRunResolver = async (
     { parentContext: { id: testPlanReportId } },
-    { user: testerUserId },
+    { userId: testerUserId },
     { user }
 ) => {
     if (!user.roles.includes('ADMIN')) {
@@ -16,7 +16,9 @@ const deleteTestPlanRunResolver = async (
         testPlanReportId,
         testerUserId
     });
-    return { parentContext: { id: testPlanReportId } };
+    return populatedDataResolver({
+        parentContext: { locationOfData: { testPlanReportId } }
+    });
 };
 
 module.exports = deleteTestPlanRunResolver;

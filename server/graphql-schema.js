@@ -54,10 +54,10 @@ const graphqlSchema = gql`
     }
 
     input TestPlanTargetInput {
-        atId: ID!
-        atVersion: String!
-        browserId: ID!
-        browserVersion: String!
+        atId: ID
+        atVersion: String
+        browserId: ID
+        browserVersion: String
     }
 
     enum TestPlanVersionStatus {

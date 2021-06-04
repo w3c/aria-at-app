@@ -209,7 +209,7 @@ describe('test queue', () => {
         });
     });
 
-    it.only('queries for information needed to add reports', async () => {
+    it('queries for information needed to add reports', async () => {
         const result = await query(gql`
             query {
                 ats {
@@ -251,7 +251,7 @@ describe('test queue', () => {
         );
     });
 
-    it('supports adding reports', async () => {
+    it.only('supports adding reports', async () => {
         await dbCleaner(async () => {
             // A1
             const testPlanVersionId = 1;
@@ -266,9 +266,9 @@ describe('test queue', () => {
                             testPlanVersionId: ${testPlanVersionId}
                             testPlanTarget: {
                                 atId: ${atId}
-                                atVersion: ${unknownAtVersion}
+                                atVersion: "${unknownAtVersion}"
                                 browserId: ${browserId}
-                                browserVersion: ${unknownBrowserVersion}
+                                browserVersion: "${unknownBrowserVersion}"
                             }
                         }) {
                             populatedData {

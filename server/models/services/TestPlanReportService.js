@@ -7,10 +7,13 @@ const {
     USER_ATTRIBUTES
 } = require('./helpers');
 const { TestPlanReport } = require('../');
-const { getAtVersion, createAtVersion } = require('./AtService');
-const { getBrowserVersion, createBrowserVersion } = require('./BrowserService');
+const { getAtVersions, createAtVersion } = require('./AtService');
 const {
-    getTestPlanTarget,
+    getBrowserVersions,
+    createBrowserVersion
+} = require('./BrowserService');
+const {
+    getTestPlanTargets,
     createTestPlanTarget
 } = require('./TestPlanTargetService');
 
@@ -65,6 +68,8 @@ const userAssociation = userAttributes => ({
  * @param {string[]} testPlanVersionAttributes - TestPlanVersion attributes to be returned in the result
  * @param {string[]} testPlanTargetAttributes - TestPlanTarget attributes to be returned in the result
  * @param {string[]} userAttributes - User attributes to be returned in the result
+ * @param {object} options - Generic options for sequelize
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
 const getTestPlanReportById = async (
@@ -73,7 +78,8 @@ const getTestPlanReportById = async (
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
     testPlanTargetAttributes = TEST_PLAN_TARGET_ATTRIBUTES,
-    userAttributes = USER_ATTRIBUTES
+    userAttributes = USER_ATTRIBUTES,
+    options = {}
 ) => {
     return await ModelService.getById(
         TestPlanReport,
@@ -83,7 +89,8 @@ const getTestPlanReportById = async (
             testPlanRunAssociation(testPlanRunAttributes, userAttributes),
             testPlanVersionAssociation(testPlanVersionAttributes),
             testPlanTargetAssociation(testPlanTargetAttributes)
-        ]
+        ],
+        options
     );
 };
 
@@ -100,6 +107,8 @@ const getTestPlanReportById = async (
  * @param {number} [pagination.limit=10] - amount of results to be returned per page (affected by {@param pagination.enablePagination})
  * @param {string[][]} [pagination.order=[]] - expects a Sequelize structured input dataset for sorting the Sequelize Model results (NOT affected by {@param pagination.enablePagination}). See {@link https://sequelize.org/v5/manual/querying.html#ordering} and {@example [ [ 'username', 'DESC' ], [..., ...], ... ]}
  * @param {boolean} [pagination.enablePagination=false] - use to enable pagination for a query result as well useful values. Data for all items matching query if not enabled
+ * @param {object} options - Generic options for sequelize
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
 const getTestPlanReports = async (
@@ -110,7 +119,8 @@ const getTestPlanReports = async (
     testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
     testPlanTargetAttributes = TEST_PLAN_TARGET_ATTRIBUTES,
     userAttributes = USER_ATTRIBUTES,
-    pagination = {}
+    pagination = {},
+    options = {}
 ) => {
     // search and filtering options
     let where = { ...filter };
@@ -124,7 +134,8 @@ const getTestPlanReports = async (
             testPlanVersionAssociation(testPlanVersionAttributes),
             testPlanTargetAssociation(testPlanTargetAttributes)
         ],
-        pagination
+        pagination,
+        options
     );
 };
 
@@ -140,6 +151,8 @@ const createTestPlanReport = async () => {
  * @param {string[]} testPlanVersionAttributes - TestPlanVersion attributes to be returned in the result
  * @param {string[]} testPlanTargetAttributes - TestPlanTarget attributes to be returned in the result
  * @param {string[]} userAttributes - User attributes to be returned in the result
+ * @param {object} options - Generic options for sequelize
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
 const updateTestPlanReport = async (
@@ -149,12 +162,14 @@ const updateTestPlanReport = async (
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
     testPlanTargetAttributes = TEST_PLAN_TARGET_ATTRIBUTES,
-    userAttributes = USER_ATTRIBUTES
+    userAttributes = USER_ATTRIBUTES,
+    options = {}
 ) => {
     await ModelService.update(
         TestPlanReport,
         { id },
-        { status, testPlanTargetId, testPlanVersionId }
+        { status, testPlanTargetId, testPlanVersionId },
+        options
     );
 
     // call custom this.getById if custom attributes are being accounted for
@@ -168,6 +183,7 @@ const updateTestPlanReport = async (
     );
 };
 
+// TODO: document
 const getOrCreateTestPlanReport = async (
     {
         testPlanVersionId,
@@ -181,21 +197,21 @@ const getOrCreateTestPlanReport = async (
     userAttributes = USER_ATTRIBUTES,
     pagination = {}
 ) => {
-    const accumulatedResults = ModelService.nestedGetOrCreate([
+    const accumulatedResults = await ModelService.nestedGetOrCreate([
         {
-            get: getAtVersion,
+            get: getAtVersions,
             create: createAtVersion,
             values: { atId, atVersion },
             returnAttributes: [null]
         },
         {
-            get: getBrowserVersion,
+            get: getBrowserVersions,
             create: createBrowserVersion,
             values: { browserId, browserVersion },
             returnAttributes: [null]
         },
         {
-            get: getTestPlanTarget,
+            get: getTestPlanTargets,
             create: createTestPlanTarget,
             values: { atId, browserId, atVersion, browserVersion },
             returnAttributes: [null]
@@ -203,7 +219,7 @@ const getOrCreateTestPlanReport = async (
         accumulatedResults => {
             const [testPlanTarget] = accumulatedResults[2];
             return {
-                get: getTestPlanTarget,
+                get: getTestPlanTargets,
                 create: createTestPlanReport,
                 update: updateTestPlanReport,
                 values: {

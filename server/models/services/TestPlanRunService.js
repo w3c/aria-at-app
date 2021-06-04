@@ -18,16 +18,36 @@ const { TestPlanRun } = require('../');
  */
 const testPlanReportAssociation = (
     testPlanReportAttributes,
+    testPlanRunAttributes,
     testPlanVersionAttributes,
-    testPlanTargetAttributes
+    testPlanTargetAttributes,
+    userAttributes
 ) => ({
     association: 'testPlanReport',
     attributes: testPlanReportAttributes,
     include: [
         // eslint-disable-next-line no-use-before-define
+        testPlanRunAssociation(testPlanRunAttributes, userAttributes),
+        // eslint-disable-next-line no-use-before-define
         testPlanVersionAssociation(testPlanVersionAttributes),
         // eslint-disable-next-line no-use-before-define
         testPlanTargetAssociation(testPlanTargetAttributes)
+    ]
+});
+
+/**
+ * When the test plan run model loads the test plan report, it should still load
+ * all the test plan runs, otherwise you would not be able to compare the
+ * current run to the complete list of runs.
+ * @param {string[]} testPlanVersionAttributes - TestPlanVersion attributes
+ * @returns {{association: string, attributes: string[]}}
+ */
+const testPlanRunAssociation = (testPlanRunAttributes, userAttributes) => ({
+    association: 'testPlanRuns',
+    attributes: testPlanRunAttributes,
+    include: [
+        // eslint-disable-next-line no-use-before-define
+        userAssociation(userAttributes)
     ]
 });
 
@@ -65,6 +85,8 @@ const userAssociation = userAttributes => ({
  * @param {string[]} testPlanRunAttributes - TestPlanRun attributes to be returned in the result
  * @param {string[]} testPlanReportAttributes - TestPlanReport attributes to be returned in the result
  * @param {string[]} userAttributes - User attributes to be returned in the result
+ * @param {object} options - Generic options for sequelize
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
 const getTestPlanRunById = async (
@@ -73,16 +95,25 @@ const getTestPlanRunById = async (
     testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
     testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
     testPlanTargetAttributes = TEST_PLAN_TARGET_ATTRIBUTES,
-    userAttributes = USER_ATTRIBUTES
+    userAttributes = USER_ATTRIBUTES,
+    options = {}
 ) => {
-    return ModelService.getById(TestPlanRun, id, testPlanRunAttributes, [
-        testPlanReportAssociation(
-            testPlanReportAttributes,
-            testPlanVersionAttributes,
-            testPlanTargetAttributes
-        ),
-        userAssociation(userAttributes)
-    ]);
+    return ModelService.getById(
+        TestPlanRun,
+        id,
+        testPlanRunAttributes,
+        [
+            testPlanReportAssociation(
+                testPlanReportAttributes,
+                testPlanRunAttributes,
+                testPlanVersionAttributes,
+                testPlanTargetAttributes,
+                userAttributes
+            ),
+            userAssociation(userAttributes)
+        ],
+        options
+    );
 };
 
 /**
@@ -96,6 +127,8 @@ const getTestPlanRunById = async (
  * @param {number} [pagination.limit=10] - amount of results to be returned per page (affected by {@param pagination.enablePagination})
  * @param {string[][]} [pagination.order=[]] - expects a Sequelize structured input dataset for sorting the Sequelize Model results (NOT affected by {@param pagination.enablePagination}). See {@link https://sequelize.org/v5/manual/querying.html#ordering} and {@example [ [ 'username', 'DESC' ], [..., ...], ... ]}
  * @param {boolean} [pagination.enablePagination=false] - use to enable pagination for a query result as well useful values. Data for all items matching query if not enabled
+ * @param {object} options - Generic options for sequelize
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
 const getTestPlanRuns = async (
@@ -104,7 +137,8 @@ const getTestPlanRuns = async (
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
     userAttributes = USER_ATTRIBUTES,
-    pagination = {}
+    pagination = {},
+    options = {}
 ) => {
     // search and filtering options
     let where = { ...filter };
@@ -117,7 +151,8 @@ const getTestPlanRuns = async (
             testPlanReportAssociation(testPlanReportAttributes),
             userAssociation(userAttributes)
         ],
-        pagination
+        pagination,
+        options
     );
 };
 
@@ -126,13 +161,16 @@ const getTestPlanRuns = async (
  * @param {string[]} testPlanRunAttributes - TestPlanRun attributes to be returned in the result
  * @param {string[]} testPlanReportAttributes - TestPlanReport attributes to be returned in the result
  * @param {string[]} userAttributes - User attributes to be returned in the result
+ * @param {object} options - Generic options for sequelize
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
 const createTestPlanRun = async (
     { testerUserId, testPlanReportId, testResults },
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
-    userAttributes = USER_ATTRIBUTES
+    userAttributes = USER_ATTRIBUTES,
+    options = {}
 ) => {
     // shouldn't have duplicate entries for a tester
     const existingTestPlanRuns = await getTestPlanRuns(
@@ -143,22 +181,33 @@ const createTestPlanRun = async (
         },
         testPlanRunAttributes,
         testPlanReportAttributes,
-        userAttributes
+        userAttributes,
+        options
     );
     if (existingTestPlanRuns.length) return existingTestPlanRuns[0];
 
-    const testPlanRunResult = await ModelService.create(TestPlanRun, {
-        testerUserId,
-        testPlanReportId,
-        testResults
-    });
+    const testPlanRunResult = await ModelService.create(
+        TestPlanRun,
+        {
+            testerUserId,
+            testPlanReportId,
+            testResults
+        },
+        options
+    );
     const { id } = testPlanRunResult;
 
     // to ensure the structure being returned matches what we expect for simple queries and can be controlled
-    return await ModelService.getById(TestPlanRun, id, testPlanRunAttributes, [
-        testPlanReportAssociation(testPlanReportAttributes),
-        userAssociation(userAttributes)
-    ]);
+    return await ModelService.getById(
+        TestPlanRun,
+        id,
+        testPlanRunAttributes,
+        [
+            testPlanReportAssociation(testPlanReportAttributes),
+            userAssociation(userAttributes)
+        ],
+        options
+    );
 };
 
 /**
@@ -167,6 +216,8 @@ const createTestPlanRun = async (
  * @param {string[]} testPlanRunAttributes - TestPlanRun attributes to be returned in the result
  * @param {string[]} testPlanReportAttributes - TestPlanReport attributes to be returned in the result
  * @param {string[]} userAttributes - User attributes to be returned in the result
+ * @param {object} options - Generic options for sequelize
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
 const updateTestPlanRun = async (
@@ -174,14 +225,21 @@ const updateTestPlanRun = async (
     { testResults },
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
-    userAttributes = USER_ATTRIBUTES
+    userAttributes = USER_ATTRIBUTES,
+    options = {}
 ) => {
     await ModelService.update(TestPlanRun, { id }, { testResults });
 
-    return await ModelService.getById(TestPlanRun, id, testPlanRunAttributes, [
-        testPlanReportAssociation(testPlanReportAttributes),
-        userAssociation(userAttributes)
-    ]);
+    return await ModelService.getById(
+        TestPlanRun,
+        id,
+        testPlanRunAttributes,
+        [
+            testPlanReportAssociation(testPlanReportAttributes),
+            userAssociation(userAttributes)
+        ],
+        options
+    );
 };
 
 /**

@@ -34,18 +34,27 @@ const testPlanRunAssociation = testPlanRunAttributes => ({
  * @param {string[]} userAttributes - User attributes to be returned in the result
  * @param {string[]} roleAttributes - Role attributes to be returned in the result
  * @param {string[]} testPlanRunAttributes - TestPlanRun attributes to be returned in the result
+ * @param {object} options - Generic options for sequelize
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
 const getUserById = async (
     id,
     userAttributes = USER_ATTRIBUTES,
     roleAttributes = ROLE_ATTRIBUTES,
-    testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES
+    testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
+    options = {}
 ) => {
-    return await ModelService.getById(User, id, userAttributes, [
-        roleAssociation(roleAttributes),
-        testPlanRunAssociation(testPlanRunAttributes)
-    ]);
+    return await ModelService.getById(
+        User,
+        id,
+        userAttributes,
+        [
+            roleAssociation(roleAttributes),
+            testPlanRunAssociation(testPlanRunAttributes)
+        ],
+        options
+    );
 };
 
 /**
@@ -54,18 +63,27 @@ const getUserById = async (
  * @param {string[]} userAttributes - User attributes to be returned in the result
  * @param {string[]} roleAttributes - Role attributes to be returned in the result
  * @param {string[]} testPlanRunAttributes - TestPlanRun attributes to be returned in the result
+ * @param {object} options - Generic options for sequelize
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
 const getUserByUsername = async (
     username,
     userAttributes = USER_ATTRIBUTES,
     roleAttributes = ROLE_ATTRIBUTES,
-    testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES
+    testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
+    options = {}
 ) => {
-    return await ModelService.getByQuery(User, { username }, userAttributes, [
-        roleAssociation(roleAttributes),
-        testPlanRunAssociation(testPlanRunAttributes)
-    ]);
+    return await ModelService.getByQuery(
+        User,
+        { username },
+        userAttributes,
+        [
+            roleAssociation(roleAttributes),
+            testPlanRunAssociation(testPlanRunAttributes)
+        ],
+        options
+    );
 };
 
 /**
@@ -79,6 +97,8 @@ const getUserByUsername = async (
  * @param {number} [pagination.limit=10] - amount of results to be returned per page (affected by {@param pagination.enablePagination})
  * @param {string[][]} [pagination.order=[]] - expects a Sequelize structured input dataset for sorting the Sequelize Model results (NOT affected by {@param pagination.enablePagination}). See {@link https://sequelize.org/v5/manual/querying.html#ordering} and {@example [ [ 'username', 'DESC' ], [..., ...], ... ]}
  * @param {boolean} [pagination.enablePagination=false] - use to enable pagination for a query result as well useful values. Data for all items matching query if not enabled
+ * @param {object} options - Generic options for sequelize
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
 const getUsers = async (
@@ -87,7 +107,8 @@ const getUsers = async (
     userAttributes = USER_ATTRIBUTES,
     roleAttributes = ROLE_ATTRIBUTES,
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
-    pagination = {}
+    pagination = {},
+    options = {}
 ) => {
     // search and filtering options
     let where = { ...filter };
@@ -103,7 +124,8 @@ const getUsers = async (
             roleAssociation(roleAttributes),
             testPlanRunAssociation(testPlanRunAttributes)
         ],
-        pagination
+        pagination,
+        options
     );
 };
 
@@ -112,25 +134,34 @@ const getUsers = async (
  * @param {string[]} userAttributes - User attributes to be returned in the result
  * @param {string[]} roleAttributes - Role attributes to be returned in the result
  * @param {string[]} testPlanRunAttributes - TestPlanRun attributes to be returned in the result
+ * @param {object} options - Generic options for sequelize
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
 const createUser = async (
     { username, role },
     userAttributes = USER_ATTRIBUTES,
     roleAttributes = ROLE_ATTRIBUTES,
-    testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES
+    testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
+    options
 ) => {
-    const userResult = await ModelService.create(User, { username });
+    const userResult = await ModelService.create(User, { username }, options);
     const { id } = userResult;
 
     // eslint-disable-next-line no-use-before-define
     if (role) await addUserToRole(id, role); // if role was also passed, create UserRole entry
 
     // to ensure the structure being returned matches what we expect for simple queries and can be controlled
-    return await ModelService.getById(User, id, userAttributes, [
-        roleAssociation(roleAttributes),
-        testPlanRunAssociation(testPlanRunAttributes)
-    ]);
+    return await ModelService.getById(
+        User,
+        id,
+        userAttributes,
+        [
+            roleAssociation(roleAttributes),
+            testPlanRunAssociation(testPlanRunAttributes)
+        ],
+        options
+    );
 };
 
 /**
@@ -139,6 +170,8 @@ const createUser = async (
  * @param {string[]} userAttributes - User attributes to be returned in the result
  * @param {string[]} roleAttributes - Role attributes to be returned in the result
  * @param {string[]} testPlanRunAttributes - TestPlanRun attributes to be returned in the result
+ * @param {object} options - Generic options for sequelize
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
 const updateUser = async (
@@ -146,14 +179,21 @@ const updateUser = async (
     { username },
     userAttributes = USER_ATTRIBUTES,
     roleAttributes = ROLE_ATTRIBUTES,
-    testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES
+    testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
+    options = {}
 ) => {
     await ModelService.update(User, { id }, { username });
 
-    return await ModelService.getById(User, id, userAttributes, [
-        roleAssociation(roleAttributes),
-        testPlanRunAssociation(testPlanRunAttributes)
-    ]);
+    return await ModelService.getById(
+        User,
+        id,
+        userAttributes,
+        [
+            roleAssociation(roleAttributes),
+            testPlanRunAssociation(testPlanRunAttributes)
+        ],
+        options
+    );
 };
 
 /**
