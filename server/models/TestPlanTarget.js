@@ -45,7 +45,8 @@ module.exports = function(sequelize, DataTypes) {
     Model.associate = function(models) {
         Model.belongsTo(models.At, {
             ...Model.AT_ASSOCIATION,
-            targetKey: 'id'
+            targetKey: 'id',
+            as: 'at'
         });
 
         Model.belongsTo(models.AtVersion, {
@@ -55,7 +56,8 @@ module.exports = function(sequelize, DataTypes) {
 
         Model.belongsTo(models.Browser, {
             ...Model.BROWSER_ASSOCIATION,
-            targetKey: 'id'
+            targetKey: 'id',
+            as: 'browser'
         });
 
         Model.belongsTo(models.BrowserVersion, {
