@@ -21,16 +21,16 @@ describe('TestPlanTargetModel', () => {
 
     describe('properties', () => {
         // A3
-        ['title', 'at', 'atVersion', 'browser', 'browserVersion'].forEach(
+        ['title', 'atId', 'atVersion', 'browserId', 'browserVersion'].forEach(
             checkPropertyExists(modelInstance)
         );
     });
 
     describe('associations', () => {
         // A1
-        const AT_ASSOCIATION = { foreignKey: 'at' };
+        const AT_ASSOCIATION = { foreignKey: 'atId' };
         const AT_VERSION_ASSOCIATION = { foreignKey: 'atVersion' };
-        const BROWSER_ASSOCIATION = { foreignKey: 'browser' };
+        const BROWSER_ASSOCIATION = { foreignKey: 'browserId' };
         const BROWSER_VERSION_ASSOCIATION = { foreignKey: 'browserVersion' };
 
         // A2

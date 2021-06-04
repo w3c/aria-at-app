@@ -74,34 +74,15 @@ const createTestPlanTarget = async (
     testPlanTargetAttributes = TEST_PLAN_TARGET_ATTRIBUTES,
     options = {}
 ) => {
-    let atName;
-    let browserName;
+    const atResult = await AtService.getAtById(atId);
+    const atName = atResult ? atResult.name : '';
 
-    if (typeof atId === 'string') {
-        atName = atId;
-        const atResults = await AtService.getAts(null, { name: atId });
-        atId = atResults.length ? atResults[0].id : 0;
-    } else {
-        // assuming type is number; get name to construct title if required
-        const atResult = await AtService.getAtById(atId);
-        atName = atResult ? atResult.name : '';
-    }
+    const browserResult = await BrowserService.getBrowserById(browserId);
+    const browserName = browserResult ? browserResult.name : '';
 
-    if (typeof browser === 'string') {
-        browserName = browserId;
-        const browserResults = await BrowserService.getBrowsers(null, {
-            name: browserId
-        });
-        browserId = browserResults.length ? browserResults[0].id : 0;
-    } else {
-        // assuming type is number; get name to construct title if required
-        const browserResult = await BrowserService.getBrowserById(browserId);
-        browserName = browserResult ? browserResult.name : '';
-    }
-
-    // Construct title as <at> <atVersion> with <browser> <browserVersion>
-    if (!title)
+    if (!title) {
         title = `${atName} ${atVersion} with ${browserName} ${browserVersion}`;
+    }
 
     // fallback on SequelizeError for invalid at | atVersion | browser | browserVersion
     const testPlanTargetResult = await ModelService.create(

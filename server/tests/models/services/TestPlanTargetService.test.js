@@ -42,18 +42,18 @@ describe('TestPlanTargetModel data Checks', () => {
         await dbCleaner(async () => {
             // A1
             const _title = null;
-            const _at = 'NVDA'; // 2
-            const _browser = 'Chrome'; // 2
+            const _atId = 2;
+            const _browserId = 2;
             const _atVersion = '2020.4';
             const _browserVersion = '91.0.4472';
-            const constructedTitle = `${_at} ${_atVersion} with ${_browser} ${_browserVersion}`;
+            const constructedTitle = `NVDA ${_atVersion} with Chrome ${_browserVersion}`;
 
             // A2
             const testPlanTarget = await TestPlanTargetService.createTestPlanTarget(
                 {
                     title: _title,
-                    at: _at,
-                    browser: _browser,
+                    atId: _atId,
+                    browserId: _browserId,
                     atVersion: _atVersion,
                     browserVersion: _browserVersion
                 }
@@ -61,8 +61,8 @@ describe('TestPlanTargetModel data Checks', () => {
             const {
                 id,
                 title,
-                at,
-                browser,
+                atId,
+                browserId,
                 atVersion,
                 browserVersion
             } = testPlanTarget;
@@ -70,8 +70,8 @@ describe('TestPlanTargetModel data Checks', () => {
             // A3
             expect(id).toBeTruthy();
             expect(title).toEqual(constructedTitle);
-            expect(at).toEqual(2);
-            expect(browser).toEqual(2);
+            expect(atId).toEqual(2);
+            expect(browserId).toEqual(2);
             expect(atVersion).toEqual(_atVersion);
             expect(browserVersion).toEqual(_browserVersion);
         });
@@ -81,8 +81,8 @@ describe('TestPlanTargetModel data Checks', () => {
         await dbCleaner(async () => {
             // A1
             const _title = null;
-            const _at = 'non-existent at';
-            const _browser = 'non-existent browser';
+            const _atId = 22;
+            const _browserId = 22;
             const _atVersion = '2020.4';
             const _browserVersion = '91.0.4472';
 
@@ -90,8 +90,8 @@ describe('TestPlanTargetModel data Checks', () => {
             const createTestPlanTarget = async () => {
                 await TestPlanTargetService.createTestPlanTarget({
                     title: _title,
-                    at: _at,
-                    browser: _browser,
+                    atId: _atId,
+                    browserId: _browserId,
                     atVersion: _atVersion,
                     browserVersion: _browserVersion
                 });
@@ -107,8 +107,8 @@ describe('TestPlanTargetModel data Checks', () => {
         await dbCleaner(async () => {
             // A1
             const _title = null;
-            const _at = 594;
-            const _browser = 242;
+            const _atId = 594;
+            const _browserId = 242;
             const _atVersion = '2020.4';
             const _browserVersion = '91.0.4472';
 
@@ -116,34 +116,8 @@ describe('TestPlanTargetModel data Checks', () => {
             const createTestPlanTarget = async () => {
                 await TestPlanTargetService.createTestPlanTarget({
                     title: _title,
-                    at: _at,
-                    browser: _browser,
-                    atVersion: _atVersion,
-                    browserVersion: _browserVersion
-                });
-            };
-
-            await expect(createTestPlanTarget()).rejects.toThrow(
-                /violates foreign key/gi
-            );
-        });
-    });
-
-    it('should fail to create a new testPlanTarget with invalid atVersion or browserVersion number entries', async () => {
-        await dbCleaner(async () => {
-            // A1
-            const _title = null;
-            const _at = 'NVDA'; // 2
-            const _browser = 'Chrome'; // 2
-            const _atVersion = 'non.existent.at.atVersion';
-            const _browserVersion = 'non.existent.browser.browserVersion';
-
-            // A2
-            const createTestPlanTarget = async () => {
-                await TestPlanTargetService.createTestPlanTarget({
-                    title: _title,
-                    at: _at,
-                    browser: _browser,
+                    atId: _atId,
+                    browserId: _browserId,
                     atVersion: _atVersion,
                     browserVersion: _browserVersion
                 });
@@ -159,8 +133,8 @@ describe('TestPlanTargetModel data Checks', () => {
         await dbCleaner(async () => {
             // A1
             const _title = randomStringGenerator();
-            const _at = 2;
-            const _browser = 2;
+            const _atId = 2;
+            const _browserId = 2;
             const _atVersion = '2020.4';
             const _browserVersion = '91.0.4472';
 
@@ -168,8 +142,8 @@ describe('TestPlanTargetModel data Checks', () => {
             const testPlanTarget = await TestPlanTargetService.createTestPlanTarget(
                 {
                     title: _title,
-                    at: _at,
-                    browser: _browser,
+                    atId: _atId,
+                    browserId: _browserId,
                     atVersion: _atVersion,
                     browserVersion: _browserVersion
                 }
@@ -177,8 +151,8 @@ describe('TestPlanTargetModel data Checks', () => {
             const {
                 id,
                 title,
-                at,
-                browser,
+                atId,
+                browserId,
                 atVersion,
                 browserVersion
             } = testPlanTarget;
@@ -192,8 +166,8 @@ describe('TestPlanTargetModel data Checks', () => {
             // after testPlanTarget created
             expect(id).toBeTruthy();
             expect(title).toEqual(_title);
-            expect(at).toEqual(_at);
-            expect(browser).toEqual(_browser);
+            expect(atId).toEqual(_atId);
+            expect(browserId).toEqual(_browserId);
             expect(atVersion).toEqual(_atVersion);
             expect(browserVersion).toEqual(_browserVersion);
 
@@ -219,8 +193,8 @@ describe('TestPlanTargetModel data Checks', () => {
                 expect.objectContaining({
                     id: expect.any(Number),
                     title: expect.stringMatching(/Chrome/gi),
-                    at: expect.any(Number),
-                    browser: expect.any(Number),
+                    atId: expect.any(Number),
+                    browserId: expect.any(Number),
                     atVersion: expect.any(String),
                     browserVersion: expect.any(String)
                 })

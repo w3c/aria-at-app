@@ -21,7 +21,7 @@ describe('TestPlanRunModel Data Checks', () => {
         expect(testPlanRun).toHaveProperty('tester');
     });
 
-    it('should return valid testPlanRun for id query with no associations', async () => {
+    it.only('should return valid testPlanRun for id query with no associations', async () => {
         const _id = 1;
 
         const testPlanRun = await TestPlanRunService.getTestPlanRunById(

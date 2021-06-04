@@ -240,7 +240,7 @@ describe('AtVersionModel Data Checks', () => {
                 })
             })
         );
-        expect(atVersion).toHaveProperty('at');
+        expect(atVersionInstance).toHaveProperty('at');
     });
 
     it('should return valid atVersion for query with no associations', async () => {

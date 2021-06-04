@@ -161,14 +161,14 @@ const removeBrowser = async (id, deleteOptions = { truncate: false }) => {
  * @returns {Promise<*>}
  */
 const getBrowserVersionByQuery = async (
-    { browserId, version },
+    { browserId, browserVersion },
     browserVersionAttributes = BROWSER_VERSION_ATTRIBUTES,
     browserAttributes = BROWSER_ATTRIBUTES,
     options = {}
 ) => {
     return ModelService.getByQuery(
         BrowserVersion,
-        { browserId, version },
+        { browserId, browserVersion },
         browserVersionAttributes,
         [browserAssociation(browserAttributes)],
         options
@@ -253,7 +253,7 @@ const createBrowserVersion = async (
  * @returns {Promise<*>}
  */
 const updateBrowserVersionByQuery = async (
-    { browserId, version },
+    { browserId, browserVersion },
     updateParams = {},
     browserVersionAttributes = BROWSER_VERSION_ATTRIBUTES,
     browserAttributes = BROWSER_ATTRIBUTES,
@@ -261,14 +261,17 @@ const updateBrowserVersionByQuery = async (
 ) => {
     await ModelService.update(
         BrowserVersion,
-        { browserId, version },
+        { browserId, browserVersion },
         updateParams,
         options
     );
 
     return await ModelService.getByQuery(
         BrowserVersion,
-        { browserId, version: updateParams.version || version },
+        {
+            browserId,
+            browserVersion: updateParams.browserVersion || browserVersion
+        },
         browserVersionAttributes,
         [browserAssociation(browserAttributes)],
         options
@@ -281,12 +284,12 @@ const updateBrowserVersionByQuery = async (
  * @returns {Promise<boolean>}
  */
 const removeBrowserVersionByQuery = async (
-    { browserId, version },
+    { browserId, browserVersion },
     deleteOptions = { truncate: false }
 ) => {
     return await ModelService.removeByQuery(
         BrowserVersion,
-        { browserId, version },
+        { browserId, browserVersion },
         deleteOptions
     );
 };
