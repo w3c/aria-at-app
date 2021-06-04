@@ -259,7 +259,7 @@ describe('test queue', () => {
         );
     });
 
-    it.only('supports adding reports', async () => {
+    it('supports adding reports', async () => {
         // DB cleaner is not supported because this mutation uses a transaction
         // A1
         const testPlanVersionId = '1';
