@@ -44,9 +44,9 @@ export default [
                 exact: true,
                 component: () => {
                     return (
-                        <ConfirmAuth requiredPermission="tester">
-                            <Route component={TestQueue} />
-                        </ConfirmAuth>
+                        // <ConfirmAuth requiredPermission="tester">
+                        <Route component={TestQueue} />
+                        // </ConfirmAuth>
                     );
                 }
             },

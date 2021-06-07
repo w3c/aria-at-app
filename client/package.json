@@ -23,11 +23,13 @@
   },
   "homepage": "https://github.com/bocoup/aria-at-report#readme",
   "dependencies": {
+    "@apollo/client": "^3.3.19",
     "@fortawesome/fontawesome-svg-core": "^1.2.32",
     "@fortawesome/free-solid-svg-icons": "^5.15.1",
     "@fortawesome/react-fontawesome": "^0.1.11",
     "bootstrap": "^4.4.1",
     "dotenv-webpack": "^1.8.0",
+    "graphql": "^15.5.0",
     "node-sass": "^4.13.1",
     "query-string": "^6.12.1",
     "react-bootstrap": "^1.0.0",
