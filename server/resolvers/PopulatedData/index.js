@@ -57,7 +57,7 @@ const PopulatedData = async ({ parentContext: { locationOfData } }) => {
     const browserVersion = testPlanTarget && testPlanTarget.browserVersion;
 
     if (!testPlanVersion) {
-        // TODO: This error can be removed when a TestPlan table is added.
+        // TODO: This error can be removed when we refine the versioning
         throw new Error(
             'LocationOfData without an associated test plan version is not ' +
                 'yet implemented. Note you may see this error if the data ' +
@@ -67,7 +67,9 @@ const PopulatedData = async ({ parentContext: { locationOfData } }) => {
     testPlan = { id: testPlanVersion.metadata.directory };
 
     const idsContradict = (provided, found) => {
-        return provided && provided.toString() !== found.id.toString();
+        return (
+            provided && (!found || provided.toString() !== found.id.toString())
+        );
     };
     if (
         idsContradict(testPlanId, testPlan) ||

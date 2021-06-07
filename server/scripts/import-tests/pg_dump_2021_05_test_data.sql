@@ -62,7 +62,7 @@ INSERT INTO public."BrowserVersion" ("browserId", "browserVersion") VALUES (3, '
 -- Data for Name: TestPlanTarget; Type: TABLE DATA; Schema: public; Owner: atr
 --
 
-INSERT INTO public."TestPlanTarget" (id, title, at, browser, "atVersion", "browserVersion") VALUES (1, 'NVDA 2020.4 with Chrome 91.0.4472', 2, 2, '2020.4', '91.0.4472');
+INSERT INTO public."TestPlanTarget" (id, title, "atId", "browserId", "atVersion", "browserVersion") VALUES (1, 'NVDA 2020.4 with Chrome 91.0.4472', 2, 2, '2020.4', '91.0.4472');
 
 
 --
