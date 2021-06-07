@@ -93,13 +93,13 @@ const userAssociation = userAttributes => ({
 /**
  * You can pass any of the attribute arrays as '[]' to exclude that related association
  * @param {number} id - unique id of the TestPlanReport model being queried
- * @param {string[]} testPlanReportAttributes - TestPlanRun attributes to be returned in the result
+ * @param {string[]} testPlanReportAttributes - TestPlanReport attributes to be returned in the result
  * @param {string[]} testPlanRunAttributes - TestPlanRun attributes to be returned in the result
  * @param {string[]} testPlanVersionAttributes - TestPlanVersion attributes to be returned in the result
  * @param {string[]} testPlanTargetAttributes - TestPlanTarget attributes to be returned in the result
  * @param {string[]} atAttributes - At attributes to be returned in the result
- * @param {string[]} browserAttributes - Browser attributes to be returned in the results
- * @param {string[]} userAttributes - User attributes to be returned in the results
+ * @param {string[]} browserAttributes - Browser attributes to be returned in the result
+ * @param {string[]} userAttributes - User attributes to be returned in the result
  * @param {object} options - Generic options for Sequelize
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
@@ -135,13 +135,13 @@ const getTestPlanReportById = async (
 /**
  * @param {string|any} search - use this to combine with {@param filter} to be passed to Sequelize's where clause
  * @param {object} filter - use this define conditions to be passed to Sequelize's where clause
- * @param {string[]} testPlanReportAttributes - TestPlanRun attributes to be returned in the result
+ * @param {string[]} testPlanReportAttributes - TestPlanReport attributes to be returned in the result
  * @param {string[]} testPlanRunAttributes - TestPlanRun attributes to be returned in the result
  * @param {string[]} testPlanVersionAttributes - TestPlanVersion attributes to be returned in the result
  * @param {string[]} testPlanTargetAttributes - TestPlanTarget attributes to be returned in the result
  * @param {string[]} atAttributes - At attributes to be returned in the result
- * @param {string[]} browserAttributes - Browser attributes to be returned in the results
- * @param {string[]} userAttributes - User attributes to be returned in the results
+ * @param {string[]} browserAttributes - Browser attributes to be returned in the result
+ * @param {string[]} userAttributes - User attributes to be returned in the result
  * @param {object} pagination - pagination options for query
  * @param {number} [pagination.page=0] - page to be queried in the pagination result (affected by {@param pagination.enablePagination})
  * @param {number} [pagination.limit=10] - amount of results to be returned per page (affected by {@param pagination.enablePagination})
@@ -187,13 +187,13 @@ const getTestPlanReports = async (
 
 /**
  * @param {object} createParams - values to be used to create the TestPlanReport
- * @param {string[]} testPlanReportAttributes - TestPlanRun attributes to be returned in the result
+ * @param {string[]} testPlanReportAttributes - TestPlanReport attributes to be returned in the result
  * @param {string[]} testPlanRunAttributes - TestPlanRun attributes to be returned in the result
  * @param {string[]} testPlanVersionAttributes - TestPlanVersion attributes to be returned in the result
  * @param {string[]} testPlanTargetAttributes - TestPlanTarget attributes to be returned in the result
  * @param {string[]} atAttributes - At attributes to be returned in the result
- * @param {string[]} browserAttributes - Browser attributes to be returned in the results
- * @param {string[]} userAttributes - User attributes to be returned in the results
+ * @param {string[]} browserAttributes - Browser attributes to be returned in the result
+ * @param {string[]} userAttributes - User attributes to be returned in the result
  * @param {object} options - Generic options for Sequelize
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
@@ -280,7 +280,7 @@ const updateTestPlanReport = async (
 };
 
 /**
- * Gets one TestPlanReport, or creates it if it doesn't exist, and then optionally updates it.
+ * Gets one TestPlanReport, or creates it if it doesn't exist, and then optionally updates it. Supports nested / associated values.
  * @param {*} nestedGetOrCreateValues - These values will be used to find a matching record, or they will be used to create one
  * @param {*} nestedUpdateValues - Values which will be used when a record is found or created, but not used for the initial find
  * @param {*} testPlanReportAttributes - TestPlanReport attributes to be returned in the result

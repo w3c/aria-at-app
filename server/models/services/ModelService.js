@@ -176,7 +176,6 @@ const update = async (model, queryParams, updateParams, options = {}) => {
     );
 };
 
-// TODO: update description
 /**
  * Gets or creates multiple records for multiple models as part of a
  * single transaction.
