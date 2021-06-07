@@ -3,6 +3,8 @@ const ModelService = require('../../../models/services/ModelService');
 const {
     getSequelizeModelAttributes
 } = require('../../../models/services/helpers');
+const AtService = require('../../../models/services/AtService');
+const TestPlanTargetService = require('../../../models/services/TestPlanTargetService');
 const { dbCleaner } = require('../../util/db-cleaner');
 
 // valid ModelService functionality has been covered by all other ModelService tests
@@ -65,10 +67,6 @@ describe('ModelService', () => {
         await expect(update()).rejects.toThrow(/not defined/gi);
     });
 
-    it('should support nested upcerts', () => {
-        expect(true).toBe(false);
-    });
-
     it('should throw error if model not passed for removeById', async () => {
         const removeById = async () => {
             await dbCleaner(async () => {
@@ -87,6 +85,58 @@ describe('ModelService', () => {
         };
 
         await expect(removeByQuery()).rejects.toThrow(/not defined/gi);
+    });
+
+    it('should support nestedGetOrCreate', async () => {
+        const _atId = 2;
+        const _atVersion = '2222.0';
+        const _browserId = 1;
+        const _browserVersion = '88.0';
+
+        const results = await ModelService.nestedGetOrCreate([
+            {
+                get: AtService.getAtVersions,
+                create: AtService.createAtVersion,
+                values: {
+                    atId: _atId,
+                    atVersion: _atVersion
+                },
+                returnAttributes: [null, []]
+            },
+            {
+                get: TestPlanTargetService.getTestPlanTargets,
+                create: TestPlanTargetService.createTestPlanTarget,
+                values: {
+                    atId: _atId,
+                    atVersion: _atVersion,
+                    browserId: _browserId,
+                    browserVersion: _browserVersion
+                },
+                returnAttributes: [null]
+            }
+        ]);
+        // DB cleaner is not supported because this query uses a transaction
+        await results[1][0].destroy();
+        await results[0][0].destroy();
+
+        expect(results).toEqual([
+            [
+                expect.objectContaining({
+                    atId: _atId,
+                    atVersion: _atVersion
+                }),
+                true
+            ],
+            [
+                expect.objectContaining({
+                    atId: _atId,
+                    atVersion: _atVersion,
+                    browserId: _browserId,
+                    browserVersion: _browserVersion
+                }),
+                true
+            ]
+        ]);
     });
 
     it('should return result for raw query', async () => {

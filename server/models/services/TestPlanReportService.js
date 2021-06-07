@@ -388,6 +388,7 @@ module.exports = {
     // Basic CRUD
     getTestPlanReportById,
     getTestPlanReports,
+    createTestPlanReport,
     updateTestPlanReport,
     getOrCreateTestPlanReport
 };
