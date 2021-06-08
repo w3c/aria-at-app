@@ -16,77 +16,72 @@ import UserSettings from '@components/UserSettings';
 
 export default [
     {
-        component: App,
-        routes: [
-            {
-                path: '/',
-                exact: true,
-                component: Home
-            },
-            {
-                path: '/signup-instructions',
-                exact: true,
-                component: SignupInstructions
-            },
-            {
-                path: '/account/settings',
-                exact: true,
-                component: () => {
-                    return (
-                        <ConfirmAuth requiredPermission="tester">
-                            <Route component={UserSettings} />
-                        </ConfirmAuth>
-                    );
-                }
-            },
-            {
-                path: '/test-queue',
-                exact: true,
-                component: () => {
-                    return (
-                        // <ConfirmAuth requiredPermission="tester">
-                        <Route component={TestQueue} />
-                        // </ConfirmAuth>
-                    );
-                }
-            },
-            {
-                path: '/admin/configure-runs',
-                exact: true,
-                component: () => {
-                    return (
-                        <ConfirmAuth requiredPermission="admin">
-                            <Route component={ConfigureActiveRuns} />
-                        </ConfirmAuth>
-                    );
-                }
-            },
-            {
-                path: '/results/run/:runId(\\d+)',
-                component: RunResultsPage
-            },
-            {
-                path: '/run/:runId(\\d+)',
-                component: TestRun
-            },
-            {
-                path: '/reports/test-plans/:testPlanId(\\d+)',
-                component: TestPlanReportPage
-            },
-            {
-                path: '/reports',
-                component: ReportsPage
-            },
-            {
-                path: '/404',
-                exact: true,
-                component: NotFound
-            },
-            {
-                component: () => {
-                    return <Redirect to={{ pathname: '/404' }} />;
-                }
-            }
-        ]
+        path: '/',
+        exact: true,
+        component: Home
+    },
+    {
+        path: '/signup-instructions',
+        exact: true,
+        component: SignupInstructions
+    },
+    {
+        path: '/account/settings',
+        exact: true,
+        component: () => {
+            return (
+                <ConfirmAuth requiredPermission="tester">
+                    <Route component={UserSettings} />
+                </ConfirmAuth>
+            );
+        }
+    },
+    {
+        path: '/test-queue',
+        exact: true,
+        component: () => {
+            return (
+                <ConfirmAuth requiredPermission="tester">
+                    <Route component={TestQueue} />
+                </ConfirmAuth>
+            );
+        }
+    },
+    {
+        path: '/admin/configure-runs',
+        exact: true,
+        component: () => {
+            return (
+                <ConfirmAuth requiredPermission="admin">
+                    <Route component={ConfigureActiveRuns} />
+                </ConfirmAuth>
+            );
+        }
+    },
+    {
+        path: '/results/run/:runId(\\d+)',
+        component: RunResultsPage
+    },
+    {
+        path: '/run/:runId(\\d+)',
+        component: TestRun
+    },
+    {
+        path: '/reports/test-plans/:testPlanId(\\d+)',
+        component: TestPlanReportPage
+    },
+    {
+        path: '/reports',
+        component: ReportsPage
+    },
+    {
+        path: '/404',
+        exact: true,
+        component: NotFound
+    },
+    {
+        component: () => {
+            return <Redirect to={{ pathname: '/404' }} />;
+        }
     }
 ];
