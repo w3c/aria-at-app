@@ -237,10 +237,17 @@ const update = async (model, queryParams, updateParams, options = {}) => {
  * ] = results;
  *
  * @param {[object|function]} getOptionsArray
+ * @param {object} options - Generic options for Sequelize
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<[[*,Boolean]]>}
  */
-const nestedGetOrCreate = async getOptionsArray => {
-    return await sequelize.transaction(async transaction => {
+const nestedGetOrCreate = async (getOptionsArray, options = {}) => {
+    const isInternalTransaction = !options.transaction;
+    const transaction = isInternalTransaction
+        ? await sequelize.transaction()
+        : options.transaction;
+
+    try {
         let accumulatedResults = [];
         for (const getOptions of getOptionsArray) {
             const {
@@ -271,8 +278,9 @@ const nestedGetOrCreate = async getOptionsArray => {
                         found[0].id,
                         updateValues,
                         ...returnAttributes,
-                        pagination,
-                        { transaction }
+                        {
+                            transaction
+                        }
                     );
                 }
                 accumulatedResults.push([found[0], false]);
@@ -282,15 +290,21 @@ const nestedGetOrCreate = async getOptionsArray => {
             const created = await create(
                 { ...values, ...updateValues },
                 ...returnAttributes,
-                pagination,
                 { transaction }
             );
 
             accumulatedResults.push([created, true]);
         }
 
+        if (isInternalTransaction) {
+            await transaction.commit();
+        }
+
         return accumulatedResults;
-    });
+    } catch (error) {
+        await transaction.rollback();
+        throw error;
+    }
 };
 
 /**

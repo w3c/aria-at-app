@@ -353,7 +353,10 @@ describe('test queue', () => {
         const second = await mutationToTest();
         // DB cleaner is not supported because this mutation uses a transaction
         await TestPlanReport.destroy({
-            where: { id: first.testPlanReport.id }
+            where: {
+                id: first.testPlanReport.id,
+                testPlanTargetId: first.testPlanTarget.id
+            }
         });
         await removeTestPlanTarget(first.testPlanTarget.id);
         await removeBrowserVersionByQuery({

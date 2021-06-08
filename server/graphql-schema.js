@@ -257,6 +257,9 @@ const graphqlSchema = gql`
         passThroughResultIndex: Int
     }
 
+    """
+    All the records that are associated with the id(s) of a given locationOfData
+    """
     type PopulatedData {
         locationOfData: LocationOfData!
         testPlan: TestPlan
