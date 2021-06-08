@@ -260,7 +260,7 @@ const createAtVersion = async (
     atAttributes = AT_ATTRIBUTES,
     options = {}
 ) => {
-    await ModelService.create(AtVersion, { atId, atVersion });
+    await ModelService.create(AtVersion, { atId, atVersion }, options);
 
     // to ensure the structure being returned matches what we expect for simple queries and can be controlled
     return await ModelService.getByQuery(

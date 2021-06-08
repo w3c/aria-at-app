@@ -290,6 +290,8 @@ const updateTestPlanReport = async (
  * @param {*} atAttributes - At attributes to be returned in the result
  * @param {*} browserAttributes - Browser attributes to be returned in the result
  * @param {*} userAttributes - User attributes to be returned in the result
+ * @param {object} options - Generic options for Sequelize
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<[*, [*]]}
  */
 const getOrCreateTestPlanReport = async (
@@ -309,47 +311,51 @@ const getOrCreateTestPlanReport = async (
     testPlanTargetAttributes = TEST_PLAN_TARGET_ATTRIBUTES,
     atAttributes = AT_ATTRIBUTES,
     browserAttributes = BROWSER_ATTRIBUTES,
-    userAttributes = USER_ATTRIBUTES
+    userAttributes = USER_ATTRIBUTES,
+    options = {}
 ) => {
-    const accumulatedResults = await ModelService.nestedGetOrCreate([
-        {
-            get: getAtVersions,
-            create: createAtVersion,
-            values: { atId, atVersion: providedAtVersion },
-            returnAttributes: [null, []]
-        },
-        {
-            get: getBrowserVersions,
-            create: createBrowserVersion,
-            values: { browserId, browserVersion: providedBrowserVersion },
-            returnAttributes: [null, []]
-        },
-        {
-            get: getTestPlanTargets,
-            create: createTestPlanTarget,
-            values: {
-                atId,
-                browserId,
-                atVersion: providedAtVersion,
-                browserVersion: providedBrowserVersion
+    const accumulatedResults = await ModelService.nestedGetOrCreate(
+        [
+            {
+                get: getAtVersions,
+                create: createAtVersion,
+                values: { atId, atVersion: providedAtVersion },
+                returnAttributes: [null, []]
             },
-            returnAttributes: [null]
-        },
-        accumulatedResults => {
-            const [testPlanTarget] = accumulatedResults[2];
-            return {
-                get: getTestPlanReports,
-                create: createTestPlanReport,
-                update: updateTestPlanReport,
+            {
+                get: getBrowserVersions,
+                create: createBrowserVersion,
+                values: { browserId, browserVersion: providedBrowserVersion },
+                returnAttributes: [null, []]
+            },
+            {
+                get: getTestPlanTargets,
+                create: createTestPlanTarget,
                 values: {
-                    testPlanTargetId: testPlanTarget.id,
-                    testPlanVersionId: testPlanVersionId
+                    atId,
+                    browserId,
+                    atVersion: providedAtVersion,
+                    browserVersion: providedBrowserVersion
                 },
-                updateValues: { status },
-                returnAttributes: [null, [], [], [], [], [], []]
-            };
-        }
-    ]);
+                returnAttributes: [null]
+            },
+            accumulatedResults => {
+                const [testPlanTarget] = accumulatedResults[2];
+                return {
+                    get: getTestPlanReports,
+                    create: createTestPlanReport,
+                    update: updateTestPlanReport,
+                    values: {
+                        testPlanTargetId: testPlanTarget.id,
+                        testPlanVersionId: testPlanVersionId
+                    },
+                    updateValues: { status },
+                    returnAttributes: [null, [], [], [], [], [], []]
+                };
+            }
+        ],
+        options
+    );
 
     const testPlanTargetId = accumulatedResults[2][0].id;
     const testPlanReportId = accumulatedResults[3][0].id;
@@ -378,7 +384,8 @@ const getOrCreateTestPlanReport = async (
         testPlanTargetAttributes,
         atAttributes,
         browserAttributes,
-        userAttributes
+        userAttributes,
+        options
     );
 
     return [testPlanReport, created];

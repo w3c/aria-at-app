@@ -111,7 +111,7 @@ describe('TestPlanReportModel Data Checks', () => {
     it('should create TestPlanReport', async () => {
         await dbCleaner(async () => {
             const _testPlanTargetId = 1;
-            const _testPlanVersionId = 2;
+            const _testPlanVersionId = 3;
             const _status = 'DRAFT';
 
             const testPlanReport = await TestPlanReportService.createTestPlanReport(
@@ -139,12 +139,14 @@ describe('TestPlanReportModel Data Checks', () => {
 
     it('should getOrCreate TestPlanReport', async () => {
         // A1
+        // DB cleaner is not supported because this query uses a transaction
+        const transaction = await sequelize.transaction();
         const _status = 'DRAFT';
         const _testPlanVersionId = 2;
         const _atId = 2;
         const _atVersion = '2020.4';
         const _browserId = 1;
-        const _browserVersion = '88.0';
+        const _browserVersion = '86.0.1';
         const _testPlanTarget = {
             atId: _atId,
             atVersion: _atVersion,
@@ -156,13 +158,23 @@ describe('TestPlanReportModel Data Checks', () => {
         const [
             testPlanReport,
             created
-        ] = await TestPlanReportService.getOrCreateTestPlanReport({
-            status: _status,
-            testPlanVersionId: _testPlanVersionId,
-            testPlanTarget: _testPlanTarget
-        });
-        // DB cleaner is not supported because this query uses a transaction
-        await testPlanReport.destroy();
+        ] = await TestPlanReportService.getOrCreateTestPlanReport(
+            {
+                status: _status,
+                testPlanVersionId: _testPlanVersionId,
+                testPlanTarget: _testPlanTarget
+            },
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            { transaction }
+        );
+        await transaction.rollback();
 
         // A3
         expect(testPlanReport).toEqual(
@@ -180,11 +192,19 @@ describe('TestPlanReportModel Data Checks', () => {
                 })
             })
         );
-        expect(created.length).toBe(1);
-        expect(created[0]).toEqual(
-            expect.objectContaining({
-                testPlanReportId: testPlanReport.id
-            })
+        expect(created.length).toBe(2);
+        expect(created).toEqual(
+            expect.arrayContaining([
+                // TestPlanReport
+                expect.objectContaining({
+                    testPlanReportId: testPlanReport.id
+                }),
+                // TestPlanTarget
+                expect.objectContaining({
+                    testPlanReportId: testPlanReport.id,
+                    testPlanTargetId: expect.anything()
+                })
+            ])
         );
     });
 });

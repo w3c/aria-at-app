@@ -88,36 +88,39 @@ describe('ModelService', () => {
     });
 
     it('should support nestedGetOrCreate', async () => {
+        // DB cleaner is not supported because this query uses a transaction
+        const transaction = await sequelize.transaction();
         const _atId = 2;
         const _atVersion = '2222.0';
         const _browserId = 1;
         const _browserVersion = '88.0';
 
-        const results = await ModelService.nestedGetOrCreate([
-            {
-                get: AtService.getAtVersions,
-                create: AtService.createAtVersion,
-                values: {
-                    atId: _atId,
-                    atVersion: _atVersion
+        const results = await ModelService.nestedGetOrCreate(
+            [
+                {
+                    get: AtService.getAtVersions,
+                    create: AtService.createAtVersion,
+                    values: {
+                        atId: _atId,
+                        atVersion: _atVersion
+                    },
+                    returnAttributes: [null, []]
                 },
-                returnAttributes: [null, []]
-            },
-            {
-                get: TestPlanTargetService.getTestPlanTargets,
-                create: TestPlanTargetService.createTestPlanTarget,
-                values: {
-                    atId: _atId,
-                    atVersion: _atVersion,
-                    browserId: _browserId,
-                    browserVersion: _browserVersion
-                },
-                returnAttributes: [null]
-            }
-        ]);
-        // DB cleaner is not supported because this query uses a transaction
-        await results[1][0].destroy();
-        await results[0][0].destroy();
+                {
+                    get: TestPlanTargetService.getTestPlanTargets,
+                    create: TestPlanTargetService.createTestPlanTarget,
+                    values: {
+                        atId: _atId,
+                        atVersion: _atVersion,
+                        browserId: _browserId,
+                        browserVersion: _browserVersion
+                    },
+                    returnAttributes: [null]
+                }
+            ],
+            { transaction }
+        );
+        await transaction.rollback();
 
         expect(results).toEqual([
             [
