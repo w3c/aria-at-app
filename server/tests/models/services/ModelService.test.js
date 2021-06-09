@@ -3,6 +3,8 @@ const ModelService = require('../../../models/services/ModelService');
 const {
     getSequelizeModelAttributes
 } = require('../../../models/services/helpers');
+const AtService = require('../../../models/services/AtService');
+const TestPlanTargetService = require('../../../models/services/TestPlanTargetService');
 const { dbCleaner } = require('../../util/db-cleaner');
 
 // valid ModelService functionality has been covered by all other ModelService tests
@@ -83,6 +85,61 @@ describe('ModelService', () => {
         };
 
         await expect(removeByQuery()).rejects.toThrow(/not defined/gi);
+    });
+
+    it('should support nestedGetOrCreate', async () => {
+        // DB cleaner is not supported because this query uses a transaction
+        const transaction = await sequelize.transaction();
+        const _atId = 2;
+        const _atVersion = '2222.0';
+        const _browserId = 1;
+        const _browserVersion = '88.0';
+
+        const results = await ModelService.nestedGetOrCreate(
+            [
+                {
+                    get: AtService.getAtVersions,
+                    create: AtService.createAtVersion,
+                    values: {
+                        atId: _atId,
+                        atVersion: _atVersion
+                    },
+                    returnAttributes: [null, []]
+                },
+                {
+                    get: TestPlanTargetService.getTestPlanTargets,
+                    create: TestPlanTargetService.createTestPlanTarget,
+                    values: {
+                        atId: _atId,
+                        atVersion: _atVersion,
+                        browserId: _browserId,
+                        browserVersion: _browserVersion
+                    },
+                    returnAttributes: [null]
+                }
+            ],
+            { transaction }
+        );
+        await transaction.rollback();
+
+        expect(results).toEqual([
+            [
+                expect.objectContaining({
+                    atId: _atId,
+                    atVersion: _atVersion
+                }),
+                true
+            ],
+            [
+                expect.objectContaining({
+                    atId: _atId,
+                    atVersion: _atVersion,
+                    browserId: _browserId,
+                    browserVersion: _browserVersion
+                }),
+                true
+            ]
+        ]);
     });
 
     it('should return result for raw query', async () => {

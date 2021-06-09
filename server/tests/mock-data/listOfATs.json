@@ -2,11 +2,11 @@
     "atsDB": [
         {
             "id": 0,
-            "name": "Foo"
+            "name": "NVDA"
         },
         {
             "id": 1,
-            "name": "Bar"
+            "name": "JAWS"
         }
     ]
 }

@@ -24,6 +24,9 @@ module.exports = function(sequelize, DataTypes) {
         }
     );
 
+    Model.TESTER = 'TESTER';
+    Model.ADMIN = 'ADMIN';
+
     Model.ROLE_ASSOCIATION = { through: 'UserRoles', as: 'roles' };
 
     Model.TEST_PLAN_RUN_ASSOCIATION = { as: 'testPlanRuns' };

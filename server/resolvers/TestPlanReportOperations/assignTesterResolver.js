@@ -2,21 +2,25 @@ const { AuthenticationError } = require('apollo-server');
 const {
     createTestPlanRun
 } = require('../../models/services/TestPlanRunService');
+const populatedDataResolver = require('../PopulatedData');
 
 const assignTesterResolver = async (
     { parentContext: { id: testPlanReportId } },
-    { user: testerUserId },
+    { userId: testerUserId },
     { user }
 ) => {
     if (!user.roles.includes('ADMIN')) {
         throw new AuthenticationError();
     }
 
-    await createTestPlanRun({
+    const { id: testPlanRunId } = await createTestPlanRun({
         testPlanReportId,
         testerUserId
     });
-    return { parentContext: { id: testPlanReportId } };
+
+    return populatedDataResolver({
+        parentContext: { locationOfData: { testPlanReportId, testPlanRunId } }
+    });
 };
 
 module.exports = assignTesterResolver;

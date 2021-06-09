@@ -21,8 +21,9 @@ const graphqlSchema = gql`
     }
 
     type Browser {
+        id: ID!
         name: String!
-        versions: [String]!
+        browserVersions: [String]!
     }
 
     enum AtMode {
@@ -32,9 +33,10 @@ const graphqlSchema = gql`
     }
 
     type At {
+        id: ID!
         name: String!
         modes: [AtMode]!
-        versions: [String]!
+        atVersions: [String]!
     }
 
     """
@@ -52,13 +54,13 @@ const graphqlSchema = gql`
     }
 
     input TestPlanTargetInput {
-        at: ID!
+        atId: ID!
         atVersion: String!
-        browser: ID!
+        browserId: ID!
         browserVersion: String!
     }
 
-    enum TestPlanStatus {
+    enum TestPlanVersionStatus {
         DRAFT
         IN_REVIEW
         FINALIZED
@@ -69,25 +71,45 @@ const graphqlSchema = gql`
         Corresponds to the ARIA-AT directory storing the test plan.
         """
         id: ID!
-        atGitSha(gitSha: String!): TestPlanVersion
-        latestVersion: TestPlanVersion!
-        latestVersionWithResults: TestPlanVersion
-        versions: [TestPlanVersion]!
-        versionsWithResults: [TestPlanVersion]!
-        queueRelevantVersions: [TestPlanVersion]!
+        # TODO: determine if isObsolete is needed.
+        # """
+        # Whether the directory still exists in the ARIA-AT repo.
+        # """
+        # isObsolete: Boolean!
+        """
+        A least one argument is required. Determines what type of test plan to
+        load. Will load the latest version matching the criteria.
+        """
+        latestTestPlanVersion(
+            status: TestPlanVersionStatus
+            testPlanReportStatus: TestPlanReportStatus
+            atGitSha: String
+            atSemanticVersion: String
+        ): TestPlanVersion
+        """
+        Loads multiple historic versions of the test plan, accepting filter
+        criteria.
+        """
+        testPlanVersions(
+            status: TestPlanVersionStatus
+            testPlanReportStatus: TestPlanReportStatus
+        ): [TestPlanVersion]
     }
 
     type TestPlanVersion {
+        id: ID!
         title: String!
-        status: TestPlanStatus!
+        status: TestPlanVersionStatus!
         gitSha: String!
         gitMessage: String!
-        exampleUrl: String!
+        semanticVersion: String
+        # TODO: determine if isLatest is needed
+        # isLatest: Boolean!
         updatedAt: Timestamp!
+        exampleUrl: String!
         tests: [Test]!
         testCount: Int!
-        testPlanReports: [TestPlanReport]!
-        testPlanReport(id: ID, testPlanTarget: ID): TestPlanReport
+        testPlanReports(status: TestPlanReportStatus): [TestPlanReport]!
     }
 
     interface Test {
@@ -114,6 +136,7 @@ const graphqlSchema = gql`
     }
 
     interface PassThrough {
+        index: Int!
         atMode: String!
         nthCommand: Int!
         # Examples would go here if we support multiple examples for one test.
@@ -140,6 +163,7 @@ const graphqlSchema = gql`
     }
 
     type PassThroughResult implements PassThrough {
+        index: Int!
         atMode: String!
         nthCommand: Int!
 
@@ -174,6 +198,7 @@ const graphqlSchema = gql`
     enum TestPlanReportStatus {
         DRAFT
         IN_REVIEW
+        REMOVED
         FINALIZED
     }
 
@@ -197,46 +222,94 @@ const graphqlSchema = gql`
     }
 
     input TestPlanReportInput {
-        testPlan: ID!
-        testPlanTarget: ID!
+        testPlanVersionId: ID!
+        testPlanTarget: TestPlanTargetInput!
+    }
+
+    input LocationOfDataInput {
+        testPlanId: ID
+        testPlanVersionId: ID
+        testIndex: Int
+        passThroughIndex: Int
+        testPlanReportId: ID
+        testPlanTargetId: ID
+        browserId: ID
+        browserVersion: String
+        atId: ID
+        atVersion: String
+        testPlanRunId: ID
+        testResultIndex: Int
+        passThroughResultIndex: Int
+    }
+    type LocationOfData {
+        testPlanId: ID
+        testPlanVersionId: ID
+        testIndex: Int
+        passThroughIndex: Int
+        testPlanReportId: ID
+        testPlanTargetId: ID
+        browserId: ID
+        browserVersion: String
+        atId: ID
+        atVersion: String
+        testPlanRunId: ID
+        testResultIndex: Int
+        passThroughResultIndex: Int
+    }
+
+    """
+    All the records that are associated with the id(s) of a given locationOfData
+    """
+    type PopulatedData {
+        locationOfData: LocationOfData!
+        testPlan: TestPlan
+        testPlanVersion: TestPlanVersion
+        testPlanTarget: TestPlanTarget
+        at: At
+        browser: Browser
+        atVersion: String
+        browserVersion: String
+        test: Test
+        passThrough: PassThrough
+        testPlanReport: TestPlanReport
+        testPlanRun: TestPlanRun
+        testResult: TestResult
+        passThroughResult: PassThroughResult
     }
 
     type Query {
         me: User
+        ats: [At]
+        browsers: [Browser]
         testPlans: [TestPlan]!
         testPlan(id: ID!): TestPlan
-        testPlanReport(id: ID!): TestPlanReport
+        testPlanReport(id: ID): TestPlanReport
+        testPlanReports(statuses: [TestPlanReportStatus]): [TestPlanReport]!
         testPlanTargets: [TestPlanTarget]!
+        populateData(locationOfData: LocationOfDataInput!): PopulatedData!
     }
 
     # Mutation-specific types below
 
     type TestPlanReportOperations {
-        assignTester(user: ID!): TestPlanReportOperationResult!
-        deleteTestPlanRun(user: ID!): TestPlanReportOperationResult!
-        updateStatus(
-            status: TestPlanReportStatus!
-        ): TestPlanReportOperationResult!
+        assignTester(userId: ID!): PopulatedData!
+        deleteTestPlanRun(userId: ID!): PopulatedData!
+        updateStatus(status: TestPlanReportStatus!): PopulatedData!
     }
 
-    type TestPlanReportOperationResult {
-        resultingTestPlanReport: TestPlanReport!
-    }
-
-    type TestPlanTargetOperations {
-        delete: NoResponse # UI should warn this will delete any runs as well
-        resultingTestPlanTarget: TestPlanTarget
+    type findOrCreateResult {
+        populatedData: PopulatedData!
+        """
+        There will be one array item per database record created.
+        """
+        created: [PopulatedData]!
     }
 
     type Mutation {
-        createTestPlanReport(
+        findOrCreateTestPlanReport(
             input: TestPlanReportInput!
-        ): TestPlanReportOperations!
-        createTestPlanTarget(
-            input: TestPlanTargetInput!
-        ): TestPlanTargetOperations!
+        ): findOrCreateResult!
         testPlanReport(id: ID!): TestPlanReportOperations!
-        testPlanTarget(id: ID!): TestPlanTargetOperations!
     }
 `;
 

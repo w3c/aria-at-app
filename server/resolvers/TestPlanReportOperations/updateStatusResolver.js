@@ -1,11 +1,11 @@
 const { AuthenticationError } = require('apollo-server');
-
 const {
     getTestPlanReportById,
     updateTestPlanReport
 } = require('../../models/services/TestPlanReportService');
 const conflictsResolver = require('../TestPlanReport/conflictsResolver');
 const isCompleteResolver = require('../TestPlanRun/isCompleteResolver');
+const populatedDataResolver = require('../PopulatedData');
 
 const updateStatusResolver = async (
     { parentContext: { id: testPlanReportId } },
@@ -34,7 +34,10 @@ const updateStatusResolver = async (
     }
 
     await updateTestPlanReport(testPlanReportId, { status });
-    return { parentContext: { id: testPlanReportId } };
+
+    return populatedDataResolver({
+        parentContext: { locationOfData: { testPlanReportId } }
+    });
 };
 
 module.exports = updateStatusResolver;

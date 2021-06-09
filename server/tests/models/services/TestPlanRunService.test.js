@@ -28,6 +28,10 @@ describe('TestPlanRunModel Data Checks', () => {
             _id,
             null,
             [],
+            [],
+            [],
+            [],
+            [],
             []
         );
         const { id, testerUserId, testPlanReportId, testResults } = testPlanRun;
@@ -205,6 +209,9 @@ describe('TestPlanRunModel Data Checks', () => {
             '',
             {},
             ['id'],
+            [],
+            [],
+            [],
             [],
             [],
             { enablePagination: true }

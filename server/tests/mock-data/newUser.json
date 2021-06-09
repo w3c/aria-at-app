@@ -1,6 +1,5 @@
 {
-    "fullname": "Foo Bar",
-    "username": "foobar",
-    "email": "foo@bar.com",
-    "roles": ["admin", "tester"]
+    "username": "esmeralda-baggins",
+    "email": "esmeralda-baggins@example.com",
+    "roles": ["ADMIN", "TESTER"]
 }

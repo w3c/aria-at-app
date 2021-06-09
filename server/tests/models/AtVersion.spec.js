@@ -18,7 +18,7 @@ describe('AtVersionModel', () => {
 
     describe('properties', () => {
         // A3
-        ['atId', 'version'].forEach(checkPropertyExists(modelInstance));
+        ['atId', 'atVersion'].forEach(checkPropertyExists(modelInstance));
     });
 
     describe('associations', () => {

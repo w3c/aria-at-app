@@ -18,7 +18,9 @@ describe('BrowserVersionModel', () => {
 
     describe('properties', () => {
         // A3
-        ['browserId', 'version'].forEach(checkPropertyExists(modelInstance));
+        ['browserId', 'browserVersion'].forEach(
+            checkPropertyExists(modelInstance)
+        );
     });
 
     describe('associations', () => {

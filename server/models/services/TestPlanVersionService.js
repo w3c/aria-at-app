@@ -74,6 +74,8 @@ const userAssociation = userAttributes => ({
  * @param {string[]} testPlanTargetAttributes - TestPlanTarget attributes to be returned in the result
  * @param {string[]} testPlanRunAttributes - TestPlanRun attributes to be returned in the result
  * @param {string[]} userAttributes - User attributes to be returned in the result
+ * @param {object} options - Generic options for Sequelize
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
 const getTestPlanVersionById = async (
@@ -82,7 +84,8 @@ const getTestPlanVersionById = async (
     testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
     testPlanTargetAttributes = TEST_PLAN_TARGET_ATTRIBUTES,
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
-    userAttributes = USER_ATTRIBUTES
+    userAttributes = USER_ATTRIBUTES,
+    options = {}
 ) => {
     return await ModelService.getById(
         TestPlanVersion,
@@ -95,7 +98,8 @@ const getTestPlanVersionById = async (
                 testPlanRunAttributes,
                 userAttributes
             )
-        ]
+        ],
+        options
     );
 };
 
@@ -112,6 +116,8 @@ const getTestPlanVersionById = async (
  * @param {number} [pagination.limit=10] - amount of results to be returned per page (affected by {@param pagination.enablePagination})
  * @param {string[][]} [pagination.order=[]] - expects a Sequelize structured input dataset for sorting the Sequelize Model results (NOT affected by {@param pagination.enablePagination}). See {@link https://sequelize.org/v5/manual/querying.html#ordering} and {@example [ [ 'username', 'DESC' ], [..., ...], ... ]}
  * @param {boolean} [pagination.enablePagination=false] - use to enable pagination for a query result as well useful values. Data for all items matching query if not enabled
+ * @param {object} options - Generic options for Sequelize
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
 const getTestPlanVersions = async (
@@ -122,7 +128,8 @@ const getTestPlanVersions = async (
     testPlanTargetAttributes = TEST_PLAN_TARGET_ATTRIBUTES,
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     userAttributes = USER_ATTRIBUTES,
-    pagination = {}
+    pagination = {},
+    options = {}
 ) => {
     // search and filtering options
     let where = { ...filter };
@@ -141,7 +148,8 @@ const getTestPlanVersions = async (
                 userAttributes
             )
         ],
-        pagination
+        pagination,
+        options
     );
 };
 
@@ -152,6 +160,8 @@ const getTestPlanVersions = async (
  * @param {string[]} testPlanTargetAttributes - TestPlanTarget attributes to be returned in the result
  * @param {string[]} testPlanRunAttributes - TestPlanRun attributes to be returned in the result
  * @param {string[]} userAttributes - User attributes to be returned in the result
+ * @param {object} options - Generic options for Sequelize
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
 const createTestPlanVersion = async (
@@ -169,7 +179,8 @@ const createTestPlanVersion = async (
     testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
     testPlanTargetAttributes = TEST_PLAN_TARGET_ATTRIBUTES,
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
-    userAttributes = USER_ATTRIBUTES
+    userAttributes = USER_ATTRIBUTES,
+    options = {}
 ) => {
     const testPlanVersionResult = await ModelService.create(TestPlanVersion, {
         title,
@@ -189,7 +200,8 @@ const createTestPlanVersion = async (
         testPlanReportAttributes,
         testPlanTargetAttributes,
         testPlanRunAttributes,
-        userAttributes
+        userAttributes,
+        options
     );
 };
 
@@ -201,6 +213,8 @@ const createTestPlanVersion = async (
  * @param {string[]} testPlanTargetAttributes - TestPlanTarget attributes to be returned in the result
  * @param {string[]} testPlanRunAttributes - TestPlanRun attributes to be returned in the result
  * @param {string[]} userAttributes - User attributes to be returned in the result
+ * @param {object} options - Generic options for Sequelize
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
 const updateTestPlanVersion = async (
@@ -219,7 +233,8 @@ const updateTestPlanVersion = async (
     testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
     testPlanTargetAttributes = TEST_PLAN_TARGET_ATTRIBUTES,
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
-    userAttributes = USER_ATTRIBUTES
+    userAttributes = USER_ATTRIBUTES,
+    options = {}
 ) => {
     await ModelService.update(
         TestPlanVersion,
@@ -233,7 +248,8 @@ const updateTestPlanVersion = async (
             updatedAt,
             metadata,
             tests
-        }
+        },
+        options
     );
 
     return await getTestPlanVersionById(
@@ -242,7 +258,8 @@ const updateTestPlanVersion = async (
         testPlanReportAttributes,
         testPlanTargetAttributes,
         testPlanRunAttributes,
-        userAttributes
+        userAttributes,
+        options
     );
 };
 

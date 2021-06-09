@@ -32,37 +32,37 @@ INSERT INTO public."AtMode" ("atId", name) VALUES (1, 'interaction');
 -- Data for Name: AtVersion; Type: TABLE DATA; Schema: public; Owner: atr
 --
 
-INSERT INTO public."AtVersion" ("atId", version) VALUES (2, '2019.3');
-INSERT INTO public."AtVersion" ("atId", version) VALUES (2, '2020.1');
-INSERT INTO public."AtVersion" ("atId", version) VALUES (2, '2020.2');
-INSERT INTO public."AtVersion" ("atId", version) VALUES (2, '2020.3');
-INSERT INTO public."AtVersion" ("atId", version) VALUES (2, '2020.4');
-INSERT INTO public."AtVersion" ("atId", version) VALUES (1, '2021.2103.174');
-INSERT INTO public."AtVersion" ("atId", version) VALUES (3, 'MacOS');
+INSERT INTO public."AtVersion" ("atId", "atVersion") VALUES (2, '2019.3');
+INSERT INTO public."AtVersion" ("atId", "atVersion") VALUES (2, '2020.1');
+INSERT INTO public."AtVersion" ("atId", "atVersion") VALUES (2, '2020.2');
+INSERT INTO public."AtVersion" ("atId", "atVersion") VALUES (2, '2020.3');
+INSERT INTO public."AtVersion" ("atId", "atVersion") VALUES (2, '2020.4');
+INSERT INTO public."AtVersion" ("atId", "atVersion") VALUES (1, '2021.2103.174');
+INSERT INTO public."AtVersion" ("atId", "atVersion") VALUES (3, 'MacOS');
 
 
 --
 -- Data for Name: BrowserVersion; Type: TABLE DATA; Schema: public; Owner: atr
 --
 
-INSERT INTO public."BrowserVersion" ("browserId", version) VALUES (1, '86.0');
-INSERT INTO public."BrowserVersion" ("browserId", version) VALUES (1, '86.0.1');
-INSERT INTO public."BrowserVersion" ("browserId", version) VALUES (1, '87.0');
-INSERT INTO public."BrowserVersion" ("browserId", version) VALUES (1, '88.0');
-INSERT INTO public."BrowserVersion" ("browserId", version) VALUES (1, '88.0.1');
-INSERT INTO public."BrowserVersion" ("browserId", version) VALUES (2, '90.0.4430');
-INSERT INTO public."BrowserVersion" ("browserId", version) VALUES (2, '91.0.4472');
-INSERT INTO public."BrowserVersion" ("browserId", version) VALUES (3, '13.0');
-INSERT INTO public."BrowserVersion" ("browserId", version) VALUES (3, '13.1');
-INSERT INTO public."BrowserVersion" ("browserId", version) VALUES (3, '14.0');
-INSERT INTO public."BrowserVersion" ("browserId", version) VALUES (3, '14.1');
+INSERT INTO public."BrowserVersion" ("browserId", "browserVersion") VALUES (1, '86.0');
+INSERT INTO public."BrowserVersion" ("browserId", "browserVersion") VALUES (1, '86.0.1');
+INSERT INTO public."BrowserVersion" ("browserId", "browserVersion") VALUES (1, '87.0');
+INSERT INTO public."BrowserVersion" ("browserId", "browserVersion") VALUES (1, '88.0');
+INSERT INTO public."BrowserVersion" ("browserId", "browserVersion") VALUES (1, '88.0.1');
+INSERT INTO public."BrowserVersion" ("browserId", "browserVersion") VALUES (2, '90.0.4430');
+INSERT INTO public."BrowserVersion" ("browserId", "browserVersion") VALUES (2, '91.0.4472');
+INSERT INTO public."BrowserVersion" ("browserId", "browserVersion") VALUES (3, '13.0');
+INSERT INTO public."BrowserVersion" ("browserId", "browserVersion") VALUES (3, '13.1');
+INSERT INTO public."BrowserVersion" ("browserId", "browserVersion") VALUES (3, '14.0');
+INSERT INTO public."BrowserVersion" ("browserId", "browserVersion") VALUES (3, '14.1');
 
 
 --
 -- Data for Name: TestPlanTarget; Type: TABLE DATA; Schema: public; Owner: atr
 --
 
-INSERT INTO public."TestPlanTarget" (id, title, at, browser, "atVersion", "browserVersion") VALUES (1, 'NVDA 2020.4 with Chrome 91.0.4472', 2, 2, '2020.4', '91.0.4472');
+INSERT INTO public."TestPlanTarget" (id, title, "atId", "browserId", "atVersion", "browserVersion") VALUES (1, 'NVDA 2020.4 with Chrome 91.0.4472', 2, 2, '2020.4', '91.0.4472');
 
 
 --
@@ -76,8 +76,8 @@ INSERT INTO public."TestPlanReport" (id, "status", "testPlanTargetId", "testPlan
 -- Data for Name: User; Type: TABLE DATA; Schema: public; Owner: atr
 --
 
-INSERT INTO public."User" (id, username, "createdAt", "updatedAt") VALUES (1, 'foobar-admin', '2021-05-14 13:57:16.232-05', '2021-05-14 13:57:20.473-05');
-INSERT INTO public."User" (id, username, "createdAt", "updatedAt") VALUES (2, 'foobar-tester', '2021-05-14 13:57:16.232-05', '2021-05-14 13:57:20.473-05');
+INSERT INTO public."User" (id, username, "createdAt", "updatedAt") VALUES (1, 'esmeralda-baggins', '2021-05-14 13:57:16.232-05', '2021-05-14 13:57:20.473-05');
+INSERT INTO public."User" (id, username, "createdAt", "updatedAt") VALUES (2, 'tom-proudfeet', '2021-05-14 13:57:16.232-05', '2021-05-14 13:57:20.473-05');
 
 
 --
@@ -93,9 +93,9 @@ INSERT INTO public."TestPlanRun" (id, "testerUserId", "testPlanReportId", "testR
 -- Data for Name: UserRoles; Type: TABLE DATA; Schema: public; Owner: atr
 --
 
-INSERT INTO public."UserRoles" ("userId", "roleName") VALUES (1, 'admin');
-INSERT INTO public."UserRoles" ("userId", "roleName") VALUES (1, 'tester');
-INSERT INTO public."UserRoles" ("userId", "roleName") VALUES (2, 'tester');
+INSERT INTO public."UserRoles" ("userId", "roleName") VALUES (1, 'ADMIN');
+INSERT INTO public."UserRoles" ("userId", "roleName") VALUES (1, 'TESTER');
+INSERT INTO public."UserRoles" ("userId", "roleName") VALUES (2, 'TESTER');
 
 
 --

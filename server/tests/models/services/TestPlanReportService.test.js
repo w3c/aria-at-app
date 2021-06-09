@@ -1,5 +1,6 @@
 const { sequelize } = require('../../../models');
 const TestPlanReportService = require('../../../models/services/TestPlanReportService');
+const { dbCleaner } = require('../../util/db-cleaner');
 
 describe('TestPlanReportModel Data Checks', () => {
     afterAll(async () => {
@@ -21,7 +22,7 @@ describe('TestPlanReportModel Data Checks', () => {
         } = testPlanReport;
 
         expect(id).toEqual(_id);
-        expect(status).toMatch(/^(DRAFT|IN_REVIEW|FINALIZED)$/);
+        expect(status).toMatch(/^(DRAFT|IN_REVIEW|FINALIZED|REMOVED)$/);
         expect(testPlanTargetId).toBeTruthy();
         expect(testPlanVersionId).toBeTruthy();
         expect(createdAt).toBeTruthy();
@@ -36,6 +37,8 @@ describe('TestPlanReportModel Data Checks', () => {
         const testPlanReport = await TestPlanReportService.getTestPlanReportById(
             _id,
             null,
+            [],
+            [],
             [],
             [],
             [],
@@ -83,6 +86,8 @@ describe('TestPlanReportModel Data Checks', () => {
             [],
             [],
             [],
+            [],
+            [],
             { enablePagination: true }
         );
 
@@ -100,6 +105,106 @@ describe('TestPlanReportModel Data Checks', () => {
                     })
                 ])
             })
+        );
+    });
+
+    it('should create TestPlanReport', async () => {
+        await dbCleaner(async () => {
+            const _testPlanTargetId = 1;
+            const _testPlanVersionId = 3;
+            const _status = 'DRAFT';
+
+            const testPlanReport = await TestPlanReportService.createTestPlanReport(
+                {
+                    status: _status,
+                    testPlanTargetId: _testPlanTargetId,
+                    testPlanVersionId: _testPlanVersionId
+                }
+            );
+
+            expect(testPlanReport).toEqual(
+                expect.objectContaining({
+                    id: expect.anything(),
+                    status: _status,
+                    testPlanVersion: expect.objectContaining({
+                        id: _testPlanVersionId
+                    }),
+                    testPlanTarget: expect.objectContaining({
+                        id: _testPlanTargetId
+                    })
+                })
+            );
+        });
+    });
+
+    it('should getOrCreate TestPlanReport', async () => {
+        // A1
+        // DB cleaner is not supported because this query uses a transaction
+        const transaction = await sequelize.transaction();
+        const _status = 'DRAFT';
+        const _testPlanVersionId = 2;
+        const _atId = 2;
+        const _atVersion = '2020.4';
+        const _browserId = 1;
+        const _browserVersion = '86.0.1';
+        const _testPlanTarget = {
+            atId: _atId,
+            atVersion: _atVersion,
+            browserId: _browserId,
+            browserVersion: _browserVersion
+        };
+
+        // A2
+        const [
+            testPlanReport,
+            created
+        ] = await TestPlanReportService.getOrCreateTestPlanReport(
+            {
+                status: _status,
+                testPlanVersionId: _testPlanVersionId,
+                testPlanTarget: _testPlanTarget
+            },
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            { transaction }
+        );
+        await transaction.rollback();
+
+        // A3
+        expect(testPlanReport).toEqual(
+            expect.objectContaining({
+                id: expect.anything(),
+                status: _status,
+                testPlanVersion: expect.objectContaining({
+                    id: _testPlanVersionId
+                }),
+                testPlanTarget: expect.objectContaining({
+                    atId: _atId,
+                    atVersion: _atVersion,
+                    browserId: _browserId,
+                    browserVersion: _browserVersion
+                })
+            })
+        );
+        expect(created.length).toBe(2);
+        expect(created).toEqual(
+            expect.arrayContaining([
+                // TestPlanReport
+                expect.objectContaining({
+                    testPlanReportId: testPlanReport.id
+                }),
+                // TestPlanTarget
+                expect.objectContaining({
+                    testPlanReportId: testPlanReport.id,
+                    testPlanTargetId: expect.anything()
+                })
+            ])
         );
     });
 });
