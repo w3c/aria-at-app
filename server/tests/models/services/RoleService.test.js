@@ -2,7 +2,7 @@ const { sequelize } = require('../../../models');
 const RoleService = require('../../../models/services/RoleService');
 const UserService = require('../../../models/services/UserService');
 const randomStringGenerator = require('../../util/random-character-generator');
-const { dbCleaner } = require('../../util/db-cleaner');
+const dbCleaner = require('../../util/db-cleaner');
 
 describe('RoleModel Data Checks', () => {
     afterAll(async () => {

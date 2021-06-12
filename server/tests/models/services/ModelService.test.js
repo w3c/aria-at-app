@@ -5,7 +5,7 @@ const {
 } = require('../../../models/services/helpers');
 const AtService = require('../../../models/services/AtService');
 const TestPlanTargetService = require('../../../models/services/TestPlanTargetService');
-const { dbCleaner } = require('../../util/db-cleaner');
+const dbCleaner = require('../../util/db-cleaner');
 
 // valid ModelService functionality has been covered by all other ModelService tests
 describe('ModelService', () => {

@@ -22,3 +22,5 @@ function dbCleaner(fn) {
 module.exports = {
     dbCleaner
 };
+
+module.exports = dbCleaner;

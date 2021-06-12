@@ -1,7 +1,7 @@
 const { sequelize } = require('../../../models');
 const UserService = require('../../../models/services/UserService');
 const randomStringGenerator = require('../../util/random-character-generator');
-const { dbCleaner } = require('../../util/db-cleaner');
+const dbCleaner = require('../../util/db-cleaner');
 
 describe('UserModel Data Checks', () => {
     afterAll(async () => {

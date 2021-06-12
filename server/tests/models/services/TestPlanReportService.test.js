@@ -1,6 +1,6 @@
 const { sequelize } = require('../../../models');
 const TestPlanReportService = require('../../../models/services/TestPlanReportService');
-const { dbCleaner } = require('../../util/db-cleaner');
+const dbCleaner = require('../../util/db-cleaner');
 
 describe('TestPlanReportModel Data Checks', () => {
     afterAll(async () => {
