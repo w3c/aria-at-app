@@ -336,6 +336,30 @@ const getOrCreateUser = async (
     });
 };
 
+// Custom Functions
+
+/**
+ * This assumes the id (userId) and the role (roleName) are valid entries that already exist
+ * @param {number} id - id of the User that the role will be added for
+ * @param {string} role - role to be assigned to the User record referenced by {@param id}
+ * @returns {Promise<*>}
+ */
+const addUserToRole = async (id, role) => {
+    return await ModelService.create(UserRoles, { userId: id, roleName: role });
+};
+
+/**
+ * @param {number} id - id of the User that the role will be removed from
+ * @param {string} role - role to be removed for the User record referenced by {@param id}
+ * @returns {Promise<boolean>}
+ */
+const deleteUserFromRole = async (id, role) => {
+    return await ModelService.removeByQuery(UserRoles, {
+        userId: id,
+        roleName: role
+    });
+};
+
 module.exports = {
     // Basic CRUD
     getUserById,
@@ -345,5 +369,9 @@ module.exports = {
     updateUser,
     removeUser,
     bulkGetOrReplaceUserRoles,
-    getOrCreateUser
+    getOrCreateUser,
+
+    // Custom Functions
+    addUserToRole,
+    deleteUserFromRole
 };

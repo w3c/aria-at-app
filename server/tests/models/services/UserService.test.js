@@ -96,14 +96,14 @@ describe('UserModel Data Checks', () => {
             // A2
             const [newUser, isNew1] = await UserService.getOrCreateUser(
                 { username: _username },
-                { roles: [_role1] }
+                { roles: [{ name: _role1 }] }
             );
             const { id, username, createdAt, updatedAt, roles } = newUser;
 
             // A2
             const [updatedUser, isNew2] = await UserService.getOrCreateUser(
                 { username: _username },
-                { roles: [_role2] }
+                { roles: [{ name: _role2 }] }
             );
 
             // A2

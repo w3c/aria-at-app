@@ -2,10 +2,10 @@ const getSessionAgent = require('supertest-session');
 const bodyParser = require('body-parser');
 const express = require('express');
 const { ApolloServer } = require('apollo-server-express');
+const session = require('express-session');
 const typeDefs = require('../../graphql-schema');
 const getGraphQLContext = require('../../graphql-context');
 const resolvers = require('../../resolvers');
-const session = require('express-session');
 
 const startSupertestServer = async ({ graphql = false, pathToRoutes = [] }) => {
     const expressApp = express();

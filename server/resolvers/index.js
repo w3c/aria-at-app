@@ -37,7 +37,10 @@ const resolvers = {
     TestPlanReport,
     TestPlanReportOperations,
     TestPlanRun,
-    PopulatedData
+    PopulatedData,
+    Test: { __resolveType: () => null },
+    Assertion: { __resolveType: () => null },
+    PassThrough: { __resolveType: () => null }
 };
 
 module.exports = resolvers;
