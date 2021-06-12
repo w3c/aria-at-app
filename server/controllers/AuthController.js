@@ -1,13 +1,85 @@
-const services = require('../services');
-const { GithubService, UsersService } = services;
+const { User } = require('../models');
+const { getOrCreateUser } = require('../models/services/UserService');
+const { GithubService } = require('../services');
 
-const OAUTH = 'oauth';
-const allowsFakeRole = process.env.ALLOW_FAKE_ROLE === 'true';
+const ALLOW_FAKE_ROLE = process.env.ALLOW_FAKE_ROLE === 'true';
+const APP_SERVER = process.env.APP_SERVER;
 
-const capitalizeServiceString = service =>
-    `${service.charAt(0).toUpperCase()}${service.slice(1)}`;
+const oauthRedirectToGithubController = async (req, res) => {
+    const { dataFromFrontend: state } = req.query;
+    const oauthUrl = GithubService.getOauthUrl({ state });
+    res.redirect(303, oauthUrl);
+    res.end();
+};
 
-function destroySession(req, res) {
+const oauthRedirectFromGithubController = async (req, res) => {
+    const loginSucceeded = () => {
+        res.redirect(303, `${APP_SERVER}/test-queue`);
+    };
+    const loginFailedDueToRole = async () => {
+        if (req.session) {
+            await new Promise(resolve => req.session.destroy(resolve));
+        }
+        res.redirect(303, `${APP_SERVER}/signup-instructions`);
+    };
+    const loginFailed = () => {
+        res.status(401);
+        res.end();
+    };
+
+    const { code, state: dataFromFrontend } = req.query;
+
+    const githubAccessToken = await GithubService.getGithubAccessToken(code);
+    if (!githubAccessToken) return loginFailed();
+
+    const githubUsername = await GithubService.getGithubUsername(
+        githubAccessToken
+    );
+    if (!githubUsername) return loginFailed();
+
+    const teams = await GithubService.getGithubTeams({
+        githubAccessToken,
+        githubUsername
+    });
+    if (!teams) return loginFailed();
+
+    const roles = [];
+    if (teams.includes(User.ADMIN)) {
+        roles.push(User.ADMIN);
+    }
+    if (teams.includes(User.TESTER) || teams.includes(User.ADMIN)) {
+        roles.push(User.TESTER); // Admins are always testers
+    }
+
+    if (roles.length === 0) return loginFailedDueToRole();
+
+    const user = await getOrCreateUser(
+        { username: githubUsername },
+        { roles },
+        undefined,
+        undefined,
+        []
+    );
+
+    // Allows for quickly logging in with different roles - changing
+    // roles would otherwise require leaving and joining GitHub teams
+    const matchedFakeRole =
+        dataFromFrontend && dataFromFrontend.match(/fakeRole-(\w*)/);
+    if (ALLOW_FAKE_ROLE && matchedFakeRole) {
+        user.roles =
+            matchedFakeRole[1] === '' ? [] : [matchedFakeRole[1].toUpperCase()];
+        if (user.roles[0] === User.ADMIN) {
+            user.roles.push(User.TESTER); // Admins are always testers
+        }
+    }
+
+    req.session.githubAccessToken = githubAccessToken;
+    req.session.user = user;
+
+    return loginSucceeded();
+};
+
+const signoutController = (req, res) => {
     req.session.destroy(err => {
         if (err) {
             res.status(500);
@@ -16,121 +88,10 @@ function destroySession(req, res) {
         }
         res.end();
     });
-}
-
-function resolveService(service) {
-    return (
-        services[`${capitalizeServiceString(service)}Service`] || GithubService
-    );
-}
+};
 
 module.exports = {
-    async oauth(req, res) {
-        const { service, referer, dataFromFrontend } = req.query;
-        const authService = resolveService(service);
-        req.session.referer = referer;
-        req.session.authType = OAUTH;
-        const oauthServiceUrl = authService.getUrl({ state: dataFromFrontend });
-        res.redirect(303, oauthServiceUrl);
-        res.end();
-    },
-
-    async authorize(req, res) {
-        const { service, code, state: dataFromFrontend } = req.query;
-        const authService = resolveService(service);
-
-        req.session.accessToken = await authService.authorize(code);
-
-        let userToAuthorize;
-        let authorizationError;
-        try {
-            userToAuthorize = await authService.getUser({
-                accessToken: req.session.accessToken
-            });
-        } catch (error) {
-            authorizationError = error;
-        }
-        let authorized = false;
-
-        if (req.session.authType === OAUTH) {
-            let user;
-
-            // If this is a known user that we can authorize...
-            if (userToAuthorize) {
-                const { name: fullname, username, email } = userToAuthorize;
-                user = await UsersService.getUser({
-                    fullname,
-                    username,
-                    email
-                });
-            }
-
-            // ...otherwise, add them as a new user.
-            if (!user) {
-                try {
-                    user = await UsersService.signupUser({
-                        accessToken: req.session.accessToken,
-                        user: userToAuthorize
-                    });
-                } catch (error) {
-                    console.error(`Error: ${error}`);
-                }
-            }
-
-            // Assuming we now have a user, assign updated roles
-            if (user) {
-                authorized = true;
-                userToAuthorize = await UsersService.getUserAndUpdateRoles({
-                    accessToken: req.session.accessToken,
-                    user
-                });
-            }
-        }
-        if (authorized && userToAuthorize) {
-            req.session.user = userToAuthorize;
-
-            // Allows for quickly logging in with different roles - changing
-            // roles would otherwise require leaving and joining GitHub teams
-            const matchedFakeRole =
-                dataFromFrontend && dataFromFrontend.match(/fakeRole-(\w*)/);
-
-            if (allowsFakeRole && matchedFakeRole) {
-                req.session.user.roles =
-                    matchedFakeRole[1] === '' ? [] : [matchedFakeRole[1]];
-            }
-
-            const redirectUrl =
-                req.session.user.roles.length === 0
-                    ? `${req.session.referer}/signup-instructions`
-                    : `${req.session.referer}/test-queue`;
-
-            res.redirect(303, redirectUrl);
-            res.end(() => {
-                delete req.session.referer;
-                delete req.session.authType;
-            });
-        } else {
-            if (authorizationError) {
-                res.status(401);
-                res.end();
-            } else {
-                res.redirect(303, `${req.session.referer}/signup-instructions`);
-                res.end(() => destroySession(req, res));
-            }
-        }
-    },
-
-    currentUser(req, res) {
-        const { user } = req.session;
-        if (user) {
-            res.status(200).json(user);
-        } else {
-            res.status(401);
-        }
-        res.end();
-    },
-
-    signout(req, res) {
-        destroySession(req, res);
-    }
+    oauthRedirectToGithubController,
+    oauthRedirectFromGithubController,
+    signoutController
 };

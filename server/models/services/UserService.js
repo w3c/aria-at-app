@@ -2,6 +2,7 @@ const ModelService = require('./ModelService');
 const {
     USER_ATTRIBUTES,
     ROLE_ATTRIBUTES,
+    USER_ROLES_ATTRIBUTES,
     TEST_PLAN_RUN_ATTRIBUTES
 } = require('./helpers');
 const { Sequelize, User, UserRoles } = require('../');
@@ -130,6 +131,40 @@ const getUsers = async (
 };
 
 /**
+ * @param {string|any} search - use this to combine with {@param filter} to be passed to Sequelize's where clause
+ * @param {object} filter - use this define conditions to be passed to Sequelize's where clause
+ * @param {string[]} userRolesAttributes - UserRoles attributes to be returned in the result
+ * @param {object} pagination - pagination options for query
+ * @param {number} [pagination.page=0] - page to be queried in the pagination result (affected by {@param pagination.enablePagination})
+ * @param {number} [pagination.limit=10] - amount of results to be returned per page (affected by {@param pagination.enablePagination})
+ * @param {string[][]} [pagination.order=[]] - expects a Sequelize structured input dataset for sorting the Sequelize Model results
+ * @param {boolean} [pagination.enablePagination=false] - use to enable pagination for a query result as well useful values. Data for all items matching query if not enabled
+ * @param {object} options - Generic options for Sequelize
+ * @param {*} options.transaction - Sequelize transaction
+ * @returns {Promise<*>}
+ */
+const getUserRoles = async (
+    search,
+    filter = {},
+    userRolesAttributes = USER_ROLES_ATTRIBUTES,
+    pagination = {},
+    options = {}
+) => {
+    if (search) throw new Error('Not implemented');
+
+    const where = { ...filter };
+
+    return await ModelService.get(
+        UserRoles,
+        where,
+        userRolesAttributes,
+        [],
+        pagination,
+        options
+    );
+};
+
+/**
  * @param {object} createParams - values to be used to create the User (+ UserRole entry if applicable)
  * @param {string[]} userAttributes - User attributes to be returned in the result
  * @param {string[]} roleAttributes - Role attributes to be returned in the result
@@ -139,7 +174,7 @@ const getUsers = async (
  * @returns {Promise<*>}
  */
 const createUser = async (
-    { username, role },
+    { username },
     userAttributes = USER_ATTRIBUTES,
     roleAttributes = ROLE_ATTRIBUTES,
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
@@ -147,9 +182,6 @@ const createUser = async (
 ) => {
     const userResult = await ModelService.create(User, { username }, options);
     const { id } = userResult;
-
-    // eslint-disable-next-line no-use-before-define
-    if (role) await addUserToRole(id, role); // if role was also passed, create UserRole entry
 
     // to ensure the structure being returned matches what we expect for simple queries and can be controlled
     return await ModelService.getById(
@@ -205,27 +237,102 @@ const removeUser = async (id, deleteOptions) => {
     return await ModelService.removeById(User, id, deleteOptions);
 };
 
-// Custom Functions
-
 /**
- * This assumes the id (userId) and the role (roleName) are valid entries that already exist
- * @param {number} id - id of the User that the role will be added for
- * @param {string} role - role to be assigned to the User record referenced by {@param id}
+ * Confirms the user roles are correct and replaces them if not.
+ * @example
+ * await bulkGetOrReplaceUserRoles(
+ *     { userId: 1 },
+ *     [{ roleName: 'TESTER' }, { roleName: 'ADMIN' }],
+ *     ['roleName'],
+ * );
+ *
+ * @param {object} where - values to be used to search Sequelize Model. Only supports exact values.
+ * @param {object} expectedValues - array of objects containing a "roleName"
+ * @param {string[]} userRolesAttributes - UserRoles attributes to be returned in the result
+ * @param {object} options - Generic options for Sequelize
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
-const addUserToRole = async (id, role) => {
-    return await ModelService.create(UserRoles, { userId: id, roleName: role });
+const bulkGetOrReplaceUserRoles = async (
+    { userId },
+    expectedValues,
+    userRolesAttributes,
+    options = {}
+) => {
+    return ModelService.confirmTransaction(options.transaction, async t => {
+        const noPagination = {};
+
+        const isUpdated = await ModelService.bulkGetOrReplace(
+            UserRoles,
+            { userId },
+            expectedValues,
+            { transaction: t }
+        );
+
+        const records = await getUserRoles(
+            '',
+            { userId },
+            userRolesAttributes,
+            noPagination,
+            { transaction: t }
+        );
+
+        return [records, isUpdated];
+    });
 };
 
 /**
- * @param {number} id - id of the User that the role will be removed from
- * @param {string} role - role to be removed for the User record referenced by {@param id}
- * @returns {Promise<boolean>}
+ * Gets one user, creating them if they do not exist, including their roles.
+ * @param {*} nestedGetOrCreateValues - These values will be used to find a matching record, or they will be used to create one
+ * @param {*} nestedUpdateValues - Values which will be used when a record is found or created, but not used for the initial find
+ * @param {string[]} userAttributes - User attributes to be returned in the result
+ * @param {string[]} roleAttributes - Role attributes to be returned in the result
+ * @param {string[]} testPlanRunAttributes - TestPlanRun attributes to be returned in the result
+ * @param {object} options - Generic options for Sequelize
+ * @param {*} options.transaction - Sequelize transaction
+ * @returns {Promise<[*, boolean]>}
  */
-const deleteUserFromRole = async (id, role) => {
-    return await ModelService.removeByQuery(UserRoles, {
-        userId: id,
-        roleName: role
+const getOrCreateUser = async (
+    { username },
+    { roles },
+    userAttributes = USER_ATTRIBUTES,
+    roleAttributes = ROLE_ATTRIBUTES,
+    testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
+    options = {}
+) => {
+    return ModelService.confirmTransaction(options.transaction, async t => {
+        const accumulatedResults = await ModelService.nestedGetOrCreate(
+            [
+                {
+                    get: getUsers,
+                    create: createUser,
+                    values: { username },
+                    returnAttributes: [null, [], []]
+                },
+                accumulatedResults => {
+                    const userId = accumulatedResults[0][0].id;
+                    return {
+                        bulkGetOrReplace: bulkGetOrReplaceUserRoles,
+                        bulkGetOrReplaceWhere: { userId },
+                        values: roles.map(roleName => ({ roleName })),
+                        returnAttributes: [null]
+                    };
+                }
+            ],
+            { transaction: t }
+        );
+
+        const userId = accumulatedResults[0][0].id;
+        const isNewUser = accumulatedResults[0][1];
+        const user = await getUserById(
+            userId,
+            userAttributes,
+            roleAttributes,
+            testPlanRunAttributes,
+            { transaction: t }
+        );
+
+        return [user, isNewUser];
     });
 };
 
@@ -237,8 +344,6 @@ module.exports = {
     createUser,
     updateUser,
     removeUser,
-
-    // Custom Functions
-    addUserToRole,
-    deleteUserFromRole
+    bulkGetOrReplaceUserRoles,
+    getOrCreateUser
 };

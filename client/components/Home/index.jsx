@@ -18,6 +18,7 @@ import heroImage from '../../assets/hero-illustration.png';
 
 class Home extends Component {
     render() {
+        // FIXME: use the new hook
         const signInURL = `${process.env.API_SERVER}/api/auth/oauth?referer=${window.location.origin}&service=github`;
 
         return (

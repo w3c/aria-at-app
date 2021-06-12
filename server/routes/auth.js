@@ -1,16 +1,14 @@
 const { Router } = require('express');
 const {
-    oauth,
-    authorize,
-    currentUser,
-    signout
+    oauthRedirectToGithubController,
+    oauthRedirectFromGithubController,
+    signoutController
 } = require('../controllers/AuthController');
 
 const router = Router();
 
-router.get('/oauth', oauth);
-router.get('/authorize', authorize);
-router.get('/me', currentUser);
-router.post('/signout', signout);
+router.get('/oauth', oauthRedirectToGithubController);
+router.get('/authorize', oauthRedirectFromGithubController);
+router.post('/signout', signoutController);
 
 module.exports = router;

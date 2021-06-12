@@ -43,10 +43,10 @@ async function saveTestResults(req, res) {
 
 async function getIssuesByTestId(req, res) {
     const test_id = parseInt(req.query.test_id);
-    const { accessToken } = req.session;
+    const { githubAccessToken } = req.session;
     try {
         const issues = await TestService.getIssuesByTestId({
-            accessToken,
+            githubAccessToken,
             test_id
         });
         res.status(200).json(issues);
@@ -59,10 +59,10 @@ async function getIssuesByTestId(req, res) {
 
 async function createIssue(req, res) {
     const { run_id, test_id, title, body } = req.body.data;
-    const { accessToken } = req.session;
+    const { githubAccessToken } = req.session;
     try {
         const result = await TestService.createIssue({
-            accessToken,
+            githubAccessToken,
             run_id,
             test_id,
             title,

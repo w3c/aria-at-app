@@ -1,5 +1,36 @@
-const { isFunction } = require('lodash');
+const { isFunction, isEqualWith, sortBy } = require('lodash');
 const { sequelize } = require('../');
+
+/**
+ * Allows ModelService functions to use transactions internally while also supporting an outer, parent transaction.
+ *
+ * Creates a managed transaction if one does not already exist - if there is a parent transaction it will not commit or rollback, leaving those steps to the parent.
+ *
+ * Works with dbCleaner.
+ * @param {*} providedTransaction - An OPTIONAL existing transaction. In test environments this defaults to a test transaction managed by dbCleaner.
+ * @param {function} callback - An async function which takes a transaction as its argument
+ * @returns {*} - Returns whatever the callback returns
+ */
+const confirmTransaction = async (
+    providedTransaction = global.globalTestTransaction,
+    callback
+) => {
+    const isProvided = !!providedTransaction;
+    const transaction = providedTransaction || (await sequelize.transaction());
+
+    try {
+        const result = await callback(transaction);
+        if (!isProvided) {
+            await transaction.commit();
+        }
+        return result;
+    } catch (error) {
+        if (!isProvided) {
+            await transaction.rollback();
+        }
+        throw error;
+    }
+};
 
 /**
  * Created Query Sequelize Example:
@@ -38,7 +69,7 @@ const getById = async (
     id,
     attributes = [],
     include = [],
-    options = {}
+    { transaction = global.globalTestTransaction } = {}
 ) => {
     if (!model) throw new Error('Model not defined');
 
@@ -47,7 +78,7 @@ const getById = async (
         where: { id },
         attributes,
         include,
-        ...options
+        transaction
     });
 };
 
@@ -65,7 +96,7 @@ const getByQuery = async (
     queryParams,
     attributes = [],
     include = [],
-    options = {}
+    { transaction = global.globalTestTransaction } = {}
 ) => {
     if (!model) throw new Error('Model not defined');
 
@@ -73,7 +104,7 @@ const getByQuery = async (
         where: { ...queryParams },
         attributes,
         include,
-        ...options
+        transaction
     });
 };
 
@@ -98,7 +129,7 @@ const get = async (
     attributes = [],
     include = [],
     pagination = {},
-    options = {}
+    { transaction = global.globalTestTransaction } = {}
 ) => {
     if (!model) throw new Error('Model not defined');
 
@@ -119,7 +150,7 @@ const get = async (
         order,
         attributes,
         include, // included fields being marked as 'required' will affect overall count for pagination
-        ...options
+        transaction
     };
 
     // enablePagination paginated result structure and related values
@@ -154,9 +185,29 @@ const get = async (
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>} - result of the sequelize.create function
  */
-const create = async (model, createParams, options = {}) => {
+const create = async (
+    model,
+    createParams,
+    { transaction = global.globalTestTransaction } = {}
+) => {
     if (!model) throw new Error('Model not defined');
-    return await model.create({ ...createParams }, options);
+    return await model.create({ ...createParams }, { transaction });
+};
+
+/**
+ * @param {Model} model - Sequelize Model instance to query for
+ * @param {object} createParamsArray - array of properties to be used to create the {@param model} Sequelize Model that is being used
+ * @param {object} options - Generic options for Sequelize
+ * @param {*} options.transaction - Sequelize transaction
+ * @returns {Promise<*>} - result of the sequelize.create function
+ */
+const bulkCreate = async (
+    model,
+    createParamsArray,
+    { transaction = global.globalTestTransaction } = {}
+) => {
+    if (!model) throw new Error('Model not defined');
+    return await model.bulkCreate(createParamsArray, { transaction });
 };
 
 /**
@@ -167,12 +218,17 @@ const create = async (model, createParams, options = {}) => {
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>} - result of the sequelize.update function
  */
-const update = async (model, queryParams, updateParams, options = {}) => {
+const update = async (
+    model,
+    queryParams,
+    updateParams,
+    { transaction = global.globalTestTransaction } = {}
+) => {
     if (!model) throw new Error('Model not defined');
 
     return await model.update(
         { ...updateParams },
-        { where: { ...queryParams }, ...options }
+        { where: { ...queryParams }, transaction }
     );
 };
 
@@ -242,12 +298,7 @@ const update = async (model, queryParams, updateParams, options = {}) => {
  * @returns {Promise<[[*,Boolean]]>}
  */
 const nestedGetOrCreate = async (getOptionsArray, options = {}) => {
-    const isInternalTransaction = !options.transaction;
-    const transaction = isInternalTransaction
-        ? await sequelize.transaction()
-        : options.transaction;
-
-    try {
+    return confirmTransaction(options.transaction, async transaction => {
         let accumulatedResults = [];
         for (const getOptions of getOptionsArray) {
             const {
@@ -256,10 +307,33 @@ const nestedGetOrCreate = async (getOptionsArray, options = {}) => {
                 update,
                 values,
                 updateValues,
+                bulkGetOrReplace,
+                bulkGetOrReplaceWhere,
                 returnAttributes
             } = isFunction(getOptions)
                 ? getOptions(accumulatedResults)
                 : getOptions;
+
+            if (bulkGetOrReplace) {
+                if (get || create || update) {
+                    throw new Error(
+                        'Cannot mix bulkGetOrReplace with get, create or ' +
+                            'update, because one works with an array and the ' +
+                            'others work with a single record'
+                    );
+                }
+                const [
+                    records,
+                    isUpdated
+                ] = await bulkGetOrReplace(
+                    bulkGetOrReplaceWhere,
+                    values,
+                    ...returnAttributes,
+                    { transaction }
+                );
+                accumulatedResults.push([records, isUpdated]);
+                continue;
+            }
 
             const search = null;
             const pagination = {};
@@ -278,9 +352,7 @@ const nestedGetOrCreate = async (getOptionsArray, options = {}) => {
                         found[0].id,
                         updateValues,
                         ...returnAttributes,
-                        {
-                            transaction
-                        }
+                        { transaction }
                     );
                 }
                 accumulatedResults.push([found[0], false]);
@@ -296,32 +368,94 @@ const nestedGetOrCreate = async (getOptionsArray, options = {}) => {
             accumulatedResults.push([created, true]);
         }
 
-        if (isInternalTransaction) {
-            await transaction.commit();
+        return accumulatedResults;
+    });
+};
+
+/**
+ * Allows you to bulk replace an array of records, such as the roles for a user.
+ * @example
+ * await bulkGetOrReplace(
+ *   UserRoles,
+ *   { where: { userId: 1 } },
+ *   [{ roleName: 'TESTER' }, { roleName: 'ADMIN' }]
+ * );
+ *
+ * @param {Model} model - Sequelize Model instance to query for
+ * @param {object} where - values to be used to search Sequelize Model. Only supports exact values.
+ * @param {object} expectedValues - values to be replaced. Note the "where" values will be merged in so they do not need to be duplicated here.
+ * @param {object} options - Generic options for Sequelize
+ * @param {*} options.transaction - Sequelize transaction
+ * @returns {Promise<boolean>} - True / false if the records were replaced
+ */
+const bulkGetOrReplace = async (Model, where, expectedValues, options = {}) => {
+    return confirmTransaction(options.transaction, async transaction => {
+        if (expectedValues.length === 0) {
+            throw new Error('At least one expected value is required!');
+        }
+        const comparisonKeys = Object.keys(expectedValues[0]);
+        const whereKeys = Object.keys(where);
+
+        const noInclude = [];
+        const noPagination = {};
+        const persistedValues = await get(
+            Model,
+            where,
+            [...whereKeys, ...comparisonKeys],
+            noInclude,
+            noPagination,
+            { transaction }
+        );
+
+        const isUpdated = !isEqualWith(
+            sortBy(persistedValues, comparisonKeys),
+            sortBy(expectedValues, comparisonKeys),
+            (persisted, expected, index) => {
+                // See https://github.com/lodash/lodash/issues/2490
+                if (index === undefined) return;
+
+                return !comparisonKeys.find(comparisonKey => {
+                    return persisted[comparisonKey] !== expected[comparisonKey];
+                });
+            }
+        );
+
+        if (isUpdated) {
+            // eslint-disable-next-line no-use-before-define
+            await removeByQuery(Model, where, { transaction });
+
+            const fullRecordValues = expectedValues.map(expectedValue => ({
+                ...where,
+                ...expectedValue
+            }));
+
+            await bulkCreate(Model, fullRecordValues, { transaction });
         }
 
-        return accumulatedResults;
-    } catch (error) {
-        await transaction.rollback();
-        throw error;
-    }
+        return isUpdated;
+    });
 };
 
 /**
  * See {@link https://sequelize.org/v5/class/lib/model.js~Model.html#static-method-destroy}
  * @param {Model} model - Sequelize Model instance to query for
  * @param {number | string} id - ID of the Sequelize Model to be removed
- * @param {object} deleteOptions - additional Sequelize deletion options
- * @param {boolean} [deleteOptions.truncate=false] - enables the truncate option to be used when running a deletion
+ * @param {object} options - additional Sequelize deletion and generic options
+ * @param {boolean} [options.truncate=false] - enables the truncate option to be used when running a deletion
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<boolean>} - returns true if record was deleted
  */
-const removeById = async (model, id, deleteOptions = { truncate: false }) => {
+const removeById = async (
+    model,
+    id,
+    { truncate = false, transaction = global.globalTestTransaction } = {}
+) => {
     if (!model) throw new Error('Model not defined');
 
-    const { truncate } = deleteOptions;
     await model.destroy({
         where: { id },
-        truncate
+        truncate,
+        transaction
     });
     return true;
 };
@@ -329,21 +463,22 @@ const removeById = async (model, id, deleteOptions = { truncate: false }) => {
 /**
  * @param {Model} model - Sequelize Model instance to query for
  * @param queryParams - query params to be used to find the Sequelize Models to be removed
- * @param {object} deleteOptions - additional Sequelize deletion options
- * @param {boolean} [deleteOptions.truncate=false] - enables the truncate option to be used when running a deletion
+ * @param {object} options - additional Sequelize deletion and generic options
+ * @param {boolean} [options.truncate=false] - enables the truncate option to be used when running a deletion
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<boolean>} - returns true if record was deleted
  */
 const removeByQuery = async (
     model,
     queryParams,
-    deleteOptions = { truncate: false }
+    { truncate = false, transaction = global.globalTestTransaction } = {}
 ) => {
     if (!model) throw new Error('Model not defined');
 
-    const { truncate } = deleteOptions;
     await model.destroy({
         where: { ...queryParams },
-        truncate
+        truncate,
+        transaction
     });
     return true;
 };
@@ -359,11 +494,14 @@ const rawQuery = async query => {
 };
 
 module.exports = {
+    confirmTransaction,
     getById,
     getByQuery,
     get,
     create,
+    bulkCreate,
     update,
+    bulkGetOrReplace,
     nestedGetOrCreate,
     removeById,
     removeByQuery,

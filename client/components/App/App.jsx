@@ -26,9 +26,8 @@ const useLoginUrl = () => {
         dataFromFrontend += `fakeRole-${matchedFakeRole[1]}`;
     }
     return (
-        `${process.env.API_SERVER}/api/auth/oauth` +
-        `?referer=${window.location.origin}&service=github&` +
-        `dataFromFrontend=${dataFromFrontend}`
+        `${process.env.API_SERVER}/api/auth/oauth?dataFromFrontend=` +
+        dataFromFrontend
     );
 };
 
