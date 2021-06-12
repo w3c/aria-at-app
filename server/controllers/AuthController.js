@@ -45,15 +45,15 @@ const oauthRedirectFromGithubController = async (req, res) => {
 
     const roles = [];
     if (teams.includes(User.ADMIN)) {
-        roles.push(User.ADMIN);
+        roles.push({ name: User.ADMIN });
     }
     if (teams.includes(User.TESTER) || teams.includes(User.ADMIN)) {
-        roles.push(User.TESTER); // Admins are always testers
+        roles.push({ name: User.TESTER }); // Admins are always testers
     }
 
     if (roles.length === 0) return loginFailedDueToRole();
 
-    const user = await getOrCreateUser(
+    let [user] = await getOrCreateUser(
         { username: githubUsername },
         { roles },
         undefined,
@@ -66,12 +66,17 @@ const oauthRedirectFromGithubController = async (req, res) => {
     const matchedFakeRole =
         dataFromFrontend && dataFromFrontend.match(/fakeRole-(\w*)/);
     if (ALLOW_FAKE_ROLE && matchedFakeRole) {
+        user = user.get({ plain: true });
         user.roles =
-            matchedFakeRole[1] === '' ? [] : [matchedFakeRole[1].toUpperCase()];
-        if (user.roles[0] === User.ADMIN) {
-            user.roles.push(User.TESTER); // Admins are always testers
+            matchedFakeRole[1] === ''
+                ? []
+                : [{ name: matchedFakeRole[1].toUpperCase() }];
+        if (user.roles[0] && user.roles[0].name === User.ADMIN) {
+            user.roles.push({ name: User.TESTER }); // Admins are always testers
         }
     }
+
+    if (user.roles.length === 0) return loginFailedDueToRole();
 
     req.session.githubAccessToken = githubAccessToken;
     req.session.user = user;

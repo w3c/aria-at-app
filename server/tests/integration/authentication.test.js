@@ -1,18 +1,15 @@
 const fetch = require('node-fetch');
-const express = require('express');
-const { gql } = require('apollo-server');
-const request = require('supertest');
-const { query } = require('../util/graphql-test-utilities');
 const dbCleaner = require('../util/db-cleaner');
 const setUpMockGithubServer = require('../util/mock-github-server');
+const startSupertestServer = require('../util/api-server');
 const authRoutes = require('../../routes/auth');
-const session = require('express-session');
 
-let agent;
+let sessionAgent;
+let apiServer;
 let mockGithubServer;
 
-const followRedirects = async () => {
-    const res1 = await agent.get('/api/auth/oauth');
+const followRedirects = async firstUrl => {
+    const res1 = await sessionAgent.get(firstUrl);
 
     expect(res1.status).toBe(303);
     expect(res1.headers.location).toMatch(
@@ -34,35 +31,31 @@ const followRedirects = async () => {
 
     const removeDomain = process.env.API_SERVER.length;
     const location3 = res2.headers.get('location').substr(removeDomain);
-    const res3 = await agent.get(location3);
+    const res3 = await sessionAgent.get(location3);
 
     return res3;
 };
 
+beforeAll(async () => {
+    apiServer = await startSupertestServer({
+        graphql: true,
+        pathToRoutes: [['/api/auth', authRoutes]]
+    });
+    sessionAgent = apiServer.sessionAgent;
+    mockGithubServer = await setUpMockGithubServer();
+});
+
+afterAll(async () => {
+    await apiServer.tearDown();
+    await mockGithubServer.tearDown();
+});
+
+afterEach(async () => {
+    await sessionAgent.post('/api/auth/signout');
+});
+
 /* eslint-disable */
 describe('authentication', () => {
-    beforeAll(async () => {
-        expressApp = express();
-        expressApp.use(
-            session({
-                secret: 'test environment',
-                resave: false,
-                saveUninitialized: true
-            })
-        );
-        expressApp.use('/api/auth', authRoutes);
-        agent = request.agent(expressApp);
-        mockGithubServer = await setUpMockGithubServer();
-    });
-
-    afterAll(async () => {
-        await mockGithubServer.tearDown();
-    });
-
-    afterEach(async () => {
-        await agent.post('/api/auth/signout');
-    });
-
     it('handles Oauth to and from GitHub with preexisting user', async () => {
         await dbCleaner(async () => {
             // A1
@@ -73,16 +66,20 @@ describe('authentication', () => {
             });
 
             // A2
-            const res = await followRedirects();
+            const res = await followRedirects('/api/auth/oauth');
 
-            const data = await query(gql`
-                query {
-                    me {
-                        username
-                        roles
+            const {
+                body: { data }
+            } = await sessionAgent.post('/api/graphql').send({
+                query: `
+                    query {
+                        me {
+                            username
+                            roles
+                        }
                     }
-                }
-            `);
+                `
+            });
 
             // A3
             expect(res.status).toBe(303);
@@ -104,16 +101,20 @@ describe('authentication', () => {
             });
 
             // A2
-            const res = await followRedirects();
+            const res = await followRedirects('/api/auth/oauth');
 
-            const data = await query(gql`
-                query {
-                    me {
-                        username
-                        roles
+            const {
+                body: { data }
+            } = await sessionAgent.post('/api/graphql').send({
+                query: `
+                    query {
+                        me {
+                            username
+                            roles
+                        }
                     }
-                }
-            `);
+                `
+            });
 
             // A3
             expect(res.status).toBe(303);
@@ -135,30 +136,31 @@ describe('authentication', () => {
             });
 
             // A2
-            const response = await fetch(
-                `${process.env.API_SERVER}/api/auth/oauth`,
-                { redirect: 'follow' }
-            );
+            const res = await followRedirects('/api/auth/oauth');
 
-            const data = await query(gql`
-                query {
-                    me {
-                        username
-                        roles
+            const {
+                body: { data }
+            } = await sessionAgent.post('/api/graphql').send({
+                query: `
+                    query {
+                        me {
+                            username
+                            roles
+                        }
                     }
-                }
-            `);
+                `
+            });
 
             // A3
-            expect(response.redirected).toBe(true);
-            expect(response.url).toBe(
+            expect(res.status).toBe(303);
+            expect(res.headers.location).toBe(
                 `${process.env.APP_SERVER}/signup-instructions`
             );
             expect(data.me).toBe(null);
         });
     });
 
-    it.only('supports signing out', async () => {
+    it('supports signing out', async () => {
         await dbCleaner(async () => {
             // A1
             const _knownUsername = 'esmeralda-baggins';
@@ -168,29 +170,39 @@ describe('authentication', () => {
             });
 
             // A2
-            await followRedirects();
+            await followRedirects('/api/auth/oauth');
 
-            const first = await query(gql`
-                query {
-                    me {
-                        username
+            const {
+                body: { data: first }
+            } = await sessionAgent.post('/api/graphql').send({
+                query: `
+                    query {
+                        me {
+                            username
+                            roles
+                        }
                     }
-                }
-            `);
+                `
+            });
 
-            const signoutResponse = await agent.post('/api/auth/signout');
+            const signoutRes = await sessionAgent.post('/api/auth/signout');
 
-            const second = await query(gql`
-                query {
-                    me {
-                        username
+            const {
+                body: { data: second }
+            } = await sessionAgent.post('/api/graphql').send({
+                query: `
+                    query {
+                        me {
+                            username
+                            roles
+                        }
                     }
-                }
-            `);
+                `
+            });
 
             // A3
             expect(first.me.username).toBe(_knownUsername);
-            expect(signoutResponse.status).toBe(200);
+            expect(signoutRes.status).toBe(200);
             expect(second.me).toBe(null);
         });
     });
@@ -206,35 +218,37 @@ describe('authentication', () => {
             });
 
             // A2
-            await fetch(
-                `${process.env.API_SERVER}/api/auth/oauth` +
-                    `?dataFromFrontend=${_dataFromFrontend}`,
-                { redirect: 'follow' }
+            await followRedirects(
+                `/api/auth/oauth?dataFromFrontend=${_dataFromFrontend}`
             );
 
-            const firstLogin = await query(gql`
-                query {
-                    me {
-                        roles
+            const {
+                body: { data: firstLogin }
+            } = await sessionAgent.post('/api/graphql').send({
+                query: `
+                    query {
+                        me {
+                            roles
+                        }
                     }
-                }
-            `);
-
-            await fetch(`${process.env.API_SERVER}/api/auth/signout`, {
-                method: 'POST'
+                `
             });
 
-            await fetch(`${process.env.API_SERVER}/api/auth/oauth`, {
-                redirect: 'follow'
-            });
+            await sessionAgent.post('/api/auth/signout');
 
-            const secondLogin = await query(gql`
-                query {
-                    me {
-                        roles
+            await followRedirects(`/api/auth/oauth`);
+
+            const {
+                body: { data: secondLogin }
+            } = await sessionAgent.post('/api/graphql').send({
+                query: `
+                    query {
+                        me {
+                            roles
+                        }
                     }
-                }
-            `);
+                `
+            });
 
             // A3
             expect(firstLogin.me.roles).toEqual(['TESTER']);
@@ -255,15 +269,13 @@ describe('authentication', () => {
             });
 
             // A2
-            const response = await fetch(
-                `${process.env.API_SERVER}/api/auth/oauth` +
-                    `?dataFromFrontend=${_dataFromFrontend}`,
-                { redirect: 'follow' }
+            const res = await followRedirects(
+                `/api/auth/oauth?dataFromFrontend=${_dataFromFrontend}`
             );
 
             // A3
-            expect(response.redirected).toBe(true);
-            expect(response.url).toBe(
+            expect(res.status).toBe(303);
+            expect(res.headers.location).toBe(
                 `${process.env.APP_SERVER}/signup-instructions`
             );
         });

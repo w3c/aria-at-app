@@ -314,7 +314,7 @@ const getOrCreateUser = async (
                     return {
                         bulkGetOrReplace: bulkGetOrReplaceUserRoles,
                         bulkGetOrReplaceWhere: { userId },
-                        values: roles.map(roleName => ({ roleName })),
+                        values: roles.map(({ name }) => ({ roleName: name })),
                         returnAttributes: [null]
                     };
                 }

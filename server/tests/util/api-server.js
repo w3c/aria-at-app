@@ -1,56 +1,50 @@
-const path = require('path');
-const { spawn } = require('child_process');
+const getSessionAgent = require('supertest-session');
+const bodyParser = require('body-parser');
+const express = require('express');
+const { ApolloServer } = require('apollo-server-express');
+const typeDefs = require('../../graphql-schema');
+const getGraphQLContext = require('../../graphql-context');
+const resolvers = require('../../resolvers');
+const session = require('express-session');
 
-const serverPath = path.join(__dirname, '../../server.js');
+const startSupertestServer = async ({ graphql = false, pathToRoutes = [] }) => {
+    const expressApp = express();
 
-const setUpApiServer = async () => {
-    const apiServer = spawn('node', [serverPath], {
-        env: process.env,
-        stdio: 'pipe'
-    });
+    expressApp.use(bodyParser.json());
+    expressApp.use(
+        session({
+            secret: 'test environment',
+            resave: false,
+            saveUninitialized: true,
+            cookie: { maxAge: 30 * 24 * 60 * 60 * 1000 } // 30 days
+        })
+    );
 
-    let apiServerStarted;
-    let apiServerFailedToStart;
-    const apiServerPromise = new Promise((resolve, reject) => {
-        apiServerStarted = resolve;
-        apiServerFailedToStart = reject;
-    });
-
-    const determineIfServerStarted = firstOutput => {
-        if (firstOutput && firstOutput.match(/Listening on \d+/)) {
-            return apiServerStarted();
-        }
-        apiServerFailedToStart('API Server failed to start');
-    };
-
-    let isFirstOutput = true;
-
-    apiServer.stdout.on('data', data => {
-        const output = data.toString();
-        console.log(output); // eslint-disable-line no-console
-
-        if (isFirstOutput) {
-            isFirstOutput = false;
-            determineIfServerStarted(output);
-        }
-    });
-
-    apiServer.stderr.on('data', data => {
-        console.error(data.toString());
-    });
-
-    await apiServerPromise;
-
-    const tearDown = () => {
-        return new Promise(resolve => {
-            apiServer.on('close', () => resolve());
-            apiServer.kill();
+    let apolloServer;
+    if (graphql) {
+        apolloServer = new ApolloServer({
+            typeDefs,
+            context: getGraphQLContext,
+            resolvers
         });
+
+        await apolloServer.start();
+        apolloServer.applyMiddleware({ app: expressApp, path: '/api/graphql' });
+    }
+
+    pathToRoutes.forEach(([path, routes]) => {
+        expressApp.use(path, routes);
+    });
+
+    const sessionAgent = getSessionAgent(expressApp);
+
+    const tearDown = async () => {
+        if (graphql) {
+            await apolloServer.stop();
+        }
     };
 
-    return {
-        tearDown
-    };
+    return { sessionAgent, tearDown };
 };
 
-module.exports = setUpApiServer;
+module.exports = startSupertestServer;

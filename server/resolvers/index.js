@@ -9,6 +9,7 @@ const mutateTestPlanReport = require('./mutateTestPlanReportResolver');
 const populateData = require('./populateDataResolver');
 const At = require('./At');
 const Browser = require('./Browser');
+const User = require('./User');
 const TestPlanVersion = require('./TestPlanVersion');
 const TestPlanReport = require('./TestPlanReport');
 const TestPlanReportOperations = require('./TestPlanReportOperations');
@@ -31,6 +32,7 @@ const resolvers = {
     },
     At,
     Browser,
+    User,
     TestPlanVersion,
     TestPlanReport,
     TestPlanReportOperations,

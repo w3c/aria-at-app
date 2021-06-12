@@ -42,7 +42,8 @@
     "pg": "^8.6.0",
     "pg-hstore": "^2.3.3",
     "rawgit": "https://github.com/rgrove/rawgit.git#eaa9b36aa2143041894866ba9db72e51d05c2a52",
-    "sequelize": "5.x.x"
+    "sequelize": "5.x.x",
+    "supertest-session": "^4.1.0"
   },
   "devDependencies": {
     "apollo-server-testing": "^2.24.0",
