@@ -16,7 +16,7 @@ const startSupertestServer = async ({ graphql = false, pathToRoutes = [] }) => {
             secret: 'test environment',
             resave: false,
             saveUninitialized: true,
-            cookie: { maxAge: 30 * 24 * 60 * 60 * 1000 } // 30 days
+            cookie: { maxAge: 30000 } // Required
         })
     );
 

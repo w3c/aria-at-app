@@ -53,10 +53,7 @@ const setUpMockGithubServer = async () => {
         }
     };
 
-    const apolloServer = new ApolloServer({
-        typeDefs,
-        resolvers
-    });
+    const apolloServer = new ApolloServer({ typeDefs, resolvers });
 
     const expressApp = express();
 

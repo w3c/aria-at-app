@@ -335,14 +335,14 @@ const nestedGetOrCreate = async (getOptionsArray, options = {}) => {
                 continue;
             }
 
-            const search = null;
-            const pagination = {};
+            const noSearch = '';
+            const noPagination = {};
 
             const found = await get(
-                search,
+                noSearch,
                 values,
                 ...returnAttributes,
-                pagination,
+                noPagination,
                 { transaction }
             );
 

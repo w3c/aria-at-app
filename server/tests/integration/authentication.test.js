@@ -54,7 +54,6 @@ afterEach(async () => {
     await sessionAgent.post('/api/auth/signout');
 });
 
-/* eslint-disable */
 describe('authentication', () => {
     it('handles Oauth to and from GitHub with preexisting user', async () => {
         await dbCleaner(async () => {
