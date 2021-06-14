@@ -3,6 +3,7 @@ const dbCleaner = require('../util/db-cleaner');
 const setUpMockGithubServer = require('../util/mock-github-server');
 const startSupertestServer = require('../util/api-server');
 const authRoutes = require('../../routes/auth');
+const db = require('../../models/index');
 
 let sessionAgent;
 let apiServer;
@@ -48,6 +49,8 @@ beforeAll(async () => {
 afterAll(async () => {
     await apiServer.tearDown();
     await mockGithubServer.tearDown();
+    // Closing the DB connection allows Jest to exit successfully.
+    await db.sequelize.close();
 });
 
 afterEach(async () => {
