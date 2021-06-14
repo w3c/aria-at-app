@@ -37,10 +37,10 @@ const App = () => {
 
     if (loading) return null;
 
-    const isLoggedIn = !!(data.me && data.me.username);
-    const isTester = data.me && data.me.roles.includes('TESTER');
-    const isAdmin = data.me && data.me.roles.includes('ADMIN');
-    const username = data.me && data.me.username;
+    const isLoggedIn = !!(data && data.me && data.me.username);
+    const isTester = isLoggedIn && data.me.roles.includes('TESTER');
+    const isAdmin = isLoggedIn && data.me.roles.includes('ADMIN');
+    const username = isLoggedIn && data.me.username;
 
     return (
         <BrowserRouter>
