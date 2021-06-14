@@ -1,11 +1,12 @@
 import React, { Fragment } from 'react';
 import { useQuery, gql } from '@apollo/client';
 import { renderRoutes } from 'react-router-config';
-import { BrowserRouter, Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Container, Navbar, Nav } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
 import routes from '../../routes';
+import useSigninUrl from './useSigninUrl';
 import './App.css';
 
 const APP_QUERY = gql`
@@ -17,41 +18,32 @@ const APP_QUERY = gql`
     }
 `;
 
-const useLoginUrl = () => {
-    // Allows for quickly logging in with different roles - changing
-    // roles would otherwise require leaving and joining GitHub teams
-    const matchedFakeRole = location.href.match(/fakeRole=(\w*)/);
-    let dataFromFrontend = '';
-    if (matchedFakeRole) {
-        dataFromFrontend += `fakeRole-${matchedFakeRole[1]}`;
-    }
-    return (
-        `${process.env.API_SERVER}/api/auth/oauth?dataFromFrontend=` +
-        dataFromFrontend
-    );
-};
-
 const App = () => {
-    const { loading, data } = useQuery(APP_QUERY);
-    const loginUrl = useLoginUrl();
+    const { client, loading, data } = useQuery(APP_QUERY);
+    const signinUrl = useSigninUrl();
+    const location = useLocation();
+
+    const signOut = async () => {
+        await fetch('/api/auth/signout', { method: 'POST' });
+        client.resetStore();
+    };
 
     if (loading) return null;
 
-    const isLoggedIn = !!(data && data.me && data.me.username);
-    const isTester = isLoggedIn && data.me.roles.includes('TESTER');
-    const isAdmin = isLoggedIn && data.me.roles.includes('ADMIN');
-    const username = isLoggedIn && data.me.username;
+    const isSignedIn = !!(data && data.me && data.me.username);
+    const isTester = isSignedIn && data.me.roles.includes('TESTER');
+    const isAdmin = isSignedIn && data.me.roles.includes('ADMIN');
+    const username = isSignedIn && data.me.username;
 
     return (
-        <BrowserRouter>
+        <Fragment>
             <Container fluid>
                 <Navbar bg="light" expand="lg" aria-label="Main Menu">
                     <Navbar.Brand
                         className="logo"
                         as={Link}
                         to="/"
-                        // TODO: reenable
-                        // {...this.navProps('/')}
+                        aria-current={location.pathname === '/'}
                     >
                         ARIA-AT
                     </Navbar.Brand>
@@ -60,13 +52,14 @@ const App = () => {
                         id="basic-navbar-nav"
                         className="justify-content-end"
                     >
-                        {(!isLoggedIn && (
+                        {(!isSignedIn && (
                             <Fragment>
                                 <Nav.Link
                                     as={Link}
                                     to="/reports"
-                                    // TODO: reenable
-                                    // {...this.navProps('/reports')}
+                                    aria-current={
+                                        location.pathname === '/reports'
+                                    }
                                 >
                                     Test Reports
                                 </Nav.Link>
@@ -74,7 +67,7 @@ const App = () => {
                                     as={Link}
                                     to="/"
                                     onClick={() =>
-                                        (window.location.href = loginUrl)
+                                        (window.location.href = signinUrl)
                                     }
                                 >
                                     Sign in with GitHub
@@ -85,8 +78,9 @@ const App = () => {
                                 <Nav.Link
                                     as={Link}
                                     to="/reports"
-                                    // TODO: reenable
-                                    // {...this.navProps('/reports')}
+                                    aria-current={
+                                        location.pathname === '/reports'
+                                    }
                                 >
                                     Test Reports
                                 </Nav.Link>
@@ -94,8 +88,9 @@ const App = () => {
                                     <Nav.Link
                                         as={Link}
                                         to="/test-queue"
-                                        // TODO: reenable
-                                        // {...this.navProps('/test-queue')}
+                                        aria-current={
+                                            location.pathname === '/test-queue'
+                                        }
                                     >
                                         Test Queue
                                     </Nav.Link>
@@ -104,10 +99,10 @@ const App = () => {
                                     <Nav.Link
                                         as={Link}
                                         to="/admin/configure-runs"
-                                        // TODO: reenable
-                                        // {...this.navProps(
-                                        //     '/admin/configure-runs'
-                                        // )}
+                                        aria-current={
+                                            location.pathname ===
+                                            '/admin/configure-runs'
+                                        }
                                     >
                                         Test Configuration
                                     </Nav.Link>
@@ -115,16 +110,14 @@ const App = () => {
                                 <Nav.Link
                                     as={Link}
                                     to="/account/settings"
-                                    // TODO: reenable
-                                    // {...this.navProps('/account/settings')}
+                                    aria-current={
+                                        location.pathname ===
+                                        '/account/settings'
+                                    }
                                 >
                                     Settings
                                 </Nav.Link>
-                                <Nav.Link
-                                    as={Link}
-                                    to="/"
-                                    onClick={this.signOut}
-                                >
+                                <Nav.Link as={Link} to="/" onClick={signOut}>
                                     Sign out
                                 </Nav.Link>
                                 <div className="signed-in">
@@ -139,7 +132,7 @@ const App = () => {
             <Container fluid>
                 <div>{renderRoutes(routes)}</div>
             </Container>
-        </BrowserRouter>
+        </Fragment>
     );
 };
 
