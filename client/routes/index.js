@@ -1,7 +1,6 @@
 import React from 'react';
 import { Route, Redirect } from 'react-router-dom';
 
-import App from '@components/App';
 import ConfigureActiveRuns from '@components/ConfigureActiveRuns';
 import ConfirmAuth from '@components/ConfirmAuth';
 import Home from '@components/Home';
