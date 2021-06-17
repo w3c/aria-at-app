@@ -4,7 +4,7 @@ on: [push, pull_request]
 jobs:
   runtest_task:
     name: Using NodeJS and Postgres 12
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-20.04
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v2
@@ -23,6 +23,7 @@ jobs:
           sudo pg_ctlcluster 12 main restart
       - name: before_script
         run: |
+          npm install -g dotenv-cli
           source config/test.env
           sudo -u postgres createdb ${PGDATABASE}
           echo Created ${PGDATABASE}
