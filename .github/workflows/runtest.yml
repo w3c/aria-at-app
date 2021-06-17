@@ -4,7 +4,7 @@ on: [push, pull_request]
 jobs:
   runtest_task:
     name: Using NodeJS and Postgres 12
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-16.04
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v2
