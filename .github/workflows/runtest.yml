@@ -33,6 +33,8 @@ jobs:
           echo Created ${PGDATABASE}
           sudo -u postgres psql -c "CREATE ROLE ${PGUSER} WITH LOGIN PASSWORD '${PGPASSWORD}'"
           sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE ${PGDATABASE} to ${PGUSER};"
+      - name: using yarn
+        run: |
           yarn sequelize:test db:migrate
           yarn sequelize:test db:seed:all
           yarn workspace server db-import-tests:test -c ${IMPORT_ARIA_AT_TESTS_COMMIT_1}
