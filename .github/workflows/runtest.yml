@@ -26,6 +26,7 @@ jobs:
           npm install -g dotenv-cli
           npm install -g sequelize-cli
           npm install -g sequelize
+          npm install -g pg
           source config/test.env
           sudo -u postgres createdb ${PGDATABASE}
           echo Created ${PGDATABASE}
