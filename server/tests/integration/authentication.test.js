@@ -64,7 +64,7 @@ describe('authentication', () => {
             const _knownUsername = 'esmeralda-baggins';
             mockGithubServer.nextLogin({
                 githubUsername: _knownUsername,
-                githubTeams: [process.env.GITHUB_TEAM_ADMIN, 'Irrelevant Team']
+                isOnAdminTeam: true
             });
 
             // A2
@@ -99,7 +99,7 @@ describe('authentication', () => {
             const _unknownUsername = 'aurelia-proudfeet';
             mockGithubServer.nextLogin({
                 githubUsername: _unknownUsername,
-                githubTeams: [process.env.GITHUB_TEAM_ADMIN]
+                isOnAdminTeam: true
             });
 
             // A2
@@ -128,13 +128,48 @@ describe('authentication', () => {
         });
     });
 
-    it('shows signup instructions when not on required teams', async () => {
+    it('signs in as a tester', async () => {
+        await dbCleaner(async () => {
+            // A1
+            const _testerUsername = 'a11ydoer'; // From testers.txt
+            mockGithubServer.nextLogin({
+                githubUsername: _testerUsername,
+                isOnAdminTeam: false
+            });
+
+            // A2
+            const res = await followRedirects('/api/auth/oauth');
+
+            const {
+                body: { data }
+            } = await sessionAgent.post('/api/graphql').send({
+                query: `
+                    query {
+                        me {
+                            username
+                            roles
+                        }
+                    }
+                `
+            });
+
+            // A3
+            expect(res.status).toBe(303);
+            expect(res.headers.location).toBe(
+                `${process.env.APP_SERVER}/test-queue`
+            );
+            expect(data.me.username).toBe(_testerUsername);
+            expect(data.me.roles).toEqual(['TESTER']);
+        });
+    });
+
+    it('shows signup instructions when not known to the system', async () => {
         await dbCleaner(async () => {
             // A1
             const _unknownUsername = 'aurelia-proudfeet';
             mockGithubServer.nextLogin({
                 githubUsername: _unknownUsername,
-                githubTeams: []
+                isOnAdminTeam: false
             });
 
             // A2
@@ -168,7 +203,7 @@ describe('authentication', () => {
             const _knownUsername = 'esmeralda-baggins';
             mockGithubServer.nextLogin({
                 githubUsername: _knownUsername,
-                githubTeams: [process.env.GITHUB_TEAM_ADMIN]
+                isOnAdminTeam: true
             });
 
             // A2
@@ -216,7 +251,7 @@ describe('authentication', () => {
             const _knownUsername = 'esmeralda-baggins';
             mockGithubServer.nextLogin({
                 githubUsername: _knownUsername,
-                githubTeams: [process.env.GITHUB_TEAM_ADMIN]
+                isOnAdminTeam: true
             });
 
             // A2
@@ -267,7 +302,7 @@ describe('authentication', () => {
             const _knownUsername = 'esmeralda-baggins';
             mockGithubServer.nextLogin({
                 githubUsername: _knownUsername,
-                githubTeams: [process.env.GITHUB_TEAM_ADMIN]
+                isOnAdminTeam: true
             });
 
             // A2

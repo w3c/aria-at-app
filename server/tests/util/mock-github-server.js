@@ -2,9 +2,11 @@ const express = require('express');
 const randomStringGenerator = require('./random-character-generator');
 const { ApolloServer, gql } = require('apollo-server-express');
 
+const { GITHUB_TEAM_ADMIN } = process.env;
+
 const setUpMockGithubServer = async () => {
     let nextGithubUsername;
-    let nextGithubTeams;
+    let nextIsOnAdminTeam;
 
     const typeDefs = gql`
         type Node {
@@ -44,11 +46,8 @@ const setUpMockGithubServer = async () => {
         },
         Organization: {
             teams: () => {
-                return {
-                    edges: nextGithubTeams.map(teamName => {
-                        return { node: { name: teamName } };
-                    })
-                };
+                const teamName = nextIsOnAdminTeam ? GITHUB_TEAM_ADMIN : null;
+                return { edges: [{ node: { name: teamName } }] };
             }
         }
     };
@@ -81,9 +80,9 @@ const setUpMockGithubServer = async () => {
         listener = expressApp.listen('4466', resolve);
     });
 
-    const nextLogin = ({ githubUsername, githubTeams }) => {
+    const nextLogin = ({ githubUsername, isOnAdminTeam }) => {
         nextGithubUsername = githubUsername;
-        nextGithubTeams = githubTeams;
+        nextIsOnAdminTeam = isOnAdminTeam;
     };
 
     const tearDown = async () => {
