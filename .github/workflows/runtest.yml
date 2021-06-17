@@ -11,7 +11,8 @@ jobs:
       - name: Install NodeJS 10
         uses: actions/setup-node@v2
         with:
-          node-version: '10'
+          node-version: '14'
+        run: yarn --version
       - name: Install PostgreSQL 12
         run: |
           sudo apt-get -y install postgresql-12
@@ -23,11 +24,7 @@ jobs:
           sudo pg_ctlcluster 12 main restart
       - name: before_script
         run: |
-          npm install -g dotenv-cli
-          npm install -g sequelize-cli
-          npm install -g sequelize
-          npm install -g pg
-          npm install -g bluebird
+          yarn --frozen-lockfile
           source config/test.env
           sudo -u postgres createdb ${PGDATABASE}
           echo Created ${PGDATABASE}
