@@ -107,6 +107,7 @@ const graphqlSchema = gql`
         # isLatest: Boolean!
         updatedAt: Timestamp!
         exampleUrl: String!
+        directory: String!
         tests: [Test]!
         testCount: Int!
         testPlanReports(status: TestPlanReportStatus): [TestPlanReport]!
@@ -287,6 +288,7 @@ const graphqlSchema = gql`
 
     type Query {
         me: User
+        users: [User]
         ats: [At]
         browsers: [Browser]
         testPlans: [TestPlan]!

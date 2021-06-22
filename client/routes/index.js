@@ -29,7 +29,7 @@ export default [
         exact: true,
         component: () => {
             return (
-                <ConfirmAuth requiredPermission="tester">
+                <ConfirmAuth requiredPermission="TESTER">
                     <Route component={UserSettings} />
                 </ConfirmAuth>
             );
@@ -40,7 +40,7 @@ export default [
         exact: true,
         component: () => {
             return (
-                <ConfirmAuth requiredPermission="tester">
+                <ConfirmAuth requiredPermission="TESTER">
                     <Route component={TestQueue} />
                 </ConfirmAuth>
             );
@@ -51,7 +51,7 @@ export default [
         exact: true,
         component: () => {
             return (
-                <ConfirmAuth requiredPermission="admin">
+                <ConfirmAuth requiredPermission="ADMIN">
                     <Route component={ConfigureActiveRuns} />
                 </ConfirmAuth>
             );

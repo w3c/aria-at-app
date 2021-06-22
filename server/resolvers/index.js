@@ -4,6 +4,7 @@ const browsers = require('./browsersResolver');
 const testPlans = require('./testPlanVersionsResolver');
 const testPlanReport = require('./testPlanReportResolver');
 const testPlanReports = require('./testPlanReportsResolver');
+const users = require('./usersResolver');
 const findOrCreateTestPlanReport = require('./findOrCreateTestPlanReportResolver');
 const mutateTestPlanReport = require('./mutateTestPlanReportResolver');
 const populateData = require('./populateDataResolver');
@@ -24,6 +25,7 @@ const resolvers = {
         testPlans,
         testPlanReport,
         testPlanReports,
+        users,
         populateData
     },
     Mutation: {

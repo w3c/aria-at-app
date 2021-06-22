@@ -1,6 +1,7 @@
 .testers-wrapper {
     display: flex;
     flex-direction: row;
+    min-height: 3.75rem;
 }
 
 .testers-wrapper div {
@@ -13,6 +14,12 @@
 
 .testers-wrapper .assign-actions {
     width: 100%;
+}
+
+.status-wrapper {
+    display: flex;
+    flex-direction: row;
+    min-height: 3.75rem;
 }
 
 .assignees {
