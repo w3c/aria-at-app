@@ -5,9 +5,6 @@ import { Link } from 'react-router-dom';
 import { Container, Table, Alert } from 'react-bootstrap';
 import { Helmet } from 'react-helmet';
 import { connect } from 'react-redux';
-import { getAllUsers } from '../../actions/users';
-import { getActiveRuns, getActiveRunConfiguration } from '../../actions/runs';
-import { handleGetValidAts } from '../../actions/ats';
 import nextId from 'react-id-generator';
 import TestQueueRun from '../TestQueueRun';
 import DeleteResultsModal from '../DeleteResultsModal';
@@ -73,149 +70,20 @@ const TestQueue = () => {
     const [structuredTestPlanTargets, setStructuredTestPlanTargets] = useState(
         {}
     );
+    const [isShowingDeleteResultsModal, enableDeleteResultsModal] = useState(
+        false
+    );
+    const [deleteResultsDetails, setDeleteResultsDetails] = useState({});
+
+    const currentUserIsAdmin =
+        user && user.roles && user.roles.includes('ADMIN');
 
     useEffect(() => {
         if (data) {
             const { me = {}, users = [], testPlanReports = [] } = data;
             setUser(me);
             setTesters(users);
-            // setTestPlanReports(testPlanReports);
-            setTestPlanReports([
-                {
-                    id: '1',
-                    status: 'DRAFT',
-                    conflictCount: 0,
-                    testPlanTarget: {
-                        id: '1',
-                        title: 'NVDA 2020.4 with Chrome 91.0.4472'
-                    },
-                    testPlanVersion: {
-                        id: '1',
-                        title: 'Checkbox Example (Two State)',
-                        gitSha: '4ca7842ea7777b668546e74c9b5ed5b09696d927',
-                        gitMessage:
-                            'Revert "Generated tests and review pages output improvements (#441)" (#449)',
-                        testCount: 26,
-                        directory: 'checkbox'
-                    },
-                    draftTestPlanRuns: [
-                        {
-                            id: '1',
-                            tester: {
-                                username: 'howard-e'
-                            },
-                            testResultCount: 2
-                        }
-                    ]
-                },
-                {
-                    id: '2',
-                    status: 'DRAFT',
-                    conflictCount: 0,
-                    testPlanTarget: {
-                        id: '2',
-                        title: 'NVDA 2020.4 with Chrome 91.0.4472'
-                    },
-                    testPlanVersion: {
-                        id: '2',
-                        title: 'Checkbox Example (Three State)',
-                        gitSha: '4ca7842ea7777b668546e74c9b5ed5b09696d927',
-                        gitMessage:
-                            'Revert "Generated tests and review pages output improvements (#441)" (#449)',
-                        testCount: 26,
-                        directory: 'checkbox'
-                    },
-                    draftTestPlanRuns: [
-                        {
-                            id: '2',
-                            tester: {
-                                username: 'somebody-else'
-                            },
-                            testResultCount: 2
-                        }
-                    ]
-                },
-                {
-                    id: '3',
-                    status: 'DRAFT',
-                    conflictCount: 0,
-                    testPlanTarget: {
-                        id: '3',
-                        title: 'JAWS 2020.4 with Firefox 89.02'
-                    },
-                    testPlanVersion: {
-                        id: '2',
-                        title: 'Checkbox Example (Five State)',
-                        gitSha: '4ca7842ea7777b668546e74c9b5ed5b09696d927',
-                        gitMessage:
-                            'Revert "Generated tests and review pages output improvements (#441)" (#449)',
-                        testCount: 26,
-                        directory: 'checkbox-complete'
-                    },
-                    draftTestPlanRuns: [
-                        {
-                            id: '3',
-                            tester: {
-                                username: 'howard-e'
-                            },
-                            testResultCount: 2
-                        },
-                        {
-                            id: '4',
-                            tester: {
-                                username: 'somebody-else'
-                            },
-                            testResultCount: 2
-                        }
-                    ]
-                },
-                {
-                    id: '4',
-                    status: 'DRAFT',
-                    conflictCount: 0,
-                    testPlanTarget: {
-                        id: '4',
-                        title: 'NVDA 2020.4 with Chrome 91.0.4472'
-                    },
-                    testPlanVersion: {
-                        id: '4',
-                        title: 'Checkbox Example (Two State)',
-                        gitSha: '5498v98dfv2492042092409204924',
-                        gitMessage:
-                            'Other Revert "Generated tests and review pages output improvements (#441)" (#449)',
-                        testCount: 26,
-                        directory: 'checkbox'
-                    },
-                    draftTestPlanRuns: [
-                        {
-                            id: '5',
-                            tester: {
-                                username: 'howard-e'
-                            },
-                            testResultCount: 1
-                        }
-                    ]
-                },
-                {
-                    id: '5',
-                    status: 'DRAFT',
-                    conflictCount: 0,
-                    testPlanTarget: {
-                        id: '5',
-                        title: 'NVDA 2020.4 with Chrome 91.0.4472'
-                    },
-                    testPlanVersion: {
-                        id: '5',
-                        title: 'Editor Menubar Example',
-                        gitSha: '4ca7842ea7777b668546e74c9b5ed5b09696d927',
-                        gitMessage:
-                            'Revert "Generated tests and review pages output improvements (#441)" (#449)',
-                        testCount: 20,
-                        directory: 'something-else'
-                    },
-                    draftTestPlanRuns: []
-                }
-            ]);
+            setTestPlanReports(testPlanReports);
         }
     }, [data]);
 
@@ -279,34 +147,45 @@ const TestQueue = () => {
                                         user={user}
                                         testers={testers}
                                         testPlanReport={testPlanReport}
-                                        handleAssignTester={null}
-                                        handleRemoveTester={null}
+                                        triggerDeleteResultsModal={
+                                            triggerDeleteResultsModal
+                                        }
                                     />
                                 );
                             })}
-
-                            {/*{runIds.map(runId => {*/}
-                            {/*    return (*/}
-                            {/*        <TestQueueRun*/}
-                            {/*            key={runId}*/}
-                            {/*            runId={runId}*/}
-                            {/*            atName={atName}*/}
-                            {/*            browserName={browserName}*/}
-                            {/*            // TODO: Shouldn't be hardcoded*/}
-                            {/*            admin={true}*/}
-                            {/*            deleteResults={this.deleteResults}*/}
-                            {/*            showDeleteResultsModal={*/}
-                            {/*                this.showDeleteResultsModal*/}
-                            {/*            }*/}
-                            {/*        />*/}
-                            {/*    );*/}
-                            {/*})}*/}
                         </tbody>
                     </Table>
                 </div>
             );
         }
         return null;
+    };
+
+    const triggerDeleteResultsModal = (
+        title = null,
+        username = null,
+        deleteFunction = () => {}
+    ) => {
+        setDeleteResultsDetails({
+            title,
+            username,
+            deleteFunction
+        });
+
+        enableDeleteResultsModal(true);
+    };
+
+    const handleDeleteResults = async () => {
+        if (deleteResultsDetails.deleteFunction)
+            await deleteResultsDetails.deleteFunction();
+        closeDeleteResultsModal();
+    };
+
+    const closeDeleteResultsModal = () => {
+        enableDeleteResultsModal(false);
+
+        // reset deleteResultsDetails
+        setDeleteResultsDetails({});
     };
 
     const loadingView = <div data-test="test-queue-loading">Loading</div>;
@@ -339,6 +218,14 @@ const TestQueue = () => {
             {Object.keys(structuredTestPlanTargets).map(key =>
                 renderAtBrowserList(key, structuredTestPlanTargets[key])
             )}
+            <DeleteResultsModal
+                show={isShowingDeleteResultsModal}
+                isAdmin={currentUserIsAdmin}
+                title={deleteResultsDetails.title}
+                username={deleteResultsDetails.username}
+                handleClose={closeDeleteResultsModal}
+                handleDeleteResults={handleDeleteResults}
+            />
         </Container>
     );
 };

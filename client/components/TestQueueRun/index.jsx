@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react';
+import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faCheck,
@@ -9,14 +10,15 @@ import nextId from 'react-id-generator';
 import { Button, Dropdown } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import ATAlert from '../ATAlert';
+import { capitalizeFirstLetterOfWords } from '../../utils/formatter';
+
 import './TestQueueRun.css';
 
 const TestQueueRun = ({
     user = {},
     testers = [],
     testPlanReport = {},
-    handleAssignTester = () => {},
-    handleRemoveTester = () => {}
+    triggerDeleteResultsModal = () => {}
 }) => {
     const startTestingButtonRef = useRef();
     const alertMessage = useState('');
@@ -110,7 +112,7 @@ const TestQueueRun = ({
     const evaluateTestRunTitle = () => {
         const { testPlanTarget, testPlanVersion } = testPlanReport;
         const { title: testPlanTargetName } = testPlanTarget;
-        const { name: apgExampleName } = testPlanVersion;
+        const { title: apgExampleName } = testPlanVersion;
 
         return `${apgExampleName} for ${testPlanTargetName}`;
     };
@@ -146,8 +148,6 @@ const TestQueueRun = ({
     };
 
     const renderDeleteMenu = () => {
-        // eslint-disable-next-line no-unused-vars
-        const { id: runId } = currentUserTestPlanRun;
         let testPlanRunsWithResults = getTestPlanRunsWithResults();
 
         if (testPlanRunsWithResults.length) {
@@ -167,9 +167,11 @@ const TestQueueRun = ({
                                         as="button"
                                         key={nextId()}
                                         onClick={() => {
-                                            // showDeleteResultsModal(t.username, activeRunsById[runId], async () =>
-                                            //     await this.handleDeleteResultsForUser(t.id)
-                                            // )
+                                            triggerDeleteResultsModal(
+                                                evaluateTestRunTitle(),
+                                                t.tester.username,
+                                                () => {}
+                                            );
                                         }}
                                     >
                                         <FontAwesomeIcon icon={faTrashAlt} />
@@ -275,7 +277,7 @@ const TestQueueRun = ({
                         {!currentUserAssigned && (
                             <Button
                                 variant="secondary"
-                                onClick={handleAssignTester}
+                                onClick={() => {}}
                                 aria-label={`Assign yourself to the test run ${evaluateTestRunTitle()}`}
                                 className="assign-self"
                             >
@@ -285,7 +287,7 @@ const TestQueueRun = ({
                         {currentUserAssigned && (
                             <Button
                                 variant="secondary"
-                                onClick={handleRemoveTester}
+                                onClick={() => {}}
                                 aria-label={`Unassign yourself from the test run ${evaluateTestRunTitle()}`}
                                 className="assign-self"
                             >
@@ -331,7 +333,8 @@ const TestQueueRun = ({
                                     updateReportStatus(nextReportStatus)
                                 }
                             >
-                                Mark as {nextReportStatus}
+                                Mark as{' '}
+                                {capitalizeFirstLetterOfWords(nextReportStatus)}
                             </Button>
                             {nextReportStatus === 'Final' ? (
                                 <Button
@@ -398,6 +401,13 @@ const TestQueueRun = ({
             </td>
         </tr>
     );
+};
+
+TestQueueRun.propTypes = {
+    user: PropTypes.object,
+    testers: PropTypes.array,
+    testPlanReport: PropTypes.object,
+    triggerDeleteResultsModal: PropTypes.func
 };
 
 export default TestQueueRun;
