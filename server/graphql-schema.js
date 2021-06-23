@@ -98,7 +98,7 @@ const graphqlSchema = gql`
 
     type TestPlanVersion {
         id: ID!
-        title: String!
+        title: String
         status: TestPlanVersionStatus!
         gitSha: String!
         gitMessage: String!
@@ -292,6 +292,7 @@ const graphqlSchema = gql`
         ats: [At]
         browsers: [Browser]
         testPlans: [TestPlan]!
+        testPlanVersions: [TestPlanVersion]
         testPlan(id: ID!): TestPlan
         testPlanReport(id: ID): TestPlanReport
         testPlanReports(statuses: [TestPlanReportStatus]): [TestPlanReport]!

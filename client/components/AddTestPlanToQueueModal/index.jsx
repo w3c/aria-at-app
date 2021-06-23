@@ -15,13 +15,11 @@ const POPULATE_MODAL_QUERY = gql`
             name
             browserVersions
         }
-        testPlans {
-            latestTestPlanVersion {
-                id
-                title
-                gitSha
-                directory
-            }
+        testPlanVersions {
+            id
+            title
+            gitSha
+            directory
         }
     }
 `;
@@ -48,30 +46,14 @@ const AddTestPlanToQueueModal = ({
 
     useEffect(() => {
         if (data) {
-            const { ats = [], browsers = [], testPlans = [] } = data;
+            const {
+                ats = [],
+                browsers = [],
+                testPlanVersions: testPlans = []
+            } = data;
             setAts(ats);
             setBrowsers(browsers);
-            // setTestPlans(testPlans);
-            setTestPlans([
-                {
-                    id: '1',
-                    title: 'Checkbox Example (Two State)',
-                    gitSha: '4ca7842ea7777b668546e74c9b5ed5b09696d927',
-                    directory: 'checkbox'
-                },
-                {
-                    id: '2',
-                    title: 'Checkbox Example (Two State)',
-                    gitSha: '66sd998kjk421d',
-                    directory: 'checkbox'
-                },
-                {
-                    id: '3',
-                    title: 'Combobox Example',
-                    gitSha: '66sd998kjk421d',
-                    directory: 'combo-box'
-                }
-            ]);
+            setTestPlans(testPlans);
         }
     }, [data]);
 
@@ -157,10 +139,12 @@ const AddTestPlanToQueueModal = ({
                         </option>
                         {primaryDropdownOptions.map(item => (
                             <option
-                                key={`${item.title}-${item.id}`}
+                                key={`${item.title || item.directory}-${
+                                    item.id
+                                }`}
                                 value={item.id}
                             >
-                                {item.title}
+                                {item.title || `"${item.directory}"`}
                             </option>
                         ))}
                     </Form.Control>
