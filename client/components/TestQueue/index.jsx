@@ -2,13 +2,16 @@ import React, { useEffect, useState } from 'react';
 import { useQuery, gql } from '@apollo/client';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
-import { Container, Table, Alert } from 'react-bootstrap';
+import { Container, Table, Alert, Button } from 'react-bootstrap';
 import { Helmet } from 'react-helmet';
 import { connect } from 'react-redux';
 import nextId from 'react-id-generator';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import TestQueueRun from '../TestQueueRun';
+import AddTestPlanToQueueModal from '../AddTestPlanToQueueModal';
 import DeleteResultsModal from '../DeleteResultsModal';
-import CurrentGitCommit from '../CurrentGitCommit';
+
 import './TestQueue.css';
 
 const TEST_PLAN_REPORTS_QUERY = gql`
@@ -202,19 +205,9 @@ const TestQueue = () => {
                 Assign yourself a test plan or start executing one that is
                 already assigned to you.
             </p>
-            {/* TODO: Remove */}
-            <CurrentGitCommit
-                label="Current Git Commit"
-                // TODO: Shouldn't be hardcoded
-                gitHash={
-                    testPlanReports[0] &&
-                    testPlanReports[0].testPlanVersion.gitSha
-                }
-                gitCommitMessage={
-                    testPlanReports[0] &&
-                    testPlanReports[0].testPlanVersion.gitMessage
-                }
-            />
+
+            <AddTestPlanToQueue />
+
             {Object.keys(structuredTestPlanTargets).map(key =>
                 renderAtBrowserList(key, structuredTestPlanTargets[key])
             )}
@@ -226,8 +219,28 @@ const TestQueue = () => {
                 handleClose={closeDeleteResultsModal}
                 handleDeleteResults={handleDeleteResults}
             />
+            <AddTestPlanToQueueModal show={true} />
         </Container>
     );
+};
+
+const AddTestPlanToQueue = ({ handleOpenDialog = () => {} }) => {
+    return (
+        <div className="add-test-plan-queue-container">
+            <Button
+                className="add-test-plan-queue-button"
+                variant="primary"
+                onClick={handleOpenDialog}
+            >
+                <FontAwesomeIcon icon={faPlus} />
+                Add a Test Plan to the Queue
+            </Button>
+        </div>
+    );
+};
+
+AddTestPlanToQueue.propTypes = {
+    handleOpenDialog: PropTypes.func
 };
 
 export default TestQueue;
