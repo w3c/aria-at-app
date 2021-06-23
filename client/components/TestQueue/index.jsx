@@ -73,10 +73,11 @@ const TestQueue = () => {
     const [structuredTestPlanTargets, setStructuredTestPlanTargets] = useState(
         {}
     );
+    const [deleteResultsDetails, setDeleteResultsDetails] = useState({});
     const [isShowingDeleteResultsModal, enableDeleteResultsModal] = useState(
         false
     );
-    const [deleteResultsDetails, setDeleteResultsDetails] = useState({});
+    const [isShowingAddToQueueModal, enableAddToQueueModal] = useState(false);
 
     const currentUserIsAdmin =
         user && user.roles && user.roles.includes('ADMIN');
@@ -206,7 +207,9 @@ const TestQueue = () => {
                 already assigned to you.
             </p>
 
-            <AddTestPlanToQueue />
+            <AddTestPlanToQueue
+                handleOpenDialog={() => enableAddToQueueModal(true)}
+            />
 
             {Object.keys(structuredTestPlanTargets).map(key =>
                 renderAtBrowserList(key, structuredTestPlanTargets[key])
@@ -219,7 +222,11 @@ const TestQueue = () => {
                 handleClose={closeDeleteResultsModal}
                 handleDeleteResults={handleDeleteResults}
             />
-            <AddTestPlanToQueueModal show={true} />
+            <AddTestPlanToQueueModal
+                show={isShowingAddToQueueModal}
+                handleClose={() => enableAddToQueueModal(false)}
+                handleAddToTestQueue={null}
+            />
         </Container>
     );
 };
