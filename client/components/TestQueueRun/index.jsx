@@ -1,5 +1,6 @@
 import React, { useRef, useState } from 'react';
 import PropTypes from 'prop-types';
+import { gql, useMutation } from '@apollo/client';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faCheck,
@@ -14,21 +15,64 @@ import { capitalizeFirstLetterOfWords } from '../../utils/formatter';
 
 import './TestQueueRun.css';
 
+const ASSIGN_TESTER_MUTATION = gql`
+    mutation AssignTester($testReportId: ID!, $testerId: ID!) {
+        testPlanReport(id: $testReportId) {
+            assignTester(userId: $testerId) {
+                testPlanReport {
+                    draftTestPlanRuns {
+                        tester {
+                            id
+                            username
+                        }
+                    }
+                }
+            }
+        }
+    }
+`;
+
+const REMOVE_TESTER_MUTATION = gql`
+    mutation RemoveTester($testReportId: ID!, $testerId: ID!) {
+        testPlanReport(id: $testReportId) {
+            deleteTestPlanRun(userId: $testerId) {
+                testPlanReport {
+                    draftTestPlanRuns {
+                        tester {
+                            id
+                            username
+                        }
+                    }
+                }
+            }
+        }
+    }
+`;
+
 const TestQueueRun = ({
     user = {},
     testers = [],
     testPlanReport = {},
-    triggerDeleteResultsModal = () => {}
+    triggerDeleteResultsModal = () => {},
+    triggerTestPlanReportUpdate = () => {}
 }) => {
     const startTestingButtonRef = useRef();
-    const alertMessage = useState('');
+    const [alertMessage, setAlertMessage] = useState('');
+
+    const [assignTester] = useMutation(ASSIGN_TESTER_MUTATION);
+    const [removeTester] = useMutation(REMOVE_TESTER_MUTATION);
 
     // TODO: Pass down auth info through redux
     // TODO: Pass down report statuses from common place
     const currentUserIsAdmin = user.roles.includes('ADMIN');
-    const currentUserAssigned = testPlanReport.draftTestPlanRuns.some(
-        testPlanRun => testPlanRun.tester.username === user.username
-    );
+
+    const checkIsTesterAssigned = username => {
+        return testPlanReport.draftTestPlanRuns.some(
+            testPlanRun => testPlanRun.tester.username === username
+        );
+    };
+
+    const currentUserAssigned = checkIsTesterAssigned(user.username);
     const currentUserTestPlanRun = currentUserAssigned
         ? testPlanReport.draftTestPlanRuns.find(
               testPlanRun => testPlanRun.tester.username === user.username
@@ -41,19 +85,43 @@ const TestQueueRun = ({
         if (currentUserAssigned)
             return (
                 <Link to={`/run/${currentUserTestPlanRun.id}`}>
-                    {testPlanReport.testPlanVersion.title}
+                    {testPlanReport.testPlanVersion.title ||
+                        `"${testPlanReport.testPlanVersion.directory}"`}
                 </Link>
             );
-        return testPlanReport.testPlanVersion.title;
+        return (
+            testPlanReport.testPlanVersion.title ||
+            `"${testPlanReport.testPlanVersion.directory}"`
+        );
+    };
+
+    const toggleTesterAssign = async username => {
+        const isTesterAssigned = checkIsTesterAssigned(username);
+        const tester = testers.find(tester => tester.username === username);
+
+        if (isTesterAssigned) {
+            // unassign tester
+            await removeTester({
+                variables: {
+                    testReportId: testPlanReport.id,
+                    testerId: tester.id
+                }
+            });
+        } else {
+            // assign tester
+            await assignTester({
+                variables: {
+                    testReportId: testPlanReport.id,
+                    testerId: tester.id
+                }
+            });
+        }
+
+        // force data after assignment changes
+        await triggerTestPlanReportUpdate();
     };
 
     const renderAssignMenu = () => {
-        let testersToAssign = testers.filter(
-            tester =>
-                tester.roles.includes('TESTER') ||
-                tester.roles.includes('ADMIN')
-        );
-
         return (
             <>
                 <Dropdown aria-label="Assign testers menu">
@@ -65,9 +133,12 @@ const TestQueueRun = ({
                         <FontAwesomeIcon icon={faUserPlus} />
                     </Dropdown.Toggle>
                     <Dropdown.Menu>
-                        {testersToAssign.length ? (
-                            testersToAssign.map(tester => {
-                                let classname = currentUserAssigned
+                        {testers.length ? (
+                            testers.map(tester => {
+                                const isTesterAssigned = checkIsTesterAssigned(
+                                    tester.username
+                                );
+                                let classname = isTesterAssigned
                                     ? 'assigned'
                                     : 'not-assigned';
                                 return (
@@ -75,11 +146,22 @@ const TestQueueRun = ({
                                         variant="secondary"
                                         as="button"
                                         key={nextId()}
-                                        onClick={() => {}}
-                                        aria-checked={currentUserAssigned}
+                                        onClick={async () => {
+                                            await toggleTesterAssign(
+                                                tester.username
+                                            );
+                                            setAlertMessage(
+                                                `You have been ${
+                                                    classname.includes('not')
+                                                        ? 'removed from'
+                                                        : 'assigned to'
+                                                } this test run.`
+                                            );
+                                        }}
+                                        aria-checked={isTesterAssigned}
                                         role="menuitemcheckbox"
                                     >
-                                        {currentUserAssigned && (
+                                        {isTesterAssigned && (
                                             <FontAwesomeIcon icon={faCheck} />
                                         )}
                                         <span className={classname}>
@@ -89,19 +171,9 @@ const TestQueueRun = ({
                                 );
                             })
                         ) : (
-                            <Dropdown.Item
-                                disabled
-                                variant="secondary"
-                                as="button"
-                                key={nextId()}
-                                onClick={() => {}}
-                                aria-checked="disabled"
-                                role="menuitemcheckbox"
-                            >
-                                <span className="not-assigned">
-                                    No testers to assign
-                                </span>
-                            </Dropdown.Item>
+                            <span className="not-assigned">
+                                No testers to assign
+                            </span>
                         )}
                     </Dropdown.Menu>
                 </Dropdown>
@@ -277,7 +349,9 @@ const TestQueueRun = ({
                         {!currentUserAssigned && (
                             <Button
                                 variant="secondary"
-                                onClick={() => {}}
+                                onClick={() =>
+                                    toggleTesterAssign(user.username)
+                                }
                                 aria-label={`Assign yourself to the test run ${evaluateTestRunTitle()}`}
                                 className="assign-self"
                             >
@@ -287,7 +361,9 @@ const TestQueueRun = ({
                         {currentUserAssigned && (
                             <Button
                                 variant="secondary"
-                                onClick={() => {}}
+                                onClick={() =>
+                                    toggleTesterAssign(user.username)
+                                }
                                 aria-label={`Unassign yourself from the test run ${evaluateTestRunTitle()}`}
                                 className="assign-self"
                             >
@@ -396,7 +472,12 @@ const TestQueueRun = ({
                     {/*    )) ||*/}
                     {/*    ''}*/}
 
-                    <ATAlert message={alertMessage} />
+                    {alertMessage && (
+                        <ATAlert
+                            key={`${testPlanReport.testPlanVersion.id}-${testPlanReport.testPlanVersion.gitSha}-${testPlanReport.testPlanVersion.directory}`}
+                            message={alertMessage}
+                        />
+                    )}
                 </div>
             </td>
         </tr>
@@ -407,7 +488,8 @@ TestQueueRun.propTypes = {
     user: PropTypes.object,
     testers: PropTypes.array,
     testPlanReport: PropTypes.object,
-    triggerDeleteResultsModal: PropTypes.func
+    triggerDeleteResultsModal: PropTypes.func,
+    triggerTestPlanReportUpdate: PropTypes.func
 };
 
 export default TestQueueRun;

@@ -49,6 +49,7 @@ const TEST_PLAN_REPORTS_QUERY = gql`
                 title
                 gitSha
                 gitMessage
+                directory
                 testCount
             }
             draftTestPlanRuns {
@@ -65,7 +66,7 @@ const TEST_PLAN_REPORTS_QUERY = gql`
 
 const TestQueue = () => {
     // eslint-disable-next-line no-unused-vars
-    const { loading, error, data } = useQuery(TEST_PLAN_REPORTS_QUERY);
+    const { loading, error, data, refetch } = useQuery(TEST_PLAN_REPORTS_QUERY);
 
     const [user, setUser] = useState({});
     const [testers, setTesters] = useState([]);
@@ -86,7 +87,13 @@ const TestQueue = () => {
         if (data) {
             const { me = {}, users = [], testPlanReports = [] } = data;
             setUser(me);
-            setTesters(users);
+            setTesters(
+                users.filter(
+                    tester =>
+                        tester.roles.includes('TESTER') ||
+                        tester.roles.includes('ADMIN')
+                )
+            );
             setTestPlanReports(testPlanReports);
         }
     }, [data]);
@@ -154,6 +161,7 @@ const TestQueue = () => {
                                         triggerDeleteResultsModal={
                                             triggerDeleteResultsModal
                                         }
+                                        triggerTestPlanReportUpdate={refetch}
                                     />
                                 );
                             })}
@@ -225,7 +233,7 @@ const TestQueue = () => {
             <AddTestPlanToQueueModal
                 show={isShowingAddToQueueModal}
                 handleClose={() => enableAddToQueueModal(false)}
-                handleAddToTestQueue={null}
+                handleAddToTestQueue={refetch}
             />
         </Container>
     );

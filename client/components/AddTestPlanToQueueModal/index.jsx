@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Modal, Form } from 'react-bootstrap';
 import PropTypes from 'prop-types';
-import { gql, useQuery } from '@apollo/client';
+import { gql, useQuery, useMutation } from '@apollo/client';
 
 const POPULATE_MODAL_QUERY = gql`
     query {
@@ -20,6 +20,59 @@ const POPULATE_MODAL_QUERY = gql`
             title
             gitSha
             directory
+        }
+    }
+`;
+
+const ADD_TEST_QUEUE_MUTATION = gql`
+    mutation AddTestPlanReport(
+        $testPlanVersionId: ID!
+        $atId: ID!
+        $atVersion: String!
+        $browserId: ID!
+        $browserVersion: String!
+    ) {
+        findOrCreateTestPlanReport(
+            input: {
+                testPlanVersionId: $testPlanVersionId
+                testPlanTarget: {
+                    atId: $atId
+                    atVersion: $atVersion
+                    browserId: $browserId
+                    browserVersion: $browserVersion
+                }
+            }
+        ) {
+            populatedData {
+                testPlanReport {
+                    id
+                    status
+                }
+                testPlanTarget {
+                    id
+                    at {
+                        id
+                    }
+                    atVersion
+                    browser {
+                        id
+                    }
+                    browserVersion
+                }
+                testPlanVersion {
+                    id
+                }
+            }
+            created {
+                locationOfData {
+                    testPlanReportId
+                    testPlanTargetId
+                    browserId
+                    browserVersion
+                    atId
+                    atVersion
+                }
+            }
         }
     }
 `;
@@ -43,6 +96,7 @@ const AddTestPlanToQueueModal = ({
 
     // eslint-disable-next-line no-unused-vars
     const { loading, error, data } = useQuery(POPULATE_MODAL_QUERY);
+    const [addTestPlanReport] = useMutation(ADD_TEST_QUEUE_MUTATION);
 
     useEffect(() => {
         if (data) {
@@ -66,6 +120,19 @@ const AddTestPlanToQueueModal = ({
         );
         setFilteredTestPlans(filteredTestPlans);
     }, [testPlans]);
+
+    const handleCreateTestPlanReport = async () => {
+        await addTestPlanReport({
+            variables: {
+                testPlanVersionId: selectedTestPlanVersion,
+                atId: selectedAt,
+                atVersion: atVersion,
+                browserId: selectedBrowser,
+                browserVersion: browserVersion
+            }
+        });
+        await handleAddToTestQueue();
+    };
 
     const dropdownRowWithInputField = ({
         label,
@@ -240,7 +307,10 @@ const AddTestPlanToQueueModal = ({
                 <Button variant="secondary" onClick={handleClose}>
                     Cancel
                 </Button>
-                <Button variant="primary" onClick={handleAddToTestQueue}>
+                <Button
+                    variant="primary"
+                    onClick={() => handleCreateTestPlanReport()}
+                >
                     Add
                 </Button>
             </Modal.Footer>
