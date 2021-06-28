@@ -1,7 +1,7 @@
-import { CHECK_SIGNED_IN, SIGN_OUT, ATS, SET_USER_ATS } from '../actions/types';
-import atsReducer from '../reducers/ats';
-import userReducer from '../reducers/user';
-import usersReducer from '../reducers/users';
+import { SIGN_IN, SIGN_OUT, ATS, SET_USER_ATS } from '../redux/actions/types';
+import atsReducer from '../redux/reducers/ats';
+import userReducer from '../redux/reducers/user';
+import usersReducer from '../redux/reducers/users';
 
 describe('user reducer tests', () => {
     test('returns default initial state when no action is passed', () => {
@@ -14,7 +14,7 @@ describe('user reducer tests', () => {
             name: 'Foo Bar'
         };
         const newState = userReducer(undefined, {
-            type: CHECK_SIGNED_IN,
+            type: SIGN_IN,
             payload: apiPayload
         });
         expect(newState).toEqual({
@@ -29,7 +29,7 @@ describe('user reducer tests', () => {
             name: 'Foo Bar'
         };
         const loggedInState = userReducer(undefined, {
-            type: CHECK_SIGNED_IN,
+            type: SIGN_IN,
             payload: apiPayload
         });
 

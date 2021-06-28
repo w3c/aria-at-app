@@ -1,5 +1,8 @@
+// auth.action.types
 export const SIGN_IN = 'SIGN_IN';
-export const SIGN_OUT = 'SIGNOUT';
+export const SIGN_OUT = 'SIGN_OUT';
+export const SIGN_IN_FAIL = 'SIGN_IN_FAIL';
+
 export const CHECK_SIGNED_IN = 'CHECK_SIGNED_IN';
 export const SIGNED_IN_FAIL = 'SIGNED_IN_FAIL';
 export const ATS = 'ATS';

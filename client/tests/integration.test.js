@@ -1,7 +1,7 @@
 import { storeFactory } from './util';
-import { handleCheckSignedIn, handleSignout } from '../actions/user';
-import { handleGetValidAts } from '../actions/ats';
-import { handleSetUserAts, getAllUsers } from '../actions/users';
+import { handleCheckSignedIn, handleSignout } from '../redux/actions/user';
+import { handleGetValidAts } from '../redux/actions/ats';
+import { handleSetUserAts, getAllUsers } from '../redux/actions/users';
 import moxios from 'moxios';
 
 describe('sign in actions dispatchers', () => {

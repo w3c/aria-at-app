@@ -4,8 +4,8 @@ import { connect } from 'react-redux';
 import { Alert, Button } from 'react-bootstrap';
 import { Octicon, Octicons } from 'octicons-react';
 import nextId from 'react-id-generator';
-import { getConflictsByTestResults } from '../../actions/runs';
-import { getIssuesByTestId } from '../../actions/issues';
+import { getConflictsByTestResults } from '../../redux/actions/runs';
+import { getIssuesByTestId } from '../../redux/actions/issues';
 
 class StatusBar extends Component {
     constructor(props) {

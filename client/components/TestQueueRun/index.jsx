@@ -49,6 +49,21 @@ const REMOVE_TESTER_MUTATION = gql`
     }
 `;
 
+const UPDATE_TEST_PLAN_REPORT_MUTATION = gql`
+    mutation UpdateTestPlanReportStatus(
+        $testReportId: ID!
+        $status: TestPlanReportStatus!
+    ) {
+        testPlanReport(id: $testReportId) {
+            updateStatus(status: $status) {
+                testPlanReport {
+                    status
+                }
+            }
+        }
+    }
+`;
+
 const TestQueueRun = ({
     user = {},
     testers = [],
@@ -61,10 +76,12 @@ const TestQueueRun = ({
 
     const [assignTester] = useMutation(ASSIGN_TESTER_MUTATION);
     const [removeTester] = useMutation(REMOVE_TESTER_MUTATION);
+    const [updateTestPlanReportStatus] = useMutation(
+        UPDATE_TEST_PLAN_REPORT_MUTATION
+    );
 
-    // TODO: Pass down auth info through redux
     // TODO: Pass down report statuses from common place
-    const currentUserIsAdmin = user.roles.includes('ADMIN');
+    const currentUserIsAdmin = user.isAdmin;
 
     const checkIsTesterAssigned = username => {
         return testPlanReport.draftTestPlanRuns.some(
@@ -258,9 +275,14 @@ const TestQueueRun = ({
         }
     };
 
-    const updateReportStatus = status => {
-        // eslint-disable-next-line no-console
-        console.info('TODO: IMPLEMENT ME', status);
+    const updateReportStatus = async status => {
+        await updateTestPlanReportStatus({
+            variables: {
+                testReportId: testPlanReport.id,
+                status: status
+            }
+        });
+        await triggerTestPlanReportUpdate();
     };
 
     const evaluateStatusAndResults = () => {
@@ -317,7 +339,7 @@ const TestQueueRun = ({
         // and admin can mark a test run as "draft"
         let newStatus;
         if (
-            (status !== 'DRAFT' &&
+            (status !== 'IN_REVIEW' &&
                 conflictCount === 0 &&
                 testersWithResults.length > 0) ||
             status === 'FINALIZED'
@@ -327,7 +349,7 @@ const TestQueueRun = ({
         // If the results have been marked as draft and there is no conflict,
         // they can be marked as "final"
         else if (
-            status === 'DRAFT' &&
+            status === 'IN_REVIEW' &&
             conflictCount === 0 &&
             testersWithResults.length > 0
         ) {
@@ -410,7 +432,10 @@ const TestQueueRun = ({
                                 }
                             >
                                 Mark as{' '}
-                                {capitalizeFirstLetterOfWords(nextReportStatus)}
+                                {capitalizeFirstLetterOfWords(
+                                    nextReportStatus,
+                                    '_'
+                                )}
                             </Button>
                             {nextReportStatus === 'Final' ? (
                                 <Button

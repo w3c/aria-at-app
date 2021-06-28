@@ -1,6 +1,6 @@
 import { createStore } from 'redux';
-import rootReducer from '../../reducers';
-import middleware from '../../middleware';
+import rootReducer from '../../redux/reducers';
+import middleware from '../../redux/middleware';
 
 export const storeFactory = initialState => {
     return createStore(rootReducer, initialState, middleware);

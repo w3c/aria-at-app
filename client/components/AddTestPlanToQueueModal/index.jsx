@@ -305,11 +305,20 @@ const AddTestPlanToQueueModal = ({
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="secondary" onClick={handleClose}>
-                    Cancel
+                    Close
                 </Button>
                 <Button
                     variant="primary"
                     onClick={() => handleCreateTestPlanReport()}
+                    disabled={
+                        !(
+                            selectedTestPlanVersion &&
+                            selectedAt &&
+                            atVersion &&
+                            selectedBrowser &&
+                            browserVersion
+                        )
+                    }
                 >
                     Add
                 </Button>

@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { useQuery, gql } from '@apollo/client';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { useQuery, gql } from '@apollo/client';
 import { Link } from 'react-router-dom';
 import { Container, Table, Alert, Button } from 'react-bootstrap';
 import { Helmet } from 'react-helmet';
-import { connect } from 'react-redux';
 import nextId from 'react-id-generator';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
@@ -16,11 +16,6 @@ import './TestQueue.css';
 
 const TEST_PLAN_REPORTS_QUERY = gql`
     query {
-        me {
-            id
-            username
-            roles
-        }
         users {
             id
             username
@@ -64,11 +59,9 @@ const TEST_PLAN_REPORTS_QUERY = gql`
     }
 `;
 
-const TestQueue = () => {
-    // eslint-disable-next-line no-unused-vars
-    const { loading, error, data, refetch } = useQuery(TEST_PLAN_REPORTS_QUERY);
+const TestQueue = ({ auth }) => {
+    const { loading, data, refetch } = useQuery(TEST_PLAN_REPORTS_QUERY);
 
-    const [user, setUser] = useState({});
     const [testers, setTesters] = useState([]);
     const [testPlanReports, setTestPlanReports] = useState([]);
     const [structuredTestPlanTargets, setStructuredTestPlanTargets] = useState(
@@ -80,13 +73,11 @@ const TestQueue = () => {
     );
     const [isShowingAddToQueueModal, enableAddToQueueModal] = useState(false);
 
-    const currentUserIsAdmin =
-        user && user.roles && user.roles.includes('ADMIN');
+    const currentUserIsAdmin = auth.isAdmin;
 
     useEffect(() => {
         if (data) {
-            const { me = {}, users = [], testPlanReports = [] } = data;
-            setUser(me);
+            const { users = [], testPlanReports = [] } = data;
             setTesters(
                 users.filter(
                     tester =>
@@ -155,7 +146,7 @@ const TestQueue = () => {
                                 return (
                                     <TestQueueRun
                                         key={id}
-                                        user={user}
+                                        user={auth}
                                         testers={testers}
                                         testPlanReport={testPlanReport}
                                         triggerDeleteResultsModal={
@@ -254,8 +245,17 @@ const AddTestPlanToQueue = ({ handleOpenDialog = () => {} }) => {
     );
 };
 
+TestQueue.propTypes = {
+    auth: PropTypes.object
+};
+
 AddTestPlanToQueue.propTypes = {
     handleOpenDialog: PropTypes.func
 };
 
-export default TestQueue;
+const mapStateToProps = state => {
+    const { auth } = state;
+    return { auth };
+};
+
+export default connect(mapStateToProps)(TestQueue);
