@@ -3,13 +3,14 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { useQuery, gql } from '@apollo/client';
 import { Link } from 'react-router-dom';
-import { Container, Table, Alert, Button } from 'react-bootstrap';
+import { Container, Table, Alert } from 'react-bootstrap';
 import { Helmet } from 'react-helmet';
 import nextId from 'react-id-generator';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import TestQueueRun from '../TestQueueRun';
-import AddTestPlanToQueueModal from '../AddTestPlanToQueueModal';
+import {
+    AddTestPlanToQueueContainer,
+    AddTestPlanToQueueModal
+} from '../AddTestPlanToQueue';
 import DeleteResultsModal from '../DeleteResultsModal';
 
 import './TestQueue.css';
@@ -191,6 +192,8 @@ const TestQueue = ({ auth }) => {
         setDeleteResultsDetails({});
     };
 
+    const handleCloseAddTestPlanToQueueModal = () => enableAddToQueueModal(false);
+
     if (loading) return <div data-test="test-queue-loading">Loading</div>;
 
     if (!isAdmin && !testPlanReports.length) {
@@ -228,7 +231,7 @@ const TestQueue = ({ auth }) => {
                 already assigned to you.
             </p>
 
-            <AddTestPlanToQueue
+            <AddTestPlanToQueueContainer
                 handleOpenDialog={() => enableAddToQueueModal(true)}
             />
 
@@ -245,34 +248,15 @@ const TestQueue = ({ auth }) => {
             />
             <AddTestPlanToQueueModal
                 show={isShowingAddToQueueModal}
-                handleClose={() => enableAddToQueueModal(false)}
+                handleClose={handleCloseAddTestPlanToQueueModal}
                 handleAddToTestQueue={refetch}
             />
         </Container>
     );
 };
 
-const AddTestPlanToQueue = ({ handleOpenDialog = () => {} }) => {
-    return (
-        <div className="add-test-plan-queue-container">
-            <Button
-                className="add-test-plan-queue-button"
-                variant="primary"
-                onClick={handleOpenDialog}
-            >
-                <FontAwesomeIcon icon={faPlus} />
-                Add a Test Plan to the Queue
-            </Button>
-        </div>
-    );
-};
-
 TestQueue.propTypes = {
     auth: PropTypes.object
-};
-
-AddTestPlanToQueue.propTypes = {
-    handleOpenDialog: PropTypes.func
 };
 
 const mapStateToProps = state => {
