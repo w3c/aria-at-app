@@ -73,7 +73,7 @@ const TestQueue = ({ auth }) => {
     );
     const [isShowingAddToQueueModal, enableAddToQueueModal] = useState(false);
 
-    const currentUserIsAdmin = auth.isAdmin;
+    const { isAdmin } = auth;
 
     useEffect(() => {
         if (data) {
@@ -191,11 +191,33 @@ const TestQueue = ({ auth }) => {
         setDeleteResultsDetails({});
     };
 
-    const loadingView = <div data-test="test-queue-loading">Loading</div>;
+    if (loading) return <div data-test="test-queue-loading">Loading</div>;
 
-    return loading ? (
-        loadingView
-    ) : (
+    if (!isAdmin && !testPlanReports.length) {
+        const noTestPlansMessage = 'There are no Test Plans available';
+        const settingsLink = <Link to="/account/settings">Settings</Link>;
+
+        return (
+            <Container as="main">
+                <Helmet>
+                    <title>{noTestPlansMessage} | ARIA-AT</title>
+                </Helmet>
+                <h2 data-test="test-queue-no-test-plans-h2">
+                    {noTestPlansMessage}
+                </h2>
+                <Alert
+                    key="alert-configure"
+                    variant="danger"
+                    data-test="test-queue-no-test-plans-p"
+                >
+                    Please configure your preferred Assistive Technologies in
+                    the {settingsLink} page.
+                </Alert>
+            </Container>
+        );
+    }
+
+    return (
         <Container as="main">
             <Helmet>
                 <title>{`Test Queue | ARIA-AT`}</title>
@@ -215,7 +237,7 @@ const TestQueue = ({ auth }) => {
             )}
             <DeleteResultsModal
                 show={isShowingDeleteResultsModal}
-                isAdmin={currentUserIsAdmin}
+                isAdmin={isAdmin}
                 title={deleteResultsDetails.title}
                 username={deleteResultsDetails.username}
                 handleClose={handleCloseDeleteResultsModal}

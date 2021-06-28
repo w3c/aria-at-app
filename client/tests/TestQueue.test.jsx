@@ -69,13 +69,16 @@ describe('render', () => {
             wrapper.setState({ currentTestIndex: 1 });
         });
         test('renders notice to configure ATs, as a tester', () => {
-            let component = findByTestAttr(wrapper, 'test-queue-no-ats-h2');
+            let component = findByTestAttr(
+                wrapper,
+                'test-queue-no-test-plans-h2'
+            );
             expect(component.length).toBe(1);
             expect(component.text()).toContain(
                 'There are no Test Plans available'
             );
 
-            component = findByTestAttr(wrapper, 'test-queue-no-ats-p');
+            component = findByTestAttr(wrapper, 'test-queue-no-test-plans-p');
             expect(component.length).toBe(1);
             expect(component.text()).toContain(
                 'Please configure your preferred Assistive Technologies in the Settings page.'
