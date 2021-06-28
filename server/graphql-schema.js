@@ -305,6 +305,7 @@ const graphqlSchema = gql`
     type TestPlanReportOperations {
         assignTester(userId: ID!): PopulatedData!
         deleteTestPlanRun(userId: ID!): PopulatedData!
+        deleteTestPlanRunResults(userId: ID!): PopulatedData!
         updateStatus(status: TestPlanReportStatus!): PopulatedData!
     }
 

@@ -181,10 +181,10 @@ const TestQueue = ({ auth }) => {
     const handleDeleteResults = async () => {
         if (deleteResultsDetails.deleteFunction)
             await deleteResultsDetails.deleteFunction();
-        closeDeleteResultsModal();
+        handleCloseDeleteResultsModal();
     };
 
-    const closeDeleteResultsModal = () => {
+    const handleCloseDeleteResultsModal = () => {
         enableDeleteResultsModal(false);
 
         // reset deleteResultsDetails
@@ -218,7 +218,7 @@ const TestQueue = ({ auth }) => {
                 isAdmin={currentUserIsAdmin}
                 title={deleteResultsDetails.title}
                 username={deleteResultsDetails.username}
-                handleClose={closeDeleteResultsModal}
+                handleClose={handleCloseDeleteResultsModal}
                 handleDeleteResults={handleDeleteResults}
             />
             <AddTestPlanToQueueModal

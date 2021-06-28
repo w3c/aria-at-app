@@ -49,6 +49,23 @@ const REMOVE_TESTER_MUTATION = gql`
     }
 `;
 
+const REMOVE_TESTER_RESULTS_MUTATION = gql`
+    mutation RemoveTester($testReportId: ID!, $testerId: ID!) {
+        testPlanReport(id: $testReportId) {
+            deleteTestPlanRunResults(userId: $testerId) {
+                testPlanReport {
+                    draftTestPlanRuns {
+                        tester {
+                            id
+                            username
+                        }
+                    }
+                }
+            }
+        }
+    }
+`;
+
 const UPDATE_TEST_PLAN_REPORT_MUTATION = gql`
     mutation UpdateTestPlanReportStatus(
         $testReportId: ID!
@@ -76,6 +93,7 @@ const TestQueueRun = ({
 
     const [assignTester] = useMutation(ASSIGN_TESTER_MUTATION);
     const [removeTester] = useMutation(REMOVE_TESTER_MUTATION);
+    const [removeTesterResults] = useMutation(REMOVE_TESTER_RESULTS_MUTATION);
     const [updateTestPlanReportStatus] = useMutation(
         UPDATE_TEST_PLAN_REPORT_MUTATION
     );
@@ -133,6 +151,21 @@ const TestQueueRun = ({
                 }
             });
         }
+
+        // force data after assignment changes
+        await triggerTestPlanReportUpdate();
+    };
+
+    const handleRemoveTesterResults = async tester => {
+        const { id: testReportId } = testPlanReport;
+        const { id: testerId } = tester;
+
+        await removeTesterResults({
+            variables: {
+                testReportId,
+                testerId
+            }
+        });
 
         // force data after assignment changes
         await triggerTestPlanReportUpdate();
@@ -259,7 +292,10 @@ const TestQueueRun = ({
                                             triggerDeleteResultsModal(
                                                 evaluateTestRunTitle(),
                                                 t.tester.username,
-                                                () => {}
+                                                async () =>
+                                                    await handleRemoveTesterResults(
+                                                        t.tester
+                                                    )
                                             );
                                         }}
                                     >
