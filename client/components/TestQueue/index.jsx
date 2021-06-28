@@ -192,7 +192,8 @@ const TestQueue = ({ auth }) => {
         setDeleteResultsDetails({});
     };
 
-    const handleCloseAddTestPlanToQueueModal = () => enableAddToQueueModal(false);
+    const handleCloseAddTestPlanToQueueModal = () =>
+        enableAddToQueueModal(false);
 
     if (loading) return <div data-test="test-queue-loading">Loading</div>;
 
@@ -246,11 +247,13 @@ const TestQueue = ({ auth }) => {
                 handleClose={handleCloseDeleteResultsModal}
                 handleDeleteResults={handleDeleteResults}
             />
-            <AddTestPlanToQueueModal
-                show={isShowingAddToQueueModal}
-                handleClose={handleCloseAddTestPlanToQueueModal}
-                handleAddToTestQueue={refetch}
-            />
+            {isShowingAddToQueueModal && (
+                <AddTestPlanToQueueModal
+                    show={isShowingAddToQueueModal}
+                    handleClose={handleCloseAddTestPlanToQueueModal}
+                    handleAddToTestQueue={refetch}
+                />
+            )}
         </Container>
     );
 };

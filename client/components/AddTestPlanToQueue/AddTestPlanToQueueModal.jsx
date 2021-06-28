@@ -277,8 +277,8 @@ const AddTestPlanToQueueModal = ({
                         label: 'Select a Test Plan and Version',
                         primaryDropdownOptions: filteredTestPlans,
                         secondaryDropdownOptions: testPlanVersions,
-                        primaryDropdownPlaceholder: 'Test Plan',
-                        secondaryDropdownPlaceholder: 'Version',
+                        primaryDropdownPlaceholder: 'Select Test Plan',
+                        secondaryDropdownPlaceholder: 'Select Version',
                         primaryDropdownValue: selectedTestPlan,
                         secondaryDropdownValue: selectedTestPlanVersion,
                         handlePrimaryDropdownSelected: value => {
