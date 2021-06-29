@@ -12,10 +12,7 @@ const updateStatusResolver = async (
     { status: status },
     { user }
 ) => {
-    // TODO: FIXME; seems to be expecting a string array; actually an array of objects instead
-    // if (!user.roles.includes('ADMIN')) {
-    const roles = user.roles.map(role => role.name);
-    if (!roles.includes('ADMIN')) {
+    if (!user.roles.includes('ADMIN')) {
         throw new AuthenticationError();
     }
 
