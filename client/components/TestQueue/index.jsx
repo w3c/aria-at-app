@@ -141,7 +141,6 @@ const TestQueue = ({ auth }) => {
                             </tr>
                         </thead>
                         <tbody>
-                            {/* TODO: Iterate over collection of TestPlanReport/Versions? */}
                             {testPlanReports.map(testPlanReport => {
                                 const id = nextId('test_queue_run_');
                                 return (

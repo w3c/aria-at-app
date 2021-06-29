@@ -294,8 +294,6 @@ const AddTestPlanToQueueModal = ({
                                         retrievedTestPlan.directory
                             );
                             setTestPlanVersions(testPlanVersions);
-
-                            // TODO: Optimize to only clear test plan version if test plan changed
                             setSelectedTestPlanVersion('');
                             setSelectedTestPlan(value);
                         },
@@ -309,7 +307,10 @@ const AddTestPlanToQueueModal = ({
                 </Button>
                 <Button
                     variant="primary"
-                    onClick={() => handleCreateTestPlanReport()}
+                    onClick={async () => {
+                        await handleCreateTestPlanReport();
+                        await handleClose();
+                    }}
                     disabled={
                         !(
                             selectedTestPlanVersion &&

@@ -98,8 +98,7 @@ const TestQueueRun = ({
         UPDATE_TEST_PLAN_REPORT_MUTATION
     );
 
-    // TODO: Pass down report statuses from common place
-    const currentUserIsAdmin = user.isAdmin;
+    const { isAdmin, username } = user;
 
     const checkIsTesterAssigned = username => {
         return testPlanReport.draftTestPlanRuns.some(
@@ -366,7 +365,6 @@ const TestQueueRun = ({
         );
     };
 
-    // TODO: Can rewrite as a state machine from server side maybe?
     const evaluateNewReportStatus = () => {
         const { status, conflictCount = 0 } = testPlanReport;
         const testersWithResults = getTestPlanRunsWithResults();
@@ -402,7 +400,7 @@ const TestQueueRun = ({
             <th>{renderAssignedUserToTestPlan()}</th>
             <td>
                 <div className="testers-wrapper">
-                    {currentUserIsAdmin && renderAssignMenu()}
+                    {isAdmin && renderAssignMenu()}
                     <div className="assign-actions">
                         {!currentUserAssigned && (
                             <Button
@@ -444,7 +442,7 @@ const TestQueueRun = ({
                                             {testPlanRun.tester.username}
                                         </a>
                                         <br />
-                                        {` (${testPlanRun.testResultCount} of ${testPlanReport.testPlanVersion.testCount} tests complete)`}
+                                        {`(${testPlanRun.testResultCount} of ${testPlanReport.testPlanVersion.testCount} tests complete)`}
                                     </li>
                                 )
                             )
@@ -459,7 +457,7 @@ const TestQueueRun = ({
             <td>
                 <div className="status-wrapper">{status}</div>
                 <div className="secondary-actions">
-                    {currentUserIsAdmin && nextReportStatus && (
+                    {isAdmin && nextReportStatus && (
                         <>
                             <Button
                                 variant="secondary"
@@ -507,31 +505,26 @@ const TestQueueRun = ({
                     </div>
                 )}
                 <div className="secondary-actions">
-                    {currentUserIsAdmin && renderOpenAsDropdown()}
-                    {currentUserIsAdmin && renderDeleteMenu()}
-
-                    {/*TODO: May no longer be relevant because no 'COMPLETE/FINAL' test runs are on this page*/}
-                    {/*{(!currentUserIsAdmin &&*/}
-                    {/*    this.testsCompletedByUser[userId] && (*/}
-                    {/*        <Button*/}
-                    {/*            variant="danger"*/}
-                    {/*            onClick={() => {*/}
-                    {/*                // showDeleteResultsModal(*/}
-                    {/*                //     usersById[userId].username,*/}
-                    {/*                //     activeRunsById[runId],*/}
-                    {/*                //     async () =>*/}
-                    {/*                //         await this.handleDeleteResultsForUser(*/}
-                    {/*                //             userId*/}
-                    {/*                //         )*/}
-                    {/*                // )*/}
-                    {/*            }}*/}
-                    {/*            aria-label="Delete my results"*/}
-                    {/*        >*/}
-                    {/*            <FontAwesomeIcon icon={faTrashAlt} />*/}
-                    {/*            Delete Results*/}
-                    {/*        </Button>*/}
-                    {/*    )) ||*/}
-                    {/*    ''}*/}
+                    {isAdmin && renderOpenAsDropdown()}
+                    {isAdmin && renderDeleteMenu()}
+                    {(!isAdmin && currentUserTestPlanRun.testResultCount && (
+                        <Button
+                            variant="danger"
+                            onClick={() => {
+                                triggerDeleteResultsModal(
+                                    evaluateTestRunTitle(),
+                                    username,
+                                    async () =>
+                                        await handleRemoveTesterResults(user)
+                                );
+                            }}
+                            aria-label="Delete my results"
+                        >
+                            <FontAwesomeIcon icon={faTrashAlt} />
+                            Delete Results
+                        </Button>
+                    )) ||
+                        null}
 
                     {alertMessage && (
                         <ATAlert

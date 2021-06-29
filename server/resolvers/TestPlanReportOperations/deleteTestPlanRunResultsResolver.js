@@ -12,7 +12,9 @@ const deleteTestPlanRunResultsResolver = async (
     // TODO: FIXME; seems to be expecting a string array; actually an array of objects instead
     // if (!user.roles.includes('ADMIN')) {
     const roles = user.roles.map(role => role.name);
-    if (!roles.includes('ADMIN')) {
+
+    // TODO: Tester has to be able to remove their own results as well
+    if (!roles.includes('ADMIN') && !roles.includes('TESTER')) {
         throw new AuthenticationError();
     }
     await removeTestPlanRunResultsByQuery({
