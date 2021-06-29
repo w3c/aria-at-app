@@ -69,9 +69,10 @@ const getById = async (
     id,
     attributes = [],
     include = [],
-    { transaction = global.globalTestTransaction } = {}
+    options = {}
 ) => {
     if (!model) throw new Error('Model not defined');
+    const { transaction = global.globalTestTransaction } = options;
 
     // findByPk
     return await model.findOne({
@@ -96,9 +97,10 @@ const getByQuery = async (
     queryParams,
     attributes = [],
     include = [],
-    { transaction = global.globalTestTransaction } = {}
+    options = {}
 ) => {
     if (!model) throw new Error('Model not defined');
+    const { transaction = global.globalTestTransaction } = options;
 
     return await model.findOne({
         where: { ...queryParams },
@@ -129,9 +131,10 @@ const get = async (
     attributes = [],
     include = [],
     pagination = {},
-    { transaction = global.globalTestTransaction } = {}
+    options = {}
 ) => {
     if (!model) throw new Error('Model not defined');
+    const { transaction = global.globalTestTransaction } = options;
 
     // pagination and sorting options
     let {
@@ -185,12 +188,9 @@ const get = async (
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>} - result of the sequelize.create function
  */
-const create = async (
-    model,
-    createParams,
-    { transaction = global.globalTestTransaction } = {}
-) => {
+const create = async (model, createParams, options = {}) => {
     if (!model) throw new Error('Model not defined');
+    const { transaction = global.globalTestTransaction } = options;
     return await model.create({ ...createParams }, { transaction });
 };
 
@@ -201,12 +201,9 @@ const create = async (
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>} - result of the sequelize.create function
  */
-const bulkCreate = async (
-    model,
-    createParamsArray,
-    { transaction = global.globalTestTransaction } = {}
-) => {
+const bulkCreate = async (model, createParamsArray, options = {}) => {
     if (!model) throw new Error('Model not defined');
+    const { transaction = global.globalTestTransaction } = options;
     return await model.bulkCreate(createParamsArray, { transaction });
 };
 
@@ -218,13 +215,9 @@ const bulkCreate = async (
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>} - result of the sequelize.update function
  */
-const update = async (
-    model,
-    queryParams,
-    updateParams,
-    { transaction = global.globalTestTransaction } = {}
-) => {
+const update = async (model, queryParams, updateParams, options = {}) => {
     if (!model) throw new Error('Model not defined');
+    const { transaction = global.globalTestTransaction } = options;
 
     return await model.update(
         { ...updateParams },
@@ -445,12 +438,12 @@ const bulkGetOrReplace = async (Model, where, expectedValues, options = {}) => {
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<boolean>} - returns true if record was deleted
  */
-const removeById = async (
-    model,
-    id,
-    { truncate = false, transaction = global.globalTestTransaction } = {}
-) => {
+const removeById = async (model, id, options = {}) => {
     if (!model) throw new Error('Model not defined');
+    const {
+        truncate = false,
+        transaction = global.globalTestTransaction
+    } = options;
 
     await model.destroy({
         where: { id },
@@ -468,12 +461,12 @@ const removeById = async (
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<boolean>} - returns true if record was deleted
  */
-const removeByQuery = async (
-    model,
-    queryParams,
-    { truncate = false, transaction = global.globalTestTransaction } = {}
-) => {
+const removeByQuery = async (model, queryParams, options = {}) => {
     if (!model) throw new Error('Model not defined');
+    const {
+        truncate = false,
+        transaction = global.globalTestTransaction
+    } = options;
 
     await model.destroy({
         where: { ...queryParams },
