@@ -2,8 +2,7 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 13.2
--- Dumped by pg_dump version 13.2
+-- Dumped from database version 13.2 but modified manually to support Postgres 11
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -74,7 +73,8 @@ DROP TABLE IF EXISTS public."AtMode";
 DROP TABLE IF EXISTS public."At";
 SET default_tablespace = '';
 
-SET default_table_access_method = heap;
+-- Prevents import into Postgres 11 database
+-- SET default_table_access_method = heap;
 
 --
 -- Name: At; Type: TABLE; Schema: public; Owner: atr
