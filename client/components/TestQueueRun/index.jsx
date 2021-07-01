@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import { gql, useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faCheck,
@@ -14,72 +14,12 @@ import ATAlert from '../ATAlert';
 import { capitalizeFirstLetterOfWords } from '../../utils/formatter';
 
 import './TestQueueRun.css';
-
-const ASSIGN_TESTER_MUTATION = gql`
-    mutation AssignTester($testReportId: ID!, $testerId: ID!) {
-        testPlanReport(id: $testReportId) {
-            assignTester(userId: $testerId) {
-                testPlanReport {
-                    draftTestPlanRuns {
-                        tester {
-                            id
-                            username
-                        }
-                    }
-                }
-            }
-        }
-    }
-`;
-
-const REMOVE_TESTER_MUTATION = gql`
-    mutation RemoveTester($testReportId: ID!, $testerId: ID!) {
-        testPlanReport(id: $testReportId) {
-            deleteTestPlanRun(userId: $testerId) {
-                testPlanReport {
-                    draftTestPlanRuns {
-                        tester {
-                            id
-                            username
-                        }
-                    }
-                }
-            }
-        }
-    }
-`;
-
-const REMOVE_TESTER_RESULTS_MUTATION = gql`
-    mutation RemoveTester($testReportId: ID!, $testerId: ID!) {
-        testPlanReport(id: $testReportId) {
-            deleteTestPlanRunResults(userId: $testerId) {
-                testPlanReport {
-                    draftTestPlanRuns {
-                        tester {
-                            id
-                            username
-                        }
-                    }
-                }
-            }
-        }
-    }
-`;
-
-const UPDATE_TEST_PLAN_REPORT_MUTATION = gql`
-    mutation UpdateTestPlanReportStatus(
-        $testReportId: ID!
-        $status: TestPlanReportStatus!
-    ) {
-        testPlanReport(id: $testReportId) {
-            updateStatus(status: $status) {
-                testPlanReport {
-                    status
-                }
-            }
-        }
-    }
-`;
+import {
+    ASSIGN_TESTER_MUTATION,
+    REMOVE_TESTER_MUTATION,
+    REMOVE_TESTER_RESULTS_MUTATION,
+    UPDATE_TEST_PLAN_REPORT_MUTATION
+} from '../TestQueue/queries';
 
 const TestQueueRun = ({
     user = {},

@@ -6,28 +6,19 @@ import {
     signInFail as signInFailAction,
     signOut as signOutAction
 } from '../../redux/actions/auth';
-import { useQuery, gql } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 import { renderRoutes } from 'react-router-config';
 import { Link, useLocation } from 'react-router-dom';
 import { Container, Navbar, Nav } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
+import { ME_QUERY } from '../TestQueue/queries';
 import routes from '../../routes';
 import useSigninUrl from './useSigninUrl';
 import './App.css';
 
-const APP_QUERY = gql`
-    query {
-        me {
-            id
-            username
-            roles
-        }
-    }
-`;
-
 const App = ({ auth, dispatch }) => {
-    const { client, error, loading, data } = useQuery(APP_QUERY);
+    const { client, error, loading, data } = useQuery(ME_QUERY);
     const signinUrl = useSigninUrl();
     const location = useLocation();
 

@@ -11,6 +11,7 @@ const AddTestPlanToQueueContainer = ({ handleOpenDialog = () => {} }) => {
                 className="add-test-plan-queue-button"
                 variant="primary"
                 onClick={handleOpenDialog}
+                data-testid="test-queue-add-test-plan-to-queue-button"
             >
                 <FontAwesomeIcon icon={faPlus} />
                 Add a Test Plan to the Queue

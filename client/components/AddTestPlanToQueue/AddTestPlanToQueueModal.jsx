@@ -1,81 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Modal, Form } from 'react-bootstrap';
 import PropTypes from 'prop-types';
-import { gql, useQuery, useMutation } from '@apollo/client';
-
-const POPULATE_MODAL_QUERY = gql`
-    query {
-        ats {
-            id
-            name
-            atVersions
-        }
-        browsers {
-            id
-            name
-            browserVersions
-        }
-        testPlanVersions {
-            id
-            title
-            gitSha
-            directory
-        }
-    }
-`;
-
-const ADD_TEST_QUEUE_MUTATION = gql`
-    mutation AddTestPlanReport(
-        $testPlanVersionId: ID!
-        $atId: ID!
-        $atVersion: String!
-        $browserId: ID!
-        $browserVersion: String!
-    ) {
-        findOrCreateTestPlanReport(
-            input: {
-                testPlanVersionId: $testPlanVersionId
-                testPlanTarget: {
-                    atId: $atId
-                    atVersion: $atVersion
-                    browserId: $browserId
-                    browserVersion: $browserVersion
-                }
-            }
-        ) {
-            populatedData {
-                testPlanReport {
-                    id
-                    status
-                }
-                testPlanTarget {
-                    id
-                    at {
-                        id
-                    }
-                    atVersion
-                    browser {
-                        id
-                    }
-                    browserVersion
-                }
-                testPlanVersion {
-                    id
-                }
-            }
-            created {
-                locationOfData {
-                    testPlanReportId
-                    testPlanTargetId
-                    browserId
-                    browserVersion
-                    atId
-                    atVersion
-                }
-            }
-        }
-    }
-`;
+import { useQuery, useMutation } from '@apollo/client';
+import {
+    ADD_TEST_QUEUE_MUTATION,
+    POPULATE_ADD_TEST_PLAN_TO_QUEUE_MODAL_QUERY
+} from '../TestQueue/queries';
 
 const AddTestPlanToQueueModal = ({
     show = false,
@@ -95,7 +25,9 @@ const AddTestPlanToQueueModal = ({
     const [selectedTestPlanVersion, setSelectedTestPlanVersion] = useState('');
 
     // eslint-disable-next-line no-unused-vars
-    const { loading, error, data } = useQuery(POPULATE_MODAL_QUERY);
+    const { loading, error, data } = useQuery(
+        POPULATE_ADD_TEST_PLAN_TO_QUEUE_MODAL_QUERY
+    );
     const [addTestPlanReport] = useMutation(ADD_TEST_QUEUE_MUTATION);
 
     useEffect(() => {
