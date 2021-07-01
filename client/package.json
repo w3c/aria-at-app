@@ -27,16 +27,31 @@
     "@fortawesome/fontawesome-svg-core": "^1.2.32",
     "@fortawesome/free-solid-svg-icons": "^5.15.1",
     "@fortawesome/react-fontawesome": "^0.1.11",
+    "axios": "^0.19.2",
     "bootstrap": "^4.4.1",
-    "dotenv-webpack": "^1.8.0",
+    "core-js": "^3.8.0",
     "graphql": "^15.5.0",
+    "moment": "^2.25.3",
+    "node-fetch": "^2.6.1",
     "node-sass": "^4.13.1",
+    "octicons-react": "^1.0.4",
+    "prop-types": "^15.7.2",
     "query-string": "^6.12.1",
+    "react": "^16.13.0",
     "react-bootstrap": "^1.0.0",
     "react-copy-to-clipboard": "^5.0.2",
+    "react-dom": "^16.13.0",
     "react-helmet": "^6.0.0",
     "react-id-generator": "^3.0.0",
-    "sass-loader": "^8.0.2"
+    "react-mde": "^10.0.3",
+    "react-redux": "^7.2.0",
+    "react-router-config": "^5.1.1",
+    "react-router-dom": "^5.1.2",
+    "redux": "^4.0.5",
+    "redux-logger": "^3.0.6",
+    "redux-thunk": "^2.3.0",
+    "sass-loader": "^8.0.2",
+    "showdown": "^1.9.1"
   },
   "devDependencies": {
     "@babel/code-frame": "^7.8.3",
@@ -50,12 +65,15 @@
     "@storybook/addon-links": "^5.3.17",
     "@storybook/addons": "^5.3.17",
     "@storybook/react": "^5.3.17",
-    "axios": "^0.19.2",
+    "@testing-library/dom": "^8.0.0",
+    "@testing-library/jest-dom": "^5.14.1",
+    "@testing-library/react": "^12.0.0",
+    "@testing-library/user-event": "^13.1.9",
     "babel-jest": "^25.1.0",
     "babel-loader": "^8.0.6",
     "babel-polyfill": "^6.26.0",
     "copy-webpack-plugin": "^5.1.1",
-    "core-js": "^3.8.0",
+    "dotenv-webpack": "^1.8.0",
     "enzyme": "^3.11.0",
     "enzyme-adapter-react-16": "^1.15.2",
     "eslint": "^7.26.0",
@@ -66,23 +84,10 @@
     "eslint-plugin-react": "^7.23.2",
     "file-loader": "^6.0.0",
     "jest": "^25.1.0",
+    "jest-environment-jsdom": "^27.0.6",
     "jest-enzyme": "^7.1.2",
-    "moment": "^2.25.3",
     "moxios": "^0.4.0",
-    "node-fetch": "^2.6.1",
-    "octicons-react": "^1.0.4",
     "prettier": "^1.19.1",
-    "prop-types": "^15.7.2",
-    "react": "^16.13.0",
-    "react-dom": "^16.13.0",
-    "react-mde": "^10.0.3",
-    "react-redux": "^7.2.0",
-    "react-router-config": "^5.1.1",
-    "react-router-dom": "^5.1.2",
-    "redux": "^4.0.5",
-    "redux-logger": "^3.0.6",
-    "redux-thunk": "^2.3.0",
-    "showdown": "^1.9.1",
     "webpack": "^4.42.0",
     "webpack-cli": "^3.3.11",
     "webpack-dev-server": "^3.10.3"
@@ -97,6 +102,11 @@
     "setupFiles": [
       "core-js"
     ],
-    "setupFilesAfterEnv": ["./jest.setup.js"]
+    "setupFilesAfterEnv": [
+      "./jest.setup.js"
+    ]
+  },
+  "resolutions": {
+    "jest-environment-jsdom": "^26.0.1"
   }
 }
