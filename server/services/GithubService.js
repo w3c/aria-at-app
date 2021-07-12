@@ -1,5 +1,4 @@
 const axios = require('axios');
-const { User } = require('../models');
 const { AuthorizationError } = require('../errors/auth');
 
 const {
@@ -7,7 +6,6 @@ const {
     GITHUB_OAUTH_SERVER,
     GITHUB_CLIENT_ID,
     GITHUB_CLIENT_SECRET,
-    GITHUB_TEAM_TESTER,
     GITHUB_TEAM_ADMIN,
     GITHUB_TEAM_ORGANIZATION,
     GITHUB_TEAM_QUERY,
@@ -38,10 +36,6 @@ function unwrapGraphQLResponse(response) {
 
 module.exports = {
     graphQLEndpoint: `${GITHUB_GRAPHQL_SERVER}/graphql`,
-    teamToRole: {
-        [GITHUB_TEAM_TESTER]: User.TESTER,
-        [GITHUB_TEAM_ADMIN]: User.ADMIN
-    },
     getOauthUrl: ({ state = '' }) => {
         return (
             `${GITHUB_OAUTH_SERVER}/login/oauth/authorize?scope=` +
@@ -76,7 +70,7 @@ module.exports = {
             response.data.data.viewer.username
         );
     },
-    async getGithubTeams({ githubAccessToken, githubUsername }) {
+    async isMemberOfAdminTeam({ githubAccessToken, githubUsername }) {
         const query = `
             {
                 organization(login: "${GITHUB_TEAM_ORGANIZATION}") {
@@ -100,13 +94,11 @@ module.exports = {
             { headers: { Authorization: `bearer ${githubAccessToken}` } }
         );
 
-        const userTeams = response.data.data.organization.teams.edges
+        const isMember = !!response.data.data.organization.teams.edges
             .map(({ node: { name } }) => name)
-            // The query may return more teams than "admin" or "tester". Therefore,
-            //  we should filter out any teams that aren't in teamToRole
-            .filter(teamName => teamName in this.teamToRole);
+            .find(teamName => teamName === GITHUB_TEAM_ADMIN);
 
-        return userTeams.map(teamName => this.teamToRole[teamName]);
+        return isMember;
     },
     async getIssues(options) {
         if (

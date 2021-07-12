@@ -1,6 +1,7 @@
 const { User } = require('../models');
 const { getOrCreateUser } = require('../models/services/UserService');
 const { GithubService } = require('../services');
+const getTesters = require('../util/get-testers');
 
 const ALLOW_FAKE_ROLE = process.env.ALLOW_FAKE_ROLE === 'true';
 const APP_SERVER = process.env.APP_SERVER;
@@ -37,20 +38,21 @@ const oauthRedirectFromGithubController = async (req, res) => {
     );
     if (!githubUsername) return loginFailed();
 
-    const teams = await GithubService.getGithubTeams({
+    const isAdmin = await GithubService.isMemberOfAdminTeam({
         githubAccessToken,
         githubUsername
     });
-    if (!teams) return loginFailed();
+    if (isAdmin == null) return loginFailed();
+
+    const testers = await getTesters();
 
     const roles = [];
-    if (teams.includes(User.ADMIN)) {
+    if (isAdmin) {
         roles.push({ name: User.ADMIN });
     }
-    if (teams.includes(User.TESTER) || teams.includes(User.ADMIN)) {
+    if (isAdmin || testers.includes(githubUsername)) {
         roles.push({ name: User.TESTER }); // Admins are always testers
     }
-
     if (roles.length === 0) return loginFailedDueToRole();
 
     let [user] = await getOrCreateUser(
@@ -62,7 +64,8 @@ const oauthRedirectFromGithubController = async (req, res) => {
     );
 
     // Allows for quickly logging in with different roles - changing
-    // roles would otherwise require leaving and joining GitHub teams
+    // roles would otherwise require leaving and joining GitHub teams.
+    // Should not be saved to database.
     const matchedFakeRole =
         dataFromFrontend && dataFromFrontend.match(/fakeRole-(\w*)/);
     if (ALLOW_FAKE_ROLE && matchedFakeRole) {
@@ -75,7 +78,6 @@ const oauthRedirectFromGithubController = async (req, res) => {
             user.roles.push({ name: User.TESTER }); // Admins are always testers
         }
     }
-
     if (user.roles.length === 0) return loginFailedDueToRole();
 
     req.session.githubAccessToken = githubAccessToken;
