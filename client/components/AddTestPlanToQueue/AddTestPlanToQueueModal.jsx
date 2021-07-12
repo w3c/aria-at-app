@@ -177,7 +177,11 @@ const AddTestPlanToQueueModal = ({
     };
 
     return (
-        <Modal show={show} onHide={handleClose}>
+        <Modal
+            show={show}
+            onHide={handleClose}
+            aria-labelledby="add-test-plan-to-queue-modal"
+        >
             <Modal.Header closeButton>
                 <Modal.Title>Add a Test Plan to the Test Queue</Modal.Title>
             </Modal.Header>

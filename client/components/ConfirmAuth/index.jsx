@@ -6,7 +6,9 @@ import PropTypes from 'prop-types';
 const ConfirmAuth = ({ auth, children, requiredPermission, ...rest }) => {
     const { isSignedIn, isAdmin, username, roles } = auth;
 
-    if (!username) return <div>Loading...</div>;
+    // to explicitly inform user that something went wrong when signing in
+    // need to provide assistance on troubleshooting should this ever happen
+    if (!username) return <Redirect to={{ pathname: '/invalid-request' }} />;
 
     // If you are an admin, you can access all other role actions by default
     const authConfirmed =

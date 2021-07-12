@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import {
     signIn as signInAction,
-    signInFail as signInFailAction,
     signOut as signOutAction
 } from '../../redux/actions/auth';
 import { useQuery } from '@apollo/client';
@@ -30,13 +29,17 @@ const App = ({ auth, dispatch }) => {
         await client.resetStore();
     };
 
-    if (error) dispatch(signInFailAction());
     if (loading) return null;
 
-    // cache still being used to prevent redux refresh unless refreshed for some
-    // isSignOutCalled boolean helps prevent this
-    if (!isSignOutCalled && !username && data.me)
+    // cache still being used to prevent redux refresh unless browser refreshed
+    // for some instances. `isSignOutCalled` boolean helps prevent this
+    if (!isSignOutCalled && !username && data && data.me)
         dispatch(signInAction(data.me));
+
+    if (error) {
+        // TODO: Display error message / page for failed user auth attempt
+        // dispatch(signInFailAction());
+    }
 
     return (
         <Fragment>

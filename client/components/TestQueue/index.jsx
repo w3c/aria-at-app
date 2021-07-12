@@ -149,7 +149,18 @@ const TestQueue = ({ auth }) => {
     const handleCloseAddTestPlanToQueueModal = () =>
         enableAddToQueueModal(false);
 
-    if (loading) return <div data-testid="test-queue-loading">Loading</div>;
+    if (loading) {
+        return (
+            <Container as="main">
+                <Helmet>
+                    <title>{`Loading - Test Queue | ARIA-AT`}</title>
+                </Helmet>
+                <h1>Test Queue</h1>
+
+                <div data-testid="test-queue-loading">Loading ...</div>
+            </Container>
+        );
+    }
 
     if (!testPlanReports.length) {
         const noTestPlansMessage = 'There are no Test Plans available';

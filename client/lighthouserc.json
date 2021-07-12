@@ -42,17 +42,7 @@
       "collect": {
         "startServerCommand": "npm run dev",
         "url": ["http://localhost:3000"],
-        "settings": {
-          "skipAudits": [
-            "is-on-https",
-            "redirects-http",
-            "service-worker",
-            "works-offline",
-            "viewport",
-            "without-javascript",
-            "first-contentful-paint"
-          ],
-          "chromeFlags": "--no-sandbox" }
+        "chromeFlags": "--no-sandbox"
       }
     }
   }
