@@ -173,9 +173,9 @@ const TestQueueRun = ({
     const evaluateTestRunTitle = () => {
         const { testPlanTarget, testPlanVersion } = testPlanReport;
         const { title: testPlanTargetName } = testPlanTarget;
-        const { title: apgExampleName } = testPlanVersion;
+        const { title: apgExampleName, directory } = testPlanVersion;
 
-        return `${apgExampleName} for ${testPlanTargetName}`;
+        return `${apgExampleName || directory} for ${testPlanTargetName}`;
     };
 
     const renderOpenAsDropdown = () => {
@@ -336,8 +336,8 @@ const TestQueueRun = ({
     const nextReportStatus = evaluateNewReportStatus();
 
     return (
-        <tr>
-            <th>{renderAssignedUserToTestPlan()}</th>
+        <tr className="test-queue-run-row">
+            <td>{renderAssignedUserToTestPlan()}</td>
             <td>
                 <div className="testers-wrapper">
                     {isAdmin && renderAssignMenu()}
