@@ -1,5 +1,20 @@
 const axios = require('axios');
+const { User } = require('../models');
 const { AuthorizationError } = require('../errors/auth');
+
+const {
+    GITHUB_GRAPHQL_SERVER,
+    GITHUB_OAUTH_SERVER,
+    GITHUB_CLIENT_ID,
+    GITHUB_CLIENT_SECRET,
+    GITHUB_TEAM_TESTER,
+    GITHUB_TEAM_ADMIN,
+    GITHUB_TEAM_ORGANIZATION,
+    GITHUB_TEAM_QUERY,
+    GITHUB_REPO_OWNER,
+    GITHUB_REPO_NAME,
+    GITHUB_REPO_ID
+} = process.env;
 
 const permissionScopes = [
     'user:email',
@@ -22,62 +37,54 @@ function unwrapGraphQLResponse(response) {
 }
 
 module.exports = {
-    graphQLEndpoint: 'https://api.github.com/graphql',
+    graphQLEndpoint: `${GITHUB_GRAPHQL_SERVER}/graphql`,
     teamToRole: {
-        [process.env.GITHUB_TEAM_TESTER]: 'tester',
-        [process.env.GITHUB_TEAM_ADMIN]: 'admin'
+        [GITHUB_TEAM_TESTER]: User.TESTER,
+        [GITHUB_TEAM_ADMIN]: User.ADMIN
     },
-    getUrl: ({ state }) =>
-        `https://github.com/login/oauth/authorize?scope=` +
-        `${permissionScopesURI}&client_id=${process.env.GITHUB_CLIENT_ID}` +
-        `&state=${state}`,
-    async authorize(code) {
-        const redirectURL = 'https://github.com/login/oauth/access_token';
+    getOauthUrl: ({ state = '' }) => {
+        return (
+            `${GITHUB_OAUTH_SERVER}/login/oauth/authorize?scope=` +
+            `${permissionScopesURI}&client_id=${GITHUB_CLIENT_ID}` +
+            `&state=${state}`
+        );
+    },
+    async getGithubAccessToken(code) {
+        const redirectURL = `${GITHUB_OAUTH_SERVER}/login/oauth/access_token`;
         const response = await axios.post(
             redirectURL,
             {
-                client_id: process.env.GITHUB_CLIENT_ID,
-                client_secret: process.env.GITHUB_CLIENT_SECRET,
+                client_id: GITHUB_CLIENT_ID,
+                client_secret: GITHUB_CLIENT_SECRET,
                 code
             },
-            {
-                headers: { Accept: 'application/json' }
-            }
+            { headers: { Accept: 'application/json' } }
         );
-        return response.data.access_token;
+        return response && response.data && response.data.access_token;
     },
-    async getUser(options) {
-        if (typeof options === 'undefined' || !('accessToken' in options)) {
-            throw new AuthorizationError('Not authorized.');
-        }
-        const query = '{ viewer { login name email } }';
+    async getGithubUsername(githubAccessToken) {
+        const query = '{ viewer { username: login } }';
         const response = await axios.post(
             this.graphQLEndpoint,
-            {
-                query
-            },
-            {
-                headers: { Authorization: `bearer ${options.accessToken}` }
-            }
+            { query },
+            { headers: { Authorization: `bearer ${githubAccessToken}` } }
         );
-
-        const {
-            data: {
-                viewer: { login, name, email }
-            }
-        } = response.data;
-        return { username: login, name, email };
+        return (
+            response &&
+            response.data &&
+            response.data.data &&
+            response.data.data.viewer.username
+        );
     },
-    async getUserTeams(options) {
-        if (typeof options === 'undefined' || !('accessToken' in options)) {
-            throw new AuthorizationError('Not authorized.');
-        }
-        const organization = process.env.GITHUB_TEAM_ORGANIZATION;
-        const userLogin = options.userLogin;
-        const teamQuery = process.env.GITHUB_TEAM_QUERY;
-        const query = `{
-                organization(login: "${organization}") {
-                    teams(userLogins: "${userLogin}", query: "${teamQuery}", first: 100) {
+    async getGithubTeams({ githubAccessToken, githubUsername }) {
+        const query = `
+            {
+                organization(login: "${GITHUB_TEAM_ORGANIZATION}") {
+                    teams(
+                        userLogins: "${githubUsername}",
+                        query: "${GITHUB_TEAM_QUERY}",
+                        first: 100
+                    ) {
                         edges {
                             node {
                                 name
@@ -89,28 +96,27 @@ module.exports = {
         `;
         const response = await axios.post(
             this.graphQLEndpoint,
-            {
-                query
-            },
-            {
-                headers: { Authorization: `bearer ${options.accessToken}` }
-            }
+            { query },
+            { headers: { Authorization: `bearer ${githubAccessToken}` } }
         );
 
-        // The query may return more teams than "admin" or "tester". Therefore,
-        //  we should filter out any teams that aren't in teamToRole
         const userTeams = response.data.data.organization.teams.edges
             .map(({ node: { name } }) => name)
+            // The query may return more teams than "admin" or "tester". Therefore,
+            //  we should filter out any teams that aren't in teamToRole
             .filter(teamName => teamName in this.teamToRole);
 
-        return userTeams;
+        return userTeams.map(teamName => this.teamToRole[teamName]);
     },
     async getIssues(options) {
-        if (typeof options === 'undefined' || !('accessToken' in options)) {
+        if (
+            typeof options === 'undefined' ||
+            !('githubAccessToken' in options)
+        ) {
             throw new AuthorizationError('Not authorized.');
         }
 
-        const { accessToken, issues } = options;
+        const { githubAccessToken, issues } = options;
         const issueNumbers = issues.map(({ issue_number }) => issue_number);
 
         let queryIssues = '';
@@ -135,11 +141,9 @@ module.exports = {
             `.trim();
         }
 
-        const owner = process.env.GITHUB_REPO_OWNER;
-        const name = process.env.GITHUB_REPO_NAME;
         const query = `
         query FindIssues {
-            repository(owner:"${owner}", name:"${name}") {
+            repository(owner:"${GITHUB_REPO_OWNER}", name:"${GITHUB_REPO_NAME}") {
                 ${queryIssues}
             }
         }
@@ -147,12 +151,8 @@ module.exports = {
 
         const response = await axios.post(
             this.graphQLEndpoint,
-            {
-                query
-            },
-            {
-                headers: { Authorization: `bearer ${accessToken}` }
-            }
+            { query },
+            { headers: { Authorization: `bearer ${githubAccessToken}` } }
         );
 
         const result = unwrapGraphQLResponse(response);
@@ -164,10 +164,12 @@ module.exports = {
         return [];
     },
     async createIssue(options) {
-        if (typeof options === 'undefined' || !('accessToken' in options)) {
+        if (
+            typeof options === 'undefined' ||
+            !('githubAccessToken' in options)
+        ) {
             throw new AuthorizationError('Not authorized.');
         }
-        const repositoryId = process.env.GITHUB_REPO_ID;
         const { title, body } = options.issue;
 
         const query = `
@@ -199,7 +201,7 @@ module.exports = {
         `;
 
         const variables = {
-            repositoryId,
+            repositoryId: GITHUB_REPO_ID,
             title,
             body
         };
@@ -211,7 +213,9 @@ module.exports = {
                 variables
             },
             {
-                headers: { Authorization: `bearer ${options.accessToken}` }
+                headers: {
+                    Authorization: `bearer ${options.githubAccessToken}`
+                }
             }
         );
 

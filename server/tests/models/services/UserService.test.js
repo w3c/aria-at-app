@@ -1,7 +1,8 @@
+const { pick } = require('lodash');
 const { sequelize } = require('../../../models');
 const UserService = require('../../../models/services/UserService');
 const randomStringGenerator = require('../../util/random-character-generator');
-const { dbCleaner } = require('../../util/db-cleaner');
+const dbCleaner = require('../../util/db-cleaner');
 
 describe('UserModel Data Checks', () => {
     afterAll(async () => {
@@ -89,32 +90,38 @@ describe('UserModel Data Checks', () => {
         await dbCleaner(async () => {
             // A1
             const _username = randomStringGenerator();
-            const _role = 'ADMIN';
+            const _role1 = 'ADMIN';
+            const _role2 = 'TESTER';
 
             // A2
-            const user = await UserService.createUser({
-                username: _username,
-                role: _role
-            });
-            const { id, username, createdAt, updatedAt, roles } = user;
+            const [newUser, isNew1] = await UserService.getOrCreateUser(
+                { username: _username },
+                { roles: [{ name: _role1 }] }
+            );
+            const { id, username, createdAt, updatedAt, roles } = newUser;
 
             // A2
-            await UserService.deleteUserFromRole(id, _role);
-            const updatedUser = await UserService.getUserById(id);
+            const [updatedUser, isNew2] = await UserService.getOrCreateUser(
+                { username: _username },
+                { roles: [{ name: _role2 }] }
+            );
 
             // A2
             await UserService.removeUser(id);
             const deletedUser = await UserService.getUserById(id);
 
             // after user created and role added
+            expect(isNew1).toBe(true);
             expect(id).toBeTruthy();
             expect(username).toEqual(_username);
             expect(createdAt).toBeTruthy();
             expect(updatedAt).toBeTruthy();
             expect(roles).toHaveLength(1);
+            expect(roles[0].name).toEqual('ADMIN');
 
             // after role removed
-            expect(updatedUser.roles).toHaveLength(0);
+            expect(isNew2).toBe(false);
+            expect(updatedUser.roles[0].name).toBe('TESTER');
 
             // after user removed
             expect(deletedUser).toBeNull();
@@ -194,5 +201,44 @@ describe('UserModel Data Checks', () => {
                 ])
             })
         );
+    });
+
+    it('should bulkGetOrReplace UserRoles', async () => {
+        await dbCleaner(async () => {
+            // A1
+            const adminUserId = 1;
+
+            // A2
+            const [
+                originalUserRoles,
+                isUpdated1
+            ] = await UserService.bulkGetOrReplaceUserRoles(
+                { userId: adminUserId },
+                [{ roleName: 'TESTER' }, { roleName: 'ADMIN' }],
+                ['roleName']
+            );
+
+            const [
+                updatedUserRoles,
+                isUpdated2
+            ] = await UserService.bulkGetOrReplaceUserRoles(
+                { userId: adminUserId },
+                [{ roleName: 'TESTER' }],
+                ['roleName']
+            );
+
+            // A3
+            expect(isUpdated1).toBe(false);
+            expect(originalUserRoles.length).toBe(2);
+            expect(
+                originalUserRoles.map(each => pick(each, ['roleName']))
+            ).toEqual([{ roleName: 'ADMIN' }, { roleName: 'TESTER' }]);
+
+            expect(isUpdated2).toBe(true);
+            expect(updatedUserRoles.length).toBe(1);
+            expect(
+                updatedUserRoles.map(each => pick(each, ['roleName']))
+            ).toEqual([{ roleName: 'TESTER' }]);
+        });
     });
 });

@@ -314,81 +314,90 @@ const getOrCreateTestPlanReport = async (
     userAttributes = USER_ATTRIBUTES,
     options = {}
 ) => {
-    const accumulatedResults = await ModelService.nestedGetOrCreate(
-        [
-            {
-                get: getAtVersions,
-                create: createAtVersion,
-                values: { atId, atVersion: providedAtVersion },
-                returnAttributes: [null, []]
-            },
-            {
-                get: getBrowserVersions,
-                create: createBrowserVersion,
-                values: { browserId, browserVersion: providedBrowserVersion },
-                returnAttributes: [null, []]
-            },
-            {
-                get: getTestPlanTargets,
-                create: createTestPlanTarget,
-                values: {
-                    atId,
-                    browserId,
-                    atVersion: providedAtVersion,
-                    browserVersion: providedBrowserVersion
+    return ModelService.confirmTransaction(options.transaction, async t => {
+        const accumulatedResults = await ModelService.nestedGetOrCreate(
+            [
+                {
+                    get: getAtVersions,
+                    create: createAtVersion,
+                    values: { atId, atVersion: providedAtVersion },
+                    returnAttributes: [null, []]
                 },
-                returnAttributes: [null]
-            },
-            accumulatedResults => {
-                const [testPlanTarget] = accumulatedResults[2];
-                return {
-                    get: getTestPlanReports,
-                    create: createTestPlanReport,
-                    update: updateTestPlanReport,
+                {
+                    get: getBrowserVersions,
+                    create: createBrowserVersion,
                     values: {
-                        testPlanTargetId: testPlanTarget.id,
-                        testPlanVersionId: testPlanVersionId
+                        browserId,
+                        browserVersion: providedBrowserVersion
                     },
-                    updateValues: { status },
-                    returnAttributes: [null, [], [], [], [], [], []]
-                };
-            }
-        ],
-        options
-    );
+                    returnAttributes: [null, []]
+                },
+                {
+                    get: getTestPlanTargets,
+                    create: createTestPlanTarget,
+                    values: {
+                        atId,
+                        browserId,
+                        atVersion: providedAtVersion,
+                        browserVersion: providedBrowserVersion
+                    },
+                    returnAttributes: [null]
+                },
+                accumulatedResults => {
+                    const [testPlanTarget] = accumulatedResults[2];
+                    return {
+                        get: getTestPlanReports,
+                        create: createTestPlanReport,
+                        update: updateTestPlanReport,
+                        values: {
+                            testPlanTargetId: testPlanTarget.id,
+                            testPlanVersionId: testPlanVersionId
+                        },
+                        updateValues: { status },
+                        returnAttributes: [null, [], [], [], [], [], []]
+                    };
+                }
+            ],
+            { transaction: t }
+        );
 
-    const testPlanTargetId = accumulatedResults[2][0].id;
-    const testPlanReportId = accumulatedResults[3][0].id;
-    const atVersion = accumulatedResults[0][0].atVersion;
-    const browserVersion = accumulatedResults[1][0].browserVersion;
+        const testPlanTargetId = accumulatedResults[2][0].id;
+        const testPlanReportId = accumulatedResults[3][0].id;
+        const atVersion = accumulatedResults[0][0].atVersion;
+        const browserVersion = accumulatedResults[1][0].browserVersion;
 
-    const created = [];
-    if (accumulatedResults[0][1]) {
-        created.push({ testPlanReportId, testPlanTargetId, atVersion });
-    }
-    if (accumulatedResults[1][1]) {
-        created.push({ testPlanReportId, testPlanTargetId, browserVersion });
-    }
-    if (accumulatedResults[2][1]) {
-        created.push({ testPlanReportId, testPlanTargetId });
-    }
-    if (accumulatedResults[3][1]) {
-        created.push({ testPlanReportId });
-    }
+        const created = [];
+        if (accumulatedResults[0][1]) {
+            created.push({ testPlanReportId, testPlanTargetId, atVersion });
+        }
+        if (accumulatedResults[1][1]) {
+            created.push({
+                testPlanReportId,
+                testPlanTargetId,
+                browserVersion
+            });
+        }
+        if (accumulatedResults[2][1]) {
+            created.push({ testPlanReportId, testPlanTargetId });
+        }
+        if (accumulatedResults[3][1]) {
+            created.push({ testPlanReportId });
+        }
 
-    const testPlanReport = await getTestPlanReportById(
-        testPlanReportId,
-        testPlanReportAttributes,
-        testPlanRunAttributes,
-        testPlanVersionAttributes,
-        testPlanTargetAttributes,
-        atAttributes,
-        browserAttributes,
-        userAttributes,
-        options
-    );
+        const testPlanReport = await getTestPlanReportById(
+            testPlanReportId,
+            testPlanReportAttributes,
+            testPlanRunAttributes,
+            testPlanVersionAttributes,
+            testPlanTargetAttributes,
+            atAttributes,
+            browserAttributes,
+            userAttributes,
+            { transaction: t }
+        );
 
-    return [testPlanReport, created];
+        return [testPlanReport, created];
+    });
 };
 
 module.exports = {
