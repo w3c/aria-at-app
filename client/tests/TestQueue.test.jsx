@@ -1,5 +1,11 @@
 import React from 'react';
-import { render, screen, waitFor, fireEvent } from '@testing-library/react';
+import {
+    render,
+    screen,
+    waitFor,
+    fireEvent,
+    act
+} from '@testing-library/react';
 import { InMemoryCache } from '@apollo/client';
 import { MockedProvider } from '@apollo/client/testing';
 import { BrowserRouter } from 'react-router-dom';
@@ -44,22 +50,26 @@ describe('Render TestQueue/index.jsx', () => {
 
         it('renders Test Queue page instructions', async () => {
             // allow page time to load
-            await waitFor(() => new Promise(res => setTimeout(res, 0)));
+            await act(async () => {
+                await waitFor(() => new Promise(res => setTimeout(res, 0)));
 
-            const { queryByTestId, getByTestId } = wrapper;
-            const loadingElement = queryByTestId('test-queue-loading');
-            const element = getByTestId('test-queue-no-test-plans-p');
+                const { queryByTestId, getByTestId } = wrapper;
+                const loadingElement = queryByTestId('test-queue-loading');
+                const element = getByTestId('test-queue-no-test-plans-p');
 
-            expect(loadingElement).not.toBeInTheDocument();
-            expect(element).toBeTruthy();
-            expect(element).toHaveTextContent(
-                /Please configure your preferred Assistive Technologies in/gi
-            );
+                expect(loadingElement).not.toBeInTheDocument();
+                expect(element).toBeTruthy();
+                expect(element).toHaveTextContent(
+                    /Please configure your preferred Assistive Technologies in/gi
+                );
+            });
         });
 
         it('renders no AT-specific sections', async () => {
             // allow page time to load
-            await waitFor(() => new Promise(res => setTimeout(res, 0)));
+            await act(async () => {
+                await waitFor(() => new Promise(res => setTimeout(res, 0)));
+            });
 
             const { queryAllByText } = wrapper;
             const nvdaElements = queryAllByText(/nvda/gi);
@@ -73,7 +83,9 @@ describe('Render TestQueue/index.jsx', () => {
 
         it('does not render add test plan modal button', async () => {
             // allow page time to load
-            await waitFor(() => new Promise(res => setTimeout(res, 0)));
+            await act(async () => {
+                await waitFor(() => new Promise(res => setTimeout(res, 0)));
+            });
 
             const { queryByTestId } = wrapper;
             const button = queryByTestId(
@@ -100,7 +112,9 @@ describe('Render TestQueue/index.jsx', () => {
 
         it('renders Test Queue page instructions', async () => {
             // allow page time to load
-            await waitFor(() => new Promise(res => setTimeout(res, 0)));
+            await act(async () => {
+                await waitFor(() => new Promise(res => setTimeout(res, 0)));
+            });
 
             const { queryByTestId, getByTestId } = wrapper;
             const loadingElement = queryByTestId('test-queue-loading');
@@ -115,7 +129,9 @@ describe('Render TestQueue/index.jsx', () => {
 
         it('renders AT-specific sections', async () => {
             // allow page time to load
-            await waitFor(() => new Promise(res => setTimeout(res, 0)));
+            await act(async () => {
+                await waitFor(() => new Promise(res => setTimeout(res, 0)));
+            });
 
             const { queryAllByText } = wrapper;
             const nvdaElements = queryAllByText(/nvda/gi);
@@ -129,7 +145,9 @@ describe('Render TestQueue/index.jsx', () => {
 
         it('renders testers are assigned to Test Plans', async () => {
             // allow page time to load
-            await waitFor(() => new Promise(res => setTimeout(res, 0)));
+            await act(async () => {
+                await waitFor(() => new Promise(res => setTimeout(res, 0)));
+            });
 
             const { queryAllByText } = wrapper;
             const userAAssignedElements = queryAllByText(/foo-bar/gi);
@@ -147,7 +165,9 @@ describe('Render TestQueue/index.jsx', () => {
 
         it('does not render add test plan modal button', async () => {
             // allow page time to load
-            await waitFor(() => new Promise(res => setTimeout(res, 0)));
+            await act(async () => {
+                await waitFor(() => new Promise(res => setTimeout(res, 0)));
+            });
 
             const { queryByTestId } = wrapper;
             const button = queryByTestId(
@@ -174,7 +194,9 @@ describe('Render TestQueue/index.jsx', () => {
 
         it('renders Test Queue page instructions', async () => {
             // allow page time to load
-            await waitFor(() => new Promise(res => setTimeout(res, 0)));
+            await act(async () => {
+                await waitFor(() => new Promise(res => setTimeout(res, 0)));
+            });
 
             const { queryByTestId, getByTestId } = wrapper;
             const loadingElement = queryByTestId('test-queue-loading');
@@ -187,7 +209,9 @@ describe('Render TestQueue/index.jsx', () => {
 
         it('renders no AT-specific sections', async () => {
             // allow page time to load
-            await waitFor(() => new Promise(res => setTimeout(res, 0)));
+            await act(async () => {
+                await waitFor(() => new Promise(res => setTimeout(res, 0)));
+            });
 
             const { queryAllByText } = wrapper;
             const nvdaElements = queryAllByText(/nvda/gi);
@@ -201,27 +225,29 @@ describe('Render TestQueue/index.jsx', () => {
 
         it('renders add test plan modal on button click', async () => {
             // allow page time to load
-            await waitFor(() => new Promise(res => setTimeout(res, 0)));
+            await act(async () => {
+                await waitFor(() => new Promise(res => setTimeout(res, 0)));
 
-            const { queryByTestId } = wrapper;
-            const button = queryByTestId(
-                'test-queue-add-test-plan-to-queue-button'
-            );
+                const { queryByTestId } = wrapper;
+                const button = queryByTestId(
+                    'test-queue-add-test-plan-to-queue-button'
+                );
 
-            expect(button).toBeTruthy();
+                expect(button).toBeTruthy();
 
-            // opens modal
-            fireEvent.click(button);
+                // opens modal
+                fireEvent.click(button);
 
-            expect(
-                screen.getByText('Select an AT and Version')
-            ).toBeInTheDocument();
-            expect(
-                screen.getByText('Select a Browser and Version')
-            ).toBeInTheDocument();
-            expect(
-                screen.getByText('Select a Test Plan and Version')
-            ).toBeInTheDocument();
+                expect(
+                    screen.getByText('Select an AT and Version')
+                ).toBeInTheDocument();
+                expect(
+                    screen.getByText('Select a Browser and Version')
+                ).toBeInTheDocument();
+                expect(
+                    screen.getByText('Select a Test Plan and Version')
+                ).toBeInTheDocument();
+            });
         });
     });
 
@@ -241,7 +267,9 @@ describe('Render TestQueue/index.jsx', () => {
 
         it('renders Test Queue page instructions', async () => {
             // allow page time to load
-            await waitFor(() => new Promise(res => setTimeout(res, 0)));
+            await act(async () => {
+                await waitFor(() => new Promise(res => setTimeout(res, 0)));
+            });
 
             const { queryByTestId, getByTestId } = wrapper;
             const loadingElement = queryByTestId('test-queue-loading');
@@ -256,7 +284,9 @@ describe('Render TestQueue/index.jsx', () => {
 
         it('renders AT-specific sections', async () => {
             // allow page time to load
-            await waitFor(() => new Promise(res => setTimeout(res, 0)));
+            await act(async () => {
+                await waitFor(() => new Promise(res => setTimeout(res, 0)));
+            });
 
             const { queryAllByText } = wrapper;
             const nvdaElements = queryAllByText(/nvda/gi);
@@ -270,7 +300,9 @@ describe('Render TestQueue/index.jsx', () => {
 
         it('renders testers are assigned to Test Plans', async () => {
             // allow page time to load
-            await waitFor(() => new Promise(res => setTimeout(res, 0)));
+            await act(async () => {
+                await waitFor(() => new Promise(res => setTimeout(res, 0)));
+            });
 
             const { queryAllByText } = wrapper;
             const userAAssignedElements = queryAllByText(/foo-bar/gi);
@@ -288,27 +320,29 @@ describe('Render TestQueue/index.jsx', () => {
 
         it('renders add test plan modal on button click', async () => {
             // allow page time to load
-            await waitFor(() => new Promise(res => setTimeout(res, 0)));
+            await act(async () => {
+                await waitFor(() => new Promise(res => setTimeout(res, 0)));
 
-            const { queryByTestId } = wrapper;
-            const button = queryByTestId(
-                'test-queue-add-test-plan-to-queue-button'
-            );
+                const { queryByTestId } = wrapper;
+                const button = queryByTestId(
+                    'test-queue-add-test-plan-to-queue-button'
+                );
 
-            expect(button).toBeTruthy();
+                expect(button).toBeTruthy();
 
-            // opens modal
-            fireEvent.click(button);
+                // opens modal
+                fireEvent.click(button);
 
-            expect(
-                screen.getByText('Select an AT and Version')
-            ).toBeInTheDocument();
-            expect(
-                screen.getByText('Select a Browser and Version')
-            ).toBeInTheDocument();
-            expect(
-                screen.getByText('Select a Test Plan and Version')
-            ).toBeInTheDocument();
+                expect(
+                    screen.getByText('Select an AT and Version')
+                ).toBeInTheDocument();
+                expect(
+                    screen.getByText('Select a Browser and Version')
+                ).toBeInTheDocument();
+                expect(
+                    screen.getByText('Select a Test Plan and Version')
+                ).toBeInTheDocument();
+            });
         });
     });
 });
