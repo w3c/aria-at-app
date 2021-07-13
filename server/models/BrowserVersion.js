@@ -4,7 +4,7 @@ module.exports = function(sequelize, DataTypes) {
     const Model = sequelize.define(
         MODEL_NAME,
         {
-            browser: {
+            browserId: {
                 type: DataTypes.INTEGER,
                 allowNull: false,
                 primaryKey: true,
@@ -13,7 +13,7 @@ module.exports = function(sequelize, DataTypes) {
                     key: 'id'
                 }
             },
-            version: {
+            browserVersion: {
                 type: DataTypes.TEXT,
                 allowNull: false,
                 primaryKey: true,
@@ -26,12 +26,13 @@ module.exports = function(sequelize, DataTypes) {
         }
     );
 
-    Model.BROWSER_ASSOCIATION = { foreignKey: 'browser' };
+    Model.BROWSER_ASSOCIATION = { foreignKey: 'browserId' };
 
     Model.associate = function(models) {
         Model.belongsTo(models.Browser, {
             ...Model.BROWSER_ASSOCIATION,
-            targetKey: 'id'
+            targetKey: 'id',
+            as: 'browser'
         });
     };
 

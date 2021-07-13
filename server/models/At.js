@@ -21,20 +21,20 @@ module.exports = function(sequelize, DataTypes) {
         }
     );
 
-    Model.AT_VERSION_ASSOCIATION = { as: 'versions' };
+    Model.AT_VERSION_ASSOCIATION = { as: 'atVersions' };
 
     Model.AT_MODE_ASSOCIATION = { as: 'modes' };
 
     Model.associate = function(models) {
         Model.hasMany(models.AtVersion, {
             ...Model.AT_VERSION_ASSOCIATION,
-            foreignKey: 'at',
+            foreignKey: 'atId',
             sourceKey: 'id'
         });
 
         Model.hasMany(models.AtMode, {
             ...Model.AT_MODE_ASSOCIATION,
-            foreignKey: 'at',
+            foreignKey: 'atId',
             sourceKey: 'id'
         });
     };

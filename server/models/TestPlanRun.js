@@ -10,9 +10,9 @@ module.exports = function(sequelize, DataTypes) {
                 primaryKey: true,
                 autoIncrement: true
             },
-            isManuallyTested: { type: DataTypes.BOOLEAN, default: false },
-            tester: { type: DataTypes.INTEGER, allowNull: true },
-            testPlanReport: { type: DataTypes.INTEGER }
+            testerUserId: { type: DataTypes.INTEGER, allowNull: true },
+            testPlanReportId: { type: DataTypes.INTEGER },
+            testResults: { type: DataTypes.ARRAY(DataTypes.JSONB) }
         },
         {
             timestamps: false,
@@ -22,25 +22,21 @@ module.exports = function(sequelize, DataTypes) {
 
     Model.TEST_RESULT_ASSOCIATION = { as: 'testResults' };
 
-    Model.TEST_PLAN_REPORT_ASSOCIATION = { foreignKey: 'testPlanReport' };
+    Model.TEST_PLAN_REPORT_ASSOCIATION = { foreignKey: 'testPlanReportId' };
 
-    Model.USER_ASSOCIATION = { foreignKey: 'tester' };
+    Model.USER_ASSOCIATION = { foreignKey: 'testerUserId' };
 
     Model.associate = function(models) {
-        Model.hasMany(models.TestResult, {
-            ...Model.TEST_RESULT_ASSOCIATION,
-            foreignKey: 'testPlanRun',
-            sourceKey: 'id'
-        });
-
         Model.belongsTo(models.TestPlanReport, {
             ...Model.TEST_PLAN_REPORT_ASSOCIATION,
-            targetKey: 'id'
+            targetKey: 'id',
+            as: 'testPlanReport'
         });
 
         Model.belongsTo(models.User, {
             ...Model.USER_ASSOCIATION,
-            targetKey: 'id'
+            targetKey: 'id',
+            as: 'tester'
         });
     };
 

@@ -25,12 +25,12 @@ module.exports = function(sequelize, DataTypes) {
     Model.FIREFOX = 'Firefox';
     Model.SAFARI = 'Safari';
 
-    Model.BROWSER_VERSION_ASSOCIATION = { as: 'versions' };
+    Model.BROWSER_VERSION_ASSOCIATION = { as: 'browserVersions' };
 
     Model.associate = function(models) {
         Model.hasMany(models.BrowserVersion, {
             ...Model.BROWSER_VERSION_ASSOCIATION,
-            foreignKey: 'browser',
+            foreignKey: 'browserId',
             sourceKey: 'id'
         });
     };

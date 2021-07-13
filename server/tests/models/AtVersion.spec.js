@@ -18,12 +18,12 @@ describe('AtVersionModel', () => {
 
     describe('properties', () => {
         // A3
-        ['at', 'version'].forEach(checkPropertyExists(modelInstance));
+        ['atId', 'atVersion'].forEach(checkPropertyExists(modelInstance));
     });
 
     describe('associations', () => {
         // A1
-        const AT_ASSOCIATION = { foreignKey: 'at' };
+        const AT_ASSOCIATION = { foreignKey: 'atId' };
 
         // A2
         beforeAll(() => {

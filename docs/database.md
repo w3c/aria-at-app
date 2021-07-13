@@ -44,6 +44,18 @@ yarn sequelize db:seed:all;
 yarn db-import-tests:dev;
 ```
 
+### Test Database
+
+The instructions are similar for the test database, with one extra step:
+
+```
+yarn db-init:test;
+yarn sequelize:test db:migrate;
+yarn sequelize:test db:seed:all;
+yarn workspace server db-import-tests:test;
+yarn workspace server db-populate-sample-data:test;
+```
+
 ### Inspecting the database
 
 To connect to the Postgres table locally:

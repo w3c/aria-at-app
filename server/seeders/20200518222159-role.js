@@ -4,7 +4,7 @@ module.exports = {
     up: queryInterface => {
         return queryInterface.bulkInsert(
             'Role',
-            [{ name: 'admin' }, { name: 'tester' }],
+            [{ name: 'ADMIN' }, { name: 'TESTER' }],
             {}
         );
     },

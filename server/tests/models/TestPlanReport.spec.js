@@ -6,7 +6,7 @@ const {
 } = require('sequelize-test-helpers');
 
 const TestPlanReportModel = require('../../models/TestPlanReport');
-const TestPlanModel = require('../../models/TestPlan');
+const TestPlanVersionModel = require('../../models/TestPlanVersion');
 const TestPlanTargetModel = require('../../models/TestPlanTarget');
 const TestPlanRunModel = require('../../models/TestPlanRun');
 
@@ -21,31 +21,35 @@ describe('TestPlanReportModel', () => {
     describe('properties', () => {
         // A3
         [
-            'publishStatus',
-            'testPlanTarget',
-            'testPlan',
-            'coveragePercent',
+            'status',
+            'testPlanTargetId',
+            'testPlanVersionId',
             'createdAt'
         ].forEach(checkPropertyExists(modelInstance));
     });
 
     describe('associations', () => {
         // A1
-        const TEST_PLAN_ASSOCIATION = { foreignKey: 'testPlan' };
-        const TEST_PLAN_TARGET_ASSOCIATION = { foreignKey: 'testPlanTarget' };
+        const TEST_PLAN_VERSION_ASSOCIATION = {
+            foreignKey: 'testPlanVersionId'
+        };
+        const TEST_PLAN_TARGET_ASSOCIATION = { foreignKey: 'testPlanTargetId' };
         const TEST_PLAN_RUN_ASSOCIATION = { as: 'testPlanRuns' };
 
         // A2
         beforeAll(() => {
-            Model.belongsTo(TestPlanModel, TEST_PLAN_ASSOCIATION);
+            Model.belongsTo(
+                TestPlanVersionModel,
+                TEST_PLAN_VERSION_ASSOCIATION
+            );
             Model.belongsTo(TestPlanTargetModel, TEST_PLAN_TARGET_ASSOCIATION);
             Model.hasMany(TestPlanRunModel, TEST_PLAN_RUN_ASSOCIATION);
         });
 
-        it('defined a belongsTo association to TestPlan', () => {
+        it('defined a belongsTo association to TestPlanVersion', () => {
             expect(Model.belongsTo).toHaveBeenCalledWith(
-                TestPlanModel,
-                expect.objectContaining(Model.TEST_PLAN_ASSOCIATION)
+                TestPlanVersionModel,
+                expect.objectContaining(Model.TEST_PLAN_VERSION_ASSOCIATION)
             );
         });
 
