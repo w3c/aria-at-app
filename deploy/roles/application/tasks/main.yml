@@ -38,6 +38,7 @@
 
 - name: Install Node.js dependencies
   command: yarn install
+  become: yes
   args:
     chdir: '{{source_dir}}'
 
@@ -70,6 +71,7 @@
 
 - name: Build front end package
   command: ./deploy/scripts/export-and-exec.sh {{environment_config.dest}} yarn workspace client build
+  become: yes
   args:
     chdir: '{{source_dir}}'
 
