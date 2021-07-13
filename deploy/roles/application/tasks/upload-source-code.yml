@@ -41,6 +41,7 @@
         dest: '{{source_dir}}'
         rsync_opts:
           - '--filter=:- .gitignore'
+          - '--delete'
       become: yes
   always:
     - name: Revoke temporary privilege
