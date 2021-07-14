@@ -25,5 +25,5 @@ all:
     aria-at-app-sandbox.bocoup.com:
       needs_become_password: true
   vars:
-    deployment_mode: staging
+    deployment_mode: sandbox
     fqdn: aria-at-app-sandbox.bocoup.com
