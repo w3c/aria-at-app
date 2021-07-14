@@ -25,9 +25,9 @@ Now you can navigate your browser to: [http://localhost:3000/](http://localhost:
 
 ### Signing in as a tester and/or admin
 
-ARIA-AT App determines whether you are authorized to sign in as a tester or admin based on whether you are a member of the official tester or admin teams within the W3C GitHub organization. The GitHub organization and team names can be changed by altering the app's environment variables, and there are dedicated teams for each app environment.
+ARIA-AT App determines if you are authorized to sign in as an admin based on whether you are a member of the official admin team within the W3C GitHub organization and as a tester based on whether your Github username is listed in the testers.txt file. The GitHub organization and team name can be changed by altering the app's environment variables, and there are dedicated teams for each app environment.
 
-Another way to log in as either a tester or admin, useful for quick testing and not requiring membership within any GitHub organizations or teams, is described below.
+Another way to log in as either a tester or admin, useful for quick testing and not requiring editing testers.txt or membership within any GitHub organizations or teams, is described below.
 
 1. Sign out and return to the home page.
 2. Add `?fakeRole=admin` to the URL bar and press enter. Alternatively use `?fakeRole=tester` to log in as a tester only or `?fakeRole=` to preview logging in without a role.
