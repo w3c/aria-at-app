@@ -11,7 +11,7 @@ import nextId from 'react-id-generator';
 import { Button, Dropdown } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import ATAlert from '../ATAlert';
-import { capitalizeFirstLetterOfWords } from '../../utils/formatter';
+import { capitalizeEachWord } from '../../utils/formatter';
 
 import './TestQueueRun.css';
 import {
@@ -406,10 +406,9 @@ const TestQueueRun = ({
                                 }
                             >
                                 Mark as{' '}
-                                {capitalizeFirstLetterOfWords(
-                                    nextReportStatus,
-                                    '_'
-                                )}
+                                {capitalizeEachWord(nextReportStatus, {
+                                    splitChar: '_'
+                                })}
                             </Button>
                             {nextReportStatus === 'Final' ? (
                                 <Button

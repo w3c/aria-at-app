@@ -7,7 +7,7 @@ import {
     POPULATE_ADD_TEST_PLAN_TO_QUEUE_MODAL_QUERY
 } from '../TestQueue/queries';
 
-const AddTestPlanToQueueModal = ({
+const NewTestPlanReportModal = ({
     show = false,
     handleClose = () => {},
     handleAddToTestQueue = () => {}
@@ -264,10 +264,10 @@ const AddTestPlanToQueueModal = ({
     );
 };
 
-AddTestPlanToQueueModal.propTypes = {
+NewTestPlanReportModal.propTypes = {
     show: PropTypes.bool,
     handleClose: PropTypes.func,
     handleAddToTestQueue: PropTypes.func
 };
 
-export default AddTestPlanToQueueModal;
+export default NewTestPlanReportModal;

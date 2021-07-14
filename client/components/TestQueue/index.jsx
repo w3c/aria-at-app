@@ -8,11 +8,10 @@ import { Helmet } from 'react-helmet';
 import nextId from 'react-id-generator';
 import TestQueueRun from '../TestQueueRun';
 import {
-    AddTestPlanToQueueContainer,
-    AddTestPlanToQueueModal
-} from '../AddTestPlanToQueue';
+    NewTestPlanReportContainer,
+    NewTestPlanReportModal
+} from '../NewTestPlanReport';
 import DeleteResultsModal from '../DeleteResultsModal';
-
 import { TEST_QUEUE_PAGE_QUERY } from './queries';
 import './TestQueue.css';
 
@@ -25,10 +24,10 @@ const TestQueue = ({ auth }) => {
         {}
     );
     const [deleteResultsDetails, setDeleteResultsDetails] = useState({});
-    const [isShowingDeleteResultsModal, enableDeleteResultsModal] = useState(
+    const [isShowingDeleteResultsModal, setDeleteResultsModal] = useState(
         false
     );
-    const [isShowingAddToQueueModal, enableAddToQueueModal] = useState(false);
+    const [isShowingAddToQueueModal, setAddToQueueModal] = useState(false);
 
     const { isAdmin } = auth;
 
@@ -74,49 +73,48 @@ const TestQueue = ({ auth }) => {
 
     const renderAtBrowserList = (title = '', testPlanReports = []) => {
         // means structuredTestPlanTargets would have been generated
-        if (testPlanReports.length) {
-            const tableId = nextId('table_name_');
+        if (!testPlanReports.length) return null;
 
-            return (
-                <div key={title}>
-                    <h2 id={tableId}>{title}</h2>
-                    <Table
-                        className="test-queue"
-                        aria-labelledby={tableId}
-                        striped
-                        bordered
-                        hover
-                    >
-                        <thead>
-                            <tr>
-                                <th className="test-plan">Test Plan</th>
-                                <th className="testers">Testers</th>
-                                <th className="report-status">Report Status</th>
-                                <th className="actions">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {testPlanReports.map(testPlanReport => {
-                                const id = nextId('test_queue_run_');
-                                return (
-                                    <TestQueueRun
-                                        key={id}
-                                        user={auth}
-                                        testers={testers}
-                                        testPlanReport={testPlanReport}
-                                        triggerDeleteResultsModal={
-                                            triggerDeleteResultsModal
-                                        }
-                                        triggerTestPlanReportUpdate={refetch}
-                                    />
-                                );
-                            })}
-                        </tbody>
-                    </Table>
-                </div>
-            );
-        }
-        return null;
+        const tableId = nextId('table_name_');
+
+        return (
+            <div key={title}>
+                <h2 id={tableId}>{title}</h2>
+                <Table
+                    className="test-queue"
+                    aria-labelledby={tableId}
+                    striped
+                    bordered
+                    hover
+                >
+                    <thead>
+                        <tr>
+                            <th className="test-plan">Test Plan</th>
+                            <th className="testers">Testers</th>
+                            <th className="report-status">Report Status</th>
+                            <th className="actions">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {testPlanReports.map(testPlanReport => {
+                            const id = nextId('test_queue_run_');
+                            return (
+                                <TestQueueRun
+                                    key={id}
+                                    user={auth}
+                                    testers={testers}
+                                    testPlanReport={testPlanReport}
+                                    triggerDeleteResultsModal={
+                                        triggerDeleteResultsModal
+                                    }
+                                    triggerTestPlanReportUpdate={refetch}
+                                />
+                            );
+                        })}
+                    </tbody>
+                </Table>
+            </div>
+        );
     };
 
     const triggerDeleteResultsModal = (
@@ -130,7 +128,7 @@ const TestQueue = ({ auth }) => {
             deleteFunction
         });
 
-        enableDeleteResultsModal(true);
+        setDeleteResultsModal(true);
     };
 
     const handleDeleteResults = async () => {
@@ -140,14 +138,13 @@ const TestQueue = ({ auth }) => {
     };
 
     const handleCloseDeleteResultsModal = () => {
-        enableDeleteResultsModal(false);
+        setDeleteResultsModal(false);
 
         // reset deleteResultsDetails
         setDeleteResultsDetails({});
     };
 
-    const handleCloseAddTestPlanToQueueModal = () =>
-        enableAddToQueueModal(false);
+    const handleCloseAddTestPlanToQueueModal = () => setAddToQueueModal(false);
 
     if (loading) {
         return (
@@ -186,13 +183,13 @@ const TestQueue = ({ auth }) => {
                 </Alert>
 
                 {isAdmin && (
-                    <AddTestPlanToQueueContainer
-                        handleOpenDialog={() => enableAddToQueueModal(true)}
+                    <NewTestPlanReportContainer
+                        handleOpenDialog={() => setAddToQueueModal(true)}
                     />
                 )}
 
                 {isAdmin && isShowingAddToQueueModal && (
-                    <AddTestPlanToQueueModal
+                    <NewTestPlanReportModal
                         show={isShowingAddToQueueModal}
                         handleClose={handleCloseAddTestPlanToQueueModal}
                         handleAddToTestQueue={refetch}
@@ -214,8 +211,8 @@ const TestQueue = ({ auth }) => {
             </p>
 
             {isAdmin && (
-                <AddTestPlanToQueueContainer
-                    handleOpenDialog={() => enableAddToQueueModal(true)}
+                <NewTestPlanReportContainer
+                    handleOpenDialog={() => setAddToQueueModal(true)}
                 />
             )}
 
@@ -233,7 +230,7 @@ const TestQueue = ({ auth }) => {
             />
 
             {isAdmin && isShowingAddToQueueModal && (
-                <AddTestPlanToQueueModal
+                <NewTestPlanReportModal
                     show={isShowingAddToQueueModal}
                     handleClose={handleCloseAddTestPlanToQueueModal}
                     handleAddToTestQueue={refetch}

@@ -6,7 +6,7 @@ const NotFound = () => {
     return (
         <Container as="main">
             <Helmet>
-                <title>{`Page Not Found | ARIA-AT`}</title>
+                <title>Page Not Found | ARIA-AT</title>
             </Helmet>
             <section className="not-found">
                 <div>

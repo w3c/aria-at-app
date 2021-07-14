@@ -6,7 +6,7 @@ const InvalidRequest = () => {
     return (
         <Container as="main">
             <Helmet>
-                <title>{`Invalid Request | ARIA-AT`}</title>
+                <title>Invalid Request | ARIA-AT</title>
             </Helmet>
             <section className="invalid-request">
                 <div>

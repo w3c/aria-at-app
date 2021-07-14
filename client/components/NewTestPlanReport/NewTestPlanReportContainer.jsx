@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import PropTypes from 'prop-types';
 
-const AddTestPlanToQueueContainer = ({ handleOpenDialog = () => {} }) => {
+const NewTestPlanReportContainer = ({ handleOpenDialog = () => {} }) => {
     return (
         <div className="add-test-plan-queue-container">
             <Button
@@ -20,8 +20,8 @@ const AddTestPlanToQueueContainer = ({ handleOpenDialog = () => {} }) => {
     );
 };
 
-AddTestPlanToQueueContainer.propTypes = {
+NewTestPlanReportContainer.propTypes = {
     handleOpenDialog: PropTypes.func
 };
 
-export default AddTestPlanToQueueContainer;
+export default NewTestPlanReportContainer;
