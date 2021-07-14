@@ -226,6 +226,10 @@ const graphqlSchema = gql`
         testPlanTarget: TestPlanTargetInput!
     }
 
+    """
+    A particular traversal of the TestPlan data - allowing for highlighting a
+    TestPlan, TestPlanVersion, TestPlanReport, or even subsets of those.
+    """
     input LocationOfDataInput {
         testPlanId: ID
         testPlanVersionId: ID
@@ -241,6 +245,10 @@ const graphqlSchema = gql`
         testResultIndex: Int
         passThroughResultIndex: Int
     }
+    """
+    A particular traversal of the TestPlan data - allowing for highlighting a
+    TestPlan, TestPlanVersion, TestPlanReport, or even subsets of those.
+    """
     type LocationOfData {
         testPlanId: ID
         testPlanVersionId: ID

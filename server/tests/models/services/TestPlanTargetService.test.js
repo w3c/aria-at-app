@@ -1,7 +1,7 @@
 const { sequelize } = require('../../../models');
 const TestPlanTargetService = require('../../../models/services/TestPlanTargetService');
 const randomStringGenerator = require('../../util/random-character-generator');
-const { dbCleaner } = require('../../util/db-cleaner');
+const dbCleaner = require('../../util/db-cleaner');
 
 describe('TestPlanTargetModel data Checks', () => {
     afterAll(async () => {

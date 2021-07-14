@@ -1,17 +1,17 @@
 import React from 'react';
 import Enzyme, { shallow } from 'enzyme';
 import EnzymeAdapter from 'enzyme-adapter-react-16';
-import { storeFactory } from './util';
-
 import App from '../components/App';
-import routes from '../routes';
+import GraphQLProvider from '../components/GraphQLProvider';
 
 Enzyme.configure({ adapter: new EnzymeAdapter() });
 
-const setup = (initialState = {}) => {
-    const store = storeFactory(initialState);
-    // Step into the higher order connected component and step into the contents of the UserSettings component
-    const wrapper = shallow(<App route={{ routes }} store={store} />).dive();
+const setup = () => {
+    const wrapper = shallow(
+        <GraphQLProvider>
+            <App />
+        </GraphQLProvider>
+    ).dive();
     return wrapper;
 };
 

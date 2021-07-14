@@ -1,6 +1,6 @@
 const { sequelize } = require('../../../models');
 const TestPlanVersionService = require('../../../models/services/TestPlanVersionService');
-const { dbCleaner } = require('../../util/db-cleaner');
+const dbCleaner = require('../../util/db-cleaner');
 const randomStringGenerator = require('../../util/random-character-generator');
 
 describe('TestPlanReportModel Data Checks', () => {

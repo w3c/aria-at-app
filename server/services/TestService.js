@@ -205,7 +205,7 @@ async function saveTestResults(testResult) {
     }
 }
 
-async function getIssuesByTestId({ accessToken, test_id }) {
+async function getIssuesByTestId({ githubAccessToken, test_id }) {
     try {
         const issues = await db.TestIssue.findAll({
             where: {
@@ -214,7 +214,7 @@ async function getIssuesByTestId({ accessToken, test_id }) {
         });
 
         const results = await GithubService.getIssues({
-            accessToken,
+            githubAccessToken,
             issues
         });
 
@@ -234,10 +234,16 @@ async function getIssuesByTestId({ accessToken, test_id }) {
     }
 }
 
-async function createIssue({ accessToken, run_id, test_id, title, body }) {
+async function createIssue({
+    githubAccessToken,
+    run_id,
+    test_id,
+    title,
+    body
+}) {
     try {
         const issue = await GithubService.createIssue({
-            accessToken,
+            githubAccessToken,
             issue: {
                 title,
                 body
