@@ -1,6 +1,7 @@
 const express = require('express');
 const randomStringGenerator = require('./random-character-generator');
 const { ApolloServer, gql } = require('apollo-server-express');
+const { GracefulShutdownManager } = require('@moebius/http-graceful-shutdown');
 
 const { GITHUB_TEAM_ADMIN } = process.env;
 
@@ -75,9 +76,10 @@ const setUpMockGithubServer = async () => {
         });
     });
 
-    let listener;
+    let shutdownManager;
     await new Promise(resolve => {
-        listener = expressApp.listen('4466', resolve);
+        const listener = expressApp.listen('4466', resolve);
+        shutdownManager = new GracefulShutdownManager(listener);
     });
 
     const nextLogin = ({ githubUsername, isOnAdminTeam }) => {
@@ -86,7 +88,9 @@ const setUpMockGithubServer = async () => {
     };
 
     const tearDown = async () => {
-        listener.close();
+        await new Promise(resolve => {
+            shutdownManager.terminate(resolve);
+        });
         await apolloServer.stop();
     };
 
