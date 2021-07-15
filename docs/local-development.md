@@ -3,7 +3,7 @@
 ## Dependencies
 
 1. Node
-    - Version >= 10.13.0 and < 13
+    - Version 14 or greater
     - It is recommended to install node with [`nvm`](https://github.com/nvm-sh/nvm)
 2. Yarn
     - Yarn is resposible for installing dependencies, similar to npm. This project is utilizing yarn workspaces to organize the code into a monorepo structure.
@@ -57,29 +57,27 @@ To use the GraphQL playground, go to `/api/graphql` while the dev server is runn
 
 ### Running all tests
 
-Setup the test database by running the following commands:
-    ```
-    yarn db-init:test
-    yarn sequelize:test db:migrate
-    yarn sequelize:test db:seed:all
-    ```
+Setup the test database by running the commands in [database.md](./database.md).
 
-The following command encompasses running the linter, formatter, Jest tests, and Lighthouse accessibility checks only once.
-    ```
-    yarn test
-    ```
+The following command runs the linter, formatter and Jest tests, all at once.
+
+```
+yarn test
+```
 
 ### Linting and formatting
 
 Code linting is performed by **ESLint**. To manually run ESLint:
-    ```
-    yarn lint
-    ```
+
+```
+yarn lint
+```
 
 Code formatting is performed by **Prettier**. To manually run Prettier:
-    ```
-    yarn prettier
-    ```
+
+```
+yarn prettier
+```
 
 ### Unit tests
 
@@ -90,19 +88,20 @@ Code formatting is performed by **Prettier**. To manually run Prettier:
     * The server side, additionally, user **Supertest** to test HTTP integration
 
 The following command will run all unit tests.
-    ```
-    yarn jest
-    ```
+
+```
+yarn jest
+```
 
 If running the tests on demand, in a hot-loaded way, run the following for each workspace with the --watchAll command. The downside to this approach is that separate terminals have to be used to run each command.
 
-    ```
-    # Run all client tests and watch for changes
-    yarn workspace client jest --watchAll
+```
+# Run all client tests and watch for changes
+yarn workspace client jest --watchAll
 
-    # Run all server tests and watch from changes
-    yarn workspace server jest --watchAll
-    ```
+# Run all server tests and watch from changes
+yarn workspace server jest --watchAll
+```
 
 ### Accessibility testing
 
@@ -136,9 +135,10 @@ If you have a linux computer, you will have to download a Windows VM in order to
 #### Automated accessibility tests
 
 [Lighthouse CI](https://github.com/GoogleChrome/lighthouse-ci) is used for automated accessibility testing of the React application. It has also been integrated into the CI workflow To run the Lighthouse tests, run:
-    ```
-    yarn a11y
-    ```
+
+```
+yarn a11y
+```
 
 ## Best Practices
 
