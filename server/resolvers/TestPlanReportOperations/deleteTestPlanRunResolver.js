@@ -9,7 +9,9 @@ const deleteTestPlanRunResolver = async (
     { userId: testerUserId },
     { user }
 ) => {
-    const roles = user.roles.map(role => role.name);
+    let roles = [...user.roles];
+    if (user.roles.length && typeof user.roles[0] === 'object')
+        roles = user.roles.map(role => role.name);
 
     // prettier-ignore
     if (
