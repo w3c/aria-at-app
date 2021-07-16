@@ -11,6 +11,7 @@ import {
     NewTestPlanReportContainer,
     NewTestPlanReportModal
 } from '../NewTestPlanReport';
+import DeleteTestPlanReportModal from '../DeleteTestPlanReportModal';
 import DeleteResultsModal from '../DeleteResultsModal';
 import { TEST_QUEUE_PAGE_QUERY } from './queries';
 import './TestQueue.css';
@@ -23,6 +24,14 @@ const TestQueue = ({ auth }) => {
     const [structuredTestPlanTargets, setStructuredTestPlanTargets] = useState(
         {}
     );
+    const [
+        deleteTestPlanReportDetails,
+        setDeleteTestPlanReportDetails
+    ] = useState({});
+    const [
+        isShowingDeleteTestPlanReportModal,
+        setDeleteTestPlanReportModal
+    ] = useState(false);
     const [deleteResultsDetails, setDeleteResultsDetails] = useState({});
     const [isShowingDeleteResultsModal, setDeleteResultsModal] = useState(
         false
@@ -104,6 +113,9 @@ const TestQueue = ({ auth }) => {
                                     user={auth}
                                     testers={testers}
                                     testPlanReport={testPlanReport}
+                                    triggerDeleteTestPlanReportModal={
+                                        triggerDeleteTestPlanReportModal
+                                    }
                                     triggerDeleteResultsModal={
                                         triggerDeleteResultsModal
                                     }
@@ -117,6 +129,28 @@ const TestQueue = ({ auth }) => {
         );
     };
 
+    const triggerDeleteTestPlanReportModal = (
+        id = null,
+        title = null,
+        deleteFunction = () => {}
+    ) => {
+        setDeleteTestPlanReportDetails({ id, title, deleteFunction });
+        setDeleteTestPlanReportModal(true);
+    };
+
+    const handleDeleteTestPlanReport = async () => {
+        if (deleteTestPlanReportDetails.deleteFunction)
+            await deleteTestPlanReportDetails.deleteFunction();
+        handleCloseDeleteTestPlanReportModal();
+    };
+
+    const handleCloseDeleteTestPlanReportModal = () => {
+        setDeleteTestPlanReportModal(false);
+
+        // reset deleteTestPlanDetails
+        setDeleteTestPlanReportDetails({});
+    };
+
     const triggerDeleteResultsModal = (
         title = null,
         username = null,
@@ -127,7 +161,6 @@ const TestQueue = ({ auth }) => {
             username,
             deleteFunction
         });
-
         setDeleteResultsModal(true);
     };
 
@@ -223,11 +256,19 @@ const TestQueue = ({ auth }) => {
             <DeleteResultsModal
                 show={isShowingDeleteResultsModal}
                 isAdmin={isAdmin}
-                title={deleteResultsDetails.title}
-                username={deleteResultsDetails.username}
+                details={deleteResultsDetails}
                 handleClose={handleCloseDeleteResultsModal}
-                handleDeleteResults={handleDeleteResults}
+                handleAction={handleDeleteResults}
             />
+
+            {isAdmin && isShowingDeleteTestPlanReportModal && (
+                <DeleteTestPlanReportModal
+                    show={isShowingDeleteTestPlanReportModal}
+                    details={deleteTestPlanReportDetails}
+                    handleClose={handleCloseDeleteTestPlanReportModal}
+                    handleAction={handleDeleteTestPlanReport}
+                />
+            )}
 
             {isAdmin && isShowingAddToQueueModal && (
                 <NewTestPlanReportModal

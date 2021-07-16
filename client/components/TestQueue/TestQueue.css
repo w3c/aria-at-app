@@ -16,6 +16,10 @@ main.container-fluid table .col-md-3 {
     /* background: #ffffff; */
 }
 
+.test-queue.table .test-cta-wrapper :nth-child(n+2) {
+    margin-top: 0.375rem;
+}
+
 .test-queue.table .secondary-actions {
     border-top: 1px solid #d2d5d9;
     padding: 0.75em;

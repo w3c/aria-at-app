@@ -25,6 +25,7 @@ const TestQueueRun = ({
     user = {},
     testers = [],
     testPlanReport = {},
+    triggerDeleteTestPlanReportModal = () => {},
     triggerDeleteResultsModal = () => {},
     triggerTestPlanReportUpdate = () => {}
 }) => {
@@ -90,6 +91,13 @@ const TestQueueRun = ({
                 }
             });
         }
+
+        // force data after assignment changes
+        await triggerTestPlanReportUpdate();
+    };
+
+    const handleRemoveTestPlanReport = async () => {
+        await updateReportStatus('REMOVED');
 
         // force data after assignment changes
         await triggerTestPlanReportUpdate();
@@ -441,6 +449,24 @@ const TestQueueRun = ({
                                 ? 'Continue testing'
                                 : 'Start testing'}
                         </Button>
+
+                        {isAdmin && (
+                            <Button
+                                variant="danger"
+                                onClick={() => {
+                                    triggerDeleteTestPlanReportModal(
+                                        testPlanReport.id,
+                                        evaluateTestRunTitle(),
+                                        async () =>
+                                            await handleRemoveTestPlanReport(
+                                                testPlanReport
+                                            )
+                                    );
+                                }}
+                            >
+                                Remove
+                            </Button>
+                        )}
                     </div>
                 )}
                 <div className="secondary-actions">
@@ -481,6 +507,7 @@ TestQueueRun.propTypes = {
     user: PropTypes.object,
     testers: PropTypes.array,
     testPlanReport: PropTypes.object,
+    triggerDeleteTestPlanReportModal: PropTypes.func,
     triggerDeleteResultsModal: PropTypes.func,
     triggerTestPlanReportUpdate: PropTypes.func
 };
