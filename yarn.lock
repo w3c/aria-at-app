@@ -1791,6 +1791,11 @@
     lighthouse "5.5.0"
     tree-kill "^1.2.1"
 
+"@moebius/http-graceful-shutdown@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@moebius/http-graceful-shutdown/-/http-graceful-shutdown-1.1.0.tgz#b9d33e63358aa77b2103a577ea7ccdeae3e3c6d5"
+  integrity sha512-cjODgYTIGuCwgsuVMZNDh8RBK697ULAoQAmLqMVpqnqF3nOlPaJHqtGrdLooyn81l83wzHYwG6kPvEIv+Fo+sQ==
+
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/@mrmlnc/readdir-enhanced/-/readdir-enhanced-2.2.1.tgz#524af240d1a360527b730475ecfa1344aa540dde"
