@@ -1,4 +1,4 @@
-import checkForConflict from '../utils/checkForConflict';
+import checkForConflict from '../../utils/checkForConflict';
 import axios from 'axios';
 import {
     ACTIVE_RUNS,

@@ -1,100 +1,135 @@
-import { CHECK_SIGNED_IN, SIGN_OUT, ATS, SET_USER_ATS } from '../actions/types';
-import atsReducer from '../reducers/ats';
-import userReducer from '../reducers/user';
-import usersReducer from '../reducers/users';
+import authReducer from '../redux/reducers/auth';
+import { SIGN_IN, SIGN_OUT } from '../redux/actions/types';
 
-describe('user reducer tests', () => {
+describe('auth reducer tests', () => {
     test('returns default initial state when no action is passed', () => {
-        const newState = userReducer(undefined, {});
-        expect(newState).toEqual({ isSignedIn: false, loadedUserData: false });
-    });
-    test('returns object upon receiving an action of type `LOG_IN`', () => {
-        const apiPayload = {
-            username: 'foo',
-            name: 'Foo Bar'
-        };
-        const newState = userReducer(undefined, {
-            type: CHECK_SIGNED_IN,
-            payload: apiPayload
-        });
-        expect(newState).toEqual({
-            isSignedIn: true,
-            loadedUserData: true,
-            ...apiPayload
+        const state = authReducer(undefined, {});
+        expect(state).toMatchObject({
+            id: null,
+            roles: [],
+            username: null,
+            isAdmin: false,
+            isTester: false,
+            isSignedIn: false,
+            isSignInFailed: false,
+            isSignOutCalled: false
         });
     });
-    test('returns object without username and name and isSignedIn false with `SIGN_OUT` type', () => {
-        const apiPayload = {
-            username: 'foo',
-            name: 'Foo Bar'
+
+    test('returns object upon receiving an action of type `SIGN_IN` as ADMIN and TESTER role', () => {
+        const payload = {
+            id: 1,
+            roles: ['ADMIN', 'TESTER'],
+            username: 'foo'
         };
-        const loggedInState = userReducer(undefined, {
-            type: CHECK_SIGNED_IN,
-            payload: apiPayload
+
+        const state = authReducer(undefined, {
+            payload,
+            type: SIGN_IN
         });
 
-        const newState = userReducer(loggedInState, {
+        expect(state).toEqual(
+            expect.objectContaining({
+                isSignInFailed: false,
+                isSignOutCalled: false,
+                ...payload
+            })
+        );
+        expect(state.id).toEqual(payload.id);
+        expect(state.username).toEqual(payload.username);
+        expect(state.roles).toEqual(expect.arrayContaining(payload.roles));
+        expect(state.isAdmin).toEqual(true);
+        expect(state.isTester).toEqual(true);
+    });
+
+    test('returns object upon receiving an action of type `SIGN_IN` as ADMIN role', () => {
+        const payload = {
+            id: 1,
+            roles: ['ADMIN'],
+            username: 'foo'
+        };
+
+        const state = authReducer(undefined, {
+            payload,
+            type: SIGN_IN
+        });
+
+        expect(state).toEqual(
+            expect.objectContaining({
+                isSignInFailed: false,
+                isSignOutCalled: false,
+                ...payload
+            })
+        );
+        expect(state.id).toEqual(payload.id);
+        expect(state.username).toEqual(payload.username);
+        expect(state.roles).toEqual(expect.arrayContaining(payload.roles));
+        expect(state.isAdmin).toEqual(true);
+        expect(state.isTester).toEqual(false);
+    });
+
+    test('returns object upon receiving an action of type `SIGN_IN` as TESTER role', () => {
+        const payload = {
+            id: 1,
+            roles: ['TESTER'],
+            username: 'foo'
+        };
+
+        const state = authReducer(undefined, {
+            payload,
+            type: SIGN_IN
+        });
+
+        expect(state).toEqual(
+            expect.objectContaining({
+                isSignInFailed: false,
+                isSignOutCalled: false,
+                ...payload
+            })
+        );
+        expect(state.id).toEqual(payload.id);
+        expect(state.username).toEqual(payload.username);
+        expect(state.roles).toEqual(expect.arrayContaining(payload.roles));
+        expect(state.isAdmin).toEqual(false);
+        expect(state.isTester).toEqual(true);
+    });
+
+    test('returns object without username and isSignedIn set false with `SIGN_OUT` type', () => {
+        const payload = {
+            id: 1,
+            roles: ['ADMIN', 'TESTER'],
+            username: 'foo'
+        };
+
+        const loggedInState = authReducer(undefined, {
+            payload,
+            type: SIGN_IN
+        });
+
+        const signedOutState = authReducer(loggedInState, {
             type: SIGN_OUT
         });
 
-        expect(newState).toEqual({ isSignedIn: false, loadedUserData: true });
-    });
-});
-
-describe('ats reducer tests', () => {
-    test('returns default initial state when no action is passed', () => {
-        const newState = atsReducer(undefined, {});
-        expect(newState).toEqual([]);
-    });
-    test('returns object upon receiving an action of type `ATS`', () => {
-        const apiPayload = { names: ['Foo', 'Bar'] };
-        const newState = atsReducer(undefined, {
-            type: ATS,
-            payload: apiPayload
-        });
-        expect(newState).toEqual({ names: ['Foo', 'Bar'] });
-    });
-});
-
-describe('users reducer tests', () => {
-    test('returns default initial state when no action is passed', () => {
-        const newState = usersReducer(undefined, {});
-        expect(newState).toEqual({ usersById: {} });
-    });
-    test('returns object upon receiving an action of type `SET_USER_ATS`', () => {
-        const apiPayload = {
-            userId: 1,
-            ats: [
-                { at_name_id: 1, active: true },
-                { at_name_id: 2, active: true }
-            ]
-        };
-        const newState = usersReducer(
-            {
-                usersById: {
-                    1: {
-                        id: 1,
-                        username: 'foobar',
-                        configured_ats: [{ at_name_id: 1, active: false }]
-                    }
-                }
-            },
-            {
-                type: SET_USER_ATS,
-                payload: apiPayload
-            }
+        // checks if logged in and logged out successfully
+        expect(loggedInState).toEqual(
+            expect.objectContaining({
+                isSignInFailed: false,
+                isSignOutCalled: false,
+                ...payload
+            })
         );
-        expect(newState).toEqual({
-            usersById: {
-                1: {
-                    id: 1,
-                    username: 'foobar',
-                    configured_ats: [
-                        { at_name_id: 1, active: true },
-                        { at_name_id: 2, active: true }
-                    ]
-                }
-            }
-        });
+        expect(signedOutState).toEqual(
+            expect.objectContaining({
+                isSignedIn: false,
+                isSignOutCalled: true
+            })
+        );
+
+        // checks to make sure original log in information payload isn't present after sign out
+        expect(signedOutState).not.toEqual(
+            expect.objectContaining({
+                ...payload
+            })
+        );
     });
 });

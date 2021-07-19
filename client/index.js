@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
 import { Provider } from 'react-redux';
-import store from './store';
+import store from './redux/store';
 // Order matters for the following two imports
 import './scss/custom.scss';
 import App from './components/App';

@@ -15,7 +15,7 @@ const setup = (initialState = {}) => {
     return wrapper;
 };
 
-describe('render', () => {
+describe.skip('render', () => {
     describe('loading when there are no tests', () => {
         let wrapper;
         beforeEach(() => {

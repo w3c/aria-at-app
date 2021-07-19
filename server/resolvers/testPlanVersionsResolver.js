@@ -1,11 +1,9 @@
 const {
-    getTestPlanVersionById
+    getTestPlanVersions
 } = require('../models/services/TestPlanVersionService');
 
-// TODO: Revisit when the versioning approach is more defined
-const testPlans = async () => {
-    const testPlanVersion = await getTestPlanVersionById(1);
-    return [{ latestTestPlanVersion: testPlanVersion }];
+const testPlanVersionsResolver = async () => {
+    return getTestPlanVersions();
 };
 
-module.exports = testPlans;
+module.exports = testPlanVersionsResolver;

@@ -20,7 +20,7 @@ import {
     getActiveRunConfiguration,
     getActiveRuns,
     saveResult
-} from '../../actions/runs';
+} from '../../redux/actions/runs';
 import RaiseIssueModal from '@components/RaiseIssueModal';
 import ReviewConflictsModal from '@components/ReviewConflictsModal';
 import StatusBar from '@components/StatusBar';

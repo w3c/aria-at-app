@@ -9,7 +9,15 @@ const deleteTestPlanRunResolver = async (
     { userId: testerUserId },
     { user }
 ) => {
-    if (!user.roles.includes('ADMIN')) {
+    let roles = [...user.roles];
+    if (user.roles.length && typeof user.roles[0] === 'object')
+        roles = user.roles.map(role => role.name);
+
+    // prettier-ignore
+    if (
+        !roles.includes('ADMIN') &&
+        (roles.includes('TESTER') && testerUserId === user.id)
+    ) {
         throw new AuthenticationError();
     }
     await removeTestPlanRunByQuery({

@@ -98,7 +98,7 @@ const graphqlSchema = gql`
 
     type TestPlanVersion {
         id: ID!
-        title: String!
+        title: String
         status: TestPlanVersionStatus!
         gitSha: String!
         gitMessage: String!
@@ -107,6 +107,7 @@ const graphqlSchema = gql`
         # isLatest: Boolean!
         updatedAt: Timestamp!
         exampleUrl: String!
+        directory: String!
         tests: [Test]!
         testCount: Int!
         testPlanReports(status: TestPlanReportStatus): [TestPlanReport]!
@@ -287,9 +288,11 @@ const graphqlSchema = gql`
 
     type Query {
         me: User
+        users: [User]
         ats: [At]
         browsers: [Browser]
         testPlans: [TestPlan]!
+        testPlanVersions: [TestPlanVersion]
         testPlan(id: ID!): TestPlan
         testPlanReport(id: ID): TestPlanReport
         testPlanReports(statuses: [TestPlanReportStatus]): [TestPlanReport]!
@@ -302,6 +305,7 @@ const graphqlSchema = gql`
     type TestPlanReportOperations {
         assignTester(userId: ID!): PopulatedData!
         deleteTestPlanRun(userId: ID!): PopulatedData!
+        deleteTestPlanRunResults(userId: ID!): PopulatedData!
         updateStatus(status: TestPlanReportStatus!): PopulatedData!
     }
 

@@ -14,7 +14,7 @@ const setup = (initialState = {}) => {
     return wrapper;
 };
 
-describe('render', () => {
+describe.skip('render', () => {
     describe('user is not signed in', () => {
         let wrapper;
         beforeEach(() => {

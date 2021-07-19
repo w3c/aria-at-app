@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Helmet } from 'react-helmet';
 import { Table, Container, Breadcrumb } from 'react-bootstrap';
 import { connect } from 'react-redux';
-import { getPublishedRuns, getTestVersions } from '../../actions/runs';
+import { getPublishedRuns, getTestVersions } from '../../redux/actions/runs';
 import CurrentGitCommit from '@components/CurrentGitCommit';
 import PropTypes from 'prop-types';
 import {

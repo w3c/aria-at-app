@@ -1,39 +1,45 @@
 import React, { Fragment } from 'react';
-import { useQuery, gql } from '@apollo/client';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import {
+    signIn as signInAction,
+    signOut as signOutAction
+} from '../../redux/actions/auth';
+import { useQuery } from '@apollo/client';
 import { renderRoutes } from 'react-router-config';
 import { Link, useLocation } from 'react-router-dom';
 import { Container, Navbar, Nav } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
+import { ME_QUERY } from '../TestQueue/queries';
 import routes from '../../routes';
 import useSigninUrl from './useSigninUrl';
 import './App.css';
 
-const APP_QUERY = gql`
-    query {
-        me {
-            username
-            roles
-        }
-    }
-`;
-
-const App = () => {
-    const { client, loading, data } = useQuery(APP_QUERY);
+const App = ({ auth, dispatch }) => {
+    const { client, error, loading, data } = useQuery(ME_QUERY);
     const signinUrl = useSigninUrl();
     const location = useLocation();
 
+    const { isSignedIn, isSignOutCalled, isTester, isAdmin, username } = auth;
+
     const signOut = async () => {
+        dispatch(signOutAction());
         await fetch('/api/auth/signout', { method: 'POST' });
-        client.resetStore();
+        await client.resetStore();
     };
 
     if (loading) return null;
 
-    const isSignedIn = !!(data && data.me && data.me.username);
-    const isTester = isSignedIn && data.me.roles.includes('TESTER');
-    const isAdmin = isSignedIn && data.me.roles.includes('ADMIN');
-    const username = isSignedIn && data.me.username;
+    // cache still being used to prevent redux refresh unless browser refreshed
+    // for some instances. `isSignOutCalled` boolean helps prevent this
+    if (!isSignOutCalled && !username && data && data.me)
+        dispatch(signInAction(data.me));
+
+    if (error) {
+        // TODO: Display error message / page for failed user auth attempt
+        // dispatch(signInFailAction());
+    }
 
     return (
         <Fragment>
@@ -136,4 +142,14 @@ const App = () => {
     );
 };
 
-export default App;
+App.propTypes = {
+    auth: PropTypes.object,
+    dispatch: PropTypes.func
+};
+
+const mapStateToProps = state => {
+    const { auth } = state;
+    return { auth };
+};
+
+export default connect(mapStateToProps)(App);

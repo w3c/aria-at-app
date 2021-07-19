@@ -9,7 +9,7 @@ import {
     getActiveRunConfiguration,
     getTestVersions,
     getActiveRuns
-} from '../../actions/runs';
+} from '../../redux/actions/runs';
 import ConfigureTechnologyRow from '@components/ConfigureTechnologyRow';
 import ConfigurationModal from '@components/ConfigurationModal';
 import CurrentGitCommit from '@components/CurrentGitCommit';

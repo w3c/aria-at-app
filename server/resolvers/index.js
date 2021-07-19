@@ -1,9 +1,11 @@
 const me = require('./meResolver');
 const ats = require('./atsResolver');
 const browsers = require('./browsersResolver');
-const testPlans = require('./testPlanVersionsResolver');
+const testPlans = require('./testPlansResolver');
+const testPlanVersions = require('./testPlanVersionsResolver');
 const testPlanReport = require('./testPlanReportResolver');
 const testPlanReports = require('./testPlanReportsResolver');
+const users = require('./usersResolver');
 const findOrCreateTestPlanReport = require('./findOrCreateTestPlanReportResolver');
 const mutateTestPlanReport = require('./mutateTestPlanReportResolver');
 const populateData = require('./populateDataResolver');
@@ -22,8 +24,10 @@ const resolvers = {
         ats,
         browsers,
         testPlans,
+        testPlanVersions,
         testPlanReport,
         testPlanReports,
+        users,
         populateData
     },
     Mutation: {

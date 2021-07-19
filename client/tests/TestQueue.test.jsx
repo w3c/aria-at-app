@@ -1,85 +1,348 @@
 import React from 'react';
-import Enzyme, { shallow } from 'enzyme';
-import EnzymeAdapter from 'enzyme-adapter-react-16';
-Enzyme.configure({ adapter: new EnzymeAdapter() });
-import { findByTestAttr, storeFactory } from './util';
-import TestQueue from '../components/TestQueue';
+import {
+    render,
+    screen,
+    waitFor,
+    fireEvent,
+    act
+} from '@testing-library/react';
+import { InMemoryCache } from '@apollo/client';
+import { MockedProvider } from '@apollo/client/testing';
+import { BrowserRouter } from 'react-router-dom';
+import '@testing-library/jest-dom/extend-expect';
 
-const setup = (initialState = {}) => {
+import TestQueue from '../components/TestQueue';
+import { storeFactory } from './util';
+
+// eslint-disable-next-line jest/no-mocks-import
+import {
+    TEST_QUEUE_PAGE_NOT_POPULATED_MOCK,
+    TEST_QUEUE_PAGE_POPULATED_MOCK
+} from './__mocks__/GraphQLMocks';
+
+const setup = (initialState = {}, mocks = []) => {
     const store = storeFactory(initialState);
-    const wrapper = shallow(
-        <TestQueue store={store} match={{ params: { runId: 1 } }} />
-    )
-        .dive()
-        .dive();
-    return wrapper;
+    return render(
+        <BrowserRouter>
+            <MockedProvider mocks={mocks} cache={new InMemoryCache({})}>
+                <TestQueue store={store} />
+            </MockedProvider>
+        </BrowserRouter>
+    );
 };
 
-describe('render', () => {
-    describe('loading when there are no tests', () => {
-        let wrapper;
+describe('Render TestQueue/index.jsx', () => {
+    let wrapper;
+
+    describe('[NOT ADMIN] when no test plan reports exist', () => {
         beforeEach(() => {
-            const initialState = {};
-            wrapper = setup(initialState);
+            const initialState = { auth: { isAdmin: false, isTester: true } };
+            wrapper = setup(initialState, TEST_QUEUE_PAGE_NOT_POPULATED_MOCK);
         });
-        test('renders not logged in text', () => {
-            const component = findByTestAttr(wrapper, 'test-queue-loading');
-            expect(component.text()).toContain('Loading');
+
+        it('renders loading state on initialization', async () => {
+            const { getByTestId } = wrapper;
+            const element = getByTestId('test-queue-loading');
+
+            expect(element).toBeTruthy();
+            expect(element).toHaveTextContent('Loading');
         });
-    });
-    describe('tests are loaded, no ATs', () => {
-        let wrapper;
-        beforeEach(() => {
-            const initialState = {
-                ats: [],
-                runs: {
-                    activeRunsById: {
-                        1: {
-                            id: 1,
-                            apg_example_name: 'apg_example_name',
-                            at_name: 'at_name',
-                            at_version: 'at_version',
-                            browser_name: 'browser_name',
-                            browser_version: 'browser_version'
-                        }
-                    }
-                },
-                user: {
-                    email: 'jane@maine.com',
-                    fullname: 'Jane Rain',
-                    id: 10,
-                    isSignedIn: true,
-                    loadedUserData: true,
-                    roles: ['tester'],
-                    username: 'jane'
-                },
-                users: {
-                    usersById: {
-                        10: {
-                            configured_ats: [],
-                            email: 'jane@maine.com',
-                            fullname: 'Jane Rain',
-                            id: 10,
-                            username: 'jane'
-                        }
-                    }
-                }
-            };
-            wrapper = setup(initialState);
-            wrapper.setState({ currentTestIndex: 1 });
+
+        it('renders Test Queue page instructions', async () => {
+            // allow page time to load
+            await act(async () => {
+                await waitFor(() => new Promise(res => setTimeout(res, 0)));
+
+                const { queryByTestId, getByTestId } = wrapper;
+                const loadingElement = queryByTestId('test-queue-loading');
+                const element = getByTestId('test-queue-no-test-plans-p');
+
+                expect(loadingElement).not.toBeInTheDocument();
+                expect(element).toBeTruthy();
+                expect(element).toHaveTextContent(
+                    /Please configure your preferred Assistive Technologies in/gi
+                );
+            });
         });
-        test('renders notice to configure ATs, as a tester', () => {
-            let component = findByTestAttr(wrapper, 'test-queue-no-ats-h2');
-            expect(component.length).toBe(1);
-            expect(component.text()).toContain(
-                'There are no Test Plans available'
+
+        it('renders no AT-specific sections', async () => {
+            // allow page time to load
+            await act(async () => {
+                await waitFor(() => new Promise(res => setTimeout(res, 0)));
+            });
+
+            const { queryAllByText } = wrapper;
+            const nvdaElements = queryAllByText(/nvda/gi);
+            const jawsElements = queryAllByText(/jaws/gi);
+            const voiceOverElements = queryAllByText(/voiceover/gi);
+
+            expect(nvdaElements.length).toEqual(0);
+            expect(jawsElements.length).toEqual(0);
+            expect(voiceOverElements.length).toEqual(0);
+        });
+
+        it('does not render add test plan modal button', async () => {
+            // allow page time to load
+            await act(async () => {
+                await waitFor(() => new Promise(res => setTimeout(res, 0)));
+            });
+
+            const { queryByTestId } = wrapper;
+            const button = queryByTestId(
+                'test-queue-add-test-plan-to-queue-button'
             );
 
-            component = findByTestAttr(wrapper, 'test-queue-no-ats-p');
-            expect(component.length).toBe(1);
-            expect(component.text()).toContain(
-                'Please configure your preferred Assistive Technologies in the Settings page.'
+            expect(button).not.toBeTruthy();
+        });
+    });
+
+    describe('[NOT ADMIN] when test plan reports exist', () => {
+        beforeEach(() => {
+            const initialState = { auth: { isAdmin: false, isTester: true } };
+            wrapper = setup(initialState, TEST_QUEUE_PAGE_POPULATED_MOCK);
+        });
+
+        it('renders loading state on initialization', async () => {
+            const { getByTestId } = wrapper;
+            const element = getByTestId('test-queue-loading');
+
+            expect(element).toBeTruthy();
+            expect(element).toHaveTextContent('Loading');
+        });
+
+        it('renders Test Queue page instructions', async () => {
+            // allow page time to load
+            await act(async () => {
+                await waitFor(() => new Promise(res => setTimeout(res, 0)));
+            });
+
+            const { queryByTestId, getByTestId } = wrapper;
+            const loadingElement = queryByTestId('test-queue-loading');
+            const element = getByTestId('test-queue-instructions');
+
+            expect(loadingElement).not.toBeInTheDocument();
+            expect(element).toBeTruthy();
+            expect(element).toHaveTextContent(
+                'Assign yourself a test plan or start executing one that is already assigned to you.'
             );
+        });
+
+        it('renders AT-specific sections', async () => {
+            // allow page time to load
+            await act(async () => {
+                await waitFor(() => new Promise(res => setTimeout(res, 0)));
+            });
+
+            const { queryAllByText } = wrapper;
+            const nvdaElements = queryAllByText(/nvda/gi);
+            const jawsElements = queryAllByText(/jaws/gi);
+            const voiceOverElements = queryAllByText(/voiceover/gi);
+
+            expect(nvdaElements.length).toBeGreaterThanOrEqual(1);
+            expect(jawsElements.length).toBeGreaterThanOrEqual(1);
+            expect(voiceOverElements.length).toBeGreaterThanOrEqual(1);
+        });
+
+        it('renders testers are assigned to Test Plans', async () => {
+            // allow page time to load
+            await act(async () => {
+                await waitFor(() => new Promise(res => setTimeout(res, 0)));
+            });
+
+            const { queryAllByText } = wrapper;
+            const userAAssignedElements = queryAllByText(/foo-bar/gi);
+            const userBAssignedElements = queryAllByText(/bar-foo/gi);
+            const userCAssignedElements = queryAllByText(/boo-far/gi);
+            const assignedTestsElements = queryAllByText(
+                /\d+ of \d+ tests complete/gi
+            );
+
+            expect(userAAssignedElements.length).toBeGreaterThanOrEqual(1);
+            expect(userBAssignedElements.length).toBeGreaterThanOrEqual(1);
+            expect(userCAssignedElements.length).toBeGreaterThanOrEqual(1);
+            expect(assignedTestsElements.length).toBeGreaterThanOrEqual(1);
+        });
+
+        it('does not render add test plan modal button', async () => {
+            // allow page time to load
+            await act(async () => {
+                await waitFor(() => new Promise(res => setTimeout(res, 0)));
+            });
+
+            const { queryByTestId } = wrapper;
+            const button = queryByTestId(
+                'test-queue-add-test-plan-to-queue-button'
+            );
+
+            expect(button).not.toBeTruthy();
+        });
+    });
+
+    describe('[IS ADMIN] when no test plan reports exist', () => {
+        beforeEach(() => {
+            const initialState = { auth: { isAdmin: true, isTester: true } };
+            wrapper = setup(initialState, TEST_QUEUE_PAGE_NOT_POPULATED_MOCK);
+        });
+
+        it('renders loading state on initialization', async () => {
+            const { getByTestId } = wrapper;
+            const element = getByTestId('test-queue-loading');
+
+            expect(element).toBeTruthy();
+            expect(element).toHaveTextContent('Loading');
+        });
+
+        it('renders Test Queue page instructions', async () => {
+            // allow page time to load
+            await act(async () => {
+                await waitFor(() => new Promise(res => setTimeout(res, 0)));
+            });
+
+            const { queryByTestId, getByTestId } = wrapper;
+            const loadingElement = queryByTestId('test-queue-loading');
+            const element = getByTestId('test-queue-no-test-plans-p');
+
+            expect(loadingElement).not.toBeInTheDocument();
+            expect(element).toBeTruthy();
+            expect(element).toHaveTextContent(/Add a Test Plan to the Queue/gi);
+        });
+
+        it('renders no AT-specific sections', async () => {
+            // allow page time to load
+            await act(async () => {
+                await waitFor(() => new Promise(res => setTimeout(res, 0)));
+            });
+
+            const { queryAllByText } = wrapper;
+            const nvdaElements = queryAllByText(/nvda/gi);
+            const jawsElements = queryAllByText(/jaws/gi);
+            const voiceOverElements = queryAllByText(/voiceover/gi);
+
+            expect(nvdaElements.length).toEqual(0);
+            expect(jawsElements.length).toEqual(0);
+            expect(voiceOverElements.length).toEqual(0);
+        });
+
+        it('renders add test plan modal on button click', async () => {
+            // allow page time to load
+            await act(async () => {
+                await waitFor(() => new Promise(res => setTimeout(res, 0)));
+
+                const { queryByTestId } = wrapper;
+                const button = queryByTestId(
+                    'test-queue-add-test-plan-to-queue-button'
+                );
+
+                expect(button).toBeTruthy();
+
+                // opens modal
+                fireEvent.click(button);
+
+                expect(
+                    screen.getByText('Select an AT and Version')
+                ).toBeInTheDocument();
+                expect(
+                    screen.getByText('Select a Browser and Version')
+                ).toBeInTheDocument();
+                expect(
+                    screen.getByText('Select a Test Plan and Version')
+                ).toBeInTheDocument();
+            });
+        });
+    });
+
+    describe('[IS ADMIN] when test plan reports exist', () => {
+        beforeEach(() => {
+            const initialState = { auth: { isAdmin: true, isTester: true } };
+            wrapper = setup(initialState, TEST_QUEUE_PAGE_POPULATED_MOCK);
+        });
+
+        it('renders loading state on initialization', async () => {
+            const { getByTestId } = wrapper;
+            const element = getByTestId('test-queue-loading');
+
+            expect(element).toBeTruthy();
+            expect(element).toHaveTextContent('Loading');
+        });
+
+        it('renders Test Queue page instructions', async () => {
+            // allow page time to load
+            await act(async () => {
+                await waitFor(() => new Promise(res => setTimeout(res, 0)));
+            });
+
+            const { queryByTestId, getByTestId } = wrapper;
+            const loadingElement = queryByTestId('test-queue-loading');
+            const element = getByTestId('test-queue-instructions');
+
+            expect(loadingElement).not.toBeInTheDocument();
+            expect(element).toBeTruthy();
+            expect(element).toHaveTextContent(
+                'Assign yourself a test plan or start executing one that is already assigned to you.'
+            );
+        });
+
+        it('renders AT-specific sections', async () => {
+            // allow page time to load
+            await act(async () => {
+                await waitFor(() => new Promise(res => setTimeout(res, 0)));
+            });
+
+            const { queryAllByText } = wrapper;
+            const nvdaElements = queryAllByText(/nvda/gi);
+            const jawsElements = queryAllByText(/jaws/gi);
+            const voiceOverElements = queryAllByText(/voiceover/gi);
+
+            expect(nvdaElements.length).toBeGreaterThanOrEqual(1);
+            expect(jawsElements.length).toBeGreaterThanOrEqual(1);
+            expect(voiceOverElements.length).toBeGreaterThanOrEqual(1);
+        });
+
+        it('renders testers are assigned to Test Plans', async () => {
+            // allow page time to load
+            await act(async () => {
+                await waitFor(() => new Promise(res => setTimeout(res, 0)));
+            });
+
+            const { queryAllByText } = wrapper;
+            const userAAssignedElements = queryAllByText(/foo-bar/gi);
+            const userBAssignedElements = queryAllByText(/bar-foo/gi);
+            const userCAssignedElements = queryAllByText(/boo-far/gi);
+            const assignedTestsElements = queryAllByText(
+                /\d+ of \d+ tests complete/gi
+            );
+
+            expect(userAAssignedElements.length).toBeGreaterThanOrEqual(1);
+            expect(userBAssignedElements.length).toBeGreaterThanOrEqual(1);
+            expect(userCAssignedElements.length).toBeGreaterThanOrEqual(1);
+            expect(assignedTestsElements.length).toBeGreaterThanOrEqual(1);
+        });
+
+        it('renders add test plan modal on button click', async () => {
+            // allow page time to load
+            await act(async () => {
+                await waitFor(() => new Promise(res => setTimeout(res, 0)));
+
+                const { queryByTestId } = wrapper;
+                const button = queryByTestId(
+                    'test-queue-add-test-plan-to-queue-button'
+                );
+
+                expect(button).toBeTruthy();
+
+                // opens modal
+                fireEvent.click(button);
+
+                expect(
+                    screen.getByText('Select an AT and Version')
+                ).toBeInTheDocument();
+                expect(
+                    screen.getByText('Select a Browser and Version')
+                ).toBeInTheDocument();
+                expect(
+                    screen.getByText('Select a Test Plan and Version')
+                ).toBeInTheDocument();
+            });
         });
     });
 });
