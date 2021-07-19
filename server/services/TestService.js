@@ -1,5 +1,8 @@
 const { exec } = require('child_process');
 const db = require('../models/index');
+const {
+    getTestPlanVersions
+} = require('../models/services/TestPlanVersionService');
 const GithubService = require('./GithubService');
 
 async function runImportScript(git_hash) {
@@ -27,16 +30,24 @@ async function runImportScript(git_hash) {
  * Functions that use importTests should be wrapped
  * in a try/catch in case the import script fails
  */
-async function importTests(git_hash) {
-    if (git_hash) {
+async function importTests(gitSha) {
+    if (gitSha) {
         // check if version exists
-        let results = await db.TestVersion.findAll({ where: { git_hash } });
+        let results = await getTestPlanVersions(
+            null,
+            { gitSha },
+            [],
+            [],
+            [],
+            [],
+            []
+        );
         let versionExists = results.length === 0 ? false : true;
         if (versionExists) {
             return versionExists;
         }
     }
-    const { stdout, stderr } = await runImportScript(git_hash);
+    const { stdout, stderr } = await runImportScript(gitSha);
     return stdout.includes('no errors') && stderr === '';
 }
 
