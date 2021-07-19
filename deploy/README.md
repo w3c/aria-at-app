@@ -56,6 +56,10 @@ To deploy this project to  server:
    directory which contains this document
 3. Install [Ansible](https://www.ansible.com/)
 4. Execute the following command:
+   - Sandbox:
+    ```
+    ansible-playbook provision.yml --inventory inventory/sandbox.yml
+    ```
    - Staging:
     ```
     ansible-playbook provision.yml --inventory inventory/staging.yml
@@ -75,6 +79,12 @@ Change the following variables (at minimum) to create a new configuration:
    - A new GitHub OAuth application must be created for a new environment. Instructions TBD.
 - GITHUB_CLIENT_SECRET
 - SESSION_SECRET
+
+Command to edit encrypted files (must be run in the deploy folder):
+
+```
+ansible-vault edit files/config-sandbox.env
+```
 
 ## Manual DB Backup
 
