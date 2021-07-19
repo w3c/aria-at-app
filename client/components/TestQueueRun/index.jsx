@@ -435,8 +435,8 @@ const TestQueueRun = ({
                 </div>
             </td>
             <td className="actions">
-                {currentUserAssigned && (
-                    <div className="test-cta-wrapper">
+                <div className="test-cta-wrapper">
+                    {currentUserAssigned && (
                         <Button
                             variant="primary"
                             href={`/run/${currentUserTestPlanRun.id}`}
@@ -449,26 +449,26 @@ const TestQueueRun = ({
                                 ? 'Continue testing'
                                 : 'Start testing'}
                         </Button>
+                    )}
 
-                        {isAdmin && (
-                            <Button
-                                variant="danger"
-                                onClick={() => {
-                                    triggerDeleteTestPlanReportModal(
-                                        testPlanReport.id,
-                                        evaluateTestRunTitle(),
-                                        async () =>
-                                            await handleRemoveTestPlanReport(
-                                                testPlanReport
-                                            )
-                                    );
-                                }}
-                            >
-                                Remove
-                            </Button>
-                        )}
-                    </div>
-                )}
+                    {isAdmin && (
+                        <Button
+                            variant="danger"
+                            onClick={() => {
+                                triggerDeleteTestPlanReportModal(
+                                    testPlanReport.id,
+                                    evaluateTestRunTitle(),
+                                    async () =>
+                                        await handleRemoveTestPlanReport(
+                                            testPlanReport
+                                        )
+                                );
+                            }}
+                        >
+                            Remove
+                        </Button>
+                    )}
+                </div>
                 <div className="secondary-actions">
                     {isAdmin && renderOpenAsDropdown()}
                     {isAdmin && renderDeleteMenu()}
