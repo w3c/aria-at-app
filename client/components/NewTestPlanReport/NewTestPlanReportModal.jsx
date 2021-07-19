@@ -67,6 +67,7 @@ const NewTestPlanReportModal = ({
     };
 
     const dropdownRowWithInputField = ({
+        controlId,
         label,
         dropdownOptions,
         dropdownPlaceholder,
@@ -78,7 +79,7 @@ const NewTestPlanReportModal = ({
     }) => {
         return (
             <div className="add-test-plan-queue-modal-row">
-                <Form.Group controlId="formBasicSelect">
+                <Form.Group controlId={controlId}>
                     <Form.Label>{label}</Form.Label>
                     <Form.Control
                         as="select"
@@ -113,6 +114,8 @@ const NewTestPlanReportModal = ({
 
     const dropdownsRow = ({
         label,
+        primaryControlId,
+        secondaryControlId,
         primaryDropdownOptions,
         secondaryDropdownOptions,
         primaryDropdownPlaceholder,
@@ -124,7 +127,7 @@ const NewTestPlanReportModal = ({
     }) => {
         return (
             <div className="add-test-plan-queue-modal-row">
-                <Form.Group controlId="formBasicSelect">
+                <Form.Group controlId={primaryControlId}>
                     <Form.Label>{label}</Form.Label>
                     <Form.Control
                         as="select"
@@ -149,7 +152,7 @@ const NewTestPlanReportModal = ({
                     </Form.Control>
                 </Form.Group>
                 <Form.Group
-                    controlId="formBasicSelect"
+                    controlId={secondaryControlId}
                     className="add-test-plan-queue-modal-normalize-row"
                 >
                     <Form.Control
@@ -189,6 +192,7 @@ const NewTestPlanReportModal = ({
                 <div className="add-test-plan-queue-modal-container">
                     {dropdownRowWithInputField({
                         label: 'Select an AT and Version',
+                        controlId: 'select-at',
                         dropdownOptions: ats,
                         dropdownPlaceholder: 'Assistive Technology',
                         inputFieldPlaceholder: 'AT Version',
@@ -200,6 +204,7 @@ const NewTestPlanReportModal = ({
 
                     {dropdownRowWithInputField({
                         label: 'Select a Browser and Version',
+                        controlId: 'select-browser',
                         dropdownOptions: browsers,
                         dropdownPlaceholder: 'Browser',
                         inputFieldPlaceholder: 'Browser Version',
@@ -211,6 +216,8 @@ const NewTestPlanReportModal = ({
 
                     {dropdownsRow({
                         label: 'Select a Test Plan and Version',
+                        primaryControlId: 'select-test-plan',
+                        secondaryControlId: 'select-test-plan-version',
                         primaryDropdownOptions: filteredTestPlans,
                         secondaryDropdownOptions: testPlanVersions,
                         primaryDropdownPlaceholder: 'Select Test Plan',
