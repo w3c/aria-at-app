@@ -13,7 +13,11 @@ const DeleteTestPlanModal = ({
     const { title } = details;
 
     return (
-        <Modal show={show} onHide={handleClose}>
+        <Modal
+            show={show}
+            onHide={handleClose}
+            aria-labelledby="delete-test-plan-report-modal"
+        >
             <Modal.Header closeButton>
                 <Modal.Title>
                     {`You are about the delete the Test Plan Report for ${title}`}

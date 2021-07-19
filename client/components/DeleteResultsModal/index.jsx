@@ -15,7 +15,11 @@ const DeleteResultsModal = ({
     const { title, username } = details;
 
     return (
-        <Modal show={show} onHide={handleClose}>
+        <Modal
+            show={show}
+            onHide={handleClose}
+            aria-labelledby="delete-results-modal"
+        >
             <Modal.Header closeButton>
                 <Modal.Title>
                     {isAdmin
