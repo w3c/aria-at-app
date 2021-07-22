@@ -1,4 +1,4 @@
-const RunService = require('../services/RunService');
+const RunService = require('../services/TestRunService');
 
 async function getTestVersions(req, res) {
     try {

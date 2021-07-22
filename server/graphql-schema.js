@@ -9,6 +9,9 @@ const graphqlSchema = gql`
     """
     scalar Timestamp
 
+    # Required for passing free form Object data
+    scalar Object
+
     enum Role {
         TESTER
         ADMIN
@@ -113,15 +116,22 @@ const graphqlSchema = gql`
         testPlanReports(status: TestPlanReportStatus): [TestPlanReport]!
     }
 
-    interface Test {
+    interface BaseTest {
         title: String!
         index: Int!
+        referenceFilePath: String!
+    }
+
+    type Test implements BaseTest {
+        title: String!
+        index: Int!
+        referenceFilePath: String!
         # TODO: account for running scripts
         instructions: [Instruction]!
         assertions: [Assertion]!
+        passThroughs: [PassThrough]!
         assertionCount: Int!
         optionalAssertionCount: Int!
-        passThroughs: [PassThrough]!
     }
 
     type Instruction {
@@ -129,11 +139,17 @@ const graphqlSchema = gql`
         manualInstruction: String!
     }
 
-    interface Assertion {
+    interface BaseAssertion {
         # TODO: account for at-specific assertions
         # TODO: account for optional assertions
         # TODO: account for automation
         manualAssertion: String!
+    }
+
+    type Assertion implements BaseAssertion {
+        manualAssertion: String!
+        command: String!
+        priority: String!
     }
 
     interface PassThrough {
@@ -143,17 +159,18 @@ const graphqlSchema = gql`
         # Examples would go here if we support multiple examples for one test.
     }
 
-    type TestResult implements Test {
+    type TestResult implements BaseTest {
         title: String!
         index: Int!
+        referenceFilePath: String!
         instructions: [Instruction]!
         assertions: [Assertion]!
         passThroughs: [PassThrough]!
         assertionCount: Int!
         optionalAssertionCount: Int!
 
-        startedAt: Timestamp!
-        completedAt: Timestamp!
+        startedAt: Timestamp
+        completedAt: Timestamp
         isComplete: Boolean!
         isSkipped: Boolean!
 
@@ -173,7 +190,7 @@ const graphqlSchema = gql`
         unexpectedBehaviors: [UnexpectedBehavior]!
     }
 
-    type AssertionResult implements Assertion {
+    type AssertionResult implements BaseAssertion {
         manualAssertion: String!
         passed: Boolean!
     }
@@ -297,6 +314,7 @@ const graphqlSchema = gql`
         testPlanReport(id: ID): TestPlanReport
         testPlanReports(statuses: [TestPlanReportStatus]): [TestPlanReport]!
         testPlanTargets: [TestPlanTarget]!
+        testPlanRun(id: ID): TestPlanRun
         populateData(locationOfData: LocationOfDataInput!): PopulatedData!
     }
 
@@ -307,6 +325,12 @@ const graphqlSchema = gql`
         deleteTestPlanRun(userId: ID!): PopulatedData!
         deleteTestPlanRunResults(userId: ID!): PopulatedData!
         updateStatus(status: TestPlanReportStatus!): PopulatedData!
+    }
+
+    type TestPlanRunOperations {
+        # Allow null so tester may 'start over'
+        updateResult(result: Object, index: Int!): PopulatedData!
+        updateSerializedForm(form: [Object], index: Int!): PopulatedData!
     }
 
     type findOrCreateResult {
@@ -322,6 +346,7 @@ const graphqlSchema = gql`
             input: TestPlanReportInput!
         ): findOrCreateResult!
         testPlanReport(id: ID!): TestPlanReportOperations!
+        testPlanRun(id: ID!): TestPlanRunOperations!
     }
 `;
 

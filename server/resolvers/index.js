@@ -1,37 +1,43 @@
 const me = require('./meResolver');
+const users = require('./usersResolver');
 const ats = require('./atsResolver');
 const browsers = require('./browsersResolver');
 const testPlans = require('./testPlansResolver');
 const testPlanVersions = require('./testPlanVersionsResolver');
 const testPlanReport = require('./testPlanReportResolver');
 const testPlanReports = require('./testPlanReportsResolver');
-const users = require('./usersResolver');
+const testPlanRun = require('./testPlanRunResolver');
 const findOrCreateTestPlanReport = require('./findOrCreateTestPlanReportResolver');
 const mutateTestPlanReport = require('./mutateTestPlanReportResolver');
+const mutateTestPlanRun = require('./mutateTestPlanRunResolver');
 const populateData = require('./populateDataResolver');
+const User = require('./User');
 const At = require('./At');
 const Browser = require('./Browser');
-const User = require('./User');
 const TestPlanVersion = require('./TestPlanVersion');
 const TestPlanReport = require('./TestPlanReport');
 const TestPlanReportOperations = require('./TestPlanReportOperations');
+const TestPlanRunOperations = require('./TestPlanRunOperations');
 const TestPlanRun = require('./TestPlanRun');
+const TestResult = require('./TestResult');
 const PopulatedData = require('./PopulatedData');
 
 const resolvers = {
     Query: {
         me,
+        users,
         ats,
         browsers,
         testPlans,
         testPlanVersions,
         testPlanReport,
         testPlanReports,
-        users,
+        testPlanRun,
         populateData
     },
     Mutation: {
         testPlanReport: mutateTestPlanReport,
+        testPlanRun: mutateTestPlanRun,
         findOrCreateTestPlanReport
     },
     At,
@@ -39,11 +45,13 @@ const resolvers = {
     User,
     TestPlanVersion,
     TestPlanReport,
-    TestPlanReportOperations,
     TestPlanRun,
+    TestResult,
+    TestPlanReportOperations,
+    TestPlanRunOperations,
     PopulatedData,
-    Test: { __resolveType: () => null },
-    Assertion: { __resolveType: () => null },
+    BaseTest: { __resolveType: () => null },
+    BaseAssertion: { __resolveType: () => null },
     PassThrough: { __resolveType: () => null }
 };
 
