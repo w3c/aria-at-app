@@ -5,9 +5,10 @@ const testPlanRunResolver = async (_, { id }) => {
 
     if (!result) return null;
 
-    const testResults = result.testResults.map(each => {
-        return { ...each.test, ...each };
-    });
+    const testResults = result.testResults.map(each => ({
+        ...each.test,
+        ...each
+    }));
 
     return {
         ...result,

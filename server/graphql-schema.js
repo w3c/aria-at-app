@@ -178,6 +178,9 @@ const graphqlSchema = gql`
         assertionsPassed: Int!
         optionalAssertionsPassed: Int!
         unexpectedBehaviorCount: Int!
+
+        rawResultData: Object
+        rawSerializedFormData: [Object]
     }
 
     type PassThroughResult implements PassThrough {

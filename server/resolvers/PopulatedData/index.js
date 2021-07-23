@@ -66,6 +66,18 @@ const PopulatedData = async ({ parentContext: { locationOfData } }) => {
     }
     testPlan = { id: testPlanVersion.metadata.directory };
 
+    if (
+        testPlanRun &&
+        testPlanRun.testResults &&
+        testPlanRun.testResults.length
+    ) {
+        const testResults = testPlanRun.testResults.map(each => ({
+            ...each.test,
+            ...each
+        }));
+        testPlanRun.testResults = [...testResults];
+    }
+
     const idsContradict = (provided, found) => {
         return (
             provided && (!found || provided.toString() !== found.id.toString())
