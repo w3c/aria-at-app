@@ -345,7 +345,7 @@ const TestQueueRun = ({
 
     return (
         <tr className="test-queue-run-row">
-            <td>{renderAssignedUserToTestPlan()}</td>
+            <th>{renderAssignedUserToTestPlan()}</th>
             <td>
                 <div className="testers-wrapper">
                     {isAdmin && renderAssignMenu()}
