@@ -194,7 +194,7 @@ const TestQueueRun = ({
                 <Dropdown.Toggle
                     id={nextId()}
                     variant="secondary"
-                    aria-label={`Open run ${evaluateTestRunTitle()} as tester`}
+                    aria-label="Run as other tester"
                     disabled={!testPlanRunTesters.length}
                 >
                     Open run as...
