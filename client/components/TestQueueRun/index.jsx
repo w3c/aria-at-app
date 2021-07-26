@@ -129,7 +129,7 @@ const TestQueueRun = ({
                     >
                         <FontAwesomeIcon icon={faUserPlus} />
                     </Dropdown.Toggle>
-                    <Dropdown.Menu>
+                    <Dropdown.Menu role="menu">
                         {testers.length ? (
                             testers.map(tester => {
                                 const isTesterAssigned = checkIsTesterAssigned(
@@ -140,6 +140,7 @@ const TestQueueRun = ({
                                     : 'not-assigned';
                                 return (
                                     <Dropdown.Item
+                                        role="menuitem"
                                         variant="secondary"
                                         as="button"
                                         key={nextId()}
@@ -156,7 +157,6 @@ const TestQueueRun = ({
                                             );
                                         }}
                                         aria-checked={isTesterAssigned}
-                                        role="menuitemcheckbox"
                                     >
                                         {isTesterAssigned && (
                                             <FontAwesomeIcon icon={faCheck} />
@@ -227,7 +227,7 @@ const TestQueueRun = ({
                             <FontAwesomeIcon icon={faTrashAlt} />
                             Delete for...
                         </Dropdown.Toggle>
-                        <Dropdown.Menu>
+                        <Dropdown.Menu role="menu">
                             {testPlanRunsWithResults.map(t => {
                                 return (
                                     <Dropdown.Item
