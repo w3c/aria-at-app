@@ -33,10 +33,8 @@ describe('test queue', () => {
                                 priority
                                 manualAssertion
                             }
-                            assertionCount
-                            optionalAssertionCount
+                            assertionsCount
                             assertionsPassed
-                            optionalAssertionsPassed
                             unexpectedBehaviorCount
                         }
                     }
@@ -66,10 +64,8 @@ describe('test queue', () => {
                                     manualAssertion: expect.any(String)
                                 }
                             ]),
-                            assertionCount: expect.any(Number),
-                            optionalAssertionCount: expect.any(Number),
+                            assertionsCount: expect.any(Number),
                             assertionsPassed: expect.any(Number),
-                            optionalAssertionsPassed: expect.any(Number),
                             unexpectedBehaviorCount: expect.any(Number)
                         })
                     ])

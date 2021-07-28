@@ -125,10 +125,9 @@ const graphqlSchema = gql`
         referenceFilePath: String!
         # TODO: account for running scripts
         instructions: [Instruction]!
-        assertions: [Assertion]!
+        assertions(priority: AssertionPriority): [Assertion]!
+        assertionsCount(priority: AssertionPriority): Int!
         passThroughs: [PassThrough]!
-        assertionCount: Int!
-        optionalAssertionCount: Int!
     }
 
     type Instruction {
@@ -156,22 +155,26 @@ const graphqlSchema = gql`
         # Examples would go here if we support multiple examples for one test.
     }
 
+    enum AssertionPriority {
+        REQUIRED
+        OPTIONAL
+    }
+
     type TestResult implements BaseTest {
         title: String!
         index: Int!
         referenceFilePath: String!
         instructions: [Instruction]!
-        assertions: [Assertion]!
+        assertions(priority: AssertionPriority): [Assertion]!
+        assertionsCount(priority: AssertionPriority): Int!
+        assertionsPassed(priority: AssertionPriority): Int!
+
         passThroughs: [PassThrough]!
-        assertionCount: Int!
-        optionalAssertionCount: Int!
+        passThroughResults: [PassThroughResult]!
 
         isComplete: Boolean!
         isSkipped: Boolean!
 
-        passThroughResults: [PassThroughResult]!
-        assertionsPassed: Int!
-        optionalAssertionsPassed: Int!
         unexpectedBehaviorCount: Int!
 
         result: TestResultResult

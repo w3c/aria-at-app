@@ -1,11 +1,11 @@
-const assertions = testResult => {
+const assertions = (testResult, { priority }) => {
     const { result } = testResult;
     const { details } = result || {};
     const { commands = [] } = details || {};
 
     if (!details || !commands.length) return [];
 
-    const assertions = commands.map(commandObj =>
+    const assertionsData = commands.map(commandObj =>
         commandObj.assertions.map(assertionObj => ({
             command: commandObj.command,
             manualAssertion: assertionObj.assertion,
@@ -13,7 +13,19 @@ const assertions = testResult => {
         }))
     );
 
-    return assertions.flat();
+    let assertions = [];
+
+    if (!priority) assertions = assertionsData.flat();
+    if (priority === 'REQUIRED')
+        assertions = assertionsData
+            .flat()
+            .filter(each => each.priority === '1');
+    if (priority === 'OPTIONAL')
+        assertions = assertionsData
+            .flat()
+            .filter(each => each.priority === '2');
+
+    return assertions;
 };
 
 module.exports = assertions;

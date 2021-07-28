@@ -2,24 +2,20 @@ const title = require('./titleResolver');
 const index = require('./indexResolver');
 const referenceFilePath = require('./referenceFilePathResolver');
 const assertions = require('./assertionsResolver');
-const assertionCount = require('./assertionCountResolver');
-const optionalAssertionCount = require('./optionalAssertionCountResolver');
+const assertionsCount = require('./assertionsCountResolver');
+const assertionsPassed = require('./assertionsPassedResolver');
+const unexpectedBehaviorCount = require('./unexpectedBehaviorCountResolver');
 const isComplete = require('./isCompleteResolver');
 const isSkipped = require('./isSkippedResolver');
-const assertionsPassed = require('./assertionsPassedResolver');
-const optionalAssertionsPassed = require('./optionalAssertionsPassedResolver');
-const unexpectedBehaviorCount = require('./unexpectedBehaviorCountResolver');
 
 module.exports = {
     title,
     index,
     referenceFilePath,
     assertions,
-    assertionCount,
-    optionalAssertionCount,
-    isComplete,
-    isSkipped,
+    assertionsCount,
     assertionsPassed,
-    optionalAssertionsPassed,
-    unexpectedBehaviorCount
+    unexpectedBehaviorCount,
+    isComplete,
+    isSkipped
 };
