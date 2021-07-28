@@ -1,7 +1,7 @@
 const unexpectedBehaviorCount = testResult => {
     const { result } = testResult;
-    const { details } = result;
-    const { summary } = details;
+    const { details } = result || {};
+    const { summary } = details || {};
 
     if (!details || !summary) return 0;
 

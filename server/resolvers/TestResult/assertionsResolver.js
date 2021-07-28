@@ -1,7 +1,7 @@
 const assertions = testResult => {
     const { result } = testResult;
-    const { details } = result;
-    const { commands = [] } = details;
+    const { details } = result || {};
+    const { commands = [] } = details || {};
 
     if (!details || !commands.length) return [];
 

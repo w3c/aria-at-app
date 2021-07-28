@@ -9,9 +9,6 @@ const graphqlSchema = gql`
     """
     scalar Timestamp
 
-    # Required for passing free form Object data
-    scalar Object
-
     enum Role {
         TESTER
         ADMIN
@@ -169,7 +166,7 @@ const graphqlSchema = gql`
         assertionCount: Int!
         optionalAssertionCount: Int!
 
-        startedAt: Timestamp
+        startedAt: Timestamp!
         completedAt: Timestamp
         isComplete: Boolean!
         isSkipped: Boolean!
@@ -179,8 +176,58 @@ const graphqlSchema = gql`
         optionalAssertionsPassed: Int!
         unexpectedBehaviorCount: Int!
 
-        rawResultData: Object
-        rawSerializedFormData: [Object]
+        result: TestResultResult
+        serializedForm: [TestResultSerializedForm]
+        issues: [Int]
+    }
+
+    type TestResultResult {
+        test: String!
+        status: String!
+        details: TestResultResultDetails!
+    }
+
+    type TestResultResultDetails {
+        name: String!
+        task: String!
+        summary: TestResultResultDetailsSummary!
+        commands: [TestResultResultDetailsCommands]!
+        specific_user_instruction: String!
+    }
+
+    type TestResultResultDetailsSummary {
+        # required/optional needs to be transformed from '1'/'2'
+        required: TestResultResultDetailsSummaryPriority!
+        optional: TestResultResultDetailsSummaryPriority!
+        unexpectedCount: Int!
+    }
+
+    type TestResultResultDetailsSummaryPriority {
+        pass: Int!
+        fail: Int!
+    }
+
+    type TestResultResultDetailsCommands {
+        output: String!
+        command: String!
+        support: String!
+        assertions: [TestResultResultDetailsCommandsAssertion]!
+        unexpected_behaviors: [String]!
+    }
+
+    type TestResultResultDetailsCommandsAssertion {
+        pass: String
+        fail: String
+        priority: String!
+        assertion: String!
+    }
+
+    type TestResultSerializedForm {
+        name: String!
+        value: String!
+        checked: Boolean
+        disabled: Boolean
+        indeterminate: Boolean
     }
 
     type PassThroughResult implements PassThrough {
@@ -245,6 +292,70 @@ const graphqlSchema = gql`
     input TestPlanReportInput {
         testPlanVersionId: ID!
         testPlanTarget: TestPlanTargetInput!
+    }
+
+    input TestResultInput {
+        index: Int!
+        # TODO: Revise transforming this structure for GraphQL
+        test: TestResultTestInput
+        result: TestResultResultInput
+        serializedForm: [TestResultSerializedFormInput]
+        issues: [Int]
+    }
+
+    input TestResultTestInput {
+        htmlFile: String!
+        testFullName: String!
+        executionOrder: Int!
+    }
+
+    input TestResultResultInput {
+        test: String!
+        status: String!
+        details: TestResultResultDetailsInput!
+    }
+
+    input TestResultResultDetailsInput {
+        name: String!
+        task: String!
+        summary: TestResultResultDetailsSummaryInput!
+        commands: [TestResultResultDetailsCommandsInput]!
+        specific_user_instruction: String!
+    }
+
+    input TestResultResultDetailsSummaryInput {
+        # required/optional needs to be transformed from '1'/'2'
+        required: TestResultResultDetailsSummaryPriorityInput!
+        optional: TestResultResultDetailsSummaryPriorityInput!
+        unexpectedCount: Int!
+    }
+
+    input TestResultResultDetailsSummaryPriorityInput {
+        pass: Int!
+        fail: Int!
+    }
+
+    input TestResultResultDetailsCommandsInput {
+        output: String!
+        command: String!
+        support: String!
+        assertions: [TestResultResultDetailsCommandsAssertionInput]!
+        unexpected_behaviors: [String]!
+    }
+
+    input TestResultResultDetailsCommandsAssertionInput {
+        pass: String
+        fail: String
+        priority: String!
+        assertion: String!
+    }
+
+    input TestResultSerializedFormInput {
+        name: String!
+        value: String!
+        checked: Boolean
+        disabled: Boolean
+        indeterminate: Boolean
     }
 
     """
@@ -331,9 +442,8 @@ const graphqlSchema = gql`
     }
 
     type TestPlanRunOperations {
-        # Allow null so tester may 'start over'
-        updateResult(result: Object, index: Int!): PopulatedData!
-        updateSerializedForm(form: [Object], index: Int!): PopulatedData!
+        updateTestResult(input: TestResultInput!): PopulatedData!
+        clearTestResult(input: TestResultInput!): PopulatedData!
     }
 
     type findOrCreateResult {

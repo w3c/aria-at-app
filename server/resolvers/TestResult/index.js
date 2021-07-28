@@ -9,8 +9,6 @@ const isSkipped = require('./isSkippedResolver');
 const assertionsPassed = require('./assertionsPassedResolver');
 const optionalAssertionsPassed = require('./optionalAssertionsPassedResolver');
 const unexpectedBehaviorCount = require('./unexpectedBehaviorCountResolver');
-const rawResultData = require('./rawResultDataResolver');
-const rawSerializedFormData = require('./rawSerializedFormDataResolver');
 
 module.exports = {
     title,
@@ -23,7 +21,5 @@ module.exports = {
     isSkipped,
     assertionsPassed,
     optionalAssertionsPassed,
-    unexpectedBehaviorCount,
-    rawResultData,
-    rawSerializedFormData
+    unexpectedBehaviorCount
 };

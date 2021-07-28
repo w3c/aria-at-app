@@ -1,11 +1,11 @@
 const assertionsPassed = testResult => {
     const { result } = testResult;
-    const { details } = result;
-    const { summary } = details;
+    const { details } = result || {};
+    const { summary } = details || {};
 
     if (!details || !summary) return 0;
 
-    return summary['1'].pass;
+    return summary.required.pass;
 };
 
 module.exports = assertionsPassed;

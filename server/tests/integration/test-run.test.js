@@ -2,6 +2,7 @@ const { gql } = require('apollo-server');
 const dbCleaner = require('../util/db-cleaner');
 const { query, mutate } = require('../util/graphql-test-utilities');
 const db = require('../../models/index');
+const validateTestResult = require('../../util/validateTestResult');
 
 afterAll(async () => {
     // Closing the DB connection allows Jest to exit successfully.
@@ -81,11 +82,35 @@ describe('test queue', () => {
 
     it('updates test plan run serializedForm data', async () => {
         await dbCleaner(async () => {
-            const testPlanRunId = 1;
+            const testReportId = '1';
+            const testerId = '2';
             const testPlanResultIndex = 1;
 
-            const previous = await query(
-                gql`
+            // create new testPlanRun
+            const assignTesterResult = await mutate(gql`
+                mutation {
+                    testPlanReport(id: ${testReportId}) {
+                        assignTester(userId: ${testerId}) {
+                            testPlanReport {
+                                draftTestPlanRuns {
+                                    id
+                                    tester {
+                                        id
+                                        username
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            `);
+
+            // id of newly created testPlanRun
+            const testPlanRunId = assignTesterResult.testPlanReport.assignTester.testPlanReport.draftTestPlanRuns.find(
+                run => run.tester.id === testerId
+            ).id;
+
+            const previous = await query(gql`
                 query {
                     testPlanRun(id: ${testPlanRunId}) {
                         testResultCount
@@ -96,12 +121,14 @@ describe('test queue', () => {
                         testResults {
                             index
                             startedAt
-                            rawSerializedFormData
+                            serializedForm {
+                                name
+                            }
                         }
                     }
                 }
-            `
-            );
+            `);
+
             const previousTestResult = previous.testPlanRun.testResults.find(
                 testResult => testResult.index === testPlanResultIndex
             );
@@ -109,9 +136,31 @@ describe('test queue', () => {
             const result = await mutate(gql`
                 mutation {
                     testPlanRun(id: ${testPlanRunId}) {
-                        updateSerializedForm(
-                          index: 1
-                          form: [{ testing: "something1" }, { testing: "something2" }]
+                        updateTestResult(
+                            input: {
+                                index: ${testPlanResultIndex}
+                                test: {
+                                    htmlFile: "tests/checkbox/test-01-navigate-to-unchecked-checkbox-reading.html"
+                                    testFullName: "Navigate to an unchecked checkbox in reading mode"
+                                    executionOrder: 1
+                                }
+                                serializedForm: [
+                                    {
+                                        name: "result-0-0"
+                                        value: "on"
+                                        checked: true
+                                        disabled: false
+                                        indeterminate: false
+                                    }
+                                    {
+                                        name: "result-0-1"
+                                        value: "on"
+                                        checked: false
+                                        disabled: false
+                                        indeterminate: false
+                                    }
+                                ]
+                            }
                         ) {
                             testPlanRun {
                                 testResultCount
@@ -122,29 +171,36 @@ describe('test queue', () => {
                                 testResults {
                                     index
                                     startedAt
-                                    rawSerializedFormData
+                                    serializedForm {
+                                        name
+                                        value
+                                        checked
+                                        disabled
+                                        indeterminate
+                                    }
                                 }
                             }
                         }
                     }
                 }
             `);
-            const testResult = result.testPlanRun.updateSerializedForm.testPlanRun.testResults.find(
+            const testResult = result.testPlanRun.updateTestResult.testPlanRun.testResults.find(
                 testResult => testResult.index === testPlanResultIndex
             );
 
-            expect(previousTestResult.startedAt).not.toBeTruthy();
-            expect(previousTestResult.rawSerializedFormData).not.toEqual(
-                expect.arrayContaining([
-                    { testing: 'something1' },
-                    { testing: 'something2' }
-                ])
-            );
+            expect(previousTestResult).not.toBeTruthy();
+
+            expect(testResult).toBeTruthy();
             expect(testResult.startedAt).toBeTruthy();
-            expect(testResult.rawSerializedFormData).toEqual(
+            expect(testResult.serializedForm).toEqual(
                 expect.arrayContaining([
-                    { testing: 'something1' },
-                    { testing: 'something2' }
+                    expect.objectContaining({
+                        name: expect.any(String),
+                        value: expect.any(String),
+                        checked: expect.any(Boolean),
+                        disabled: expect.any(Boolean),
+                        indeterminate: expect.any(Boolean)
+                    })
                 ])
             );
         });
@@ -170,7 +226,9 @@ describe('test queue', () => {
                         testResults {
                             index
                             isComplete
-                            rawResultData
+                            result {
+                                test
+                            }
                         }
                     }
                 }
@@ -183,7 +241,119 @@ describe('test queue', () => {
             const result = await mutate(gql`
                 mutation {
                     testPlanRun(id: ${testPlanRunId}) {
-                        updateResult(index: ${testPlanResultIndex}, result: { testing: "something" }) {
+                        updateTestResult(
+                            input: {
+                                index: ${testPlanResultIndex}
+                                result: {
+                                    test: "Navigate to an unchecked checkbox in reading mode"
+                                    status: "PASS"
+                                    details: {
+                                        name: "Navigate to an unchecked checkbox in reading mode"
+                                        task: "navigate to unchecked checkbox"
+                                        summary: {
+                                            required: { fail: 0, pass: 12 }
+                                            optional: { fail: 0, pass: 0 }
+                                            unexpectedCount: 0
+                                        }
+                                        commands: [
+                                            {
+                                                output: "Success"
+                                                command: "X / Shift+X"
+                                                support: "FULL"
+                                                assertions: [
+                                                    {
+                                                        pass: "Good Output "
+                                                        priority: "1"
+                                                        assertion: "Role \\"checkbox\\" is conveyed"
+                                                    }
+                                                    {
+                                                        pass: "Good Output "
+                                                        priority: "1"
+                                                        assertion: "Name \\"Lettuce\\" is conveyed"
+                                                    }
+                                                    {
+                                                        pass: "Good Output "
+                                                        priority: "1"
+                                                        assertion: "State of the checkbox (not checked) is conveyed"
+                                                    }
+                                                ]
+                                                unexpected_behaviors: []
+                                            }
+                                            {
+                                                output: "Success"
+                                                command: "F / Shift+F"
+                                                support: "FULL"
+                                                assertions: [
+                                                    {
+                                                        pass: "Good Output "
+                                                        priority: "1"
+                                                        assertion: "Role \\"checkbox\\" is conveyed"
+                                                    }
+                                                    {
+                                                        pass: "Good Output "
+                                                        priority: "1"
+                                                        assertion: "Name \\"Lettuce\\" is conveyed"
+                                                    }
+                                                    {
+                                                        pass: "Good Output "
+                                                        priority: "1"
+                                                        assertion: "State of the checkbox (not checked) is conveyed"
+                                                    }
+                                                ]
+                                                unexpected_behaviors: []
+                                            }
+                                            {
+                                                output: "Success"
+                                                command: "Tab / Shift+Tab"
+                                                support: "FULL"
+                                                assertions: [
+                                                    {
+                                                        pass: "Good Output "
+                                                        priority: "1"
+                                                        assertion: "Role \\"checkbox\\" is conveyed"
+                                                    }
+                                                    {
+                                                        pass: "Good Output "
+                                                        priority: "1"
+                                                        assertion: "Name \\"Lettuce\\" is conveyed"
+                                                    }
+                                                    {
+                                                        pass: "Good Output "
+                                                        priority: "1"
+                                                        assertion: "State of the checkbox (not checked) is conveyed"
+                                                    }
+                                                ]
+                                                unexpected_behaviors: []
+                                            }
+                                            {
+                                                output: "Success"
+                                                command: "Up Arrow / Down Arrow"
+                                                support: "FULL"
+                                                assertions: [
+                                                    {
+                                                        pass: "Good Output "
+                                                        priority: "1"
+                                                        assertion: "Role \\"checkbox\\" is conveyed"
+                                                    }
+                                                    {
+                                                        pass: "Good Output "
+                                                        priority: "1"
+                                                        assertion: "Name \\"Lettuce\\" is conveyed"
+                                                    }
+                                                    {
+                                                        pass: "Good Output "
+                                                        priority: "1"
+                                                        assertion: "State of the checkbox (not checked) is conveyed"
+                                                    }
+                                                ]
+                                                unexpected_behaviors: []
+                                            }
+                                        ]
+                                        specific_user_instruction: "Navigate to the first checkbox. Note: it should be in the unchecked state."
+                                    }
+                                }
+                            }
+                        ) {
                             testPlanRun {
                                 testResultCount
                                 tester {
@@ -193,23 +363,307 @@ describe('test queue', () => {
                                 testResults {
                                     index
                                     isComplete
-                                    rawResultData
+                                    result {
+                                        test
+                                    }
                                 }
                             }
                         }
                     }
                 }
             `);
-            const testResult = result.testPlanRun.updateResult.testPlanRun.testResults.find(
+            const testResult = result.testPlanRun.updateTestResult.testPlanRun.testResults.find(
                 testResult => testResult.index === testPlanResultIndex
             );
 
             expect(previousTestResult.isComplete).toEqual(false);
-            expect(previousTestResult.rawResultData).not.toHaveProperty(
-                'testing'
-            );
             expect(testResult.isComplete).toEqual(true);
-            expect(testResult.rawResultData).toHaveProperty('testing');
         });
+    });
+
+    it('fails to update test if invalid test object provided for new test plan run', async () => {
+        await dbCleaner(async () => {
+            const testReportId = '1';
+            const testerId = '2';
+            const testPlanResultIndex = 1;
+
+            // create new testPlanRun
+            const assignTesterResult = await mutate(gql`
+                mutation {
+                    testPlanReport(id: ${testReportId}) {
+                        assignTester(userId: ${testerId}) {
+                            testPlanReport {
+                                draftTestPlanRuns {
+                                    id
+                                    tester {
+                                        id
+                                        username
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            `);
+
+            // id of newly created testPlanRun
+            const testPlanRunId = assignTesterResult.testPlanReport.assignTester.testPlanReport.draftTestPlanRuns.find(
+                run => run.tester.id === testerId
+            ).id;
+
+            const updateTestPlanResult = async () => {
+                await mutate(gql`
+                mutation {
+                    testPlanRun(id: ${testPlanRunId}) {
+                        updateTestResult(
+                            input: {
+                                index: ${testPlanResultIndex}
+                                test: {
+                                    testFullName: "Navigate to an unchecked checkbox in reading mode"
+                                    executionOrder: 1
+                                }
+                            }
+                        ) {
+                            testPlanRun {
+                                testResultCount
+                                tester {
+                                    id
+                                    username
+                                }
+                                testResults {
+                                    index
+                                    startedAt
+                                    serializedForm {
+                                        name
+                                        value
+                                        checked
+                                        disabled
+                                        indeterminate
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            `);
+            };
+
+            await expect(updateTestPlanResult()).rejects.toThrow(
+                /ValidationError/gi
+            );
+        });
+    });
+
+    it('fails to update serializedForm if no test object provided for new test plan run', async () => {
+        await dbCleaner(async () => {
+            const testReportId = '1';
+            const testerId = '2';
+            const testPlanResultIndex = 1;
+
+            // create new testPlanRun
+            const assignTesterResult = await mutate(gql`
+                mutation {
+                    testPlanReport(id: ${testReportId}) {
+                        assignTester(userId: ${testerId}) {
+                            testPlanReport {
+                                draftTestPlanRuns {
+                                    id
+                                    tester {
+                                        id
+                                        username
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            `);
+
+            // id of newly created testPlanRun
+            const testPlanRunId = assignTesterResult.testPlanReport.assignTester.testPlanReport.draftTestPlanRuns.find(
+                run => run.tester.id === testerId
+            ).id;
+
+            const updateTestPlanResult = async () => {
+                await mutate(gql`
+                mutation {
+                    testPlanRun(id: ${testPlanRunId}) {
+                        updateTestResult(
+                            input: {
+                                index: ${testPlanResultIndex}
+                                serializedForm: [
+                                    {
+                                        name: "result-0-0"
+                                        value: "on"
+                                        checked: true
+                                        disabled: false
+                                        indeterminate: false
+                                    }
+                                    {
+                                        name: "result-0-1"
+                                        value: "on"
+                                        checked: false
+                                        disabled: false
+                                        indeterminate: false
+                                    }
+                                ]
+                            }
+                        ) {
+                            testPlanRun {
+                                testResultCount
+                                tester {
+                                    id
+                                    username
+                                }
+                                testResults {
+                                    index
+                                    startedAt
+                                    serializedForm {
+                                        name
+                                        value
+                                        checked
+                                        disabled
+                                        indeterminate
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            `);
+            };
+
+            await expect(updateTestPlanResult()).rejects.toThrow(
+                /no 'test' object provided/gi
+            );
+        });
+    });
+
+    it('transforms testResult.test priority keys from numbers to strings', async () => {
+        const testResult = {
+            test: {
+                htmlFile:
+                    'tests/checkbox/test-01-navigate-to-unchecked-checkbox-reading.html',
+                testFullName:
+                    'Navigate to an unchecked checkbox in reading mode',
+                executionOrder: 1,
+                startedAt: '2021-07-19 14:18:23.602-05',
+                completedAt: '2021-07-20 14:18:23.602-05'
+            },
+            issues: [76],
+            result: {
+                test: 'Navigate to an unchecked checkbox in reading mode',
+                status: 'PASS',
+                details: {
+                    name: 'Navigate to an unchecked checkbox in reading mode',
+                    task: 'navigate to unchecked checkbox',
+                    summary: {
+                        '1': { fail: 0, pass: 12 },
+                        '2': { fail: 0, pass: 0 },
+                        unexpectedCount: 0
+                    },
+                    commands: [
+                        {
+                            output: 'Success',
+                            command: 'X / Shift+X',
+                            support: 'FULL',
+                            assertions: [
+                                {
+                                    pass: 'Good Output ',
+                                    priority: '1',
+                                    assertion: "Role 'checkbox' is conveyed"
+                                },
+                                {
+                                    pass: 'Good Output ',
+                                    priority: '1',
+                                    assertion: "Name 'Lettuce' is conveyed"
+                                },
+                                {
+                                    pass: 'Good Output ',
+                                    priority: '1',
+                                    assertion:
+                                        'State of the checkbox (not checked) is conveyed'
+                                }
+                            ],
+                            unexpected_behaviors: []
+                        }
+                    ],
+                    specific_user_instruction:
+                        'Navigate to the first checkbox. Note: it should be in the unchecked state.'
+                }
+            },
+            serializedForm: [
+                { name: '', value: 'Success', disabled: false },
+                {
+                    name: 'result-0-0',
+                    value: 'on',
+                    checked: true,
+                    disabled: false,
+                    indeterminate: false
+                },
+                {
+                    name: 'result-0-0',
+                    value: 'on',
+                    checked: false,
+                    disabled: false,
+                    indeterminate: false
+                },
+                {
+                    name: 'result-0-0',
+                    value: 'on',
+                    checked: false,
+                    disabled: false,
+                    indeterminate: false
+                },
+                {
+                    name: 'result-0-1',
+                    value: 'on',
+                    checked: true,
+                    disabled: false,
+                    indeterminate: false
+                }
+            ]
+        };
+
+        const previousRequiredPassValue =
+            testResult.result.details.summary['1'].pass;
+        const previousRequiredFailValue =
+            testResult.result.details.summary['1'].fail;
+        const previousOptionalPassValue =
+            testResult.result.details.summary['2'].pass;
+        const previousOptionalFailValue =
+            testResult.result.details.summary['2'].fail;
+
+        expect(testResult.result.details.summary).toHaveProperty('1');
+        expect(testResult.result.details.summary).toHaveProperty('2');
+
+        // transform testResult if required
+        const validatedTestResult = await validateTestResult(testResult);
+
+        expect(validatedTestResult.result.details.summary).toHaveProperty(
+            'required'
+        );
+        expect(validatedTestResult.result.details.summary).toHaveProperty(
+            'optional'
+        );
+        expect(validatedTestResult.result.details.summary).not.toHaveProperty(
+            '1'
+        );
+        expect(validatedTestResult.result.details.summary).not.toHaveProperty(
+            '2'
+        );
+
+        expect(previousRequiredPassValue).toEqual(
+            validatedTestResult.result.details.summary.required.pass
+        );
+        expect(previousRequiredFailValue).toEqual(
+            validatedTestResult.result.details.summary.required.fail
+        );
+        expect(previousOptionalPassValue).toEqual(
+            validatedTestResult.result.details.summary.optional.pass
+        );
+        expect(previousOptionalFailValue).toEqual(
+            validatedTestResult.result.details.summary.optional.fail
+        );
     });
 });

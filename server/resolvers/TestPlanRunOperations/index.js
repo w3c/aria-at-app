@@ -1,7 +1,7 @@
-const updateResult = require('./updateResultResolver');
-const updateSerializedForm = require('./updateSerializedFormResolver');
+const updateTestResult = require('./updateTestResultResolver');
+const clearTestResult = require('./clearTestResultResolver');
 
 module.exports = {
-    updateResult,
-    updateSerializedForm
+    updateTestResult,
+    clearTestResult
 };
