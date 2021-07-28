@@ -20,6 +20,7 @@ const TestPlanReportOperations = require('./TestPlanReportOperations');
 const TestPlanRunOperations = require('./TestPlanRunOperations');
 const TestPlanRun = require('./TestPlanRun');
 const TestResult = require('./TestResult');
+const Test = require('./Test');
 const PopulatedData = require('./PopulatedData');
 
 const resolvers = {
@@ -47,6 +48,7 @@ const resolvers = {
     TestPlanReport,
     TestPlanRun,
     TestResult,
+    Test,
     TestPlanReportOperations,
     TestPlanRunOperations,
     PopulatedData,

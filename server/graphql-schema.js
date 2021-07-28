@@ -160,6 +160,14 @@ const graphqlSchema = gql`
         OPTIONAL
     }
 
+    # Raw structure of TestPlanRun.testPlanResults[] object.
+    # This structure is subject to change
+    # {
+    #   test: { ... }, // derived from TestPlanVersion.tests
+    #   result: { ... }, // returned from iframe submit result
+    #   serializedForm: [ ... ], // persisted form info once values are recorded for test in Test Navigator
+    #   issues: [ ] // recorded GitHub issue numbers for any issue created
+    # }
     type TestResult implements BaseTest {
         title: String!
         index: Int!
@@ -177,46 +185,50 @@ const graphqlSchema = gql`
 
         unexpectedBehaviorCount: Int!
 
-        result: TestResultResult
+        result: TestResultData
         serializedForm: [TestResultSerializedForm]
         issues: [Int]
     }
 
-    type TestResultResult {
+    # TestResultData and all other linked types are returned from the iframe
+    # submit result.
+    # This should be temporary while the logic of how the resolvers will work
+    # with that data is discussed.
+    type TestResultData {
         test: String!
         status: String!
-        details: TestResultResultDetails!
+        details: TestResultDataDetails!
     }
 
-    type TestResultResultDetails {
+    type TestResultDataDetails {
         name: String!
         task: String!
-        summary: TestResultResultDetailsSummary!
-        commands: [TestResultResultDetailsCommands]!
+        summary: TestResultDataDetailsSummary!
+        commands: [TestResultDataDetailsCommands]!
         specific_user_instruction: String!
     }
 
-    type TestResultResultDetailsSummary {
-        # required/optional needs to be transformed from '1'/'2'
-        required: TestResultResultDetailsSummaryPriority!
-        optional: TestResultResultDetailsSummaryPriority!
+    type TestResultDataDetailsSummary {
+        # required/optional transformed from '1'/'2'
+        required: TestResultDataDetailsSummaryPriority!
+        optional: TestResultDataDetailsSummaryPriority!
         unexpectedCount: Int!
     }
 
-    type TestResultResultDetailsSummaryPriority {
+    type TestResultDataDetailsSummaryPriority {
         pass: Int!
         fail: Int!
     }
 
-    type TestResultResultDetailsCommands {
+    type TestResultDataDetailsCommands {
         output: String!
         command: String!
         support: String!
-        assertions: [TestResultResultDetailsCommandsAssertion]!
+        assertions: [TestResultDataDetailsCommandsAssertion]!
         unexpected_behaviors: [String]!
     }
 
-    type TestResultResultDetailsCommandsAssertion {
+    type TestResultDataDetailsCommandsAssertion {
         pass: String
         fail: String
         priority: String!
@@ -299,7 +311,7 @@ const graphqlSchema = gql`
         index: Int!
         # TODO: Revise transforming this structure for GraphQL
         test: TestResultTestInput
-        result: TestResultResultInput
+        result: TestResultDataInput
         serializedForm: [TestResultSerializedFormInput]
         issues: [Int]
     }
@@ -310,41 +322,41 @@ const graphqlSchema = gql`
         executionOrder: Int!
     }
 
-    input TestResultResultInput {
+    input TestResultDataInput {
         test: String!
         status: String!
-        details: TestResultResultDetailsInput!
+        details: TestResultDataDetailsInput!
     }
 
-    input TestResultResultDetailsInput {
+    input TestResultDataDetailsInput {
         name: String!
         task: String!
-        summary: TestResultResultDetailsSummaryInput!
-        commands: [TestResultResultDetailsCommandsInput]!
+        summary: TestResultDataDetailsSummaryInput!
+        commands: [TestResultDataDetailsCommandsInput]!
         specific_user_instruction: String!
     }
 
-    input TestResultResultDetailsSummaryInput {
+    input TestResultDataDetailsSummaryInput {
         # required/optional needs to be transformed from '1'/'2'
-        required: TestResultResultDetailsSummaryPriorityInput!
-        optional: TestResultResultDetailsSummaryPriorityInput!
+        required: TestResultDataDetailsSummaryPriorityInput!
+        optional: TestResultDataDetailsSummaryPriorityInput!
         unexpectedCount: Int!
     }
 
-    input TestResultResultDetailsSummaryPriorityInput {
+    input TestResultDataDetailsSummaryPriorityInput {
         pass: Int!
         fail: Int!
     }
 
-    input TestResultResultDetailsCommandsInput {
+    input TestResultDataDetailsCommandsInput {
         output: String!
         command: String!
         support: String!
-        assertions: [TestResultResultDetailsCommandsAssertionInput]!
+        assertions: [TestResultDataDetailsCommandsAssertionInput]!
         unexpected_behaviors: [String]!
     }
 
-    input TestResultResultDetailsCommandsAssertionInput {
+    input TestResultDataDetailsCommandsAssertionInput {
         pass: String
         fail: String
         priority: String!

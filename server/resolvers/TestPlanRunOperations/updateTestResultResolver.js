@@ -25,22 +25,18 @@ const updateTestResultResolver = async (
 
     // newly created TestPlanRun
     if (!testResults) testResults = [];
-    if (!testResults.length) {
+
+    let testResultToUpdateIndex = testResults.findIndex(
+        testResult => testResult.test.executionOrder === index
+    );
+
+    if (testResultToUpdateIndex < 0) {
         // 'test' object MUST exist if 'testResults' are null during first run
         if (!test) throw new Error("No 'test' object provided");
 
-        testResults = [
-            {
-                test: { ...validatedTestResult.test, startedAt: new Date() },
-                ...validatedTestResult
-            }
-        ];
-        testResults = [testResultInput];
+        testResultToUpdateIndex = testResults.length;
+        testResults[testResultToUpdateIndex] = validatedTestResult;
     }
-
-    const testResultToUpdateIndex = testResults.findIndex(
-        testResult => testResult.test.executionOrder === index
-    );
 
     // comes from the iframe result after submitting a test
     if (result) {
