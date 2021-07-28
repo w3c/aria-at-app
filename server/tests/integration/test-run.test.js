@@ -28,8 +28,6 @@ describe('test queue', () => {
                             referenceFilePath
                             isComplete
                             isSkipped
-                            startedAt
-                            completedAt
                             assertions {
                                 command
                                 priority
@@ -120,7 +118,6 @@ describe('test queue', () => {
                         }
                         testResults {
                             index
-                            startedAt
                             serializedForm {
                                 name
                             }
@@ -170,7 +167,6 @@ describe('test queue', () => {
                                 }
                                 testResults {
                                     index
-                                    startedAt
                                     serializedForm {
                                         name
                                         value
@@ -191,7 +187,6 @@ describe('test queue', () => {
             expect(previousTestResult).not.toBeTruthy();
 
             expect(testResult).toBeTruthy();
-            expect(testResult.startedAt).toBeTruthy();
             expect(testResult.serializedForm).toEqual(
                 expect.arrayContaining([
                     expect.objectContaining({
@@ -432,7 +427,6 @@ describe('test queue', () => {
                                 }
                                 testResults {
                                     index
-                                    startedAt
                                     serializedForm {
                                         name
                                         value
@@ -517,7 +511,6 @@ describe('test queue', () => {
                                 }
                                 testResults {
                                     index
-                                    startedAt
                                     serializedForm {
                                         name
                                         value
@@ -546,9 +539,7 @@ describe('test queue', () => {
                     'tests/checkbox/test-01-navigate-to-unchecked-checkbox-reading.html',
                 testFullName:
                     'Navigate to an unchecked checkbox in reading mode',
-                executionOrder: 1,
-                startedAt: '2021-07-19 14:18:23.602-05',
-                completedAt: '2021-07-20 14:18:23.602-05'
+                executionOrder: 1
             },
             issues: [76],
             result: {

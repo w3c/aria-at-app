@@ -166,8 +166,6 @@ const graphqlSchema = gql`
         assertionCount: Int!
         optionalAssertionCount: Int!
 
-        startedAt: Timestamp!
-        completedAt: Timestamp
         isComplete: Boolean!
         isSkipped: Boolean!
 

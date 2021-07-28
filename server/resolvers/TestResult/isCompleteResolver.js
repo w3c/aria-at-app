@@ -1,5 +1,5 @@
 const isComplete = testResult => {
-    return !!testResult.completedAt;
+    return !!testResult.result;
 };
 
 module.exports = isComplete;

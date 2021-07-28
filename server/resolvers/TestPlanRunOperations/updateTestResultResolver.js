@@ -48,8 +48,6 @@ const updateTestResultResolver = async (
             ...testResults[testResultToUpdateIndex].result,
             ...validatedTestResult.result
         };
-        testResults[testResultToUpdateIndex].test.isComplete = true;
-        testResults[testResultToUpdateIndex].test.completedAt = new Date();
     }
 
     // when someone submits or skips the current test plan results
@@ -57,7 +55,6 @@ const updateTestResultResolver = async (
         testResults[testResultToUpdateIndex].serializedForm = [
             ...serializedForm
         ];
-        testResults[testResultToUpdateIndex].test.startedAt = new Date();
     }
 
     // represents GitHub issues
