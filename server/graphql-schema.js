@@ -116,13 +116,13 @@ const graphqlSchema = gql`
     interface BaseTest {
         title: String!
         index: Int!
-        referenceFilePath: String!
+        testFilePath: String!
     }
 
     type Test implements BaseTest {
         title: String!
         index: Int!
-        referenceFilePath: String!
+        testFilePath: String!
         # TODO: account for running scripts
         instructions: [Instruction]!
         assertions(priority: AssertionPriority): [Assertion]!
@@ -163,7 +163,7 @@ const graphqlSchema = gql`
     type TestResult implements BaseTest {
         title: String!
         index: Int!
-        referenceFilePath: String!
+        testFilePath: String!
         instructions: [Instruction]!
         assertions(priority: AssertionPriority): [Assertion]!
         assertionsCount(priority: AssertionPriority): Int!

@@ -1,6 +1,6 @@
 const titleResolver = require('../TestResult/titleResolver');
 const indexResolver = require('../TestResult/indexResolver');
-const referenceFilePathResolver = require('../TestResult/referenceFilePathResolver');
+const referenceFilePathResolver = require('../TestResult/testFilePathResolver');
 
 const testResolver = test => ({
     ...test,

@@ -25,7 +25,7 @@ describe('test queue', () => {
                         testResults {
                             title
                             index
-                            referenceFilePath
+                            testFilePath
                             isComplete
                             isSkipped
                             assertions {
@@ -54,7 +54,7 @@ describe('test queue', () => {
                         expect.objectContaining({
                             title: expect.any(String),
                             index: expect.any(Number),
-                            referenceFilePath: expect.any(String),
+                            testFilePath: expect.any(String),
                             isComplete: expect.any(Boolean),
                             isSkipped: expect.any(Boolean),
                             assertions: expect.arrayContaining([
