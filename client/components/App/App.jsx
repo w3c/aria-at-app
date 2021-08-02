@@ -11,7 +11,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Container, Navbar, Nav } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
-import { ME_QUERY } from '../TestQueue/queries';
+import { ME_QUERY } from './queries';
 import routes from '../../routes';
 import useSigninUrl from './useSigninUrl';
 import './App.css';
@@ -101,18 +101,18 @@ const App = ({ auth, dispatch }) => {
                                         Test Queue
                                     </Nav.Link>
                                 )}
-                                {isAdmin && (
-                                    <Nav.Link
-                                        as={Link}
-                                        to="/admin/configure-runs"
-                                        aria-current={
-                                            location.pathname ===
-                                            '/admin/configure-runs'
-                                        }
-                                    >
-                                        Test Configuration
-                                    </Nav.Link>
-                                )}
+                                {/*{isAdmin && (*/}
+                                {/*    <Nav.Link*/}
+                                {/*        as={Link}*/}
+                                {/*        to="/admin/configure-runs"*/}
+                                {/*        aria-current={*/}
+                                {/*            location.pathname ===*/}
+                                {/*            '/admin/configure-runs'*/}
+                                {/*        }*/}
+                                {/*    >*/}
+                                {/*        Test Configuration*/}
+                                {/*    </Nav.Link>*/}
+                                {/*)}*/}
                                 <Nav.Link
                                     as={Link}
                                     to="/account/settings"

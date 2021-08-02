@@ -67,6 +67,10 @@ export default [
         component: TestRun
     },
     {
+        path: '/test-plan/:testPlanId(\\d+)/run/:runId(\\d+)',
+        component: TestRun
+    },
+    {
         path: '/reports/test-plans/:testPlanId(\\d+)',
         component: TestPlanReportPage
     },

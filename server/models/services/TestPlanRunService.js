@@ -7,6 +7,7 @@ const {
     TEST_PLAN_TARGET_ATTRIBUTES
 } = require('./helpers');
 const { TestPlanRun } = require('../');
+const { getTestPlanReportById } = require('./TestPlanReportService');
 
 // association helpers to be included with Models' results
 
@@ -211,6 +212,18 @@ const createTestPlanRun = async (
         options
     );
     if (existingTestPlanRuns.length) return existingTestPlanRuns[0];
+
+    if (!testResults) {
+        // get tests from testPlanVersion through testPlanReport to create testPlanRun.testResults[].test
+        const testPlanReport = await getTestPlanReportById(testPlanReportId);
+        testResults = testPlanReport.testPlanVersion.tests.map(test => ({
+            test: {
+                htmlFile: test.htmlFile,
+                testFullName: test.testFullName,
+                executionOrder: test.executionOrder
+            }
+        }));
+    }
 
     const testPlanRunResult = await ModelService.create(
         TestPlanRun,
