@@ -28,10 +28,10 @@ import './TestRun.css';
 
 const TestRun = ({ auth, openAsUserId }) => {
     const params = useParams();
-    const { testPlanId: testPlanReportId, runId: testPlanRunId } = params;
+    const { runId: testPlanRunId } = params;
 
     const { loading, data, refetch } = useQuery(TEST_RUN_PAGE_QUERY, {
-        variables: { testPlanReportId, testPlanRunId }
+        variables: { testPlanRunId }
     });
 
     const { id: userId } = auth;
@@ -48,7 +48,8 @@ const TestRun = ({ auth, openAsUserId }) => {
         );
     }
 
-    const { testPlanReport, testPlanRun, users } = data;
+    const { testPlanRun, users } = data;
+    const { testPlanReport } = testPlanRun;
     const { testPlanTarget, testPlanVersion, conflictCount } = testPlanReport;
 
     const hasTestsToRun = testPlanRun.testResults.length;
@@ -100,19 +101,19 @@ const TestRun = ({ auth, openAsUserId }) => {
 
         const nextButton = (
             <Button
+                key="nextButton"
                 variant="secondary"
                 onClick={handleNextTestClick}
-                key="nextButton"
             >
                 Next Test
             </Button>
         );
 
-        const prevButton = (
+        const previousButton = (
             <Button
+                key="previousButton"
                 variant="secondary"
                 onClick={handlePreviousTestClick}
-                key="previousButton"
                 className="testrun__button-right"
                 disabled={isFirstTest}
             >
@@ -123,6 +124,7 @@ const TestRun = ({ auth, openAsUserId }) => {
         if (isComplete) {
             const editButton = (
                 <Button
+                    key="editButton"
                     className="edit-results"
                     variant="secondary"
                     onClick={handleEditClick}
@@ -134,6 +136,7 @@ const TestRun = ({ auth, openAsUserId }) => {
 
             const continueButton = (
                 <Button
+                    key="continueButton"
                     variant="primary"
                     disabled={isLastTest && !isComplete}
                     onClick={handleNextTestClick}
@@ -144,19 +147,27 @@ const TestRun = ({ auth, openAsUserId }) => {
 
             if (!isLastTest) forwardButtons = [nextButton];
             primaryButtons = [
-                prevButton,
+                previousButton,
                 editButton,
                 ...forwardButtons,
                 continueButton
             ];
         } else {
             const saveResultsButton = (
-                <Button variant="primary" onClick={handleSaveClick}>
+                <Button
+                    key="saveResultsButton"
+                    variant="primary"
+                    onClick={handleSaveClick}
+                >
                     Submit Results
                 </Button>
             );
             if (!isLastTest) forwardButtons = [nextButton];
-            primaryButtons = [prevButton, ...forwardButtons, saveResultsButton];
+            primaryButtons = [
+                previousButton,
+                ...forwardButtons,
+                saveResultsButton
+            ];
         }
 
         const primaryButtonGroup = (
@@ -355,7 +366,7 @@ const TestRun = ({ auth, openAsUserId }) => {
                                     return (
                                         <li
                                             className={`test-name-wrapper ${resultClassName}`}
-                                            key={i}
+                                            key={`TestNavigatorItem_${i}`}
                                         >
                                             <a
                                                 href="#"

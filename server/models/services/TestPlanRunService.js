@@ -63,11 +63,41 @@ const testPlanVersionAssociation = testPlanVersionAttributes => ({
 
 /**
  * @param {string[]} testPlanTargetAttributes - TestPlanTarget attributes
+ * @param {string[]} atAttributes - At attributes
+ * @param {string[]} browserAttributes - Browser attributes
  * @returns {{association: string, attributes: string[]}}
  */
-const testPlanTargetAssociation = testPlanTargetAttributes => ({
+const testPlanTargetAssociation = (
+    testPlanTargetAttributes,
+    atAttributes,
+    browserAttributes
+) => ({
     association: 'testPlanTarget',
-    attributes: testPlanTargetAttributes
+    attributes: testPlanTargetAttributes,
+    include: [
+        // eslint-disable-next-line no-use-before-define
+        atAssociation(atAttributes),
+        // eslint-disable-next-line no-use-before-define
+        browserAssociation(browserAttributes)
+    ]
+});
+
+/**
+ * @param {string[]} atAttributes - User attributes
+ * @returns {{association: string, attributes: string[]}}
+ */
+const atAssociation = atAttributes => ({
+    association: 'at',
+    attributes: atAttributes
+});
+
+/**
+ * @param {string[]} browserAttributes - User attributes
+ * @returns {{association: string, attributes: string[]}}
+ */
+const browserAssociation = browserAttributes => ({
+    association: 'browser',
+    attributes: browserAttributes
 });
 
 /**

@@ -1,26 +1,7 @@
 import { gql } from '@apollo/client';
 
 export const TEST_RUN_PAGE_QUERY = gql`
-    query TestPlanRunPage($testPlanReportId: ID!, $testPlanRunId: ID!) {
-        testPlanReport(id: $testPlanReportId) {
-            status
-            conflictCount
-            testPlanTarget {
-                title
-                at {
-                    name
-                }
-                atVersion
-                browser {
-                    name
-                }
-                browserVersion
-            }
-            testPlanVersion {
-                title
-                directory
-            }
-        }
+    query TestPlanRunPage($testPlanRunId: ID!) {
         testPlanRun(id: $testPlanRunId) {
             isComplete
             testResultCount
@@ -49,6 +30,26 @@ export const TEST_RUN_PAGE_QUERY = gql`
                     name
                 }
                 issues
+            }
+            testPlanReport {
+                id
+                status
+                conflictCount
+                testPlanTarget {
+                    title
+                    at {
+                        name
+                    }
+                    atVersion
+                    browser {
+                        name
+                    }
+                    browserVersion
+                }
+                testPlanVersion {
+                    title
+                    directory
+                }
             }
         }
         users {

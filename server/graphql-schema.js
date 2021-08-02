@@ -274,6 +274,7 @@ const graphqlSchema = gql`
         isComplete: Boolean!
         testResults: [TestResult]!
         testResultCount: Int!
+        testPlanReport: TestPlanReport!
     }
 
     enum TestPlanReportStatus {

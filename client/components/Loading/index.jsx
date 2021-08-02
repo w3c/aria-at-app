@@ -17,8 +17,8 @@ const Loading = ({ title, heading, message = 'Loading ...' }) => {
 };
 
 Loading.propTypes = {
-    title: PropTypes.string.required,
-    heading: PropTypes.string.required,
+    title: PropTypes.string,
+    heading: PropTypes.string,
     message: PropTypes.string
 };
 
