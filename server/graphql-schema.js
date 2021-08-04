@@ -236,8 +236,8 @@ const graphqlSchema = gql`
     }
 
     type TestResultSerializedForm {
-        name: String!
-        value: String!
+        name: String
+        value: String
         checked: Boolean
         disabled: Boolean
         indeterminate: Boolean
@@ -365,8 +365,8 @@ const graphqlSchema = gql`
     }
 
     input TestResultSerializedFormInput {
-        name: String!
-        value: String!
+        name: String
+        value: String
         checked: Boolean
         disabled: Boolean
         indeterminate: Boolean

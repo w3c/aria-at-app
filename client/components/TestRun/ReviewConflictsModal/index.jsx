@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Button, Modal } from 'react-bootstrap';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
-import checkForConflict from '../../utils/checkForConflict';
-import formatConflictsAsText from '../../utils/formatConflictsAsText';
+import checkForConflict from '../../../utils/checkForConflict';
+import formatConflictsAsText from '../../../utils/formatConflictsAsText';
 import nextId from 'react-id-generator';
 
 class ReviewConflictsModal extends Component {

@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
-import { Link, useParams } from 'react-router-dom';
-import { useQuery } from '@apollo/client';
+import { Link, useParams, useHistory } from 'react-router-dom';
+import { useQuery, useMutation } from '@apollo/client';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faArrowLeft,
@@ -17,27 +17,34 @@ import {
 import nextId from 'react-id-generator';
 import { Alert, Button, Col, Container, Modal, Row } from 'react-bootstrap';
 import queryString from 'query-string';
-import RaiseIssueModal from '@components/RaiseIssueModal';
-import ReviewConflictsModal from '@components/ReviewConflictsModal';
-import StatusBar from '@components/StatusBar';
-import TestResult from '@components/TestResult';
-import TestIframe from '@components/TestIframe';
-import Loading from '../Loading';
-import { TEST_RUN_PAGE_QUERY } from './queries';
+import RaiseIssueModal from '../RaiseIssueModal';
+import ReviewConflictsModal from './ReviewConflictsModal';
+import StatusBar from './StatusBar';
+import TestResult from '../TestResult';
+import TestIframe from './TestIframe';
+import OptionButton from './OptionButton';
+import Loading from '../common/Loading';
+import BasicModal from '../common/BasicModal';
+import { TEST_RUN_PAGE_QUERY, CLEAR_TEST_RESULT_MUTATION } from './queries';
 import './TestRun.css';
 
 const TestRun = ({ auth, openAsUserId }) => {
     const params = useParams();
+    const history = useHistory();
+
     const { runId: testPlanRunId } = params;
 
     const { loading, data, refetch } = useQuery(TEST_RUN_PAGE_QUERY, {
         variables: { testPlanRunId }
     });
+    const [clearTestResult] = useMutation(CLEAR_TEST_RESULT_MUTATION);
 
     const { id: userId } = auth;
 
     const [showTestNavigator, setShowTestNavigator] = useState(true);
     const [currentTestIndex, setCurrentTestIndex] = useState(1);
+    const [showStartOverModal, setShowStartOverModal] = useState(false);
+    const [showRaiseIssueModal, setShowRaiseIssueModal] = useState(false);
 
     if (!data || loading) {
         return (
@@ -56,6 +63,26 @@ const TestRun = ({ auth, openAsUserId }) => {
 
     const toggleTestNavigator = () => setShowTestNavigator(!showTestNavigator);
 
+    const navigateTests = (previous = false) => {
+        // assume navigation forward if previous is false
+        let newTestIndex = currentTestIndex;
+        if (!previous) {
+            // next
+            const newTestIndexToEval = currentTestIndex + 1;
+            if (newTestIndexToEval <= testPlanRun.testResults.length)
+                newTestIndex = newTestIndexToEval;
+        } else {
+            // previous
+            const newTestIndexToEval = currentTestIndex - 1;
+            if (
+                newTestIndexToEval >= 1 &&
+                newTestIndexToEval <= testPlanRun.testResults.length
+            )
+                newTestIndex = newTestIndexToEval;
+        }
+        setCurrentTestIndex(newTestIndex);
+    };
+
     const performButtonAction = async (action, index) => {
         const testerId = openAsUserId || userId;
         const currentTest = testPlanRun.testResults.find(
@@ -66,6 +93,27 @@ const TestRun = ({ auth, openAsUserId }) => {
             case 'goToTestAtIndex': {
                 // TODO: Save serialized form
                 setCurrentTestIndex(index);
+                break;
+            }
+            case 'goToNextTest': {
+                // TODO: Save serialized form
+                navigateTests();
+                break;
+            }
+            case 'goToPreviousTest': {
+                // TODO: Save serialized form
+                navigateTests(true);
+                break;
+            }
+            case 'editTest': {
+                break;
+            }
+            case 'saveTest': {
+                break;
+            }
+            case 'closeTest': {
+                // TODO: Save serialized form
+                history.push('/test-queue');
                 break;
             }
         }
@@ -85,14 +133,34 @@ const TestRun = ({ auth, openAsUserId }) => {
 
     const handleEditClick = async () => performButtonAction('editTest');
 
-    const handleRaiseIssueClick = async () => {};
+    const handleRaiseIssueButtonClick = async () =>
+        setShowRaiseIssueModal(true);
 
-    const handleRedoClick = async () => {};
+    const handleStartOverButtonClick = async () => setShowStartOverModal(true);
+
+    const handleStartOverAction = async () => {
+        await clearTestResult({
+            variables: {
+                testPlanRunId,
+                index: currentTestIndex
+            }
+        });
+        await refetch();
+
+        // close modal after action
+        setShowStartOverModal(false);
+    };
 
     const renderTestContent = (testPlanReport, testResult, heading) => {
-        const { conflictCount } = testPlanReport;
+        // const { conflictCount } = testPlanReport;
 
-        const { isComplete, isSkipped, index } = testResult;
+        const {
+            isComplete,
+            // isSkipped,
+            index,
+            result,
+            serializedForm
+        } = testResult;
         const isFirstTest = index === 1;
         const isLastTest = currentTestIndex === testPlanRun.testResults.length;
 
@@ -180,31 +248,24 @@ const TestRun = ({ auth, openAsUserId }) => {
             <div role="complementary">
                 <h3>Test Options</h3>
                 <div className="options-wrapper">
-                    <Button
-                        className="btn-block"
-                        variant="secondary"
-                        onClick={handleRaiseIssueClick}
-                    >
-                        <FontAwesomeIcon icon={faExclamationCircle} />
-                        Raise an issue
-                    </Button>
+                    <OptionButton
+                        text="Raise An Issue"
+                        icon={<FontAwesomeIcon icon={faExclamationCircle} />}
+                        onClick={handleRaiseIssueButtonClick}
+                    />
 
-                    <Button
-                        className="btn-block"
-                        variant="secondary"
-                        onClick={handleRedoClick}
-                    >
-                        <FontAwesomeIcon icon={faRedo} />
-                        Start over
-                    </Button>
+                    <OptionButton
+                        text="Start Over"
+                        disabled={!result || !serializedForm}
+                        icon={<FontAwesomeIcon icon={faRedo} />}
+                        onClick={handleStartOverButtonClick}
+                    />
 
-                    <Button
-                        className="btn-block"
-                        variant="secondary"
+                    <OptionButton
+                        text="Save and Close"
                         onClick={handleCloseRunClick}
-                    >
-                        Save and Close
-                    </Button>
+                    />
+
                     <div className="help-link">
                         Need Help?{' '}
                         <a href="mailto:public-aria-at@w3.org">Email Us</a>
@@ -229,6 +290,17 @@ const TestRun = ({ auth, openAsUserId }) => {
                         {menuRightOfContent}
                     </Col>
                 </Row>
+                <BasicModal
+                    show={showStartOverModal}
+                    centered={true}
+                    animation={false}
+                    details={{
+                        title: 'Start Over',
+                        description: `Are you sure you want to start over Test #${currentTestIndex}? Your progress (if any), will be lost.`
+                    }}
+                    handleAction={handleStartOverAction}
+                    handleClose={() => setShowStartOverModal(false)}
+                />
             </>
         );
     };
@@ -275,7 +347,7 @@ const TestRun = ({ auth, openAsUserId }) => {
                     <div className="test-info-entity tests-completed">
                         <div className="info-label">
                             <FontAwesomeIcon icon={faCheck} />
-                            <b>{`${currentTestIndex} of ${testPlanRun.testResults.length}`}</b>{' '}
+                            <b>{`${testPlanRun.testResultCount} of ${testPlanRun.testResults.length}`}</b>{' '}
                             tests completed
                         </div>
                     </div>
@@ -292,7 +364,7 @@ const TestRun = ({ auth, openAsUserId }) => {
                 </div>
                 <div className="test-info-entity at-browser">
                     <div className="info-label">AT and Browser</div>
-                    {`${testPlanTarget.at.name} ${testPlanTarget.atVersion} with ${testPlanTarget.browser.name} ${testPlanTarget.browserVersion}`}
+                    {`${testPlanTarget.title}`}
                 </div>
             </>
         );

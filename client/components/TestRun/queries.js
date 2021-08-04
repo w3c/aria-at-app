@@ -58,3 +58,62 @@ export const TEST_RUN_PAGE_QUERY = gql`
         }
     }
 `;
+
+export const CLEAR_TEST_RESULT_MUTATION = gql`
+    mutation ClearTestResult($testPlanRunId: ID!, $index: Int!) {
+        testPlanRun(id: $testPlanRunId) {
+            clearTestResult(input: { index: $index }) {
+                testPlanRun {
+                    isComplete
+                    testResultCount
+                    tester {
+                        id
+                        username
+                    }
+                    testResults {
+                        title
+                        index
+                        testFilePath
+                        isComplete
+                        isSkipped
+                        assertions(priority: REQUIRED) {
+                            command
+                            priority
+                            manualAssertion
+                        }
+                        assertionsCount(priority: REQUIRED)
+                        assertionsPassed(priority: REQUIRED)
+                        unexpectedBehaviorCount
+                        result {
+                            test
+                        }
+                        serializedForm {
+                            name
+                        }
+                        issues
+                    }
+                    testPlanReport {
+                        id
+                        status
+                        conflictCount
+                        testPlanTarget {
+                            title
+                            at {
+                                name
+                            }
+                            atVersion
+                            browser {
+                                name
+                            }
+                            browserVersion
+                        }
+                        testPlanVersion {
+                            title
+                            directory
+                        }
+                    }
+                }
+            }
+        }
+    }
+`;
