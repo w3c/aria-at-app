@@ -302,3 +302,8 @@ main.container-fluid .test-iframe-container > .row {
 .fa-check {
     color: #1e8f37;
 }
+
+.status-bar {
+    display: flex;
+    align-items: center;
+}

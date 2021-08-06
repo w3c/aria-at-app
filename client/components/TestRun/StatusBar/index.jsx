@@ -24,7 +24,7 @@ const StatusBar = ({
                 </Button>
             );
             const icon = 'alert';
-            const message = 'This test has conflicting results.';
+            const message = 'This test has conflicting results';
 
             setStatuses([
                 ...statuses,
@@ -42,8 +42,13 @@ const StatusBar = ({
         <>
             {statuses.map(({ action, icon, message, variant }) => {
                 return (
-                    <Alert key={nextId()} variant={variant}>
-                        <Octicon icon={Octicons[icon]} /> {message}
+                    <Alert
+                        key={nextId()}
+                        variant={variant}
+                        className="status-bar"
+                    >
+                        <Octicon icon={Octicons[icon]} className="mr-2" />{' '}
+                        {message}
                         {action}
                     </Alert>
                 );
