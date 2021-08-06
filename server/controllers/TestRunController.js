@@ -1,8 +1,8 @@
-const RunService = require('../services/RunService');
+const TestRunService = require('../services/TestRunService');
 
 async function configureRuns(req, res) {
     try {
-        const savedRun = await RunService.configureRuns(req.body.data);
+        const savedRun = await TestRunService.configureRuns(req.body.data);
         res.status(201).json(savedRun);
     } catch (error) {
         res.status(400);
@@ -13,7 +13,7 @@ async function configureRuns(req, res) {
 
 async function getActiveRuns(req, res) {
     try {
-        const runs = await RunService.getActiveRuns();
+        const runs = await TestRunService.getActiveRuns();
         res.status(201).json(runs);
     } catch (error) {
         res.status(400);
@@ -24,7 +24,7 @@ async function getActiveRuns(req, res) {
 
 async function getPublishedRuns(req, res) {
     try {
-        const runs = await RunService.getPublishedRuns();
+        const runs = await TestRunService.getPublishedRuns();
         res.status(201).json(runs);
     } catch (error) {
         res.status(400);
@@ -35,7 +35,7 @@ async function getPublishedRuns(req, res) {
 
 async function getActiveRunsConfiguration(req, res) {
     try {
-        const config = await RunService.getActiveRunsConfiguration();
+        const config = await TestRunService.getActiveRunsConfiguration();
         res.status(201).json(config);
     } catch (error) {
         res.status(400);
@@ -47,7 +47,7 @@ async function getActiveRunsConfiguration(req, res) {
 async function saveRunStatus(req, res) {
     try {
         const run = req.body.data;
-        const savedRun = await RunService.saveRunStatus(run);
+        const savedRun = await TestRunService.saveRunStatus(run);
         res.status(201).json(savedRun);
     } catch (error) {
         res.status(400);
