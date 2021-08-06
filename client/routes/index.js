@@ -4,6 +4,7 @@ import { Route, Redirect } from 'react-router-dom';
 import ConfigureActiveRuns from '@components/ConfigureActiveRuns';
 import ConfirmAuth from '@components/ConfirmAuth';
 import Home from '@components/Home';
+import InvalidRequest from '@components/InvalidRequest';
 import NotFound from '@components/NotFound';
 import ReportsPage from '@components/ReportsPage';
 import TestPlanReportPage from '@components/TestPlanReportPage';
@@ -29,7 +30,7 @@ export default [
         exact: true,
         component: () => {
             return (
-                <ConfirmAuth requiredPermission="tester">
+                <ConfirmAuth requiredPermission="TESTER">
                     <Route component={UserSettings} />
                 </ConfirmAuth>
             );
@@ -40,7 +41,7 @@ export default [
         exact: true,
         component: () => {
             return (
-                <ConfirmAuth requiredPermission="tester">
+                <ConfirmAuth requiredPermission="TESTER">
                     <Route component={TestQueue} />
                 </ConfirmAuth>
             );
@@ -51,7 +52,7 @@ export default [
         exact: true,
         component: () => {
             return (
-                <ConfirmAuth requiredPermission="admin">
+                <ConfirmAuth requiredPermission="ADMIN">
                     <Route component={ConfigureActiveRuns} />
                 </ConfirmAuth>
             );
@@ -72,6 +73,11 @@ export default [
     {
         path: '/reports',
         component: ReportsPage
+    },
+    {
+        path: '/invalid-request',
+        exact: true,
+        component: InvalidRequest
     },
     {
         path: '/404',

@@ -1,5 +1,6 @@
-import React, { Component, Fragment } from 'react';
+import React, { useRef, useState } from 'react';
 import PropTypes from 'prop-types';
+import { useMutation } from '@apollo/client';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faCheck,
@@ -8,217 +9,283 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import nextId from 'react-id-generator';
 import { Button, Dropdown } from 'react-bootstrap';
-import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import ATAlert from '@components/ATAlert';
-import checkForConflict from '../../utils/checkForConflict';
-import {
-    deleteTestResults,
-    deleteUsersFromRun,
-    saveUsersToRuns,
-    saveRunStatus
-} from '../../actions/runs';
+import ATAlert from '../ATAlert';
+import { capitalizeEachWord } from '../../utils/formatter';
+
 import './TestQueueRun.css';
+import {
+    ASSIGN_TESTER_MUTATION,
+    REMOVE_TESTER_MUTATION,
+    REMOVE_TESTER_RESULTS_MUTATION,
+    UPDATE_TEST_PLAN_REPORT_MUTATION
+} from '../TestQueue/queries';
 
-class TestQueueRun extends Component {
-    constructor(props) {
-        super(props);
+const TestQueueRun = ({
+    user = {},
+    testers = [],
+    testPlanReport = {},
+    triggerDeleteTestPlanReportModal = () => {},
+    triggerDeleteResultsModal = () => {},
+    triggerTestPlanReportUpdate = () => {}
+}) => {
+    const startTestingButtonRef = useRef();
+    const [alertMessage, setAlertMessage] = useState('');
 
-        const {
-            totalConflicts,
-            testsWithResults
-        } = this.countCompleteTestsAndConflicts();
-        this.state = {
-            totalConflicts,
-            testsWithResults
-        };
+    const [assignTester] = useMutation(ASSIGN_TESTER_MUTATION);
+    const [removeTester] = useMutation(REMOVE_TESTER_MUTATION);
+    const [removeTesterResults] = useMutation(REMOVE_TESTER_RESULTS_MUTATION);
+    const [updateTestPlanReportStatus] = useMutation(
+        UPDATE_TEST_PLAN_REPORT_MUTATION
+    );
 
-        this.handleUnassignSelfClick = this.handleUnassignSelfClick.bind(this);
-        this.handleAssignSelfClick = this.handleAssignSelfClick.bind(this);
-        this.toggleTesterAssign = this.toggleTesterAssign.bind(this);
-        this.handleDeleteResultsForUser = this.handleDeleteResultsForUser.bind(
-            this
+    const { isAdmin, username } = user;
+
+    const checkIsTesterAssigned = username => {
+        return testPlanReport.draftTestPlanRuns.some(
+            testPlanRun => testPlanRun.tester.username === username
         );
-        this.updateRunStatus = this.updateRunStatus.bind(this);
+    };
 
-        this.startTestingButton = React.createRef();
-    }
+    const currentUserAssigned = checkIsTesterAssigned(user.username);
+    const currentUserTestPlanRun = currentUserAssigned
+        ? testPlanReport.draftTestPlanRuns.find(
+              testPlanRun => testPlanRun.tester.username === user.username
+          )
+        : {};
+    const testPlanRunTesters = testPlanReport.draftTestPlanRuns;
 
-    countCompleteTestsAndConflicts() {
-        const { testsForRun, runStatus } = this.props;
+    const renderAssignedUserToTestPlan = () => {
+        // Determine if current user is assigned to testPlan
+        if (currentUserAssigned)
+            return (
+                <Link to={`/run/${currentUserTestPlanRun.id}`}>
+                    {testPlanReport.testPlanVersion.title ||
+                        `"${testPlanReport.testPlanVersion.directory}"`}
+                </Link>
+            );
+        return (
+            testPlanReport.testPlanVersion.title ||
+            `"${testPlanReport.testPlanVersion.directory}"`
+        );
+    };
 
-        let totalConflicts = 0;
-        let testsWithResults = 0;
-        for (let test of testsForRun) {
-            if (
-                test.results &&
-                Object.values(test.results).filter(r => r.status === 'complete')
-                    .length
-            ) {
-                testsWithResults++;
-                if (checkForConflict(test.results).length) {
-                    totalConflicts++;
+    const toggleTesterAssign = async username => {
+        const isTesterAssigned = checkIsTesterAssigned(username);
+        const tester = testers.find(tester => tester.username === username);
+
+        if (isTesterAssigned) {
+            // unassign tester
+            await removeTester({
+                variables: {
+                    testReportId: testPlanReport.id,
+                    testerId: tester.id
                 }
-            }
-        }
-
-        // Update the run status back to raw if there are no test results
-        if (testsWithResults === 0 && runStatus !== 'raw') {
-            this.updateRunStatus('raw');
-        }
-
-        return { totalConflicts, testsWithResults };
-    }
-
-    handleUnassignSelfClick() {
-        const { dispatch, userId, runId } = this.props;
-        dispatch(deleteUsersFromRun([userId], runId));
-    }
-
-    handleAssignSelfClick() {
-        const { dispatch, userId, runId } = this.props;
-        dispatch(saveUsersToRuns([userId], [runId]));
-        this.setState({
-            alertMessage: 'You have been assigned to this test run.'
-        });
-    }
-
-    toggleTesterAssign(uid) {
-        const { dispatch, runId, testers } = this.props;
-        if (testers.includes(uid)) {
-            dispatch(deleteUsersFromRun([uid], runId));
+            });
         } else {
-            dispatch(saveUsersToRuns([uid], [runId]));
-        }
-    }
-
-    updateRunStatus(status) {
-        let statusMap = {
-            Draft: 'raw',
-            'In Review': 'draft',
-            Final: 'final'
-        };
-        const { dispatch, runId } = this.props;
-        dispatch(saveRunStatus(statusMap[status], runId));
-    }
-
-    async handleDeleteResultsForUser(userId) {
-        const { dispatch, runId } = this.props;
-        await dispatch(deleteTestResults(userId, runId));
-
-        // Recount the number of tests with results
-        const { testsWithResults } = this.countCompleteTestsAndConflicts();
-        this.setState({
-            testsWithResults
-        });
-    }
-
-    componentDidUpdate(prevProps) {
-        // Focus on the start testing button after assigning yourself
-        const { userId, testers } = this.props;
-        if (testers.includes(userId) && !prevProps.testers.includes(userId)) {
-            this.startTestingButton.current.focus();
-        }
-
-        if (this.props.testsForRun.length !== prevProps.testsForRun.length) {
-            const {
-                totalConflicts,
-                testsWithResults
-            } = this.countCompleteTestsAndConflicts();
-
-            this.setState({
-                totalConflicts,
-                testsWithResults
+            // assign tester
+            await assignTester({
+                variables: {
+                    testReportId: testPlanReport.id,
+                    testerId: tester.id
+                }
             });
         }
-    }
 
-    testRun() {
-        const { apgExampleName, atName, browserName } = this.props;
+        // force data after assignment changes
+        await triggerTestPlanReportUpdate();
+    };
 
-        return `${apgExampleName} for ${atName} on ${browserName}`;
-    }
+    const handleRemoveTestPlanReport = async () => {
+        await updateReportStatus('REMOVED');
 
-    renderTestsCompletedByUser(uid) {
-        const { testsForRun, usersById } = this.props;
-        let totalTests = testsForRun.length;
-        let testsCompleted = this.testsCompletedByUser[uid];
+        // force data after assignment changes
+        await triggerTestPlanReportUpdate();
+    };
+
+    const handleRemoveTesterResults = async tester => {
+        const { id: testReportId } = testPlanReport;
+        const { id: testerId } = tester;
+
+        await removeTesterResults({
+            variables: {
+                testReportId,
+                testerId
+            }
+        });
+
+        // force data after assignment changes
+        await triggerTestPlanReportUpdate();
+    };
+
+    const renderAssignMenu = () => {
         return (
-            <li key={nextId()}>
-                <a
-                    href={`https://github.com/${usersById[uid].username}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    {usersById[uid].username}
-                </a>
-                <br />
-                {` (${testsCompleted} of ${totalTests} tests complete)`}
-            </li>
+            <>
+                <Dropdown aria-label="Assign testers menu">
+                    <Dropdown.Toggle
+                        aria-label="Assign testers"
+                        className="assign-tester"
+                        variant="secondary"
+                    >
+                        <FontAwesomeIcon icon={faUserPlus} />
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu role="menu">
+                        {testers.length ? (
+                            testers.map(tester => {
+                                const isTesterAssigned = checkIsTesterAssigned(
+                                    tester.username
+                                );
+                                let classname = isTesterAssigned
+                                    ? 'assigned'
+                                    : 'not-assigned';
+                                return (
+                                    <Dropdown.Item
+                                        role="menuitem"
+                                        variant="secondary"
+                                        as="button"
+                                        key={nextId()}
+                                        onClick={async () => {
+                                            await toggleTesterAssign(
+                                                tester.username
+                                            );
+                                            setAlertMessage(
+                                                `You have been ${
+                                                    classname.includes('not')
+                                                        ? 'removed from'
+                                                        : 'assigned to'
+                                                } this test run.`
+                                            );
+                                        }}
+                                        aria-checked={isTesterAssigned}
+                                    >
+                                        {isTesterAssigned && (
+                                            <FontAwesomeIcon icon={faCheck} />
+                                        )}
+                                        <span className={classname}>
+                                            {`${tester.username}`}
+                                        </span>
+                                    </Dropdown.Item>
+                                );
+                            })
+                        ) : (
+                            <span className="not-assigned">
+                                No testers to assign
+                            </span>
+                        )}
+                    </Dropdown.Menu>
+                </Dropdown>
+            </>
         );
-    }
+    };
 
-    renderTesterList(currentUserAssigned) {
-        const { testers, userId } = this.props;
+    const evaluateTestRunTitle = () => {
+        const { testPlanTarget, testPlanVersion } = testPlanReport;
+        const { title: testPlanTargetName } = testPlanTarget;
+        const { title: apgExampleName, directory } = testPlanVersion;
 
-        let userInfo = testers
-            .filter(uid => uid !== userId)
-            .map(uid => this.renderTestsCompletedByUser(uid));
-        if (currentUserAssigned) {
-            userInfo.unshift(this.renderTestsCompletedByUser(userId));
-        }
+        return `${apgExampleName || directory} for ${testPlanTargetName}`;
+    };
 
-        return userInfo;
-    }
-
-    renderOpenAsDropdown() {
-        const { runId, testers, usersById } = this.props;
-
-        let testrun = this.testRun();
+    const renderOpenAsDropdown = () => {
+        const { id: runId } = currentUserTestPlanRun;
 
         return (
             <Dropdown className="open-run-as">
                 <Dropdown.Toggle
                     id={nextId()}
                     variant="secondary"
-                    aria-label={`Open run ${testrun} as tester`}
-                    disabled={testers.length ? false : true}
+                    aria-label="Run as other tester"
+                    disabled={!testPlanRunTesters.length}
                 >
                     Open run as...
                 </Dropdown.Toggle>
                 <Dropdown.Menu role="menu">
-                    {testers.map(t => {
+                    {testPlanRunTesters.map(t => {
                         return (
                             <Dropdown.Item
                                 role="menuitem"
-                                href={`/run/${runId}?user=${t}`}
+                                href={`/run/${runId}?user=${t.tester.id}`}
                                 key={nextId()}
                             >
-                                {usersById[t].username}
+                                {t.tester.username}
                             </Dropdown.Item>
                         );
                     })}
                 </Dropdown.Menu>
             </Dropdown>
         );
-    }
+    };
 
-    renderStatusAndResult() {
-        const { runId, runStatus } = this.props;
+    const renderDeleteMenu = () => {
+        let testPlanRunsWithResults = getTestPlanRunsWithResults();
+
+        if (testPlanRunsWithResults.length) {
+            return (
+                <>
+                    <Dropdown aria-label="Delete results menu">
+                        <Dropdown.Toggle variant="danger">
+                            <FontAwesomeIcon icon={faTrashAlt} />
+                            Delete for...
+                        </Dropdown.Toggle>
+                        <Dropdown.Menu role="menu">
+                            {testPlanRunsWithResults.map(t => {
+                                return (
+                                    <Dropdown.Item
+                                        role="menuitem"
+                                        variant="secondary"
+                                        as="button"
+                                        key={nextId()}
+                                        onClick={() => {
+                                            triggerDeleteResultsModal(
+                                                evaluateTestRunTitle(),
+                                                t.tester.username,
+                                                async () =>
+                                                    await handleRemoveTesterResults(
+                                                        t.tester
+                                                    )
+                                            );
+                                        }}
+                                    >
+                                        <FontAwesomeIcon icon={faTrashAlt} />
+                                        {t.tester.username}
+                                    </Dropdown.Item>
+                                );
+                            })}
+                        </Dropdown.Menu>
+                    </Dropdown>
+                </>
+            );
+        }
+    };
+
+    const updateReportStatus = async status => {
+        await updateTestPlanReportStatus({
+            variables: {
+                testReportId: testPlanReport.id,
+                status: status
+            }
+        });
+        await triggerTestPlanReportUpdate();
+    };
+
+    const evaluateStatusAndResults = () => {
+        const { status: runStatus, conflictCount = 0 } = testPlanReport;
+        const { id: runId } = currentUserTestPlanRun;
+
         let status, results;
 
-        if (this.state.totalConflicts > 0) {
-            let pluralizedStatus = `${this.state.totalConflicts} Conflict${
-                this.state.totalConflicts === 1 ? '' : 's'
+        if (conflictCount > 0) {
+            let pluralizedStatus = `${conflictCount} Conflict${
+                conflictCount === 1 ? '' : 's'
             }`;
             status = (
                 <span className="status-label conflicts">
                     {pluralizedStatus}
                 </span>
             );
-        } else if (runStatus === 'raw' || !runStatus) {
+        } else if (runStatus === 'DRAFT' || !runStatus) {
             status = <span className="status-label not-started">Draft</span>;
-        } else if (runStatus === 'draft') {
+        } else if (runStatus === 'IN_REVIEW') {
             status = (
                 <span className="status-label in-progress">In Review</span>
             );
@@ -227,7 +294,7 @@ class TestQueueRun extends Component {
                     View Results
                 </Link>
             );
-        } else if (runStatus === 'final') {
+        } else if (runStatus === 'FINALIZED') {
             status = <span className="status-label complete">Final</span>;
             results = (
                 <Link className="reports-link" to={`/results/run/${runId}`}>
@@ -237,367 +304,202 @@ class TestQueueRun extends Component {
         }
 
         return { status, results };
-    }
+    };
 
-    generateRunStatus() {
-        const { runStatus } = this.props;
+    const getTestPlanRunsWithResults = () => {
+        const { draftTestPlanRuns } = testPlanReport;
+        return draftTestPlanRuns.filter(
+            testPlanRun => testPlanRun.testResultCount > 0
+        );
+    };
+
+    const evaluateNewReportStatus = () => {
+        const { status, conflictCount = 0 } = testPlanReport;
+        const testersWithResults = getTestPlanRunsWithResults();
 
         // If there are no conflicts OR the test has been marked as "final",
         // and admin can mark a test run as "draft"
         let newStatus;
         if (
-            (runStatus !== 'draft' &&
-                this.state.totalConflicts === 0 &&
-                this.state.testsWithResults > 0) ||
-            runStatus === 'final'
+            (status !== 'IN_REVIEW' &&
+                conflictCount === 0 &&
+                testersWithResults.length > 0) ||
+            status === 'FINALIZED'
         ) {
-            newStatus = 'In Review';
+            newStatus = 'IN_REVIEW';
         }
         // If the results have been marked as draft and there is no conflict,
         // they can be marked as "final"
         else if (
-            runStatus === 'draft' &&
-            this.state.totalConflicts === 0 &&
-            this.state.testsWithResults > 0
+            status === 'IN_REVIEW' &&
+            conflictCount === 0 &&
+            testersWithResults.length > 0
         ) {
-            newStatus = 'Final';
+            newStatus = 'FINALIZED';
         }
         return newStatus;
-    }
+    };
 
-    generateAssignableTesters() {
-        const { atNameId, testers, usersById } = this.props;
+    const { status, results } = evaluateStatusAndResults();
+    const nextReportStatus = evaluateNewReportStatus();
 
-        let canAssignTesters = [];
-        for (let uid of Object.keys(usersById)) {
-            const tester = usersById[uid];
-
-            if (tester.configured_ats.find(ua => ua.at_name_id === atNameId)) {
-                canAssignTesters.push({
-                    ...tester,
-                    assigned: testers.includes(tester.id)
-                });
-            }
-        }
-
-        return canAssignTesters;
-    }
-
-    renderAssignMenu() {
-        const canAssignTesters = this.generateAssignableTesters();
-
-        return (
-            <Fragment>
-                <Dropdown aria-label="Assign testers menu">
-                    <Dropdown.Toggle
-                        aria-label="Assign testers"
-                        className="assign-tester"
-                        variant="secondary"
-                    >
-                        <FontAwesomeIcon icon={faUserPlus} />
-                    </Dropdown.Toggle>
-                    <Dropdown.Menu>
-                        {canAssignTesters.map(t => {
-                            let classname = t.assigned
-                                ? 'assigned'
-                                : 'not-assigned';
-                            return (
-                                <Dropdown.Item
-                                    variant="secondary"
-                                    as="button"
-                                    key={nextId()}
-                                    onClick={() =>
-                                        this.toggleTesterAssign(t.id)
-                                    }
-                                    aria-checked={t.assigned}
-                                    role="menuitemcheckbox"
-                                >
-                                    {t.assigned && (
-                                        <FontAwesomeIcon icon={faCheck} />
-                                    )}
-                                    <span className={classname}>
-                                        {`${t.username} `}
-                                        <span className="fullname">
-                                            {t.fullname}
-                                        </span>
-                                    </span>
-                                </Dropdown.Item>
-                            );
-                        })}
-                    </Dropdown.Menu>
-                </Dropdown>
-            </Fragment>
-        );
-    }
-
-    generateTestersWithResults() {
-        const { testers, usersById } = this.props;
-
-        let testersWithResults = [];
-        for (let uid of Object.keys(usersById)) {
-            const tester = usersById[uid];
-            if (
-                testers.includes(tester.id) &&
-                this.testsCompletedByUser[tester.id]
-            ) {
-                testersWithResults.push(tester);
-            }
-        }
-
-        return testersWithResults;
-    }
-
-    renderDeleteMenu() {
-        const { showDeleteResultsModal, activeRunsById, runId } = this.props;
-        let testersWithResults = this.generateTestersWithResults();
-
-        if (testersWithResults.length) {
-            return (
-                <Fragment>
-                    <Dropdown aria-label="Delete results menu">
-                        <Dropdown.Toggle variant="danger">
-                            <FontAwesomeIcon icon={faTrashAlt} />
-                            Delete for...
-                        </Dropdown.Toggle>
-                        <Dropdown.Menu>
-                            {testersWithResults.map(t => {
-                                return (
-                                    <Dropdown.Item
-                                        role="menuitem"
-                                        variant="secondary"
-                                        as="button"
-                                        key={nextId()}
-                                        onClick={() =>
-                                            showDeleteResultsModal(
-                                                t.username,
-                                                activeRunsById[runId],
-                                                async () =>
-                                                    await this.handleDeleteResultsForUser(
-                                                        t.id
-                                                    )
-                                            )
-                                        }
-                                    >
-                                        <FontAwesomeIcon icon={faTrashAlt} />
-                                        {t.username}
-                                    </Dropdown.Item>
-                                );
-                            })}
-                        </Dropdown.Menu>
-                    </Dropdown>
-                </Fragment>
-            );
-        }
-    }
-
-    renderAdminActionMenu() {
-        return (
-            <Dropdown.Menu role="menu">
-                {this.renderAssignOptions(true)}
-                {this.renderRunStatusChangeOption()}
-                {this.renderDeleteOptions()}
-            </Dropdown.Menu>
-        );
-    }
-
-    render() {
-        const {
-            activeRunsById,
-            admin,
-            userId,
-            usersById,
-            runId,
-            testers,
-            testsForRun,
-            apgExampleName,
-            showDeleteResultsModal
-        } = this.props;
-
-        let currentUserAssigned = testers.includes(userId);
-
-        let designPatternLinkOrName;
-        if (currentUserAssigned) {
-            designPatternLinkOrName = (
-                <Link to={`/run/${runId}`}>{apgExampleName}</Link>
-            );
-        } else {
-            designPatternLinkOrName = apgExampleName;
-        }
-
-        this.testsCompletedByUser = testers.reduce((acc, uid) => {
-            acc[uid] = testsForRun.filter(
-                t =>
-                    t.results &&
-                    t.results[uid] &&
-                    t.results[uid].status === 'complete'
-            ).length;
-            return acc;
-        }, {});
-
-        this.testsCompletedOrInProgressByThisUser = testsForRun.filter(t => {
-            return t.results && t.results[userId];
-        }).length;
-
-        let testerList = this.renderTesterList(currentUserAssigned);
-
-        let { status, results } = this.renderStatusAndResult();
-        const newStatus = this.generateRunStatus();
-
-        return (
-            <tr key={runId}>
-                <th>{designPatternLinkOrName}</th>
-                <td>
-                    <div className="testers-wrapper">
-                        {admin && this.renderAssignMenu()}
-                        <div className="assign-actions">
-                            {!currentUserAssigned && (
-                                <Button
-                                    variant="secondary"
-                                    onClick={this.handleAssignSelfClick}
-                                    aria-label={`Assign yourself to the test run ${this.testRun()}`}
-                                    className="assign-self"
-                                >
-                                    Assign Yourself
-                                </Button>
-                            )}
-                            {currentUserAssigned && (
-                                <Button
-                                    variant="secondary"
-                                    onClick={this.handleUnassignSelfClick}
-                                    aria-label={`Unassign yourself from the test run ${this.testRun()}`}
-                                    className="assign-self"
-                                >
-                                    Unassign Yourself
-                                </Button>
-                            )}
-                        </div>
+    return (
+        <tr className="test-queue-run-row">
+            <th>{renderAssignedUserToTestPlan()}</th>
+            <td>
+                <div className="testers-wrapper">
+                    {isAdmin && renderAssignMenu()}
+                    <div className="assign-actions">
+                        <Button
+                            variant="secondary"
+                            onClick={() => toggleTesterAssign(user.username)}
+                            aria-label={
+                                !currentUserAssigned
+                                    ? 'Assign Yourself'
+                                    : 'Unassign Yourself'
+                            }
+                            className="assign-self"
+                        >
+                            {!currentUserAssigned
+                                ? 'Assign Yourself'
+                                : 'Unassign Yourself'}
+                        </Button>
                     </div>
-                    <div className="secondary-actions">
-                        <ul className="assignees">
-                            {testerList.length !== 0 ? (
-                                testerList
-                            ) : (
-                                <li className="no-assignees">
-                                    No testers assigned
-                                </li>
-                            )}
-                        </ul>
-                    </div>
-                </td>
-                <td>
-                    <div className="status-wrapper">{status}</div>
-                    <div className="secondary-actions">
-                        {admin && newStatus && (
-                            <>
-                                <Button
-                                    variant="secondary"
-                                    onClick={() =>
-                                        this.updateRunStatus(newStatus)
-                                    }
-                                >
-                                    Mark as {newStatus}
-                                </Button>
-                                {newStatus === 'Final' ? (
-                                    <Button
-                                        variant="link"
-                                        className="mt-1"
-                                        onClick={() =>
-                                            this.updateRunStatus('Draft')
-                                        }
-                                    >
-                                        Mark as Draft
-                                    </Button>
-                                ) : (
-                                    <></>
-                                )}
-                            </>
+                </div>
+                <div className="secondary-actions">
+                    <ul className="assignees">
+                        {testPlanReport.draftTestPlanRuns.length !== 0 ? (
+                            testPlanReport.draftTestPlanRuns.map(
+                                testPlanRun => (
+                                    <li key={nextId()}>
+                                        <a
+                                            href={`https://github.com/${testPlanRun.tester.username}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+                                            {testPlanRun.tester.username}
+                                        </a>
+                                        <br />
+                                        {`(${testPlanRun.testResultCount} of ${testPlanReport.testPlanVersion.testCount} tests complete)`}
+                                    </li>
+                                )
+                            )
+                        ) : (
+                            <li className="no-assignees">
+                                No testers assigned
+                            </li>
                         )}
-                        {results}
-                    </div>
-                </td>
-                <td className="actions">
-                    {currentUserAssigned && (
-                        <div className="test-cta-wrapper">
+                    </ul>
+                </div>
+            </td>
+            <td>
+                <div className="status-wrapper">{status}</div>
+                <div className="secondary-actions">
+                    {isAdmin && nextReportStatus && (
+                        <>
                             <Button
-                                variant="primary"
-                                href={`/run/${runId}`}
-                                disabled={!currentUserAssigned}
-                                ref={this.startTestingButton}
-                            >
-                                {this.testsCompletedOrInProgressByThisUser
-                                    ? 'Continue testing'
-                                    : 'Start testing'}
-                            </Button>
-                        </div>
-                    )}
-                    <div className="secondary-actions">
-                        {admin && this.renderOpenAsDropdown()}
-                        {admin && this.renderDeleteMenu()}
-                        {(!admin && this.testsCompletedByUser[userId] && (
-                            <Button
-                                variant="danger"
+                                variant="secondary"
                                 onClick={() =>
-                                    showDeleteResultsModal(
-                                        usersById[userId].username,
-                                        activeRunsById[runId],
-                                        async () =>
-                                            await this.handleDeleteResultsForUser(
-                                                userId
-                                            )
-                                    )
+                                    updateReportStatus(nextReportStatus)
                                 }
-                                aria-label="Delete my results"
                             >
-                                <FontAwesomeIcon icon={faTrashAlt} />
-                                Delete Results
+                                Mark as{' '}
+                                {capitalizeEachWord(nextReportStatus, {
+                                    splitChar: '_'
+                                })}
                             </Button>
-                        )) ||
-                            ''}
-                        <ATAlert message={this.state.alertMessage} />
-                    </div>
-                </td>
-            </tr>
-        );
-    }
-}
+                            {nextReportStatus === 'Final' ? (
+                                <Button
+                                    variant="link"
+                                    className="mt-1"
+                                    onClick={() => updateReportStatus('DRAFT')}
+                                >
+                                    Mark as Draft
+                                </Button>
+                            ) : (
+                                <></>
+                            )}
+                        </>
+                    )}
+                    {results}
+                </div>
+            </td>
+            <td className="actions">
+                <div className="test-cta-wrapper">
+                    {currentUserAssigned && (
+                        <Button
+                            variant="primary"
+                            href={`/run/${currentUserTestPlanRun.id}`}
+                            disabled={!currentUserAssigned}
+                            ref={startTestingButtonRef}
+                        >
+                            {currentUserTestPlanRun.testResultCount > 0 &&
+                            currentUserTestPlanRun.testResultCount <
+                                testPlanReport.testPlanVersion.testCount
+                                ? 'Continue testing'
+                                : 'Start testing'}
+                        </Button>
+                    )}
+
+                    {isAdmin && (
+                        <Button
+                            variant="danger"
+                            onClick={() => {
+                                triggerDeleteTestPlanReportModal(
+                                    testPlanReport.id,
+                                    evaluateTestRunTitle(),
+                                    async () =>
+                                        await handleRemoveTestPlanReport(
+                                            testPlanReport
+                                        )
+                                );
+                            }}
+                        >
+                            Remove
+                        </Button>
+                    )}
+                </div>
+                <div className="secondary-actions">
+                    {isAdmin && renderOpenAsDropdown()}
+                    {isAdmin && renderDeleteMenu()}
+                    {(!isAdmin && currentUserTestPlanRun.testResultCount && (
+                        <Button
+                            variant="danger"
+                            onClick={() => {
+                                triggerDeleteResultsModal(
+                                    evaluateTestRunTitle(),
+                                    username,
+                                    async () =>
+                                        await handleRemoveTesterResults(user)
+                                );
+                            }}
+                            aria-label="Delete my results"
+                        >
+                            <FontAwesomeIcon icon={faTrashAlt} />
+                            Delete Results
+                        </Button>
+                    )) ||
+                        null}
+
+                    {alertMessage && (
+                        <ATAlert
+                            key={`${testPlanReport.testPlanVersion.id}-${testPlanReport.testPlanVersion.gitSha}-${testPlanReport.testPlanVersion.directory}`}
+                            message={alertMessage}
+                        />
+                    )}
+                </div>
+            </td>
+        </tr>
+    );
+};
 
 TestQueueRun.propTypes = {
-    activeRunsById: PropTypes.object,
-    admin: PropTypes.bool,
-    runId: PropTypes.number,
-    runStatus: PropTypes.string,
-    apgExampleName: PropTypes.string,
+    user: PropTypes.object,
     testers: PropTypes.array,
-    usersById: PropTypes.object,
-    userId: PropTypes.number,
-    atName: PropTypes.string,
-    atNameId: PropTypes.number,
-    browserName: PropTypes.string,
-    dispatch: PropTypes.func,
-    testsForRun: PropTypes.array,
-    showDeleteResultsModal: PropTypes.func
+    testPlanReport: PropTypes.object,
+    triggerDeleteTestPlanReportModal: PropTypes.func,
+    triggerDeleteResultsModal: PropTypes.func,
+    triggerTestPlanReportUpdate: PropTypes.func
 };
 
-const mapStateToProps = (state, ownProps) => {
-    const { activeRunsById } = state.runs;
-    const { usersById } = state.users;
-    const { runId } = ownProps;
-    const userId = state.user.id;
-
-    const run = activeRunsById[runId];
-    const { apg_example_name, testers, at_name_id, run_status, tests } = run;
-
-    return {
-        apgExampleName: apg_example_name,
-        testers,
-        atNameId: at_name_id,
-        runStatus: run_status,
-        runId,
-        testsForRun: tests,
-        activeRunsById,
-        usersById,
-        userId
-    };
-};
-
-export default connect(mapStateToProps)(TestQueueRun);
+export default TestQueueRun;

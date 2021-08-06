@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import { Button, Container, Form } from 'react-bootstrap';
-import { handleSetUserAts } from '../../actions/users';
+import { handleSetUserAts } from '../../redux/actions/users';
 
 class UserSettings extends Component {
     constructor(props) {
