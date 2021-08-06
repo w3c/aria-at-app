@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import { Link, useParams, useHistory } from 'react-router-dom';
+import useRouterQuery from '../../hooks/useRouterQuery';
 import { useQuery, useMutation } from '@apollo/client';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -28,9 +29,10 @@ import BasicModal from '../common/BasicModal';
 import { TEST_RUN_PAGE_QUERY, CLEAR_TEST_RESULT_MUTATION } from './queries';
 import './TestRun.css';
 
-const TestRun = ({ auth, openAsUserId }) => {
+const TestRun = ({ auth }) => {
     const params = useParams();
     const history = useHistory();
+    const routerQuery = useRouterQuery();
 
     const { runId: testPlanRunId } = params;
 
@@ -40,11 +42,15 @@ const TestRun = ({ auth, openAsUserId }) => {
     const [clearTestResult] = useMutation(CLEAR_TEST_RESULT_MUTATION);
 
     const { id: userId } = auth;
+    const openAsUserId = routerQuery.get('user');
 
     const [showTestNavigator, setShowTestNavigator] = useState(true);
     const [currentTestIndex, setCurrentTestIndex] = useState(1);
     const [showStartOverModal, setShowStartOverModal] = useState(false);
     const [showRaiseIssueModal, setShowRaiseIssueModal] = useState(false);
+    const [showReviewConflictsModal, setShowReviewConflictsModal] = useState(
+        false
+    );
 
     if (!data || loading) {
         return (
@@ -57,7 +63,7 @@ const TestRun = ({ auth, openAsUserId }) => {
 
     const { testPlanRun, users } = data;
     const { testPlanReport } = testPlanRun;
-    const { testPlanTarget, testPlanVersion, conflictCount } = testPlanReport;
+    const { testPlanTarget, testPlanVersion, conflicts } = testPlanReport;
 
     const hasTestsToRun = testPlanRun.testResults.length;
 
@@ -151,16 +157,11 @@ const TestRun = ({ auth, openAsUserId }) => {
         setShowStartOverModal(false);
     };
 
-    const renderTestContent = (testPlanReport, testResult, heading) => {
-        // const { conflictCount } = testPlanReport;
+    const handleReviewConflictsButtonClick = async () =>
+        setShowReviewConflictsModal(true);
 
-        const {
-            isComplete,
-            // isSkipped,
-            index,
-            result,
-            serializedForm
-        } = testResult;
+    const renderTestContent = (testPlanReport, testResult, heading) => {
+        const { isComplete, index, result, serializedForm } = testResult;
         const isFirstTest = index === 1;
         const isLastTest = currentTestIndex === testPlanRun.testResults.length;
 
@@ -281,6 +282,13 @@ const TestRun = ({ auth, openAsUserId }) => {
                     {`${currentTestIndex}.`} {testResult.title}
                 </h1>
                 <span>{heading}</span>
+                <StatusBar
+                    key={nextId()}
+                    conflicts={conflicts[currentTestIndex]}
+                    handleReviewConflictsButtonClick={
+                        handleReviewConflictsButtonClick
+                    }
+                />
                 <Row>
                     <Col md={9} className="test-iframe-container">
                         {/*<Row>{testContent}</Row>*/}
@@ -300,6 +308,12 @@ const TestRun = ({ auth, openAsUserId }) => {
                     }}
                     handleAction={handleStartOverAction}
                     handleClose={() => setShowStartOverModal(false)}
+                />
+                <ReviewConflictsModal
+                    show={showReviewConflictsModal}
+                    testerId={openAsUserId || userId}
+                    conflicts={conflicts[currentTestIndex]}
+                    handleClose={() => setShowReviewConflictsModal(false)}
                 />
             </>
         );
@@ -419,11 +433,14 @@ const TestRun = ({ auth, openAsUserId }) => {
                                     let resultClassName = 'not-started';
                                     let resultStatus = 'Not Started:';
 
+                                    const testConflicts =
+                                        conflicts[t.index] || [];
+
                                     if (t) {
                                         if (t.serializedForm && !t.result) {
                                             resultClassName = 'in-progress';
                                             resultStatus = 'In Progress:';
-                                        } else if (conflictCount) {
+                                        } else if (testConflicts.length) {
                                             resultClassName = 'conflicts';
                                             resultStatus = 'Has Conflicts:';
                                         } else if (

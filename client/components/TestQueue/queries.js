@@ -10,7 +10,7 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
         testPlanReports(statuses: [DRAFT, IN_REVIEW]) {
             id
             status
-            # conflictCount
+            conflictCount
             testPlanTarget {
                 id
                 title

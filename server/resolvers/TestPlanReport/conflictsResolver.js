@@ -10,7 +10,7 @@ const conflictsResolver = testPlanReport => {
                     ...testResult,
                     executionOrder: testResult.test.executionOrder,
                     testPlanRunId: testPlanRun.id,
-                    testerUserId: testPlanRun.testerUserId
+                    tester: testPlanRun.tester
                 };
 
                 if (!tests[testResult.test.executionOrder])
@@ -27,9 +27,9 @@ const conflictsResolver = testPlanReport => {
         for (let key in tests) {
             const testsToCheck = [...tests[key]]; // executionOrder id
             const baseTestToCheck = testsToCheck[0];
-            const baseTesterId = baseTestToCheck.testerUserId;
+            const baseTester = baseTestToCheck.tester;
             const otherTestsToCheck = testsToCheck.filter(
-                r => r.testerUserId !== baseTesterId
+                r => r.tester.id !== baseTester.id
             );
 
             // TODO: Based on old implementation; works but complex. Simplify.
@@ -60,7 +60,7 @@ const conflictsResolver = testPlanReport => {
                             differentAnswers.push({
                                 output: otherCommand.output,
                                 answer: otherAnswer,
-                                testerUserId: otherTest.testerUserId
+                                tester: otherTest.tester
                             });
                         }
                     }
@@ -73,7 +73,7 @@ const conflictsResolver = testPlanReport => {
                                 {
                                     output: baseCommand.output,
                                     answer: baseAnswer,
-                                    testerUserId: baseTesterId
+                                    tester: baseTester
                                 },
                                 ...differentAnswers
                             ]
@@ -98,7 +98,7 @@ const conflictsResolver = testPlanReport => {
                                       ' and '
                                   )
                                 : 'No unexpected behaviors recorded',
-                            testerUserId: otherResult.testerUserId
+                            tester: otherResult.tester
                         });
                     }
                     // If they are the same length, confirm they are the same
@@ -117,7 +117,7 @@ const conflictsResolver = testPlanReport => {
                                               ' and '
                                           )
                                         : 'No unexpected behaviors recorded',
-                                    testerUserId: otherResult.testerUserId
+                                    tester: otherResult.tester
                                 });
                                 // If we find any conflicts in the unexpected list, then the lists conflict
                                 break;
@@ -138,7 +138,7 @@ const conflictsResolver = testPlanReport => {
                                               ' and '
                                           )
                                         : 'No unexpected behaviors recorded',
-                                    testerUserId: baseTesterId
+                                    tester: baseTester
                                 },
                                 ...differentAnswers
                             ]

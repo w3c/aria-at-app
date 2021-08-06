@@ -9,6 +9,8 @@ const graphqlSchema = gql`
     """
     scalar Timestamp
 
+    scalar Object
+
     enum Role {
         TESTER
         ADMIN
@@ -291,7 +293,8 @@ const graphqlSchema = gql`
         optionalSupportPercent: Int!
         testPlanTarget: TestPlanTarget!
         testPlanVersion: TestPlanVersion!
-        conflicts: [TestResultConflict]!
+        # conflicts: [TestResultConflict]!
+        conflicts: Object!
         conflictCount: Int!
         """
         Finalizing a test plan report requires resolving any conflicts between

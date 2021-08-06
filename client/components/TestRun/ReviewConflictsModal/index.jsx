@@ -1,28 +1,31 @@
-import React, { Component, Fragment } from 'react';
+import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 import { Button, Modal } from 'react-bootstrap';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
-import checkForConflict from '../../../utils/checkForConflict';
 import formatConflictsAsText from '../../../utils/formatConflictsAsText';
 import nextId from 'react-id-generator';
 
-class ReviewConflictsModal extends Component {
-    constructor(props) {
-        super(props);
-    }
-    renderModalBody(conflicts) {
-        const { testerId, usersById } = this.props;
-
-        const you = usersById[testerId].username;
+const ReviewConflictsModal = ({
+    show = false,
+    testerId,
+    conflicts = [],
+    handleClose = () => {},
+    handleRaiseIssueButtonClick = () => {}
+}) => {
+    const renderModalBody = () => {
         return conflicts.map((conflict, index) => {
             if (conflict.assertion) {
-                let yourAnswer = conflict.answers.find(
-                    a => a.user === testerId
-                );
+                let currentUsername = '';
+                let yourAnswer = conflict.answers.find(a => {
+                    if (a.tester.id == testerId) {
+                        currentUsername = a.tester.username;
+                        return true;
+                    }
+                });
                 let otherAnswers = conflict.answers.filter(
-                    a => a.user !== testerId
+                    a => a.tester.id != testerId
                 );
+
                 return (
                     <Fragment key={nextId()}>
                         <h5>{`Difference ${index + 1} - Testing command "${
@@ -30,10 +33,10 @@ class ReviewConflictsModal extends Component {
                         }" for assertion "${conflict.assertion}"`}</h5>
                         <ul>
                             <li>
-                                {`${you}'s result: ${yourAnswer.answer} (for output "${yourAnswer.output}")`}
+                                {`${currentUsername}'s result: ${yourAnswer.answer} (for output "${yourAnswer.output}")`}
                             </li>
                             {otherAnswers.map(answer => {
-                                let other = usersById[answer.user].username;
+                                let other = answer.tester.username;
                                 return (
                                     <li key={nextId()}>
                                         {`${other}'s result: ${answer.answer} (for output "${answer.output}")`}
@@ -44,11 +47,15 @@ class ReviewConflictsModal extends Component {
                     </Fragment>
                 );
             } else {
-                let yourUnexpecteds = conflict.answers.find(
-                    a => a.user === testerId
-                );
+                let currentUsername = '';
+                let yourUnexpecteds = conflict.answers.find(a => {
+                    if (a.tester.id == testerId) {
+                        currentUsername = a.tester.username;
+                        return true;
+                    }
+                });
                 let otherUnexpecteds = conflict.answers.filter(
-                    a => a.user !== testerId
+                    a => a.tester.id != testerId
                 );
                 return (
                     <Fragment key={nextId()}>
@@ -58,10 +65,10 @@ class ReviewConflictsModal extends Component {
                         }"`}</h5>
                         <ul>
                             <li>
-                                {`${you}'s result: ${yourUnexpecteds.answer} (for output "${yourUnexpecteds.output}")`}
+                                {`${currentUsername}'s result: ${yourUnexpecteds.answer} (for output "${yourUnexpecteds.output}")`}
                             </li>
                             {otherUnexpecteds.map(answer => {
-                                let other = usersById[answer.user].username;
+                                let other = answer.tester.username;
                                 return (
                                     <li key={nextId()}>
                                         {`${other}'s result: ${answer.answer} (for output "${answer.output}")`}
@@ -73,78 +80,52 @@ class ReviewConflictsModal extends Component {
                 );
             }
         });
-    }
+    };
 
-    render() {
-        const {
-            show,
-            onHide,
-            handleRaiseIssueClick,
-            test,
-            testerId
-        } = this.props;
+    const conflictsText = formatConflictsAsText(conflicts, testerId);
+    const modalBody = renderModalBody(conflicts);
 
-        if (!test.results) {
-            return null;
-        }
-
-        const conflicts = checkForConflict(test.results, testerId);
-
-        if (conflicts.length === 0) {
-            return null;
-        }
-
-        const conflictsText = formatConflictsAsText(conflicts, testerId);
-        const modalBody = this.renderModalBody(conflicts);
-
-        const role = 'dialog';
-        return (
-            <Modal
-                aria-labelledby="review-conflicts-modal-title"
-                aria-modal="true"
-                keyboard
-                scrollable
-                dialogClassName="modal-xl"
-                onHide={onHide}
-                role={role}
-                show={show}
-                tabIndex={-1}
-            >
-                <Modal.Header closeButton>
-                    <Modal.Title id="review-conflicts-modal-title">
-                        {`Reviewing ${conflicts.length} Conflicts`}
-                    </Modal.Title>
-                </Modal.Header>
-                <Modal.Body>{modalBody}</Modal.Body>
-                <Modal.Footer>
-                    <CopyToClipboard text={conflictsText}>
-                        <Button variant="secondary">
-                            Copy Conflicts to Clipboard
-                        </Button>
-                    </CopyToClipboard>
-                    <Button variant="secondary" onClick={handleRaiseIssueClick}>
-                        Raise an Issue for this Conflict
+    return (
+        <Modal
+            show={show}
+            role="dialog"
+            tabIndex={-1}
+            keyboard
+            scrollable
+            dialogClassName="modal-xl"
+            aria-modal="true"
+            aria-labelledby="review-conflicts-modal"
+            onHide={handleClose}
+        >
+            <Modal.Header closeButton>
+                <Modal.Title id="review-conflicts-modal-title">
+                    {`Reviewing ${conflicts.length} Conflicts`}
+                </Modal.Title>
+            </Modal.Header>
+            <Modal.Body>{modalBody}</Modal.Body>
+            <Modal.Footer>
+                <CopyToClipboard text={conflictsText}>
+                    <Button variant="secondary">
+                        Copy Conflicts to Clipboard
                     </Button>
-                </Modal.Footer>
-            </Modal>
-        );
-    }
-}
+                </CopyToClipboard>
+                <Button
+                    variant="secondary"
+                    onClick={handleRaiseIssueButtonClick}
+                >
+                    Raise an Issue for this Conflict
+                </Button>
+            </Modal.Footer>
+        </Modal>
+    );
+};
 
 ReviewConflictsModal.propTypes = {
-    conflicts: PropTypes.array,
-    dispatch: PropTypes.func,
-    onHide: PropTypes.func,
-    handleRaiseIssueClick: PropTypes.func,
     show: PropTypes.bool,
-    test: PropTypes.object,
-    usersById: PropTypes.object,
-    testerId: PropTypes.number
+    testerId: PropTypes.any,
+    conflicts: PropTypes.array,
+    handleClose: PropTypes.func,
+    handleRaiseIssueButtonClick: PropTypes.func
 };
 
-const mapStateToProps = state => {
-    const { usersById } = state.users;
-    return { usersById };
-};
-
-export default connect(mapStateToProps)(ReviewConflictsModal);
+export default ReviewConflictsModal;

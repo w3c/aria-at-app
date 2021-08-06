@@ -35,6 +35,7 @@ export const TEST_RUN_PAGE_QUERY = gql`
                 id
                 status
                 conflictCount
+                conflicts
                 testPlanTarget {
                     title
                     at {
@@ -96,6 +97,7 @@ export const CLEAR_TEST_RESULT_MUTATION = gql`
                         id
                         status
                         conflictCount
+                        conflicts
                         testPlanTarget {
                             title
                             at {
