@@ -12,6 +12,7 @@ main.container-fluid table .col-md-3 {
 .test-queue.table .testers-wrapper,
 .test-queue.table .status-wrapper,
 .test-queue.table .test-cta-wrapper {
+    min-height: 3.75rem;
     padding: 0.75em;
     /* background: #ffffff; */
 }

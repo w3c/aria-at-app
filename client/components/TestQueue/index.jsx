@@ -106,10 +106,10 @@ const TestQueue = ({ auth }) => {
                     </thead>
                     <tbody>
                         {testPlanReports.map(testPlanReport => {
-                            const id = nextId('test_queue_run_');
+                            const key = `test_plan_report_${testPlanReport.id}`;
                             return (
                                 <TestQueueRun
-                                    key={id}
+                                    key={key}
                                     user={auth}
                                     testers={testers}
                                     testPlanReport={testPlanReport}
