@@ -201,8 +201,6 @@ const TestQueueRun = ({
     };
 
     const renderOpenAsDropdown = () => {
-        const { id: runId } = currentUserTestPlanRun;
-
         return (
             <Dropdown className="open-run-as">
                 <Dropdown.Toggle
