@@ -48,7 +48,7 @@ const TestRun = ({ auth }) => {
 
     const { id: userId } = auth;
     const openAsUserId = routerQuery.get('user');
-    // const testerId = openAsUserId || userId;
+    const testerId = openAsUserId || userId;
 
     const [showTestNavigator, setShowTestNavigator] = useState(true);
     const [currentTestIndex, setCurrentTestIndex] = useState(1);
@@ -380,7 +380,7 @@ const TestRun = ({ auth }) => {
                     <RaiseIssueModal
                         key={nextId()}
                         show={showRaiseIssueModal}
-                        userId={openAsUserId || userId}
+                        userId={testerId}
                         test={currentTest}
                         testPlanRun={testPlanRun}
                         issues={issues}
@@ -395,7 +395,7 @@ const TestRun = ({ auth }) => {
                     <ReviewConflictsModal
                         key={nextId()}
                         show={showReviewConflictsModal}
-                        userId={openAsUserId || userId}
+                        userId={testerId}
                         conflicts={conflicts[currentTestIndex]}
                         handleClose={() => setShowReviewConflictsModal(false)}
                         handleRaiseIssueButtonClick={
@@ -413,7 +413,7 @@ const TestRun = ({ auth }) => {
     let openAsUserHeading = null;
 
     if (openAsUserId) {
-        const openAsUser = users.filter(user => user.id === openAsUserId);
+        const openAsUser = users.find(user => user.id === openAsUserId);
         openAsUserHeading = (
             <>
                 <div className="test-info-entity reviewing-as">
@@ -582,8 +582,7 @@ const TestRun = ({ auth }) => {
 };
 
 TestRun.propTypes = {
-    auth: PropTypes.object,
-    openAsUserId: PropTypes.number
+    auth: PropTypes.object
 };
 
 const mapStateToProps = state => {
