@@ -7,7 +7,7 @@ import nextId from 'react-id-generator';
 
 const ReviewConflictsModal = ({
     show = false,
-    testerId,
+    userId,
     conflicts = [],
     handleClose = () => {},
     handleRaiseIssueButtonClick = () => {}
@@ -17,13 +17,13 @@ const ReviewConflictsModal = ({
             if (conflict.assertion) {
                 let currentUsername = '';
                 let yourAnswer = conflict.answers.find(a => {
-                    if (a.tester.id == testerId) {
+                    if (a.tester.id == userId) {
                         currentUsername = a.tester.username;
                         return true;
                     }
                 });
                 let otherAnswers = conflict.answers.filter(
-                    a => a.tester.id != testerId
+                    a => a.tester.id != userId
                 );
 
                 return (
@@ -49,13 +49,13 @@ const ReviewConflictsModal = ({
             } else {
                 let currentUsername = '';
                 let yourUnexpecteds = conflict.answers.find(a => {
-                    if (a.tester.id == testerId) {
+                    if (a.tester.id == userId) {
                         currentUsername = a.tester.username;
                         return true;
                     }
                 });
                 let otherUnexpecteds = conflict.answers.filter(
-                    a => a.tester.id != testerId
+                    a => a.tester.id != userId
                 );
                 return (
                     <Fragment key={nextId()}>
@@ -82,7 +82,7 @@ const ReviewConflictsModal = ({
         });
     };
 
-    const conflictsText = formatConflictsAsText(conflicts, testerId);
+    const conflictsText = formatConflictsAsText(conflicts, userId);
     const modalBody = renderModalBody(conflicts);
 
     return (
@@ -122,7 +122,7 @@ const ReviewConflictsModal = ({
 
 ReviewConflictsModal.propTypes = {
     show: PropTypes.bool,
-    testerId: PropTypes.any,
+    userId: PropTypes.any,
     conflicts: PropTypes.array,
     handleClose: PropTypes.func,
     handleRaiseIssueButtonClick: PropTypes.func
