@@ -54,8 +54,12 @@ const updateTestResultResolver = async (
     }
 
     // represents GitHub issues
-    if (issues.length)
-        testResults[testResultToUpdateIndex].issues = [...issues];
+    if (issues.length) {
+        testResults[testResultToUpdateIndex].issues = [
+            ...(testResults[testResultToUpdateIndex].issues || []),
+            ...issues
+        ];
+    }
 
     await updateTestPlanRun(testPlanRunId, { testResults });
 

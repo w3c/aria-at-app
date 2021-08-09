@@ -5,18 +5,43 @@ import { Octicon, Octicons } from 'octicons-react';
 import nextId from 'react-id-generator';
 
 const StatusBar = ({
+    issues = [],
     conflicts = [],
+    handleRaiseIssueButtonClick = () => {},
     handleReviewConflictsButtonClick = () => {}
 }) => {
     const [statuses, setStatuses] = useState([]);
 
     useEffect(() => {
-        // TODO: determine if still need to show issues. Seems to have been unsupported in old version
+        const statuses = [];
+
+        if (issues.length) {
+            // TODO: Replace with a loader to prevent flickers
+            const variant = 'warning';
+            const action = (
+                <Button
+                    className="ml-auto"
+                    variant={variant}
+                    onClick={handleRaiseIssueButtonClick}
+                >
+                    Review Issues
+                </Button>
+            );
+            const icon = 'alert';
+            const message = 'This test has open issues';
+            statuses.push({
+                action,
+                icon,
+                message,
+                variant
+            });
+        }
+
         if (conflicts.length) {
             const variant = 'warning';
             const action = (
                 <Button
-                    className="ml-2"
+                    className="ml-auto"
                     variant={variant}
                     onClick={handleReviewConflictsButtonClick}
                 >
@@ -25,17 +50,15 @@ const StatusBar = ({
             );
             const icon = 'alert';
             const message = 'This test has conflicting results';
-
-            setStatuses([
-                ...statuses,
-                {
-                    action,
-                    icon,
-                    message,
-                    variant
-                }
-            ]);
+            statuses.push({
+                action,
+                icon,
+                message,
+                variant
+            });
         }
+
+        setStatuses(statuses);
     }, []);
 
     return (
@@ -58,7 +81,9 @@ const StatusBar = ({
 };
 
 StatusBar.propTypes = {
+    issues: PropTypes.array,
     conflicts: PropTypes.array,
+    handleRaiseIssueButtonClick: PropTypes.func,
     handleReviewConflictsButtonClick: PropTypes.func
 };
 

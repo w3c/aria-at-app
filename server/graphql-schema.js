@@ -9,6 +9,9 @@ const graphqlSchema = gql`
     """
     scalar Timestamp
 
+    """
+    To temporarily support free-form objects
+    """
     scalar Object
 
     enum Role {
@@ -314,16 +317,9 @@ const graphqlSchema = gql`
     input TestResultInput {
         index: Int!
         # TODO: Revise transforming this structure for GraphQL
-        test: TestResultTestInput
         result: TestResultDataInput
         serializedForm: [TestResultSerializedFormInput]
         issues: [Int]
-    }
-
-    input TestResultTestInput {
-        htmlFile: String!
-        testFullName: String!
-        executionOrder: Int!
     }
 
     input TestResultDataInput {

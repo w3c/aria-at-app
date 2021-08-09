@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
@@ -16,17 +16,21 @@ import {
     faPen
 } from '@fortawesome/free-solid-svg-icons';
 import nextId from 'react-id-generator';
-import { Alert, Button, Col, Container, Modal, Row } from 'react-bootstrap';
-import queryString from 'query-string';
+import { Alert, Button, Col, Container, Row } from 'react-bootstrap';
+import { getTestPlanRunIssuesForTest } from '../../network';
 import RaiseIssueModal from '../RaiseIssueModal';
 import ReviewConflictsModal from './ReviewConflictsModal';
 import StatusBar from './StatusBar';
 import TestResult from '../TestResult';
-import TestIframe from './TestIframe';
+// import TestIframe from './TestIframe';
 import OptionButton from './OptionButton';
 import Loading from '../common/Loading';
 import BasicModal from '../common/BasicModal';
-import { TEST_RUN_PAGE_QUERY, CLEAR_TEST_RESULT_MUTATION } from './queries';
+import {
+    TEST_RUN_PAGE_QUERY,
+    UPDATE_TEST_RUN_RESULT_MUTATION,
+    CLEAR_TEST_RESULT_MUTATION
+} from './queries';
 import './TestRun.css';
 
 const TestRun = ({ auth }) => {
@@ -39,18 +43,36 @@ const TestRun = ({ auth }) => {
     const { loading, data, refetch } = useQuery(TEST_RUN_PAGE_QUERY, {
         variables: { testPlanRunId }
     });
+    const [updateTestRunResult] = useMutation(UPDATE_TEST_RUN_RESULT_MUTATION);
     const [clearTestResult] = useMutation(CLEAR_TEST_RESULT_MUTATION);
 
     const { id: userId } = auth;
     const openAsUserId = routerQuery.get('user');
+    // const testerId = openAsUserId || userId;
 
     const [showTestNavigator, setShowTestNavigator] = useState(true);
     const [currentTestIndex, setCurrentTestIndex] = useState(1);
+    const [issues, setIssues] = useState(1);
     const [showStartOverModal, setShowStartOverModal] = useState(false);
     const [showRaiseIssueModal, setShowRaiseIssueModal] = useState(false);
     const [showReviewConflictsModal, setShowReviewConflictsModal] = useState(
         false
     );
+
+    useEffect(() => {
+        setIssues([]);
+
+        if (data) {
+            // get structured UNCLOSED issue data from GitHub for current test
+            (async () => {
+                const issues = await getTestPlanRunIssuesForTest(
+                    testPlanRunId,
+                    currentTestIndex
+                );
+                setIssues(issues.filter(({ closed }) => !closed));
+            })();
+        }
+    }, [data, currentTestIndex]);
 
     if (!data || loading) {
         return (
@@ -65,6 +87,9 @@ const TestRun = ({ auth }) => {
     const { testPlanReport } = testPlanRun;
     const { testPlanTarget, testPlanVersion, conflicts } = testPlanReport;
 
+    const currentTest = testPlanRun.testResults.find(
+        t => t.index === currentTestIndex
+    );
     const hasTestsToRun = testPlanRun.testResults.length;
 
     const toggleTestNavigator = () => setShowTestNavigator(!showTestNavigator);
@@ -90,11 +115,6 @@ const TestRun = ({ auth }) => {
     };
 
     const performButtonAction = async (action, index) => {
-        const testerId = openAsUserId || userId;
-        const currentTest = testPlanRun.testResults.find(
-            t => t.index === currentTestIndex
-        );
-
         switch (action) {
             case 'goToTestAtIndex': {
                 // TODO: Save serialized form
@@ -139,8 +159,10 @@ const TestRun = ({ auth }) => {
 
     const handleEditClick = async () => performButtonAction('editTest');
 
-    const handleRaiseIssueButtonClick = async () =>
-        setShowRaiseIssueModal(true);
+    const handleRaiseIssueButtonClick = async () => {
+        setShowRaiseIssueModal(!showRaiseIssueModal);
+        setShowReviewConflictsModal(false);
+    };
 
     const handleStartOverButtonClick = async () => setShowStartOverModal(true);
 
@@ -155,6 +177,26 @@ const TestRun = ({ auth }) => {
 
         // close modal after action
         setShowStartOverModal(false);
+    };
+
+    const handleUpdateTestPlanRunResultAction = async ({
+        result,
+        serializedForm,
+        issues
+    }) => {
+        await updateTestRunResult({
+            variables: {
+                // required
+                testPlanRunId,
+                index: currentTestIndex,
+
+                // optionals
+                result,
+                issues,
+                serializedForm
+            }
+        });
+        // await refetch();
     };
 
     const handleReviewConflictsButtonClick = async () =>
@@ -275,6 +317,16 @@ const TestRun = ({ auth }) => {
             </div>
         );
 
+        if (currentTest.isComplete) {
+            testContent = <TestResult testResult={currentTest} />;
+        } else if (currentTest.isSkipped) {
+            // TODO: Show new renderer
+            testContent = <></>;
+        } else {
+            // TODO: Show new renderer
+            testContent = <></>;
+        }
+
         return (
             <>
                 <h1 data-test="testing-task">
@@ -284,37 +336,73 @@ const TestRun = ({ auth }) => {
                 <span>{heading}</span>
                 <StatusBar
                     key={nextId()}
+                    issues={issues}
                     conflicts={conflicts[currentTestIndex]}
                     handleReviewConflictsButtonClick={
                         handleReviewConflictsButtonClick
                     }
+                    handleRaiseIssueButtonClick={handleRaiseIssueButtonClick}
                 />
                 <Row>
                     <Col md={9} className="test-iframe-container">
-                        {/*<Row>{testContent}</Row>*/}
+                        <Row>{testContent}</Row>
                         <Row>{primaryButtonGroup}</Row>
+                        <Row>
+                            {testPlanRun.isComplete && (
+                                <Alert key={nextId()} variant="success">
+                                    <FontAwesomeIcon icon={faCheck} /> Thanks!
+                                    Your results have been submitted
+                                </Alert>
+                            )}
+                        </Row>
                     </Col>
                     <Col className="current-test-options" md={3}>
                         {menuRightOfContent}
                     </Col>
                 </Row>
-                <BasicModal
-                    show={showStartOverModal}
-                    centered={true}
-                    animation={false}
-                    details={{
-                        title: 'Start Over',
-                        description: `Are you sure you want to start over Test #${currentTestIndex}? Your progress (if any), will be lost.`
-                    }}
-                    handleAction={handleStartOverAction}
-                    handleClose={() => setShowStartOverModal(false)}
-                />
-                <ReviewConflictsModal
-                    show={showReviewConflictsModal}
-                    testerId={openAsUserId || userId}
-                    conflicts={conflicts[currentTestIndex]}
-                    handleClose={() => setShowReviewConflictsModal(false)}
-                />
+
+                {/* Modals */}
+                {showStartOverModal && (
+                    <BasicModal
+                        key={nextId()}
+                        show={showStartOverModal}
+                        centered={true}
+                        animation={false}
+                        details={{
+                            title: 'Start Over',
+                            description: `Are you sure you want to start over Test #${currentTestIndex}? Your progress (if any), will be lost.`
+                        }}
+                        handleAction={handleStartOverAction}
+                        handleClose={() => setShowStartOverModal(false)}
+                    />
+                )}
+                {showRaiseIssueModal && (
+                    <RaiseIssueModal
+                        key={nextId()}
+                        show={showRaiseIssueModal}
+                        userId={openAsUserId || userId}
+                        test={currentTest}
+                        testPlanRun={testPlanRun}
+                        issues={issues}
+                        conflicts={conflicts[currentTestIndex]}
+                        handleUpdateTestPlanRunResultAction={
+                            handleUpdateTestPlanRunResultAction
+                        }
+                        handleClose={() => setShowRaiseIssueModal(false)}
+                    />
+                )}
+                {showReviewConflictsModal && (
+                    <ReviewConflictsModal
+                        key={nextId()}
+                        show={showReviewConflictsModal}
+                        userId={openAsUserId || userId}
+                        conflicts={conflicts[currentTestIndex]}
+                        handleClose={() => setShowReviewConflictsModal(false)}
+                        handleRaiseIssueButtonClick={
+                            handleRaiseIssueButtonClick
+                        }
+                    />
+                )}
             </>
         );
     };

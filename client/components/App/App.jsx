@@ -21,7 +21,7 @@ const App = ({ auth, dispatch }) => {
     const signinUrl = useSigninUrl();
     const location = useLocation();
 
-    const { isSignedIn, isSignOutCalled, isTester, isAdmin, username } = auth;
+    const { isSignedIn, isSignOutCalled, isTester, username } = auth;
 
     const signOut = async () => {
         dispatch(signOutAction());
