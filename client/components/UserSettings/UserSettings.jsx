@@ -6,15 +6,12 @@ import { useMutation, useQuery } from '@apollo/client';
 
 const UserSettings = () => {
     const { data } = useQuery(CURRENT_SETTINGS_QUERY);
+
     const [updateMe] = useMutation(UPDATE_ME_MUTATION, {
         refetchQueries: [{ query: CURRENT_SETTINGS_QUERY }]
     });
 
-    const [isLoading, setIsLoading] = useState(true);
-    const [ats, setAts] = useState(null);
-    const [username, setCurrentUsername] = useState(null);
-    const [currentAts, setCurrentAts] = useState(null);
-    const [checkedAts, setCheckedAts] = useState(null);
+    const [checkedAts, setCheckedAts] = useState(undefined);
 
     const handleCheckedAt = useCallback(
         event => {
@@ -39,33 +36,16 @@ const UserSettings = () => {
 
     useEffect(() => {
         if (!data) return;
-        console.log('updating state');
-        setAts(data.ats);
-        setCurrentAts(data.me.ats.map(at => at.id));
         setCheckedAts(data.me.ats.map(at => at.id));
-        setCurrentUsername(data.me.username);
-        setIsLoading(false);
     }, [data]);
 
-    if (isLoading) return null;
+    if (!data || !checkedAts) return null;
 
-    const currentAtDisplay = (
-        <div>
-            <p>You can currently test the following assistive technologies:</p>
-            <ul>
-                {ats
-                    .filter(({ id: atId }) => currentAts.includes(atId))
-                    .map(at => (
-                        <li key={at.id}>{at.name}</li>
-                    ))}
-            </ul>
-        </div>
-    );
-    const noCurrentAtDisplay = (
-        <p>
-            You currently are not configured to run any assistive technologies.
-        </p>
-    );
+    const {
+        ats,
+        me: { username, ats: userAtsData }
+    } = data;
+    const savedAts = userAtsData.map(at => at.id);
 
     return (
         <Container as="main">
@@ -86,10 +66,29 @@ const UserSettings = () => {
                         </a>
                     </p>
                     <h2>Assistive Technology Settings</h2>
-                    <div tabIndex={0} /* ref={this.currentAtsRef} */>
-                        {currentAts.length > 0
-                            ? currentAtDisplay
-                            : noCurrentAtDisplay}
+                    <div tabIndex={0}>
+                        {savedAts.length > 0 ? (
+                            <div>
+                                <p>
+                                    You can currently test the following
+                                    assistive technologies:
+                                </p>
+                                <ul>
+                                    {ats
+                                        .filter(({ id: atId }) =>
+                                            savedAts.includes(atId)
+                                        )
+                                        .map(at => (
+                                            <li key={at.id}>{at.name}</li>
+                                        ))}
+                                </ul>
+                            </div>
+                        ) : (
+                            <p>
+                                You currently are not configured to run any
+                                assistive technologies.
+                            </p>
+                        )}
                     </div>
                     <p>
                         Submit the form below to update the assistive
