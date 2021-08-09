@@ -15,3 +15,13 @@ export const CURRENT_SETTINGS_QUERY = gql`
         }
     }
 `;
+
+export const UPDATE_ME_MUTATION = gql`
+    mutation UpdateMe($input: UserInput) {
+        updateMe(input: $input) {
+            ats {
+                id
+            }
+        }
+    }
+`;
