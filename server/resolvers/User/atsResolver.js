@@ -1,8 +1,8 @@
-const { getAts } = require('../../models/services/AtService');
+const { getUserById } = require('../../models/services/UserService');
 
-const atsResolver = () => {
-    // TODO: actually link to users
-    return getAts();
+const atsResolver = async (_, __, { user }) => {
+    const { ats } = await getUserById(user.id);
+    return ats;
 };
 
 module.exports = atsResolver;

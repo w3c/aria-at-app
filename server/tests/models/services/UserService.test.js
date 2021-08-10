@@ -180,7 +180,7 @@ describe('UserModel Data Checks', () => {
     });
 
     it('should return collection of users with paginated structure', async () => {
-        const result = await UserService.getUsers('', {}, ['id'], [], [], {
+        const result = await UserService.getUsers('', {}, ['id'], [], [], [], {
             page: -1,
             limit: -1,
             enablePagination: true

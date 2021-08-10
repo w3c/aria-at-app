@@ -28,7 +28,7 @@ module.exports = function(sequelize, DataTypes) {
     Model.ADMIN = 'ADMIN';
 
     Model.ROLE_ASSOCIATION = { through: 'UserRoles', as: 'roles' };
-
+    Model.ATS_ASSOCIATION = { through: 'UserAts', as: 'ats' };
     Model.TEST_PLAN_RUN_ASSOCIATION = { as: 'testPlanRuns' };
 
     Model.associate = function(models) {
@@ -36,6 +36,12 @@ module.exports = function(sequelize, DataTypes) {
             ...Model.ROLE_ASSOCIATION,
             foreignKey: 'userId',
             otherKey: 'roleName'
+        });
+
+        Model.belongsToMany(models.At, {
+            ...Model.ATS_ASSOCIATION,
+            foreignKey: 'userId',
+            otherKey: 'atId'
         });
 
         Model.hasMany(models.TestPlanRun, {
