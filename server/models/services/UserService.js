@@ -392,6 +392,7 @@ const bulkGetOrReplaceUserAts = async (
  * @param {*} nestedUpdateValues - Values which will be used when a record is found or created, but not used for the initial find
  * @param {string[]} userAttributes - User attributes to be returned in the result
  * @param {string[]} roleAttributes - Role attributes to be returned in the result
+ * @param {string[]} atAttributes - AT attributes to be returned in the result
  * @param {string[]} testPlanRunAttributes - TestPlanRun attributes to be returned in the result
  * @param {object} options - Generic options for Sequelize
  * @param {*} options.transaction - Sequelize transaction
@@ -402,6 +403,7 @@ const getOrCreateUser = async (
     { roles },
     userAttributes = USER_ATTRIBUTES,
     roleAttributes = ROLE_ATTRIBUTES,
+    atAttributes = AT_ATTRIBUTES,
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     options = {}
 ) => {
@@ -433,6 +435,7 @@ const getOrCreateUser = async (
             userId,
             userAttributes,
             roleAttributes,
+            atAttributes,
             testPlanRunAttributes,
             { transaction: t }
         );

@@ -26,7 +26,7 @@ describe('UserModel Data Checks', () => {
     it('should return valid user for id query with no associations', async () => {
         const _id = 1;
 
-        const user = await UserService.getUserById(_id, null, [], []);
+        const user = await UserService.getUserById(_id, null, [], [], []);
         const { id, username, createdAt, updatedAt } = user;
 
         expect(id).toEqual(_id);
