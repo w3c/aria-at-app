@@ -1,13 +1,16 @@
 import React from 'react';
-
 import { Container } from 'react-bootstrap';
+import { Helmet } from 'react-helmet';
 
 const NotFound = () => {
     return (
         <Container as="main">
+            <Helmet>
+                <title>Page Not Found | ARIA-AT</title>
+            </Helmet>
             <section className="not-found">
                 <div>
-                    <h1>Whoooops! Page not found</h1>
+                    <h1>Whoops! Page not found</h1>
                 </div>
             </section>
         </Container>

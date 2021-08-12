@@ -4,7 +4,7 @@ import EnzymeAdapter from 'enzyme-adapter-react-16';
 Enzyme.configure({ adapter: new EnzymeAdapter() });
 import ConfigureTechnologyRow from '../components/ConfigureTechnologyRow';
 
-describe('render', () => {
+describe.skip('render', () => {
     describe('runTechnologies props', () => {
         test('when runTechnologies present, table rows should not have form elements', () => {
             const runTechnologies = {

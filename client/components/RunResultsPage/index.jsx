@@ -11,7 +11,7 @@ import {
     Button,
     Breadcrumb
 } from 'react-bootstrap';
-import { getPublishedRuns, getTestVersions } from '../../actions/runs';
+import { getPublishedRuns, getTestVersions } from '../../redux/actions/runs';
 import checkForConflict from '../../utils/checkForConflict';
 import TestResult from '@components/TestResult';
 import RaiseIssueModal from '@components/RaiseIssueModal';

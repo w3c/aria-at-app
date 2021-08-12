@@ -3,32 +3,22 @@ import { connect } from 'react-redux';
 import { Route, Redirect } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
-const ConfirmAuth = ({
-    children,
-    isAuthorized,
-    roles,
-    requiredPermission,
-    loadedUserData,
-    isSignedIn,
-    ...rest
-}) => {
-    if (!loadedUserData) {
-        return <div>Loading...</div>;
-    }
+const ConfirmAuth = ({ auth, children, requiredPermission, ...rest }) => {
+    const { isSignedIn, isAdmin, username, roles } = auth;
 
-    let AuthConfirmed = isAuthorized;
-    if (!AuthConfirmed) {
-        // If you are an admin, you can all other roles by default
-        AuthConfirmed =
-            isSignedIn &&
-            (roles.includes(requiredPermission) || roles.includes('admin'));
-    }
+    // to explicitly inform user that something went wrong when signing in
+    // need to provide assistance on troubleshooting should this ever happen
+    if (!username) return <Redirect to={{ pathname: '/invalid-request' }} />;
+
+    // If you are an admin, you can access all other role actions by default
+    const authConfirmed =
+        isSignedIn && (roles.includes(requiredPermission) || isAdmin);
 
     return (
         <Route
             {...rest}
             render={() => {
-                return AuthConfirmed ? (
+                return authConfirmed ? (
                     children
                 ) : (
                     <Redirect to={{ pathname: '/404' }} />
@@ -38,21 +28,18 @@ const ConfirmAuth = ({
     );
 };
 
-function mapStateToProps(state) {
-    const { isSignedIn, username, roles, loadedUserData } = state.user;
-    return { isSignedIn, username, roles, loadedUserData };
-}
+const mapStateToProps = state => {
+    const { auth } = state;
+    return { auth };
+};
 
 ConfirmAuth.propTypes = {
+    auth: PropTypes.object,
     children: PropTypes.oneOfType([
         PropTypes.arrayOf(PropTypes.node),
         PropTypes.node
     ]).isRequired,
-    isAuthorized: PropTypes.bool,
-    isSignedIn: PropTypes.bool,
-    loadedUserData: PropTypes.bool,
-    roles: PropTypes.array,
     requiredPermission: PropTypes.string
 };
 
-export default connect(mapStateToProps, null)(ConfirmAuth);
+export default connect(mapStateToProps)(ConfirmAuth);

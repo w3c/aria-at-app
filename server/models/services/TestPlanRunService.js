@@ -311,6 +311,21 @@ const removeTestPlanRunByQuery = async (
     );
 };
 
+/**
+ * @param {number} queryParams - conditions to be passed to Sequelize's where clause
+ * @returns {Promise<boolean>}
+ */
+const removeTestPlanRunResultsByQuery = async ({
+    testerUserId,
+    testPlanReportId
+}) => {
+    return await ModelService.update(
+        TestPlanRun,
+        { testerUserId, testPlanReportId },
+        { testResults: [] }
+    );
+};
+
 module.exports = {
     // TestPlanRun
     getTestPlanRunById,
@@ -318,5 +333,6 @@ module.exports = {
     createTestPlanRun,
     updateTestPlanRun,
     removeTestPlanRun,
-    removeTestPlanRunByQuery
+    removeTestPlanRunByQuery,
+    removeTestPlanRunResultsByQuery
 };
