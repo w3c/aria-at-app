@@ -23,6 +23,7 @@ import ReviewConflictsModal from './ReviewConflictsModal';
 import StatusBar from './StatusBar';
 import TestResult from '../TestResult';
 // import TestIframe from './TestIframe';
+import TestRenderer from '../TestRenderer';
 import OptionButton from './OptionButton';
 import Loading from '../common/Loading';
 import BasicModal from '../common/BasicModal';
@@ -324,7 +325,7 @@ const TestRun = ({ auth }) => {
             testContent = <></>;
         } else {
             // TODO: Show new renderer
-            testContent = <></>;
+            testContent = <TestRenderer />;
         }
 
         return (
