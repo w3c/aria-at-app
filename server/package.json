@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/bocoup/aria-at-report#readme",
   "dependencies": {
+    "@moebius/http-graceful-shutdown": "^1.1.0",
     "apicache": "^1.6.2",
     "apollo-server": "^2.23.0",
     "apollo-server-express": "^2.23.0",
@@ -35,13 +36,15 @@
     "express-session": "^1.17.1",
     "graphql": "^15.5.0",
     "lodash": "^4.17.21",
+    "node-fetch": "^2.6.1",
     "node-html-parser": "^3.1.5",
     "nodegit": "^0.27.0",
     "nodemon": "^2.0.7",
     "pg": "^8.6.0",
     "pg-hstore": "^2.3.3",
     "rawgit": "https://github.com/rgrove/rawgit.git#eaa9b36aa2143041894866ba9db72e51d05c2a52",
-    "sequelize": "5.x.x"
+    "sequelize": "5.x.x",
+    "supertest-session": "^4.1.0"
   },
   "devDependencies": {
     "apollo-server-testing": "^2.24.0",

@@ -98,7 +98,7 @@ const graphqlSchema = gql`
 
     type TestPlanVersion {
         id: ID!
-        title: String!
+        title: String
         status: TestPlanVersionStatus!
         gitSha: String!
         gitMessage: String!
@@ -107,19 +107,26 @@ const graphqlSchema = gql`
         # isLatest: Boolean!
         updatedAt: Timestamp!
         exampleUrl: String!
+        directory: String!
         tests: [Test]!
         testCount: Int!
         testPlanReports(status: TestPlanReportStatus): [TestPlanReport]!
     }
 
-    interface Test {
+    interface BaseTest {
         title: String!
         index: Int!
+        testFilePath: String!
+    }
+
+    type Test implements BaseTest {
+        title: String!
+        index: Int!
+        testFilePath: String!
         # TODO: account for running scripts
         instructions: [Instruction]!
-        assertions: [Assertion]!
-        assertionCount: Int!
-        optionalAssertionCount: Int!
+        assertions(priority: AssertionPriority): [Assertion]!
+        assertionsCount(priority: AssertionPriority): Int!
         passThroughs: [PassThrough]!
     }
 
@@ -128,11 +135,17 @@ const graphqlSchema = gql`
         manualInstruction: String!
     }
 
-    interface Assertion {
+    interface BaseAssertion {
         # TODO: account for at-specific assertions
         # TODO: account for optional assertions
         # TODO: account for automation
         manualAssertion: String!
+    }
+
+    type Assertion implements BaseAssertion {
+        manualAssertion: String!
+        command: String!
+        priority: String!
     }
 
     interface PassThrough {
@@ -142,24 +155,92 @@ const graphqlSchema = gql`
         # Examples would go here if we support multiple examples for one test.
     }
 
-    type TestResult implements Test {
+    enum AssertionPriority {
+        REQUIRED
+        OPTIONAL
+    }
+
+    # Raw structure of TestPlanRun.testPlanResults[] object.
+    # This structure is subject to change
+    # {
+    #   test: { ... }, // derived from TestPlanVersion.tests
+    #   result: { ... }, // returned from iframe submit result
+    #   serializedForm: [ ... ], // persisted form info once values are recorded for test in Test Navigator
+    #   issues: [ ] // recorded GitHub issue numbers for any issue created
+    # }
+    type TestResult implements BaseTest {
         title: String!
         index: Int!
+        testFilePath: String!
         instructions: [Instruction]!
-        assertions: [Assertion]!
-        passThroughs: [PassThrough]!
-        assertionCount: Int!
-        optionalAssertionCount: Int!
+        assertions(priority: AssertionPriority): [Assertion]!
+        assertionsCount(priority: AssertionPriority): Int!
+        assertionsPassed(priority: AssertionPriority): Int!
 
-        startedAt: Timestamp!
-        completedAt: Timestamp!
+        passThroughs: [PassThrough]!
+        passThroughResults: [PassThroughResult]!
+
         isComplete: Boolean!
         isSkipped: Boolean!
 
-        passThroughResults: [PassThroughResult]!
-        assertionsPassed: Int!
-        optionalAssertionsPassed: Int!
         unexpectedBehaviorCount: Int!
+
+        result: TestResultData
+        serializedForm: [TestResultSerializedForm]
+        issues: [Int]
+    }
+
+    # TestResultData and all other linked types are returned from the iframe
+    # submit result.
+    # This should be temporary while the logic of how the resolvers will work
+    # with that data is discussed.
+    type TestResultData {
+        test: String!
+        status: String!
+        details: TestResultDataDetails!
+    }
+
+    type TestResultDataDetails {
+        name: String!
+        task: String!
+        summary: TestResultDataDetailsSummary!
+        commands: [TestResultDataDetailsCommands]!
+        specific_user_instruction: String!
+    }
+
+    type TestResultDataDetailsSummary {
+        # required/optional transformed from '1'/'2'
+        required: TestResultDataDetailsSummaryPriority!
+        optional: TestResultDataDetailsSummaryPriority!
+        unexpectedCount: Int!
+    }
+
+    type TestResultDataDetailsSummaryPriority {
+        pass: Int!
+        fail: Int!
+    }
+
+    type TestResultDataDetailsCommands {
+        output: String!
+        command: String!
+        support: String!
+        assertions: [TestResultDataDetailsCommandsAssertion]!
+        unexpected_behaviors: [String]!
+    }
+
+    type TestResultDataDetailsCommandsAssertion {
+        pass: String
+        fail: String
+        priority: String!
+        assertion: String!
+    }
+
+    type TestResultSerializedForm {
+        name: String!
+        value: String!
+        checked: Boolean
+        disabled: Boolean
+        indeterminate: Boolean
     }
 
     type PassThroughResult implements PassThrough {
@@ -172,7 +253,7 @@ const graphqlSchema = gql`
         unexpectedBehaviors: [UnexpectedBehavior]!
     }
 
-    type AssertionResult implements Assertion {
+    type AssertionResult implements BaseAssertion {
         manualAssertion: String!
         passed: Boolean!
     }
@@ -226,6 +307,74 @@ const graphqlSchema = gql`
         testPlanTarget: TestPlanTargetInput!
     }
 
+    input TestResultInput {
+        index: Int!
+        # TODO: Revise transforming this structure for GraphQL
+        test: TestResultTestInput
+        result: TestResultDataInput
+        serializedForm: [TestResultSerializedFormInput]
+        issues: [Int]
+    }
+
+    input TestResultTestInput {
+        htmlFile: String!
+        testFullName: String!
+        executionOrder: Int!
+    }
+
+    input TestResultDataInput {
+        test: String!
+        status: String!
+        details: TestResultDataDetailsInput!
+    }
+
+    input TestResultDataDetailsInput {
+        name: String!
+        task: String!
+        summary: TestResultDataDetailsSummaryInput!
+        commands: [TestResultDataDetailsCommandsInput]!
+        specific_user_instruction: String!
+    }
+
+    input TestResultDataDetailsSummaryInput {
+        # required/optional needs to be transformed from '1'/'2'
+        required: TestResultDataDetailsSummaryPriorityInput!
+        optional: TestResultDataDetailsSummaryPriorityInput!
+        unexpectedCount: Int!
+    }
+
+    input TestResultDataDetailsSummaryPriorityInput {
+        pass: Int!
+        fail: Int!
+    }
+
+    input TestResultDataDetailsCommandsInput {
+        output: String!
+        command: String!
+        support: String!
+        assertions: [TestResultDataDetailsCommandsAssertionInput]!
+        unexpected_behaviors: [String]!
+    }
+
+    input TestResultDataDetailsCommandsAssertionInput {
+        pass: String
+        fail: String
+        priority: String!
+        assertion: String!
+    }
+
+    input TestResultSerializedFormInput {
+        name: String!
+        value: String!
+        checked: Boolean
+        disabled: Boolean
+        indeterminate: Boolean
+    }
+
+    """
+    A particular traversal of the TestPlan data - allowing for highlighting a
+    TestPlan, TestPlanVersion, TestPlanReport, or even subsets of those.
+    """
     input LocationOfDataInput {
         testPlanId: ID
         testPlanVersionId: ID
@@ -241,6 +390,10 @@ const graphqlSchema = gql`
         testResultIndex: Int
         passThroughResultIndex: Int
     }
+    """
+    A particular traversal of the TestPlan data - allowing for highlighting a
+    TestPlan, TestPlanVersion, TestPlanReport, or even subsets of those.
+    """
     type LocationOfData {
         testPlanId: ID
         testPlanVersionId: ID
@@ -279,13 +432,16 @@ const graphqlSchema = gql`
 
     type Query {
         me: User
+        users: [User]
         ats: [At]
         browsers: [Browser]
         testPlans: [TestPlan]!
+        testPlanVersions: [TestPlanVersion]
         testPlan(id: ID!): TestPlan
         testPlanReport(id: ID): TestPlanReport
         testPlanReports(statuses: [TestPlanReportStatus]): [TestPlanReport]!
         testPlanTargets: [TestPlanTarget]!
+        testPlanRun(id: ID): TestPlanRun
         populateData(locationOfData: LocationOfDataInput!): PopulatedData!
     }
 
@@ -294,7 +450,13 @@ const graphqlSchema = gql`
     type TestPlanReportOperations {
         assignTester(userId: ID!): PopulatedData!
         deleteTestPlanRun(userId: ID!): PopulatedData!
+        deleteTestPlanRunResults(userId: ID!): PopulatedData!
         updateStatus(status: TestPlanReportStatus!): PopulatedData!
+    }
+
+    type TestPlanRunOperations {
+        updateTestResult(input: TestResultInput!): PopulatedData!
+        clearTestResult(input: TestResultInput!): PopulatedData!
     }
 
     type findOrCreateResult {
@@ -310,6 +472,7 @@ const graphqlSchema = gql`
             input: TestPlanReportInput!
         ): findOrCreateResult!
         testPlanReport(id: ID!): TestPlanReportOperations!
+        testPlanRun(id: ID!): TestPlanRunOperations!
     }
 `;
 

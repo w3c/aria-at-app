@@ -1,0 +1,14 @@
+# Allow users with the following GitHub usernames to sign in as testers.
+# Admins are always testers so they do not need to be included here.
+# One username per line.
+
+jongund
+MarcoZehe
+jscholes
+shirsha
+robfentress
+a11ydoer
+jha11y
+brettplewis1966
+hadirangin
+AlyssaGourley

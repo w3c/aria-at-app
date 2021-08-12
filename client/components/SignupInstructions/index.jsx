@@ -5,10 +5,10 @@ const SignupInstructions = () => {
     return (
         <Container as="main">
             <p>
-                You are not registered with an authorized W3C GitHub team.
-                Please create an issue at{' '}
-                <a href="https://github.com/w3c/aria-at-app">
-                    ARIA-AT App GitHub
+                You are not yet registered to participate! Let us know you want
+                to help by&nbsp;
+                <a href="https://github.com/w3c/aria-at-app/issues/new">
+                    opening an issue on GitHub
                 </a>
                 .
             </p>

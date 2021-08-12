@@ -1,7 +1,7 @@
 const { sequelize } = require('../../../models');
 const AtService = require('../../../models/services/AtService');
 const randomStringGenerator = require('../../util/random-character-generator');
-const { dbCleaner } = require('../../util/db-cleaner');
+const dbCleaner = require('../../util/db-cleaner');
 
 afterAll(async () => {
     await sequelize.close();

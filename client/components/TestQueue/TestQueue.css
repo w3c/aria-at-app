@@ -12,8 +12,13 @@ main.container-fluid table .col-md-3 {
 .test-queue.table .testers-wrapper,
 .test-queue.table .status-wrapper,
 .test-queue.table .test-cta-wrapper {
+    min-height: 3.75rem;
     padding: 0.75em;
     /* background: #ffffff; */
+}
+
+.test-queue.table .test-cta-wrapper :nth-child(n + 2) {
+    margin-top: 0.375rem;
 }
 
 .test-queue.table .secondary-actions {
@@ -55,4 +60,36 @@ table button {
     width: 100%;
     text-align: center;
     margin: 0.45em 0;
+}
+
+.add-test-plan-queue-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    height: 5rem;
+
+    background: #e9ebee;
+    border: 1px solid #d2d5d9;
+}
+
+.add-test-plan-queue-button {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+}
+
+.add-test-plan-queue-modal-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.add-test-plan-queue-modal-row {
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 1rem;
+}
+
+.add-test-plan-queue-modal-normalize-row {
+    margin-top: auto;
 }
