@@ -115,7 +115,11 @@ const ariaAtImport = {
             const stat = fse.statSync(testPlanDirPath); // folder stats
 
             // <repo>.git/tests/resources folder shouldn't be factored in the tests
-            if (stat.isDirectory() && testPlanDir !== 'resources') {
+            if (
+                fse.existsSync(sourceTestPlanDirPath) && // explicitly check if source test plan directory exists
+                stat.isDirectory() &&
+                testPlanDir !== 'resources'
+            ) {
                 // check multiple locations for relevant data folder that contains references.csv
                 const dataPath = path.join(
                     buildDirExists ? sourceTestPlanDirPath : testPlanDirPath,
