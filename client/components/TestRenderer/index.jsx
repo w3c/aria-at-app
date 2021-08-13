@@ -3,7 +3,15 @@ import styled from '@emotion/styled';
 import PropTypes from 'prop-types';
 import nextId from 'react-id-generator';
 
-import * as AriaAtTestRun from '../../resources/aria-at-test-run.mjs';
+import {
+    userCloseWindow,
+    userOpenWindow
+} from '../../resources/aria-at-test-run.mjs';
+import {
+    TestRunExport,
+    TestRunInputOutput
+} from '../../resources/aria-at-test-io-format.mjs';
+import { TestWindow } from '../../resources/aria-at-test-window.mjs';
 
 const Container = styled.div`
     border: black solid 2px;
@@ -17,7 +25,7 @@ const ErrorSection = styled.section`
 
 const InstructionsSection = styled.section``;
 
-const HeaderText = styled.h1``;
+const HeadingText = styled.h1``;
 
 const SubHeadingText = styled.h2``;
 
@@ -123,6 +131,22 @@ const BulletList = styled.ul`
     }
 `;
 
+const ResultsBulletList = styled.ul`
+    display: block;
+    list-style-type: disc;
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    margin-inline-start: 0;
+    margin-inline-end: 0;
+    padding-inline-start: 40px;
+
+    > li {
+        display: list-item;
+        list-style: disc;
+        text-align: -webkit-match-parent;
+    }
+`;
+
 const Button = styled.button``;
 
 const ResultsSection = styled.section``;
@@ -138,251 +162,231 @@ const ErrorComponent = ({ hasErrors = false }) => {
 };
 
 const TestRenderer = ({
-    state = {
-        info: {
-            description: 'Navigate to an unchecked checkbox in reading mode',
-            task: 'navigate to unchecked checkbox',
-            mode: 'reading',
-            modeInstructions:
-                'Insure NVDA is in browse mode by pressing Escape. Note: This command has no effect if NVDA is already in browse mode.',
-            userInstructions: [
-                'Navigate to the first checkbox. Note: it should be in the unchecked state.'
-            ],
-            setupScriptDescription: ''
-        },
-        config: {
-            at: {
-                key: 'nvda',
-                name: 'NVDA'
-            },
-            renderResultsAfterSubmit: true,
-            displaySubmitButton: true
-        },
-        currentUserAction: 'loadPage',
-        commands: [
+    title = 'Navigate to an unchecked checkbox in reading mode',
+    support = {
+        ats: [
             {
-                description: 'X / Shift+X',
-                atOutput: { highlightRequired: true },
-                assertions: [
-                    {
-                        description: 'Role "checkbox" is conveyed',
-                        highlightRequired: true,
-                        priority: 1
-                    },
-                    {
-                        description: 'Name "Lettuce" is conveyed',
-                        highlightRequired: true,
-                        priority: 1
-                    },
-                    {
-                        description:
-                            'State of the checkbox (not checked) is conveyed',
-                        highlightRequired: true,
-                        priority: 1
-                    }
-                ],
-                additionalAssertions: [],
-                unexpected: {
-                    highlightRequired: true,
-                    behaviors: [
-                        {
-                            description:
-                                'Output is excessively verbose, e.g., includes redundant and/or irrelevant speech'
-                        },
-                        {
-                            description:
-                                'Reading cursor position changed in an unexpected manner'
-                        },
-                        {
-                            description:
-                                'Screen reader became extremely sluggish'
-                        },
-                        {
-                            description: 'Screen reader crashed'
-                        },
-                        {
-                            description: 'Browser crashed'
-                        },
-                        {
-                            description: 'Other',
-                            more: { highlightRequired: true }
-                        }
-                    ]
-                }
-            } /*,
-            {
-                description: 'F / Shift+F',
-                atOutput: { highlightRequired: true },
-                assertions: [
-                    {
-                        description: 'Role "checkbox" is conveyed',
-                        highlightRequired: true,
-                        priority: 1
-                    },
-                    {
-                        description: 'Name "Lettuce" is conveyed',
-                        highlightRequired: true,
-                        priority: 1
-                    },
-                    {
-                        description:
-                            'State of the checkbox (not checked) is conveyed',
-                        highlightRequired: true,
-                        priority: 1
-                    }
-                ],
-                additionalAssertions: [],
-                unexpected: {
-                    highlightRequired: true,
-                    behaviors: [
-                        {
-                            description:
-                                'Output is excessively verbose, e.g., includes redundant and/or irrelevant speech'
-                        },
-                        {
-                            description:
-                                'Reading cursor position changed in an unexpected manner'
-                        },
-                        {
-                            description:
-                                'Screen reader became extremely sluggish'
-                        },
-                        {
-                            description: 'Screen reader crashed'
-                        },
-                        {
-                            description: 'Browser crashed'
-                        },
-                        {
-                            description: 'Other',
-                            more: { highlightRequired: true }
-                        }
-                    ]
-                }
+                name: 'JAWS',
+                key: 'jaws'
             },
             {
-                description: 'Tab / Shift+Tab',
-                atOutput: { highlightRequired: true },
-                assertions: [
-                    {
-                        description: 'Role "checkbox" is conveyed',
-                        highlightRequired: true,
-                        priority: 1
-                    },
-                    {
-                        description: 'Name "Lettuce" is conveyed',
-                        highlightRequired: true,
-                        priority: 1
-                    },
-                    {
-                        description:
-                            'State of the checkbox (not checked) is conveyed',
-                        highlightRequired: true,
-                        priority: 1
-                    }
-                ],
-                additionalAssertions: [],
-                unexpected: {
-                    highlightRequired: true,
-                    behaviors: [
-                        {
-                            description:
-                                'Output is excessively verbose, e.g., includes redundant and/or irrelevant speech'
-                        },
-                        {
-                            description:
-                                'Reading cursor position changed in an unexpected manner'
-                        },
-                        {
-                            description:
-                                'Screen reader became extremely sluggish'
-                        },
-                        {
-                            description: 'Screen reader crashed'
-                        },
-                        {
-                            description: 'Browser crashed'
-                        },
-                        {
-                            description: 'Other',
-                            more: { highlightRequired: true }
-                        }
-                    ]
-                }
+                name: 'NVDA',
+                key: 'nvda'
             },
             {
-                description: 'Up Arrow / Down Arrow',
-                atOutput: { highlightRequired: true },
-                assertions: [
-                    {
-                        description: 'Role "checkbox" is conveyed',
-                        highlightRequired: true,
-                        priority: 1
-                    },
-                    {
-                        description: 'Name "Lettuce" is conveyed',
-                        highlightRequired: true,
-                        priority: 1
-                    },
-                    {
-                        description:
-                            'State of the checkbox (not checked) is conveyed',
-                        highlightRequired: true,
-                        priority: 1
-                    }
-                ],
-                additionalAssertions: [],
-                unexpected: {
-                    highlightRequired: true,
-                    behaviors: [
-                        {
-                            description:
-                                'Output is excessively verbose, e.g., includes redundant and/or irrelevant speech'
-                        },
-                        {
-                            description:
-                                'Reading cursor position changed in an unexpected manner'
-                        },
-                        {
-                            description:
-                                'Screen reader became extremely sluggish'
-                        },
-                        {
-                            description: 'Screen reader crashed'
-                        },
-                        {
-                            description: 'Browser crashed'
-                        },
-                        {
-                            description: 'Other',
-                            more: { highlightRequired: true }
-                        }
-                    ]
-                }
-            }*/
+                name: 'VoiceOver for macOS',
+                key: 'voiceover_macos'
+            }
         ],
-        openTest: {
-            enabled: true
+        applies_to: {
+            'Desktop Screen Readers': ['VoiceOver for macOS', 'NVDA', 'JAWS'],
+            'Screen Readers': ['VoiceOver for macOS', 'NVDA', 'JAWS']
+        },
+        examples: [
+            {
+                directory: 'checkbox',
+                name: 'Checkbox Example (Two State)'
+            },
+            {
+                directory: 'menubar-editor',
+                name: 'Editor Menubar Example'
+            }
+        ]
+    },
+    configQueryParams = [['at', 'nvda']],
+    commands = {
+        'navigate to unchecked checkbox': {
+            reading: {
+                jaws: [
+                    ['X_AND_SHIFT_X'],
+                    ['F_AND_SHIFT_F'],
+                    ['TAB_AND_SHIFT_TAB'],
+                    ['UP_AND_DOWN'],
+                    ['LEFT_AND_RIGHT', '(with Smart Navigation on)']
+                ],
+                nvda: [
+                    ['X_AND_SHIFT_X'],
+                    ['F_AND_SHIFT_F'],
+                    ['TAB_AND_SHIFT_TAB'],
+                    ['UP_AND_DOWN']
+                ]
+            },
+            interaction: {
+                jaws: [['TAB_AND_SHIFT_TAB']],
+                nvda: [['TAB_AND_SHIFT_TAB']],
+                voiceover_macos: [
+                    ['TAB_AND_SHIFT_TAB'],
+                    ['CTRL_OPT_RIGHT_AND_CTRL_OPT_LEFT'],
+                    ['CTRL_OPT_CMD_J_AND_SHIFT_CTRL_OPT_CMD_J']
+                ]
+            }
         }
-    }
+    },
+    behavior = {
+        setup_script_description: '',
+        setupTestPage: '',
+        applies_to: ['jaws', 'nvda'],
+        mode: 'reading',
+        task: 'navigate to unchecked checkbox',
+        specific_user_instruction:
+            'Navigate to the first checkbox. Note: it should be in the unchecked state.',
+        output_assertions: [
+            ['1', "Role 'checkbox' is conveyed"],
+            ['1', "Name 'Lettuce' is conveyed"],
+            ['1', 'State of the checkbox (not checked) is conveyed']
+        ]
+    },
+    pageUri = 'https://github.com/w3c/aria-at/blob/master/build/tests/checkbox/reference/2020-11-23_175030/checkbox-1/checkbox-1.html'
 }) => {
     const [pageContent, setPageContent] = useState(null);
-    const [isSubmitted, setIsSubmitted] = useState(false);
+    const [submitResult, setSubmitResult] = useState(null);
 
-    const testRun = new AriaAtTestRun.TestRun({
-        hooks: {},
-        state
+    const testRunIO = new TestRunInputOutput();
+    testRunIO.setTitleInputFromTitle(title);
+    testRunIO.setUnexpectedInputFromBuiltin();
+    testRunIO.setScriptsInputFromMap({});
+    testRunIO.setSupportInputFromJSON(support);
+    testRunIO.setConfigInputFromQueryParamsAndSupport(configQueryParams); // Array.from(new URL(document.location).searchParams)
+    testRunIO.setKeysInputFromBuiltinAndConfig();
+    testRunIO.setCommandsInputFromJSONAndConfigKeys(commands);
+    testRunIO.setBehaviorInputFromJSONAndCommandsConfigKeysTitleUnexpected(
+        behavior
+    );
+    testRunIO.setPageUriInputFromPageUri(pageUri);
+
+    const testWindow = new TestWindow({
+        ...testRunIO.testWindowOptions(),
+        hooks: {
+            windowOpened() {
+                testRunExport.dispatch(userOpenWindow());
+            },
+            windowClosed() {
+                testRunExport.dispatch(userCloseWindow());
+            }
+        }
+    });
+
+    const testRunExport = new TestRunExport({
+        hooks: {
+            openTestPage() {
+                testWindow.open();
+            },
+            closeTestPage() {
+                testWindow.close();
+            }
+        },
+        // state: testRunIO.testRunState(),
+        state: {
+            errors: [],
+            info: {
+                description:
+                    'Navigate to an unchecked checkbox in reading mode',
+                task: 'navigate to unchecked checkbox',
+                mode: 'reading',
+                modeInstructions:
+                    'Insure NVDA is in browse mode by pressing Escape. Note: This command has no effect if NVDA is already in browse mode.',
+                userInstructions: [
+                    'Navigate to the first checkbox. Note: it should be in the unchecked state.'
+                ],
+                setupScriptDescription: ''
+            },
+            config: {
+                at: {
+                    name: 'NVDA',
+                    key: 'nvda'
+                },
+                displaySubmitButton: true,
+                renderResultsAfterSubmit: true
+            },
+            currentUserAction: 'loadPage',
+            openTest: {
+                enabled: true
+            },
+            commands: [
+                {
+                    description: 'X / Shift+X',
+                    atOutput: {
+                        highlightRequired: false,
+                        value: ''
+                    },
+                    assertions: [
+                        {
+                            description: "Role 'checkbox' is conveyed",
+                            highlightRequired: false,
+                            priority: 1,
+                            result: 'notSet'
+                        },
+                        {
+                            description: "Name 'Lettuce' is conveyed",
+                            highlightRequired: false,
+                            priority: 1,
+                            result: 'notSet'
+                        },
+                        {
+                            description:
+                                'State of the checkbox (not checked) is conveyed',
+                            highlightRequired: false,
+                            priority: 1,
+                            result: 'notSet'
+                        }
+                    ],
+                    additionalAssertions: [],
+                    unexpected: {
+                        highlightRequired: false,
+                        hasUnexpected: 'notSet',
+                        tabbedBehavior: 0,
+                        behaviors: [
+                            {
+                                description:
+                                    'Output is excessively verbose, e.g., includes redundant and/or irrelevant speech',
+                                checked: false,
+                                more: null
+                            },
+                            {
+                                description:
+                                    'Reading cursor position changed in an unexpected manner',
+                                checked: false,
+                                more: null
+                            },
+                            {
+                                description:
+                                    'Screen reader became extremely sluggish',
+                                checked: false,
+                                more: null
+                            },
+                            {
+                                description: 'Screen reader crashed',
+                                checked: false,
+                                more: null
+                            },
+                            {
+                                description: 'Browser crashed',
+                                checked: false,
+                                more: null
+                            },
+                            {
+                                description: 'Other',
+                                checked: false,
+                                more: {
+                                    highlightRequired: false,
+                                    value: ''
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        resultsJSON: state => testRunIO.submitResultsJSON(state)
     });
 
     useEffect(() => {
-        testRun.observe(result => {
-            console.info('new.state', result);
-            console.info('testRun.testPage()', testRun.testPage());
-            console.info('testRun.instructions()', testRun.instructions());
-            setPageContent({ ...testRun.instructions() });
+        testRunExport.observe(() => {
+            setPageContent({ ...testRunExport.instructions() });
+            setSubmitResult(testRunExport.testPageAndResults());
         });
 
-        setPageContent(testRun.instructions());
+        setPageContent(testRunExport.instructions());
     }, []);
 
     const parseRichContent = (instruction = []) => {
@@ -463,379 +467,525 @@ const TestRenderer = ({
         return <NumberedList>{content}</NumberedList>;
     };
 
+    const parseLinebreakOutput = (output = []) => {
+        return output.map(item => {
+            if (typeof item === 'string')
+                return <Fragment key={nextId()}>{item}</Fragment>;
+            else if (typeof item === 'object') {
+                if ('whitespace' in item) {
+                    if (item.whitespace === 'lineBreak')
+                        return <br key={nextId()} />;
+                }
+            }
+        });
+    };
+
+    const SubmitResultsContent = () => {
+        const { results } = submitResult;
+        const { header, status, table } = results;
+
+        return (
+            <>
+                <HeadingText>{header}</HeadingText>
+                <SubHeadingText id="overallstatus">
+                    {status.header.map(text => (
+                        <Fragment key={nextId()}>{text}</Fragment>
+                    ))}
+                </SubHeadingText>
+                <Table>
+                    <tbody>
+                        <tr>
+                            <th>{table.headers.description}</th>
+                            <th>{table.headers.support}</th>
+                            <th>{table.headers.details}</th>
+                        </tr>
+                        {table.commands.map(command => {
+                            const { description, support, details } = command;
+
+                            return (
+                                <tr key={nextId()}>
+                                    <td>{description}</td>
+                                    <td>{support}</td>
+                                    <td>
+                                        <p>
+                                            {parseLinebreakOutput(
+                                                details.output
+                                            )}
+                                        </p>
+                                        <div>
+                                            {
+                                                details.passingAssertions
+                                                    .description
+                                            }
+                                            <ResultsBulletList>
+                                                {details.passingAssertions.items.map(
+                                                    item => (
+                                                        <li key={nextId()}>
+                                                            {item}
+                                                        </li>
+                                                    )
+                                                )}
+                                            </ResultsBulletList>
+                                        </div>
+                                        <div>
+                                            {
+                                                details.failingAssertions
+                                                    .description
+                                            }
+                                            <ResultsBulletList>
+                                                {details.failingAssertions.items.map(
+                                                    item => (
+                                                        <li key={nextId()}>
+                                                            {item}
+                                                        </li>
+                                                    )
+                                                )}
+                                            </ResultsBulletList>
+                                        </div>
+                                        <div>
+                                            {
+                                                details.unexpectedBehaviors
+                                                    .description
+                                            }
+                                            <ResultsBulletList>
+                                                {details.unexpectedBehaviors.items.map(
+                                                    item => (
+                                                        <li key={nextId()}>
+                                                            {item}
+                                                        </li>
+                                                    )
+                                                )}
+                                            </ResultsBulletList>
+                                        </div>
+                                    </td>
+                                </tr>
+                            );
+                        })}
+                    </tbody>
+                </Table>
+            </>
+        );
+    };
+
+    // pageContent to render instructions; submitResult.resultsJSON indicates results have been submitted
     if (!pageContent) return null;
 
     return (
         <Container>
-            <ErrorComponent hasErrors={!!pageContent.errors} />
-            <InstructionsSection>
-                <HeaderText id="behavior-header" tabindex="0">
-                    {pageContent.instructions.header.header}
-                </HeaderText>
-                <Text>{pageContent.instructions.description}</Text>
-                <SubHeadingText>
-                    {pageContent.instructions.instructions.header}
-                </SubHeadingText>
-                <InstructionsContent />
-                <SubHeadingText>
-                    {pageContent.instructions.assertions.header}
-                </SubHeadingText>
-                <Text>{pageContent.instructions.assertions.description}</Text>
-                <AssertionsContent />
-                {pageContent.instructions.openTestPage.enabled && (
-                    <Button
-                        onClick={pageContent.instructions.openTestPage.click}
-                    >
-                        {pageContent.instructions.openTestPage.button}
-                    </Button>
-                )}
-            </InstructionsSection>
-            <ResultsSection>
-                <SubHeadingText>
-                    {pageContent.results.header.header}
-                </SubHeadingText>
-                <Text>{pageContent.results.header.description}</Text>
-                {pageContent.results.commands.map((value, commandIndex) => {
-                    const {
-                        header,
-                        atOutput,
-                        assertionsHeader,
-                        assertions,
-                        unexpectedBehaviors
-                    } = value;
+            {submitResult && submitResult.resultsJSON ? (
+                <SubmitResultsContent />
+            ) : (
+                <>
+                    <ErrorComponent
+                        hasErrors={
+                            pageContent.errors && pageContent.errors.length
+                        }
+                    />
+                    <InstructionsSection>
+                        <HeadingText id="behavior-header" tabindex="0">
+                            {pageContent.instructions.header.header}
+                        </HeadingText>
+                        <Text>{pageContent.instructions.description}</Text>
+                        <SubHeadingText>
+                            {pageContent.instructions.instructions.header}
+                        </SubHeadingText>
+                        <InstructionsContent />
+                        <SubHeadingText>
+                            {pageContent.instructions.assertions.header}
+                        </SubHeadingText>
+                        <Text>
+                            {pageContent.instructions.assertions.description}
+                        </Text>
+                        <AssertionsContent />
+                        {pageContent.instructions.openTestPage.enabled && (
+                            <Button
+                                onClick={
+                                    pageContent.instructions.openTestPage.click
+                                }
+                            >
+                                {pageContent.instructions.openTestPage.button}
+                            </Button>
+                        )}
+                    </InstructionsSection>
+                    <ResultsSection>
+                        <SubHeadingText>
+                            {pageContent.results.header.header}
+                        </SubHeadingText>
+                        <Text>{pageContent.results.header.description}</Text>
+                        {pageContent.results.commands.map(
+                            (value, commandIndex) => {
+                                const {
+                                    header,
+                                    atOutput,
+                                    assertionsHeader,
+                                    assertions,
+                                    unexpectedBehaviors
+                                } = value;
 
-                    return (
-                        <Fragment key={`AtOutputKey_${commandIndex}`}>
-                            <InnerSectionHeadingText>
-                                {header}
-                            </InnerSectionHeadingText>
-                            <Text>
-                                <label>
-                                    {atOutput.description[0]}
-                                    <Feedback
-                                        className={`${atOutput.description[1]
-                                            .required && 'required'} ${atOutput
-                                            .description[1].highlightRequired &&
-                                            'highlight-required'}`}
+                                return (
+                                    <Fragment
+                                        key={`AtOutputKey_${commandIndex}`}
                                     >
-                                        {atOutput.description[1].description}
-                                    </Feedback>
-                                </label>
-                                <textarea
-                                    value={atOutput.value}
-                                    onChange={e =>
-                                        atOutput.change(e.target.value)
-                                    }
-                                />
-                            </Text>
-                            <Table>
-                                <tbody>
-                                    <tr>
-                                        <th>
-                                            {assertionsHeader.descriptionHeader ||
-                                                'Assertion'}
-                                        </th>
-                                        <th>
-                                            {assertionsHeader.passHeader ||
-                                                'Success case'}
-                                        </th>
-                                        <th>
-                                            {assertionsHeader.failHeader ||
-                                                'Failure cases'}
-                                        </th>
-                                    </tr>
-                                    {assertions.map(
-                                        (assertion, assertionIndex) => {
-                                            const {
-                                                description,
-                                                passChoice,
-                                                failChoices
-                                            } = assertion;
-
-                                            const [
-                                                missingCase,
-                                                failureCase
-                                            ] = failChoices;
-
-                                            return (
-                                                <tr
-                                                    key={`AssertionKey_${assertionIndex}`}
+                                        <InnerSectionHeadingText>
+                                            {header}
+                                        </InnerSectionHeadingText>
+                                        <Text>
+                                            <label>
+                                                {atOutput.description[0]}
+                                                <Feedback
+                                                    className={`${atOutput
+                                                        .description[1]
+                                                        .required &&
+                                                        'required'} ${atOutput
+                                                        .description[1]
+                                                        .highlightRequired &&
+                                                        'highlight-required'}`}
                                                 >
-                                                    {/*Assertion*/}
-                                                    <td>
-                                                        {description[0]}
-                                                        <Feedback
-                                                            className={`${description[1]
-                                                                .required &&
-                                                                'required'} ${description[1]
-                                                                .highlightRequired &&
-                                                                'highlight-required'}`}
-                                                        >
-                                                            {
-                                                                description[1]
-                                                                    .description
-                                                            }
-                                                        </Feedback>
-                                                    </td>
-                                                    {/*Success case*/}
-                                                    <td>
-                                                        <input
-                                                            type="radio"
-                                                            id={`pass-${commandIndex}-${assertionIndex}`}
-                                                            name={`result-${commandIndex}-${assertionIndex}`}
-                                                            onClick={
-                                                                passChoice.click
-                                                            }
-                                                        />
-                                                        <label
-                                                            id={`pass-${commandIndex}-${assertionIndex}-label`}
-                                                            htmlFor={`pass-${commandIndex}-${assertionIndex}`}
-                                                        >
-                                                            {
-                                                                passChoice
-                                                                    .label[0]
-                                                            }
-                                                            <Feedback
-                                                                className={`${passChoice
-                                                                    .label[1]
-                                                                    .offScreen &&
-                                                                    'off-screen'}`}
-                                                            >
-                                                                {
-                                                                    passChoice
-                                                                        .label[1]
-                                                                        .description
-                                                                }
-                                                            </Feedback>
-                                                        </label>
-                                                    </td>
-                                                    {/*Failure cases*/}
-                                                    <td>
-                                                        <input
-                                                            type="radio"
-                                                            id={`missing-${commandIndex}-${assertionIndex}`}
-                                                            name={`result-${commandIndex}-${assertionIndex}`}
-                                                            onClick={
-                                                                missingCase.click
-                                                            }
-                                                        />
-                                                        <label
-                                                            id={`missing-${commandIndex}-${assertionIndex}-label`}
-                                                            htmlFor={`missing-${commandIndex}-${assertionIndex}`}
-                                                        >
-                                                            {
-                                                                missingCase
-                                                                    .label[0]
-                                                            }
-                                                            <Feedback
-                                                                className={`${missingCase
-                                                                    .label[1]
-                                                                    .offScreen &&
-                                                                    'off-screen'}`}
-                                                            >
-                                                                {
-                                                                    missingCase
-                                                                        .label[1]
-                                                                        .description
-                                                                }
-                                                            </Feedback>
-                                                        </label>
-
-                                                        <input
-                                                            type="radio"
-                                                            id={`fail-${commandIndex}-${assertionIndex}`}
-                                                            name={`result-${commandIndex}-${assertionIndex}`}
-                                                            onClick={
-                                                                failureCase.click
-                                                            }
-                                                        />
-                                                        <label
-                                                            id={`fail-${commandIndex}-${assertionIndex}-label`}
-                                                            htmlFor={`fail-${commandIndex}-${assertionIndex}`}
-                                                        >
-                                                            {
-                                                                failureCase
-                                                                    .label[0]
-                                                            }
-                                                            <Feedback
-                                                                className={`${failureCase
-                                                                    .label[1]
-                                                                    .offScreen &&
-                                                                    'off-screen'}`}
-                                                            >
-                                                                {
-                                                                    failureCase
-                                                                        .label[1]
-                                                                        .description
-                                                                }
-                                                            </Feedback>
-                                                        </label>
-                                                    </td>
+                                                    {
+                                                        atOutput.description[1]
+                                                            .description
+                                                    }
+                                                </Feedback>
+                                            </label>
+                                            <textarea
+                                                value={atOutput.value}
+                                                onChange={e =>
+                                                    atOutput.change(
+                                                        e.target.value
+                                                    )
+                                                }
+                                            />
+                                        </Text>
+                                        <Table>
+                                            <tbody>
+                                                <tr>
+                                                    <th>
+                                                        {assertionsHeader.descriptionHeader ||
+                                                            'Assertion'}
+                                                    </th>
+                                                    <th>
+                                                        {assertionsHeader.passHeader ||
+                                                            'Success case'}
+                                                    </th>
+                                                    <th>
+                                                        {assertionsHeader.failHeader ||
+                                                            'Failure cases'}
+                                                    </th>
                                                 </tr>
-                                            );
-                                        }
-                                    )}
-                                </tbody>
-                            </Table>
-                            {/*Unexpected Behaviors*/}
-                            <Fieldset id={`cmd-${commandIndex}-problems`}>
-                                {unexpectedBehaviors.description[0]}
-                                <Feedback
-                                    className={`${unexpectedBehaviors
-                                        .description[1].required &&
-                                        'required'} ${unexpectedBehaviors
-                                        .description[1].highlightRequired &&
-                                        'highlight-required'}`}
-                                >
-                                    {
-                                        unexpectedBehaviors.description[1]
-                                            .description
-                                    }
-                                </Feedback>
-                                <div>
-                                    <input
-                                        type="radio"
-                                        id={`problem-${commandIndex}-true`}
-                                        name={`problem-${commandIndex}`}
-                                        onClick={
-                                            unexpectedBehaviors.passChoice.click
-                                        }
-                                    />
-                                    <label
-                                        id={`problem-${commandIndex}-true-label`}
-                                        htmlFor={`problem-${commandIndex}-true`}
-                                    >
-                                        {unexpectedBehaviors.passChoice.label}
-                                    </label>
-                                </div>
-                                <div>
-                                    <input
-                                        type="radio"
-                                        id={`problem-${commandIndex}-false`}
-                                        name={`problem-${commandIndex}`}
-                                        onClick={
-                                            unexpectedBehaviors.failChoice.click
-                                        }
-                                    />
-                                    <label
-                                        id={`problem-${commandIndex}-false-label`}
-                                        htmlFor={`problem-${commandIndex}-false`}
-                                    >
-                                        {unexpectedBehaviors.failChoice.label}
-                                    </label>
-                                </div>
+                                                {assertions.map(
+                                                    (
+                                                        assertion,
+                                                        assertionIndex
+                                                    ) => {
+                                                        const {
+                                                            description,
+                                                            passChoice,
+                                                            failChoices
+                                                        } = assertion;
 
-                                <Fieldset className="problem-select">
-                                    <legend>
-                                        {
-                                            unexpectedBehaviors.failChoice
-                                                .options.header
-                                        }
-                                    </legend>
-                                    {unexpectedBehaviors.failChoice.options.options.map(
-                                        (option, optionIndex) => {
-                                            const {
-                                                checked,
-                                                description,
-                                                more,
-                                                change
-                                            } = option;
-                                            return (
-                                                <Fragment
-                                                    key={`AssertionOptionsKey_${optionIndex}`}
-                                                >
-                                                    <input
-                                                        type="checkbox"
-                                                        value={description}
-                                                        id={`${description}-${commandIndex}`}
-                                                        className={`undesirable-${commandIndex}`}
-                                                        tabIndex={
-                                                            optionIndex === 0
-                                                                ? 0
-                                                                : -1
-                                                        }
-                                                        onClick={e =>
-                                                            change(
-                                                                e.target.checked
-                                                            )
-                                                        }
-                                                        disabled={
-                                                            !unexpectedBehaviors
-                                                                .failChoice
-                                                                .checked
-                                                        }
-                                                    />
-                                                    <label
-                                                        htmlFor={`${description}-${commandIndex}`}
-                                                    >
-                                                        {description}
-                                                    </label>
-                                                    <br />
-                                                    {more && (
-                                                        <div>
-                                                            <label
-                                                                htmlFor={`${description}-${commandIndex}-input`}
+                                                        const [
+                                                            missingCase,
+                                                            failureCase
+                                                        ] = failChoices;
+
+                                                        return (
+                                                            <tr
+                                                                key={`AssertionKey_${assertionIndex}`}
                                                             >
-                                                                {
-                                                                    more
-                                                                        .description[0]
-                                                                }
-                                                                <Feedback
-                                                                    className={`${more
-                                                                        .description[1]
-                                                                        .required &&
-                                                                        'required'} ${more
-                                                                        .description[1]
-                                                                        .highlightRequired &&
-                                                                        'highlight-required'}`}
+                                                                {/*Assertion*/}
+                                                                <td>
+                                                                    {
+                                                                        description[0]
+                                                                    }
+                                                                    <Feedback
+                                                                        className={`${description[1]
+                                                                            .required &&
+                                                                            'required'} ${description[1]
+                                                                            .highlightRequired &&
+                                                                            'highlight-required'}`}
+                                                                    >
+                                                                        {
+                                                                            description[1]
+                                                                                .description
+                                                                        }
+                                                                    </Feedback>
+                                                                </td>
+                                                                {/*Success case*/}
+                                                                <td>
+                                                                    <input
+                                                                        type="radio"
+                                                                        id={`pass-${commandIndex}-${assertionIndex}`}
+                                                                        name={`result-${commandIndex}-${assertionIndex}`}
+                                                                        onClick={
+                                                                            passChoice.click
+                                                                        }
+                                                                    />
+                                                                    <label
+                                                                        id={`pass-${commandIndex}-${assertionIndex}-label`}
+                                                                        htmlFor={`pass-${commandIndex}-${assertionIndex}`}
+                                                                    >
+                                                                        {
+                                                                            passChoice
+                                                                                .label[0]
+                                                                        }
+                                                                        <Feedback
+                                                                            className={`${passChoice
+                                                                                .label[1]
+                                                                                .offScreen &&
+                                                                                'off-screen'}`}
+                                                                        >
+                                                                            {
+                                                                                passChoice
+                                                                                    .label[1]
+                                                                                    .description
+                                                                            }
+                                                                        </Feedback>
+                                                                    </label>
+                                                                </td>
+                                                                {/*Failure cases*/}
+                                                                <td>
+                                                                    <input
+                                                                        type="radio"
+                                                                        id={`missing-${commandIndex}-${assertionIndex}`}
+                                                                        name={`result-${commandIndex}-${assertionIndex}`}
+                                                                        onClick={
+                                                                            missingCase.click
+                                                                        }
+                                                                    />
+                                                                    <label
+                                                                        id={`missing-${commandIndex}-${assertionIndex}-label`}
+                                                                        htmlFor={`missing-${commandIndex}-${assertionIndex}`}
+                                                                    >
+                                                                        {
+                                                                            missingCase
+                                                                                .label[0]
+                                                                        }
+                                                                        <Feedback
+                                                                            className={`${missingCase
+                                                                                .label[1]
+                                                                                .offScreen &&
+                                                                                'off-screen'}`}
+                                                                        >
+                                                                            {
+                                                                                missingCase
+                                                                                    .label[1]
+                                                                                    .description
+                                                                            }
+                                                                        </Feedback>
+                                                                    </label>
+
+                                                                    <input
+                                                                        type="radio"
+                                                                        id={`fail-${commandIndex}-${assertionIndex}`}
+                                                                        name={`result-${commandIndex}-${assertionIndex}`}
+                                                                        onClick={
+                                                                            failureCase.click
+                                                                        }
+                                                                    />
+                                                                    <label
+                                                                        id={`fail-${commandIndex}-${assertionIndex}-label`}
+                                                                        htmlFor={`fail-${commandIndex}-${assertionIndex}`}
+                                                                    >
+                                                                        {
+                                                                            failureCase
+                                                                                .label[0]
+                                                                        }
+                                                                        <Feedback
+                                                                            className={`${failureCase
+                                                                                .label[1]
+                                                                                .offScreen &&
+                                                                                'off-screen'}`}
+                                                                        >
+                                                                            {
+                                                                                failureCase
+                                                                                    .label[1]
+                                                                                    .description
+                                                                            }
+                                                                        </Feedback>
+                                                                    </label>
+                                                                </td>
+                                                            </tr>
+                                                        );
+                                                    }
+                                                )}
+                                            </tbody>
+                                        </Table>
+                                        {/*Unexpected Behaviors*/}
+                                        <Fieldset
+                                            id={`cmd-${commandIndex}-problems`}
+                                        >
+                                            {unexpectedBehaviors.description[0]}
+                                            <Feedback
+                                                className={`${unexpectedBehaviors
+                                                    .description[1].required &&
+                                                    'required'} ${unexpectedBehaviors
+                                                    .description[1]
+                                                    .highlightRequired &&
+                                                    'highlight-required'}`}
+                                            >
+                                                {
+                                                    unexpectedBehaviors
+                                                        .description[1]
+                                                        .description
+                                                }
+                                            </Feedback>
+                                            <div>
+                                                <input
+                                                    type="radio"
+                                                    id={`problem-${commandIndex}-true`}
+                                                    name={`problem-${commandIndex}`}
+                                                    onClick={
+                                                        unexpectedBehaviors
+                                                            .passChoice.click
+                                                    }
+                                                />
+                                                <label
+                                                    id={`problem-${commandIndex}-true-label`}
+                                                    htmlFor={`problem-${commandIndex}-true`}
+                                                >
+                                                    {
+                                                        unexpectedBehaviors
+                                                            .passChoice.label
+                                                    }
+                                                </label>
+                                            </div>
+                                            <div>
+                                                <input
+                                                    type="radio"
+                                                    id={`problem-${commandIndex}-false`}
+                                                    name={`problem-${commandIndex}`}
+                                                    onClick={
+                                                        unexpectedBehaviors
+                                                            .failChoice.click
+                                                    }
+                                                />
+                                                <label
+                                                    id={`problem-${commandIndex}-false-label`}
+                                                    htmlFor={`problem-${commandIndex}-false`}
+                                                >
+                                                    {
+                                                        unexpectedBehaviors
+                                                            .failChoice.label
+                                                    }
+                                                </label>
+                                            </div>
+
+                                            <Fieldset className="problem-select">
+                                                <legend>
+                                                    {
+                                                        unexpectedBehaviors
+                                                            .failChoice.options
+                                                            .header
+                                                    }
+                                                </legend>
+                                                {unexpectedBehaviors.failChoice.options.options.map(
+                                                    (option, optionIndex) => {
+                                                        const {
+                                                            checked,
+                                                            description,
+                                                            more,
+                                                            change
+                                                        } = option;
+                                                        return (
+                                                            <Fragment
+                                                                key={`AssertionOptionsKey_${optionIndex}`}
+                                                            >
+                                                                <input
+                                                                    type="checkbox"
+                                                                    value={
+                                                                        description
+                                                                    }
+                                                                    id={`${description}-${commandIndex}`}
+                                                                    className={`undesirable-${commandIndex}`}
+                                                                    tabIndex={
+                                                                        optionIndex ===
+                                                                        0
+                                                                            ? 0
+                                                                            : -1
+                                                                    }
+                                                                    onClick={e =>
+                                                                        change(
+                                                                            e
+                                                                                .target
+                                                                                .checked
+                                                                        )
+                                                                    }
+                                                                    disabled={
+                                                                        !unexpectedBehaviors
+                                                                            .failChoice
+                                                                            .checked
+                                                                    }
+                                                                />
+                                                                <label
+                                                                    htmlFor={`${description}-${commandIndex}`}
                                                                 >
                                                                     {
-                                                                        more
-                                                                            .description[1]
-                                                                            .description
+                                                                        description
                                                                     }
-                                                                </Feedback>
-                                                            </label>
-                                                            <input
-                                                                type="text"
-                                                                id={`${description}-${commandIndex}-input`}
-                                                                name={`${description}-${commandIndex}-input`}
-                                                                className={`undesirable-${description.toLowerCase()}-input`}
-                                                                value={
-                                                                    more.value
-                                                                }
-                                                                onChange={e =>
-                                                                    more.change(
-                                                                        e.target
-                                                                            .value
-                                                                    )
-                                                                }
-                                                                disabled={
-                                                                    !checked
-                                                                }
-                                                            />
-                                                        </div>
-                                                    )}
-                                                </Fragment>
-                                            );
-                                        }
-                                    )}
-                                </Fieldset>
-                            </Fieldset>
-                        </Fragment>
-                    );
-                })}
-            </ResultsSection>
-            <button
-                type="button"
-                onClick={() => {
-                    pageContent.submit.click();
-                    // console.log(testRun.testPage());
-                    console.log(testRun.resultsTable());
-                }}
-            >
-                {pageContent.submit.button}
-            </button>
+                                                                </label>
+                                                                <br />
+                                                                {more && (
+                                                                    <div>
+                                                                        <label
+                                                                            htmlFor={`${description}-${commandIndex}-input`}
+                                                                        >
+                                                                            {
+                                                                                more
+                                                                                    .description[0]
+                                                                            }
+                                                                            <Feedback
+                                                                                className={`${more
+                                                                                    .description[1]
+                                                                                    .required &&
+                                                                                    'required'} ${more
+                                                                                    .description[1]
+                                                                                    .highlightRequired &&
+                                                                                    'highlight-required'}`}
+                                                                            >
+                                                                                {
+                                                                                    more
+                                                                                        .description[1]
+                                                                                        .description
+                                                                                }
+                                                                            </Feedback>
+                                                                        </label>
+                                                                        <input
+                                                                            type="text"
+                                                                            id={`${description}-${commandIndex}-input`}
+                                                                            name={`${description}-${commandIndex}-input`}
+                                                                            className={`undesirable-${description.toLowerCase()}-input`}
+                                                                            value={
+                                                                                more.value
+                                                                            }
+                                                                            onChange={e =>
+                                                                                more.change(
+                                                                                    e
+                                                                                        .target
+                                                                                        .value
+                                                                                )
+                                                                            }
+                                                                            disabled={
+                                                                                !checked
+                                                                            }
+                                                                        />
+                                                                    </div>
+                                                                )}
+                                                            </Fragment>
+                                                        );
+                                                    }
+                                                )}
+                                            </Fieldset>
+                                        </Fieldset>
+                                    </Fragment>
+                                );
+                            }
+                        )}
+                    </ResultsSection>
+                    <button type="button" onClick={pageContent.submit.click}>
+                        {pageContent.submit.button}
+                    </button>
+                </>
+            )}
         </Container>
     );
 };
@@ -845,7 +995,13 @@ ErrorComponent.propTypes = {
 };
 
 TestRenderer.propTypes = {
-    state: PropTypes.object
+    state: PropTypes.object,
+    title: PropTypes.string,
+    support: PropTypes.object,
+    configQueryParams: PropTypes.array,
+    commands: PropTypes.object,
+    behavior: PropTypes.object,
+    pageUri: PropTypes.string
 };
 
 export default TestRenderer;
