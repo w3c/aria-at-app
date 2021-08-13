@@ -23,13 +23,6 @@ const App = ({ auth, dispatch }) => {
 
     const { isSignedIn, isSignOutCalled, isTester, username } = auth;
 
-    useEffect(() => {
-        // cache still being used to prevent redux refresh unless browser refreshed
-        // for some instances. `isSignOutCalled` boolean helps prevent this
-        if (!isSignOutCalled && !username && data && data.me)
-            dispatch(signInAction(data.me));
-    }, []);
-
     const signOut = async () => {
         dispatch(signOutAction());
         await fetch('/api/auth/signout', { method: 'POST' });
@@ -37,6 +30,11 @@ const App = ({ auth, dispatch }) => {
     };
 
     if (loading) return null;
+
+    // cache still being used to prevent redux refresh unless browser refreshed
+    // for some instances. `isSignOutCalled` boolean helps prevent this
+    if (!isSignOutCalled && !username && data && data.me)
+        dispatch(signInAction(data.me));
 
     if (error) {
         // TODO: Display error message / page for failed user auth attempt

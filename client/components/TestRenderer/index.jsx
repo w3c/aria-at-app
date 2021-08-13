@@ -24,13 +24,27 @@ const SubHeadingText = styled.h2``;
 const InnerSectionHeadingText = styled.h3``;
 
 const Text = styled.p`
-    > label {
-        > span {
-            display: none;
-        }
-    }
     > textarea {
         width: 100%;
+    }
+`;
+
+const Feedback = styled.span`
+    &.required:not(.highlight-required) {
+        display: none;
+    }
+
+    &.required.highlight-required {
+        color: red;
+    }
+
+    &.off-screen {
+        position: absolute !important;
+        height: 1px;
+        width: 1px;
+        overflow: hidden;
+        clip: rect(1px, 1px, 1px, 1px);
+        white-space: nowrap;
     }
 `;
 
@@ -49,14 +63,10 @@ const Table = styled.table`
         td,
         th {
             border: 1px solid black;
+        }
 
-            > span {
-                display: none;
-            }
-
-            > label span {
-                display: none;
-            }
+        th {
+            font-weight: bold;
         }
     }
 `;
@@ -77,10 +87,6 @@ const Fieldset = styled.fieldset`
     border-color: threedface;
     border-image: initial;
 
-    > span {
-        display: none;
-    }
-
     > legend {
         display: block;
 
@@ -96,7 +102,7 @@ const Fieldset = styled.fieldset`
         border-image: initial;
     }
 
-    .problem-select {
+    &.problem-select {
         margin-top: 1em;
         margin-left: 1em;
     }
@@ -131,247 +137,252 @@ const ErrorComponent = ({ hasErrors = false }) => {
     );
 };
 
-const TestRenderer = () => {
-    const [pageContent, setPageContent] = useState(null);
-
-    useEffect(() => {
-        const testRun = new AriaAtTestRun.TestRun({
-            hooks: {},
-            state: {
-                info: {
-                    description:
-                        'Navigate to an unchecked checkbox in reading mode',
-                    task: 'navigate to unchecked checkbox',
-                    mode: 'reading',
-                    modeInstructions:
-                        'Insure NVDA is in browse mode by pressing Escape. Note: This command has no effect if NVDA is already in browse mode.',
-                    userInstructions: [
-                        'Navigate to the first checkbox. Note: it should be in the unchecked state.'
-                    ],
-                    setupScriptDescription: ''
-                },
-                config: {
-                    at: {
-                        key: 'nvda',
-                        name: 'NVDA'
-                    },
-                    renderResultsAfterSubmit: false,
-                    displaySubmitButton: false
-                },
-                currentUserAction: 'loadPage',
-                commands: [
+const TestRenderer = ({
+    state = {
+        info: {
+            description: 'Navigate to an unchecked checkbox in reading mode',
+            task: 'navigate to unchecked checkbox',
+            mode: 'reading',
+            modeInstructions:
+                'Insure NVDA is in browse mode by pressing Escape. Note: This command has no effect if NVDA is already in browse mode.',
+            userInstructions: [
+                'Navigate to the first checkbox. Note: it should be in the unchecked state.'
+            ],
+            setupScriptDescription: ''
+        },
+        config: {
+            at: {
+                key: 'nvda',
+                name: 'NVDA'
+            },
+            renderResultsAfterSubmit: true,
+            displaySubmitButton: true
+        },
+        currentUserAction: 'loadPage',
+        commands: [
+            {
+                description: 'X / Shift+X',
+                atOutput: { highlightRequired: true },
+                assertions: [
                     {
-                        description: 'X / Shift+X',
-                        atOutput: { highlightRequired: false },
-                        assertions: [
-                            {
-                                description: 'Role "checkbox" is conveyed',
-                                priority: 1
-                            },
-                            {
-                                description: 'Name "Lettuce" is conveyed',
-                                priority: 1
-                            },
-                            {
-                                description:
-                                    'State of the checkbox (not checked) is conveyed',
-                                priority: 1
-                            }
-                        ],
-                        additionalAssertions: [],
-                        unexpected: {
-                            highlightRequired: false,
-                            behaviors: [
-                                {
-                                    description:
-                                        'Output is excessively verbose, e.g., includes redundant and/or irrelevant speech'
-                                },
-                                {
-                                    description:
-                                        'Reading cursor position changed in an unexpected manner'
-                                },
-                                {
-                                    description:
-                                        'Screen reader became extremely sluggish'
-                                },
-                                {
-                                    description: 'Screen reader crashed'
-                                },
-                                {
-                                    description: 'Browser crashed'
-                                },
-                                {
-                                    description: 'Other',
-                                    more: [
-                                        {
-                                            highlightRequired: false
-                                        }
-                                    ]
-                                }
-                            ]
-                        }
+                        description: 'Role "checkbox" is conveyed',
+                        highlightRequired: true,
+                        priority: 1
                     },
                     {
-                        description: 'F / Shift+F',
-                        atOutput: { highlightRequired: false },
-                        assertions: [
-                            {
-                                description: 'Role "checkbox" is conveyed',
-                                priority: 1
-                            },
-                            {
-                                description: 'Name "Lettuce" is conveyed',
-                                priority: 1
-                            },
-                            {
-                                description:
-                                    'State of the checkbox (not checked) is conveyed',
-                                priority: 1
-                            }
-                        ],
-                        additionalAssertions: [],
-                        unexpected: {
-                            highlightRequired: false,
-                            behaviors: [
-                                {
-                                    description:
-                                        'Output is excessively verbose, e.g., includes redundant and/or irrelevant speech'
-                                },
-                                {
-                                    description:
-                                        'Reading cursor position changed in an unexpected manner'
-                                },
-                                {
-                                    description:
-                                        'Screen reader became extremely sluggish'
-                                },
-                                {
-                                    description: 'Screen reader crashed'
-                                },
-                                {
-                                    description: 'Browser crashed'
-                                },
-                                {
-                                    description: 'Other',
-                                    more: [
-                                        {
-                                            highlightRequired: false
-                                        }
-                                    ]
-                                }
-                            ]
-                        }
+                        description: 'Name "Lettuce" is conveyed',
+                        highlightRequired: true,
+                        priority: 1
                     },
                     {
-                        description: 'Tab / Shift+Tab',
-                        atOutput: { highlightRequired: false },
-                        assertions: [
-                            {
-                                description: 'Role "checkbox" is conveyed',
-                                priority: 1
-                            },
-                            {
-                                description: 'Name "Lettuce" is conveyed',
-                                priority: 1
-                            },
-                            {
-                                description:
-                                    'State of the checkbox (not checked) is conveyed',
-                                priority: 1
-                            }
-                        ],
-                        additionalAssertions: [],
-                        unexpected: {
-                            highlightRequired: false,
-                            behaviors: [
-                                {
-                                    description:
-                                        'Output is excessively verbose, e.g., includes redundant and/or irrelevant speech'
-                                },
-                                {
-                                    description:
-                                        'Reading cursor position changed in an unexpected manner'
-                                },
-                                {
-                                    description:
-                                        'Screen reader became extremely sluggish'
-                                },
-                                {
-                                    description: 'Screen reader crashed'
-                                },
-                                {
-                                    description: 'Browser crashed'
-                                },
-                                {
-                                    description: 'Other',
-                                    more: [
-                                        {
-                                            highlightRequired: false
-                                        }
-                                    ]
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        description: 'Up Arrow / Down Arrow',
-                        atOutput: { highlightRequired: false },
-                        assertions: [
-                            {
-                                description: 'Role "checkbox" is conveyed',
-                                priority: 1
-                            },
-                            {
-                                description: 'Name "Lettuce" is conveyed',
-                                priority: 1
-                            },
-                            {
-                                description:
-                                    'State of the checkbox (not checked) is conveyed',
-                                priority: 1
-                            }
-                        ],
-                        additionalAssertions: [],
-                        unexpected: {
-                            highlightRequired: false,
-                            behaviors: [
-                                {
-                                    description:
-                                        'Output is excessively verbose, e.g., includes redundant and/or irrelevant speech'
-                                },
-                                {
-                                    description:
-                                        'Reading cursor position changed in an unexpected manner'
-                                },
-                                {
-                                    description:
-                                        'Screen reader became extremely sluggish'
-                                },
-                                {
-                                    description: 'Screen reader crashed'
-                                },
-                                {
-                                    description: 'Browser crashed'
-                                },
-                                {
-                                    description: 'Other',
-                                    more: [
-                                        {
-                                            highlightRequired: false
-                                        }
-                                    ]
-                                }
-                            ]
-                        }
+                        description:
+                            'State of the checkbox (not checked) is conveyed',
+                        highlightRequired: true,
+                        priority: 1
                     }
                 ],
-                openTest: {
-                    enabled: true
+                additionalAssertions: [],
+                unexpected: {
+                    highlightRequired: true,
+                    behaviors: [
+                        {
+                            description:
+                                'Output is excessively verbose, e.g., includes redundant and/or irrelevant speech'
+                        },
+                        {
+                            description:
+                                'Reading cursor position changed in an unexpected manner'
+                        },
+                        {
+                            description:
+                                'Screen reader became extremely sluggish'
+                        },
+                        {
+                            description: 'Screen reader crashed'
+                        },
+                        {
+                            description: 'Browser crashed'
+                        },
+                        {
+                            description: 'Other',
+                            more: { highlightRequired: true }
+                        }
+                    ]
                 }
-            }
+            } /*,
+            {
+                description: 'F / Shift+F',
+                atOutput: { highlightRequired: true },
+                assertions: [
+                    {
+                        description: 'Role "checkbox" is conveyed',
+                        highlightRequired: true,
+                        priority: 1
+                    },
+                    {
+                        description: 'Name "Lettuce" is conveyed',
+                        highlightRequired: true,
+                        priority: 1
+                    },
+                    {
+                        description:
+                            'State of the checkbox (not checked) is conveyed',
+                        highlightRequired: true,
+                        priority: 1
+                    }
+                ],
+                additionalAssertions: [],
+                unexpected: {
+                    highlightRequired: true,
+                    behaviors: [
+                        {
+                            description:
+                                'Output is excessively verbose, e.g., includes redundant and/or irrelevant speech'
+                        },
+                        {
+                            description:
+                                'Reading cursor position changed in an unexpected manner'
+                        },
+                        {
+                            description:
+                                'Screen reader became extremely sluggish'
+                        },
+                        {
+                            description: 'Screen reader crashed'
+                        },
+                        {
+                            description: 'Browser crashed'
+                        },
+                        {
+                            description: 'Other',
+                            more: { highlightRequired: true }
+                        }
+                    ]
+                }
+            },
+            {
+                description: 'Tab / Shift+Tab',
+                atOutput: { highlightRequired: true },
+                assertions: [
+                    {
+                        description: 'Role "checkbox" is conveyed',
+                        highlightRequired: true,
+                        priority: 1
+                    },
+                    {
+                        description: 'Name "Lettuce" is conveyed',
+                        highlightRequired: true,
+                        priority: 1
+                    },
+                    {
+                        description:
+                            'State of the checkbox (not checked) is conveyed',
+                        highlightRequired: true,
+                        priority: 1
+                    }
+                ],
+                additionalAssertions: [],
+                unexpected: {
+                    highlightRequired: true,
+                    behaviors: [
+                        {
+                            description:
+                                'Output is excessively verbose, e.g., includes redundant and/or irrelevant speech'
+                        },
+                        {
+                            description:
+                                'Reading cursor position changed in an unexpected manner'
+                        },
+                        {
+                            description:
+                                'Screen reader became extremely sluggish'
+                        },
+                        {
+                            description: 'Screen reader crashed'
+                        },
+                        {
+                            description: 'Browser crashed'
+                        },
+                        {
+                            description: 'Other',
+                            more: { highlightRequired: true }
+                        }
+                    ]
+                }
+            },
+            {
+                description: 'Up Arrow / Down Arrow',
+                atOutput: { highlightRequired: true },
+                assertions: [
+                    {
+                        description: 'Role "checkbox" is conveyed',
+                        highlightRequired: true,
+                        priority: 1
+                    },
+                    {
+                        description: 'Name "Lettuce" is conveyed',
+                        highlightRequired: true,
+                        priority: 1
+                    },
+                    {
+                        description:
+                            'State of the checkbox (not checked) is conveyed',
+                        highlightRequired: true,
+                        priority: 1
+                    }
+                ],
+                additionalAssertions: [],
+                unexpected: {
+                    highlightRequired: true,
+                    behaviors: [
+                        {
+                            description:
+                                'Output is excessively verbose, e.g., includes redundant and/or irrelevant speech'
+                        },
+                        {
+                            description:
+                                'Reading cursor position changed in an unexpected manner'
+                        },
+                        {
+                            description:
+                                'Screen reader became extremely sluggish'
+                        },
+                        {
+                            description: 'Screen reader crashed'
+                        },
+                        {
+                            description: 'Browser crashed'
+                        },
+                        {
+                            description: 'Other',
+                            more: { highlightRequired: true }
+                        }
+                    ]
+                }
+            }*/
+        ],
+        openTest: {
+            enabled: true
+        }
+    }
+}) => {
+    const [pageContent, setPageContent] = useState(null);
+    const [isSubmitted, setIsSubmitted] = useState(false);
+
+    const testRun = new AriaAtTestRun.TestRun({
+        hooks: {},
+        state
+    });
+
+    useEffect(() => {
+        testRun.observe(result => {
+            console.info('new.state', result);
+            console.info('testRun.testPage()', testRun.testPage());
+            console.info('testRun.instructions()', testRun.instructions());
+            setPageContent({ ...testRun.instructions() });
         });
 
-        setPageContent(testRun.testPage());
+        setPageContent(testRun.instructions());
     }, []);
 
     const parseRichContent = (instruction = []) => {
@@ -430,16 +441,13 @@ const TestRenderer = () => {
 
     const InstructionsContent = () => {
         const allInstructions = [
-            ...pageContent.instructions.instructions.instructions.instructions,
-            ...pageContent.instructions.instructions.instructions
-                .strongInstructions,
-            pageContent.instructions.instructions.instructions.commands
-                .description
+            ...pageContent.instructions.instructions.instructions,
+            ...pageContent.instructions.instructions.strongInstructions,
+            pageContent.instructions.instructions.commands.description
         ];
 
         const commands =
-            pageContent.instructions.instructions.instructions.commands
-                .commands;
+            pageContent.instructions.instructions.commands.commands;
 
         const commandsContent = parseListContent(commands);
         const content = parseListContent(allInstructions, commandsContent);
@@ -448,261 +456,11 @@ const TestRenderer = () => {
     };
 
     const AssertionsContent = () => {
-        const assertions = [
-            ...pageContent.instructions.instructions.assertions.assertions
-        ];
+        const assertions = [...pageContent.instructions.assertions.assertions];
 
         const content = parseListContent(assertions);
 
         return <NumberedList>{content}</NumberedList>;
-    };
-
-    const ResultsContent = () => {
-        const resultCommands = [...pageContent.instructions.results.commands];
-
-        return resultCommands.map((value, commandIndex) => {
-            const {
-                header,
-                atOutput,
-                assertionsHeader,
-                assertions,
-                unexpectedBehaviors
-            } = value;
-
-            return (
-                <Fragment key={nextId()}>
-                    <InnerSectionHeadingText>{header}</InnerSectionHeadingText>
-                    <Text>
-                        <label>
-                            {atOutput.description[0]}
-                            <span
-                                className={`${atOutput.description[1]
-                                    .required && 'required'} ${atOutput
-                                    .description[1].highlightRequired &&
-                                    'highlight-required'}`}
-                            >
-                                {atOutput.description[1].description}
-                            </span>
-                        </label>
-                        <textarea />
-                    </Text>
-                    <Table>
-                        <tbody>
-                            <tr>
-                                <th>
-                                    {assertionsHeader.descriptionHeader ||
-                                        'Assertion'}
-                                </th>
-                                <th>
-                                    {assertionsHeader.passHeader ||
-                                        'Success case'}
-                                </th>
-                                <th>
-                                    {assertionsHeader.failHeader ||
-                                        'Failure cases'}
-                                </th>
-                            </tr>
-                            {assertions.map((assertion, assertionIndex) => {
-                                const {
-                                    description,
-                                    passChoice,
-                                    failChoices
-                                } = assertion;
-
-                                const [missingCase, failureCase] = failChoices;
-
-                                return (
-                                    <tr key={nextId()}>
-                                        {/*Assertion*/}
-                                        <td>
-                                            {description[0]}
-                                            <span
-                                                className={`${description[1]
-                                                    .required &&
-                                                    'required'} ${description[1]
-                                                    .highlightRequired &&
-                                                    'highlight-required'}`}
-                                            >
-                                                {description[1].description}
-                                            </span>
-                                        </td>
-                                        {/*Success case*/}
-                                        <td>
-                                            <input
-                                                type="radio"
-                                                id={`pass-${commandIndex}-${assertionIndex}`}
-                                                name={`result-${commandIndex}-${assertionIndex}`}
-                                            />
-                                            <label
-                                                id={`pass-${commandIndex}-${assertionIndex}-label`}
-                                                htmlFor={`pass-${commandIndex}-${assertionIndex}`}
-                                            >
-                                                {passChoice.label[0]}
-                                                <span
-                                                    className={`${passChoice
-                                                        .label[1].offScreen &&
-                                                        'off-screen'}`}
-                                                >
-                                                    {
-                                                        passChoice.label[1]
-                                                            .description
-                                                    }
-                                                </span>
-                                            </label>
-                                        </td>
-                                        {/*Failure cases*/}
-                                        <td>
-                                            <input
-                                                type="radio"
-                                                id={`missing-${commandIndex}-${assertionIndex}`}
-                                                name={`result-${commandIndex}-${assertionIndex}`}
-                                            />
-                                            <label
-                                                id={`missing-${commandIndex}-${assertionIndex}-label`}
-                                                htmlFor={`missing-${commandIndex}-${assertionIndex}`}
-                                            >
-                                                {missingCase.label[0]}
-                                                <span
-                                                    className={`${missingCase
-                                                        .label[1].offScreen &&
-                                                        'off-screen'}`}
-                                                >
-                                                    {
-                                                        missingCase.label[1]
-                                                            .description
-                                                    }
-                                                </span>
-                                            </label>
-
-                                            <input
-                                                type="radio"
-                                                id={`fail-${commandIndex}-${assertionIndex}`}
-                                                name={`result-${commandIndex}-${assertionIndex}`}
-                                            />
-                                            <label
-                                                id={`fail-${commandIndex}-${assertionIndex}-label`}
-                                                htmlFor={`fail-${commandIndex}-${assertionIndex}`}
-                                            >
-                                                {failureCase.label[0]}
-                                                <span
-                                                    className={`${failureCase
-                                                        .label[1].offScreen &&
-                                                        'off-screen'}`}
-                                                >
-                                                    {
-                                                        failureCase.label[1]
-                                                            .description
-                                                    }
-                                                </span>
-                                            </label>
-                                        </td>
-                                    </tr>
-                                );
-                            })}
-                        </tbody>
-                    </Table>
-                    <Fieldset id={`cmd-${commandIndex}-problems`}>
-                        {unexpectedBehaviors.description[0]}
-                        <span
-                            className={`${unexpectedBehaviors.description[1]
-                                .required && 'required'} ${unexpectedBehaviors
-                                .description[1].highlightRequired &&
-                                'highlight-required'}`}
-                        >
-                            {unexpectedBehaviors.description[1].description}
-                        </span>
-                        <div>
-                            <input
-                                type="radio"
-                                id={`problem-${commandIndex}-true`}
-                                name={`problem-${commandIndex}`}
-                            />
-                            <label
-                                id={`problem-${commandIndex}-true-label`}
-                                htmlFor={`problem-${commandIndex}-true`}
-                            >
-                                {unexpectedBehaviors.passChoice.label}
-                            </label>
-                        </div>
-                        <div>
-                            <input
-                                type="radio"
-                                id={`problem-${commandIndex}-false`}
-                                name={`problem-${commandIndex}`}
-                            />
-                            <label
-                                id={`problem-${commandIndex}-false-label`}
-                                htmlFor={`problem-${commandIndex}-false`}
-                            >
-                                {unexpectedBehaviors.failChoice.label}
-                            </label>
-                        </div>
-
-                        <Fieldset className="problem-select">
-                            <legend>
-                                {unexpectedBehaviors.failChoice.options.header}
-                            </legend>
-                            {unexpectedBehaviors.failChoice.options.options.map(
-                                (option, optionIndex) => {
-                                    const { description, more } = option;
-                                    return (
-                                        <Fragment key={nextId()}>
-                                            <input
-                                                type="checkbox"
-                                                value={description}
-                                                id={`${description}-${commandIndex}`}
-                                                className={`undesirable-${commandIndex}`}
-                                                tabIndex={
-                                                    optionIndex === 0 ? 0 : -1
-                                                }
-                                                disabled
-                                            />
-                                            <label
-                                                htmlFor={`${description}-${commandIndex}`}
-                                            >
-                                                {description}
-                                            </label>
-                                            <br />
-                                            {more && (
-                                                <div>
-                                                    <label
-                                                        htmlFor={`${description}-${commandIndex}-input`}
-                                                    >
-                                                        {more.description[0]}
-                                                        <span
-                                                            style={{
-                                                                // TODO: temporary
-                                                                display: 'none'
-                                                            }}
-                                                            className={`${more
-                                                                .description[1]
-                                                                .required &&
-                                                                'required'}`}
-                                                        >
-                                                            {
-                                                                more
-                                                                    .description[1]
-                                                                    .description
-                                                            }
-                                                        </span>
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        id={`${description}-${commandIndex}-input`}
-                                                        name={`${description}-${commandIndex}-input`}
-                                                        className={`undesirable-${description.toLowerCase()}-input`}
-                                                    />
-                                                </div>
-                                            )}
-                                        </Fragment>
-                                    );
-                                }
-                            )}
-                        </Fieldset>
-                    </Fieldset>
-                </Fragment>
-            );
-        });
     };
 
     if (!pageContent) return null;
@@ -712,52 +470,382 @@ const TestRenderer = () => {
             <ErrorComponent hasErrors={!!pageContent.errors} />
             <InstructionsSection>
                 <HeaderText id="behavior-header" tabindex="0">
-                    {pageContent.instructions.instructions.header.header}
+                    {pageContent.instructions.header.header}
                 </HeaderText>
-                <Text>{pageContent.instructions.instructions.description}</Text>
+                <Text>{pageContent.instructions.description}</Text>
                 <SubHeadingText>
-                    {pageContent.instructions.instructions.instructions.header}
+                    {pageContent.instructions.instructions.header}
                 </SubHeadingText>
                 <InstructionsContent />
                 <SubHeadingText>
-                    {pageContent.instructions.instructions.assertions.header}
+                    {pageContent.instructions.assertions.header}
                 </SubHeadingText>
-                <Text>
-                    {
-                        pageContent.instructions.instructions.assertions
-                            .description
-                    }
-                </Text>
+                <Text>{pageContent.instructions.assertions.description}</Text>
                 <AssertionsContent />
-                {pageContent.instructions.instructions.openTestPage.enabled && (
+                {pageContent.instructions.openTestPage.enabled && (
                     <Button
-                        onClick={
-                            pageContent.instructions.instructions.openTestPage
-                                .click
-                        }
+                        onClick={pageContent.instructions.openTestPage.click}
                     >
-                        {
-                            pageContent.instructions.instructions.openTestPage
-                                .button
-                        }
+                        {pageContent.instructions.openTestPage.button}
                     </Button>
                 )}
             </InstructionsSection>
             <ResultsSection>
                 <SubHeadingText>
-                    {pageContent.instructions.results.header.header}
+                    {pageContent.results.header.header}
                 </SubHeadingText>
-                <Text>
-                    {pageContent.instructions.results.header.description}
-                </Text>
-                <ResultsContent />
+                <Text>{pageContent.results.header.description}</Text>
+                {pageContent.results.commands.map((value, commandIndex) => {
+                    const {
+                        header,
+                        atOutput,
+                        assertionsHeader,
+                        assertions,
+                        unexpectedBehaviors
+                    } = value;
+
+                    return (
+                        <Fragment key={`AtOutputKey_${commandIndex}`}>
+                            <InnerSectionHeadingText>
+                                {header}
+                            </InnerSectionHeadingText>
+                            <Text>
+                                <label>
+                                    {atOutput.description[0]}
+                                    <Feedback
+                                        className={`${atOutput.description[1]
+                                            .required && 'required'} ${atOutput
+                                            .description[1].highlightRequired &&
+                                            'highlight-required'}`}
+                                    >
+                                        {atOutput.description[1].description}
+                                    </Feedback>
+                                </label>
+                                <textarea
+                                    value={atOutput.value}
+                                    onChange={e =>
+                                        atOutput.change(e.target.value)
+                                    }
+                                />
+                            </Text>
+                            <Table>
+                                <tbody>
+                                    <tr>
+                                        <th>
+                                            {assertionsHeader.descriptionHeader ||
+                                                'Assertion'}
+                                        </th>
+                                        <th>
+                                            {assertionsHeader.passHeader ||
+                                                'Success case'}
+                                        </th>
+                                        <th>
+                                            {assertionsHeader.failHeader ||
+                                                'Failure cases'}
+                                        </th>
+                                    </tr>
+                                    {assertions.map(
+                                        (assertion, assertionIndex) => {
+                                            const {
+                                                description,
+                                                passChoice,
+                                                failChoices
+                                            } = assertion;
+
+                                            const [
+                                                missingCase,
+                                                failureCase
+                                            ] = failChoices;
+
+                                            return (
+                                                <tr
+                                                    key={`AssertionKey_${assertionIndex}`}
+                                                >
+                                                    {/*Assertion*/}
+                                                    <td>
+                                                        {description[0]}
+                                                        <Feedback
+                                                            className={`${description[1]
+                                                                .required &&
+                                                                'required'} ${description[1]
+                                                                .highlightRequired &&
+                                                                'highlight-required'}`}
+                                                        >
+                                                            {
+                                                                description[1]
+                                                                    .description
+                                                            }
+                                                        </Feedback>
+                                                    </td>
+                                                    {/*Success case*/}
+                                                    <td>
+                                                        <input
+                                                            type="radio"
+                                                            id={`pass-${commandIndex}-${assertionIndex}`}
+                                                            name={`result-${commandIndex}-${assertionIndex}`}
+                                                            onClick={
+                                                                passChoice.click
+                                                            }
+                                                        />
+                                                        <label
+                                                            id={`pass-${commandIndex}-${assertionIndex}-label`}
+                                                            htmlFor={`pass-${commandIndex}-${assertionIndex}`}
+                                                        >
+                                                            {
+                                                                passChoice
+                                                                    .label[0]
+                                                            }
+                                                            <Feedback
+                                                                className={`${passChoice
+                                                                    .label[1]
+                                                                    .offScreen &&
+                                                                    'off-screen'}`}
+                                                            >
+                                                                {
+                                                                    passChoice
+                                                                        .label[1]
+                                                                        .description
+                                                                }
+                                                            </Feedback>
+                                                        </label>
+                                                    </td>
+                                                    {/*Failure cases*/}
+                                                    <td>
+                                                        <input
+                                                            type="radio"
+                                                            id={`missing-${commandIndex}-${assertionIndex}`}
+                                                            name={`result-${commandIndex}-${assertionIndex}`}
+                                                            onClick={
+                                                                missingCase.click
+                                                            }
+                                                        />
+                                                        <label
+                                                            id={`missing-${commandIndex}-${assertionIndex}-label`}
+                                                            htmlFor={`missing-${commandIndex}-${assertionIndex}`}
+                                                        >
+                                                            {
+                                                                missingCase
+                                                                    .label[0]
+                                                            }
+                                                            <Feedback
+                                                                className={`${missingCase
+                                                                    .label[1]
+                                                                    .offScreen &&
+                                                                    'off-screen'}`}
+                                                            >
+                                                                {
+                                                                    missingCase
+                                                                        .label[1]
+                                                                        .description
+                                                                }
+                                                            </Feedback>
+                                                        </label>
+
+                                                        <input
+                                                            type="radio"
+                                                            id={`fail-${commandIndex}-${assertionIndex}`}
+                                                            name={`result-${commandIndex}-${assertionIndex}`}
+                                                            onClick={
+                                                                failureCase.click
+                                                            }
+                                                        />
+                                                        <label
+                                                            id={`fail-${commandIndex}-${assertionIndex}-label`}
+                                                            htmlFor={`fail-${commandIndex}-${assertionIndex}`}
+                                                        >
+                                                            {
+                                                                failureCase
+                                                                    .label[0]
+                                                            }
+                                                            <Feedback
+                                                                className={`${failureCase
+                                                                    .label[1]
+                                                                    .offScreen &&
+                                                                    'off-screen'}`}
+                                                            >
+                                                                {
+                                                                    failureCase
+                                                                        .label[1]
+                                                                        .description
+                                                                }
+                                                            </Feedback>
+                                                        </label>
+                                                    </td>
+                                                </tr>
+                                            );
+                                        }
+                                    )}
+                                </tbody>
+                            </Table>
+                            {/*Unexpected Behaviors*/}
+                            <Fieldset id={`cmd-${commandIndex}-problems`}>
+                                {unexpectedBehaviors.description[0]}
+                                <Feedback
+                                    className={`${unexpectedBehaviors
+                                        .description[1].required &&
+                                        'required'} ${unexpectedBehaviors
+                                        .description[1].highlightRequired &&
+                                        'highlight-required'}`}
+                                >
+                                    {
+                                        unexpectedBehaviors.description[1]
+                                            .description
+                                    }
+                                </Feedback>
+                                <div>
+                                    <input
+                                        type="radio"
+                                        id={`problem-${commandIndex}-true`}
+                                        name={`problem-${commandIndex}`}
+                                        onClick={
+                                            unexpectedBehaviors.passChoice.click
+                                        }
+                                    />
+                                    <label
+                                        id={`problem-${commandIndex}-true-label`}
+                                        htmlFor={`problem-${commandIndex}-true`}
+                                    >
+                                        {unexpectedBehaviors.passChoice.label}
+                                    </label>
+                                </div>
+                                <div>
+                                    <input
+                                        type="radio"
+                                        id={`problem-${commandIndex}-false`}
+                                        name={`problem-${commandIndex}`}
+                                        onClick={
+                                            unexpectedBehaviors.failChoice.click
+                                        }
+                                    />
+                                    <label
+                                        id={`problem-${commandIndex}-false-label`}
+                                        htmlFor={`problem-${commandIndex}-false`}
+                                    >
+                                        {unexpectedBehaviors.failChoice.label}
+                                    </label>
+                                </div>
+
+                                <Fieldset className="problem-select">
+                                    <legend>
+                                        {
+                                            unexpectedBehaviors.failChoice
+                                                .options.header
+                                        }
+                                    </legend>
+                                    {unexpectedBehaviors.failChoice.options.options.map(
+                                        (option, optionIndex) => {
+                                            const {
+                                                checked,
+                                                description,
+                                                more,
+                                                change
+                                            } = option;
+                                            return (
+                                                <Fragment
+                                                    key={`AssertionOptionsKey_${optionIndex}`}
+                                                >
+                                                    <input
+                                                        type="checkbox"
+                                                        value={description}
+                                                        id={`${description}-${commandIndex}`}
+                                                        className={`undesirable-${commandIndex}`}
+                                                        tabIndex={
+                                                            optionIndex === 0
+                                                                ? 0
+                                                                : -1
+                                                        }
+                                                        onClick={e =>
+                                                            change(
+                                                                e.target.checked
+                                                            )
+                                                        }
+                                                        disabled={
+                                                            !unexpectedBehaviors
+                                                                .failChoice
+                                                                .checked
+                                                        }
+                                                    />
+                                                    <label
+                                                        htmlFor={`${description}-${commandIndex}`}
+                                                    >
+                                                        {description}
+                                                    </label>
+                                                    <br />
+                                                    {more && (
+                                                        <div>
+                                                            <label
+                                                                htmlFor={`${description}-${commandIndex}-input`}
+                                                            >
+                                                                {
+                                                                    more
+                                                                        .description[0]
+                                                                }
+                                                                <Feedback
+                                                                    className={`${more
+                                                                        .description[1]
+                                                                        .required &&
+                                                                        'required'} ${more
+                                                                        .description[1]
+                                                                        .highlightRequired &&
+                                                                        'highlight-required'}`}
+                                                                >
+                                                                    {
+                                                                        more
+                                                                            .description[1]
+                                                                            .description
+                                                                    }
+                                                                </Feedback>
+                                                            </label>
+                                                            <input
+                                                                type="text"
+                                                                id={`${description}-${commandIndex}-input`}
+                                                                name={`${description}-${commandIndex}-input`}
+                                                                className={`undesirable-${description.toLowerCase()}-input`}
+                                                                value={
+                                                                    more.value
+                                                                }
+                                                                onChange={e =>
+                                                                    more.change(
+                                                                        e.target
+                                                                            .value
+                                                                    )
+                                                                }
+                                                                disabled={
+                                                                    !checked
+                                                                }
+                                                            />
+                                                        </div>
+                                                    )}
+                                                </Fragment>
+                                            );
+                                        }
+                                    )}
+                                </Fieldset>
+                            </Fieldset>
+                        </Fragment>
+                    );
+                })}
             </ResultsSection>
+            <button
+                type="button"
+                onClick={() => {
+                    pageContent.submit.click();
+                    // console.log(testRun.testPage());
+                    console.log(testRun.resultsTable());
+                }}
+            >
+                {pageContent.submit.button}
+            </button>
         </Container>
     );
 };
 
 ErrorComponent.propTypes = {
     hasErrors: PropTypes.bool
+};
+
+TestRenderer.propTypes = {
+    state: PropTypes.object
 };
 
 export default TestRenderer;
