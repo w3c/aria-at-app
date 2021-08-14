@@ -35,8 +35,8 @@ const client = new Client();
 const ariaAtRepo = 'https://github.com/w3c/aria-at.git';
 const DEFAULT_BRANCH = 'master';
 const tmpDirectory = path.resolve(__dirname, 'tmp');
-const testDirectory = path.resolve(tmpDirectory, 'tests');
-const supportFile = path.resolve(testDirectory, 'support.json');
+const testsBuildDirectory = path.resolve(tmpDirectory, 'build', 'tests');
+const testsDirectory = path.resolve(tmpDirectory, 'tests');
 
 const ariaAtImport = {
     /**
@@ -78,27 +78,56 @@ const ariaAtImport = {
             commit = await nodegit.Commit.lookup(repo, latestCommit);
         }
 
+        // use to conditionally determine paths to use based on whether or not
+        // the commit pulled for the aria-at repo is the old or new structure
+        const buildDirExists = fse.existsSync(testsBuildDirectory);
+        const supportFile = buildDirExists
+            ? path.resolve(testsBuildDirectory, 'support.json')
+            : path.resolve(testsDirectory, 'support.json');
+
         let commitDate = commit.date();
         let commitMessage = commit.message();
         let commitHash = commit.id().tostrS();
 
         const support = JSON.parse(fse.readFileSync(supportFile));
         const ats = support.ats;
-        for (let at of ats) await this.upsertAt(at.name); // TODO: will we need to port support for at.key as well?
+        for (let at of ats) await this.upsertAt(at.name);
 
         const exampleNames = {};
         for (let example of support.examples)
             exampleNames[example.directory] = example.name;
 
-        let exampleDirs = fse.readdirSync(testDirectory);
-        for (let i = 0; i < exampleDirs.length; i++) {
-            const exampleDir = exampleDirs[i];
-            const subDirFullPath = path.join(testDirectory, exampleDir);
-            const stat = fse.statSync(subDirFullPath); // folder stats
+        let testPlanDirs = fse.readdirSync(
+            buildDirExists ? testsBuildDirectory : testsDirectory
+        );
+        for (let i = 0; i < testPlanDirs.length; i++) {
+            const testPlanDir = testPlanDirs[i];
+            const testPlanDirPath = path.join(
+                buildDirExists ? testsBuildDirectory : testsDirectory,
+                testPlanDir
+            );
+
+            // check source location of test plan directories because of the new 'build' directory set up
+            const sourceTestPlanDirPath = path.join(
+                testsDirectory,
+                testPlanDir
+            );
+            const stat = fse.statSync(testPlanDirPath); // folder stats
 
             // <repo>.git/tests/resources folder shouldn't be factored in the tests
-            if (stat.isDirectory() && exampleDir !== 'resources') {
-                const dataPath = path.join(subDirFullPath, 'data');
+            if (
+                fse.existsSync(sourceTestPlanDirPath) && // explicitly check if source test plan directory exists
+                stat.isDirectory() &&
+                testPlanDir !== 'resources'
+            ) {
+                // check multiple locations for relevant data folder that contains references.csv
+                const dataPath = path.join(
+                    buildDirExists ? sourceTestPlanDirPath : testPlanDirPath,
+                    'data'
+                );
+
+                // 'references.csv' only exists in <root>/tests/<directory>/data/references.csv
+                // doesn't exist in <root>/build/tests/<directory>/data/references.csv
                 const referencesCsvPath = path.join(dataPath, 'references.csv');
 
                 let referencesCsv;
@@ -118,30 +147,72 @@ const ariaAtImport = {
                     .split('\n')
                     .filter(line => line.includes('example'));
 
+                const testReferenceRefLine = referencesCsv
+                    .split('\n')
+                    .filter(line => line.includes('reference'));
+
                 // designPattern url parsed from <repo>.git/tests/<directory>/data/references.csv
                 const practiceGuidelinesRefLine = referencesCsv
                     .split('\n')
                     .filter(line => line.includes('designPattern'));
 
                 const tests = [];
-                const testFiles = fse.readdirSync(subDirFullPath);
+                const testFiles = fse.readdirSync(testPlanDirPath);
 
                 for (let j = 0; j < testFiles.length; j++) {
                     const testFile = testFiles[j];
-                    const testFullPath = path.join(subDirFullPath, testFile);
+                    const testPath = path.join(testPlanDirPath, testFile);
                     if (
                         path.extname(testFile) === '.html' &&
                         testFile !== 'index.html'
                     ) {
                         // Get the testFile name from the html file
-                        const htmlFile = path.relative(
-                            tmpDirectory,
-                            testFullPath
-                        );
+                        const htmlFile = path.relative(tmpDirectory, testPath);
                         const root = np.parse(
-                            fse.readFileSync(testFullPath, 'utf8'),
+                            fse.readFileSync(testPath, 'utf8'),
                             { script: true }
                         );
+
+                        let testJsonString = '';
+                        let commandJsonString = '';
+
+                        const testJsonStartPattern = 'const testJson = {';
+                        const commandJsonStartPattern = 'const commandJson = {';
+                        const endPattern = '};';
+
+                        const scriptTags = root.querySelectorAll('script');
+                        scriptTags.forEach(script => {
+                            const { text } = script;
+                            if (text.indexOf(testJsonStartPattern) > -1) {
+                                testJsonString = text.substring(
+                                    text.indexOf(testJsonStartPattern)
+                                );
+                                testJsonString = testJsonString.substring(
+                                    0,
+                                    testJsonString.indexOf(endPattern) + 1
+                                );
+                                testJsonString = testJsonString.substring(
+                                    testJsonString.indexOf('{')
+                                );
+                            }
+
+                            if (text.indexOf(commandJsonStartPattern) > -1) {
+                                commandJsonString = text.substring(
+                                    text.indexOf(commandJsonStartPattern)
+                                );
+                                commandJsonString = commandJsonString.substring(
+                                    0,
+                                    commandJsonString.indexOf(endPattern) + 1
+                                );
+                                commandJsonString = commandJsonString.substring(
+                                    commandJsonString.indexOf('{')
+                                );
+                            }
+                        });
+
+                        const testJson = JSON.parse(testJsonString);
+                        const commandJson = JSON.parse(commandJsonString);
+
                         const testFullName = root.querySelector('title')
                             .innerHTML;
 
@@ -152,19 +223,22 @@ const ariaAtImport = {
                             testFullName,
                             htmlFile,
                             commitHash,
-                            executionOrder
+                            executionOrder,
+                            testJson,
+                            commandJson
                         });
                     }
                 }
                 await this.upsertTestPlanVersion(
-                    exampleDir,
-                    exampleNames[exampleDir],
+                    testPlanDir,
+                    exampleNames[testPlanDir],
                     ariaAtRepo,
                     commitHash,
                     commitMessage,
                     commitDate,
                     exampleRefLine,
                     practiceGuidelinesRefLine,
+                    testReferenceRefLine,
                     tests
                 );
             }
@@ -201,6 +275,8 @@ const ariaAtImport = {
      * @param {string} commitDate - the date of the latest versions of the tests pulled from the {@param ariaAtRepo} repository
      * @param {string[]} exampleRefLine - the example url link pulled from the references.csv file related to the test
      * @param {string[]} practiceGuidelinesRefLine - the APG (ARIA Practices Guidelines) link pulled from the references.csv file related to the test
+     * @param {string[]} testReferenceRefLine - the relative link that's opened for the test page, pulled from the references.csv file related to the test
+     * @param {object[]} tests - test steps for the test plan pulled from the {@param ariaAtRepo} repository
      * @returns {number} - returns TestPlanVersion.id
      */
     async upsertTestPlanVersion(
@@ -212,28 +288,34 @@ const ariaAtImport = {
         commitDate,
         exampleRefLine,
         practiceGuidelinesRefLine,
+        testReferenceRefLine,
         tests
     ) {
-        const getReferenceUrl = referenceLine => {
+        const getReferenceUrl = (referenceLine, ignoreValidation = false) => {
             let url = null;
             if (referenceLine.length) {
                 const [referenceType, link] = referenceLine[0].split(',');
-                if (validUrl.isUri(link)) url = link;
-                else
-                    console.error(
-                        `WARNING: The ${referenceType} link ${link} is not valid for ${exampleName}. Not writing to database.`
-                    );
+                if (ignoreValidation) url = link;
+                else {
+                    if (validUrl.isUri(link)) url = link;
+                    else
+                        console.error(
+                            `WARNING: The ${referenceType} link ${link} is not valid for ${exampleName}. Not writing to database.`
+                        );
+                }
             }
             return url;
         };
 
         const exampleUrl = getReferenceUrl(exampleRefLine);
         const designPattern = getReferenceUrl(practiceGuidelinesRefLine);
+        const testReferencePath = getReferenceUrl(testReferenceRefLine, true);
 
         let metadata = {
             gitRepo: ariaAtRepo,
             directory: exampleDir,
-            designPattern
+            designPattern,
+            testReferencePath
         };
 
         // checking to see if unique testPlanVersion row (gitSha + directory provides a unique row)
@@ -242,15 +324,28 @@ const ariaAtImport = {
             [commitHash, exampleDir]
         );
 
-        if (testPlanVersionResult.rowCount) return;
+        if (testPlanVersionResult.rowCount) {
+            await client.query(
+                'UPDATE "TestPlanVersion" SET title=$1, "exampleUrl"=$2, metadata=$3, tests=$4 WHERE "gitSha"=$5 and metadata ->> \'directory\'=$6',
+                [
+                    exampleName,
+                    exampleUrl,
+                    metadata,
+                    tests,
+                    commitHash,
+                    exampleDir
+                ]
+            );
+            return;
+        }
 
         await db.TestPlanVersion.create({
             title: exampleName,
             status: 'DRAFT',
             gitSha: commitHash,
             gitMessage: commitMessage,
-            exampleUrl,
             updatedAt: commitDate,
+            exampleUrl,
             metadata,
             tests
         });

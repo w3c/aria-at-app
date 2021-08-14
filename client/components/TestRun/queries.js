@@ -16,6 +16,8 @@ export const TEST_RUN_PAGE_QUERY = gql`
                 testFilePath
                 isComplete
                 isSkipped
+                commandJson
+                testJson
                 assertions(priority: REQUIRED) {
                     command
                     priority
@@ -24,45 +26,8 @@ export const TEST_RUN_PAGE_QUERY = gql`
                 assertionsCount(priority: REQUIRED)
                 assertionsPassed(priority: REQUIRED)
                 unexpectedBehaviorCount
-                result {
-                    test
-                    status
-                    details {
-                        name
-                        task
-                        summary {
-                            required {
-                                pass
-                                fail
-                            }
-                            optional {
-                                pass
-                                fail
-                            }
-                            unexpectedCount
-                        }
-                        commands {
-                            output
-                            command
-                            support
-                            assertions {
-                                pass
-                                fail
-                                priority
-                                assertion
-                            }
-                            unexpected_behaviors
-                        }
-                        specific_user_instruction
-                    }
-                }
-                serializedForm {
-                    name
-                    value
-                    checked
-                    disabled
-                    indeterminate
-                }
+                result
+                state
                 issues
             }
             testPlanReport {
@@ -84,6 +49,7 @@ export const TEST_RUN_PAGE_QUERY = gql`
                 testPlanVersion {
                     title
                     directory
+                    testReferencePath
                     gitSha
                 }
             }
@@ -99,8 +65,8 @@ export const UPDATE_TEST_RUN_RESULT_MUTATION = gql`
     mutation UpdateTestPlanRunResult(
         $testPlanRunId: ID!
         $index: Int!
-        $result: TestResultDataInput
-        $serializedForm: [TestResultSerializedFormInput]
+        $result: Object
+        $state: Object
         $issues: [Int]
     ) {
         testPlanRun(id: $testPlanRunId) {
@@ -108,7 +74,7 @@ export const UPDATE_TEST_RUN_RESULT_MUTATION = gql`
                 input: {
                     index: $index
                     result: $result
-                    serializedForm: $serializedForm
+                    state: $state
                     issues: $issues
                 }
             ) {
@@ -126,6 +92,8 @@ export const UPDATE_TEST_RUN_RESULT_MUTATION = gql`
                         testFilePath
                         isComplete
                         isSkipped
+                        commandJson
+                        testJson
                         assertions(priority: REQUIRED) {
                             command
                             priority
@@ -134,45 +102,8 @@ export const UPDATE_TEST_RUN_RESULT_MUTATION = gql`
                         assertionsCount(priority: REQUIRED)
                         assertionsPassed(priority: REQUIRED)
                         unexpectedBehaviorCount
-                        result {
-                            test
-                            status
-                            details {
-                                name
-                                task
-                                summary {
-                                    required {
-                                        pass
-                                        fail
-                                    }
-                                    optional {
-                                        pass
-                                        fail
-                                    }
-                                    unexpectedCount
-                                }
-                                commands {
-                                    output
-                                    command
-                                    support
-                                    assertions {
-                                        pass
-                                        fail
-                                        priority
-                                        assertion
-                                    }
-                                    unexpected_behaviors
-                                }
-                                specific_user_instruction
-                            }
-                        }
-                        serializedForm {
-                            name
-                            value
-                            checked
-                            disabled
-                            indeterminate
-                        }
+                        result
+                        state
                         issues
                     }
                     testPlanReport {
@@ -194,6 +125,7 @@ export const UPDATE_TEST_RUN_RESULT_MUTATION = gql`
                         testPlanVersion {
                             title
                             directory
+                            testReferencePath
                             gitSha
                         }
                     }
@@ -221,6 +153,8 @@ export const CLEAR_TEST_RESULT_MUTATION = gql`
                         testFilePath
                         isComplete
                         isSkipped
+                        commandJson
+                        testJson
                         assertions(priority: REQUIRED) {
                             command
                             priority
@@ -229,45 +163,8 @@ export const CLEAR_TEST_RESULT_MUTATION = gql`
                         assertionsCount(priority: REQUIRED)
                         assertionsPassed(priority: REQUIRED)
                         unexpectedBehaviorCount
-                        result {
-                            test
-                            status
-                            details {
-                                name
-                                task
-                                summary {
-                                    required {
-                                        pass
-                                        fail
-                                    }
-                                    optional {
-                                        pass
-                                        fail
-                                    }
-                                    unexpectedCount
-                                }
-                                commands {
-                                    output
-                                    command
-                                    support
-                                    assertions {
-                                        pass
-                                        fail
-                                        priority
-                                        assertion
-                                    }
-                                    unexpected_behaviors
-                                }
-                                specific_user_instruction
-                            }
-                        }
-                        serializedForm {
-                            name
-                            value
-                            checked
-                            disabled
-                            indeterminate
-                        }
+                        result
+                        state
                         issues
                     }
                     testPlanReport {
@@ -289,6 +186,7 @@ export const CLEAR_TEST_RESULT_MUTATION = gql`
                         testPlanVersion {
                             title
                             directory
+                            testReferencePath
                             gitSha
                         }
                     }

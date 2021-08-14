@@ -2,7 +2,6 @@ import React, { Fragment, useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import PropTypes from 'prop-types';
 import nextId from 'react-id-generator';
-
 import {
     userCloseWindow,
     userOpenWindow
@@ -162,84 +161,18 @@ const ErrorComponent = ({ hasErrors = false }) => {
 };
 
 const TestRenderer = ({
-    title = 'Navigate to an unchecked checkbox in reading mode',
-    support = {
-        ats: [
-            {
-                name: 'JAWS',
-                key: 'jaws'
-            },
-            {
-                name: 'NVDA',
-                key: 'nvda'
-            },
-            {
-                name: 'VoiceOver for macOS',
-                key: 'voiceover_macos'
-            }
-        ],
-        applies_to: {
-            'Desktop Screen Readers': ['VoiceOver for macOS', 'NVDA', 'JAWS'],
-            'Screen Readers': ['VoiceOver for macOS', 'NVDA', 'JAWS']
-        },
-        examples: [
-            {
-                directory: 'checkbox',
-                name: 'Checkbox Example (Two State)'
-            },
-            {
-                directory: 'menubar-editor',
-                name: 'Editor Menubar Example'
-            }
-        ]
-    },
-    configQueryParams = [['at', 'nvda']],
-    commands = {
-        'navigate to unchecked checkbox': {
-            reading: {
-                jaws: [
-                    ['X_AND_SHIFT_X'],
-                    ['F_AND_SHIFT_F'],
-                    ['TAB_AND_SHIFT_TAB'],
-                    ['UP_AND_DOWN'],
-                    ['LEFT_AND_RIGHT', '(with Smart Navigation on)']
-                ],
-                nvda: [
-                    ['X_AND_SHIFT_X'],
-                    ['F_AND_SHIFT_F'],
-                    ['TAB_AND_SHIFT_TAB'],
-                    ['UP_AND_DOWN']
-                ]
-            },
-            interaction: {
-                jaws: [['TAB_AND_SHIFT_TAB']],
-                nvda: [['TAB_AND_SHIFT_TAB']],
-                voiceover_macos: [
-                    ['TAB_AND_SHIFT_TAB'],
-                    ['CTRL_OPT_RIGHT_AND_CTRL_OPT_LEFT'],
-                    ['CTRL_OPT_CMD_J_AND_SHIFT_CTRL_OPT_CMD_J']
-                ]
-            }
-        }
-    },
-    behavior = {
-        setup_script_description: '',
-        setupTestPage: '',
-        applies_to: ['jaws', 'nvda'],
-        mode: 'reading',
-        task: 'navigate to unchecked checkbox',
-        specific_user_instruction:
-            'Navigate to the first checkbox. Note: it should be in the unchecked state.',
-        output_assertions: [
-            ['1', "Role 'checkbox' is conveyed"],
-            ['1', "Name 'Lettuce' is conveyed"],
-            ['1', 'State of the checkbox (not checked) is conveyed']
-        ]
-    },
-    pageUri = 'https://github.com/w3c/aria-at/blob/master/build/tests/checkbox/reference/2020-11-23_175030/checkbox-1/checkbox-1.html'
+    test,
+    testPageUri,
+    support,
+    configQueryParams = [[]],
+    testRunStateRef,
+    testRunResultRef,
+    submitButtonRef
 }) => {
+    const { title, testJson, commandJson, state, result } = test;
+
     const [pageContent, setPageContent] = useState(null);
-    const [submitResult, setSubmitResult] = useState(null);
+    const [submitResult, setSubmitResult] = useState(result);
 
     const testRunIO = new TestRunInputOutput();
     testRunIO.setTitleInputFromTitle(title);
@@ -248,11 +181,11 @@ const TestRenderer = ({
     testRunIO.setSupportInputFromJSON(support);
     testRunIO.setConfigInputFromQueryParamsAndSupport(configQueryParams); // Array.from(new URL(document.location).searchParams)
     testRunIO.setKeysInputFromBuiltinAndConfig();
-    testRunIO.setCommandsInputFromJSONAndConfigKeys(commands);
+    testRunIO.setCommandsInputFromJSONAndConfigKeys(commandJson);
     testRunIO.setBehaviorInputFromJSONAndCommandsConfigKeysTitleUnexpected(
-        behavior
+        testJson
     );
-    testRunIO.setPageUriInputFromPageUri(pageUri);
+    testRunIO.setPageUriInputFromPageUri(testPageUri);
 
     const testWindow = new TestWindow({
         ...testRunIO.testWindowOptions(),
@@ -275,115 +208,22 @@ const TestRenderer = ({
                 testWindow.close();
             }
         },
-        // state: testRunIO.testRunState(),
-        state: {
-            errors: [],
-            info: {
-                description:
-                    'Navigate to an unchecked checkbox in reading mode',
-                task: 'navigate to unchecked checkbox',
-                mode: 'reading',
-                modeInstructions:
-                    'Insure NVDA is in browse mode by pressing Escape. Note: This command has no effect if NVDA is already in browse mode.',
-                userInstructions: [
-                    'Navigate to the first checkbox. Note: it should be in the unchecked state.'
-                ],
-                setupScriptDescription: ''
-            },
-            config: {
-                at: {
-                    name: 'NVDA',
-                    key: 'nvda'
-                },
-                displaySubmitButton: true,
-                renderResultsAfterSubmit: true
-            },
-            currentUserAction: 'loadPage',
-            openTest: {
-                enabled: true
-            },
-            commands: [
-                {
-                    description: 'X / Shift+X',
-                    atOutput: {
-                        highlightRequired: false,
-                        value: ''
-                    },
-                    assertions: [
-                        {
-                            description: "Role 'checkbox' is conveyed",
-                            highlightRequired: false,
-                            priority: 1,
-                            result: 'notSet'
-                        },
-                        {
-                            description: "Name 'Lettuce' is conveyed",
-                            highlightRequired: false,
-                            priority: 1,
-                            result: 'notSet'
-                        },
-                        {
-                            description:
-                                'State of the checkbox (not checked) is conveyed',
-                            highlightRequired: false,
-                            priority: 1,
-                            result: 'notSet'
-                        }
-                    ],
-                    additionalAssertions: [],
-                    unexpected: {
-                        highlightRequired: false,
-                        hasUnexpected: 'notSet',
-                        tabbedBehavior: 0,
-                        behaviors: [
-                            {
-                                description:
-                                    'Output is excessively verbose, e.g., includes redundant and/or irrelevant speech',
-                                checked: false,
-                                more: null
-                            },
-                            {
-                                description:
-                                    'Reading cursor position changed in an unexpected manner',
-                                checked: false,
-                                more: null
-                            },
-                            {
-                                description:
-                                    'Screen reader became extremely sluggish',
-                                checked: false,
-                                more: null
-                            },
-                            {
-                                description: 'Screen reader crashed',
-                                checked: false,
-                                more: null
-                            },
-                            {
-                                description: 'Browser crashed',
-                                checked: false,
-                                more: null
-                            },
-                            {
-                                description: 'Other',
-                                checked: false,
-                                more: {
-                                    highlightRequired: false,
-                                    value: ''
-                                }
-                            }
-                        ]
-                    }
-                }
-            ]
-        },
+        state: state || testRunIO.testRunState(),
         resultsJSON: state => testRunIO.submitResultsJSON(state)
     });
 
     useEffect(() => {
-        testRunExport.observe(() => {
+        testRunStateRef.current = state;
+
+        testRunExport.observe(result => {
+            const { state: newState } = result;
+            const submitResult = testRunExport.testPageAndResults();
+
             setPageContent({ ...testRunExport.instructions() });
-            setSubmitResult(testRunExport.testPageAndResults());
+            setSubmitResult(submitResult);
+
+            testRunStateRef.current = newState;
+            testRunResultRef.current = submitResult;
         });
 
         setPageContent(testRunExport.instructions());
@@ -684,8 +524,8 @@ const TestRenderer = ({
                                                         } = assertion;
 
                                                         const [
-                                                            missingCase,
-                                                            failureCase
+                                                            missingChoice,
+                                                            failureChoice
                                                         ] = failChoices;
 
                                                         return (
@@ -716,6 +556,9 @@ const TestRenderer = ({
                                                                         type="radio"
                                                                         id={`pass-${commandIndex}-${assertionIndex}`}
                                                                         name={`result-${commandIndex}-${assertionIndex}`}
+                                                                        defaultChecked={
+                                                                            passChoice.checked
+                                                                        }
                                                                         onClick={
                                                                             passChoice.click
                                                                         }
@@ -748,8 +591,11 @@ const TestRenderer = ({
                                                                         type="radio"
                                                                         id={`missing-${commandIndex}-${assertionIndex}`}
                                                                         name={`result-${commandIndex}-${assertionIndex}`}
+                                                                        defaultChecked={
+                                                                            missingChoice.checked
+                                                                        }
                                                                         onClick={
-                                                                            missingCase.click
+                                                                            missingChoice.click
                                                                         }
                                                                     />
                                                                     <label
@@ -757,17 +603,17 @@ const TestRenderer = ({
                                                                         htmlFor={`missing-${commandIndex}-${assertionIndex}`}
                                                                     >
                                                                         {
-                                                                            missingCase
+                                                                            missingChoice
                                                                                 .label[0]
                                                                         }
                                                                         <Feedback
-                                                                            className={`${missingCase
+                                                                            className={`${missingChoice
                                                                                 .label[1]
                                                                                 .offScreen &&
                                                                                 'off-screen'}`}
                                                                         >
                                                                             {
-                                                                                missingCase
+                                                                                missingChoice
                                                                                     .label[1]
                                                                                     .description
                                                                             }
@@ -778,8 +624,11 @@ const TestRenderer = ({
                                                                         type="radio"
                                                                         id={`fail-${commandIndex}-${assertionIndex}`}
                                                                         name={`result-${commandIndex}-${assertionIndex}`}
+                                                                        defaultChecked={
+                                                                            failureChoice.checked
+                                                                        }
                                                                         onClick={
-                                                                            failureCase.click
+                                                                            failureChoice.click
                                                                         }
                                                                     />
                                                                     <label
@@ -787,17 +636,17 @@ const TestRenderer = ({
                                                                         htmlFor={`fail-${commandIndex}-${assertionIndex}`}
                                                                     >
                                                                         {
-                                                                            failureCase
+                                                                            failureChoice
                                                                                 .label[0]
                                                                         }
                                                                         <Feedback
-                                                                            className={`${failureCase
+                                                                            className={`${failureChoice
                                                                                 .label[1]
                                                                                 .offScreen &&
                                                                                 'off-screen'}`}
                                                                         >
                                                                             {
-                                                                                failureCase
+                                                                                failureChoice
                                                                                     .label[1]
                                                                                     .description
                                                                             }
@@ -834,6 +683,10 @@ const TestRenderer = ({
                                                     type="radio"
                                                     id={`problem-${commandIndex}-true`}
                                                     name={`problem-${commandIndex}`}
+                                                    defaultChecked={
+                                                        unexpectedBehaviors
+                                                            .passChoice.checked
+                                                    }
                                                     onClick={
                                                         unexpectedBehaviors
                                                             .passChoice.click
@@ -854,6 +707,10 @@ const TestRenderer = ({
                                                     type="radio"
                                                     id={`problem-${commandIndex}-false`}
                                                     name={`problem-${commandIndex}`}
+                                                    defaultChecked={
+                                                        unexpectedBehaviors
+                                                            .failChoice.checked
+                                                    }
                                                     onClick={
                                                         unexpectedBehaviors
                                                             .failChoice.click
@@ -902,6 +759,9 @@ const TestRenderer = ({
                                                                         0
                                                                             ? 0
                                                                             : -1
+                                                                    }
+                                                                    defaultChecked={
+                                                                        checked
                                                                     }
                                                                     onClick={e =>
                                                                         change(
@@ -981,7 +841,12 @@ const TestRenderer = ({
                             }
                         )}
                     </ResultsSection>
-                    <button type="button" onClick={pageContent.submit.click}>
+                    <button
+                        ref={submitButtonRef}
+                        type="button"
+                        hidden
+                        onClick={pageContent.submit.click}
+                    >
                         {pageContent.submit.button}
                     </button>
                 </>
@@ -995,13 +860,13 @@ ErrorComponent.propTypes = {
 };
 
 TestRenderer.propTypes = {
-    state: PropTypes.object,
-    title: PropTypes.string,
+    test: PropTypes.object,
     support: PropTypes.object,
     configQueryParams: PropTypes.array,
-    commands: PropTypes.object,
-    behavior: PropTypes.object,
-    pageUri: PropTypes.string
+    testPageUri: PropTypes.string,
+    testRunStateRef: PropTypes.any,
+    testRunResultRef: PropTypes.any,
+    submitButtonRef: PropTypes.any
 };
 
 export default TestRenderer;

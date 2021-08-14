@@ -41,17 +41,14 @@ const TestNavigator = ({
                             let resultStatus = 'Not Started:';
 
                             if (testResult) {
-                                if (
-                                    testResult.serializedForm &&
-                                    !testResult.result
-                                ) {
+                                if (testResult.state && !testResult.result) {
                                     resultClassName = 'in-progress';
                                     resultStatus = 'In Progress:';
                                 } else if (testResult.conflictCount) {
                                     resultClassName = 'conflicts';
                                     resultStatus = 'Has Conflicts:';
                                 } else if (
-                                    testResult.serializedForm &&
+                                    testResult.state &&
                                     testResult.result
                                 ) {
                                     resultClassName = 'complete';

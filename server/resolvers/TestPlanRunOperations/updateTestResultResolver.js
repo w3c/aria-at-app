@@ -3,22 +3,19 @@ const {
     updateTestPlanRun
 } = require('../../models/services/TestPlanRunService');
 const populatedDataResolver = require('../PopulatedData');
-const validateTestResult = require('../../util/validateTestResult');
 
 const updateTestResultResolver = async (
     { parentContext: { id: testPlanRunId } },
     { input }
 ) => {
-    const { index, test, result, serializedForm, issues = [] } = input;
+    const { index, test, result, state, issues = [] } = input;
 
     const testResultInput = {
         test,
         result,
-        serializedForm,
+        state,
         issues
     };
-
-    const validatedTestResult = await validateTestResult(testResultInput);
 
     const testPlanRun = await getTestPlanRunById(testPlanRunId);
     let { testResults } = testPlanRun;
@@ -26,40 +23,30 @@ const updateTestResultResolver = async (
     // newly created TestPlanRun
     if (!testResults) testResults = [];
 
-    let testResultToUpdateIndex = testResults.findIndex(
+    let resultToUpdateIndex = testResults.findIndex(
         testResult => testResult.test.executionOrder === index
     );
 
-    if (testResultToUpdateIndex < 0) {
+    if (resultToUpdateIndex < 0) {
         // 'test' object MUST exist if 'testResults' are null during first run
         if (!test) throw new Error("No 'test' object provided");
 
-        testResultToUpdateIndex = testResults.length;
-        testResults[testResultToUpdateIndex] = validatedTestResult;
+        resultToUpdateIndex = testResults.length;
+        testResults[resultToUpdateIndex] = testResultInput;
     }
 
     // comes from the iframe result after submitting a test
-    if (result) {
-        testResults[testResultToUpdateIndex].result = {
-            ...testResults[testResultToUpdateIndex].result,
-            ...validatedTestResult.result
-        };
-    }
+    if (result !== undefined) testResults[resultToUpdateIndex].result = result;
 
     // when someone submits or skips the current test plan results
-    if (serializedForm) {
-        testResults[testResultToUpdateIndex].serializedForm = [
-            ...serializedForm
-        ];
-    }
+    if (state !== undefined) testResults[resultToUpdateIndex].state = state;
 
-    // represents GitHub issues
-    if (issues.length) {
-        testResults[testResultToUpdateIndex].issues = [
-            ...(testResults[testResultToUpdateIndex].issues || []),
+    // represents GitHub Issue numbers
+    if (issues.length)
+        testResults[resultToUpdateIndex].issues = [
+            ...(testResults[resultToUpdateIndex].issues || []),
             ...issues
         ];
-    }
 
     await updateTestPlanRun(testPlanRunId, { testResults });
 

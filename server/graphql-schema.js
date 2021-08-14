@@ -113,6 +113,7 @@ const graphqlSchema = gql`
         updatedAt: Timestamp!
         exampleUrl: String!
         directory: String!
+        testReferencePath: String!
         tests: [Test]!
         testCount: Int!
         testPlanReports(status: TestPlanReportStatus): [TestPlanReport]!
@@ -122,12 +123,16 @@ const graphqlSchema = gql`
         title: String!
         index: Int!
         testFilePath: String!
+        testJson: Object!
+        commandJson: Object!
     }
 
     type Test implements BaseTest {
         title: String!
         index: Int!
         testFilePath: String!
+        testJson: Object!
+        commandJson: Object!
         # TODO: account for running scripts
         instructions: [Instruction]!
         assertions(priority: AssertionPriority): [Assertion]!
@@ -169,14 +174,16 @@ const graphqlSchema = gql`
     # This structure is subject to change
     # {
     #   test: { ... }, // derived from TestPlanVersion.tests
-    #   result: { ... }, // returned from iframe submit result
-    #   serializedForm: [ ... ], // persisted form info once values are recorded for test in Test Navigator
+    #   result: { ... }, // returned from renderer submit result
+    #   state: { ... }, // persisted form info once values are recorded for test in Test Navigator
     #   issues: [ ] // recorded GitHub issue numbers for any issue created
     # }
     type TestResult implements BaseTest {
         title: String!
         index: Int!
         testFilePath: String!
+        testJson: Object!
+        commandJson: Object!
         instructions: [Instruction]!
         assertions(priority: AssertionPriority): [Assertion]!
         assertionsCount(priority: AssertionPriority): Int!
@@ -190,62 +197,9 @@ const graphqlSchema = gql`
 
         unexpectedBehaviorCount: Int!
 
-        result: TestResultData
-        serializedForm: [TestResultSerializedForm]
+        result: Object
+        state: Object
         issues: [Int]
-    }
-
-    # TestResultData and all other linked types are returned from the iframe
-    # submit result.
-    # This should be temporary while the logic of how the resolvers will work
-    # with that data is discussed.
-    type TestResultData {
-        test: String!
-        status: String!
-        details: TestResultDataDetails!
-    }
-
-    type TestResultDataDetails {
-        name: String!
-        task: String!
-        summary: TestResultDataDetailsSummary!
-        commands: [TestResultDataDetailsCommands]!
-        specific_user_instruction: String!
-    }
-
-    type TestResultDataDetailsSummary {
-        # required/optional transformed from '1'/'2'
-        required: TestResultDataDetailsSummaryPriority!
-        optional: TestResultDataDetailsSummaryPriority!
-        unexpectedCount: Int!
-    }
-
-    type TestResultDataDetailsSummaryPriority {
-        pass: Int!
-        fail: Int!
-    }
-
-    type TestResultDataDetailsCommands {
-        output: String!
-        command: String!
-        support: String!
-        assertions: [TestResultDataDetailsCommandsAssertion]!
-        unexpected_behaviors: [String]!
-    }
-
-    type TestResultDataDetailsCommandsAssertion {
-        pass: String
-        fail: String
-        priority: String!
-        assertion: String!
-    }
-
-    type TestResultSerializedForm {
-        name: String
-        value: String
-        checked: Boolean
-        disabled: Boolean
-        indeterminate: Boolean
     }
 
     type PassThroughResult implements PassThrough {
@@ -317,58 +271,9 @@ const graphqlSchema = gql`
     input TestResultInput {
         index: Int!
         # TODO: Revise transforming this structure for GraphQL
-        result: TestResultDataInput
-        serializedForm: [TestResultSerializedFormInput]
+        result: Object
+        state: Object
         issues: [Int]
-    }
-
-    input TestResultDataInput {
-        test: String!
-        status: String!
-        details: TestResultDataDetailsInput!
-    }
-
-    input TestResultDataDetailsInput {
-        name: String!
-        task: String!
-        summary: TestResultDataDetailsSummaryInput!
-        commands: [TestResultDataDetailsCommandsInput]!
-        specific_user_instruction: String!
-    }
-
-    input TestResultDataDetailsSummaryInput {
-        # required/optional needs to be transformed from '1'/'2'
-        required: TestResultDataDetailsSummaryPriorityInput!
-        optional: TestResultDataDetailsSummaryPriorityInput!
-        unexpectedCount: Int!
-    }
-
-    input TestResultDataDetailsSummaryPriorityInput {
-        pass: Int!
-        fail: Int!
-    }
-
-    input TestResultDataDetailsCommandsInput {
-        output: String!
-        command: String!
-        support: String!
-        assertions: [TestResultDataDetailsCommandsAssertionInput]!
-        unexpected_behaviors: [String]!
-    }
-
-    input TestResultDataDetailsCommandsAssertionInput {
-        pass: String
-        fail: String
-        priority: String!
-        assertion: String!
-    }
-
-    input TestResultSerializedFormInput {
-        name: String
-        value: String
-        checked: Boolean
-        disabled: Boolean
-        indeterminate: Boolean
     }
 
     """

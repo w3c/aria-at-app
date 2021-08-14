@@ -17,9 +17,18 @@ export const getTestPlanRunIssuesForTest = (testPlanRunId, testResultIndex) => {
 };
 
 export const createTestPlanRunIssue = params => {
-    const endpoint = testPlanRunIssues;
     return axios
-        .post(endpoint, params)
+        .post(testPlanRunIssues, params)
+        .then(handleResponse)
+        .catch(handleError);
+};
+
+export const getSupportJson = () => {
+    // TODO: make this an environment variable
+    const endpoint =
+        'https://raw.githubusercontent.com/w3c/aria-at/master/tests/support.json';
+    return axios
+        .get(endpoint)
         .then(handleResponse)
         .catch(handleError);
 };

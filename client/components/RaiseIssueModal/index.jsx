@@ -4,6 +4,7 @@ import { Button, Form, Modal } from 'react-bootstrap';
 import { createTestPlanRunIssue } from '../../network';
 import IssueCards from './IssueCards';
 import MarkdownEditor from './MarkdownEditor';
+import { evaluateAtNameKey } from '../../utils/aria';
 import formatConflictsAsText from '../../utils/formatConflictsAsText';
 import './RaiseIssueModal.css';
 
@@ -14,13 +15,6 @@ function createIssueDefaults(
     userId,
     isReportViewer = false
 ) {
-    const evaluateAtNameKey = atName => {
-        // TODO: should probably add back support for AT keys from the database level
-        if (atName.toLowerCase().includes('voiceover'))
-            return 'voiceover_macos';
-        else return atName.toLowerCase();
-    };
-
     const title = `${
         isReportViewer ? "Report Viewer's" : "Tester's"
     } Issue Report For "${test.title}"`;

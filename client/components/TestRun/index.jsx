@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
@@ -17,16 +17,15 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import nextId from 'react-id-generator';
 import { Alert, Button, Col, Container, Row } from 'react-bootstrap';
-import { getTestPlanRunIssuesForTest } from '../../network';
+import { getSupportJson, getTestPlanRunIssuesForTest } from '../../network';
 import RaiseIssueModal from '../RaiseIssueModal';
 import ReviewConflictsModal from './ReviewConflictsModal';
 import StatusBar from './StatusBar';
-import TestResult from '../TestResult';
-// import TestIframe from './TestIframe';
 import TestRenderer from '../TestRenderer';
 import OptionButton from './OptionButton';
 import Loading from '../common/Loading';
 import BasicModal from '../common/BasicModal';
+import { evaluateAtNameKey } from '../../utils/aria';
 import {
     TEST_RUN_PAGE_QUERY,
     UPDATE_TEST_RUN_RESULT_MUTATION,
@@ -38,6 +37,9 @@ const TestRun = ({ auth }) => {
     const params = useParams();
     const history = useHistory();
     const routerQuery = useRouterQuery();
+    const testRunStateRef = useRef();
+    const testRunResultRef = useRef();
+    const testRendererSubmitButtonRef = useRef();
 
     const { runId: testPlanRunId } = params;
 
@@ -51,6 +53,9 @@ const TestRun = ({ auth }) => {
     const openAsUserId = routerQuery.get('user');
     const testerId = openAsUserId || userId;
 
+    const [pageReady, setPageReady] = useState(false);
+    const [supportJson, setSupportJson] = useState({});
+
     const [showTestNavigator, setShowTestNavigator] = useState(true);
     const [currentTestIndex, setCurrentTestIndex] = useState(1);
     const [issues, setIssues] = useState(1);
@@ -59,6 +64,19 @@ const TestRun = ({ auth }) => {
     const [showReviewConflictsModal, setShowReviewConflictsModal] = useState(
         false
     );
+
+    useEffect(() => {
+        // TODO: could serve this from backend
+        (async () => {
+            try {
+                const supportJson = await getSupportJson();
+                setSupportJson(supportJson);
+                setPageReady(true);
+            } catch (error) {
+                console.error('load.error', error);
+            }
+        })();
+    }, []);
 
     useEffect(() => {
         setIssues([]);
@@ -73,9 +91,12 @@ const TestRun = ({ auth }) => {
                 setIssues(issues.filter(({ closed }) => !closed));
             })();
         }
+
+        testRunStateRef.current = null;
+        testRunResultRef.current = null;
     }, [data, currentTestIndex]);
 
-    if (!data || loading) {
+    if (!data || !pageReady || loading) {
         return (
             <Loading
                 title="Loading - Test Results | ARIA-AT"
@@ -116,30 +137,53 @@ const TestRun = ({ auth }) => {
     };
 
     const performButtonAction = async (action, index) => {
+        const saveForm = async (withResult = false) =>
+            await handleUpdateTestPlanRunResultAction(
+                withResult
+                    ? {
+                          state: testRunStateRef.current,
+                          result: testRunResultRef.current
+                      }
+                    : {
+                          state: testRunStateRef.current
+                      }
+            );
+
         switch (action) {
             case 'goToTestAtIndex': {
-                // TODO: Save serialized form
+                // Save renderer's form state
+                await saveForm();
                 setCurrentTestIndex(index);
                 break;
             }
             case 'goToNextTest': {
-                // TODO: Save serialized form
+                // Save renderer's form state
+                await saveForm();
                 navigateTests();
                 break;
             }
             case 'goToPreviousTest': {
-                // TODO: Save serialized form
+                // Save renderer's form state
+                await saveForm();
                 navigateTests(true);
                 break;
             }
             case 'editTest': {
+                await handleUpdateTestPlanRunResultAction({
+                    result: null
+                });
                 break;
             }
             case 'saveTest': {
+                if (testRendererSubmitButtonRef.current) {
+                    testRendererSubmitButtonRef.current.click();
+                    await saveForm(true);
+                }
                 break;
             }
             case 'closeTest': {
-                // TODO: Save serialized form
+                // Save renderer's form state
+                await saveForm();
                 history.push('/test-queue');
                 break;
             }
@@ -182,7 +226,7 @@ const TestRun = ({ auth }) => {
 
     const handleUpdateTestPlanRunResultAction = async ({
         result,
-        serializedForm,
+        state,
         issues
     }) => {
         await updateTestRunResult({
@@ -194,7 +238,7 @@ const TestRun = ({ auth }) => {
                 // optionals
                 result,
                 issues,
-                serializedForm
+                state
             }
         });
         // await refetch();
@@ -204,7 +248,7 @@ const TestRun = ({ auth }) => {
         setShowReviewConflictsModal(true);
 
     const renderTestContent = (testPlanReport, testResult, heading) => {
-        const { isComplete, index, result, serializedForm } = testResult;
+        const { isComplete, index, result, state } = testResult;
         const isFirstTest = index === 1;
         const isLastTest = currentTestIndex === testPlanRun.testResults.length;
 
@@ -300,7 +344,7 @@ const TestRun = ({ auth }) => {
 
                     <OptionButton
                         text="Start Over"
-                        disabled={!result || !serializedForm}
+                        disabled={!result || !state}
                         icon={<FontAwesomeIcon icon={faRedo} />}
                         onClick={handleStartOverButtonClick}
                     />
@@ -318,15 +362,43 @@ const TestRun = ({ auth }) => {
             </div>
         );
 
-        if (currentTest.isComplete) {
-            testContent = <TestResult testResult={currentTest} />;
-        } else if (currentTest.isSkipped) {
-            // TODO: Show new renderer
-            testContent = <></>;
-        } else {
-            // TODO: Show new renderer
-            testContent = <TestRenderer />;
-        }
+        console.log('show.currentTest', currentTest);
+        testContent = (
+            <TestRenderer
+                key={nextId()}
+                test={currentTest}
+                support={supportJson}
+                testPageUri={testPlanVersion.testReferencePath}
+                configQueryParams={[
+                    ['at', evaluateAtNameKey(testPlanTarget.at.name)]
+                ]} // Array.from(new URL(document.location).searchParams)
+                testRunStateRef={testRunStateRef}
+                testRunResultRef={testRunResultRef}
+                submitButtonRef={testRendererSubmitButtonRef}
+            />
+        );
+
+        // if (currentTest.isComplete) {
+        //     testContent = <TestResult testResult={currentTest} />;
+        // } else if (currentTest.isSkipped) {
+        //     // TODO: Show new renderer
+        //     testContent = <></>;
+        // } else {
+        //     console.log('show currentTest', currentTest)
+        //     testContent = (
+        //         <TestRenderer
+        //             key={nextId()}
+        //             test={currentTest}
+        //             support={supportJson}
+        //             testPageUri={testPlanVersion.testReferencePath}
+        //             configQueryParams={[
+        //                 ['at', evaluateAtNameKey(testPlanTarget.at.name)]
+        //             ]} // Array.from(new URL(document.location).searchParams)
+        //             testRunStateRef={testRunStateRef}
+        //             submitButtonRef={testRendererSubmitButtonRef}
+        //         />
+        //     );
+        // }
 
         return (
             <>
@@ -526,16 +598,13 @@ const TestRun = ({ auth }) => {
                                         conflicts[t.index] || [];
 
                                     if (t) {
-                                        if (t.serializedForm && !t.result) {
+                                        if (t.state && !t.result) {
                                             resultClassName = 'in-progress';
                                             resultStatus = 'In Progress:';
                                         } else if (testConflicts.length) {
                                             resultClassName = 'conflicts';
                                             resultStatus = 'Has Conflicts:';
-                                        } else if (
-                                            t.serializedForm &&
-                                            t.result
-                                        ) {
+                                        } else if (t.state && t.result) {
                                             resultClassName = 'complete';
                                             resultStatus = 'Complete Test:';
                                         }

@@ -250,7 +250,9 @@ const createTestPlanRun = async (
             test: {
                 htmlFile: test.htmlFile,
                 testFullName: test.testFullName,
-                executionOrder: test.executionOrder
+                executionOrder: test.executionOrder,
+                testJson: test.testJson,
+                commandJson: test.commandJson
             }
         }));
     }
