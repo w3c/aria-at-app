@@ -362,7 +362,6 @@ const TestRun = ({ auth }) => {
             </div>
         );
 
-        console.log('show.currentTest', currentTest);
         testContent = (
             <TestRenderer
                 key={nextId()}
@@ -377,28 +376,6 @@ const TestRun = ({ auth }) => {
                 submitButtonRef={testRendererSubmitButtonRef}
             />
         );
-
-        // if (currentTest.isComplete) {
-        //     testContent = <TestResult testResult={currentTest} />;
-        // } else if (currentTest.isSkipped) {
-        //     // TODO: Show new renderer
-        //     testContent = <></>;
-        // } else {
-        //     console.log('show currentTest', currentTest)
-        //     testContent = (
-        //         <TestRenderer
-        //             key={nextId()}
-        //             test={currentTest}
-        //             support={supportJson}
-        //             testPageUri={testPlanVersion.testReferencePath}
-        //             configQueryParams={[
-        //                 ['at', evaluateAtNameKey(testPlanTarget.at.name)]
-        //             ]} // Array.from(new URL(document.location).searchParams)
-        //             testRunStateRef={testRunStateRef}
-        //             submitButtonRef={testRendererSubmitButtonRef}
-        //         />
-        //     );
-        // }
 
         return (
             <>
