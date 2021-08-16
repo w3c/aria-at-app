@@ -7,9 +7,6 @@ import useRouterQuery from '../../hooks/useRouterQuery';
 import { useQuery, useMutation } from '@apollo/client';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-    faArrowLeft,
-    faAlignLeft,
-    faArrowRight,
     faRedo,
     faExclamationCircle,
     faCheck,
@@ -17,7 +14,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import nextId from 'react-id-generator';
 import { Alert, Button, Col, Container, Row } from 'react-bootstrap';
-import { getTestPlanRunIssuesForTest } from '../../network';
+import TestNavigator from './TestNavigator';
 import RaiseIssueModal from '../RaiseIssueModal';
 import ReviewConflictsModal from './ReviewConflictsModal';
 import StatusBar from './StatusBar';
@@ -25,6 +22,7 @@ import TestRenderer from '../TestRenderer';
 import OptionButton from './OptionButton';
 import Loading from '../common/Loading';
 import BasicModal from '../common/BasicModal';
+import { getTestPlanRunIssuesForTest } from '../../network';
 import { evaluateAtNameKey } from '../../utils/aria';
 import {
     TEST_RUN_PAGE_QUERY,
@@ -521,6 +519,7 @@ const TestRun = ({ auth }) => {
                 heading
             )
         ) : (
+            // No tests loaded
             <>
                 {heading}
                 <div>No tests for this Browser / AT Combination</div>
@@ -544,75 +543,14 @@ const TestRun = ({ auth }) => {
                 <title>{testPlanTarget.title}</title>
             </Helmet>
             <Row>
-                <Col className="test-navigator" md={showTestNavigator ? 3 : 12}>
-                    {showTestNavigator && <h2>Test Navigator</h2>}
-                    <div className="test-navigator-toggle-container">
-                        <button
-                            onClick={toggleTestNavigator}
-                            className={`test-navigator-toggle ${
-                                showTestNavigator ? 'hide' : 'show'
-                            }`}
-                        >
-                            {showTestNavigator ? (
-                                <FontAwesomeIcon icon={faArrowLeft} />
-                            ) : (
-                                <FontAwesomeIcon icon={faArrowRight} />
-                            )}
-                            <FontAwesomeIcon icon={faAlignLeft} />
-                        </button>
-                    </div>
-                    {showTestNavigator && (
-                        <nav role="complementary">
-                            <ol className="test-navigator-list">
-                                {testPlanRun.testResults.map((t, i) => {
-                                    let resultClassName = 'not-started';
-                                    let resultStatus = 'Not Started:';
-
-                                    const testConflicts =
-                                        conflicts[t.index] || [];
-
-                                    if (t) {
-                                        if (t.isSkipped) {
-                                            resultClassName = 'in-progress';
-                                            resultStatus = 'In Progress:';
-                                        } else if (testConflicts.length) {
-                                            resultClassName = 'conflicts';
-                                            resultStatus = 'Has Conflicts:';
-                                        } else if (t.isComplete) {
-                                            resultClassName = 'complete';
-                                            resultStatus = 'Complete Test:';
-                                        }
-                                    }
-
-                                    return (
-                                        <li
-                                            className={`test-name-wrapper ${resultClassName}`}
-                                            key={`TestNavigatorItem_${i}`}
-                                        >
-                                            <a
-                                                href="#"
-                                                onClick={async () =>
-                                                    await handleTestClick(i + 1)
-                                                }
-                                                className="test-name"
-                                                aria-label={`${resultStatus} ${t.title}`}
-                                                aria-current={
-                                                    t.index === currentTestIndex
-                                                }
-                                            >
-                                                {t.title}
-                                            </a>
-                                            <span
-                                                className="progress-indicator"
-                                                title={`${resultStatus}`}
-                                            />
-                                        </li>
-                                    );
-                                })}
-                            </ol>
-                        </nav>
-                    )}
-                </Col>
+                <TestNavigator
+                    show={showTestNavigator}
+                    testResults={testPlanRun.testResults}
+                    conflicts={conflicts}
+                    currentTestIndex={currentTestIndex}
+                    toggleShowClick={toggleTestNavigator}
+                    handleTestClick={handleTestClick}
+                />
                 <Col className="main-test-area" as="main">
                     <Row>
                         <Col>{content}</Col>

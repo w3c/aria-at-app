@@ -201,8 +201,6 @@ const TestRenderer = ({
         }
     });
 
-    testWindow.prepare();
-
     const testRunExport = new TestRunExport({
         hooks: {
             openTestPage() {

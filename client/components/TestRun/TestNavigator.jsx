@@ -11,6 +11,7 @@ import React from 'react';
 const TestNavigator = ({
     show = true,
     testResults = [],
+    conflicts = {},
     currentTestIndex = 1,
     toggleShowClick = () => {},
     handleTestClick = () => {}
@@ -40,17 +41,17 @@ const TestNavigator = ({
                             let resultClassName = 'not-started';
                             let resultStatus = 'Not Started:';
 
+                            const testConflicts =
+                                conflicts[testResult.index] || [];
+
                             if (testResult) {
-                                if (testResult.state && !testResult.result) {
+                                if (testResult.isSkipped) {
                                     resultClassName = 'in-progress';
                                     resultStatus = 'In Progress:';
-                                } else if (testResult.conflictCount) {
+                                } else if (testConflicts.length) {
                                     resultClassName = 'conflicts';
                                     resultStatus = 'Has Conflicts:';
-                                } else if (
-                                    testResult.state &&
-                                    testResult.result
-                                ) {
+                                } else if (testResult.isComplete) {
                                     resultClassName = 'complete';
                                     resultStatus = 'Complete Test:';
                                 }
@@ -59,7 +60,7 @@ const TestNavigator = ({
                             return (
                                 <li
                                     className={`test-name-wrapper ${resultClassName}`}
-                                    key={index}
+                                    key={`TestNavigatorItem_${index}`}
                                 >
                                     <a
                                         href="#"
@@ -92,6 +93,7 @@ const TestNavigator = ({
 TestNavigator.propTypes = {
     show: PropTypes.bool,
     testResults: PropTypes.array,
+    conflicts: PropTypes.object,
     currentTestIndex: PropTypes.number,
     toggleShowClick: PropTypes.func,
     handleTestClick: PropTypes.func

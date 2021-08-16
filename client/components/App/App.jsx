@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect } from 'react';
+import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import {
@@ -17,7 +17,7 @@ import useSigninUrl from './useSigninUrl';
 import './App.css';
 
 const App = ({ auth, dispatch }) => {
-    const { client, error, loading, data } = useQuery(ME_QUERY);
+    const { client, loading, data } = useQuery(ME_QUERY);
     const signinUrl = useSigninUrl();
     const location = useLocation();
 
@@ -35,11 +35,6 @@ const App = ({ auth, dispatch }) => {
     // for some instances. `isSignOutCalled` boolean helps prevent this
     if (!isSignOutCalled && !username && data && data.me)
         dispatch(signInAction(data.me));
-
-    if (error) {
-        // TODO: Display error message / page for failed user auth attempt
-        // dispatch(signInFailAction());
-    }
 
     return (
         <Fragment>
