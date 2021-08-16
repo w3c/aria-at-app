@@ -1,6 +1,6 @@
 const title = require('../BaseTest/titleResolver');
 const index = require('../BaseTest/indexResolver');
-const testFilePath = require('../BaseTest/testFilePathResolver');
+// const testFilePath = require('../BaseTest/testFilePathResolver');
 const assertions = require('./assertionsResolver');
 const assertionsCount = require('./assertionsCountResolver');
 const assertionsPassed = require('./assertionsPassedResolver');
@@ -11,7 +11,7 @@ const isSkipped = require('./isSkippedResolver');
 module.exports = {
     title,
     index,
-    testFilePath,
+    // testFilePath,
     assertions,
     assertionsCount,
     assertionsPassed,

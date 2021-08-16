@@ -1,7 +1,18 @@
+/* TODO for Alex:
+- commandMappings and commandLabel
+*/
+
 const { gql } = require('apollo-server');
 
 const graphqlSchema = gql`
-    # Required for mutations that do not return anything
+    """
+    Freeform data.
+    """
+    scalar Any
+
+    """
+    The field does not return a response (useful for some mutations).
+    """
     scalar NoResponse
 
     """
@@ -9,8 +20,19 @@ const graphqlSchema = gql`
     """
     scalar Timestamp
 
+    """
+    The categories of actions a user can complete in the app.
+    """
     enum Role {
+        """
+        Whether the user can perform testing. Testers are specified in
+        testers.txt. Note that all admins are testers.
+        """
         TESTER
+        """
+        Whether the user can perform administrative actions. Admins are members
+        of a special GitHub team, which is different for each app environment.
+        """
         ADMIN
     }
 
@@ -26,22 +48,41 @@ const graphqlSchema = gql`
         browserVersions: [String]!
     }
 
+    """
+    Some ATs like JAWS have modes - for example, normally pushing "h" would
+    navigate to the next header, but when you are interacting with a text input,
+    typing "h" would insert the letter "h" into that input. Our tests are aware
+    of these modes.
+    """
     enum AtMode {
+        """
+        JAWS "browse" mode or NVDA "browse" mode.
+        """
         READING
+        """
+        JAWS "forms" mode or NVDA "focus" mode.
+        """
         INTERACTION
+        """
+        Used with ATs like VoiceOver which do not have modes.
+        """
         MODELESS
     }
 
     type At {
         id: ID!
         name: String!
-        modes: [AtMode]!
+        # modes: [AtMode]! # TODO: Waiting on test authoring format updates
         atVersions: [String]!
     }
 
+    type Command {
+        id: String!
+    }
+
     """
-    Specifies which AT and browser combination we are testing, divided into
-    buckets for each major version.
+    Specifies a AT and browser combination to test, divided into buckets by
+    major version.
     """
     type TestPlanTarget {
         id: ID!
@@ -50,7 +91,6 @@ const graphqlSchema = gql`
         atVersion: String!
         browser: Browser!
         browserVersion: String!
-        testPlanReports: [TestPlanReport]!
     }
 
     input TestPlanTargetInput {
@@ -60,203 +100,405 @@ const graphqlSchema = gql`
         browserVersion: String!
     }
 
-    enum TestPlanVersionStatus {
-        DRAFT
-        IN_REVIEW
-        FINALIZED
-    }
+    # TODO: Determine if needed following 2021 Working Mode changes
+    # https://github.com/w3c/aria-at/wiki/Working-Mode
+    # """
+    # To make sure Test Plans are relevant, they need to be reviewed by community
+    # stakeholders such as AT vendors.
+    # """
+    # enum TestPlanVersionStatus {
+    #     """
+    #     Default value meaning the source has been imported and the test plan
+    #     can be reviewed internally.
+    #     """
+    #     DRAFT
+    #     """
+    #     Receiving review from stakeholders.
+    #     """
+    #     WIDE_REVIEW
+    #     """
+    #     Wide review complete and ready to record test results.
+    #     """
+    #     FINALIZED
+    # }
 
+    """
+    A suite of tests which keeps its identity as it evolves over time.
+    """
     type TestPlan {
         """
-        Corresponds to the ARIA-AT directory storing the test plan.
+        This is the same as the directory field. Sometimes you want to think of
+        that string as an ID and sometimes you want to explicitly refer to it
+        as a directory, and this allows you to do both.
         """
         id: ID!
-        # TODO: determine if isObsolete is needed.
-        # """
-        # Whether the directory still exists in the ARIA-AT repo.
-        # """
+
+        """
+        Corresponds to directory in the ARIA-AT repo which stores the test plan,
+        e.g. "checkbox-tri-state" or "disclosure-navigation"
+        """
+        directory: String!
+        # TODO: determine what to do when a directory is removed from the
+        # ARIA-AT repo
         # isObsolete: Boolean!
         """
-        A least one argument is required. Determines what type of test plan to
-        load. Will load the latest version matching the criteria.
+        Gets the most recent version imported from the test plan's directory.
         """
-        latestTestPlanVersion(
-            status: TestPlanVersionStatus
-            testPlanReportStatus: TestPlanReportStatus
-            atGitSha: String
-            atSemanticVersion: String
-        ): TestPlanVersion
+        latestTestPlanVersion: TestPlanVersion!
+        # latestTestPlanVersion(
+        #     # TODO: Waiting for TestPlanVersionStatus to be implemented
+        #     status: TestPlanVersionStatus
+        #
+        #     # TODO: determine if we need to filter test plans with no results
+        #     testPlanReportStatuses: [TestPlanReportStatus]
+        # ): TestPlanVersion
+
         """
-        Loads multiple historic versions of the test plan, accepting filter
-        criteria.
+        Gets all historic versions of the test plan.
         """
-        testPlanVersions(
-            status: TestPlanVersionStatus
-            testPlanReportStatus: TestPlanReportStatus
-        ): [TestPlanVersion]
+        testPlanVersions: [TestPlanVersion]!
+        # testPlanVersions(
+        #     # TODO: Waiting for TestPlanVersionStatus to be implemented
+        #     status: TestPlanVersionStatus
+        #
+        #     # TODO: determine if we need to filter test plans with no results
+        #     testPlanReportStatuses: [TestPlanReportStatus]
+        # ): [TestPlanVersion]!
     }
 
+    """
+    A snapshot of time for a test plan, containing all the test plan data,
+    including the actual executable tests.
+    """
     type TestPlanVersion {
         id: ID!
+        """
+        The title of the TestPlan at this point in time.
+        """
         title: String
-        status: TestPlanVersionStatus!
-        gitSha: String!
-        gitMessage: String!
-        semanticVersion: String
-        # TODO: determine if isLatest is needed
-        # isLatest: Boolean!
+        # TODO: Waiting for TestPlanVersionStatus to be needed
+        # status: TestPlanVersionStatus!
+
+        # TODO: decide whether to use this approach, since we think gitShas are
+        # a bit intimidating and hard to use.
+        # """
+        # A version label set in the ARIA-AT repo. The app will only import new
+        # versions when that label has changed.
+        # """
+        # label: String!
+        """
+        A git sha corresponding to the current git commit at the time the
+        version was imported from the ARIA-AT repo. Used to version the test
+        plan over time.
+        """
+        gitSha: String! # TODO: remove if using version labels
+        """
+        Git commit message corresponding to the git sha's commit.
+        """
+        gitMessage: String! # TODO: remove if using version labels
+        """
+        The date (originating in Git) corresponding to the Git sha's commit.
+        """
         updatedAt: Timestamp!
-        exampleUrl: String!
-        directory: String!
+        """
+        Loosely structured data which may or may not be consistent or fully
+        populated across all test plan versions.
+        """
+        metadata: Any
+        """
+        The tests as they stand at this point in time.
+        """
         tests: [Test]!
-        testCount: Int!
-        testPlanReports(status: TestPlanReportStatus): [TestPlanReport]!
     }
 
+    """
+    Interface type allowing TestResults to have the same fields as Tests.
+    """
     interface BaseTest {
+        # More documentation in the Test type below
+        id: ID!
         title: String!
-        index: Int!
-        testFilePath: String!
+        ats: [At]!
+        atMode: AtMode!
+        exampleUrl: String!
+        startupScriptUrl: String!
+        instructions: [String]!
+        commandMappings: Any!
+        scenarios(atId: ID!): [Scenario]!
+        assertions(priority: AssertionPriority): [Assertion]!
     }
 
+    """
+    A parsed version of an ARIA-AT test, which, although it may produce multiple
+    executable artifacts, originated from a single row in the test authoring
+    format CSV maintained in the ARIA-AT repo.
+    """
     type Test implements BaseTest {
+        """
+        A unique ID for the test.
+        """
+        id: ID!
+        """
+        A human-readable sentence describing the function of the test.
+        """
         title: String!
-        index: Int!
-        testFilePath: String!
-        # TODO: account for running scripts
-        instructions: [Instruction]!
+        """
+        The ATs the test was written to expect.
+        """
+        ats: [At]!
+
+        # TODO: consider moving to the Scenario type if we support a single test
+        # applying to multiple AT modes.
+        """
+        The AT mode the test was written to expect.
+        """
+        atMode: AtMode!
+
+        # TODO: consider moving to the Scenario type if we support multiple
+        # examples for one test (i.e. testing that <input type="button"> and
+        # <button> have equivalent behavior).
+        """
+        Link the HTML page which will be tested.
+        """
+        exampleUrl: String!
+
+        # TODO: consider converting to an array if we support a larger number of
+        # more-focused and "compositional" startup scripts
+        """
+        Link to JS file which, when run, will prepare the example for testing.
+        """
+        startupScriptUrl: String!
+
+        # TODO: determine whether this field should remain following the
+        # introduction of machine-readable instructions
+        """
+        Human-readable sentences detailing steps that must be completed by
+        testers before the step which captures the AT output.
+        """
+        instructions: [String]!
+        # TODO: reconsider when adding machine-readable instuctions
+        """
+        An object containing nested dictionaries of commands indexed by AtMode
+        and AtId, and used when creating scenarios.
+        """
+        commandMappings: Any!
+        """
+        List of ways the test can be completed, each of which needs to be
+        executed separately. There might be a different number of Scenarios
+        for each AT.
+        """
+        scenarios(atId: ID!): [Scenario]!
+        """
+        Assertions to apply to the output captured for each Scenario. More
+        info on the Assertion type.
+        """
         assertions(priority: AssertionPriority): [Assertion]!
-        assertionsCount(priority: AssertionPriority): Int!
-        passThroughs: [PassThrough]!
     }
 
-    type Instruction {
-        # TODO: account for automation
-        manualInstruction: String!
-    }
-
-    interface BaseAssertion {
-        # TODO: account for at-specific assertions
-        # TODO: account for optional assertions
-        # TODO: account for automation
-        manualAssertion: String!
-    }
-
-    type Assertion implements BaseAssertion {
-        manualAssertion: String!
-        command: String!
-        priority: String!
-    }
-
-    interface PassThrough {
-        index: Int!
-        atMode: String!
-        nthCommand: Int!
-        # Examples would go here if we support multiple examples for one test.
-    }
-
-    enum AssertionPriority {
-        REQUIRED
-        OPTIONAL
-    }
-
-    # Raw structure of TestPlanRun.testPlanResults[] object.
-    # This structure is subject to change
-    # {
-    #   test: { ... }, // derived from TestPlanVersion.tests
-    #   result: { ... }, // returned from iframe submit result
-    #   serializedForm: [ ... ], // persisted form info once values are recorded for test in Test Navigator
-    #   issues: [ ] // recorded GitHub issue numbers for any issue created
-    # }
+    """
+    Using the Test type as a base, TestResults include all the outputs and
+    assertion results which were collected while executing the test, as well as
+    metadata about the test execution.
+    """
     type TestResult implements BaseTest {
+        """
+        A unique ID for the TestResult.
+        """
+        id: ID!
+        """
+        The ID of the test which was used to create the results.
+        """
+        testId: ID!
+        """
+        See Test type for more information.
+        """
         title: String!
-        index: Int!
-        testFilePath: String!
-        instructions: [Instruction]!
+
+        """
+        See Test type for more information.
+        """
+        ats: [At]!
+        """
+        See Test type for more information.
+        """
+        atMode: AtMode!
+        """
+        See Test type for more information.
+        """
+        exampleUrl: String!
+        """
+        See Test type for more information.
+        """
+        startupScriptUrl: String!
+        """
+        See Test type for more information.
+        """
+        instructions: [String]!
+        """
+        See Test type for more information.
+        """
+        commandMappings: Any!
+        """
+        See Test type for more information.
+        """
+        scenarios(atId: ID!): [Scenario]!
+        """
+        See Test type for more information.
+        """
         assertions(priority: AssertionPriority): [Assertion]!
-        assertionsCount(priority: AssertionPriority): Int!
-        assertionsPassed(priority: AssertionPriority): Int!
 
-        passThroughs: [PassThrough]!
-        passThroughResults: [PassThroughResult]!
-
-        isComplete: Boolean!
-        isSkipped: Boolean!
-
-        unexpectedBehaviorCount: Int!
-
-        result: TestResultData
-        serializedForm: [TestResultSerializedForm]
-        issues: [Int]
+        """
+        The AT associated with these results.
+        """
+        at: At!
+        """
+        When this particular test was started, which is interesting to collect
+        for analytics.
+        """
+        startedAt: Timestamp!
+        """
+        Used to determine if a test was completed or skipped.
+        """
+        completedAt: Timestamp!
+        """
+        The captured output for each of the Scenarios required to test the
+        AT, including the results of all assertions.
+        """
+        scenarioResults: [ScenarioResult]!
     }
 
-    # TestResultData and all other linked types are returned from the iframe
-    # submit result.
-    # This should be temporary while the logic of how the resolvers will work
-    # with that data is discussed.
-    type TestResultData {
-        test: String!
-        status: String!
-        details: TestResultDataDetails!
+    """
+    Minimal plain representation of a test result. The test data, i.e. the
+    title, instructions, etc. is stored with the TestPlanVersion and does not
+    need to be included here. The AT used is knowable via the TestPlanTarget.
+    """
+    input TestResultInput {
+        """
+        See TestResult type for more information.
+        """
+        testId: ID!
+        """
+        See TestResult type for more information.
+        """
+        startedAt: Timestamp!
+        """
+        See TestResult type for more information.
+        """
+        completedAt: Timestamp!
+        """
+        See TestResult type for more information.
+        """
+        scenarioResults: [ScenarioResultInput]!
     }
 
-    type TestResultDataDetails {
-        name: String!
-        task: String!
-        summary: TestResultDataDetailsSummary!
-        commands: [TestResultDataDetailsCommands]!
-        specific_user_instruction: String!
-    }
-
-    type TestResultDataDetailsSummary {
-        # required/optional transformed from '1'/'2'
-        required: TestResultDataDetailsSummaryPriority!
-        optional: TestResultDataDetailsSummaryPriority!
-        unexpectedCount: Int!
-    }
-
-    type TestResultDataDetailsSummaryPriority {
-        pass: Int!
-        fail: Int!
-    }
-
-    type TestResultDataDetailsCommands {
-        output: String!
-        command: String!
-        support: String!
-        assertions: [TestResultDataDetailsCommandsAssertion]!
-        unexpected_behaviors: [String]!
-    }
-
-    type TestResultDataDetailsCommandsAssertion {
-        pass: String
-        fail: String
-        priority: String!
-        assertion: String!
-    }
-
-    type TestResultSerializedForm {
-        name: String!
-        value: String!
-        checked: Boolean
-        disabled: Boolean
-        indeterminate: Boolean
-    }
-
-    type PassThroughResult implements PassThrough {
+    """
+    Just like the BaseTest type, this interface allows the ScenarioResult
+    type to build off the fields in the plain Scenario type.
+    """
+    interface BaseScenario {
+        """
+        See Scenario type for more information.
+        """
         index: Int!
-        atMode: String!
-        nthCommand: Int!
+        """
+        See Scenario type for more information.
+        """
+        command: Any!
+    }
 
+    """
+    A single test may describe a feature which is accessible in many different
+    ways, i.e. there may be several commands which should produce the same
+    output. Instead of writing dozens of nearly-identical tests, the test
+    authoring format allows a single test to have multiple Scenarios, each
+    testing a slightly different scenario.
+    """
+    type Scenario implements BaseScenario {
+        """
+        The index you can use to find this ScenarioResult in the TestResult's
+        array of ScenarioResults.
+        """
+        index: Int!
+        # TODO: reconsider when adding machine-readable instuctions
+        """
+        Object keys needed to load the exact command from the testResult's
+        commandMappings field.
+        """
+        command: Any!
+    }
+
+    type ScenarioResult implements BaseScenario {
+        """
+        The index you can use to find this ScenarioResult in the TestResult's
+        array of ScenarioResults.
+        """
+        index: Int!
+        """
+        See Scenario type for more information.
+        """
+        commandLabel: String!
+
+        """
+        The output captured from the AT.
+        """
         output: String!
-        assertionResults: [AssertionResult]!
+        assertionResults(priority: AssertionPriority): [AssertionResult]!
         unexpectedBehaviors: [UnexpectedBehavior]!
     }
 
+    input ScenarioResultInput {
+    }
+
+    """
+    Some assertions are more akin to recommendations or best practices, and,
+    while we want to record whether they are passing or failing, we do not want
+    to count the entire test as failing when they fail.
+    """
+    enum AssertionPriority {
+        """
+        All required assertions must pass for the test to pass.
+        """
+        REQUIRED
+        """
+        This assertion is not considered when deciding if a test is passing.
+        """
+        OPTIONAL
+    }
+
+    # TODO: figure out if this field can be removed and NO_OUTPUT can become an
+    # unexpected behavior instead
+    enum AssertionFailedReason {
+        INCORRECT_OUTPUT
+        NO_OUTPUT
+    }
+
+    """
+    Just like the BaseTest type, this interface allows the AssertionResult type
+    to build off the fields in the plain Assertion type.
+    """
+    interface BaseAssertion {
+        # More documentation in the Assertion type below
+        priority: AssertionPriority!
+        manualAssertion: String!
+        # TODO: account for at-specific assertions
+        # TODO: account for automation
+    }
+
+    type Assertion implements BaseAssertion {
+        priority: AssertionPriority!
+        manualAssertion: String!
+    }
+
     type AssertionResult implements BaseAssertion {
+        priority: AssertionPriority!
         manualAssertion: String!
         passed: Boolean!
+        failedReason: AssertionFailedReason
     }
+
+    input AssertionResultInput {
+    }
+
 
     type UnexpectedBehavior {
         id: ID!
@@ -307,70 +549,6 @@ const graphqlSchema = gql`
         testPlanTarget: TestPlanTargetInput!
     }
 
-    input TestResultInput {
-        index: Int!
-        # TODO: Revise transforming this structure for GraphQL
-        test: TestResultTestInput
-        result: TestResultDataInput
-        serializedForm: [TestResultSerializedFormInput]
-        issues: [Int]
-    }
-
-    input TestResultTestInput {
-        htmlFile: String!
-        testFullName: String!
-        executionOrder: Int!
-    }
-
-    input TestResultDataInput {
-        test: String!
-        status: String!
-        details: TestResultDataDetailsInput!
-    }
-
-    input TestResultDataDetailsInput {
-        name: String!
-        task: String!
-        summary: TestResultDataDetailsSummaryInput!
-        commands: [TestResultDataDetailsCommandsInput]!
-        specific_user_instruction: String!
-    }
-
-    input TestResultDataDetailsSummaryInput {
-        # required/optional needs to be transformed from '1'/'2'
-        required: TestResultDataDetailsSummaryPriorityInput!
-        optional: TestResultDataDetailsSummaryPriorityInput!
-        unexpectedCount: Int!
-    }
-
-    input TestResultDataDetailsSummaryPriorityInput {
-        pass: Int!
-        fail: Int!
-    }
-
-    input TestResultDataDetailsCommandsInput {
-        output: String!
-        command: String!
-        support: String!
-        assertions: [TestResultDataDetailsCommandsAssertionInput]!
-        unexpected_behaviors: [String]!
-    }
-
-    input TestResultDataDetailsCommandsAssertionInput {
-        pass: String
-        fail: String
-        priority: String!
-        assertion: String!
-    }
-
-    input TestResultSerializedFormInput {
-        name: String!
-        value: String!
-        checked: Boolean
-        disabled: Boolean
-        indeterminate: Boolean
-    }
-
     """
     A particular traversal of the TestPlan data - allowing for highlighting a
     TestPlan, TestPlanVersion, TestPlanReport, or even subsets of those.
@@ -379,7 +557,7 @@ const graphqlSchema = gql`
         testPlanId: ID
         testPlanVersionId: ID
         testIndex: Int
-        passThroughIndex: Int
+        scenarioIndex: Int
         testPlanReportId: ID
         testPlanTargetId: ID
         browserId: ID
@@ -388,7 +566,7 @@ const graphqlSchema = gql`
         atVersion: String
         testPlanRunId: ID
         testResultIndex: Int
-        passThroughResultIndex: Int
+        scenarioResultIndex: Int
     }
     """
     A particular traversal of the TestPlan data - allowing for highlighting a
@@ -398,7 +576,7 @@ const graphqlSchema = gql`
         testPlanId: ID
         testPlanVersionId: ID
         testIndex: Int
-        passThroughIndex: Int
+        scenarioIndex: Int
         testPlanReportId: ID
         testPlanTargetId: ID
         browserId: ID
@@ -407,7 +585,7 @@ const graphqlSchema = gql`
         atVersion: String
         testPlanRunId: ID
         testResultIndex: Int
-        passThroughResultIndex: Int
+        scenarioResultIndex: Int
     }
 
     """
@@ -423,11 +601,11 @@ const graphqlSchema = gql`
         atVersion: String
         browserVersion: String
         test: Test
-        passThrough: PassThrough
+        scenario: Scenario
         testPlanReport: TestPlanReport
         testPlanRun: TestPlanRun
         testResult: TestResult
-        passThroughResult: PassThroughResult
+        scenarioResult: ScenarioResult
     }
 
     type Query {
