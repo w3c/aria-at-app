@@ -33,13 +33,28 @@ const graphqlSchema = gql`
     }
 
     type User {
+        """
+        Postgres-provided numeric ID.
+        """
         id: ID!
+        """
+        The GitHub username of the person.
+        """
         username: String!
+        """
+        List of types of actions the user can complete.
+        """
         roles: [Role]!
     }
 
     type Browser {
+        """
+        Postgres-provided numeric ID.
+        """
         id: ID!
+        """
+        Browser name like "Chrome".
+        """
         name: String!
         browserVersions: [String]!
     }
@@ -56,24 +71,28 @@ const graphqlSchema = gql`
         """
         READING
         """
-        JAWS "forms" mode or NVDA "focus" mode.
+        JAWS "forms" mode, NVDA "focus" mode, or VoiceOver's one-and-only mode.
         """
         INTERACTION
-        """
-        Used with ATs like VoiceOver which do not have modes.
-        """
-        MODELESS
     }
 
+    """
+    An assistive technology to be tested, such as NVDA or JAWS.
+    """
     type At {
+        """
+        Postgres-provided numeric ID.
+        """
         id: ID!
+        """
+        Human-readable name for the AT, such as "NVDA".
+        """
         name: String!
-        # modes: [AtMode]! # TODO: Waiting on test authoring format updates
+        """
+        The categories of generalized AT modes the AT supports.
+        """
+        modes: [AtMode]!
         atVersions: [String]!
-    }
-
-    type Command {
-        id: String!
     }
 
     """
@@ -81,6 +100,9 @@ const graphqlSchema = gql`
     major version.
     """
     type TestPlanTarget {
+        """
+        Postgres-provided numeric ID.
+        """
         id: ID!
         title: String!
         at: At!
@@ -167,6 +189,9 @@ const graphqlSchema = gql`
     including the actual executable tests.
     """
     type TestPlanVersion {
+        """
+        Postgres-provided numeric ID.
+        """
         id: ID!
         """
         The title of the TestPlan at this point in time.
@@ -213,6 +238,10 @@ const graphqlSchema = gql`
     the test authoring format CSV maintained in the ARIA-AT repo.
     """
     type Test {
+        """
+        A base64-encoded unique ID which contains some information used by the
+        LocationOfData system.
+        """
         id: ID!
         """
         A human-readable sentence describing the function of the test.
@@ -233,7 +262,7 @@ const graphqlSchema = gql`
         # examples for one test (i.e. testing that <input type="button"> and
         # <button> have equivalent behavior).
         """
-        Link the HTML page which will be tested.
+        Link to the HTML page which will be tested.
         """
         exampleUrl: String!
 
@@ -253,8 +282,8 @@ const graphqlSchema = gql`
         instructions: [String]!
         # TODO: reconsider when adding machine-readable instuctions
         """
-        An object containing nested dictionaries and arrays of commands indexed
-        by AtMode and AtId, and used when creating scenarios.
+        An loosely structured object containing commands, e.g. keyboard
+        combinations to input into the AT.
         """
         commandMappings: Any!
         """
@@ -279,11 +308,15 @@ const graphqlSchema = gql`
     testing a different command.
     """
     type Scenario {
+        """
+        A base64-encoded unique ID which contains some information used by the
+        LocationOfData system.
+        """
         id: ID!
         """
         The AT which this scenario is testing.
         """
-        at: AT
+        at: At
         # TODO: reconsider when adding machine-readable instuctions
         """
         An object containing keys for loading the exact command from the
@@ -330,6 +363,10 @@ const graphqlSchema = gql`
     collected while executing the test, as well as metadata about the execution.
     """
     type TestResult {
+        """
+        A base64-encoded unique ID which contains some information used by the
+        LocationOfData system.
+        """
         id: ID!
         """
         The original test to which the results correspond.
@@ -379,6 +416,10 @@ const graphqlSchema = gql`
     whether the assertions passed or failed.
     """
     type ScenarioResult {
+        """
+        A base64-encoded unique ID which contains some information used by the
+        LocationOfData system.
+        """
         id: ID!
         """
         The original Scenario to which the result corresponds.
@@ -433,6 +474,10 @@ const graphqlSchema = gql`
     Whether an assertion passed or failed.
     """
     type AssertionResult {
+        """
+        A base64-encoded unique ID which contains some information used by the
+        LocationOfData system.
+        """
         id: ID!
         """
         The original Assertion to which the result corresponds.
@@ -472,6 +517,9 @@ const graphqlSchema = gql`
     occurs, should count as a scenario failure.
     """
     type UnexpectedBehavior {
+        """
+        Human-readable ID which is similar to the description.
+        """
         id: ID!
         """
         Human-readable sentence describing the failure.
@@ -488,7 +536,10 @@ const graphqlSchema = gql`
     """
     Minimal plain representation of an UnexpectedBehavior.
     """
-    type UnexpectedBehaviorInput {
+    input UnexpectedBehaviorInput {
+        """
+        See UnexpectedBehavior for more information.
+        """
         id: ID!
         """
         See UnexpectedBehavior for more information.
@@ -500,6 +551,9 @@ const graphqlSchema = gql`
     Records information about the execution of a TestPlan.
     """
     type TestPlanRun {
+        """
+        Postgres-provided numeric ID.
+        """
         id: ID!
         # TODO: make optional when automated runs are introduced
         """
@@ -513,20 +567,61 @@ const graphqlSchema = gql`
         testResults: [TestResult]!
     }
 
+    """
+    The life-cycle of a TestPlanReport from the point it is created by an admin
+    until it is saved an available to the public on the reports page.
+    """
     enum TestPlanReportStatus {
+        """
+        Accepting new TestPlanRuns from testers.
+        """
         DRAFT
+        """
+        No longer accepting testing, but not yet published.
+        """
         IN_REVIEW
+        """
+        Hides the TestPlanReport.
+        """
         REMOVED
+        """
+        Testing is complete and consistent, and ready to be displayed in the
+        Reports section of the app.
+        """
         FINALIZED
     }
 
+    """
+    A container for test results as captured by multiple testers. Different
+    TestPlanReports can share a single TestPlanTarget, allowing them to be
+    organized and displayed in tables. The tests to be run for a TestPlanReport
+    originate in the TestPlanVersion.
+    """
     type TestPlanReport {
+        """
+        Postgres-provided numeric ID.
+        """
         id: ID!
+        """
+        See TestPlanReportStatus type for more information.
+        """
         status: TestPlanReportStatus!
-        supportPercent: Int!
-        optionalSupportPercent: Int!
+        """
+        See TestPlanTarget type for more information.
+        """
         testPlanTarget: TestPlanTarget!
+        """
+        The snapshot of a TestPlan to use.
+        """
         testPlanVersion: TestPlanVersion!
+        """
+        A list of conflicts between runs, which may occur at the level of the
+        Scenario if the output or unexpected behaviors do not match, or even at
+        the level of an Assertion, if the result of an assertion does not match.
+
+        These conflicts must be resolved before the status can change from
+        DRAFT or IN_REVIEW to FINALIZED.
+        """
         conflicts: [PopulatedData]!
         """
         Finalizing a test plan report requires resolving any conflicts between
@@ -534,7 +629,14 @@ const graphqlSchema = gql`
         results, and is much more convenient to work with.
         """
         finalizedTestPlanRun: TestPlanRun
+        """
+        These are all the TestPlanRuns which were recorded during the
+        TestPlanReport's DRAFT stage.
+        """
         draftTestPlanRuns: [TestPlanRun]!
+        """
+        The point at which an admin created the TestPlanReport.
+        """
         createdAt: Timestamp!
     }
 
@@ -558,6 +660,7 @@ const graphqlSchema = gql`
         testPlanVersionId: ID
         testId: ID
         scenarioId: ID
+        assertionId: ID
         testPlanReportId: ID
         testPlanTargetId: ID
         browserId: ID
@@ -565,8 +668,9 @@ const graphqlSchema = gql`
         atId: ID
         atVersion: String
         testPlanRunId: ID
-        testResultId: Int
-        scenarioResultId: Int
+        testResultId: ID
+        scenarioResultId: ID
+        assertionResultId: ID
     }
     """
     For more information, see the LocationOfDataInput type. This type is used
@@ -578,6 +682,7 @@ const graphqlSchema = gql`
         testPlanVersionId: ID
         testId: ID
         scenarioId: ID
+        assertionId: ID
         testPlanReportId: ID
         testPlanTargetId: ID
         browserId: ID
@@ -587,6 +692,7 @@ const graphqlSchema = gql`
         testPlanRunId: ID
         testResultId: ID
         scenarioResultId: ID
+        assertionResultId: ID
     }
 
     """
@@ -606,10 +712,12 @@ const graphqlSchema = gql`
         browserVersion: String
         test: Test
         scenario: Scenario
+        assertion: Assertion
         testPlanReport: TestPlanReport
         testPlanRun: TestPlanRun
         testResult: TestResult
         scenarioResult: ScenarioResult
+        assertionResult: AssertionResult
     }
 
     type Query {
@@ -622,7 +730,7 @@ const graphqlSchema = gql`
         """
         users: [User]!
         """
-        Get all Assistive Technologies known to the app.
+        Get all assistive technologies known to the app.
         """
         ats: [At]!
         """
@@ -630,17 +738,15 @@ const graphqlSchema = gql`
         """
         browsers: [Browser]!
         """
-        Get all test plans. See the TestPlan type for more information.
+        Get all test plans.
         """
         testPlans: [TestPlan]!
         """
-        Load a particular TestPlan by ID. See the TestPlan type for more
-        information.
+        Load a particular TestPlan by ID.
         """
         testPlan(id: ID!): TestPlan
         """
-        Get a TestPlanReport by ID. See TestPlanReport type for more
-        information.
+        Get a TestPlanReport by ID.
         """
         testPlanReport(id: ID): TestPlanReport
         """
@@ -649,7 +755,7 @@ const graphqlSchema = gql`
         """
         testPlanReports(statuses: [TestPlanReportStatus]): [TestPlanReport]!
         """
-        Gets all TestPlanTargets. See TestPlanTarget for more information.
+        Get all TestPlanTargets.
         """
         testPlanTargets: [TestPlanTarget]!
         """
@@ -681,7 +787,18 @@ const graphqlSchema = gql`
         clearTestResult(input: TestResultInput!): PopulatedData!
     }
 
+    """
+    Generic response to findOrCreate mutations, which allow you to dictate an
+    expectation of what you want to exist, and it will be made so. It allows you
+    to check whether new database were created.
+    """
     type findOrCreateResult {
+        """
+        The data that was found or created, as well as any implicit
+        associations. For example, if you find or create a TestPlanReport, this
+        will include the TestPlanReport as well as the TestPlanVersion and
+        TestPlan.
+        """
         populatedData: PopulatedData!
         """
         There will be one array item per database record created.
