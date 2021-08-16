@@ -17,7 +17,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import nextId from 'react-id-generator';
 import { Alert, Button, Col, Container, Row } from 'react-bootstrap';
-import { getSupportJson, getTestPlanRunIssuesForTest } from '../../network';
+import { getTestPlanRunIssuesForTest } from '../../network';
 import RaiseIssueModal from '../RaiseIssueModal';
 import ReviewConflictsModal from './ReviewConflictsModal';
 import StatusBar from './StatusBar';
@@ -32,6 +32,7 @@ import {
     CLEAR_TEST_RESULT_MUTATION
 } from './queries';
 import './TestRun.css';
+import supportJson from '../../resources/support.json';
 
 const TestRun = ({ auth }) => {
     const params = useParams();
@@ -54,11 +55,10 @@ const TestRun = ({ auth }) => {
     const testerId = openAsUserId || userId;
 
     const [pageReady, setPageReady] = useState(false);
-    const [supportJson, setSupportJson] = useState({});
 
     const [showTestNavigator, setShowTestNavigator] = useState(true);
     const [currentTestIndex, setCurrentTestIndex] = useState(1);
-    const [issues, setIssues] = useState(1);
+    const [issues, setIssues] = useState([]);
     const [showStartOverModal, setShowStartOverModal] = useState(false);
     const [showRaiseIssueModal, setShowRaiseIssueModal] = useState(false);
     const [showReviewConflictsModal, setShowReviewConflictsModal] = useState(
@@ -66,29 +66,19 @@ const TestRun = ({ auth }) => {
     );
 
     useEffect(() => {
-        // TODO: could serve this from backend
-        (async () => {
-            try {
-                const supportJson = await getSupportJson();
-                setSupportJson(supportJson);
-                setPageReady(true);
-            } catch (error) {
-                console.error('load.error', error);
-            }
-        })();
-    }, []);
-
-    useEffect(() => {
-        setIssues([]);
-
         if (data) {
             // get structured UNCLOSED issue data from GitHub for current test
             (async () => {
-                const issues = await getTestPlanRunIssuesForTest(
-                    testPlanRunId,
-                    currentTestIndex
-                );
-                setIssues(issues.filter(({ closed }) => !closed));
+                try {
+                    const issues = await getTestPlanRunIssuesForTest(
+                        testPlanRunId,
+                        currentTestIndex
+                    );
+                    setIssues(issues.filter(({ closed }) => !closed));
+                } catch (error) {
+                    console.error('load.issues.error', error);
+                }
+                setPageReady(true);
             })();
         }
 
@@ -96,7 +86,7 @@ const TestRun = ({ auth }) => {
         testRunResultRef.current = null;
     }, [data, currentTestIndex]);
 
-    if (!data || !pageReady || loading) {
+    if (!pageReady || !data || loading) {
         return (
             <Loading
                 title="Loading - Test Results | ARIA-AT"
@@ -362,21 +352,6 @@ const TestRun = ({ auth }) => {
             </div>
         );
 
-        testContent = (
-            <TestRenderer
-                key={nextId()}
-                test={currentTest}
-                support={supportJson}
-                testPageUri={testPlanVersion.testReferencePath}
-                configQueryParams={[
-                    ['at', evaluateAtNameKey(testPlanTarget.at.name)]
-                ]} // Array.from(new URL(document.location).searchParams)
-                testRunStateRef={testRunStateRef}
-                testRunResultRef={testRunResultRef}
-                submitButtonRef={testRendererSubmitButtonRef}
-            />
-        );
-
         return (
             <>
                 <h1 data-test="testing-task">
@@ -395,7 +370,28 @@ const TestRun = ({ auth }) => {
                 />
                 <Row>
                     <Col md={9} className="test-iframe-container">
-                        <Row>{testContent}</Row>
+                        <Row>
+                            <TestRenderer
+                                key={nextId()}
+                                test={{
+                                    ...currentTest,
+                                    directory: testPlanVersion.directory
+                                }}
+                                support={supportJson}
+                                testPageUri={testPlanVersion.testReferencePath}
+                                configQueryParams={[
+                                    [
+                                        'at',
+                                        evaluateAtNameKey(
+                                            testPlanTarget.at.name
+                                        )
+                                    ]
+                                ]} // Array.from(new URL(document.location).searchParams)
+                                testRunStateRef={testRunStateRef}
+                                testRunResultRef={testRunResultRef}
+                                submitButtonRef={testRendererSubmitButtonRef}
+                            />
+                        </Row>
                         <Row>{primaryButtonGroup}</Row>
                         <Row>
                             {testPlanRun.isComplete && (
@@ -458,8 +454,7 @@ const TestRun = ({ auth }) => {
     };
 
     let heading;
-    let content = null;
-    let testContent = null;
+    let content;
     let openAsUserHeading = null;
 
     if (openAsUserId) {
@@ -474,60 +469,62 @@ const TestRun = ({ auth }) => {
         );
     }
 
-    if (hasTestsToRun) {
-        heading = (
-            <>
-                <div className="test-info-wrapper">
-                    <div
-                        className="test-info-entity apg-example-name"
-                        data-test="apg-example-name"
-                    >
-                        <div className="info-label">
-                            <b>Test Plan:</b>{' '}
-                            {`${testPlanVersion.title ||
-                                testPlanVersion.directory}`}
-                        </div>
-                    </div>
-                    <div
-                        className="test-info-entity at-browser"
-                        data-test="at-browser"
-                    >
-                        <div className="info-label">
-                            <b>AT and Browser:</b> {`${testPlanTarget.title}`}
-                        </div>
-                    </div>
-                    <div className="test-info-entity tests-completed">
-                        <div className="info-label">
-                            <FontAwesomeIcon icon={faCheck} />
-                            <b>{`${testPlanRun.testResultCount} of ${testPlanRun.testResults.length}`}</b>{' '}
-                            tests completed
-                        </div>
+    heading = (
+        <>
+            <div className="test-info-wrapper">
+                <div
+                    className="test-info-entity apg-example-name"
+                    data-test="apg-example-name"
+                >
+                    <div className="info-label">
+                        <b>Test Plan:</b>{' '}
+                        {`${testPlanVersion.title ||
+                            testPlanVersion.directory}`}
                     </div>
                 </div>
-                {openAsUserHeading}
-            </>
-        );
-    } else {
-        heading = (
-            <>
-                <div className="test-info-entity apg-example-name">
-                    <div className="info-label">APG Example</div>
-                    {`${testPlanVersion.title || testPlanVersion.directory}`}
+                <div
+                    className="test-info-entity at-browser"
+                    data-test="at-browser"
+                >
+                    <div className="info-label">
+                        <b>AT and Browser:</b> {`${testPlanTarget.title}`}
+                    </div>
                 </div>
-                <div className="test-info-entity at-browser">
-                    <div className="info-label">AT and Browser</div>
-                    {`${testPlanTarget.title}`}
+                <div className="test-info-entity tests-completed">
+                    <div className="info-label">
+                        <FontAwesomeIcon
+                            icon={hasTestsToRun ? faCheck : faExclamationCircle}
+                        />
+                        {hasTestsToRun ? (
+                            <>
+                                {' '}
+                                <b>{`${testPlanRun.testResultCount} of ${testPlanRun.testResults.length}`}</b>{' '}
+                                tests completed
+                            </>
+                        ) : (
+                            <div>
+                                No tests for this AT and Browser combination
+                            </div>
+                        )}
+                    </div>
                 </div>
-            </>
-        );
-        content = <div>No tests for this Browser / AT Combination</div>;
-    }
+            </div>
+            {openAsUserHeading}
+        </>
+    );
 
     if (!testPlanRun.isComplete) {
-        testContent = renderTestContent(
-            testPlanReport,
-            testPlanRun.testResults.find(t => t.index === currentTestIndex),
-            heading
+        content = hasTestsToRun ? (
+            renderTestContent(
+                testPlanReport,
+                testPlanRun.testResults.find(t => t.index === currentTestIndex),
+                heading
+            )
+        ) : (
+            <>
+                {heading}
+                <div>No tests for this Browser / AT Combination</div>
+            </>
         );
     } else {
         content = (
@@ -575,13 +572,13 @@ const TestRun = ({ auth }) => {
                                         conflicts[t.index] || [];
 
                                     if (t) {
-                                        if (t.state && !t.result) {
+                                        if (t.isSkipped) {
                                             resultClassName = 'in-progress';
                                             resultStatus = 'In Progress:';
                                         } else if (testConflicts.length) {
                                             resultClassName = 'conflicts';
                                             resultStatus = 'Has Conflicts:';
-                                        } else if (t.state && t.result) {
+                                        } else if (t.isComplete) {
                                             resultClassName = 'complete';
                                             resultStatus = 'Complete Test:';
                                         }
@@ -617,11 +614,9 @@ const TestRun = ({ auth }) => {
                     )}
                 </Col>
                 <Col className="main-test-area" as="main">
-                    {testContent || (
-                        <Row>
-                            <Col>{content}</Col>
-                        </Row>
-                    )}
+                    <Row>
+                        <Col>{content}</Col>
+                    </Row>
                 </Col>
             </Row>
         </Container>

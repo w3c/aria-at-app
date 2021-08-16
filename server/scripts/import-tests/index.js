@@ -173,48 +173,52 @@ const ariaAtImport = {
                             { script: true }
                         );
 
-                        let testJsonString = '';
-                        let commandJsonString = '';
+                        // parse test's name
+                        const testFullName = root.querySelector('title')
+                            .innerHTML;
+
+                        // parse testJson and commandJson from html
+                        const {
+                            text: testCommandScriptText
+                        } = root.querySelectorAll('script')[1];
 
                         const testJsonStartPattern = 'const testJson = {';
                         const commandJsonStartPattern = 'const commandJson = {';
                         const endPattern = '};';
 
-                        const scriptTags = root.querySelectorAll('script');
-                        scriptTags.forEach(script => {
-                            const { text } = script;
-                            if (text.indexOf(testJsonStartPattern) > -1) {
-                                testJsonString = text.substring(
-                                    text.indexOf(testJsonStartPattern)
+                        const getJsonTestCommandStringFromText = (
+                            text,
+                            startPattern,
+                            endPattern
+                        ) => {
+                            let string = '';
+                            if (text.indexOf(startPattern) > -1) {
+                                string = text.substring(
+                                    text.indexOf(startPattern)
                                 );
-                                testJsonString = testJsonString.substring(
+                                string = string.substring(
                                     0,
-                                    testJsonString.indexOf(endPattern) + 1
+                                    string.indexOf(endPattern) + 1
                                 );
-                                testJsonString = testJsonString.substring(
-                                    testJsonString.indexOf('{')
-                                );
+                                string = string.substring(string.indexOf('{'));
+                                return string;
                             }
+                            return string;
+                        };
 
-                            if (text.indexOf(commandJsonStartPattern) > -1) {
-                                commandJsonString = text.substring(
-                                    text.indexOf(commandJsonStartPattern)
-                                );
-                                commandJsonString = commandJsonString.substring(
-                                    0,
-                                    commandJsonString.indexOf(endPattern) + 1
-                                );
-                                commandJsonString = commandJsonString.substring(
-                                    commandJsonString.indexOf('{')
-                                );
-                            }
-                        });
+                        const testJsonString = getJsonTestCommandStringFromText(
+                            testCommandScriptText,
+                            testJsonStartPattern,
+                            endPattern
+                        );
+                        const commandJsonString = getJsonTestCommandStringFromText(
+                            testCommandScriptText,
+                            commandJsonStartPattern,
+                            endPattern
+                        );
 
                         const testJson = JSON.parse(testJsonString);
                         const commandJson = JSON.parse(commandJsonString);
-
-                        const testFullName = root.querySelector('title')
-                            .innerHTML;
 
                         // Get the testFile order from the file name
                         const executionOrder = parseInt(testFile.split('-')[1]);

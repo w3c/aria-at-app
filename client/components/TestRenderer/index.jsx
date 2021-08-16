@@ -169,7 +169,7 @@ const TestRenderer = ({
     testRunResultRef,
     submitButtonRef
 }) => {
-    const { title, testJson, commandJson, state, result } = test;
+    const { title, directory, testJson, commandJson, state, result } = test;
 
     const [pageContent, setPageContent] = useState(null);
     const [submitResult, setSubmitResult] = useState(result);
@@ -185,7 +185,9 @@ const TestRenderer = ({
     testRunIO.setBehaviorInputFromJSONAndCommandsConfigKeysTitleUnexpected(
         testJson
     );
-    testRunIO.setPageUriInputFromPageUri(testPageUri);
+    testRunIO.setPageUriInputFromPageUri(
+        `${process.env.GITHUB_OPEN_TEST_URI_BASE}/${directory}/${testPageUri}`
+    );
 
     const testWindow = new TestWindow({
         ...testRunIO.testWindowOptions(),
@@ -198,6 +200,8 @@ const TestRenderer = ({
             }
         }
     });
+
+    testWindow.prepare();
 
     const testRunExport = new TestRunExport({
         hooks: {
@@ -437,15 +441,16 @@ const TestRenderer = ({
                             {pageContent.instructions.assertions.description}
                         </Text>
                         <AssertionsContent />
-                        {pageContent.instructions.openTestPage.enabled && (
-                            <Button
-                                onClick={
-                                    pageContent.instructions.openTestPage.click
-                                }
-                            >
-                                {pageContent.instructions.openTestPage.button}
-                            </Button>
-                        )}
+                        <Button
+                            disabled={
+                                !pageContent.instructions.openTestPage.enabled
+                            }
+                            onClick={
+                                pageContent.instructions.openTestPage.click
+                            }
+                        >
+                            {pageContent.instructions.openTestPage.button}
+                        </Button>
                     </InstructionsSection>
                     <ResultsSection>
                         <SubHeadingText>
