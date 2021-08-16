@@ -1,7 +1,3 @@
-/* TODO for Alex:
-- commandMappings and commandLabel
-*/
-
 const { gql } = require('apollo-server');
 
 const graphqlSchema = gql`
@@ -212,31 +208,11 @@ const graphqlSchema = gql`
     }
 
     """
-    Interface type allowing TestResults to have the same fields as Tests.
-    """
-    interface BaseTest {
-        # More documentation in the Test type below
-        id: ID!
-        title: String!
-        ats: [At]!
-        atMode: AtMode!
-        exampleUrl: String!
-        startupScriptUrl: String!
-        instructions: [String]!
-        commandMappings: Any!
-        scenarios(atId: ID!): [Scenario]!
-        assertions(priority: AssertionPriority): [Assertion]!
-    }
-
-    """
     A parsed version of an ARIA-AT test, which, although it may produce multiple
-    executable artifacts, originated from a single row in the test authoring
-    format CSV maintained in the ARIA-AT repo.
+    executable artifacts (i.e. the scenarios), originated from a single row in
+    the test authoring format CSV maintained in the ARIA-AT repo.
     """
-    type Test implements BaseTest {
-        """
-        A unique ID for the test.
-        """
+    type Test {
         id: ID!
         """
         A human-readable sentence describing the function of the test.
@@ -246,7 +222,6 @@ const graphqlSchema = gql`
         The ATs the test was written to expect.
         """
         ats: [At]!
-
         # TODO: consider moving to the Scenario type if we support a single test
         # applying to multiple AT modes.
         """
@@ -278,16 +253,17 @@ const graphqlSchema = gql`
         instructions: [String]!
         # TODO: reconsider when adding machine-readable instuctions
         """
-        An object containing nested dictionaries of commands indexed by AtMode
-        and AtId, and used when creating scenarios.
+        An object containing nested dictionaries and arrays of commands indexed
+        by AtMode and AtId, and used when creating scenarios.
         """
         commandMappings: Any!
         """
         List of ways the test can be completed, each of which needs to be
         executed separately. There might be a different number of Scenarios
-        for each AT.
+        for each AT, based on factors like the number of commands that the AT
+        supports to complete a task.
         """
-        scenarios(atId: ID!): [Scenario]!
+        scenarios(atId: ID): [Scenario]!
         """
         Assertions to apply to the output captured for each Scenario. More
         info on the Assertion type.
@@ -296,61 +272,69 @@ const graphqlSchema = gql`
     }
 
     """
-    Using the Test type as a base, TestResults include all the outputs and
-    assertion results which were collected while executing the test, as well as
-    metadata about the test execution.
+    A single test may describe a feature which is accessible in many different
+    ways, i.e. there may be several commands which should produce the same
+    output. Instead of writing dozens of nearly-identical tests, the test
+    authoring format allows a single test to have multiple Scenarios, each
+    testing a different command.
     """
-    type TestResult implements BaseTest {
-        """
-        A unique ID for the TestResult.
-        """
+    type Scenario {
         id: ID!
         """
-        The ID of the test which was used to create the results.
+        The AT which this scenario is testing.
         """
-        testId: ID!
+        at: AT
+        # TODO: reconsider when adding machine-readable instuctions
         """
-        See Test type for more information.
+        An object containing keys for loading the exact command from the
+        Test's commandMappings field.
         """
-        title: String!
+        commandKeys: Any!
+    }
 
+    """
+    Some assertions are more akin to recommendations or best practices, and,
+    while we want to record whether they are passing or failing, we do not want
+    to count the entire test as failing when they fail.
+    """
+    enum AssertionPriority {
         """
-        See Test type for more information.
+        All required assertions must pass for the test to pass.
         """
-        ats: [At]!
+        REQUIRED
         """
-        See Test type for more information.
+        This assertion is not considered when deciding if a test is passing.
         """
-        atMode: AtMode!
-        """
-        See Test type for more information.
-        """
-        exampleUrl: String!
-        """
-        See Test type for more information.
-        """
-        startupScriptUrl: String!
-        """
-        See Test type for more information.
-        """
-        instructions: [String]!
-        """
-        See Test type for more information.
-        """
-        commandMappings: Any!
-        """
-        See Test type for more information.
-        """
-        scenarios(atId: ID!): [Scenario]!
-        """
-        See Test type for more information.
-        """
-        assertions(priority: AssertionPriority): [Assertion]!
+        OPTIONAL
+    }
 
+    """
+    For a given output, the assertion describes a check on that output which can
+    pass or fail.
+    """
+    type Assertion {
         """
-        The AT associated with these results.
+        Whether this assertion contributes to the test failing or not.
         """
-        at: At!
+        priority: AssertionPriority!
+        # TODO: consider adding a automatedAssertion field which uses regex or
+        # similar to automatically determine pass or fail.
+        """
+        A human-readable version of the assertion.
+        """
+        manualAssertion: String!
+    }
+
+    """
+    TestResults include all the outputs and assertion results which were
+    collected while executing the test, as well as metadata about the execution.
+    """
+    type TestResult {
+        id: ID!
+        """
+        The original test to which the results correspond.
+        """
+        test: Test!
         """
         When this particular test was started, which is interesting to collect
         for analytics.
@@ -368,9 +352,7 @@ const graphqlSchema = gql`
     }
 
     """
-    Minimal plain representation of a test result. The test data, i.e. the
-    title, instructions, etc. is stored with the TestPlanVersion and does not
-    need to be included here. The AT used is knowable via the TestPlanTarget.
+    Minimal plain representation of a TestResult.
     """
     input TestResultInput {
         """
@@ -392,80 +374,55 @@ const graphqlSchema = gql`
     }
 
     """
-    Just like the BaseTest type, this interface allows the ScenarioResult
-    type to build off the fields in the plain Scenario type.
+    For a given scenario, the tester will complete the instructions and then
+    record the output of the AT, which then will be the basis for evaluating
+    whether the assertions passed or failed.
     """
-    interface BaseScenario {
+    type ScenarioResult {
+        id: ID!
         """
-        See Scenario type for more information.
+        The original Scenario to which the result corresponds.
         """
-        index: Int!
+        scenario: Scenario!
         """
-        See Scenario type for more information.
-        """
-        command: Any!
-    }
-
-    """
-    A single test may describe a feature which is accessible in many different
-    ways, i.e. there may be several commands which should produce the same
-    output. Instead of writing dozens of nearly-identical tests, the test
-    authoring format allows a single test to have multiple Scenarios, each
-    testing a slightly different scenario.
-    """
-    type Scenario implements BaseScenario {
-        """
-        The index you can use to find this ScenarioResult in the TestResult's
-        array of ScenarioResults.
-        """
-        index: Int!
-        # TODO: reconsider when adding machine-readable instuctions
-        """
-        Object keys needed to load the exact command from the testResult's
-        commandMappings field.
-        """
-        command: Any!
-    }
-
-    type ScenarioResult implements BaseScenario {
-        """
-        The index you can use to find this ScenarioResult in the TestResult's
-        array of ScenarioResults.
-        """
-        index: Int!
-        """
-        See Scenario type for more information.
-        """
-        commandLabel: String!
-
-        """
-        The output captured from the AT.
+        After each scenario is executed, the tester will capture the output of
+        the AT, and that output will be used as the basis for the assertions.
         """
         output: String!
+        """
+        The outcomes of the assertions based on the output field.
+        """
         assertionResults(priority: AssertionPriority): [AssertionResult]!
+        """
+        Failure states like "AT became excessively sluggish" which would count
+        as a failure for any scenario, even when the assertions otherwise pass.
+        """
         unexpectedBehaviors: [UnexpectedBehavior]!
     }
 
+    """
+    Minimal plain representation of a ScenarioResult.
+    """
     input ScenarioResultInput {
+        """
+        See ScenarioResult type for more information.
+        """
+        scenarioId: ID!
+        """
+        See ScenarioResult type for more information.
+        """
+        output: String!
+        """
+        See ScenarioResult type for more information.
+        """
+        assertionResults: [AssertionResultInput]!
+        """
+        See ScenarioResult type for more information.
+        """
+        unexpectedBehaviors: [UnexpectedBehaviorInput]!
     }
 
-    """
-    Some assertions are more akin to recommendations or best practices, and,
-    while we want to record whether they are passing or failing, we do not want
-    to count the entire test as failing when they fail.
-    """
-    enum AssertionPriority {
-        """
-        All required assertions must pass for the test to pass.
-        """
-        REQUIRED
-        """
-        This assertion is not considered when deciding if a test is passing.
-        """
-        OPTIONAL
-    }
-
-    # TODO: figure out if this field can be removed and NO_OUTPUT can become an
+    # TODO: figure out if this type can be removed and NO_OUTPUT can become an
     # unexpected behavior instead
     enum AssertionFailedReason {
         INCORRECT_OUTPUT
@@ -473,49 +430,87 @@ const graphqlSchema = gql`
     }
 
     """
-    Just like the BaseTest type, this interface allows the AssertionResult type
-    to build off the fields in the plain Assertion type.
+    Whether an assertion passed or failed.
     """
-    interface BaseAssertion {
-        # More documentation in the Assertion type below
-        priority: AssertionPriority!
-        manualAssertion: String!
-        # TODO: account for at-specific assertions
-        # TODO: account for automation
-    }
-
-    type Assertion implements BaseAssertion {
-        priority: AssertionPriority!
-        manualAssertion: String!
-    }
-
-    type AssertionResult implements BaseAssertion {
-        priority: AssertionPriority!
-        manualAssertion: String!
+    type AssertionResult {
+        id: ID!
+        """
+        The original Assertion to which the result corresponds.
+        """
+        assertion: Assertion!
+        """
+        Whether the assertion is considered passing or failing.
+        """
         passed: Boolean!
+        # TODO: propose removing this for the reason given above
+        """
+        When passed is false, a failedReason must be given.
+        """
         failedReason: AssertionFailedReason
     }
 
+    """
+    Minimal plain representation of an AssertionResult.
+    """
     input AssertionResultInput {
+        """
+        See Assertion for more information.
+        """
+        assertionId: ID!
+        """
+        See Assertion for more information.
+        """
+        passed: Boolean!
+        """
+        See Assertion for more information.
+        """
+        failedReason: AssertionFailedReason
     }
 
-
+    """
+    A failure state such as "AT became excessively sluggish" which, if it
+    occurs, should count as a scenario failure.
+    """
     type UnexpectedBehavior {
         id: ID!
+        """
+        Human-readable sentence describing the failure.
+        """
         description: String!
+        """
+        One of the unexpected behaviors is "other", which means the user must
+        provide text explaining what occurred. For all other unexpected
+        behaviors this field can be ignored.
+        """
+        customUnexpectedBehaviorText: String
     }
 
-    type TestResultConflict {
-        breadcrumbs: String! # TBD
+    """
+    Minimal plain representation of an UnexpectedBehavior.
+    """
+    type UnexpectedBehaviorInput {
+        id: ID!
+        """
+        See UnexpectedBehavior for more information.
+        """
+        customUnexpectedBehaviorText: String
     }
 
+    """
+    Records information about the execution of a TestPlan.
+    """
     type TestPlanRun {
         id: ID!
-        tester: User
-        isManuallyTested: Boolean!
-        isComplete: Boolean!
+        # TODO: make optional when automated runs are introduced
+        """
+        The person who executed the tests.
+        """
+        tester: User!
+        """
+        Array of results, each of which correspond to one Test which can be
+        found on the TestPlanVersion type.
+        """
         testResults: [TestResult]!
-        testResultCount: Int!
     }
 
     enum TestPlanReportStatus {
@@ -532,8 +527,7 @@ const graphqlSchema = gql`
         optionalSupportPercent: Int!
         testPlanTarget: TestPlanTarget!
         testPlanVersion: TestPlanVersion!
-        conflicts: [TestResultConflict]!
-        conflictCount: Int!
+        conflicts: [PopulatedData]!
         """
         Finalizing a test plan report requires resolving any conflicts between
         runs. At this stage a single set of results is able to represent all
@@ -544,20 +538,26 @@ const graphqlSchema = gql`
         createdAt: Timestamp!
     }
 
+    """
+    Minimal plain representation of a TestPlanReport.
+    """
     input TestPlanReportInput {
         testPlanVersionId: ID!
         testPlanTarget: TestPlanTargetInput!
     }
 
     """
-    A particular traversal of the TestPlan data - allowing for highlighting a
-    TestPlan, TestPlanVersion, TestPlanReport, or even subsets of those.
+    Allows you to provide an ID, any ID, and load all the data which
+    can be found through relationships to that ID. For example, if you have a
+    scenarioResultId, it is possible to find a ScenarioResult, Scenario,
+    TestResult, Test, TestPlanVersion, TestPlanTarget, At, AtVersion, Browser,
+    BrowserVersion, and TestPlan. This can save a lot of effort wrangling data!
     """
     input LocationOfDataInput {
         testPlanId: ID
         testPlanVersionId: ID
-        testIndex: Int
-        scenarioIndex: Int
+        testId: ID
+        scenarioId: ID
         testPlanReportId: ID
         testPlanTargetId: ID
         browserId: ID
@@ -565,18 +565,19 @@ const graphqlSchema = gql`
         atId: ID
         atVersion: String
         testPlanRunId: ID
-        testResultIndex: Int
-        scenarioResultIndex: Int
+        testResultId: Int
+        scenarioResultId: Int
     }
     """
-    A particular traversal of the TestPlan data - allowing for highlighting a
-    TestPlan, TestPlanVersion, TestPlanReport, or even subsets of those.
+    For more information, see the LocationOfDataInput type. This type is used
+    to return a LocationOfData in queries in the same form you can provide it
+    as an input type.
     """
     type LocationOfData {
         testPlanId: ID
         testPlanVersionId: ID
-        testIndex: Int
-        scenarioIndex: Int
+        testId: ID
+        scenarioId: ID
         testPlanReportId: ID
         testPlanTargetId: ID
         browserId: ID
@@ -584,12 +585,15 @@ const graphqlSchema = gql`
         atId: ID
         atVersion: String
         testPlanRunId: ID
-        testResultIndex: Int
-        scenarioResultIndex: Int
+        testResultId: ID
+        scenarioResultId: ID
     }
 
     """
-    All the records that are associated with the id(s) of a given locationOfData
+    The fully-populated data which is associated with a given LocationOfData.
+    For example, a LocationOfData which includes an ID for a TestPlanReport
+    would allow you to populate the TestPlanVersion and TestPlan, which are both
+    knowable through relationships to that TestPlanReport.
     """
     type PopulatedData {
         locationOfData: LocationOfData!
@@ -609,24 +613,64 @@ const graphqlSchema = gql`
     }
 
     type Query {
+        """
+        Get the currently-logged-in user or null if you are not logged in.
+        """
         me: User
-        users: [User]
-        ats: [At]
-        browsers: [Browser]
+        """
+        Get all registered users. Must be logged in.
+        """
+        users: [User]!
+        """
+        Get all Assistive Technologies known to the app.
+        """
+        ats: [At]!
+        """
+        Get all browsers known to the app.
+        """
+        browsers: [Browser]!
+        """
+        Get all test plans. See the TestPlan type for more information.
+        """
         testPlans: [TestPlan]!
-        testPlanVersions: [TestPlanVersion]
+        """
+        Load a particular TestPlan by ID. See the TestPlan type for more
+        information.
+        """
         testPlan(id: ID!): TestPlan
+        """
+        Get a TestPlanReport by ID. See TestPlanReport type for more
+        information.
+        """
         testPlanReport(id: ID): TestPlanReport
+        """
+        Load multiple TestPlanReports, with the optional ability to filter by
+        status. See TestPlanReport type for more information.
+        """
         testPlanReports(statuses: [TestPlanReportStatus]): [TestPlanReport]!
+        """
+        Gets all TestPlanTargets. See TestPlanTarget for more information.
+        """
         testPlanTargets: [TestPlanTarget]!
-        testPlanRun(id: ID): TestPlanRun
+        """
+        For a given ID, load all the associated data which can be inferred from
+        that ID. For more information, take a look at the description of the
+        LocationOfDatInput type.
+        """
         populateData(locationOfData: LocationOfDataInput!): PopulatedData!
     }
 
     # Mutation-specific types below
 
     type TestPlanReportOperations {
+        """
+        Assigns a user to a TestPlanReport, creating an associated TestPlanRun
+        with no results.
+        """
         assignTester(userId: ID!): PopulatedData!
+        """
+        Removes the TestPlanRun from the TestPlanReport for the user.
+        """
         deleteTestPlanRun(userId: ID!): PopulatedData!
         deleteTestPlanRunResults(userId: ID!): PopulatedData!
         updateStatus(status: TestPlanReportStatus!): PopulatedData!
