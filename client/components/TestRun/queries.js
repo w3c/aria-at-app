@@ -17,6 +17,7 @@ export const TEST_RUN_PAGE_QUERY = gql`
                 isComplete
                 isSkipped
                 commandJson
+                scripts
                 testJson
                 assertions(priority: REQUIRED) {
                     command
@@ -93,6 +94,7 @@ export const UPDATE_TEST_RUN_RESULT_MUTATION = gql`
                         isComplete
                         isSkipped
                         commandJson
+                        scripts
                         testJson
                         assertions(priority: REQUIRED) {
                             command
@@ -154,6 +156,7 @@ export const CLEAR_TEST_RESULT_MUTATION = gql`
                         isComplete
                         isSkipped
                         commandJson
+                        scripts
                         testJson
                         assertions(priority: REQUIRED) {
                             command

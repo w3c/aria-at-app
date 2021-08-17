@@ -3,6 +3,7 @@ const index = require('../BaseTest/indexResolver');
 const testFilePath = require('../BaseTest/testFilePathResolver');
 const testJson = require('../BaseTest/testJsonResolver');
 const commandJson = require('../BaseTest/commandJsonResolver');
+const scripts = require('../BaseTest/scriptsResolver');
 const assertions = require('./assertionsResolver');
 const assertionsCount = require('./assertionsCountResolver');
 const assertionsPassed = require('./assertionsPassedResolver');
@@ -16,6 +17,7 @@ module.exports = {
     testFilePath,
     testJson,
     commandJson,
+    scripts,
     assertions,
     assertionsCount,
     assertionsPassed,

@@ -169,15 +169,36 @@ const TestRenderer = ({
     testRunResultRef,
     submitButtonRef
 }) => {
-    const { title, testJson, commandJson, state, result } = test;
+    const { title, testJson, commandJson, scripts, state, result } = test;
 
     const [pageContent, setPageContent] = useState(null);
     const [submitResult, setSubmitResult] = useState(result);
 
+    /**
+     * Script tag parsed from test page html can contain structure like:
+     * @example
+     * var scripts = {
+     *   <func>: function(...) {
+     *     // ...
+     *   }
+     * };
+     *
+     * where <func> is a setup script intended to be ran when the test window
+     * is triggered.
+     *
+     * This is constructing the 'scripts' STRING variable as an internal object,
+     * '_scripts' if there are an available 'scripts' variable using eval.
+     */
+    let _scripts = null;
+    const _scriptsString = scripts.replace('var scripts', '_scripts');
+    eval(_scriptsString);
+
     const testRunIO = new TestRunInputOutput();
     testRunIO.setTitleInputFromTitle(title);
     testRunIO.setUnexpectedInputFromBuiltin();
-    testRunIO.setScriptsInputFromMap({});
+    testRunIO.setScriptsInputFromMap(
+        typeof _scripts === 'object' ? _scripts : {}
+    );
     testRunIO.setSupportInputFromJSON(support);
     testRunIO.setConfigInputFromQueryParamsAndSupport(configQueryParams); // Array.from(new URL(document.location).searchParams)
     testRunIO.setKeysInputFromBuiltinAndConfig();

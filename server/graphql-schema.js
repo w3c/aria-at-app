@@ -125,6 +125,7 @@ const graphqlSchema = gql`
         testFilePath: String!
         testJson: Object!
         commandJson: Object!
+        scripts: String! # parsed object string from html
     }
 
     type Test implements BaseTest {
@@ -133,7 +134,8 @@ const graphqlSchema = gql`
         testFilePath: String!
         testJson: Object!
         commandJson: Object!
-        # TODO: account for running scripts
+        scripts: String!
+
         instructions: [Instruction]!
         assertions(priority: AssertionPriority): [Assertion]!
         assertionsCount(priority: AssertionPriority): Int!
@@ -184,6 +186,8 @@ const graphqlSchema = gql`
         testFilePath: String!
         testJson: Object!
         commandJson: Object!
+        scripts: String!
+
         instructions: [Instruction]!
         assertions(priority: AssertionPriority): [Assertion]!
         assertionsCount(priority: AssertionPriority): Int!

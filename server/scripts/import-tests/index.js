@@ -177,6 +177,11 @@ const ariaAtImport = {
                         const testFullName = root.querySelector('title')
                             .innerHTML;
 
+                        // parse scripts to be ran from html
+                        const { text: scripts } = root.querySelectorAll(
+                            'script'
+                        )[0];
+
                         // parse testJson and commandJson from html
                         const {
                             text: testCommandScriptText
@@ -229,7 +234,8 @@ const ariaAtImport = {
                             commitHash,
                             executionOrder,
                             testJson,
-                            commandJson
+                            commandJson,
+                            scripts: scripts.trim()
                         });
                     }
                 }
