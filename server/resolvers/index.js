@@ -3,6 +3,7 @@ const users = require('./usersResolver');
 const ats = require('./atsResolver');
 const browsers = require('./browsersResolver');
 const testPlans = require('./testPlansResolver');
+const testPlan = require('./testPlanResolver');
 // const testPlanVersions = require('./testPlanVersionsResolver');
 const testPlanReport = require('./testPlanReportResolver');
 const testPlanReports = require('./testPlanReportsResolver');
@@ -27,6 +28,7 @@ const resolvers = {
         users,
         ats,
         browsers,
+        testPlan,
         testPlans,
         testPlanReport,
         testPlanReports,

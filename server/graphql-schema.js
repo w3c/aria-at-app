@@ -193,6 +193,7 @@ const graphqlSchema = gql`
         Postgres-provided numeric ID.
         """
         id: ID!
+        # TODO: fix bug where the title is missing and make this field required
         """
         The title of the TestPlan at this point in time.
         """
@@ -754,10 +755,11 @@ const graphqlSchema = gql`
         status. See TestPlanReport type for more information.
         """
         testPlanReports(statuses: [TestPlanReportStatus]): [TestPlanReport]!
-        """
-        Get all TestPlanTargets.
-        """
-        testPlanTargets: [TestPlanTarget]!
+        # TODO: determine if needed
+        # """
+        # Get all TestPlanTargets.
+        # """
+        # testPlanTargets: [TestPlanTarget]!
         """
         For a given ID, load all the associated data which can be inferred from
         that ID. For more information, take a look at the description of the
