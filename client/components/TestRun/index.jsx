@@ -23,7 +23,7 @@ import OptionButton from './OptionButton';
 import Loading from '../common/Loading';
 import BasicModal from '../common/BasicModal';
 import { getTestPlanRunIssuesForTest } from '../../network';
-import { evaluateAtNameKey } from '../../utils/aria';
+import { evaluateAtNameKey, buildTestPageUri } from '../../utils/aria';
 import {
     TEST_RUN_PAGE_QUERY,
     UPDATE_TEST_RUN_RESULT_MUTATION,
@@ -371,12 +371,13 @@ const TestRun = ({ auth }) => {
                         <Row>
                             <TestRenderer
                                 key={nextId()}
-                                test={{
-                                    ...currentTest,
-                                    directory: testPlanVersion.directory
-                                }}
+                                test={currentTest}
                                 support={supportJson}
-                                testPageUri={testPlanVersion.testReferencePath}
+                                testPageUri={buildTestPageUri(
+                                    testPlanVersion.gitSha,
+                                    testPlanVersion.directory,
+                                    testPlanVersion.testReferencePath
+                                )}
                                 configQueryParams={[
                                     [
                                         'at',

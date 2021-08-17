@@ -169,7 +169,7 @@ const TestRenderer = ({
     testRunResultRef,
     submitButtonRef
 }) => {
-    const { title, directory, testJson, commandJson, state, result } = test;
+    const { title, testJson, commandJson, state, result } = test;
 
     const [pageContent, setPageContent] = useState(null);
     const [submitResult, setSubmitResult] = useState(result);
@@ -185,9 +185,7 @@ const TestRenderer = ({
     testRunIO.setBehaviorInputFromJSONAndCommandsConfigKeysTitleUnexpected(
         testJson
     );
-    testRunIO.setPageUriInputFromPageUri(
-        `${process.env.GITHUB_OPEN_TEST_URI_BASE}/${directory}/${testPageUri}`
-    );
+    testRunIO.setPageUriInputFromPageUri(testPageUri);
 
     const testWindow = new TestWindow({
         ...testRunIO.testWindowOptions(),
@@ -414,7 +412,9 @@ const TestRenderer = ({
 
     return (
         <Container>
-            {submitResult && submitResult.resultsJSON ? (
+            {submitResult &&
+            submitResult.resultsJSON &&
+            submitResult.results ? (
                 <SubmitResultsContent />
             ) : (
                 <>
