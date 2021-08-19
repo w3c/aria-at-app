@@ -99,38 +99,52 @@ INSERT INTO public."UserRoles" ("userId", "roleName") VALUES (2, 'TESTER');
 
 
 --
+-- Name: At_id_seq; Type: SEQUENCE SET; Schema: public; Owner: atr
+--
+
+SELECT pg_catalog.setval('public."At_id_seq"', 100, true);
+
+
+--
+-- Name: Browser_id_seq; Type: SEQUENCE SET; Schema: public; Owner: atr
+--
+
+SELECT pg_catalog.setval('public."Browser_id_seq"', 100, true);
+
+
+--
 -- Name: TestPlanReport_id_seq; Type: SEQUENCE SET; Schema: public; Owner: atr
 --
 
-SELECT pg_catalog.setval('public."TestPlanReport_id_seq"', 1, true);
+SELECT pg_catalog.setval('public."TestPlanReport_id_seq"', 100, true);
 
 
 --
 -- Name: TestPlanRun_id_seq; Type: SEQUENCE SET; Schema: public; Owner: atr
 --
 
-SELECT pg_catalog.setval('public."TestPlanRun_id_seq"', 1, true);
+SELECT pg_catalog.setval('public."TestPlanRun_id_seq"', 100, true);
 
 
 --
 -- Name: TestPlanTarget_id_seq; Type: SEQUENCE SET; Schema: public; Owner: atr
 --
 
-SELECT pg_catalog.setval('public."TestPlanTarget_id_seq"', 1, true);
+SELECT pg_catalog.setval('public."TestPlanTarget_id_seq"', 100, true);
 
 
 --
 -- Name: TestPlan_id_seq; Type: SEQUENCE SET; Schema: public; Owner: atr
 --
 
-SELECT pg_catalog.setval('public."TestPlan_id_seq"', 8, true);
+SELECT pg_catalog.setval('public."TestPlan_id_seq"', 100, true);
 
 
 --
 -- Name: User_id_seq; Type: SEQUENCE SET; Schema: public; Owner: atr
 --
 
-SELECT pg_catalog.setval('public."User_id_seq"', 2, true);
+SELECT pg_catalog.setval('public."User_id_seq"', 100, true);
 
 
 --

@@ -222,8 +222,24 @@ const ariaAtImport = {
                             endPattern
                         );
 
-                        const testJson = JSON.parse(testJsonString);
-                        const commandJson = JSON.parse(commandJsonString);
+                        let testJson = {};
+                        let commandJson = {};
+
+                        try {
+                            testJson = JSON.parse(testJsonString);
+                        } catch (e) {
+                            console.error(
+                                `error.parse.testJson:${testJsonString}`
+                            );
+                        }
+
+                        try {
+                            commandJson = JSON.parse(commandJsonString);
+                        } catch (e) {
+                            console.error(
+                                `error.parse.testJson:${testJsonString}`
+                            );
+                        }
 
                         // Get the testFile order from the file name
                         const executionOrder = parseInt(testFile.split('-')[1]);
