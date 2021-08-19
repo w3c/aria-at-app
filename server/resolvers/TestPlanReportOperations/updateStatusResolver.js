@@ -17,7 +17,7 @@ const updateStatusResolver = async (
         roles = user.roles.map(role => role.name);
 
     if (!roles.includes('ADMIN')) {
-        throw new AuthenticationError();
+        throw new AuthenticationError('Unauthorized');
     }
 
     const testPlanReport = await getTestPlanReportById(testPlanReportId);
@@ -31,6 +31,8 @@ const updateStatusResolver = async (
         throw new Error('Cannot finalize test plan report due to conflicts');
     }
 
+    /*
+    TODO: The previous implementation did allow for runs to be finalized with 'skipped' test results. May want to review throwing this exception?
     const isIncomplete = testPlanReport.testPlanRuns.find(
         testPlanRun => !isCompleteResolver(testPlanRun)
     );
@@ -39,7 +41,7 @@ const updateStatusResolver = async (
         throw new Error(
             'Cannot finalize test plan due to incomplete test runs'
         );
-    }
+    }*/
 
     await updateTestPlanReport(testPlanReportId, { status });
 

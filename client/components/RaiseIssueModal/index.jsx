@@ -123,10 +123,10 @@ const RaiseIssueModal = ({
             <IssueCards key="render-issues-cards" issues={issues} />,
             <Fragment key="render-issues-buttons">
                 <Button variant="secondary" onClick={onHideButtonClick}>
-                    My Issue exists in this list
+                    My Issue Is Shown
                 </Button>
                 <Button variant="primary" onClick={onCreateNewIssueClick}>
-                    My Issue is not in this list
+                    My Issue Is Not Shown
                 </Button>
             </Fragment>
         ];

@@ -64,6 +64,7 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK = [
                     {
                         id: '1',
                         status: 'IN_REVIEW',
+                        conflictCount: 0,
                         testPlanTarget: {
                             id: '1',
                             title: 'NVDA 2020.4 with Chrome 91.0.4472',
@@ -118,6 +119,7 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK = [
                     {
                         id: '6',
                         status: 'DRAFT',
+                        conflictCount: 0,
                         testPlanTarget: {
                             id: '2',
                             title: 'JAWS 222.43 with Firefox 445.4',
@@ -151,6 +153,7 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK = [
                     {
                         id: '3',
                         status: 'DRAFT',
+                        conflictCount: 0,
                         testPlanTarget: {
                             id: '2',
                             title: 'JAWS 222.43 with Firefox 445.4',
@@ -184,6 +187,7 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK = [
                     {
                         id: '4',
                         status: 'DRAFT',
+                        conflictCount: 0,
                         testPlanTarget: {
                             id: '3',
                             title: 'NVDA 353 with Chrome 3434',
@@ -228,6 +232,7 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK = [
                     {
                         id: '5',
                         status: 'DRAFT',
+                        conflictCount: 0,
                         testPlanTarget: {
                             id: '4',
                             title: 'JAWS 59053 with Chrome 3434',
@@ -282,6 +287,7 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK = [
                     {
                         id: '8',
                         status: 'DRAFT',
+                        conflictCount: 0,
                         testPlanTarget: {
                             id: '5',
                             title: 'NVDA 2020.4 with Firefox 445.4',
@@ -326,6 +332,7 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK = [
                     {
                         id: '7',
                         status: 'DRAFT',
+                        conflictCount: 0,
                         testPlanTarget: {
                             id: '5',
                             title: 'NVDA 2020.4 with Firefox 445.4',
@@ -359,6 +366,7 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK = [
                     {
                         id: '9',
                         status: 'DRAFT',
+                        conflictCount: 0,
                         testPlanTarget: {
                             id: '6',
                             title:
@@ -393,6 +401,7 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK = [
                     {
                         id: '10',
                         status: 'DRAFT',
+                        conflictCount: 0,
                         testPlanTarget: {
                             id: '7',
                             title:
@@ -427,6 +436,7 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK = [
                     {
                         id: '11',
                         status: 'DRAFT',
+                        conflictCount: 0,
                         testPlanTarget: {
                             id: '8',
                             title: 'JAWS Ok with Chrome 1000',

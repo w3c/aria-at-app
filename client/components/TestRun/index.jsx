@@ -20,7 +20,7 @@ import ReviewConflictsModal from './ReviewConflictsModal';
 import StatusBar from './StatusBar';
 import TestRenderer from '../TestRenderer';
 import OptionButton from './OptionButton';
-import Loading from '../common/Loading';
+import PageStatus from '../common/PageStatus';
 import BasicModal from '../common/BasicModal';
 import { getTestPlanRunIssuesForTest } from '../../network';
 import { evaluateAtNameKey, buildTestPageUri } from '../../utils/aria';
@@ -42,7 +42,7 @@ const TestRun = ({ auth }) => {
 
     const { runId: testPlanRunId } = params;
 
-    const { loading, data, refetch } = useQuery(TEST_RUN_PAGE_QUERY, {
+    const { loading, data, error, refetch } = useQuery(TEST_RUN_PAGE_QUERY, {
         variables: { testPlanRunId }
     });
     const [updateTestRunResult] = useMutation(UPDATE_TEST_RUN_RESULT_MUTATION);
@@ -84,9 +84,21 @@ const TestRun = ({ auth }) => {
         testRunResultRef.current = null;
     }, [data, currentTestIndex]);
 
+    if (error) {
+        const { message } = error;
+        return (
+            <PageStatus
+                title="Error - Test Results | ARIA-AT"
+                heading="Testing Task"
+                message={message}
+                isError
+            />
+        );
+    }
+
     if (!pageReady || !data || loading) {
         return (
-            <Loading
+            <PageStatus
                 title="Loading - Test Results | ARIA-AT"
                 heading="Testing Task"
             />
@@ -94,8 +106,19 @@ const TestRun = ({ auth }) => {
     }
 
     const { testPlanRun, users } = data;
-    const { testPlanReport } = testPlanRun;
-    const { testPlanTarget, testPlanVersion, conflicts } = testPlanReport;
+    const { testPlanReport } = testPlanRun || {};
+    const { testPlanTarget, testPlanVersion, conflicts } = testPlanReport || {};
+
+    if (!testPlanRun || !testPlanTarget) {
+        return (
+            <PageStatus
+                title="Error - Test Results | ARIA-AT"
+                heading="Testing Task"
+                message="Unavailable"
+                isError
+            />
+        );
+    }
 
     const currentTest = testPlanRun.testResults.find(
         t => t.index === currentTestIndex

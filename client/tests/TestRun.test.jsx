@@ -24,7 +24,7 @@ describe.skip('render', () => {
             wrapper = setup(initialState);
         });
         test('renders not logged in text', () => {
-            const component = findByTestAttr(wrapper, 'test-run-loading');
+            const component = findByTestAttr(wrapper, 'test-run-page-status');
             expect(component.text()).toContain('Loading');
         });
     });

@@ -113,7 +113,7 @@ const ReviewConflictsModal = ({
                     variant="secondary"
                     onClick={handleRaiseIssueButtonClick}
                 >
-                    Raise an Issue for this Conflict
+                    Raise an Issue for Conflict
                 </Button>
             </Modal.Footer>
         </Modal>

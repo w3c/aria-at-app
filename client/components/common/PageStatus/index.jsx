@@ -3,7 +3,12 @@ import { Container } from 'react-bootstrap';
 import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
 
-const Loading = ({ title, heading, message = 'Loading ...' }) => {
+const Loading = ({
+    title,
+    heading,
+    message = 'Loading ...',
+    isError = false
+}) => {
     return (
         <Container as="main">
             <Helmet>
@@ -11,7 +16,13 @@ const Loading = ({ title, heading, message = 'Loading ...' }) => {
             </Helmet>
             <h1>{heading}</h1>
 
-            <div data-testid="test-run-loading">{message}</div>
+            <div
+                className={isError ? 'alert alert-danger' : ''}
+                role={isError ? 'alert' : ''}
+                data-testid="page-status"
+            >
+                {message}
+            </div>
         </Container>
     );
 };
@@ -19,7 +30,8 @@ const Loading = ({ title, heading, message = 'Loading ...' }) => {
 Loading.propTypes = {
     title: PropTypes.string,
     heading: PropTypes.string,
-    message: PropTypes.string
+    message: PropTypes.string,
+    isError: PropTypes.bool
 };
 
 export default Loading;

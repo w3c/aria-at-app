@@ -107,7 +107,12 @@
     ],
     "setupFilesAfterEnv": [
       "./jest.setup.js"
-    ]
+    ],
+    "transform": {
+      "^.+\\.(js|jsx|mjs)$": "babel-jest"
+    },
+    "testPathIgnorePatterns": ["<rootDir>/node_modules/", "<rootDir>/resources/"],
+    "coveragePathIgnorePatterns": ["<rootDir>/resources/"]
   },
   "resolutions": {
     "jest-environment-jsdom": "^26.0.1"
