@@ -593,6 +593,28 @@ const graphqlSchema = gql`
     }
 
     """
+    Tests, as we envision them, should not leave any room for interpretation. If
+    a conflict between results is found, the report cannot be published until
+    the cause of the disparity is determined.
+    """
+    type TestPlanReportConflict {
+        """
+        The part of the test where the disagreement occurred. This does not
+        include the actual results and merely points to the test, scenario or
+        assertion.
+        """
+        source: PopulatedData!
+        """
+        The two-or-more sets of test results which do not match. If the conflict
+        occurred in an assertion, for example, the populated data would include
+        a testPlanRun, scenarioResult and assertionResult for each of the
+        results which differed (as well as the other associated data
+        PopulatedData will make available.)
+        """
+        conflictingResults: [PopulatedData]!
+    }
+
+    """
     A container for test results as captured by multiple testers. Different
     TestPlanReports can share a single TestPlanTarget, allowing them to be
     organized and displayed in tables. The tests to be run for a TestPlanReport
@@ -623,7 +645,7 @@ const graphqlSchema = gql`
         These conflicts must be resolved before the status can change from
         DRAFT or IN_REVIEW to FINALIZED.
         """
-        conflicts: [PopulatedData]!
+        conflicts: [TestPlanReportConflict]!
         """
         Finalizing a test plan report requires resolving any conflicts between
         runs. At this stage a single set of results is able to represent all
@@ -699,8 +721,8 @@ const graphqlSchema = gql`
     """
     The fully-populated data which is associated with a given LocationOfData.
     For example, a LocationOfData which includes an ID for a TestPlanReport
-    would allow you to populate the TestPlanVersion and TestPlan, which are both
-    knowable through relationships to that TestPlanReport.
+    would allow you to populate the TestPlanTarget, TestPlanVersion and
+    TestPlan, which are knowable through relationships to that TestPlanReport.
     """
     type PopulatedData {
         locationOfData: LocationOfData!

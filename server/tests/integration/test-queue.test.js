@@ -16,7 +16,13 @@ describe('test queue', () => {
                     testPlanReports(statuses: [DRAFT, IN_REVIEW]) {
                         id
                         status
-                        conflictCount
+                        conflicts {
+                            source {
+                                test {
+                                    id
+                                }
+                            }
+                        }
                         testPlanTarget {
                             id
                             title
@@ -25,14 +31,18 @@ describe('test queue', () => {
                             title
                             gitSha
                             gitMessage
-                            testCount
+                            tests {
+                                id
+                            }
                         }
                         draftTestPlanRuns {
                             id
                             tester {
                                 username
                             }
-                            testResultCount
+                            testResults {
+                                id
+                            }
                         }
                     }
                 }
@@ -50,10 +60,12 @@ describe('test queue', () => {
                         title: expect.any(String)
                     },
                     testPlanVersion: {
+                        title: expect.any(String),
                         gitSha: expect.any(String),
                         gitMessage: expect.any(String),
-                        title: expect.any(String),
-                        testCount: expect.any(Number)
+                        tests: expect.objectContaining({
+                            id: expect.anything()
+                        })
                     },
                     draftTestPlanRuns: expect.arrayContaining([
                         {
@@ -61,6 +73,9 @@ describe('test queue', () => {
                             testResultCount: expect.any(Number),
                             tester: expect.objectContaining({
                                 username: expect.any(String)
+                            }),
+                            testResults: expect.objectContaining({
+                                id: expect.anything()
                             })
                         }
                     ])
@@ -223,7 +238,7 @@ describe('test queue', () => {
                     browserVersions
                 }
                 testPlans {
-                    latestTestPlanVersion(status: FINALIZED) {
+                    latestTestPlanVersion {
                         id
                         title
                     }

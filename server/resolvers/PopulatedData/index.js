@@ -19,18 +19,13 @@ const PopulatedData = async ({ parentContext: { locationOfData } }) => {
         browserId,
         atVersion: providedAtVersion,
         browserVersion: providedBrowserVersion,
-        testIndex,
-        passThroughIndex,
-        testResultIndex,
-        passThroughResultIndex
+        testId,
+        scenarioId,
+        testResultId,
+        scenarioResultId
     } = locationOfData;
 
-    if (
-        testIndex ||
-        passThroughIndex ||
-        testResultIndex ||
-        passThroughResultIndex
-    ) {
+    if (testId || scenarioId || testResultId || scenarioResultId) {
         throw new Error('Not implemented');
     }
 
@@ -56,15 +51,10 @@ const PopulatedData = async ({ parentContext: { locationOfData } }) => {
     const atVersion = testPlanTarget && testPlanTarget.atVersion;
     const browserVersion = testPlanTarget && testPlanTarget.browserVersion;
 
-    if (!testPlanVersion) {
-        // TODO: This error can be removed when we refine the versioning
-        throw new Error(
-            'LocationOfData without an associated test plan version is not ' +
-                'yet implemented. Note you may see this error if the data ' +
-                'you requested could not be found.'
-        );
-    }
-    testPlan = { id: testPlanVersion.metadata.directory };
+    testPlan = {
+        id: testPlanVersion.metadata.directory,
+        directory: testPlanVersion.metadata.directory
+    };
 
     const idsContradict = (provided, found) => {
         return (
