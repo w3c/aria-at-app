@@ -13,9 +13,13 @@ import {
 import { TestWindow } from '../../resources/aria-at-test-window.mjs';
 
 const Container = styled.div`
+    width: 100%;
+
     border: black solid 2px;
     border-radius: 0.25rem;
     padding: 1rem;
+
+    font-size: 14px;
 `;
 
 const ErrorSection = styled.section`
@@ -56,6 +60,8 @@ const Feedback = styled.span`
 `;
 
 const Table = styled.table`
+    width: 100%;
+
     display: table;
     margin-bottom: 1em;
     border-spacing: 2px;
@@ -70,6 +76,23 @@ const Table = styled.table`
         td,
         th {
             border: 1px solid black;
+            padding: 0.25em;
+        }
+
+        td {
+            > label {
+                display: initial;
+                vertical-align: middle;
+            }
+
+            > input[type='radio'] {
+                margin: 0 5px 0 0;
+                vertical-align: middle;
+
+                &:nth-child(n + 2) {
+                    margin: 0 5px;
+                }
+            }
         }
 
         th {
@@ -85,7 +108,7 @@ const Fieldset = styled.fieldset`
     padding-block-start: 0.35em;
     padding-inline-start: 0.75em;
     padding-inline-end: 0.75em;
-    padding-block-end: 0.625em;
+    padding-block-end: 0.75em;
 
     min-inline-size: min-content;
 
@@ -109,9 +132,42 @@ const Fieldset = styled.fieldset`
         border-image: initial;
     }
 
+    > div {
+        > label {
+            display: initial;
+            vertical-align: middle;
+        }
+
+        > input[type='radio'] {
+            margin: 0 5px 0 0;
+            vertical-align: middle;
+        }
+
+        > input[type='checkbox'] {
+            margin: 0 5px 0 0;
+            vertical-align: middle;
+        }
+    }
+
     &.problem-select {
         margin-top: 1em;
         margin-left: 1em;
+
+        > label {
+            display: initial;
+            vertical-align: middle;
+        }
+
+        > input[type='checkbox'] {
+            margin: 0 5px 0 0;
+            vertical-align: middle;
+        }
+
+        > div {
+            > label {
+                margin-right: 5px;
+            }
+        }
     }
 `;
 

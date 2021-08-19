@@ -393,7 +393,7 @@ const TestRun = ({ auth }) => {
                     <Col md={9} className="test-iframe-container">
                         <Row>
                             <TestRenderer
-                                key={nextId()}
+                                key={`TestRenderer__${currentTestIndex}`}
                                 test={currentTest}
                                 support={supportJson}
                                 testPageUri={buildTestPageUri(
@@ -432,7 +432,7 @@ const TestRun = ({ auth }) => {
                 {/* Modals */}
                 {showStartOverModal && (
                     <BasicModal
-                        key={nextId()}
+                        key={`BasicModal__${currentTestIndex}`}
                         show={showStartOverModal}
                         centered={true}
                         animation={false}
@@ -446,7 +446,7 @@ const TestRun = ({ auth }) => {
                 )}
                 {showRaiseIssueModal && (
                     <RaiseIssueModal
-                        key={nextId()}
+                        key={`RaiseIssueModal__${currentTestIndex}`}
                         show={showRaiseIssueModal}
                         userId={testerId}
                         test={currentTest}
@@ -461,7 +461,7 @@ const TestRun = ({ auth }) => {
                 )}
                 {showReviewConflictsModal && (
                     <ReviewConflictsModal
-                        key={nextId()}
+                        key={`ReviewConflictsModal__${currentTestIndex}`}
                         show={showReviewConflictsModal}
                         userId={testerId}
                         conflicts={conflicts[currentTestIndex]}
