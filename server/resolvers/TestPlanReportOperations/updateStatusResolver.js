@@ -4,7 +4,7 @@ const {
     updateTestPlanReport
 } = require('../../models/services/TestPlanReportService');
 const conflictsResolver = require('../TestPlanReport/conflictsResolver');
-const isCompleteResolver = require('../TestPlanRun/isCompleteResolver');
+// const isCompleteResolver = require('../TestPlanRun/isCompleteResolver');
 const populatedDataResolver = require('../PopulatedData');
 
 const updateStatusResolver = async (
