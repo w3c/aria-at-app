@@ -397,7 +397,7 @@ const TestQueueRun = ({
                                             {testPlanRun.tester.username}
                                         </a>
                                         <br />
-                                        {`(${testPlanRun.testResultCount} of ${testPlanReport.testPlanVersion.testCount} tests complete)`}
+                                        {`(${testPlanRun.testResultCount} of ${testPlanRun.testResults.length} tests complete)`}
                                     </li>
                                 )
                             )

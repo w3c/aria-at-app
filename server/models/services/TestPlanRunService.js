@@ -8,6 +8,7 @@ const {
 } = require('./helpers');
 const { TestPlanRun } = require('../');
 const { getTestPlanReportById } = require('./TestPlanReportService');
+const { evaluateAtNameKey } = require('../../util/aria');
 
 // association helpers to be included with Models' results
 
@@ -246,16 +247,24 @@ const createTestPlanRun = async (
     if (!testResults) {
         // get tests from testPlanVersion through testPlanReport to create testPlanRun.testResults[].test
         const testPlanReport = await getTestPlanReportById(testPlanReportId);
-        testResults = testPlanReport.testPlanVersion.tests.map(test => ({
-            test: {
-                htmlFile: test.htmlFile,
-                testFullName: test.testFullName,
-                executionOrder: test.executionOrder,
-                testJson: test.testJson,
-                commandJson: test.commandJson,
-                scripts: test.scripts
+
+        // tests are only applied to specific ATs
+        testResults = [];
+        const atKey = evaluateAtNameKey(testPlanReport.testPlanTarget.at.name);
+        testPlanReport.testPlanVersion.tests.forEach(test => {
+            if (JSON.stringify(test.testJson || '').includes(atKey)) {
+                testResults.push({
+                    test: {
+                        htmlFile: test.htmlFile,
+                        testFullName: test.testFullName,
+                        executionOrder: test.executionOrder,
+                        testJson: test.testJson,
+                        commandJson: test.commandJson,
+                        scripts: test.scripts
+                    }
+                });
             }
-        }));
+        });
     }
 
     const testPlanRunResult = await ModelService.create(

@@ -40,6 +40,11 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
                     username
                 }
                 testResultCount
+                testResults {
+                    index
+                    isComplete
+                    isSkipped
+                }
             }
         }
     }

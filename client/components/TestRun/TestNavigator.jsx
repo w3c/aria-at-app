@@ -37,7 +37,7 @@ const TestNavigator = ({
             {show && (
                 <nav role="complementary">
                     <ol className="test-navigator-list">
-                        {testResults.map((testResult, index) => {
+                        {testResults.map(testResult => {
                             let resultClassName = 'not-started';
                             let resultStatus = 'Not Started:';
 
@@ -60,12 +60,14 @@ const TestNavigator = ({
                             return (
                                 <li
                                     className={`test-name-wrapper ${resultClassName}`}
-                                    key={`TestNavigatorItem_${index}`}
+                                    key={`TestNavigatorItem_${testResult.index}`}
                                 >
                                     <a
                                         href="#"
                                         onClick={async () =>
-                                            await handleTestClick(index + 1)
+                                            await handleTestClick(
+                                                testResult.index
+                                            )
                                         }
                                         className="test-name"
                                         aria-label={`${resultStatus} ${testResult.title}`}

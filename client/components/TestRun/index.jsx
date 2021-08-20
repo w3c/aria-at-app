@@ -124,31 +124,35 @@ const TestRun = ({ auth }) => {
         );
     }
 
-    const currentTest = testPlanRun.testResults.find(
-        t => t.index === currentTestIndex
-    );
-    const hasTestsToRun = testPlanRun.testResults.length;
+    const testResults = testPlanRun.testResults.map((testResult, index) => ({
+        ...testResult,
+        seq: index + 1
+    }));
+    const currentTest = testResults.find(t => t.index === currentTestIndex);
+    const hasTestsToRun = testResults.length;
 
     const toggleTestNavigator = () => setShowTestNavigator(!showTestNavigator);
 
     const navigateTests = (previous = false) => {
         // assume navigation forward if previous is false
-        let newTestIndex = currentTestIndex;
+        let newTestIndex = currentTest.seq;
         if (!previous) {
             // next
-            const newTestIndexToEval = currentTestIndex + 1;
-            if (newTestIndexToEval <= testPlanRun.testResults.length)
+            const newTestIndexToEval = currentTest.seq + 1;
+            if (newTestIndexToEval <= testResults.length)
                 newTestIndex = newTestIndexToEval;
         } else {
             // previous
-            const newTestIndexToEval = currentTestIndex - 1;
+            const newTestIndexToEval = currentTest.seq - 1;
             if (
                 newTestIndexToEval >= 1 &&
-                newTestIndexToEval <= testPlanRun.testResults.length
+                newTestIndexToEval <= testResults.length
             )
                 newTestIndex = newTestIndexToEval;
         }
-        setCurrentTestIndex(newTestIndex);
+        setCurrentTestIndex(
+            testResults.find(t => t.seq === newTestIndex).index
+        );
     };
 
     const performButtonAction = async (action, index) => {
@@ -265,7 +269,7 @@ const TestRun = ({ auth }) => {
     const renderTestContent = (testPlanReport, testResult, heading) => {
         const { isComplete, index, result, state } = testResult;
         const isFirstTest = index === 1;
-        const isLastTest = currentTestIndex === testPlanRun.testResults.length;
+        const isLastTest = currentTest.seq === testResults.length;
 
         let primaryButtons = []; // These are the list of buttons that will appear below the tests
         let forwardButtons = []; // These are buttons that navigate to next tests and continue
@@ -309,7 +313,7 @@ const TestRun = ({ auth }) => {
                 <Button
                     key="continueButton"
                     variant="primary"
-                    disabled={isLastTest && !isComplete}
+                    disabled={isLastTest}
                     onClick={handleNextTestClick}
                 >
                     Continue
@@ -381,7 +385,7 @@ const TestRun = ({ auth }) => {
             <>
                 <h1 data-test="testing-task">
                     <span className="task-label">Testing task:</span>{' '}
-                    {`${currentTestIndex}.`} {testResult.title}
+                    {`${currentTest.seq}.`} {testResult.title}
                 </h1>
                 <span>{heading}</span>
                 <StatusBar
@@ -442,7 +446,7 @@ const TestRun = ({ auth }) => {
                         animation={false}
                         details={{
                             title: 'Start Over',
-                            description: `Are you sure you want to start over Test #${currentTestIndex}? Your progress (if any), will be lost.`
+                            description: `Are you sure you want to start over Test #${currentTest.seq}? Your progress (if any), will be lost.`
                         }}
                         handleAction={handleStartOverAction}
                         handleClose={() => setShowStartOverModal(false)}
@@ -524,7 +528,7 @@ const TestRun = ({ auth }) => {
                         {hasTestsToRun ? (
                             <>
                                 {' '}
-                                <b>{`${testPlanRun.testResultCount} of ${testPlanRun.testResults.length}`}</b>{' '}
+                                <b>{`${testPlanRun.testResultCount} of ${testResults.length}`}</b>{' '}
                                 tests completed
                             </>
                         ) : (
@@ -543,7 +547,7 @@ const TestRun = ({ auth }) => {
         content = hasTestsToRun ? (
             renderTestContent(
                 testPlanReport,
-                testPlanRun.testResults.find(t => t.index === currentTestIndex),
+                testResults.find(t => t.index === currentTestIndex),
                 heading
             )
         ) : (
@@ -573,7 +577,7 @@ const TestRun = ({ auth }) => {
             <Row>
                 <TestNavigator
                     show={showTestNavigator}
-                    testResults={testPlanRun.testResults}
+                    testResults={testResults}
                     conflicts={conflicts}
                     currentTestIndex={currentTestIndex}
                     toggleShowClick={toggleTestNavigator}
