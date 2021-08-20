@@ -16,8 +16,7 @@ module.exports = function(sequelize, DataTypes) {
             browserVersion: {
                 type: DataTypes.TEXT,
                 allowNull: false,
-                primaryKey: true,
-                unique: true
+                primaryKey: true
             }
         },
         {

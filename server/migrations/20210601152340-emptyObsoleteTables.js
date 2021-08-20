@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = {
-    up: (queryInterface /* , Sequelize */) => {
+    up: queryInterface => {
         return queryInterface.sequelize.transaction(async transaction => {
             await queryInterface.bulkDelete('TestPlanRun', {}, { transaction });
             await queryInterface.bulkDelete(
@@ -28,5 +28,5 @@ module.exports = {
         });
     },
 
-    down: (/*queryInterface, Sequelize */) => {}
+    down: () => {}
 };
