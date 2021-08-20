@@ -14,6 +14,17 @@ module.exports = {
                 {},
                 { transaction }
             );
+            await queryInterface.bulkDelete(
+                'TestPlanVersion',
+                {},
+                { transaction }
+            );
+            await queryInterface.bulkDelete('AtVersion', {}, { transaction });
+            await queryInterface.bulkDelete(
+                'BrowserVersion',
+                {},
+                { transaction }
+            );
         });
     },
 
