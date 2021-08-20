@@ -59,15 +59,18 @@ const TestRun = ({ auth }) => {
     );
 
     useEffect(() => {
-        if (data) {
+        if (data && !pageReady) {
             // get structured UNCLOSED issue data from GitHub for current test
             (async () => {
                 try {
+                    const currentTestIndex =
+                        data.testPlanRun.testResults[0].index;
                     const issues = await getTestPlanRunIssuesForTest(
                         testPlanRunId,
                         currentTestIndex
                     );
                     setIssues(issues.filter(({ closed }) => !closed));
+                    setCurrentTestIndex(currentTestIndex);
                 } catch (error) {
                     console.error('load.issues.error', error);
                 }
