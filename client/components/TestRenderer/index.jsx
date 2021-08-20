@@ -89,7 +89,7 @@ const Table = styled.table`
                 margin: 0 5px 0 0;
                 vertical-align: middle;
 
-                &:nth-child(n + 2) {
+                &:nth-of-type(n + 2) {
                     margin: 0 5px;
                 }
             }
@@ -291,16 +291,21 @@ const TestRenderer = ({
 
     useEffect(() => {
         testRunStateRef.current = state;
+        testRunResultRef.current = result;
 
         testRunExport.observe(result => {
             const { state: newState } = result;
+            const pageContent = testRunExport.instructions();
             const submitResult = testRunExport.testPageAndResults();
 
-            setPageContent({ ...testRunExport.instructions() });
+            setPageContent(pageContent);
             setSubmitResult(submitResult);
 
             testRunStateRef.current = newState;
-            testRunResultRef.current = submitResult;
+            testRunResultRef.current =
+                submitResult && submitResult.resultsJSON && submitResult.results
+                    ? submitResult
+                    : null;
         });
 
         setPageContent(testRunExport.instructions());

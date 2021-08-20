@@ -48,12 +48,7 @@ const TestRun = ({ auth }) => {
     const [updateTestRunResult] = useMutation(UPDATE_TEST_RUN_RESULT_MUTATION);
     const [clearTestResult] = useMutation(CLEAR_TEST_RESULT_MUTATION);
 
-    const { id: userId } = auth;
-    const openAsUserId = routerQuery.get('user');
-    const testerId = openAsUserId || userId;
-
     const [pageReady, setPageReady] = useState(false);
-
     const [showTestNavigator, setShowTestNavigator] = useState(true);
     const [currentTestIndex, setCurrentTestIndex] = useState(1);
     const [issues, setIssues] = useState([]);
@@ -106,8 +101,17 @@ const TestRun = ({ auth }) => {
     }
 
     const { testPlanRun, users } = data;
-    const { testPlanReport } = testPlanRun || {};
+    const { testPlanReport, tester } = testPlanRun || {};
     const { testPlanTarget, testPlanVersion, conflicts } = testPlanReport || {};
+
+    const { id: userId } = auth;
+    // check to ensure an admin that manually went to a test run url doesn't
+    // run the test as themselves
+    const openAsUserId =
+        routerQuery.get('user') || (tester && tester.id !== userId)
+            ? tester.id
+            : null;
+    const testerId = openAsUserId || userId;
 
     if (!testPlanRun || !testPlanTarget) {
         return (
@@ -393,7 +397,7 @@ const TestRun = ({ auth }) => {
                     <Col md={9} className="test-iframe-container">
                         <Row>
                             <TestRenderer
-                                key={`TestRenderer__${currentTestIndex}`}
+                                key={nextId()}
                                 test={currentTest}
                                 support={supportJson}
                                 testPageUri={buildTestPageUri(

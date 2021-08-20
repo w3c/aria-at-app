@@ -54,6 +54,10 @@ export const TEST_RUN_PAGE_QUERY = gql`
                     gitSha
                 }
             }
+            tester {
+                id
+                username
+            }
         }
         users {
             id
@@ -131,6 +135,10 @@ export const UPDATE_TEST_RUN_RESULT_MUTATION = gql`
                             gitSha
                         }
                     }
+                    tester {
+                        id
+                        username
+                    }
                 }
             }
         }
@@ -192,6 +200,10 @@ export const CLEAR_TEST_RESULT_MUTATION = gql`
                             testReferencePath
                             gitSha
                         }
+                    }
+                    tester {
+                        id
+                        username
                     }
                 }
             }
