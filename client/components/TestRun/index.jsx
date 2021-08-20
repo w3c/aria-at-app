@@ -331,9 +331,10 @@ const TestRun = ({ auth }) => {
                 continueButton
             ];
         } else {
+            // same key to maintain focus
             const saveResultsButton = (
                 <Button
-                    key="saveResultsButton"
+                    key="continueButton"
                     variant="primary"
                     onClick={handleSaveClick}
                 >
@@ -426,14 +427,6 @@ const TestRun = ({ auth }) => {
                             />
                         </Row>
                         <Row>{primaryButtonGroup}</Row>
-                        <Row>
-                            {testPlanRun.isComplete && (
-                                <Alert key={nextId()} variant="success">
-                                    <FontAwesomeIcon icon={faCheck} /> Thanks!
-                                    Your results have been submitted
-                                </Alert>
-                            )}
-                        </Row>
                     </Col>
                     <Col className="current-test-options" md={3}>
                         {menuRightOfContent}
@@ -564,10 +557,13 @@ const TestRun = ({ auth }) => {
         content = (
             <div>
                 {heading}
-                <p>
-                    Tests are complete. Please return to the{' '}
-                    <Link to="/test-queue">Test Queue</Link>.
-                </p>
+                <Row>
+                    <Alert key={nextId()} variant="success">
+                        <FontAwesomeIcon icon={faCheck} /> Thanks! Your results
+                        have been submitted. Please return to the{' '}
+                        <Link to="/test-queue">Test Queue</Link>.
+                    </Alert>
+                </Row>
             </div>
         );
     }
