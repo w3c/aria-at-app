@@ -89,7 +89,7 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK = [
                             gitMessage:
                                 'Revert "Generated tests and review pages output improvements (#441)" (#449)',
                             directory: 'checkbox',
-                            testCount: 26,
+                            testCount: 17,
                             __typename: 'TestPlanVersion'
                         },
                         draftTestPlanRuns: [
@@ -101,6 +101,110 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK = [
                                     __typename: 'User'
                                 },
                                 testResultCount: 0,
+                                testResults: [
+                                    {
+                                        index: 1,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 2,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 4,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 5,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 7,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 8,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 10,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 11,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 13,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 14,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 16,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 17,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 19,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 21,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 22,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 24,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 25,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    }
+                                ],
                                 __typename: 'TestPlanRun'
                             },
                             {
@@ -111,6 +215,110 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK = [
                                     __typename: 'User'
                                 },
                                 testResultCount: 0,
+                                testResults: [
+                                    {
+                                        index: 1,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 2,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 4,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 5,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 7,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 8,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 10,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 11,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 13,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 14,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 16,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 17,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 19,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 21,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 22,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 24,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 25,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    }
+                                ],
                                 __typename: 'TestPlanRun'
                             }
                         ],
@@ -144,7 +352,7 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK = [
                             gitMessage:
                                 'Revert "Generated tests and review pages output improvements (#441)" (#449)',
                             directory: 'menubar-editor',
-                            testCount: 40,
+                            testCount: 25,
                             __typename: 'TestPlanVersion'
                         },
                         draftTestPlanRuns: [],
@@ -178,7 +386,7 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK = [
                             gitMessage:
                                 'Revert "Generated tests and review pages output improvements (#441)" (#449)',
                             directory: 'checkbox',
-                            testCount: 26,
+                            testCount: 17,
                             __typename: 'TestPlanVersion'
                         },
                         draftTestPlanRuns: [],
@@ -212,7 +420,7 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK = [
                             gitMessage:
                                 'Revert "Generated tests and review pages output improvements (#441)" (#449)',
                             directory: 'checkbox',
-                            testCount: 26,
+                            testCount: 17,
                             __typename: 'TestPlanVersion'
                         },
                         draftTestPlanRuns: [
@@ -224,6 +432,110 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK = [
                                     __typename: 'User'
                                 },
                                 testResultCount: 2,
+                                testResults: [
+                                    {
+                                        index: 1,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 2,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 4,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 5,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 7,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 8,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 10,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 11,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 13,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 14,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 16,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 17,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 19,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 21,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 22,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 24,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 25,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    }
+                                ],
                                 __typename: 'TestPlanRun'
                             }
                         ],
@@ -257,7 +569,7 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK = [
                             gitMessage:
                                 'Revert "Generated tests and review pages output improvements (#441)" (#449)',
                             directory: 'checkbox-tri-state',
-                            testCount: 24,
+                            testCount: 16,
                             __typename: 'TestPlanVersion'
                         },
                         draftTestPlanRuns: [
@@ -269,6 +581,104 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK = [
                                     __typename: 'User'
                                 },
                                 testResultCount: 0,
+                                testResults: [
+                                    {
+                                        index: 1,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 2,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 3,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 4,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 7,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 8,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 10,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 11,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 13,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 14,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 16,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 17,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 19,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 20,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 21,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 22,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    }
+                                ],
                                 __typename: 'TestPlanRun'
                             },
                             {
@@ -279,6 +689,104 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK = [
                                     __typename: 'User'
                                 },
                                 testResultCount: 0,
+                                testResults: [
+                                    {
+                                        index: 1,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 2,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 3,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 4,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 7,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 8,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 10,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 11,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 13,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 14,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 16,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 17,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 19,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 20,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 21,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 22,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    }
+                                ],
                                 __typename: 'TestPlanRun'
                             }
                         ],
@@ -312,7 +820,7 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK = [
                             gitMessage:
                                 'Revert "Generated tests and review pages output improvements (#441)" (#449)',
                             directory: 'menubar-editor',
-                            testCount: 40,
+                            testCount: 25,
                             __typename: 'TestPlanVersion'
                         },
                         draftTestPlanRuns: [
@@ -324,6 +832,158 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK = [
                                     __typename: 'User'
                                 },
                                 testResultCount: 0,
+                                testResults: [
+                                    {
+                                        index: 1,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 2,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 3,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 4,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 6,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 7,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 9,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 11,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 13,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 15,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 17,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 19,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 21,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 23,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 24,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 26,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 27,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 29,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 30,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 32,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 33,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 35,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 36,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 38,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    },
+                                    {
+                                        index: 39,
+                                        isComplete: false,
+                                        isSkipped: false,
+                                        __typename: 'TestResult'
+                                    }
+                                ],
                                 __typename: 'TestPlanRun'
                             }
                         ],
@@ -357,7 +1017,7 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK = [
                             gitMessage:
                                 'Revert "Generated tests and review pages output improvements (#441)" (#449)',
                             directory: 'menu-button-actions-active-descendant',
-                            testCount: 26,
+                            testCount: 15,
                             __typename: 'TestPlanVersion'
                         },
                         draftTestPlanRuns: [],
@@ -392,7 +1052,7 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK = [
                             gitMessage:
                                 'Revert "Generated tests and review pages output improvements (#441)" (#449)',
                             directory: 'checkbox-tri-state',
-                            testCount: 24,
+                            testCount: 8,
                             __typename: 'TestPlanVersion'
                         },
                         draftTestPlanRuns: [],
@@ -427,7 +1087,7 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK = [
                             gitMessage:
                                 'Revert "Generated tests and review pages output improvements (#441)" (#449)',
                             directory: 'menubar-editor',
-                            testCount: 40,
+                            testCount: 15,
                             __typename: 'TestPlanVersion'
                         },
                         draftTestPlanRuns: [],
@@ -461,7 +1121,7 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK = [
                             gitMessage:
                                 'Revert "Generated tests and review pages output improvements (#441)" (#449)',
                             directory: 'checkbox-tri-state',
-                            testCount: 24,
+                            testCount: 16,
                             __typename: 'TestPlanVersion'
                         },
                         draftTestPlanRuns: [],
