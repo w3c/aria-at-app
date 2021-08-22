@@ -251,18 +251,18 @@ const TestRun = ({ auth }) => {
         state,
         issues
     }) => {
-        await updateTestRunResult({
-            variables: {
-                // required
-                testPlanRunId,
-                index: currentTestIndex,
+        let variables = {
+            // required
+            testPlanRunId,
+            index: currentTestIndex,
 
-                // optionals
-                result,
-                issues,
-                state
-            }
-        });
+            // optionals
+            result,
+            issues
+        };
+        if (state) variables = { ...variables, state };
+
+        await updateTestRunResult({ variables });
         // await refetch();
     };
 
@@ -367,7 +367,7 @@ const TestRun = ({ auth }) => {
 
                     <OptionButton
                         text="Start Over"
-                        disabled={!result || !state}
+                        disabled={!result && !state}
                         icon={<FontAwesomeIcon icon={faRedo} />}
                         onClick={handleStartOverButtonClick}
                     />

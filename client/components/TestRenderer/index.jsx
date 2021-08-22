@@ -290,9 +290,6 @@ const TestRenderer = ({
     });
 
     useEffect(() => {
-        testRunStateRef.current = state;
-        testRunResultRef.current = result;
-
         testRunExport.observe(result => {
             const { state: newState } = result;
             const pageContent = testRunExport.instructions();
@@ -308,6 +305,8 @@ const TestRenderer = ({
                     : null;
         });
 
+        if (state) testRunStateRef.current = state;
+        if (result) testRunResultRef.current = result;
         setPageContent(testRunExport.instructions());
     }, []);
 
@@ -573,6 +572,8 @@ const TestRenderer = ({
                                                 </Feedback>
                                             </label>
                                             <textarea
+                                                key={`AtOutput__textarea__${commandIndex}`}
+                                                autoFocus={atOutput.focus}
                                                 value={atOutput.value}
                                                 onChange={e =>
                                                     atOutput.change(
@@ -638,9 +639,13 @@ const TestRenderer = ({
                                                                 {/*Success case*/}
                                                                 <td>
                                                                     <input
+                                                                        key={`Pass__${commandIndex}__${assertionIndex}`}
                                                                         type="radio"
                                                                         id={`pass-${commandIndex}-${assertionIndex}`}
                                                                         name={`result-${commandIndex}-${assertionIndex}`}
+                                                                        autoFocus={
+                                                                            passChoice.focus
+                                                                        }
                                                                         defaultChecked={
                                                                             passChoice.checked
                                                                         }
@@ -673,9 +678,13 @@ const TestRenderer = ({
                                                                 {/*Failure cases*/}
                                                                 <td>
                                                                     <input
+                                                                        key={`Missing__${commandIndex}__${assertionIndex}`}
                                                                         type="radio"
                                                                         id={`missing-${commandIndex}-${assertionIndex}`}
                                                                         name={`result-${commandIndex}-${assertionIndex}`}
+                                                                        autoFocus={
+                                                                            missingChoice.focus
+                                                                        }
                                                                         defaultChecked={
                                                                             missingChoice.checked
                                                                         }
@@ -706,9 +715,13 @@ const TestRenderer = ({
                                                                     </label>
 
                                                                     <input
+                                                                        key={`Fail__${commandIndex}__${assertionIndex}`}
                                                                         type="radio"
                                                                         id={`fail-${commandIndex}-${assertionIndex}`}
                                                                         name={`result-${commandIndex}-${assertionIndex}`}
+                                                                        autoFocus={
+                                                                            failureChoice.focus
+                                                                        }
                                                                         defaultChecked={
                                                                             failureChoice.checked
                                                                         }
@@ -765,9 +778,14 @@ const TestRenderer = ({
                                             </Feedback>
                                             <div>
                                                 <input
+                                                    key={`Problem__${commandIndex}__true`}
                                                     type="radio"
                                                     id={`problem-${commandIndex}-true`}
                                                     name={`problem-${commandIndex}`}
+                                                    autoFocus={
+                                                        unexpectedBehaviors
+                                                            .passChoice.focus
+                                                    }
                                                     defaultChecked={
                                                         unexpectedBehaviors
                                                             .passChoice.checked
@@ -789,9 +807,14 @@ const TestRenderer = ({
                                             </div>
                                             <div>
                                                 <input
+                                                    key={`Problem__${commandIndex}__false`}
                                                     type="radio"
                                                     id={`problem-${commandIndex}-false`}
                                                     name={`problem-${commandIndex}`}
+                                                    autoFocus={
+                                                        unexpectedBehaviors
+                                                            .failChoice.focus
+                                                    }
                                                     defaultChecked={
                                                         unexpectedBehaviors
                                                             .failChoice.checked
@@ -824,6 +847,7 @@ const TestRenderer = ({
                                                     (option, optionIndex) => {
                                                         const {
                                                             checked,
+                                                            focus,
                                                             description,
                                                             more,
                                                             change
@@ -833,6 +857,7 @@ const TestRenderer = ({
                                                                 key={`AssertionOptionsKey_${optionIndex}`}
                                                             >
                                                                 <input
+                                                                    key={`${description}__${commandIndex}`}
                                                                     type="checkbox"
                                                                     value={
                                                                         description
@@ -844,6 +869,9 @@ const TestRenderer = ({
                                                                         0
                                                                             ? 0
                                                                             : -1
+                                                                    }
+                                                                    autoFocus={
+                                                                        focus
                                                                     }
                                                                     defaultChecked={
                                                                         checked
@@ -895,10 +923,14 @@ const TestRenderer = ({
                                                                             </Feedback>
                                                                         </label>
                                                                         <input
+                                                                            key={`${description}__${commandIndex}__input`}
                                                                             type="text"
                                                                             id={`${description}-${commandIndex}-input`}
                                                                             name={`${description}-${commandIndex}-input`}
                                                                             className={`undesirable-${description.toLowerCase()}-input`}
+                                                                            autoFocus={
+                                                                                more.focus
+                                                                            }
                                                                             value={
                                                                                 more.value
                                                                             }
