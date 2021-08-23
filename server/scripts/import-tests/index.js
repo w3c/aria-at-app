@@ -147,6 +147,10 @@ const ariaAtImport = {
                     .split('\n')
                     .filter(line => line.includes('example'));
 
+                const testReferenceRefLine = referencesCsv
+                    .split('\n')
+                    .filter(line => line.includes('reference'));
+
                 // designPattern url parsed from <repo>.git/tests/<directory>/data/references.csv
                 const practiceGuidelinesRefLine = referencesCsv
                     .split('\n')
@@ -168,8 +172,74 @@ const ariaAtImport = {
                             fse.readFileSync(testPath, 'utf8'),
                             { script: true }
                         );
+
+                        // parse test's name
                         const testFullName = root.querySelector('title')
                             .innerHTML;
+
+                        // parse scripts to be ran from html
+                        const { text: scripts } = root.querySelectorAll(
+                            'script'
+                        )[0];
+
+                        // parse testJson and commandJson from html
+                        const {
+                            text: testCommandScriptText
+                        } = root.querySelectorAll('script')[1];
+
+                        const testJsonStartPattern = 'const testJson = {';
+                        const commandJsonStartPattern = 'const commandJson = {';
+                        const endPattern = '};';
+
+                        const getJsonTestCommandStringFromText = (
+                            text,
+                            startPattern,
+                            endPattern
+                        ) => {
+                            let string = '';
+                            if (text.indexOf(startPattern) > -1) {
+                                string = text.substring(
+                                    text.indexOf(startPattern)
+                                );
+                                string = string.substring(
+                                    0,
+                                    string.indexOf(endPattern) + 1
+                                );
+                                string = string.substring(string.indexOf('{'));
+                                return string;
+                            }
+                            return string;
+                        };
+
+                        const testJsonString = getJsonTestCommandStringFromText(
+                            testCommandScriptText,
+                            testJsonStartPattern,
+                            endPattern
+                        );
+                        const commandJsonString = getJsonTestCommandStringFromText(
+                            testCommandScriptText,
+                            commandJsonStartPattern,
+                            endPattern
+                        );
+
+                        let testJson = {};
+                        let commandJson = {};
+
+                        try {
+                            testJson = JSON.parse(testJsonString);
+                        } catch (e) {
+                            console.error(
+                                `error.parse.testJson:${testJsonString}`
+                            );
+                        }
+
+                        try {
+                            commandJson = JSON.parse(commandJsonString);
+                        } catch (e) {
+                            console.error(
+                                `error.parse.testJson:${testJsonString}`
+                            );
+                        }
 
                         // Get the testFile order from the file name
                         const executionOrder = parseInt(testFile.split('-')[1]);
@@ -178,7 +248,10 @@ const ariaAtImport = {
                             testFullName,
                             htmlFile,
                             commitHash,
-                            executionOrder
+                            executionOrder,
+                            testJson,
+                            commandJson,
+                            scripts: scripts.trim()
                         });
                     }
                 }
@@ -191,6 +264,7 @@ const ariaAtImport = {
                     commitDate,
                     exampleRefLine,
                     practiceGuidelinesRefLine,
+                    testReferenceRefLine,
                     tests
                 );
             }
@@ -227,6 +301,7 @@ const ariaAtImport = {
      * @param {string} commitDate - the date of the latest versions of the tests pulled from the {@param ariaAtRepo} repository
      * @param {string[]} exampleRefLine - the example url link pulled from the references.csv file related to the test
      * @param {string[]} practiceGuidelinesRefLine - the APG (ARIA Practices Guidelines) link pulled from the references.csv file related to the test
+     * @param {string[]} testReferenceRefLine - the relative link that's opened for the test page, pulled from the references.csv file related to the test
      * @param {object[]} tests - test steps for the test plan pulled from the {@param ariaAtRepo} repository
      * @returns {number} - returns TestPlanVersion.id
      */
@@ -239,28 +314,34 @@ const ariaAtImport = {
         commitDate,
         exampleRefLine,
         practiceGuidelinesRefLine,
+        testReferenceRefLine,
         tests
     ) {
-        const getReferenceUrl = referenceLine => {
+        const getReferenceUrl = (referenceLine, ignoreValidation = false) => {
             let url = null;
             if (referenceLine.length) {
                 const [referenceType, link] = referenceLine[0].split(',');
-                if (validUrl.isUri(link)) url = link;
-                else
-                    console.error(
-                        `WARNING: The ${referenceType} link ${link} is not valid for ${exampleName}. Not writing to database.`
-                    );
+                if (ignoreValidation) url = link;
+                else {
+                    if (validUrl.isUri(link)) url = link;
+                    else
+                        console.error(
+                            `WARNING: The ${referenceType} link ${link} is not valid for ${exampleName}. Not writing to database.`
+                        );
+                }
             }
             return url;
         };
 
         const exampleUrl = getReferenceUrl(exampleRefLine);
         const designPattern = getReferenceUrl(practiceGuidelinesRefLine);
+        const testReferencePath = getReferenceUrl(testReferenceRefLine, true);
 
         let metadata = {
             gitRepo: ariaAtRepo,
             directory: exampleDir,
-            designPattern
+            designPattern,
+            testReferencePath
         };
 
         // checking to see if unique testPlanVersion row (gitSha + directory provides a unique row)
@@ -269,15 +350,28 @@ const ariaAtImport = {
             [commitHash, exampleDir]
         );
 
-        if (testPlanVersionResult.rowCount) return;
+        if (testPlanVersionResult.rowCount) {
+            await client.query(
+                'UPDATE "TestPlanVersion" SET title=$1, "exampleUrl"=$2, metadata=$3, tests=$4 WHERE "gitSha"=$5 and metadata ->> \'directory\'=$6',
+                [
+                    exampleName,
+                    exampleUrl,
+                    metadata,
+                    tests,
+                    commitHash,
+                    exampleDir
+                ]
+            );
+            return;
+        }
 
         await db.TestPlanVersion.create({
             title: exampleName,
             status: 'DRAFT',
             gitSha: commitHash,
             gitMessage: commitMessage,
-            exampleUrl,
             updatedAt: commitDate,
+            exampleUrl,
             metadata,
             tests
         });

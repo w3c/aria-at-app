@@ -28,7 +28,7 @@
     "apicache": "^1.6.2",
     "apollo-server": "^2.23.0",
     "apollo-server-express": "^2.23.0",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "connect-pg-simple": "^6.2.1",
     "dotenv": "^8.2.0",
     "dotenv-cli": "^4.0.0",
@@ -44,7 +44,7 @@
     "pg": "^8.6.0",
     "pg-hstore": "^2.3.3",
     "rawgit": "https://github.com/rgrove/rawgit.git#eaa9b36aa2143041894866ba9db72e51d05c2a52",
-    "sequelize": "5.x.x",
+    "sequelize": "5.22.4",
     "supertest-session": "^4.1.0"
   },
   "devDependencies": {

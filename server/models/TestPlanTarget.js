@@ -14,18 +14,10 @@ module.exports = function(sequelize, DataTypes) {
             atId: { type: DataTypes.INTEGER },
             browserId: { type: DataTypes.INTEGER },
             atVersion: {
-                type: DataTypes.TEXT,
-                references: {
-                    model: 'AtVersion',
-                    key: 'atVersion'
-                }
+                type: DataTypes.TEXT
             },
             browserVersion: {
-                type: DataTypes.TEXT,
-                references: {
-                    model: 'BrowserVersion',
-                    key: 'browserVersion'
-                }
+                type: DataTypes.TEXT
             }
         },
         {
@@ -51,7 +43,8 @@ module.exports = function(sequelize, DataTypes) {
 
         Model.belongsTo(models.AtVersion, {
             ...Model.AT_VERSION_ASSOCIATION,
-            targetKey: 'atVersion'
+            targetKey: 'atVersion',
+            constraints: false
         });
 
         Model.belongsTo(models.Browser, {
@@ -62,7 +55,8 @@ module.exports = function(sequelize, DataTypes) {
 
         Model.belongsTo(models.BrowserVersion, {
             ...Model.BROWSER_VERSION_ASSOCIATION,
-            targetKey: 'browserVersion'
+            targetKey: 'browserVersion',
+            constraints: false
         });
     };
 

@@ -20,7 +20,7 @@ const updateTestResultResolver = async (
     // if user decides to start over
     if (testResults[testResultToUpdateIndex]) {
         testResults[testResultToUpdateIndex].result = null;
-        testResults[testResultToUpdateIndex].serializedForm = null;
+        testResults[testResultToUpdateIndex].state = null;
 
         await updateTestPlanRun(testPlanRunId, { testResults });
     }

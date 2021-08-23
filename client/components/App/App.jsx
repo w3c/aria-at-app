@@ -11,17 +11,17 @@ import { Link, useLocation } from 'react-router-dom';
 import { Container, Navbar, Nav } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
-import { ME_QUERY } from '../TestQueue/queries';
+import { ME_QUERY } from './queries';
 import routes from '../../routes';
 import useSigninUrl from './useSigninUrl';
 import './App.css';
 
 const App = ({ auth, dispatch }) => {
-    const { client, error, loading, data } = useQuery(ME_QUERY);
+    const { client, loading, data } = useQuery(ME_QUERY);
     const signinUrl = useSigninUrl();
     const location = useLocation();
 
-    const { isSignedIn, isSignOutCalled, isTester, isAdmin, username } = auth;
+    const { isSignedIn, isSignOutCalled, isTester, username } = auth;
 
     const signOut = async () => {
         dispatch(signOutAction());
@@ -35,11 +35,6 @@ const App = ({ auth, dispatch }) => {
     // for some instances. `isSignOutCalled` boolean helps prevent this
     if (!isSignOutCalled && !username && data && data.me)
         dispatch(signInAction(data.me));
-
-    if (error) {
-        // TODO: Display error message / page for failed user auth attempt
-        // dispatch(signInFailAction());
-    }
 
     return (
         <Fragment>
@@ -101,18 +96,18 @@ const App = ({ auth, dispatch }) => {
                                         Test Queue
                                     </Nav.Link>
                                 )}
-                                {isAdmin && (
-                                    <Nav.Link
-                                        as={Link}
-                                        to="/admin/configure-runs"
-                                        aria-current={
-                                            location.pathname ===
-                                            '/admin/configure-runs'
-                                        }
-                                    >
-                                        Test Configuration
-                                    </Nav.Link>
-                                )}
+                                {/*{isAdmin && (*/}
+                                {/*    <Nav.Link*/}
+                                {/*        as={Link}*/}
+                                {/*        to="/admin/configure-runs"*/}
+                                {/*        aria-current={*/}
+                                {/*            location.pathname ===*/}
+                                {/*            '/admin/configure-runs'*/}
+                                {/*        }*/}
+                                {/*    >*/}
+                                {/*        Test Configuration*/}
+                                {/*    </Nav.Link>*/}
+                                {/*)}*/}
                                 <Nav.Link
                                     as={Link}
                                     to="/account/settings"

@@ -55,19 +55,18 @@ const TestQueueRun = ({
         : {};
     const testPlanRunTesters = testPlanReport.draftTestPlanRuns;
 
-    const renderAssignedUserToTestPlan = () => {
-        // Determine if current user is assigned to testPlan
-        if (currentUserAssigned)
-            return (
-                <Link to={`/run/${currentUserTestPlanRun.id}`}>
-                    {testPlanReport.testPlanVersion.title ||
-                        `"${testPlanReport.testPlanVersion.directory}"`}
-                </Link>
-            );
-        return (
-            testPlanReport.testPlanVersion.title ||
-            `"${testPlanReport.testPlanVersion.directory}"`
+    const getTestPlanRunsWithResults = () => {
+        const { draftTestPlanRuns } = testPlanReport;
+        return draftTestPlanRuns.filter(
+            testPlanRun => testPlanRun.testResultCount > 0
         );
+    };
+
+    const getTestPlanRunIdByUserId = userId => {
+        const { draftTestPlanRuns } = testPlanReport;
+        return draftTestPlanRuns.find(
+            testPlanRun => testPlanRun.tester.id === userId
+        ).id;
     };
 
     const toggleTesterAssign = async username => {
@@ -118,6 +117,21 @@ const TestQueueRun = ({
         await triggerTestPlanReportUpdate();
     };
 
+    const renderAssignedUserToTestPlan = () => {
+        // Determine if current user is assigned to testPlan
+        if (currentUserAssigned)
+            return (
+                <Link to={`/run/${currentUserTestPlanRun.id}`}>
+                    {testPlanReport.testPlanVersion.title ||
+                        `"${testPlanReport.testPlanVersion.directory}"`}
+                </Link>
+            );
+        return (
+            testPlanReport.testPlanVersion.title ||
+            `"${testPlanReport.testPlanVersion.directory}"`
+        );
+    };
+
     const renderAssignMenu = () => {
         return (
             <>
@@ -129,7 +143,7 @@ const TestQueueRun = ({
                     >
                         <FontAwesomeIcon icon={faUserPlus} />
                     </Dropdown.Toggle>
-                    <Dropdown.Menu role="menu">
+                    <Dropdown.Menu>
                         {testers.length ? (
                             testers.map(tester => {
                                 const isTesterAssigned = checkIsTesterAssigned(
@@ -140,7 +154,6 @@ const TestQueueRun = ({
                                     : 'not-assigned';
                                 return (
                                     <Dropdown.Item
-                                        role="menuitem"
                                         variant="secondary"
                                         as="button"
                                         key={nextId()}
@@ -157,6 +170,7 @@ const TestQueueRun = ({
                                             );
                                         }}
                                         aria-checked={isTesterAssigned}
+                                        role="menuitemcheckbox"
                                     >
                                         {isTesterAssigned && (
                                             <FontAwesomeIcon icon={faCheck} />
@@ -187,14 +201,12 @@ const TestQueueRun = ({
     };
 
     const renderOpenAsDropdown = () => {
-        const { id: runId } = currentUserTestPlanRun;
-
         return (
             <Dropdown className="open-run-as">
                 <Dropdown.Toggle
                     id={nextId()}
                     variant="secondary"
-                    aria-label="Run as other tester"
+                    aria-label={`Open run ${evaluateTestRunTitle()} as tester`}
                     disabled={!testPlanRunTesters.length}
                 >
                     Open run as...
@@ -204,7 +216,9 @@ const TestQueueRun = ({
                         return (
                             <Dropdown.Item
                                 role="menuitem"
-                                href={`/run/${runId}?user=${t.tester.id}`}
+                                href={`/run/${getTestPlanRunIdByUserId(
+                                    t.tester.id
+                                )}?user=${t.tester.id}`}
                                 key={nextId()}
                             >
                                 {t.tester.username}
@@ -227,7 +241,7 @@ const TestQueueRun = ({
                             <FontAwesomeIcon icon={faTrashAlt} />
                             Delete for...
                         </Dropdown.Toggle>
-                        <Dropdown.Menu role="menu">
+                        <Dropdown.Menu>
                             {testPlanRunsWithResults.map(t => {
                                 return (
                                     <Dropdown.Item
@@ -306,13 +320,6 @@ const TestQueueRun = ({
         return { status, results };
     };
 
-    const getTestPlanRunsWithResults = () => {
-        const { draftTestPlanRuns } = testPlanReport;
-        return draftTestPlanRuns.filter(
-            testPlanRun => testPlanRun.testResultCount > 0
-        );
-    };
-
     const evaluateNewReportStatus = () => {
         const { status, conflictCount = 0 } = testPlanReport;
         const testersWithResults = getTestPlanRunsWithResults();
@@ -345,25 +352,35 @@ const TestQueueRun = ({
 
     return (
         <tr className="test-queue-run-row">
-            <th>{renderAssignedUserToTestPlan()}</th>
+            <td>{renderAssignedUserToTestPlan()}</td>
             <td>
                 <div className="testers-wrapper">
                     {isAdmin && renderAssignMenu()}
                     <div className="assign-actions">
-                        <Button
-                            variant="secondary"
-                            onClick={() => toggleTesterAssign(user.username)}
-                            aria-label={
-                                !currentUserAssigned
-                                    ? 'Assign Yourself'
-                                    : 'Unassign Yourself'
-                            }
-                            className="assign-self"
-                        >
-                            {!currentUserAssigned
-                                ? 'Assign Yourself'
-                                : 'Unassign Yourself'}
-                        </Button>
+                        {!currentUserAssigned && (
+                            <Button
+                                variant="secondary"
+                                onClick={() =>
+                                    toggleTesterAssign(user.username)
+                                }
+                                aria-label={`Assign yourself to the test run ${evaluateTestRunTitle()}`}
+                                className="assign-self"
+                            >
+                                Assign Yourself
+                            </Button>
+                        )}
+                        {currentUserAssigned && (
+                            <Button
+                                variant="secondary"
+                                onClick={() =>
+                                    toggleTesterAssign(user.username)
+                                }
+                                aria-label={`Unassign yourself from the test run ${evaluateTestRunTitle()}`}
+                                className="assign-self"
+                            >
+                                Unassign Yourself
+                            </Button>
+                        )}
                     </div>
                 </div>
                 <div className="secondary-actions">
@@ -380,7 +397,7 @@ const TestQueueRun = ({
                                             {testPlanRun.tester.username}
                                         </a>
                                         <br />
-                                        {`(${testPlanRun.testResultCount} of ${testPlanReport.testPlanVersion.testCount} tests complete)`}
+                                        {`(${testPlanRun.testResultCount} of ${testPlanRun.testResults.length} tests complete)`}
                                     </li>
                                 )
                             )

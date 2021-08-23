@@ -4,7 +4,7 @@ const {
     updateTestPlanReport
 } = require('../../models/services/TestPlanReportService');
 const conflictsResolver = require('../TestPlanReport/conflictsResolver');
-const isCompleteResolver = require('../TestPlanRun/isCompleteResolver');
+// const isCompleteResolver = require('../TestPlanRun/isCompleteResolver');
 const populatedDataResolver = require('../PopulatedData');
 
 const updateStatusResolver = async (
@@ -17,16 +17,22 @@ const updateStatusResolver = async (
         roles = user.roles.map(role => role.name);
 
     if (!roles.includes('ADMIN')) {
-        throw new AuthenticationError();
+        throw new AuthenticationError('Unauthorized');
     }
 
     const testPlanReport = await getTestPlanReportById(testPlanReportId);
 
     const conflicts = conflictsResolver(testPlanReport);
-    if (conflicts.length > 0) {
+    const conflictsCount = Object.keys(conflicts).reduce(
+        (acc, curr) => (conflicts[curr].length ? 1 : 0),
+        0
+    );
+    if (conflictsCount > 0) {
         throw new Error('Cannot finalize test plan report due to conflicts');
     }
 
+    /*
+    TODO: The previous implementation did allow for runs to be finalized with 'skipped' test results. May want to review throwing this exception?
     const isIncomplete = testPlanReport.testPlanRuns.find(
         testPlanRun => !isCompleteResolver(testPlanRun)
     );
@@ -35,7 +41,7 @@ const updateStatusResolver = async (
         throw new Error(
             'Cannot finalize test plan due to incomplete test runs'
         );
-    }
+    }*/
 
     await updateTestPlanReport(testPlanReportId, { status });
 

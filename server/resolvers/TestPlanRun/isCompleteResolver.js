@@ -1,5 +1,10 @@
-const isCompleteResolver = (/* testPlanRun */) => {
-    // TODO: Implement as part of supporting test result logic
+const isCompleteResolver = testPlanRun => {
+    if (testPlanRun.testResults) {
+        for (let i = 0; i < testPlanRun.testResults.length; i++) {
+            if (!testPlanRun.testResults[i].result) return false;
+        }
+    }
+
     return true;
 };
 

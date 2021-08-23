@@ -21,7 +21,7 @@ button.test-navigator-toggle.show:hover {
 
 .test-navigator-toggle-container {
     position: absolute;
-    left: -2.75em;
+    left: -3.75em;
     top: -0.15em;
 }
 
@@ -150,11 +150,11 @@ button.test-navigator-toggle.show:hover {
     left: 9px;
 }
 
-.test-iframe-contaner {
+.test-iframe-container {
     padding: 0;
 }
 
-main.container-fluid .test-iframe-contaner > .row {
+main.container-fluid .test-iframe-container > .row {
     padding-top: 0;
 }
 
@@ -301,4 +301,9 @@ main.container-fluid .test-iframe-contaner > .row {
 
 .fa-check {
     color: #1e8f37;
+}
+
+.status-bar {
+    display: flex;
+    align-items: center;
 }

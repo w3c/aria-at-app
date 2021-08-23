@@ -74,7 +74,7 @@ describe('test queue', () => {
         );
     });
 
-    it('updates test plan run serializedForm data', async () => {
+    it('updates test plan run state data', async () => {
         await dbCleaner(async () => {
             const testReportId = '1';
             const testerId = '2';
@@ -114,9 +114,7 @@ describe('test queue', () => {
                         }
                         testResults {
                             index
-                            serializedForm {
-                                name
-                            }
+                            state
                         }
                     }
                 }
@@ -132,27 +130,107 @@ describe('test queue', () => {
                         updateTestResult(
                             input: {
                                 index: ${testPlanResultIndex}
-                                test: {
-                                    htmlFile: "tests/checkbox/test-01-navigate-to-unchecked-checkbox-reading.html"
-                                    testFullName: "Navigate to an unchecked checkbox in reading mode"
-                                    executionOrder: 1
+                                state: {
+                                    errors: [],
+                                    info: {
+                                        description:
+                                        "Navigate to an unchecked checkbox in interaction mode",
+                                        task: "navigate to unchecked checkbox",
+                                        mode: "interaction",
+                                        modeInstructions:
+                                        "If NVDA did not make the focus mode sound when the test page loaded, press Insert+Space to turn focus mode on.",
+                                        userInstructions: [
+                                            "Navigate to the first checkbox. Note: it should be in the unchecked state."
+                                        ],
+                                        setupScriptDescription: ""
+                                    },
+                                    config: {
+                                        at: {
+                                            name: "NVDA",
+                                            key: "nvda"
+                                        },
+                                        displaySubmitButton: true,
+                                        renderResultsAfterSubmit: true
+                                    },
+                                    currentUserAction: "showResults",
+                                    openTest: {
+                                        enabled: true
+                                    },
+                                    commands: [
+                                        {
+                                            description: "Tab / Shift+Tab",
+                                            atOutput: {
+                                                highlightRequired: false,
+                                                value: "Okay Output"
+                                            },
+                                            assertions: [
+                                                {
+                                                    description: "Role \\"checkbox\\" is conveyed",
+                                                    highlightRequired: false,
+                                                    priority: 1,
+                                                    result: "pass"
+                                                },
+                                                {
+                                                    description: "Name \\"Lettuce\\" is conveyed",
+                                                    highlightRequired: false,
+                                                    priority: 1,
+                                                    result: "pass"
+                                                },
+                                                {
+                                                    description:
+                                                    "State of the checkbox (not checked) is conveyed",
+                                                    highlightRequired: false,
+                                                    priority: 1,
+                                                    result: "pass"
+                                                }
+                                            ],
+                                            additionalAssertions: [],
+                                            unexpected: {
+                                                highlightRequired: false,
+                                                hasUnexpected: "doesNotHaveUnexpected",
+                                                tabbedBehavior: -1,
+                                                behaviors: [
+                                                    {
+                                                        description:
+                                                        "Output is excessively verbose, e.g., includes redundant and/or irrelevant speech",
+                                                        checked: false,
+                                                        more: null
+                                                    },
+                                                    {
+                                                        description:
+                                                        "Reading cursor position changed in an unexpected manner",
+                                                        checked: false,
+                                                        more: null
+                                                    },
+                                                    {
+                                                        description:
+                                                        "Screen reader became extremely sluggish",
+                                                        checked: false,
+                                                        more: null
+                                                    },
+                                                    {
+                                                        description: "Screen reader crashed",
+                                                        checked: false,
+                                                        more: null
+                                                    },
+                                                    {
+                                                        description: "Browser crashed",
+                                                        checked: false,
+                                                        more: null
+                                                    },
+                                                    {
+                                                        description: "Other",
+                                                        checked: false,
+                                                        more: {
+                                                            highlightRequired: false,
+                                                            value: ""
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    ]
                                 }
-                                serializedForm: [
-                                    {
-                                        name: "result-0-0"
-                                        value: "on"
-                                        checked: true
-                                        disabled: false
-                                        indeterminate: false
-                                    }
-                                    {
-                                        name: "result-0-1"
-                                        value: "on"
-                                        checked: false
-                                        disabled: false
-                                        indeterminate: false
-                                    }
-                                ]
                             }
                         ) {
                             testPlanRun {
@@ -163,13 +241,7 @@ describe('test queue', () => {
                                 }
                                 testResults {
                                     index
-                                    serializedForm {
-                                        name
-                                        value
-                                        checked
-                                        disabled
-                                        indeterminate
-                                    }
+                                    state
                                 }
                             }
                         }
@@ -180,19 +252,19 @@ describe('test queue', () => {
                 testResult => testResult.index === testPlanResultIndex
             );
 
-            expect(previousTestResult).not.toBeTruthy();
+            expect(previousTestResult).toBeTruthy();
+            expect(previousTestResult.state).not.toBeTruthy();
 
             expect(testResult).toBeTruthy();
-            expect(testResult.serializedForm).toEqual(
-                expect.arrayContaining([
-                    expect.objectContaining({
-                        name: expect.any(String),
-                        value: expect.any(String),
-                        checked: expect.any(Boolean),
-                        disabled: expect.any(Boolean),
-                        indeterminate: expect.any(Boolean)
-                    })
-                ])
+            expect(testResult.state).toEqual(
+                expect.objectContaining({
+                    errors: expect.any(Array),
+                    info: expect.any(Object),
+                    config: expect.any(Object),
+                    currentUserAction: expect.any(String),
+                    openTest: expect.any(Object),
+                    commands: expect.any(Array)
+                })
             );
         });
     });
@@ -217,9 +289,7 @@ describe('test queue', () => {
                         testResults {
                             index
                             isComplete
-                            result {
-                                test
-                            }
+                            result
                         }
                     }
                 }
@@ -236,111 +306,97 @@ describe('test queue', () => {
                             input: {
                                 index: ${testPlanResultIndex}
                                 result: {
-                                    test: "Navigate to an unchecked checkbox in reading mode"
-                                    status: "PASS"
-                                    details: {
-                                        name: "Navigate to an unchecked checkbox in reading mode"
-                                        task: "navigate to unchecked checkbox"
-                                        summary: {
-                                            required: { fail: 0, pass: 12 }
-                                            optional: { fail: 0, pass: 0 }
-                                            unexpectedCount: 0
+                                    results: {
+                                        header: "Navigate to an unchecked checkbox in interaction mode",
+                                        status: {
+                                            header: ["Test result: ", "PASS"]
+                                        },
+                                        table: {
+                                            headers: {
+                                                description: "Command",
+                                                support: "Support",
+                                                details: "Details"
+                                            },
+                                            commands: [
+                                                {
+                                                    description: "Tab / Shift+Tab",
+                                                    support: "FULL",
+                                                    details: {
+                                                        output: [
+                                                            "output:",
+                                                            {
+                                                                whitespace: "lineBreak"
+                                                            },
+                                                            " ",
+                                                            "Okay Output"
+                                                        ],
+                                                        passingAssertions: {
+                                                            description: "Passing Assertions:",
+                                                            items: [
+                                                                "Role \\"checkbox\\" is conveyed",
+                                                                "Name \\"Lettuce\\" is conveyed",
+                                                                "State of the checkbox (not checked) is conveyed"
+                                                            ]
+                                                        },
+                                                        failingAssertions: {
+                                                            description: "Failing Assertions:",
+                                                            items: ["No failing assertions."]
+                                                        },
+                                                        unexpectedBehaviors: {
+                                                            description: "Unexpected Behavior",
+                                                            items: ["No unexpect behaviors."]
+                                                        }
+                                                    }
+                                                }
+                                            ]
                                         }
-                                        commands: [
-                                            {
-                                                output: "Success"
-                                                command: "X / Shift+X"
-                                                support: "FULL"
-                                                assertions: [
-                                                    {
-                                                        pass: "Good Output "
-                                                        priority: "1"
-                                                        assertion: "Role \\"checkbox\\" is conveyed"
-                                                    }
-                                                    {
-                                                        pass: "Good Output "
-                                                        priority: "1"
-                                                        assertion: "Name \\"Lettuce\\" is conveyed"
-                                                    }
-                                                    {
-                                                        pass: "Good Output "
-                                                        priority: "1"
-                                                        assertion: "State of the checkbox (not checked) is conveyed"
-                                                    }
-                                                ]
-                                                unexpected_behaviors: []
-                                            }
-                                            {
-                                                output: "Success"
-                                                command: "F / Shift+F"
-                                                support: "FULL"
-                                                assertions: [
-                                                    {
-                                                        pass: "Good Output "
-                                                        priority: "1"
-                                                        assertion: "Role \\"checkbox\\" is conveyed"
-                                                    }
-                                                    {
-                                                        pass: "Good Output "
-                                                        priority: "1"
-                                                        assertion: "Name \\"Lettuce\\" is conveyed"
-                                                    }
-                                                    {
-                                                        pass: "Good Output "
-                                                        priority: "1"
-                                                        assertion: "State of the checkbox (not checked) is conveyed"
-                                                    }
-                                                ]
-                                                unexpected_behaviors: []
-                                            }
-                                            {
-                                                output: "Success"
-                                                command: "Tab / Shift+Tab"
-                                                support: "FULL"
-                                                assertions: [
-                                                    {
-                                                        pass: "Good Output "
-                                                        priority: "1"
-                                                        assertion: "Role \\"checkbox\\" is conveyed"
-                                                    }
-                                                    {
-                                                        pass: "Good Output "
-                                                        priority: "1"
-                                                        assertion: "Name \\"Lettuce\\" is conveyed"
-                                                    }
-                                                    {
-                                                        pass: "Good Output "
-                                                        priority: "1"
-                                                        assertion: "State of the checkbox (not checked) is conveyed"
-                                                    }
-                                                ]
-                                                unexpected_behaviors: []
-                                            }
-                                            {
-                                                output: "Success"
-                                                command: "Up Arrow / Down Arrow"
-                                                support: "FULL"
-                                                assertions: [
-                                                    {
-                                                        pass: "Good Output "
-                                                        priority: "1"
-                                                        assertion: "Role \\"checkbox\\" is conveyed"
-                                                    }
-                                                    {
-                                                        pass: "Good Output "
-                                                        priority: "1"
-                                                        assertion: "Name \\"Lettuce\\" is conveyed"
-                                                    }
-                                                    {
-                                                        pass: "Good Output "
-                                                        priority: "1"
-                                                        assertion: "State of the checkbox (not checked) is conveyed"
-                                                    }
-                                                ]
-                                                unexpected_behaviors: []
-                                            }
-                                        ]
-                                        specific_user_instruction: "Navigate to the first checkbox. Note: it should be in the unchecked state."
+                                    },
+                                    resultsJSON: {
+                                        test: "Navigate to an unchecked checkbox in interaction mode",
+                                        details: {
+                                            name: "Navigate to an unchecked checkbox in interaction mode",
+                                            task: "navigate to unchecked checkbox",
+                                            specific_user_instruction:
+                                            "Navigate to the first checkbox. Note: it should be in the unchecked state.",
+                                            summary: {
+                                                required: {
+                                                    pass: 3,
+                                                    fail: 0
+                                                },
+                                                optional: {
+                                                    pass: 0,
+                                                    fail: 0
+                                                },
+                                                unexpectedCount: 0
+                                            },
+                                            commands: [
+                                                {
+                                                    command: "Tab / Shift+Tab",
+                                                    output: "Okay Output",
+                                                    support: "FULL",
+                                                    assertions: [
+                                                        {
+                                                            assertion: "Role \\"checkbox\\" is conveyed",
+                                                            priority: "1",
+                                                            pass: "Good Output"
+                                                        },
+                                                        {
+                                                            assertion: "Name \\"Lettuce\\" is conveyed",
+                                                            priority: "1",
+                                                            pass: "Good Output"
+                                                        },
+                                                        {
+                                                            assertion:
+                                                            "State of the checkbox (not checked) is conveyed",
+                                                            priority: "1",
+                                                            pass: "Good Output"
+                                                        }
+                                                    ],
+                                                    unexpected_behaviors: []
+                                                }
+                                            ]
+                                        },
+                                        status: "PASS"
                                     }
                                 }
                             }
@@ -354,9 +410,7 @@ describe('test queue', () => {
                                 testResults {
                                     index
                                     isComplete
-                                    result {
-                                        test
-                                    }
+                                    result
                                 }
                             }
                         }
@@ -369,162 +423,6 @@ describe('test queue', () => {
 
             expect(previousTestResult.isComplete).toEqual(false);
             expect(testResult.isComplete).toEqual(true);
-        });
-    });
-
-    it('fails to update test if invalid test object provided for new test plan run', async () => {
-        await dbCleaner(async () => {
-            const testReportId = '1';
-            const testerId = '2';
-            const testPlanResultIndex = 1;
-
-            // create new testPlanRun
-            const assignTesterResult = await mutate(gql`
-                mutation {
-                    testPlanReport(id: ${testReportId}) {
-                        assignTester(userId: ${testerId}) {
-                            testPlanReport {
-                                draftTestPlanRuns {
-                                    id
-                                    tester {
-                                        id
-                                        username
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            `);
-
-            // id of newly created testPlanRun
-            const testPlanRunId = assignTesterResult.testPlanReport.assignTester.testPlanReport.draftTestPlanRuns.find(
-                run => run.tester.id === testerId
-            ).id;
-
-            const updateTestPlanResult = async () => {
-                await mutate(gql`
-                mutation {
-                    testPlanRun(id: ${testPlanRunId}) {
-                        updateTestResult(
-                            input: {
-                                index: ${testPlanResultIndex}
-                                test: {
-                                    testFullName: "Navigate to an unchecked checkbox in reading mode"
-                                    executionOrder: 1
-                                }
-                            }
-                        ) {
-                            testPlanRun {
-                                testResultCount
-                                tester {
-                                    id
-                                    username
-                                }
-                                testResults {
-                                    index
-                                    serializedForm {
-                                        name
-                                        value
-                                        checked
-                                        disabled
-                                        indeterminate
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            `);
-            };
-
-            await expect(updateTestPlanResult()).rejects.toThrow(
-                /ValidationError/gi
-            );
-        });
-    });
-
-    it('fails to update serializedForm if no test object provided for new test plan run', async () => {
-        await dbCleaner(async () => {
-            const testReportId = '1';
-            const testerId = '2';
-            const testPlanResultIndex = 1;
-
-            // create new testPlanRun
-            const assignTesterResult = await mutate(gql`
-                mutation {
-                    testPlanReport(id: ${testReportId}) {
-                        assignTester(userId: ${testerId}) {
-                            testPlanReport {
-                                draftTestPlanRuns {
-                                    id
-                                    tester {
-                                        id
-                                        username
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            `);
-
-            // id of newly created testPlanRun
-            const testPlanRunId = assignTesterResult.testPlanReport.assignTester.testPlanReport.draftTestPlanRuns.find(
-                run => run.tester.id === testerId
-            ).id;
-
-            const updateTestPlanResult = async () => {
-                await mutate(gql`
-                mutation {
-                    testPlanRun(id: ${testPlanRunId}) {
-                        updateTestResult(
-                            input: {
-                                index: ${testPlanResultIndex}
-                                serializedForm: [
-                                    {
-                                        name: "result-0-0"
-                                        value: "on"
-                                        checked: true
-                                        disabled: false
-                                        indeterminate: false
-                                    }
-                                    {
-                                        name: "result-0-1"
-                                        value: "on"
-                                        checked: false
-                                        disabled: false
-                                        indeterminate: false
-                                    }
-                                ]
-                            }
-                        ) {
-                            testPlanRun {
-                                testResultCount
-                                tester {
-                                    id
-                                    username
-                                }
-                                testResults {
-                                    index
-                                    serializedForm {
-                                        name
-                                        value
-                                        checked
-                                        disabled
-                                        indeterminate
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            `);
-            };
-
-            await expect(updateTestPlanResult()).rejects.toThrow(
-                /no 'test' object provided/gi
-            );
         });
     });
 
