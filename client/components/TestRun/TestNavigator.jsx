@@ -21,6 +21,11 @@ const TestNavigator = ({
             {show && <h2>Test Navigator</h2>}
             <div className="test-navigator-toggle-container">
                 <button
+                    aria-label={`${
+                        show
+                            ? 'Toggle button to close test navigator'
+                            : 'Toggle button to open test navigator'
+                    }`}
                     onClick={toggleShowClick}
                     className={`test-navigator-toggle ${
                         show ? 'hide' : 'show'

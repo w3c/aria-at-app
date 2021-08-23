@@ -554,7 +554,9 @@ const TestRenderer = ({
                                             {header}
                                         </InnerSectionHeadingText>
                                         <Text>
-                                            <label>
+                                            <label
+                                                htmlFor={`speechoutput-${commandIndex}`}
+                                            >
                                                 {atOutput.description[0]}
                                                 <Feedback
                                                     className={`${atOutput
@@ -572,7 +574,8 @@ const TestRenderer = ({
                                                 </Feedback>
                                             </label>
                                             <textarea
-                                                key={`AtOutput__textarea__${commandIndex}`}
+                                                key={`SpeechOutput__textarea__${commandIndex}`}
+                                                id={`speechoutput-${commandIndex}`}
                                                 autoFocus={atOutput.focus}
                                                 value={atOutput.value}
                                                 onChange={e =>
@@ -619,7 +622,9 @@ const TestRenderer = ({
                                                                 key={`AssertionKey_${assertionIndex}`}
                                                             >
                                                                 {/*Assertion*/}
-                                                                <td>
+                                                                <td
+                                                                    id={`assertion-${commandIndex}-${assertionIndex}`}
+                                                                >
                                                                     {
                                                                         description[0]
                                                                     }
@@ -643,6 +648,7 @@ const TestRenderer = ({
                                                                         type="radio"
                                                                         id={`pass-${commandIndex}-${assertionIndex}`}
                                                                         name={`result-${commandIndex}-${assertionIndex}`}
+                                                                        aria-labelledby={`pass-${commandIndex}-${assertionIndex}-label assertion-${commandIndex}-${assertionIndex}`}
                                                                         autoFocus={
                                                                             passChoice.focus
                                                                         }
@@ -655,7 +661,6 @@ const TestRenderer = ({
                                                                     />
                                                                     <label
                                                                         id={`pass-${commandIndex}-${assertionIndex}-label`}
-                                                                        htmlFor={`pass-${commandIndex}-${assertionIndex}`}
                                                                     >
                                                                         {
                                                                             passChoice
@@ -682,6 +687,7 @@ const TestRenderer = ({
                                                                         type="radio"
                                                                         id={`missing-${commandIndex}-${assertionIndex}`}
                                                                         name={`result-${commandIndex}-${assertionIndex}`}
+                                                                        aria-labelledby={`missing-${commandIndex}-${assertionIndex}-label assertion-${commandIndex}-${assertionIndex}`}
                                                                         autoFocus={
                                                                             missingChoice.focus
                                                                         }
@@ -694,7 +700,6 @@ const TestRenderer = ({
                                                                     />
                                                                     <label
                                                                         id={`missing-${commandIndex}-${assertionIndex}-label`}
-                                                                        htmlFor={`missing-${commandIndex}-${assertionIndex}`}
                                                                     >
                                                                         {
                                                                             missingChoice
@@ -719,6 +724,7 @@ const TestRenderer = ({
                                                                         type="radio"
                                                                         id={`fail-${commandIndex}-${assertionIndex}`}
                                                                         name={`result-${commandIndex}-${assertionIndex}`}
+                                                                        aria-labelledby={`fail-${commandIndex}-${assertionIndex}-label assertion-${commandIndex}-${assertionIndex}`}
                                                                         autoFocus={
                                                                             failureChoice.focus
                                                                         }
@@ -731,7 +737,6 @@ const TestRenderer = ({
                                                                     />
                                                                     <label
                                                                         id={`fail-${commandIndex}-${assertionIndex}-label`}
-                                                                        htmlFor={`fail-${commandIndex}-${assertionIndex}`}
                                                                     >
                                                                         {
                                                                             failureChoice
