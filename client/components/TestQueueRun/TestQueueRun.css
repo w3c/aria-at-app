@@ -99,6 +99,6 @@ button.more-actions:active {
     font-size: 0.9rem;
 }
 
-tr.test-queue-run-row td:first-child {
+/* tr.test-queue-run-row td:first-child {
     padding: 0.75rem;
-}
+} */
