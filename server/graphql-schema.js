@@ -222,6 +222,19 @@ const graphqlSchema = gql`
         The date (originating in Git) corresponding to the Git sha's commit.
         """
         updatedAt: Timestamp!
+        # TODO: consider moving to the Scenario type if we support multiple
+        # examples for one TestPlanVersion (i.e. testing that
+        # <input type="button"> and <button> have equivalent behavior).
+        """
+        Link to the HTML page which will be tested.
+        """
+        exampleUrl: String!
+        # TODO: consider converting to an array if we support a larger number of
+        # more-focused and "compositional" startup scripts
+        """
+        Link to JS file which, when run, will prepare the example for testing.
+        """
+        startupScriptUrl: String!
         """
         Loosely structured data which may or may not be consistent or fully
         populated across all test plan versions.
@@ -258,35 +271,25 @@ const graphqlSchema = gql`
         The AT mode the test was written to expect.
         """
         atMode: AtMode!
-
-        # TODO: consider moving to the Scenario type if we support multiple
-        # examples for one test (i.e. testing that <input type="button"> and
-        # <button> have equivalent behavior).
-        """
-        Link to the HTML page which will be tested.
-        """
-        exampleUrl: String!
-
-        # TODO: consider converting to an array if we support a larger number of
-        # more-focused and "compositional" startup scripts
-        """
-        Link to JS file which, when run, will prepare the example for testing.
-        """
-        startupScriptUrl: String!
-
         # TODO: determine whether this field should remain following the
         # introduction of machine-readable instructions
         """
         Human-readable sentences detailing steps that must be completed by
         testers before the step which captures the AT output.
         """
-        instructions: [String]!
-        # TODO: reconsider when adding machine-readable instuctions
+        preCommandInstructions: [String]!
+        # TODO: consider merging instructions and commandInstruction when we
+        # introduce machine-readable instructions
         """
-        An loosely structured object containing commands, e.g. keyboard
-        combinations to input into the AT.
+        The commandInstruction is a human-readable sentence which will be
+        executed by testers immediately after completing the instructions.
+        An example is "navigate to an unchecked checkbox". This step produces
+        the AT output that testers will record (see the ScenarioResult type for
+        more information). The actual command to use, e.g. "TAB" or "DOWN",
+        etc., will differ depending on the AT, and are listed one by one in the
+        array of scenarios.
         """
-        commandMappings: Any!
+        commandInstruction: String!
         """
         List of ways the test can be completed, each of which needs to be
         executed separately. There might be a different number of Scenarios
@@ -320,10 +323,15 @@ const graphqlSchema = gql`
         at: At
         # TODO: reconsider when adding machine-readable instuctions
         """
-        An object containing keys for loading the exact command from the
-        Test's commandMappings field.
+        The name of a command, i.e. a key combination or another kind of AT
+        input, written like "TAB" or "DOWN". The command accomplishes the
+        human-readable purpose given by the commandInstruction field on the Test
+        type. There will be one scenario for each command the AT supports, so a
+        commandInstruction like "navigate to an unchecked checkbox" might have
+        four scenarios for the keys "X", "F", "TAB" and "DOWN" which all
+        accomplish that purpose.
         """
-        commandKeys: Any!
+        command: String!
     }
 
     """

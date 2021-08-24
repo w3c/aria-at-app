@@ -19,10 +19,16 @@ const locationOfDataId = {
     /**
      * Encode a locationOfData into an ID for recovery later.
      * @param {object} locationOfData - locationOfData as defined in GraphQL
+     * @param {object} uniqueness - Additional data to encode to make sure the
+     * IDs are unique, as in the case where the locationOfData would otherwise
+     * be identical for multiple entities.
      * @returns {string} - A PopulatedData-aware ID
      */
-    encode: locationOfData => {
-        return Base64.encode(JSON.stringify(locationOfData), true);
+    encode: (locationOfData, uniqueness = null) => {
+        return Base64.encode(
+            JSON.stringify([locationOfData, uniqueness]),
+            true
+        );
     },
 
     /**
@@ -31,7 +37,8 @@ const locationOfDataId = {
      * @returns {object} - locationOfData as defined in GraphQL
      */
     decode: id => {
-        return JSON.parse(Base64.decode(id));
+        const [locationOfData] = JSON.parse(Base64.decode(id));
+        return locationOfData; // Uniqueness input is not exposed
     }
 };
 
