@@ -370,7 +370,7 @@ const nestedGetOrCreate = async (getOptionsArray, options = {}) => {
  * @example
  * await bulkGetOrReplace(
  *   UserRoles,
- *   { where: { userId: 1 } },
+ *   { userId: 1 },
  *   [{ roleName: 'TESTER' }, { roleName: 'ADMIN' }]
  * );
  *
