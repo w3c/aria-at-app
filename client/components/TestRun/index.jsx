@@ -166,7 +166,7 @@ const TestRun = ({ auth }) => {
     };
 
     const performButtonAction = async (action, index) => {
-        const saveForm = async (withResult = false) =>
+        const saveForm = async (withResult = false) => {
             await handleUpdateTestPlanRunResultAction(
                 withResult
                     ? {
@@ -177,6 +177,9 @@ const TestRun = ({ auth }) => {
                           state: testRunStateRef.current
                       }
             );
+            if (withResult) return !!testRunResultRef.current;
+            return true;
+        };
 
         switch (action) {
             case 'goToTestAtIndex': {
@@ -208,7 +211,11 @@ const TestRun = ({ auth }) => {
                 if (testRendererSubmitButtonRef.current) {
                     testRendererSubmitButtonRef.current.click();
                     setIsTestSubmitClicked(true);
-                    await saveForm(true);
+
+                    // check to see if form was successfully submitted, if so, return to top of summary document
+                    const forceFocusOnSave = await saveForm(true);
+                    if (forceFocusOnSave)
+                        if (titleRef.current) titleRef.current.focus();
                 }
                 break;
             }
