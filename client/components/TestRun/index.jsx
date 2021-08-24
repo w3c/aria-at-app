@@ -177,11 +177,6 @@ const TestRun = ({ auth }) => {
                           state: testRunStateRef.current
                       }
             );
-            console.log(
-                'dawg',
-                testRunStateRef.current,
-                testRunResultRef.current
-            );
             if (withResult) return !!testRunResultRef.current;
             return true;
         };
