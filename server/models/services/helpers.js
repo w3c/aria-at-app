@@ -10,7 +10,8 @@ const {
     TestPlanRun,
     TestPlanTarget,
     User,
-    UserRoles
+    UserRoles,
+    UserAts
 } = require('../index');
 
 /**
@@ -37,5 +38,6 @@ module.exports = {
     TEST_PLAN_RUN_ATTRIBUTES: getSequelizeModelAttributes(TestPlanRun),
     TEST_PLAN_TARGET_ATTRIBUTES: getSequelizeModelAttributes(TestPlanTarget),
     USER_ATTRIBUTES: getSequelizeModelAttributes(User),
-    USER_ROLES_ATTRIBUTES: getSequelizeModelAttributes(UserRoles)
+    USER_ROLES_ATTRIBUTES: getSequelizeModelAttributes(UserRoles),
+    USER_ATS_ATTRIBUTES: getSequelizeModelAttributes(UserAts)
 };

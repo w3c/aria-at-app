@@ -50,4 +50,10 @@ listener.route('/aria-at/:branch/*').get(
     proxyMiddleware.proxyPath(BaseURL)
 );
 
+// Error handling must be the last middleware
+listener.use((error, req, res, next) => {
+    console.error(error);
+    next(error);
+});
+
 module.exports = { app, listener };

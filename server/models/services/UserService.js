@@ -3,9 +3,11 @@ const {
     USER_ATTRIBUTES,
     ROLE_ATTRIBUTES,
     USER_ROLES_ATTRIBUTES,
-    TEST_PLAN_RUN_ATTRIBUTES
+    TEST_PLAN_RUN_ATTRIBUTES,
+    AT_ATTRIBUTES,
+    USER_ATS_ATTRIBUTES
 } = require('./helpers');
-const { Sequelize, User, UserRoles } = require('../');
+const { Sequelize, User, UserRoles, UserAts } = require('../');
 const { Op } = Sequelize;
 
 // association helpers to be included with Models' results
@@ -17,6 +19,16 @@ const { Op } = Sequelize;
 const roleAssociation = roleAttributes => ({
     association: 'roles',
     attributes: roleAttributes,
+    through: { attributes: [] }
+});
+
+/**
+ * @param atAttributes - Role attributes
+ * @returns {{association: string, attributes: string[], through: {attributes: string[]}}}
+ */
+const atAssociation = atAttributes => ({
+    association: 'ats',
+    attributes: atAttributes,
     through: { attributes: [] }
 });
 
@@ -34,6 +46,7 @@ const testPlanRunAssociation = testPlanRunAttributes => ({
  * @param {number} id - id of User to be retrieved
  * @param {string[]} userAttributes - User attributes to be returned in the result
  * @param {string[]} roleAttributes - Role attributes to be returned in the result
+ * @param {string[]} atAttributes - AT attributes to be returned in the result
  * @param {string[]} testPlanRunAttributes - TestPlanRun attributes to be returned in the result
  * @param {object} options - Generic options for Sequelize
  * @param {*} options.transaction - Sequelize transaction
@@ -43,6 +56,7 @@ const getUserById = async (
     id,
     userAttributes = USER_ATTRIBUTES,
     roleAttributes = ROLE_ATTRIBUTES,
+    atAttributes = AT_ATTRIBUTES,
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     options = {}
 ) => {
@@ -52,6 +66,7 @@ const getUserById = async (
         userAttributes,
         [
             roleAssociation(roleAttributes),
+            atAssociation(atAttributes),
             testPlanRunAssociation(testPlanRunAttributes)
         ],
         options
@@ -63,6 +78,7 @@ const getUserById = async (
  * @param {string} username - username of User to be retrieved
  * @param {string[]} userAttributes - User attributes to be returned in the result
  * @param {string[]} roleAttributes - Role attributes to be returned in the result
+ * @param {string[]} atAttributes - AT attributes to be returned in the result
  * @param {string[]} testPlanRunAttributes - TestPlanRun attributes to be returned in the result
  * @param {object} options - Generic options for Sequelize
  * @param {*} options.transaction - Sequelize transaction
@@ -72,6 +88,7 @@ const getUserByUsername = async (
     username,
     userAttributes = USER_ATTRIBUTES,
     roleAttributes = ROLE_ATTRIBUTES,
+    atAttributes = AT_ATTRIBUTES,
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     options = {}
 ) => {
@@ -81,6 +98,7 @@ const getUserByUsername = async (
         userAttributes,
         [
             roleAssociation(roleAttributes),
+            atAssociation(atAttributes),
             testPlanRunAssociation(testPlanRunAttributes)
         ],
         options
@@ -92,6 +110,7 @@ const getUserByUsername = async (
  * @param {object} filter - use this define conditions to be passed to Sequelize's where clause
  * @param {string[]} userAttributes - User attributes to be returned in the result
  * @param {string[]} roleAttributes - Role attributes to be returned in the result
+ * @param {string[]} atAttributes - AT attributes to be returned in the result
  * @param {string[]} testPlanRunAttributes - TestPlanRun attributes to be returned in the result
  * @param {object} pagination - pagination options for query
  * @param {number} [pagination.page=0] - page to be queried in the pagination result (affected by {@param pagination.enablePagination})
@@ -107,6 +126,7 @@ const getUsers = async (
     filter = {}, // pass to 'where' for top level User object
     userAttributes = USER_ATTRIBUTES,
     roleAttributes = ROLE_ATTRIBUTES,
+    atAttributes = AT_ATTRIBUTES,
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     pagination = {},
     options = {}
@@ -123,6 +143,7 @@ const getUsers = async (
         userAttributes,
         [
             roleAssociation(roleAttributes),
+            atAssociation(atAttributes),
             testPlanRunAssociation(testPlanRunAttributes)
         ],
         pagination,
@@ -165,9 +186,44 @@ const getUserRoles = async (
 };
 
 /**
+ * @param {string|any} search - use this to combine with {@param filter} to be passed to Sequelize's where clause
+ * @param {object} filter - use this define conditions to be passed to Sequelize's where clause
+ * @param {string[]} userAtsAttributes - UserAts attributes to be returned in the result
+ * @param {object} pagination - pagination options for query
+ * @param {number} [pagination.page=0] - page to be queried in the pagination result (affected by {@param pagination.enablePagination})
+ * @param {number} [pagination.limit=10] - amount of results to be returned per page (affected by {@param pagination.enablePagination})
+ * @param {string[][]} [pagination.order=[]] - expects a Sequelize structured input dataset for sorting the Sequelize Model results
+ * @param {boolean} [pagination.enablePagination=false] - use to enable pagination for a query result as well useful values. Data for all items matching query if not enabled
+ * @param {object} options - Generic options for Sequelize
+ * @param {*} options.transaction - Sequelize transaction
+ * @returns {Promise<*>}
+ */
+const getUserAts = async (
+    search,
+    filter = {},
+    userAtsAttributes = USER_ATS_ATTRIBUTES,
+    pagination = {},
+    options = {}
+) => {
+    if (search) throw new Error('Not implemented');
+
+    const where = { ...filter };
+
+    return await ModelService.get(
+        UserAts,
+        where,
+        userAtsAttributes,
+        [],
+        pagination,
+        options
+    );
+};
+
+/**
  * @param {object} createParams - values to be used to create the User (+ UserRole entry if applicable)
  * @param {string[]} userAttributes - User attributes to be returned in the result
  * @param {string[]} roleAttributes - Role attributes to be returned in the result
+ * @param {string[]} atAttributes - AT attributes to be returned in the result
  * @param {string[]} testPlanRunAttributes - TestPlanRun attributes to be returned in the result
  * @param {object} options - Generic options for Sequelize
  * @param {*} options.transaction - Sequelize transaction
@@ -177,6 +233,7 @@ const createUser = async (
     { username },
     userAttributes = USER_ATTRIBUTES,
     roleAttributes = ROLE_ATTRIBUTES,
+    atAttributes = AT_ATTRIBUTES,
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     options
 ) => {
@@ -190,6 +247,7 @@ const createUser = async (
         userAttributes,
         [
             roleAssociation(roleAttributes),
+            atAssociation(atAttributes),
             testPlanRunAssociation(testPlanRunAttributes)
         ],
         options
@@ -201,6 +259,7 @@ const createUser = async (
  * @param {object} updateParams - values to be used to update columns for the record being referenced for {@param id}
  * @param {string[]} userAttributes - User attributes to be returned in the result
  * @param {string[]} roleAttributes - Role attributes to be returned in the result
+ * @param {string[]} atAttributes - AT attributes to be returned in the result
  * @param {string[]} testPlanRunAttributes - TestPlanRun attributes to be returned in the result
  * @param {object} options - Generic options for Sequelize
  * @param {*} options.transaction - Sequelize transaction
@@ -211,6 +270,7 @@ const updateUser = async (
     { username },
     userAttributes = USER_ATTRIBUTES,
     roleAttributes = ROLE_ATTRIBUTES,
+    atAttributes = AT_ATTRIBUTES,
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     options = {}
 ) => {
@@ -222,6 +282,7 @@ const updateUser = async (
         userAttributes,
         [
             roleAssociation(roleAttributes),
+            atAssociation(atAttributes),
             testPlanRunAssociation(testPlanRunAttributes)
         ],
         options
@@ -282,11 +343,56 @@ const bulkGetOrReplaceUserRoles = async (
 };
 
 /**
+ * Confirms the user's ATs are correct and replaces them if not.
+ * @example
+ * await bulkGetOrReplaceUserAts(
+ *     { userId: 1 },
+ *     [{ atId: 1 }, { atId: 2 }],
+ *     ['atId'],
+ * );
+ *
+ * @param {object} where - values to be used to search Sequelize Model. Only supports exact values.
+ * @param {object} expectedValues - array of objects containing an "atId"
+ * @param {string[]} userAtsAttributes - UserAts attributes to be returned in the result
+ * @param {object} options - Generic options for Sequelize
+ * @param {*} options.transaction - Sequelize transaction
+ * @returns {Promise<*>}
+ */
+const bulkGetOrReplaceUserAts = async (
+    { userId },
+    expectedValues,
+    userAtsAttributes,
+    options = {}
+) => {
+    return ModelService.confirmTransaction(options.transaction, async t => {
+        const noPagination = {};
+
+        const isUpdated = await ModelService.bulkGetOrReplace(
+            UserAts,
+            { userId },
+            expectedValues,
+            { transaction: t }
+        );
+
+        const records = await getUserAts(
+            '',
+            { userId },
+            userAtsAttributes,
+            noPagination,
+            { transaction: t }
+        );
+
+        return [records, isUpdated];
+    });
+};
+
+/**
  * Gets one user, creating them if they do not exist, including their roles.
  * @param {*} nestedGetOrCreateValues - These values will be used to find a matching record, or they will be used to create one
  * @param {*} nestedUpdateValues - Values which will be used when a record is found or created, but not used for the initial find
  * @param {string[]} userAttributes - User attributes to be returned in the result
  * @param {string[]} roleAttributes - Role attributes to be returned in the result
+ * @param {string[]} atAttributes - AT attributes to be returned in the result
  * @param {string[]} testPlanRunAttributes - TestPlanRun attributes to be returned in the result
  * @param {object} options - Generic options for Sequelize
  * @param {*} options.transaction - Sequelize transaction
@@ -297,6 +403,7 @@ const getOrCreateUser = async (
     { roles },
     userAttributes = USER_ATTRIBUTES,
     roleAttributes = ROLE_ATTRIBUTES,
+    atAttributes = AT_ATTRIBUTES,
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     options = {}
 ) => {
@@ -328,6 +435,7 @@ const getOrCreateUser = async (
             userId,
             userAttributes,
             roleAttributes,
+            atAttributes,
             testPlanRunAttributes,
             { transaction: t }
         );
@@ -365,10 +473,13 @@ module.exports = {
     getUserById,
     getUserByUsername,
     getUsers,
+    getUserRoles,
+    getUserAts,
     createUser,
     updateUser,
     removeUser,
     bulkGetOrReplaceUserRoles,
+    bulkGetOrReplaceUserAts,
     getOrCreateUser,
 
     // Custom Functions

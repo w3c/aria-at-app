@@ -60,6 +60,7 @@ const oauthRedirectFromGithubController = async (req, res) => {
         { roles },
         undefined,
         undefined,
+        [],
         []
     );
 
