@@ -26,7 +26,7 @@ describe('UserModel Data Checks', () => {
     it('should return valid user for id query with no associations', async () => {
         const _id = 1;
 
-        const user = await UserService.getUserById(_id, null, [], []);
+        const user = await UserService.getUserById(_id, null, [], [], []);
         const { id, username, createdAt, updatedAt } = user;
 
         expect(id).toEqual(_id);
@@ -180,7 +180,7 @@ describe('UserModel Data Checks', () => {
     });
 
     it('should return collection of users with paginated structure', async () => {
-        const result = await UserService.getUsers('', {}, ['id'], [], [], {
+        const result = await UserService.getUsers('', {}, ['id'], [], [], [], {
             page: -1,
             limit: -1,
             enablePagination: true
