@@ -209,8 +209,6 @@ const TestRun = ({ auth }) => {
                     testRendererSubmitButtonRef.current.click();
                     setIsTestSubmitClicked(true);
                     await saveForm(true);
-
-                    if (titleRef.current) titleRef.current.focus();
                 }
                 break;
             }
