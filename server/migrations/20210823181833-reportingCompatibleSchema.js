@@ -1,4 +1,4 @@
-const { TestPlanVersion } = require('../models');
+const { TestPlanVersion, At } = require('../models');
 const locationOfDataId = require('../util/locationOfDataId');
 
 const remapTest = (previous, context) => {
@@ -10,6 +10,7 @@ const remapTest = (previous, context) => {
     );
 
     const getAtFromAtSlug = atSlug => {
+        console.log('atSlug', atSlug);
         switch (atSlug) {
             case 'jaws':
                 return allAts.find(at => at.name === 'JAWS').id;
@@ -201,7 +202,13 @@ const reverseRemapTest = (current, context) => {
 
 module.exports = {
     up: async (/* queryInterface, Sequelize */) => {
-        console.log(await TestPlanVersion.findAll());
+        const testPlanVersion = await TestPlanVersion.findOne();
+        const ats = await At.findAll();
+        const context = { testPlanVersionId: testPlanVersion.id, allAts: ats };
+        console.log(testPlanVersion.tests[0]);
+        const remapped = remapTest(testPlanVersion.tests[0], context);
+        console.log(remapped);
+        console.log(reverseRemapTest(remapped, context));
     },
 
     down: async (/* queryInterface, Sequelize */) => {
