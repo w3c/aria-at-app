@@ -36,6 +36,7 @@ const TestRun = ({ auth }) => {
     const params = useParams();
     const history = useHistory();
     const routerQuery = useRouterQuery();
+    const titleRef = useRef();
     const testRunStateRef = useRef();
     const testRunResultRef = useRef();
     const testRendererSubmitButtonRef = useRef();
@@ -49,6 +50,7 @@ const TestRun = ({ auth }) => {
     const [clearTestResult] = useMutation(CLEAR_TEST_RESULT_MUTATION);
 
     const [pageReady, setPageReady] = useState(false);
+    const [isTestSubmitClicked, setIsTestSubmitClicked] = useState(false);
     const [showTestNavigator, setShowTestNavigator] = useState(true);
     const [currentTestIndex, setCurrentTestIndex] = useState(1);
     const [issues, setIssues] = useState([]);
@@ -77,10 +79,15 @@ const TestRun = ({ auth }) => {
                 setPageReady(true);
             })();
         }
+    }, [data, currentTestIndex]);
 
+    useEffect(() => {
         testRunStateRef.current = null;
         testRunResultRef.current = null;
-    }, [data, currentTestIndex]);
+        setIsTestSubmitClicked(false);
+
+        if (titleRef.current) titleRef.current.focus();
+    }, [currentTestIndex]);
 
     if (error) {
         const { message } = error;
@@ -159,7 +166,7 @@ const TestRun = ({ auth }) => {
     };
 
     const performButtonAction = async (action, index) => {
-        const saveForm = async (withResult = false) =>
+        const saveForm = async (withResult = false) => {
             await handleUpdateTestPlanRunResultAction(
                 withResult
                     ? {
@@ -170,6 +177,9 @@ const TestRun = ({ auth }) => {
                           state: testRunStateRef.current
                       }
             );
+            if (withResult) return !!testRunResultRef.current;
+            return true;
+        };
 
         switch (action) {
             case 'goToTestAtIndex': {
@@ -194,12 +204,18 @@ const TestRun = ({ auth }) => {
                 await handleUpdateTestPlanRunResultAction({
                     result: null
                 });
+                if (titleRef.current) titleRef.current.focus();
                 break;
             }
             case 'saveTest': {
                 if (testRendererSubmitButtonRef.current) {
                     testRendererSubmitButtonRef.current.click();
-                    await saveForm(true);
+                    setIsTestSubmitClicked(true);
+
+                    // check to see if form was successfully submitted, if so, return to top of summary document
+                    const forceFocusOnSave = await saveForm(true);
+                    if (forceFocusOnSave)
+                        if (titleRef.current) titleRef.current.focus();
                 }
                 break;
             }
@@ -387,7 +403,7 @@ const TestRun = ({ auth }) => {
 
         return (
             <>
-                <h1 data-test="testing-task">
+                <h1 ref={titleRef} data-test="testing-task" tabIndex={-1}>
                     <span className="task-label">Testing task:</span>{' '}
                     {`${currentTest.seq}.`} {testResult.title}
                 </h1>
@@ -402,7 +418,7 @@ const TestRun = ({ auth }) => {
                     handleRaiseIssueButtonClick={handleRaiseIssueButtonClick}
                 />
                 <Row>
-                    <Col md={9} className="test-iframe-container">
+                    <Col className="test-iframe-container" md={9}>
                         <Row>
                             <TestRenderer
                                 key={nextId()}
@@ -424,6 +440,7 @@ const TestRun = ({ auth }) => {
                                 testRunStateRef={testRunStateRef}
                                 testRunResultRef={testRunResultRef}
                                 submitButtonRef={testRendererSubmitButtonRef}
+                                isSubmitted={isTestSubmitClicked}
                             />
                         </Row>
                         <Row>{primaryButtonGroup}</Row>
@@ -550,7 +567,7 @@ const TestRun = ({ auth }) => {
             // No tests loaded
             <>
                 {heading}
-                <div>No tests for this Browser / AT Combination</div>
+                <div>No tests for this At and Browser combination</div>
             </>
         );
     } else {

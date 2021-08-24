@@ -370,7 +370,7 @@ const nestedGetOrCreate = async (getOptionsArray, options = {}) => {
  * @example
  * await bulkGetOrReplace(
  *   UserRoles,
- *   { where: { userId: 1 } },
+ *   { userId: 1 },
  *   [{ roleName: 'TESTER' }, { roleName: 'ADMIN' }]
  * );
  *
@@ -383,10 +383,8 @@ const nestedGetOrCreate = async (getOptionsArray, options = {}) => {
  */
 const bulkGetOrReplace = async (Model, where, expectedValues, options = {}) => {
     return confirmTransaction(options.transaction, async transaction => {
-        if (expectedValues.length === 0) {
-            throw new Error('At least one expected value is required!');
-        }
-        const comparisonKeys = Object.keys(expectedValues[0]);
+        const comparisonKeys =
+            expectedValues.length === 0 ? [] : Object.keys(expectedValues[0]);
         const whereKeys = Object.keys(where);
 
         const noInclude = [];
@@ -400,29 +398,37 @@ const bulkGetOrReplace = async (Model, where, expectedValues, options = {}) => {
             { transaction }
         );
 
-        const isUpdated = !isEqualWith(
-            sortBy(persistedValues, comparisonKeys),
-            sortBy(expectedValues, comparisonKeys),
-            (persisted, expected, index) => {
-                // See https://github.com/lodash/lodash/issues/2490
-                if (index === undefined) return;
+        const isUpdated =
+            expectedValues.length === 0
+                ? persistedValues.length !== 0
+                : !isEqualWith(
+                      sortBy(persistedValues, comparisonKeys),
+                      sortBy(expectedValues, comparisonKeys),
+                      (persisted, expected, index) => {
+                          // See https://github.com/lodash/lodash/issues/2490
+                          if (index === undefined) return;
 
-                return !comparisonKeys.find(comparisonKey => {
-                    return persisted[comparisonKey] !== expected[comparisonKey];
-                });
-            }
-        );
+                          return !comparisonKeys.find(comparisonKey => {
+                              return (
+                                  persisted[comparisonKey] !==
+                                  expected[comparisonKey]
+                              );
+                          });
+                      }
+                  );
 
         if (isUpdated) {
             // eslint-disable-next-line no-use-before-define
             await removeByQuery(Model, where, { transaction });
 
-            const fullRecordValues = expectedValues.map(expectedValue => ({
-                ...where,
-                ...expectedValue
-            }));
+            if (expectedValues.length !== 0) {
+                const fullRecordValues = expectedValues.map(expectedValue => ({
+                    ...where,
+                    ...expectedValue
+                }));
 
-            await bulkCreate(Model, fullRecordValues, { transaction });
+                await bulkCreate(Model, fullRecordValues, { transaction });
+            }
         }
 
         return isUpdated;

@@ -45,6 +45,11 @@ const graphqlSchema = gql`
         List of types of actions the user can complete.
         """
         roles: [Role]!
+        ats: [At]!
+    }
+
+    input UserInput {
+        atIds: [ID]!
     }
 
     type Browser {
@@ -844,6 +849,7 @@ const graphqlSchema = gql`
         ): findOrCreateResult!
         testPlanReport(id: ID!): TestPlanReportOperations!
         testPlanRun(id: ID!): TestPlanRunOperations!
+        updateMe(input: UserInput): User!
     }
 `;
 

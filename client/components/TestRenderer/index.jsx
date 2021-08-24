@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment, useLayoutEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import PropTypes from 'prop-types';
 import nextId from 'react-id-generator';
@@ -223,7 +223,8 @@ const TestRenderer = ({
     configQueryParams = [[]],
     testRunStateRef,
     testRunResultRef,
-    submitButtonRef
+    submitButtonRef,
+    isSubmitted = false
 }) => {
     const { title, testJson, commandJson, scripts, state, result } = test;
 
@@ -289,7 +290,7 @@ const TestRenderer = ({
         resultsJSON: state => testRunIO.submitResultsJSON(state)
     });
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         testRunExport.observe(result => {
             const { state: newState } = result;
             const pageContent = testRunExport.instructions();
@@ -401,6 +402,13 @@ const TestRenderer = ({
         });
     };
 
+    const handleRendererInvalidOutput = string => {
+        if (string === 'Unexpected Behavior') return 'Unexpected Behaviors:';
+        if (string === 'No unexpect behaviors.')
+            return 'No unexpected behaviors';
+        return string;
+    };
+
     const SubmitResultsContent = () => {
         const { results } = submitResult;
         const { header, status, table } = results;
@@ -429,6 +437,7 @@ const TestRenderer = ({
                                     <td>{support}</td>
                                     <td>
                                         <p>
+                                            {state.config.at.name}{' '}
                                             {parseLinebreakOutput(
                                                 details.output
                                             )}
@@ -464,15 +473,17 @@ const TestRenderer = ({
                                             </ResultsBulletList>
                                         </div>
                                         <div>
-                                            {
+                                            {handleRendererInvalidOutput(
                                                 details.unexpectedBehaviors
                                                     .description
-                                            }
+                                            )}
                                             <ResultsBulletList>
                                                 {details.unexpectedBehaviors.items.map(
                                                     item => (
                                                         <li key={nextId()}>
-                                                            {item}
+                                                            {handleRendererInvalidOutput(
+                                                                item
+                                                            )}
                                                         </li>
                                                     )
                                                 )}
@@ -505,7 +516,7 @@ const TestRenderer = ({
                         }
                     />
                     <InstructionsSection>
-                        <HeadingText id="behavior-header" tabindex="0">
+                        <HeadingText id="behavior-header" tabIndex={0}>
                             {pageContent.instructions.header.header}
                         </HeadingText>
                         <Text>{pageContent.instructions.description}</Text>
@@ -558,25 +569,31 @@ const TestRenderer = ({
                                                 htmlFor={`speechoutput-${commandIndex}`}
                                             >
                                                 {atOutput.description[0]}
-                                                <Feedback
-                                                    className={`${atOutput
-                                                        .description[1]
-                                                        .required &&
-                                                        'required'} ${atOutput
-                                                        .description[1]
-                                                        .highlightRequired &&
-                                                        'highlight-required'}`}
-                                                >
-                                                    {
-                                                        atOutput.description[1]
-                                                            .description
-                                                    }
-                                                </Feedback>
+                                                {isSubmitted && (
+                                                    <Feedback
+                                                        className={`${atOutput
+                                                            .description[1]
+                                                            .required &&
+                                                            'required'} ${atOutput
+                                                            .description[1]
+                                                            .highlightRequired &&
+                                                            'highlight-required'}`}
+                                                    >
+                                                        {
+                                                            atOutput
+                                                                .description[1]
+                                                                .description
+                                                        }
+                                                    </Feedback>
+                                                )}
                                             </label>
                                             <textarea
                                                 key={`SpeechOutput__textarea__${commandIndex}`}
                                                 id={`speechoutput-${commandIndex}`}
-                                                autoFocus={atOutput.focus}
+                                                autoFocus={
+                                                    isSubmitted &&
+                                                    atOutput.focus
+                                                }
                                                 value={atOutput.value}
                                                 onChange={e =>
                                                     atOutput.change(
@@ -628,18 +645,20 @@ const TestRenderer = ({
                                                                     {
                                                                         description[0]
                                                                     }
-                                                                    <Feedback
-                                                                        className={`${description[1]
-                                                                            .required &&
-                                                                            'required'} ${description[1]
-                                                                            .highlightRequired &&
-                                                                            'highlight-required'}`}
-                                                                    >
-                                                                        {
-                                                                            description[1]
-                                                                                .description
-                                                                        }
-                                                                    </Feedback>
+                                                                    {isSubmitted && (
+                                                                        <Feedback
+                                                                            className={`${description[1]
+                                                                                .required &&
+                                                                                'required'} ${description[1]
+                                                                                .highlightRequired &&
+                                                                                'highlight-required'}`}
+                                                                        >
+                                                                            {
+                                                                                description[1]
+                                                                                    .description
+                                                                            }
+                                                                        </Feedback>
+                                                                    )}
                                                                 </td>
                                                                 {/*Success case*/}
                                                                 <td>
@@ -650,6 +669,7 @@ const TestRenderer = ({
                                                                         name={`result-${commandIndex}-${assertionIndex}`}
                                                                         aria-labelledby={`pass-${commandIndex}-${assertionIndex}-label assertion-${commandIndex}-${assertionIndex}`}
                                                                         autoFocus={
+                                                                            isSubmitted &&
                                                                             passChoice.focus
                                                                         }
                                                                         defaultChecked={
@@ -661,6 +681,7 @@ const TestRenderer = ({
                                                                     />
                                                                     <label
                                                                         id={`pass-${commandIndex}-${assertionIndex}-label`}
+                                                                        htmlFor={`pass-${commandIndex}-${assertionIndex}`}
                                                                     >
                                                                         {
                                                                             passChoice
@@ -689,6 +710,7 @@ const TestRenderer = ({
                                                                         name={`result-${commandIndex}-${assertionIndex}`}
                                                                         aria-labelledby={`missing-${commandIndex}-${assertionIndex}-label assertion-${commandIndex}-${assertionIndex}`}
                                                                         autoFocus={
+                                                                            isSubmitted &&
                                                                             missingChoice.focus
                                                                         }
                                                                         defaultChecked={
@@ -700,6 +722,7 @@ const TestRenderer = ({
                                                                     />
                                                                     <label
                                                                         id={`missing-${commandIndex}-${assertionIndex}-label`}
+                                                                        htmlFor={`missing-${commandIndex}-${assertionIndex}`}
                                                                     >
                                                                         {
                                                                             missingChoice
@@ -726,6 +749,7 @@ const TestRenderer = ({
                                                                         name={`result-${commandIndex}-${assertionIndex}`}
                                                                         aria-labelledby={`fail-${commandIndex}-${assertionIndex}-label assertion-${commandIndex}-${assertionIndex}`}
                                                                         autoFocus={
+                                                                            isSubmitted &&
                                                                             failureChoice.focus
                                                                         }
                                                                         defaultChecked={
@@ -737,6 +761,7 @@ const TestRenderer = ({
                                                                     />
                                                                     <label
                                                                         id={`fail-${commandIndex}-${assertionIndex}-label`}
+                                                                        htmlFor={`fail-${commandIndex}-${assertionIndex}`}
                                                                     >
                                                                         {
                                                                             failureChoice
@@ -767,20 +792,23 @@ const TestRenderer = ({
                                             id={`cmd-${commandIndex}-problems`}
                                         >
                                             {unexpectedBehaviors.description[0]}
-                                            <Feedback
-                                                className={`${unexpectedBehaviors
-                                                    .description[1].required &&
-                                                    'required'} ${unexpectedBehaviors
-                                                    .description[1]
-                                                    .highlightRequired &&
-                                                    'highlight-required'}`}
-                                            >
-                                                {
-                                                    unexpectedBehaviors
+                                            {isSubmitted && (
+                                                <Feedback
+                                                    className={`${unexpectedBehaviors
                                                         .description[1]
-                                                        .description
-                                                }
-                                            </Feedback>
+                                                        .required &&
+                                                        'required'} ${unexpectedBehaviors
+                                                        .description[1]
+                                                        .highlightRequired &&
+                                                        'highlight-required'}`}
+                                                >
+                                                    {
+                                                        unexpectedBehaviors
+                                                            .description[1]
+                                                            .description
+                                                    }
+                                                </Feedback>
+                                            )}
                                             <div>
                                                 <input
                                                     key={`Problem__${commandIndex}__true`}
@@ -788,6 +816,7 @@ const TestRenderer = ({
                                                     id={`problem-${commandIndex}-true`}
                                                     name={`problem-${commandIndex}`}
                                                     autoFocus={
+                                                        isSubmitted &&
                                                         unexpectedBehaviors
                                                             .passChoice.focus
                                                     }
@@ -817,6 +846,7 @@ const TestRenderer = ({
                                                     id={`problem-${commandIndex}-false`}
                                                     name={`problem-${commandIndex}`}
                                                     autoFocus={
+                                                        isSubmitted &&
                                                         unexpectedBehaviors
                                                             .failChoice.focus
                                                     }
@@ -876,6 +906,7 @@ const TestRenderer = ({
                                                                             : -1
                                                                     }
                                                                     autoFocus={
+                                                                        isSubmitted &&
                                                                         focus
                                                                     }
                                                                     defaultChecked={
@@ -911,21 +942,23 @@ const TestRenderer = ({
                                                                                 more
                                                                                     .description[0]
                                                                             }
-                                                                            <Feedback
-                                                                                className={`${more
-                                                                                    .description[1]
-                                                                                    .required &&
-                                                                                    'required'} ${more
-                                                                                    .description[1]
-                                                                                    .highlightRequired &&
-                                                                                    'highlight-required'}`}
-                                                                            >
-                                                                                {
-                                                                                    more
+                                                                            {isSubmitted && (
+                                                                                <Feedback
+                                                                                    className={`${more
                                                                                         .description[1]
-                                                                                        .description
-                                                                                }
-                                                                            </Feedback>
+                                                                                        .required &&
+                                                                                        'required'} ${more
+                                                                                        .description[1]
+                                                                                        .highlightRequired &&
+                                                                                        'highlight-required'}`}
+                                                                                >
+                                                                                    {
+                                                                                        more
+                                                                                            .description[1]
+                                                                                            .description
+                                                                                    }
+                                                                                </Feedback>
+                                                                            )}
                                                                         </label>
                                                                         <input
                                                                             key={`${description}__${commandIndex}__input`}
@@ -934,6 +967,7 @@ const TestRenderer = ({
                                                                             name={`${description}-${commandIndex}-input`}
                                                                             className={`undesirable-${description.toLowerCase()}-input`}
                                                                             autoFocus={
+                                                                                isSubmitted &&
                                                                                 more.focus
                                                                             }
                                                                             value={
@@ -988,7 +1022,8 @@ TestRenderer.propTypes = {
     testPageUri: PropTypes.string,
     testRunStateRef: PropTypes.any,
     testRunResultRef: PropTypes.any,
-    submitButtonRef: PropTypes.any
+    submitButtonRef: PropTypes.any,
+    isSubmitted: PropTypes.bool
 };
 
 export default TestRenderer;

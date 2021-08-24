@@ -36,6 +36,12 @@ const startSupertestServer = async ({ graphql = false, pathToRoutes = [] }) => {
         expressApp.use(path, routes);
     });
 
+    // Error handling must be the last middleware
+    expressApp.use((error, req, res, next) => {
+        console.error(error);
+        next(error);
+    });
+
     const sessionAgent = getSessionAgent(expressApp);
 
     const tearDown = async () => {
