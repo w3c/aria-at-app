@@ -143,7 +143,7 @@ const TestQueueRun = ({
                     >
                         <FontAwesomeIcon icon={faUserPlus} />
                     </Dropdown.Toggle>
-                    <Dropdown.Menu>
+                    <Dropdown.Menu role="menu">
                         {testers.length ? (
                             testers.map(tester => {
                                 const isTesterAssigned = checkIsTesterAssigned(
@@ -154,6 +154,7 @@ const TestQueueRun = ({
                                     : 'not-assigned';
                                 return (
                                     <Dropdown.Item
+                                        role="menuitem"
                                         variant="secondary"
                                         as="button"
                                         key={nextId()}
@@ -170,7 +171,6 @@ const TestQueueRun = ({
                                             );
                                         }}
                                         aria-checked={isTesterAssigned}
-                                        role="menuitemcheckbox"
                                     >
                                         {isTesterAssigned && (
                                             <FontAwesomeIcon icon={faCheck} />
@@ -206,7 +206,7 @@ const TestQueueRun = ({
                 <Dropdown.Toggle
                     id={nextId()}
                     variant="secondary"
-                    aria-label={`Open run ${evaluateTestRunTitle()} as tester`}
+                    aria-label="Run as other tester"
                     disabled={!testPlanRunTesters.length}
                 >
                     Open run as...
@@ -241,7 +241,7 @@ const TestQueueRun = ({
                             <FontAwesomeIcon icon={faTrashAlt} />
                             Delete for...
                         </Dropdown.Toggle>
-                        <Dropdown.Menu>
+                        <Dropdown.Menu role="menu">
                             {testPlanRunsWithResults.map(t => {
                                 return (
                                     <Dropdown.Item
@@ -352,35 +352,25 @@ const TestQueueRun = ({
 
     return (
         <tr className="test-queue-run-row">
-            <td>{renderAssignedUserToTestPlan()}</td>
+            <th>{renderAssignedUserToTestPlan()}</th>
             <td>
                 <div className="testers-wrapper">
                     {isAdmin && renderAssignMenu()}
                     <div className="assign-actions">
-                        {!currentUserAssigned && (
-                            <Button
-                                variant="secondary"
-                                onClick={() =>
-                                    toggleTesterAssign(user.username)
-                                }
-                                aria-label={`Assign yourself to the test run ${evaluateTestRunTitle()}`}
-                                className="assign-self"
-                            >
-                                Assign Yourself
-                            </Button>
-                        )}
-                        {currentUserAssigned && (
-                            <Button
-                                variant="secondary"
-                                onClick={() =>
-                                    toggleTesterAssign(user.username)
-                                }
-                                aria-label={`Unassign yourself from the test run ${evaluateTestRunTitle()}`}
-                                className="assign-self"
-                            >
-                                Unassign Yourself
-                            </Button>
-                        )}
+                        <Button
+                            variant="secondary"
+                            onClick={() => toggleTesterAssign(user.username)}
+                            aria-label={
+                                !currentUserAssigned
+                                    ? 'Assign Yourself'
+                                    : 'Unassign Yourself'
+                            }
+                            className="assign-self"
+                        >
+                            {!currentUserAssigned
+                                ? 'Assign Yourself'
+                                : 'Unassign Yourself'}
+                        </Button>
                     </div>
                 </div>
                 <div className="secondary-actions">
