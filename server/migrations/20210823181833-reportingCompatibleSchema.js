@@ -10,14 +10,13 @@ const remapTest = (previous, context) => {
     );
 
     const getAtFromAtSlug = atSlug => {
-        console.log('atSlug', atSlug);
         switch (atSlug) {
             case 'jaws':
-                return allAts.find(at => at.name === 'JAWS').id;
+                return allAts.find(at => at.name === 'JAWS');
             case 'nvda':
-                return allAts.find(at => at.name === 'NVDA').id;
+                return allAts.find(at => at.name === 'NVDA');
             case 'voiceover_macos':
-                return allAts.find(at => at.name === 'VoiceOver for MacOS').id;
+                return allAts.find(at => at.name === 'VoiceOver for macOS');
             default:
                 throw new Error();
         }
@@ -144,7 +143,7 @@ const reverseRemapTest = (current, context) => {
                 return 'jaws';
             case 'NVDA':
                 return 'nvda';
-            case 'VoiceOver for MacOS':
+            case 'VoiceOver for macOS':
                 return 'voiceover_macos';
             default:
                 throw new Error();
@@ -205,10 +204,14 @@ module.exports = {
         const testPlanVersion = await TestPlanVersion.findOne();
         const ats = await At.findAll();
         const context = { testPlanVersionId: testPlanVersion.id, allAts: ats };
-        console.log(testPlanVersion.tests[0]);
-        const remapped = remapTest(testPlanVersion.tests[0], context);
-        console.log(remapped);
-        console.log(reverseRemapTest(remapped, context));
+        console.log(
+            JSON.stringify(
+                testPlanVersion.tests.map(test => remapTest(test, context)),
+                null,
+                2
+            )
+        );
+        throw new Error('Successfully failed!');
     },
 
     down: async (/* queryInterface, Sequelize */) => {
