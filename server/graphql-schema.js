@@ -234,12 +234,13 @@ const graphqlSchema = gql`
         Link to the HTML page which will be tested.
         """
         exampleUrl: String!
+        # TODO: consider switching to a URL which is more standard
         # TODO: consider converting to an array if we support a larger number of
         # more-focused and "compositional" startup scripts
         """
         Link to JS file which, when run, will prepare the example for testing.
         """
-        startupScriptUrl: String!
+        startupScriptContent: String
         """
         Loosely structured data which may or may not be consistent or fully
         populated across all test plan versions.

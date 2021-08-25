@@ -1,4 +1,4 @@
-const { TestPlanVersion, At } = require('../models');
+const { TestPlanRun, TestPlanVersion, At } = require('../models');
 const locationOfDataId = require('../util/locationOfDataId');
 
 const remapTest = (previous, context) => {
@@ -201,7 +201,9 @@ const reverseRemapTest = (current, context) => {
 
 module.exports = {
     up: async (/* queryInterface, Sequelize */) => {
-        const testPlanVersion = await TestPlanVersion.findOne();
+        const testPlanVersion = await TestPlanVersion.findOne({
+            where: { id: 11 }
+        });
         const ats = await At.findAll();
         const context = { testPlanVersionId: testPlanVersion.id, allAts: ats };
         console.log(
@@ -211,6 +213,9 @@ module.exports = {
                 2
             )
         );
+        // const testPlanRun = await TestPlanRun.findOne();
+        // console.log(testPlanRun.testResults);
+
         throw new Error('Successfully failed!');
     },
 
