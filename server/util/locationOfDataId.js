@@ -1,4 +1,33 @@
 const { Base64 } = require('js-base64');
+const hash = require('object-hash');
+
+/**
+ * To keep the encoded IDs as short as possible, the keys are replaced with a
+ * number.
+ *
+ * You can add values here, but never change existing numbers.
+ */
+const shortener = {
+    testPlanId: 1,
+    testPlanVersionId: 2,
+    testId: 3,
+    scenarioId: 4,
+    assertionId: 5,
+    testPlanReportId: 6,
+    testPlanTargetId: 7,
+    browserId: 8,
+    browserVersion: 9,
+    atId: 10,
+    atVersion: 11,
+    testPlanRunId: 12,
+    testResultId: 13,
+    scenarioResultId: 14,
+    assertionResultId: 15
+};
+
+const decoder = Object.fromEntries(
+    Object.entries(shortener).map(([key, value]) => [value, key])
+);
 
 /**
  * The LocationOfData / PopulatedData API in GraphQL allows API consumers to
@@ -25,10 +54,26 @@ const locationOfDataId = {
      * @returns {string} - A PopulatedData-aware ID
      */
     encode: (locationOfData, uniqueness = null) => {
-        return Base64.encode(
-            JSON.stringify([locationOfData, uniqueness]),
+        const shortenedLocationOfData = Object.fromEntries(
+            Object.entries(locationOfData).map(([key, value]) => {
+                const shortened = shortener[key];
+                if (!shortened) {
+                    throw new Error(`Unsupported location of data for ${key}`);
+                }
+                return [shortened, value];
+            })
+        );
+        const hashed = hash([shortenedLocationOfData, uniqueness]);
+        // Start chars and end chars have two uses, 1. to make sure no one can
+        // decode the string, which would go against the design, and 2. to make
+        // it easy to tell IDs apart with just a glance.
+        const startChars = hashed.substr(0, 5);
+        const endChars = hashed.substr(5, 5);
+        const encoded = Base64.encode(
+            JSON.stringify(shortenedLocationOfData),
             true
         );
+        return `${startChars}${encoded}${endChars}`;
     },
 
     /**
@@ -37,8 +82,14 @@ const locationOfDataId = {
      * @returns {object} - locationOfData as defined in GraphQL
      */
     decode: id => {
-        const [locationOfData] = JSON.parse(Base64.decode(id));
-        return locationOfData; // Uniqueness input is not exposed
+        const encoded = id.substr(5, id.length - 10); // remove first and last 5
+        const shortenedLocationOfData = JSON.parse(Base64.decode(encoded));
+        const locationOfData = Object.fromEntries(
+            Object.entries(shortenedLocationOfData).map(([key, value]) => {
+                return [decoder[key], value];
+            })
+        );
+        return locationOfData;
     }
 };
 

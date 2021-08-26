@@ -1,13 +1,36 @@
-const { TestPlanRun, TestPlanVersion, At } = require('../models');
+const { Base64 } = require('js-base64');
+const { TestPlanVersion, At } = require('../models');
+const { getTestPlanRunById } = require('../models/services/TestPlanRunService');
 const locationOfDataId = require('../util/locationOfDataId');
+
+const unexpectedBehaviors = [
+    {
+        id: 'excessively_verbose',
+        text:
+            'Output is excessively verbose, e.g., includes redundant and/or ' +
+            'irrelevant speech'
+    },
+    {
+        id: 'unexpected_cursor_position',
+        text: 'Reading cursor position changed in an unexpected manner'
+    },
+    { id: 'sluggish', text: 'Screen reader became extremely sluggish' },
+    { id: 'at_crashed', text: 'Screen reader crashed' },
+    { id: 'browser_crashed', text: 'Browser crashed' },
+    { id: 'other', text: 'Other' }
+];
+
+const getTestId = ({ testPlanVersionId, executionOrder }) => {
+    return locationOfDataId.encode({ testPlanVersionId }, { executionOrder });
+};
 
 const remapTest = (previous, context) => {
     const { testPlanVersionId, allAts } = context;
 
-    const testId = locationOfDataId.encode(
-        { testPlanVersionId },
-        { executionOrder: previous.executionOrder }
-    );
+    const testId = getTestId({
+        testPlanVersionId,
+        executionOrder: previous.executionOrder
+    });
 
     const getAtFromAtSlug = atSlug => {
         switch (atSlug) {
@@ -38,9 +61,9 @@ const remapTest = (previous, context) => {
         let scenarioIndex = 0;
 
         for (const raw1 of Object.entries(previous.commandJson)) {
-            const [commandInstruction, raw2] = raw1;
+            const [task, raw2] = raw1;
 
-            if (commandInstruction !== previous.testJson.task) {
+            if (task !== previous.testJson.task) {
                 continue; // Not relevant to this test
             }
 
@@ -56,16 +79,16 @@ const remapTest = (previous, context) => {
 
                     const at = getAtFromAtSlug(rawAtSlug);
 
-                    const commands = raw4.map(raw => raw[0]);
+                    const commandIds = raw4.map(raw => raw[0]);
 
-                    for (const command of commands) {
+                    for (const commandId of commandIds) {
                         scenarios.push({
                             id: locationOfDataId.encode(
                                 { testId },
                                 { scenarioIndex }
                             ),
                             atId: at.id,
-                            command
+                            commandId
                         });
                         scenarioIndex += 1;
                     }
@@ -76,8 +99,9 @@ const remapTest = (previous, context) => {
         return scenarios;
     };
 
-    const remapAssertion = previousAssertion => {
+    const remapAssertion = (previousAssertion, index) => {
         return {
+            id: locationOfDataId.encode({ testId }, { assertionIndex: index }),
             priority: (() => {
                 switch (previousAssertion[0]) {
                     case '1':
@@ -88,7 +112,7 @@ const remapTest = (previous, context) => {
                         throw new Error();
                 }
             })(),
-            manualAssertion: previousAssertion[1]
+            text: previousAssertion[1]
         };
     };
 
@@ -99,31 +123,29 @@ const remapTest = (previous, context) => {
             .map(getAtFromAtSlug)
             .map(at => at.id),
         atMode: remapMode(previous.testJson.mode),
-        preCommandInstructions: previous.testJson.specific_user_instruction.split(
-            ' | '
-        ),
-        commandInstruction: previous.testJson.task,
+        startupScriptContent: previous.scripts,
+        instructions: previous.testJson.specific_user_instruction.split(' | '),
         scenarios: getScenarios(),
         assertions: previous.testJson.output_assertions.map(remapAssertion),
-        // Without Math.random() it would be too easy to use this data, making
-        // the label "unused" meaningless
-        [`unused_${Math.random()}`]: {
-            scripts: previous.scripts,
-            htmlFile: previous.htmlFile,
-            setupTestPage: previous.testJson.setupTestPage,
-            setupScriptDescription: previous.testJson.setup_script_description,
-            commitHash: previous.commitHash,
-            executionOrder: previous.executionOrder
-        }
+        testRendererRemappingData: Base64.encode(
+            JSON.stringify({
+                htmlFile: previous.htmlFile,
+                task: previous.testJson.task,
+                setupTestPage: previous.testJson.setupTestPage,
+                setupScriptDescription:
+                    previous.testJson.setup_script_description,
+                commitHash: previous.commitHash,
+                executionOrder: previous.executionOrder
+            }),
+            true
+        )
     };
 };
 
 const reverseRemapTest = (current, context) => {
     const { allAts } = context;
 
-    const unused = Object.entries(current).find(([key]) => {
-        return key.startsWith('unused_');
-    })[1];
+    const unused = JSON.parse(Base64.decode(current.testRendererRemappingData));
 
     const reverseRemapMode = currentMode => {
         switch (currentMode) {
@@ -159,7 +181,7 @@ const reverseRemapTest = (current, context) => {
                     return '2';
             }
         })();
-        return [priority, currentAssertion.manualAssertion];
+        return [priority, currentAssertion.text];
     };
 
     const getCommandJson = () => {
@@ -168,11 +190,11 @@ const reverseRemapTest = (current, context) => {
         current.scenarios.forEach(scenario => {
             const atSlug = reverseRemapAtId(scenario.atId);
             if (!atCommands[atSlug]) atCommands[atSlug] = [];
-            atCommands[atSlug].push([scenario.command]);
+            atCommands[atSlug].push([scenario.command.id]);
         });
 
         return {
-            [current.commandInstruction]: {
+            [unused.task]: {
                 [reverseRemapMode(current.atMode)]: atCommands
             }
         };
@@ -181,16 +203,14 @@ const reverseRemapTest = (current, context) => {
     return {
         testJson: {
             mode: reverseRemapMode(current.atMode),
-            task: current.commandInstruction,
+            task: unused.task,
             applies_to: current.atIds.map(reverseRemapAtId),
             setupTestPage: unused.setupTestPage,
             output_assertions: current.assertions.map(reverseRemapAssertion),
             setup_script_description: unused.setupScriptDescription,
-            specific_user_instruction: current.preCommandInstructions.join(
-                ' | '
-            )
+            specific_user_instruction: current.instructions.join(' | ')
         },
-        scripts: unused.scripts,
+        scripts: current.startupScriptContent,
         htmlFile: unused.htmlFile,
         commitHash: unused.commitHash,
         commandJson: getCommandJson(),
@@ -199,22 +219,168 @@ const reverseRemapTest = (current, context) => {
     };
 };
 
+const remapTestResults = (previous, context) => {
+    const results = [];
+    previous.forEach(previousTestResult => {
+        if (!previousTestResult.result) return;
+        results.push(remapTestResult(previousTestResult, context));
+    });
+    return results;
+};
+
+const remapTestResult = (previous, context) => {
+    const {
+        testPlanVersionId,
+        testPlanRunId,
+        tests,
+        allAts,
+        unexpectedBehaviors,
+        commands
+    } = context;
+
+    const testId = getTestId({
+        testPlanVersionId,
+        executionOrder: previous.test.executionOrder
+    });
+
+    const test = tests.find(test => test.id === testId);
+
+    const testResultId = locationOfDataId.encode(
+        { testPlanRunId, testId },
+        { executionOrder: previous.test.executionOrder }
+    );
+
+    const at = allAts.find(at => at.name === previous.state.config.at.name);
+
+    const remapAssertionResult = (previousAssertion, { scenarioResultId }) => {
+        const assertion = test.assertions.find(
+            each => each.text === previousAssertion.description
+        );
+        return {
+            id: locationOfDataId.encode(
+                { scenarioResultId, assertionId: assertion.id },
+                { atId: at.id }
+            ),
+            assertionId: assertion.id,
+            passed: previousAssertion.result === 'pass',
+            failedReason: (() => {
+                switch (previousAssertion.result) {
+                    case 'pass':
+                        return null;
+                    case 'failIncorrect':
+                        return 'INCORRECT_OUTPUT';
+                    case 'failMissing':
+                        return 'NO_OUTPUT';
+                    default:
+                        throw new Error();
+                }
+            })()
+        };
+    };
+
+    const remapUnexpectedBehavior = previousUnexpectedBehavior => {
+        const unexpectedBehavior = unexpectedBehaviors.find(each => {
+            return each.text === previousUnexpectedBehavior.description;
+        });
+        return {
+            id: unexpectedBehavior.id,
+            customUnexpectedBehaviorText: unexpectedBehavior.more?.value
+        };
+    };
+
+    const remapScenarioResult = previousScenario => {
+        const command = commands.find(
+            each => each.text === previousScenario.description
+        );
+        const scenarioId = test.scenarios.find(
+            each => each.commandId === command.id && each.atId === at.id
+        ).id;
+        const scenarioResultId = locationOfDataId.encode({
+            testResultId,
+            scenarioId
+        });
+        return {
+            id: scenarioResultId,
+            scenarioId,
+            output: previousScenario.atOutput.value,
+            assertionResults: previousScenario.assertions.map(
+                previousAssertion =>
+                    remapAssertionResult(previousAssertion, {
+                        scenarioResultId
+                    })
+            ),
+            unexpectedBehaviors: previousScenario.unexpected.behaviors.reduce(
+                (array, previousUnexpected) => {
+                    if (previousUnexpected.checked) {
+                        return array.concat(
+                            remapUnexpectedBehavior(previousUnexpected)
+                        );
+                    }
+                    return array;
+                },
+                []
+            )
+        };
+    };
+
+    return {
+        id: testResultId,
+        testId,
+        startedAt: '', // TODO: Populate on client
+        completedAt: '', // TODO: Populate on client
+        scenarioResults: previous.state.commands.map(remapScenarioResult)
+    };
+};
+
 module.exports = {
     up: async (/* queryInterface, Sequelize */) => {
-        const testPlanVersion = await TestPlanVersion.findOne({
-            where: { id: 11 }
-        });
-        const ats = await At.findAll();
-        const context = { testPlanVersionId: testPlanVersion.id, allAts: ats };
-        console.log(
-            JSON.stringify(
-                testPlanVersion.tests.map(test => remapTest(test, context)),
-                null,
-                2
-            )
-        );
-        // const testPlanRun = await TestPlanRun.findOne();
-        // console.log(testPlanRun.testResults);
+        const log = obj => {
+            console.log(JSON.stringify(obj, null, 2)); // eslint-disable-line
+        };
+
+        try {
+            const commands = Object.entries(
+                await import('../../client/resources/keys.mjs')
+            ).map(([id, text]) => ({ id, text }));
+
+            const testPlanVersion = await TestPlanVersion.findOne({
+                where: { id: 11 }
+            });
+            const ats = await At.findAll();
+            const context = {
+                testPlanVersionId: testPlanVersion.id,
+                allAts: ats
+            };
+            // console.log(
+            //     JSON.stringify(
+            //         testPlanVersion.tests.map(test => [
+            //             remapTest(test, context),
+            //             reverseRemapTest(remapTest(test, context), context)
+            //         ]),
+            //         null,
+            //         2
+            //     )
+            // );
+
+            const testPlanRun = await getTestPlanRunById(1);
+
+            const context2 = {
+                testPlanVersionId:
+                    testPlanRun.testPlanReport.testPlanVersion.id,
+                testPlanRunId: testPlanRun.id,
+                tests: testPlanRun.testPlanReport.testPlanVersion.tests.map(
+                    test => remapTest(test, context)
+                ),
+                allAts: ats,
+                unexpectedBehaviors,
+                commands
+            };
+            log(remapTestResults(testPlanRun.testResults, context2));
+        } catch (error) {
+            console.error('----- ERROR -----');
+            console.error(error.message);
+            console.error(error.stack);
+        }
 
         throw new Error('Successfully failed!');
     },
