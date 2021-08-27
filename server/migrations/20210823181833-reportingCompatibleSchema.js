@@ -246,7 +246,7 @@ const remapTestResult = (previous, context) => {
     const test = tests.find(test => test.id === testId);
 
     const testResultId = locationOfDataId.encode(
-        { testPlanRunId, testId },
+        { testPlanRunId },
         { executionOrder: previous.test.executionOrder }
     );
 
@@ -258,8 +258,8 @@ const remapTestResult = (previous, context) => {
         );
         return {
             id: locationOfDataId.encode(
-                { scenarioResultId, assertionId: assertion.id },
-                { atId: at.id }
+                { scenarioResultId },
+                { atId: at.id, assertionId: assertion.id }
             ),
             assertionId: assertion.id,
             passed: previousAssertion.result === 'pass',
@@ -295,10 +295,10 @@ const remapTestResult = (previous, context) => {
         const scenarioId = test.scenarios.find(
             each => each.commandId === command.id && each.atId === at.id
         ).id;
-        const scenarioResultId = locationOfDataId.encode({
-            testResultId,
-            scenarioId
-        });
+        const scenarioResultId = locationOfDataId.encode(
+            { testResultId },
+            { scenarioId }
+        );
         return {
             id: scenarioResultId,
             scenarioId,

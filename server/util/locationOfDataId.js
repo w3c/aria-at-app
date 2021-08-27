@@ -48,9 +48,9 @@ const locationOfDataId = {
     /**
      * Encode a locationOfData into an ID for recovery later.
      * @param {object} locationOfData - locationOfData as defined in GraphQL
-     * @param {object} uniqueness - Additional data to encode to make sure the
-     * IDs are unique, as in the case where the locationOfData would otherwise
-     * be identical for multiple entities.
+     * @param {object} uniqueness - Additional data which will be hashed into
+     * the ID to make sure it is unique, in cases where the locationOfData would
+     * otherwise be identical for multiple entities. It is not recoverable.
      * @returns {string} - A PopulatedData-aware ID
      */
     encode: (locationOfData, uniqueness = null) => {
@@ -58,17 +58,22 @@ const locationOfDataId = {
             Object.entries(locationOfData).map(([key, value]) => {
                 const shortened = shortener[key];
                 if (!shortened) {
-                    throw new Error(`Unsupported location of data for ${key}`);
+                    throw new Error(
+                        `Unrecognized locationOfData key: "${key}"`
+                    );
                 }
                 return [shortened, value];
             })
         );
-        const hashed = hash([shortenedLocationOfData, uniqueness]);
-        // Start chars and end chars have two uses, 1. to make sure no one can
-        // decode the string, which would go against the design, and 2. to make
-        // it easy to tell IDs apart with just a glance.
-        const startChars = hashed.substr(0, 5);
-        const endChars = hashed.substr(5, 5);
+        const base64hash = Base64.encode(
+            hash([shortenedLocationOfData, uniqueness])
+        );
+        // The hash is needed for producing uniqueness, but the reason for
+        // splitting it up and putting it at the beginning and end is to
+        // mitigate the fact that the random characters making up Base64 data
+        // would otherwise look extremely similar.
+        const startChars = base64hash.substr(0, 5);
+        const endChars = base64hash.substr(5, 5);
         const encoded = Base64.encode(
             JSON.stringify(shortenedLocationOfData),
             true

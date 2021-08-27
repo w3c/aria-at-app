@@ -45,6 +45,9 @@ const graphqlSchema = gql`
         List of types of actions the user can complete.
         """
         roles: [Role]!
+        """
+        The ATs the user has indicated they are able to test.
+        """
         ats: [At]!
     }
 
@@ -93,10 +96,11 @@ const graphqlSchema = gql`
         Human-readable name for the AT, such as "NVDA".
         """
         name: String!
-        """
-        The categories of generalized AT modes the AT supports.
-        """
-        modes: [AtMode]!
+        # TODO: reenable when this data is properly flowing into the system
+        # """
+        # The categories of generalized AT modes the AT supports.
+        # """
+        # modes: [AtMode]!
         atVersions: [String]!
     }
 
@@ -274,7 +278,8 @@ const graphqlSchema = gql`
         # TODO: consider converting to an array if we support a larger number of
         # more-focused and "compositional" startup scripts
         """
-        Link to JS content which, when run, will prepare the example for testing.
+        Link to JS content which, when run, will prepare the example for
+        testing.
         """
         startupScriptContent: String
         # TODO: rethink when introducing machine-readable instructions
@@ -561,7 +566,8 @@ const graphqlSchema = gql`
     """
     type UnexpectedBehavior {
         """
-        Human-readable ID which is similar to the text.
+        Human-readable ID, e.g. "excessively_sluggish" which is similar to the
+        text.
         """
         id: ID!
         """

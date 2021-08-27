@@ -1,5 +1,6 @@
 const {
-    getTestPlanVersionById
+    getTestPlanVersionById,
+    getTestPlanById
 } = require('../../models/services/TestPlanVersionService');
 const {
     getTestPlanReportById
@@ -7,9 +8,10 @@ const {
 const {
     getTestPlanRunById
 } = require('../../models/services/TestPlanRunService');
+const locationOfDataId = require('../../util/locationOfDataId');
 
 const PopulatedData = async ({ parentContext: { locationOfData } }) => {
-    const {
+    let {
         testPlanId,
         testPlanVersionId,
         testPlanReportId,
@@ -21,12 +23,26 @@ const PopulatedData = async ({ parentContext: { locationOfData } }) => {
         browserVersion: providedBrowserVersion,
         testId,
         scenarioId,
+        assertionId,
         testResultId,
-        scenarioResultId
+        scenarioResultId,
+        assertionResultId
     } = locationOfData;
 
-    if (testId || scenarioId || testResultId || scenarioResultId) {
-        throw new Error('Not implemented');
+    if (assertionId || scenarioId) {
+        ({ testId } = locationOfDataId.decode(assertionId || scenarioId));
+    }
+    if (testId) {
+        ({ testPlanVersionId } = locationOfDataId.decode(testId));
+    }
+    if (assertionResultId) {
+        ({ scenarioResultId } = locationOfDataId.decode(assertionResultId));
+    }
+    if (scenarioResultId) {
+        ({ testResultId } = locationOfDataId.decode(scenarioResultId));
+    }
+    if (testResultId) {
+        ({ testPlanRunId } = locationOfDataId.decode(testResultId));
     }
 
     let testPlan;
@@ -43,6 +59,8 @@ const PopulatedData = async ({ parentContext: { locationOfData } }) => {
         testPlanVersion = testPlanReport && testPlanReport.testPlanVersion;
     } else if (testPlanVersionId) {
         testPlanVersion = await getTestPlanVersionById(testPlanVersionId);
+    } else if (testPlanId) {
+        testPlan = await getTestPlanById(testPlanId);
     }
 
     const testPlanTarget = testPlanReport && testPlanReport.testPlanTarget;
@@ -51,10 +69,40 @@ const PopulatedData = async ({ parentContext: { locationOfData } }) => {
     const atVersion = testPlanTarget && testPlanTarget.atVersion;
     const browserVersion = testPlanTarget && testPlanTarget.browserVersion;
 
-    testPlan = {
-        id: testPlanVersion.metadata.directory,
-        directory: testPlanVersion.metadata.directory
-    };
+    testPlan =
+        testPlanVersion && !testPlan
+            ? {
+                  id: testPlanVersion.metadata.directory,
+                  directory: testPlanVersion.metadata.directory
+              }
+            : null;
+
+    let test;
+    let scenario;
+    let assertion;
+    let testResult;
+    let scenarioResult;
+    let assertionResult;
+
+    if (testResultId) {
+        testResult = testPlanRun.testResults.find(
+            each => each.id === testResultId
+        );
+    }
+    if (scenarioResultId) {
+        scenarioResult = testResult.scenarioResults.find(
+            each => each.id === scenarioResultId
+        );
+    }
+    if (testId) {
+        test = testPlanVersion.tests.find(each => each.id === testId);
+    }
+    if (scenarioId) {
+        scenario = test.scenarios.find(each => each.id === scenarioId);
+    }
+    if (assertionId) {
+        assertion = test.assertions.find(each => each.id === assertionId);
+    }
 
     const idsContradict = (provided, found) => {
         return (
