@@ -326,63 +326,50 @@ const remapTestResult = (previous, context) => {
     return {
         id: testResultId,
         testId,
-        startedAt: '', // TODO: Populate on client
-        completedAt: '', // TODO: Populate on client
+        startedAt: null, // TODO: Populate on client
+        completedAt: null, // TODO: Populate on client
         scenarioResults: previous.state.commands.map(remapScenarioResult)
     };
 };
 
 module.exports = {
     up: async (/* queryInterface, Sequelize */) => {
-        const log = obj => {
-            console.log(JSON.stringify(obj, null, 2)); // eslint-disable-line
+        const commands = Object.entries(
+            await import('../../client/resources/keys.mjs')
+        ).map(([id, text]) => ({ id, text }));
+
+        const testPlanVersion = await TestPlanVersion.findOne({
+            where: { id: 11 }
+        });
+        const ats = await At.findAll();
+        const testContext = {
+            testPlanVersionId: testPlanVersion.id,
+            allAts: ats
         };
+        // console.log(
+        //     JSON.stringify(
+        //         testPlanVersion.tests.map(test => [
+        //             remapTest(test, testContext),
+        //             reverseRemapTest(remapTest(test, testContext), testContext)
+        //         ]),
+        //         null,
+        //         2
+        //     )
+        // );
 
-        try {
-            const commands = Object.entries(
-                await import('../../client/resources/keys.mjs')
-            ).map(([id, text]) => ({ id, text }));
+        const testPlanRun = await getTestPlanRunById(1);
 
-            const testPlanVersion = await TestPlanVersion.findOne({
-                where: { id: 11 }
-            });
-            const ats = await At.findAll();
-            const context = {
-                testPlanVersionId: testPlanVersion.id,
-                allAts: ats
-            };
-            // console.log(
-            //     JSON.stringify(
-            //         testPlanVersion.tests.map(test => [
-            //             remapTest(test, context),
-            //             reverseRemapTest(remapTest(test, context), context)
-            //         ]),
-            //         null,
-            //         2
-            //     )
-            // );
-
-            const testPlanRun = await getTestPlanRunById(1);
-
-            const context2 = {
-                testPlanVersionId:
-                    testPlanRun.testPlanReport.testPlanVersion.id,
-                testPlanRunId: testPlanRun.id,
-                tests: testPlanRun.testPlanReport.testPlanVersion.tests.map(
-                    test => remapTest(test, context)
-                ),
-                allAts: ats,
-                unexpectedBehaviors,
-                commands
-            };
-            log(remapTestResults(testPlanRun.testResults, context2));
-        } catch (error) {
-            console.error('----- ERROR -----');
-            console.error(error.message);
-            console.error(error.stack);
-        }
-
-        throw new Error('Successfully failed!');
+        const testResultContext = {
+            testPlanVersionId: testPlanRun.testPlanReport.testPlanVersion.id,
+            testPlanRunId: testPlanRun.id,
+            tests: testPlanRun.testPlanReport.testPlanVersion.tests.map(test =>
+                remapTest(test, testContext)
+            ),
+            allAts: ats,
+            unexpectedBehaviors,
+            commands
+        };
+        log(remapTestResults(testPlanRun.testResults, testResultContext));
     },
 
     down: async (/* queryInterface, Sequelize */) => {
