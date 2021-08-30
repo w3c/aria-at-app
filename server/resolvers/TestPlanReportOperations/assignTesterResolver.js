@@ -2,27 +2,21 @@ const { AuthenticationError } = require('apollo-server');
 const {
     createTestPlanRun
 } = require('../../models/services/TestPlanRunService');
-const populatedDataResolver = require('../PopulatedData');
+const { populateData } = require('../../services/PopulatedData');
 
 const assignTesterResolver = async (
     { parentContext: { id: testPlanReportId } },
     { userId: testerUserId },
     { user }
 ) => {
-    let roles = [...user.roles];
-    if (user.roles.length && typeof user.roles[0] === 'object')
-        roles = user.roles.map(role => role.name);
-
-    // if user is admin OR user is tester and their id matches the currently
-    // signed in user;
-    // then continue
+    const roles = user ? user.roles.map(role => role.name) : [];
     if (
         !(
             roles.includes('ADMIN') ||
-            (roles.includes('TESTER') && testerUserId == user.id)
+            (roles.includes('TESTER') && testerUserId === user.id)
         )
     ) {
-        throw new AuthenticationError('Unauthorized');
+        throw new AuthenticationError();
     }
 
     const { id: testPlanRunId } = await createTestPlanRun({
@@ -30,9 +24,7 @@ const assignTesterResolver = async (
         testerUserId
     });
 
-    return populatedDataResolver({
-        parentContext: { locationOfData: { testPlanReportId, testPlanRunId } }
-    });
+    return populateData({ testPlanRunId });
 };
 
 module.exports = assignTesterResolver;
