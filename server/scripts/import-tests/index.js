@@ -7,6 +7,7 @@ const fse = require('fs-extra');
 const np = require('node-html-parser');
 const db = require('../../models/index');
 const validUrl = require('valid-url');
+const { remapTest } = require('./remapTest');
 
 const args = require('minimist')(process.argv.slice(2), {
     alias: {
@@ -244,15 +245,17 @@ const ariaAtImport = {
                         // Get the testFile order from the file name
                         const executionOrder = parseInt(testFile.split('-')[1]);
 
-                        tests.push({
-                            testFullName,
-                            htmlFile,
-                            commitHash,
-                            executionOrder,
-                            testJson,
-                            commandJson,
-                            scripts: scripts.trim()
-                        });
+                        tests.push(
+                            remapTest({
+                                testFullName,
+                                htmlFile,
+                                commitHash,
+                                executionOrder,
+                                testJson,
+                                commandJson,
+                                scripts: scripts.trim()
+                            })
+                        );
                     }
                 }
                 await this.upsertTestPlanVersion(
