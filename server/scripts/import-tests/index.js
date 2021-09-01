@@ -11,6 +11,7 @@ const validUrl = require('valid-url');
 const args = require('minimist')(process.argv.slice(2), {
     alias: {
         h: 'help',
+        b: 'branch',
         c: 'commit'
     }
 });
@@ -23,6 +24,8 @@ Default use:
   Arguments:
     -h, --help
        Show this message.
+    -b, --branch
+       Import tests from a specific branch (commit must be provided if not default branch)
     -c, --commit
        Import tests at the specified git commit
 
@@ -33,7 +36,7 @@ Default use:
 const client = new Client();
 
 const ariaAtRepo = 'https://github.com/w3c/aria-at.git';
-const DEFAULT_BRANCH = 'master';
+const DEFAULT_BRANCH = args.branch ? args.branch : 'master';
 const tmpDirectory = path.resolve(__dirname, 'tmp');
 const testsBuildDirectory = path.resolve(tmpDirectory, 'build', 'tests');
 const testsDirectory = path.resolve(tmpDirectory, 'tests');
@@ -81,21 +84,10 @@ const ariaAtImport = {
         // use to conditionally determine paths to use based on whether or not
         // the commit pulled for the aria-at repo is the old or new structure
         const buildDirExists = fse.existsSync(testsBuildDirectory);
-        const supportFile = buildDirExists
-            ? path.resolve(testsBuildDirectory, 'support.json')
-            : path.resolve(testsDirectory, 'support.json');
 
         let commitDate = commit.date();
         let commitMessage = commit.message();
         let commitHash = commit.id().tostrS();
-
-        const support = JSON.parse(fse.readFileSync(supportFile));
-        const ats = support.ats;
-        for (let at of ats) await this.upsertAt(at.name);
-
-        const exampleNames = {};
-        for (let example of support.examples)
-            exampleNames[example.directory] = example.name;
 
         let testPlanDirs = fse.readdirSync(
             buildDirExists ? testsBuildDirectory : testsDirectory
@@ -142,11 +134,17 @@ const ariaAtImport = {
                     throw error;
                 }
 
+                // title parsed from <repo>.git/tests/<directory>/data/references.csv
+                const titleRefLine = referencesCsv
+                    .split('\n')
+                    .filter(line => line.includes('title'));
+
                 // example url parsed from <repo>.git/tests/<directory>/data/references.csv
                 const exampleRefLine = referencesCsv
                     .split('\n')
                     .filter(line => line.includes('example'));
 
+                // test reference path parsed from <repo>.git/tests/<directory>/data/references.csv
                 const testReferenceRefLine = referencesCsv
                     .split('\n')
                     .filter(line => line.includes('reference'));
@@ -257,11 +255,11 @@ const ariaAtImport = {
                 }
                 await this.upsertTestPlanVersion(
                     testPlanDir,
-                    exampleNames[testPlanDir],
                     ariaAtRepo,
                     commitHash,
                     commitMessage,
                     commitDate,
+                    titleRefLine,
                     exampleRefLine,
                     practiceGuidelinesRefLine,
                     testReferenceRefLine,
@@ -272,33 +270,13 @@ const ariaAtImport = {
     },
 
     /**
-     * Gets At.id and inserts an At record if it doesn't exist
-     * @param {string} atName - name of AT (Assistive Technology)
-     * @returns {number} - returns At.id
-     */
-    async upsertAt(atName) {
-        const atResult = await client.query(
-            'SELECT id FROM "At" WHERE name=$1',
-            [atName]
-        );
-
-        const at = atResult.rowCount
-            ? atResult.rows[0]
-            : await this.upsertRowReturnId(
-                  'INSERT INTO "At" (name) VALUES($1) RETURNING id',
-                  [atName]
-              );
-        return at.id;
-    },
-
-    /**
      * Gets TestPlanVersion.id and inserts a TestPlanVersion record if it doesn't exist
      * @param {string} exampleDir - the name of the test directory to be processed
-     * @param {string} exampleName - the name of the example test being processed
      * @param {string} ariaAtRepo - the repository url the tests are being pulled from (ideally {@link https://github.com/w3c/aria-at.git})
      * @param {string} commitHash - the hash of the latest version of tests pulled from the {@param ariaAtRepo} repository
      * @param {string} commitMessage - the message of the latest version of tests pulled from the {@param ariaAtRepo} repository
      * @param {string} commitDate - the date of the latest versions of the tests pulled from the {@param ariaAtRepo} repository
+     * @param {string[]} titleRefLine - the title pulled from the references.csv file related to the test
      * @param {string[]} exampleRefLine - the example url link pulled from the references.csv file related to the test
      * @param {string[]} practiceGuidelinesRefLine - the APG (ARIA Practices Guidelines) link pulled from the references.csv file related to the test
      * @param {string[]} testReferenceRefLine - the relative link that's opened for the test page, pulled from the references.csv file related to the test
@@ -307,35 +285,36 @@ const ariaAtImport = {
      */
     async upsertTestPlanVersion(
         exampleDir,
-        exampleName,
         ariaAtRepo,
         commitHash,
         commitMessage,
         commitDate,
+        titleRefLine,
         exampleRefLine,
         practiceGuidelinesRefLine,
         testReferenceRefLine,
         tests
     ) {
-        const getReferenceUrl = (referenceLine, ignoreValidation = false) => {
+        const getLineValue = (referenceLine, ignoreUriValidation = false) => {
             let url = null;
             if (referenceLine.length) {
                 const [referenceType, link] = referenceLine[0].split(',');
-                if (ignoreValidation) url = link;
+                if (ignoreUriValidation) url = link;
                 else {
                     if (validUrl.isUri(link)) url = link;
                     else
                         console.error(
-                            `WARNING: The ${referenceType} link ${link} is not valid for ${exampleName}. Not writing to database.`
+                            `WARNING: The ${referenceType} link ${link} is not valid for ${exampleDir}. Not writing to database.`
                         );
                 }
             }
             return url;
         };
 
-        const exampleUrl = getReferenceUrl(exampleRefLine);
-        const designPattern = getReferenceUrl(practiceGuidelinesRefLine);
-        const testReferencePath = getReferenceUrl(testReferenceRefLine, true);
+        const title = getLineValue(titleRefLine, true);
+        const exampleUrl = getLineValue(exampleRefLine);
+        const designPattern = getLineValue(practiceGuidelinesRefLine);
+        const testReferencePath = getLineValue(testReferenceRefLine, true);
 
         let metadata = {
             gitRepo: ariaAtRepo,
@@ -353,24 +332,17 @@ const ariaAtImport = {
         if (testPlanVersionResult.rowCount) {
             await client.query(
                 'UPDATE "TestPlanVersion" SET title=$1, "exampleUrl"=$2, metadata=$3, tests=$4 WHERE "gitSha"=$5 and metadata ->> \'directory\'=$6',
-                [
-                    exampleName,
-                    exampleUrl,
-                    metadata,
-                    tests,
-                    commitHash,
-                    exampleDir
-                ]
+                [title, exampleUrl, metadata, tests, commitHash, exampleDir]
             );
             return;
         }
 
         await db.TestPlanVersion.create({
-            title: exampleName,
             status: 'DRAFT',
             gitSha: commitHash,
             gitMessage: commitMessage,
             updatedAt: commitDate,
+            title,
             exampleUrl,
             metadata,
             tests
