@@ -119,7 +119,7 @@ export function instructionDocument(resultState, hooks) {
   return {
     errors: {
       visible: false,
-      header: "",
+      header: "Test cannot be performed due to error(s)!",
       errors: [],
     },
     instructions: {
@@ -218,9 +218,9 @@ export function instructionDocument(resultState, hooks) {
         change: atOutput => hooks.setCommandOutput({commandIndex, atOutput}),
       },
       assertionsHeader: {
-        descriptionHeader: "",
-        passHeader: "",
-        failHeader: "",
+        descriptionHeader: "Assertion",
+        passHeader: "Success case",
+        failHeader: "Failure cases",
       },
       assertions: [
         ...assertions.map(bind(assertionResult, commandIndex)),
