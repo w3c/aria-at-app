@@ -1,10 +1,10 @@
 'use strict';
 
-const { Browser } = require('../models');
+const { At } = require('../models');
 
 module.exports = {
     up: async queryInterface => {
-        if ((await Browser.findAll()).length) return;
+        if ((await At.findAll()).length) return;
         return queryInterface.bulkInsert(
             'At',
             [
