@@ -87,7 +87,7 @@ const oauthRedirectFromGithubController = async (req, res) => {
     return loginSucceeded();
 };
 
-const signoutController = (req, res) => {
+const signoutController = async (req, res) => {
     req.session.destroy(err => {
         if (err) {
             res.status(500);
