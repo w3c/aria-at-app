@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { gql, useQuery } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 import { Helmet } from 'react-helmet';
 import { Button, Container } from 'react-bootstrap';
 import testConfigurationScreenshot from '../../assets/home-page/config-test.jpg';
@@ -14,17 +14,10 @@ import iconReviewTests from '../../assets/review-tests.jpg';
 import iconFixIssue from '../../assets/fix-issue.jpg';
 import heroImage from '../../assets/hero-illustration.png';
 import useSigninUrl from '../App/useSigninUrl';
-
-const HOME_QUERY = gql`
-    query {
-        me {
-            username
-        }
-    }
-`;
+import { ME_QUERY } from '../App/queries';
 
 const Home = () => {
-    const { loading, data } = useQuery(HOME_QUERY);
+    const { loading, data } = useQuery(ME_QUERY);
     const signinUrl = useSigninUrl();
 
     if (loading) return null;

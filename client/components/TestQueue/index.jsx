@@ -13,6 +13,7 @@ import {
 } from '../NewTestPlanReport';
 import DeleteTestPlanReportModal from '../DeleteTestPlanReportModal';
 import DeleteResultsModal from '../DeleteResultsModal';
+import PageStatus from '../common/PageStatus';
 import { TEST_QUEUE_PAGE_QUERY } from './queries';
 import './TestQueue.css';
 
@@ -181,14 +182,10 @@ const TestQueue = ({ auth }) => {
 
     if (loading) {
         return (
-            <Container as="main">
-                <Helmet>
-                    <title>{`Loading - Test Queue | ARIA-AT`}</title>
-                </Helmet>
-                <h1>Test Queue</h1>
-
-                <div data-testid="test-queue-loading">Loading ...</div>
-            </Container>
+            <PageStatus
+                title="Loading - Test Queue | ARIA-AT"
+                heading="Test Queue"
+            />
         );
     }
 
@@ -204,16 +201,25 @@ const TestQueue = ({ auth }) => {
                 <h2 data-testid="test-queue-no-test-plans-h2">
                     {noTestPlansMessage}
                 </h2>
-                <Alert
-                    key="alert-configure"
-                    variant="danger"
-                    data-testid="test-queue-no-test-plans-p"
-                >
-                    {!isAdmin
-                        ? `Please configure your preferred Assistive Technologies in
-                    the ${settingsLink} page.`
-                        : 'Add a Test Plan to the Queue'}
-                </Alert>
+                {!isAdmin && (
+                    <Alert
+                        key="alert-configure"
+                        variant="danger"
+                        data-testid="test-queue-no-test-plans-p"
+                    >
+                        Please configure your preferred Assistive Technologies
+                        in the {settingsLink} page.
+                    </Alert>
+                )}
+                {isAdmin && (
+                    <Alert
+                        key="alert-configure"
+                        variant="danger"
+                        data-testid="test-queue-no-test-plans-p"
+                    >
+                        Add a Test Plan to the Queue
+                    </Alert>
+                )}
 
                 {isAdmin && (
                     <NewTestPlanReportContainer

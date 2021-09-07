@@ -42,7 +42,7 @@ describe('Render TestQueue/index.jsx', () => {
 
         it('renders loading state on initialization', async () => {
             const { getByTestId } = wrapper;
-            const element = getByTestId('test-queue-loading');
+            const element = getByTestId('page-status');
 
             expect(element).toBeTruthy();
             expect(element).toHaveTextContent('Loading');
@@ -54,7 +54,7 @@ describe('Render TestQueue/index.jsx', () => {
                 await waitFor(() => new Promise(res => setTimeout(res, 0)));
 
                 const { queryByTestId, getByTestId } = wrapper;
-                const loadingElement = queryByTestId('test-queue-loading');
+                const loadingElement = queryByTestId('page-status');
                 const element = getByTestId('test-queue-no-test-plans-p');
 
                 expect(loadingElement).not.toBeInTheDocument();
@@ -104,7 +104,7 @@ describe('Render TestQueue/index.jsx', () => {
 
         it('renders loading state on initialization', async () => {
             const { getByTestId } = wrapper;
-            const element = getByTestId('test-queue-loading');
+            const element = getByTestId('page-status');
 
             expect(element).toBeTruthy();
             expect(element).toHaveTextContent('Loading');
@@ -117,7 +117,7 @@ describe('Render TestQueue/index.jsx', () => {
             });
 
             const { queryByTestId, getByTestId } = wrapper;
-            const loadingElement = queryByTestId('test-queue-loading');
+            const loadingElement = queryByTestId('page-status');
             const element = getByTestId('test-queue-instructions');
 
             expect(loadingElement).not.toBeInTheDocument();
@@ -186,7 +186,7 @@ describe('Render TestQueue/index.jsx', () => {
 
         it('renders loading state on initialization', async () => {
             const { getByTestId } = wrapper;
-            const element = getByTestId('test-queue-loading');
+            const element = getByTestId('page-status');
 
             expect(element).toBeTruthy();
             expect(element).toHaveTextContent('Loading');
@@ -199,7 +199,7 @@ describe('Render TestQueue/index.jsx', () => {
             });
 
             const { queryByTestId, getByTestId } = wrapper;
-            const loadingElement = queryByTestId('test-queue-loading');
+            const loadingElement = queryByTestId('page-status');
             const element = getByTestId('test-queue-no-test-plans-p');
 
             expect(loadingElement).not.toBeInTheDocument();
@@ -259,7 +259,7 @@ describe('Render TestQueue/index.jsx', () => {
 
         it('renders loading state on initialization', async () => {
             const { getByTestId } = wrapper;
-            const element = getByTestId('test-queue-loading');
+            const element = getByTestId('page-status');
 
             expect(element).toBeTruthy();
             expect(element).toHaveTextContent('Loading');
@@ -272,7 +272,7 @@ describe('Render TestQueue/index.jsx', () => {
             });
 
             const { queryByTestId, getByTestId } = wrapper;
-            const loadingElement = queryByTestId('test-queue-loading');
+            const loadingElement = queryByTestId('page-status');
             const element = getByTestId('test-queue-instructions');
 
             expect(loadingElement).not.toBeInTheDocument();

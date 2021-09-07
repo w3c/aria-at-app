@@ -1,15 +1,5 @@
 import { gql } from '@apollo/client';
 
-export const ME_QUERY = gql`
-    query {
-        me {
-            id
-            username
-            roles
-        }
-    }
-`;
-
 export const TEST_QUEUE_PAGE_QUERY = gql`
     query {
         users {
@@ -20,7 +10,7 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
         testPlanReports(statuses: [DRAFT, IN_REVIEW]) {
             id
             status
-            # conflictCount
+            conflictCount
             testPlanTarget {
                 id
                 title
@@ -50,6 +40,11 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
                     username
                 }
                 testResultCount
+                testResults {
+                    index
+                    isComplete
+                    isSkipped
+                }
             }
         }
     }

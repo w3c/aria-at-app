@@ -7,6 +7,8 @@ const {
     TEST_PLAN_TARGET_ATTRIBUTES
 } = require('./helpers');
 const { TestPlanRun } = require('../');
+const { getTestPlanReportById } = require('./TestPlanReportService');
+const { evaluateAtNameKey } = require('../../util/aria');
 
 // association helpers to be included with Models' results
 
@@ -62,11 +64,41 @@ const testPlanVersionAssociation = testPlanVersionAttributes => ({
 
 /**
  * @param {string[]} testPlanTargetAttributes - TestPlanTarget attributes
+ * @param {string[]} atAttributes - At attributes
+ * @param {string[]} browserAttributes - Browser attributes
  * @returns {{association: string, attributes: string[]}}
  */
-const testPlanTargetAssociation = testPlanTargetAttributes => ({
+const testPlanTargetAssociation = (
+    testPlanTargetAttributes,
+    atAttributes,
+    browserAttributes
+) => ({
     association: 'testPlanTarget',
-    attributes: testPlanTargetAttributes
+    attributes: testPlanTargetAttributes,
+    include: [
+        // eslint-disable-next-line no-use-before-define
+        atAssociation(atAttributes),
+        // eslint-disable-next-line no-use-before-define
+        browserAssociation(browserAttributes)
+    ]
+});
+
+/**
+ * @param {string[]} atAttributes - User attributes
+ * @returns {{association: string, attributes: string[]}}
+ */
+const atAssociation = atAttributes => ({
+    association: 'at',
+    attributes: atAttributes
+});
+
+/**
+ * @param {string[]} browserAttributes - User attributes
+ * @returns {{association: string, attributes: string[]}}
+ */
+const browserAssociation = browserAttributes => ({
+    association: 'browser',
+    attributes: browserAttributes
 });
 
 /**
@@ -212,6 +244,29 @@ const createTestPlanRun = async (
     );
     if (existingTestPlanRuns.length) return existingTestPlanRuns[0];
 
+    if (!testResults) {
+        // get tests from testPlanVersion through testPlanReport to create testPlanRun.testResults[].test
+        const testPlanReport = await getTestPlanReportById(testPlanReportId);
+
+        // tests are only applied to specific ATs
+        testResults = [];
+        const atKey = evaluateAtNameKey(testPlanReport.testPlanTarget.at.name);
+        testPlanReport.testPlanVersion.tests.forEach(test => {
+            if (JSON.stringify(test.testJson || '').includes(atKey)) {
+                testResults.push({
+                    test: {
+                        htmlFile: test.htmlFile,
+                        testFullName: test.testFullName,
+                        executionOrder: test.executionOrder,
+                        testJson: test.testJson,
+                        commandJson: test.commandJson,
+                        scripts: test.scripts
+                    }
+                });
+            }
+        });
+    }
+
     const testPlanRunResult = await ModelService.create(
         TestPlanRun,
         {
@@ -326,6 +381,17 @@ const removeTestPlanRunResultsByQuery = async ({
     );
 };
 
+const getIssuesForTestResult = async (testPlanRunId, testResultIndex) => {
+    const testPlanRun = await getTestPlanRunById(testPlanRunId);
+    if (!testPlanRun) return [];
+
+    const testResult = testPlanRun.testResults.find(
+        result => result.test.executionOrder === testResultIndex
+    );
+
+    return testResult.issues || [];
+};
+
 module.exports = {
     // TestPlanRun
     getTestPlanRunById,
@@ -334,5 +400,7 @@ module.exports = {
     updateTestPlanRun,
     removeTestPlanRun,
     removeTestPlanRunByQuery,
-    removeTestPlanRunResultsByQuery
+    removeTestPlanRunResultsByQuery,
+
+    getIssuesForTestResult
 };

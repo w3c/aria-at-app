@@ -15,6 +15,9 @@ jobs:
       - run: yarn --version
       - name: Install PostgreSQL 12
         run: |
+          wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+          echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" |sudo tee  /etc/apt/sources.list.d/pgdg.list
+          sudo apt-get -y update
           sudo apt-get -y install postgresql-12
           sudo apt-get -y install postgresql-client-12
       - name: before_install
@@ -34,6 +37,7 @@ jobs:
           yarn sequelize:test db:seed:all
           yarn workspace server db-import-tests:test -c ${IMPORT_ARIA_AT_TESTS_COMMIT_1}
           yarn workspace server db-import-tests:test -c ${IMPORT_ARIA_AT_TESTS_COMMIT_2}
+          yarn workspace server db-import-tests:test
           yarn workspace server db-populate-sample-data:test
       - name: test
         run: yarn test

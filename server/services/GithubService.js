@@ -108,8 +108,7 @@ module.exports = {
             throw new AuthorizationError('Not authorized.');
         }
 
-        const { githubAccessToken, issues } = options;
-        const issueNumbers = issues.map(({ issue_number }) => issue_number);
+        const { githubAccessToken, issueNumbers } = options;
 
         let queryIssues = '';
 

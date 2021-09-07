@@ -16,8 +16,7 @@ module.exports = function(sequelize, DataTypes) {
             atVersion: {
                 type: DataTypes.TEXT,
                 allowNull: false,
-                primaryKey: true,
-                unique: true
+                primaryKey: true
             }
         },
         {

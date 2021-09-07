@@ -1,4 +1,8 @@
 const TestService = require('../services/TestService');
+const { GithubService } = require('../services');
+const {
+    getIssuesForTestResult
+} = require('../models/services/TestPlanRunService');
 
 async function importTests(req, res) {
     const { git_hash } = req.body;
@@ -42,12 +46,18 @@ async function saveTestResults(req, res) {
 }
 
 async function getIssuesByTestId(req, res) {
-    const test_id = parseInt(req.query.test_id);
+    const testPlanRunId = parseInt(req.query.testPlanRunId);
+    const testResultIndex = parseInt(req.query.testResultIndex);
     const { githubAccessToken } = req.session;
     try {
-        const issues = await TestService.getIssuesByTestId({
+        const issueNumbers = await getIssuesForTestResult(
+            testPlanRunId,
+            testResultIndex
+        );
+
+        const issues = await GithubService.getIssues({
             githubAccessToken,
-            test_id
+            issueNumbers
         });
         res.status(200).json(issues);
     } catch (error) {
@@ -58,15 +68,15 @@ async function getIssuesByTestId(req, res) {
 }
 
 async function createIssue(req, res) {
-    const { run_id, test_id, title, body } = req.body.data;
+    const { title, body } = req.body;
     const { githubAccessToken } = req.session;
     try {
-        const result = await TestService.createIssue({
+        const result = await GithubService.createIssue({
             githubAccessToken,
-            run_id,
-            test_id,
-            title,
-            body
+            issue: {
+                title,
+                body
+            }
         });
         res.status(201).json(result);
     } catch (error) {

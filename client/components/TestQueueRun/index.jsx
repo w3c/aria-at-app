@@ -55,19 +55,18 @@ const TestQueueRun = ({
         : {};
     const testPlanRunTesters = testPlanReport.draftTestPlanRuns;
 
-    const renderAssignedUserToTestPlan = () => {
-        // Determine if current user is assigned to testPlan
-        if (currentUserAssigned)
-            return (
-                <Link to={`/run/${currentUserTestPlanRun.id}`}>
-                    {testPlanReport.testPlanVersion.title ||
-                        `"${testPlanReport.testPlanVersion.directory}"`}
-                </Link>
-            );
-        return (
-            testPlanReport.testPlanVersion.title ||
-            `"${testPlanReport.testPlanVersion.directory}"`
+    const getTestPlanRunsWithResults = () => {
+        const { draftTestPlanRuns } = testPlanReport;
+        return draftTestPlanRuns.filter(
+            testPlanRun => testPlanRun.testResultCount > 0
         );
+    };
+
+    const getTestPlanRunIdByUserId = userId => {
+        const { draftTestPlanRuns } = testPlanReport;
+        return draftTestPlanRuns.find(
+            testPlanRun => testPlanRun.tester.id === userId
+        ).id;
     };
 
     const toggleTesterAssign = async username => {
@@ -116,6 +115,21 @@ const TestQueueRun = ({
 
         // force data after assignment changes
         await triggerTestPlanReportUpdate();
+    };
+
+    const renderAssignedUserToTestPlan = () => {
+        // Determine if current user is assigned to testPlan
+        if (currentUserAssigned)
+            return (
+                <Link to={`/run/${currentUserTestPlanRun.id}`}>
+                    {testPlanReport.testPlanVersion.title ||
+                        `"${testPlanReport.testPlanVersion.directory}"`}
+                </Link>
+            );
+        return (
+            testPlanReport.testPlanVersion.title ||
+            `"${testPlanReport.testPlanVersion.directory}"`
+        );
     };
 
     const renderAssignMenu = () => {
@@ -187,8 +201,6 @@ const TestQueueRun = ({
     };
 
     const renderOpenAsDropdown = () => {
-        const { id: runId } = currentUserTestPlanRun;
-
         return (
             <Dropdown className="open-run-as">
                 <Dropdown.Toggle
@@ -204,7 +216,9 @@ const TestQueueRun = ({
                         return (
                             <Dropdown.Item
                                 role="menuitem"
-                                href={`/run/${runId}?user=${t.tester.id}`}
+                                href={`/run/${getTestPlanRunIdByUserId(
+                                    t.tester.id
+                                )}?user=${t.tester.id}`}
                                 key={nextId()}
                             >
                                 {t.tester.username}
@@ -306,13 +320,6 @@ const TestQueueRun = ({
         return { status, results };
     };
 
-    const getTestPlanRunsWithResults = () => {
-        const { draftTestPlanRuns } = testPlanReport;
-        return draftTestPlanRuns.filter(
-            testPlanRun => testPlanRun.testResultCount > 0
-        );
-    };
-
     const evaluateNewReportStatus = () => {
         const { status, conflictCount = 0 } = testPlanReport;
         const testersWithResults = getTestPlanRunsWithResults();
@@ -380,7 +387,7 @@ const TestQueueRun = ({
                                             {testPlanRun.tester.username}
                                         </a>
                                         <br />
-                                        {`(${testPlanRun.testResultCount} of ${testPlanReport.testPlanVersion.testCount} tests complete)`}
+                                        {`(${testPlanRun.testResultCount} of ${testPlanRun.testResults.length} tests complete)`}
                                     </li>
                                 )
                             )

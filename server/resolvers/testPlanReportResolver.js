@@ -2,8 +2,8 @@ const {
     getTestPlanReportById
 } = require('../models/services/TestPlanReportService');
 
-const testPlanReportsResolver = (_, { id }) => {
+const testPlanReportResolver = (_, { id }) => {
     return getTestPlanReportById(id);
 };
 
-module.exports = testPlanReportsResolver;
+module.exports = testPlanReportResolver;

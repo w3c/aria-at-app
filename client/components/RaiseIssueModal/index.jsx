@@ -1,197 +1,154 @@
-import React, { Component, Fragment } from 'react';
+import React, { Fragment, useState } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 import { Button, Form, Modal } from 'react-bootstrap';
-import { getConflictsByTestResults } from '../../redux/actions/runs';
-import { getIssuesByTestId, createIssue } from '../../redux/actions/issues';
+import { createTestPlanRunIssue } from '../../network';
 import IssueCards from './IssueCards';
 import MarkdownEditor from './MarkdownEditor';
+import { evaluateAtNameKey } from '../../utils/aria';
 import formatConflictsAsText from '../../utils/formatConflictsAsText';
 import './RaiseIssueModal.css';
 
-const REPO_LINK = `https://github.com/${process.env.GITHUB_REPO_OWNER}/${process.env.GITHUB_REPO_NAME}`;
+function createIssueDefaults(
+    test,
+    testPlanRun,
+    conflicts,
+    userId,
+    isReportViewer = false
+) {
+    const title = `${
+        isReportViewer ? "Report Viewer's" : "Tester's"
+    } Issue Report For "${test.title}"`;
+    let body = `### Test File at exact Commit
 
-function createIssueDefaults(userDescriptor, test, run, sha) {
-    const title = `${userDescriptor || 'Tester'} issue report for: "${
-        test.name
-    }"`;
-    let body = `
-### Test file at exact commit
+[${test.testFilePath}](https://aria-at.w3.org/aria-at/${
+        testPlanRun.testPlanReport.testPlanVersion.gitSha
+    }/${test.testFilePath}?at=${evaluateAtNameKey(
+        testPlanRun.testPlanReport.testPlanTarget.at.name
+    )})
 
+### AT
 
+${testPlanRun.testPlanReport.testPlanTarget.at.name} (version ${
+        testPlanRun.testPlanReport.testPlanTarget.atVersion
+    })
 
-[${test.file}](https://aria-at.w3.org/aria-at/${sha}/${test.file}?at=${run.at_key})
+### Browser
 
-### AT:
-
-${run.at_name} (version ${run.at_version})
-
-### Browser:
-
-${run.browser_name} (version ${run.browser_version})
+${testPlanRun.testPlanReport.testPlanTarget.browser.name} (version ${
+        testPlanRun.testPlanReport.testPlanTarget.browserVersion
+    })
 
 ### Description
 
-Type your description here.
+_type your description here_`;
 
-`;
-
+    if (conflicts.length) body = appendConflicts(body, conflicts, userId);
     return { title, body };
 }
 
-function appendConflicts(body, conflicts, testerId) {
+function appendConflicts(body, conflicts, userId) {
     const useMarkdown = true;
-    return `
-${body}
+    return `${body}
 
 ### Conflicts with other results
 
-${formatConflictsAsText(conflicts, testerId, useMarkdown)}
-
+${formatConflictsAsText(conflicts, userId, useMarkdown)}
 `;
 }
 
-class RaiseIssueModal extends Component {
-    constructor(props) {
-        super(props);
+const RaiseIssueModal = ({
+    show = false,
+    userId,
+    test = {},
+    testPlanRun = {},
+    issues = [],
+    conflicts = [],
+    isReportViewer = false,
+    handleUpdateTestPlanRunResultAction = () => {},
+    handleClose = () => {}
+}) => {
+    const { title, body } = createIssueDefaults(
+        test,
+        testPlanRun,
+        conflicts,
+        userId,
+        isReportViewer
+    );
+    const [showCreateIssue, setShowCreateIssue] = useState(!issues.length);
+    const [createdIssueNumber, setCreatedIssueNumber] = useState(-1);
+    const [showCreateIssueResult, setShowCreateIssueResult] = useState(false);
+    const [fields, setFields] = useState({
+        title,
+        body
+    });
 
-        const { test, run, git_hash, userId, userDescriptor } = this.props;
-        const { title, body } = createIssueDefaults(
-            userDescriptor,
-            test,
-            run,
-            git_hash,
-            userId
-        );
-        this.state = {
-            isReady: false,
-            showCreateIssue: false,
-            showCreateIssueResult: false,
-            title,
-            body
-        };
+    const onCreateNewIssueClick = () => setShowCreateIssue(true);
 
-        this.onHide = this.onHide.bind(this);
-        this.onCreateNewIssueClick = this.onCreateNewIssueClick.bind(this);
-        this.onCreateNewIssueSubmit = this.onCreateNewIssueSubmit.bind(this);
-        this.onIssueChange = this.onIssueChange.bind(this);
-    }
+    const onCreateNewIssueSubmit = async e => {
+        e.preventDefault();
 
-    async componentDidMount() {
-        const { dispatch, test, testerId } = this.props;
+        // shadow top level
+        const { title, body } = fields;
 
-        await dispatch(getConflictsByTestResults(test, testerId));
-        await dispatch(getIssuesByTestId(test.id));
-
-        const { conflicts } = this.props;
-
-        const body = this.props.conflicts.length
-            ? appendConflicts(this.state.body, conflicts, testerId)
-            : this.state.body;
-
-        this.setState({
-            body,
-            showCreateIssue: !this.props.issues.length,
-            isReady: true
-        });
-    }
-
-    onHide() {
-        // Reset the issue template when closing the issue modal
-        const { test, run, git_hash, userId, testerId, conflicts } = this.props;
-        let { title, body } = createIssueDefaults(test, run, git_hash, userId);
-        if (conflicts.length) {
-            body = appendConflicts(body, conflicts, testerId);
-        }
-
-        this.setState({
-            showCreateIssue: false,
-            showCreateIssueResult: false,
-            body,
-            title
-        });
-
-        this.props.onHide();
-    }
-
-    onCreateNewIssueClick() {
-        this.setState({
-            showCreateIssue: true
-        });
-    }
-
-    async onCreateNewIssueSubmit(event) {
-        event.preventDefault();
-        const { dispatch, issues, run, test } = this.props;
-        const { title, body } = this.state;
-        const data = {
-            run_id: run.id,
-            test_id: test.id,
-            title,
-            body
-        };
-        const issuesCount = issues.length;
-
-        await dispatch(createIssue(data));
-
-        if (issuesCount < this.props.issuesByTestId[test.id].length) {
-            this.setState({
-                showCreateIssueResult: true
+        const result = await createTestPlanRunIssue({ title, body });
+        if (result && result.number) {
+            // FIXME: This causes an unsightly flicker
+            await handleUpdateTestPlanRunResultAction({
+                issues: [result.number]
             });
+
+            setCreatedIssueNumber(result.number);
+            setShowCreateIssueResult(true);
         }
-    }
+    };
 
-    onIssueChange(event) {
-        this.setState({
-            [event.target.name]: event.target.value
-        });
-    }
+    const onFieldChange = e => {
+        setFields({ ...fields, [e.target.name]: e.target.value });
+    };
 
-    renderIssues() {
-        const { onHide, onCreateNewIssueClick } = this;
-        const { issues = [] } = this.props;
+    const onBackClick = () => {
+        setShowCreateIssue(false);
+        setShowCreateIssueResult(false);
+    };
 
+    const onHideButtonClick = async () => {
+        // reset issue template when closing the issue modal
+        onBackClick();
+        await handleClose();
+    };
+
+    const renderExistingIssues = () => {
         return [
-            'Review existing issues',
+            'Review Existing Issues',
             <IssueCards key="render-issues-cards" issues={issues} />,
             <Fragment key="render-issues-buttons">
-                <Button variant="secondary" onClick={onHide}>
-                    My issue exists in this list
+                <Button variant="secondary" onClick={onHideButtonClick}>
+                    My Issue Is Shown
                 </Button>
                 <Button variant="primary" onClick={onCreateNewIssueClick}>
-                    My issue is not in this list
+                    My Issue Is Not Shown
                 </Button>
             </Fragment>
         ];
-    }
+    };
 
-    renderCreateIssueForm() {
-        const { onHide, onCreateNewIssueSubmit, onIssueChange } = this;
-        const { issues = [] } = this.props;
-        const { body, title } = this.state;
-
-        const onBackClick = () => {
-            this.setState({
-                showCreateIssue: false,
-                showCreateIssueResult: false
-            });
-        };
+    const renderCreateIssueForm = () => {
         return [
-            'Create an issue',
+            'Create An Issue',
             <Form key="create-issue-form" onSubmit={onCreateNewIssueSubmit}>
                 <Form.Group controlId="create-an-issue-title">
                     <Form.Control
                         autoFocus
                         as="input"
                         name="title"
-                        onChange={onIssueChange}
+                        onChange={onFieldChange}
                         defaultValue={title}
                     />
                 </Form.Group>
                 <Form.Group controlId="create-an-issue-body">
                     <MarkdownEditor
                         name="body"
-                        onChange={onIssueChange}
+                        onChange={onFieldChange}
                         defaultValue={body}
                     />
                 </Form.Group>
@@ -203,120 +160,84 @@ class RaiseIssueModal extends Component {
                         className="float-left"
                         onClick={onBackClick}
                     >
-                        Back to issues list
+                        Back to Issues List
                     </Button>
                 ) : null}
-                <Button variant="secondary" onClick={onHide}>
+                <Button variant="secondary" onClick={onHideButtonClick}>
                     Cancel
                 </Button>
                 <Button variant="primary" onClick={onCreateNewIssueSubmit}>
-                    Submit new issue
+                    Submit New Issue
                 </Button>
             </Fragment>
         ];
-    }
+    };
 
-    renderCreateIssueResult() {
-        const { onHide } = this;
-        const { issues } = this.props;
-        const issue = issues[issues.length - 1];
+    const renderCreateIssueResult = () => {
+        const REPO_LINK = `https://github.com/${process.env.GITHUB_REPO_OWNER}/${process.env.GITHUB_REPO_NAME}`;
         return [
             'Issue created',
             <p key="create-issue-result-body">
                 <a
-                    href={`${REPO_LINK}/issues/${issue.number}`}
+                    href={`${REPO_LINK}/issues/${createdIssueNumber}`}
                     target="_blank"
                     rel="noopener noreferrer"
                 >
-                    Issue #{issue.number} created
+                    Issue #{createdIssueNumber} created
                 </a>
             </p>,
             <Button
                 key="create-issue-result-button"
                 variant="primary"
-                onClick={onHide}
+                onClick={onHideButtonClick}
             >
                 Done
             </Button>
         ];
-    }
+    };
 
-    renderCreateIssue() {
-        return this.state.showCreateIssueResult
-            ? this.renderCreateIssueResult()
-            : this.renderCreateIssueForm();
-    }
+    const renderCreateIssue = () =>
+        showCreateIssueResult
+            ? renderCreateIssueResult()
+            : renderCreateIssueForm();
 
-    render() {
-        const { onHide } = this;
-        const { issues, show } = this.props;
-        const { isReady, showCreateIssue } = this.state;
+    const [renderedTitle, renderedBody, renderedFooter] = showCreateIssue
+        ? renderCreateIssue()
+        : renderExistingIssues();
 
-        if (!isReady || !show) {
-            return null;
-        }
-
-        if (!showCreateIssue && !issues.length) {
-            this.setState({ showCreateIssue: true });
-            return null;
-        }
-
-        const [title, body, footer] = showCreateIssue
-            ? this.renderCreateIssue()
-            : this.renderIssues();
-
-        const role = 'dialog';
-        return (
-            <Modal
-                aria-labelledby="raise-issue-modal-title"
-                aria-modal="true"
-                keyboard
-                scrollable
-                dialogClassName="modal-xl"
-                onHide={onHide}
-                role={role}
-                show={show}
-                tabIndex={-1}
-            >
-                <Modal.Header closeButton>
-                    <Modal.Title id="raise-issue-modal-title">
-                        {title}
-                    </Modal.Title>
-                </Modal.Header>
-                <Modal.Body>{body}</Modal.Body>
-                <Modal.Footer>{footer}</Modal.Footer>
-            </Modal>
-        );
-    }
-}
+    return (
+        <Modal
+            show={show}
+            role="dialog"
+            tabIndex={-1}
+            keyboard
+            scrollable
+            dialogClassName="modal-xl"
+            aria-modal="true"
+            aria-labelledby="raise-issue-modal"
+            onHide={handleClose}
+        >
+            <Modal.Header closeButton>
+                <Modal.Title id="raise-issue-modal-title">
+                    {renderedTitle}
+                </Modal.Title>
+            </Modal.Header>
+            <Modal.Body>{renderedBody}</Modal.Body>
+            <Modal.Footer>{renderedFooter}</Modal.Footer>
+        </Modal>
+    );
+};
 
 RaiseIssueModal.propTypes = {
-    at_key: PropTypes.string,
-    conflicts: PropTypes.array,
-    dispatch: PropTypes.func,
-    git_hash: PropTypes.string,
-    issues: PropTypes.array,
-    issuesByTestId: PropTypes.object,
-    onHide: PropTypes.func,
-    run: PropTypes.object,
     show: PropTypes.bool,
+    userId: PropTypes.any,
     test: PropTypes.object,
-    testIndex: PropTypes.number,
-    userId: PropTypes.number,
-    testerId: PropTypes.number,
-    userDescriptor: PropTypes.string
+    testPlanRun: PropTypes.object,
+    issues: PropTypes.array,
+    conflicts: PropTypes.array,
+    isReportViewer: PropTypes.bool,
+    handleUpdateTestPlanRunResultAction: PropTypes.func,
+    handleClose: PropTypes.func
 };
 
-const mapStateToProps = (state, ownProps) => {
-    const {
-        runs: { conflictsByTestId },
-        issues: { issuesByTestId }
-    } = state;
-
-    const conflicts = conflictsByTestId[ownProps.test.id];
-    const issues = (issuesByTestId[ownProps.test.id] || []).filter(
-        ({ closed }) => !closed
-    );
-    return { conflicts, issues, issuesByTestId };
-};
-export default connect(mapStateToProps, null)(RaiseIssueModal);
+export default RaiseIssueModal;

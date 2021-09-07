@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { serialize, hydrate } from '../../utils/formSerialization';
+import { serialize, hydrate } from '../../../utils/formSerialization';
 
 class TestIframe extends Component {
     constructor(props) {
