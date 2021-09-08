@@ -1,7 +1,9 @@
 const gitMessage = require('./gitMessageResolver');
+const tests = require('./testsResolver');
 
 const TestPlanVersion = {
-    gitMessage
+    gitMessage,
+    tests
 };
 
 module.exports = TestPlanVersion;

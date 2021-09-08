@@ -1,6 +1,27 @@
-const testResultsResolver = testPlanRun => {
-    const tests = testPlanRun.testPlanReport.testPlanVersion.tests;
-    const testResults = testPlanRun.testResults;
+const { At } = require('../../models');
+const { remapTest } = require('../../scripts/import-tests/remapTest');
+const {
+    getRemapTestResultContext,
+    remapTestResults
+} = require('../../scripts/import-tests/remapTestResults');
+
+const testResultsResolver = async testPlanRun => {
+    // TODO: run this remapping before saving to database
+    const allAts = await At.findAll();
+    const testPlanVersion = testPlanRun.testPlanReport.testPlanVersion;
+    const tests = testPlanVersion.tests.map(test =>
+        remapTest(test, { testPlanVersionId: testPlanVersion.id, allAts })
+    );
+    const testResultContext = await getRemapTestResultContext({
+        testPlanVersion,
+        testPlanRun,
+        tests,
+        allAts
+    });
+    const testResults = remapTestResults(
+        testPlanRun.testResults,
+        testResultContext
+    );
 
     // Populate nested test, scenario and assertion fields
     return testResults.map(testResult => {

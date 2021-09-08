@@ -1,7 +1,9 @@
-const { TestPlanVersion, At } = require('../models');
-const { getTestPlanRunById } = require('../models/services/TestPlanRunService');
-const { getTestId } = require('../../server/scripts/import-tests/remapTest');
-const { locationOfDataId } = require('../services/PopulatedData');
+// This file is needed as long as the database is using an old version of the
+// JSON schema. A good course of action would be to migrate the database and
+// remove this file.
+
+const { getTestId } = require('./remapTest');
+const { locationOfDataId } = require('../../services/PopulatedData');
 
 const unexpectedBehaviors = [
     {
@@ -19,6 +21,26 @@ const unexpectedBehaviors = [
     { id: 'browser_crashed', text: 'Browser crashed' },
     { id: 'other', text: 'Other' }
 ];
+
+const getRemapTestResultContext = async ({
+    testPlanVersion,
+    testPlanRun,
+    tests,
+    allAts
+}) => {
+    const commands = Object.entries(
+        await import('../../client/resources/keys.mjs')
+    ).map(([id, text]) => ({ id, text }));
+
+    return {
+        testPlanVersionId: testPlanVersion.id,
+        testPlanRunId: testPlanRun.id,
+        tests,
+        allAts,
+        unexpectedBehaviors,
+        commands
+    };
+};
 
 const remapTestResults = (previous, context) => {
     const results = [];
@@ -133,53 +155,4 @@ const remapTestResult = (previous, context) => {
     };
 };
 
-module.exports = {
-    up: async (/* queryInterface, Sequelize */) => {
-        const commands = Object.entries(
-            await import('../../client/resources/keys.mjs')
-        ).map(([id, text]) => ({ id, text }));
-
-        const testPlanVersion = await TestPlanVersion.findOne({
-            where: { id: 11 }
-        });
-        const ats = await At.findAll();
-        const testContext = {
-            testPlanVersionId: testPlanVersion.id,
-            allAts: ats
-        };
-        // console.log(
-        //     JSON.stringify(
-        //         testPlanVersion.tests.map(test => [
-        //             remapTest(test, testContext),
-        //             reverseRemapTest(remapTest(test, testContext), testContext)
-        //         ]),
-        //         null,
-        //         2
-        //     )
-        // );
-
-        const testPlanRun = await getTestPlanRunById(1);
-
-        const testResultContext = {
-            testPlanVersionId: testPlanRun.testPlanReport.testPlanVersion.id,
-            testPlanRunId: testPlanRun.id,
-            tests: testPlanRun.testPlanReport.testPlanVersion.tests.map(test =>
-                remapTest(test, testContext)
-            ),
-            allAts: ats,
-            unexpectedBehaviors,
-            commands
-        };
-        log(remapTestResults(testPlanRun.testResults, testResultContext));
-    },
-
-    down: async (/* queryInterface, Sequelize */) => {
-        /*
-      Add reverting commands here.
-      Return a promise to correctly handle asynchronicity.
-
-      Example:
-      return queryInterface.dropTable('users');
-    */
-    }
-};
+module.exports = { getRemapTestResultContext, remapTestResults };

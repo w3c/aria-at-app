@@ -1,5 +1,9 @@
+// This file is needed as long as the database is using an old version of the
+// JSON schema. A good course of action would be to migrate the database and
+// remove this file.
+
 const { Base64 } = require('js-base64');
-const locationOfDataId = require('../util/locationOfDataId');
+const { locationOfDataId } = require('../../services/PopulatedData');
 
 const getTestId = ({ testPlanVersionId, executionOrder }) => {
     return locationOfDataId.encode({ testPlanVersionId }, { executionOrder });

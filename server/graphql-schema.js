@@ -45,13 +45,23 @@ const graphqlSchema = gql`
         List of types of actions the user can complete.
         """
         roles: [Role]!
+        # TODO: Either use this field or eliminate it.
         """
         The ATs the user has indicated they are able to test.
         """
         ats: [At]!
     }
 
+    """
+    The fields of the User type which can be updated after the User has been
+    created. It is a short list since most of the User fields originate outside
+    the app, i.e. the User roles are set by a GitHub team and txt file, and the
+    username is set in GitHub, etc.
+    """
     input UserInput {
+        """
+        See User type for more information.
+        """
         atIds: [ID]!
     }
 
@@ -142,11 +152,11 @@ const graphqlSchema = gql`
     #     """
     #     Receiving review from stakeholders.
     #     """
-    #     WIDE_REVIEW
+    #     CANDIDATE
     #     """
-    #     Wide review complete and ready to record test results.
+    #     Wide review phase complete and ready to record test results.
     #     """
-    #     FINALIZED
+    #     RECOMMENDED
     # }
 
     """
@@ -429,11 +439,6 @@ const graphqlSchema = gql`
         AT, including the results of all assertions.
         """
         scenarioResults: [ScenarioResult]!
-        """
-        An intentionally opaque Base64-encoded JSON string containing non-result
-        data like which fields should be highlighted due to validation errors.
-        """
-        testRendererInternalState: String!
     }
 
     """
@@ -855,14 +860,18 @@ const graphqlSchema = gql`
     }
 
     type TestPlanRunOperations {
-        updateTestResult(input: TestResultInput!): PopulatedData!
-        clearTestResult(input: TestResultInput!): PopulatedData!
+        createTestResult(input: TestResult): PopulatedData!
+    }
+
+    type TestResultOperations {
+        update(input: TestResultInput!): PopulatedData!
+        delete: PopulatedData!
     }
 
     """
     Generic response to findOrCreate mutations, which allow you to dictate an
     expectation of what you want to exist, and it will be made so. It allows you
-    to check whether new database were created.
+    to check whether new database records were created.
     """
     type findOrCreateResult {
         """
@@ -879,11 +888,36 @@ const graphqlSchema = gql`
     }
 
     type Mutation {
+        """
+        Adds a report with the given TestPlanVersion and TestPlanTarget and a
+        state of "DRAFT", resulting in the report appearing in the Test Queue.
+        In the case an identical report already exists, it will be returned
+        without changes and without affecting existing results. In the case an
+        identical report exists but with a status of "REMOVED" or "FINALIZED",
+        it will be given a status of "DRAFT" and will therefore be pulled back
+        into the queue.
+        """
         findOrCreateTestPlanReport(
+            """
+            The TestPlanReport to find or create.
+            """
             input: TestPlanReportInput!
         ): findOrCreateResult!
+        """
+        Get the available mutations for the given TestPlanReport.
+        """
         testPlanReport(id: ID!): TestPlanReportOperations!
+        """
+        Get the available mutations for the given TestPlanRun.
+        """
         testPlanRun(id: ID!): TestPlanRunOperations!
+        """
+        Get the available mutations for the given TestResult.
+        """
+        testResult(id: ID!): TestResultOperations!
+        """
+        Update the currently-logged-in User.
+        """
         updateMe(input: UserInput): User!
     }
 `;
