@@ -1,7 +1,6 @@
 import React from 'react';
 import { Route, Redirect } from 'react-router-dom';
 
-import ConfigureActiveRuns from '@components/ConfigureActiveRuns';
 import ConfirmAuth from '@components/ConfirmAuth';
 import Home from '@components/Home';
 import InvalidRequest from '@components/InvalidRequest';
@@ -43,17 +42,6 @@ export default [
             return (
                 <ConfirmAuth requiredPermission="TESTER">
                     <Route component={TestQueue} />
-                </ConfirmAuth>
-            );
-        }
-    },
-    {
-        path: '/admin/configure-runs',
-        exact: true,
-        component: () => {
-            return (
-                <ConfirmAuth requiredPermission="ADMIN">
-                    <Route component={ConfigureActiveRuns} />
                 </ConfirmAuth>
             );
         }
