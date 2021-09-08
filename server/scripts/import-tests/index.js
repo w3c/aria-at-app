@@ -164,6 +164,7 @@ const ariaAtImport = {
                     const testPath = path.join(testPlanDirPath, testFile);
                     if (
                         path.extname(testFile) === '.html' &&
+                        !testFile.includes('.collected.html') &&
                         testFile !== 'index.html'
                     ) {
                         // Get the testFile name from the html file
