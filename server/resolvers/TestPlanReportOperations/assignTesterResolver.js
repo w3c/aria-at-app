@@ -2,7 +2,7 @@ const { AuthenticationError } = require('apollo-server');
 const {
     createTestPlanRun
 } = require('../../models/services/TestPlanRunService');
-const { populateData } = require('../../services/PopulatedData');
+const populateData = require('../../services/PopulatedData/populateData');
 
 const assignTesterResolver = async (
     { parentContext: { id: testPlanReportId } },

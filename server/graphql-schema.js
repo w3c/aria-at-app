@@ -310,13 +310,6 @@ const graphqlSchema = gql`
         info on the Assertion type.
         """
         assertions(priority: AssertionPriority): [Assertion]!
-        # TODO: simplify the test renderer's API and remove this field
-        """
-        An intentionally opaque Base64-encoded JSON string currently containing
-        data like extraneous key names which are needed to format the test the
-        way the test renderer expects.
-        """
-        testRendererRemappingData: String!
     }
 
     """
@@ -749,27 +742,12 @@ const graphqlSchema = gql`
         assertionResultId: ID
     }
     """
-    For more information, see the LocationOfDataInput type. This type is used
-    to return a LocationOfData in queries in the same form you can provide it
-    as an input type.
+    Contains the same fields as the LocationOfDataInput type. This is used to
+    return a LocationOfData in queries in the same form you can provide it as an
+    input type. It is a scalar because otherwise you would need to request every
+    single field, which would be hugely inconvenient.
     """
-    type LocationOfData {
-        testPlanId: ID
-        testPlanVersionId: ID
-        testId: ID
-        scenarioId: ID
-        assertionId: ID
-        testPlanReportId: ID
-        testPlanTargetId: ID
-        browserId: ID
-        browserVersion: String
-        atId: ID
-        atVersion: String
-        testPlanRunId: ID
-        testResultId: ID
-        scenarioResultId: ID
-        assertionResultId: ID
-    }
+    scalar LocationOfData
 
     """
     The fully-populated data which is associated with a given LocationOfData.
@@ -860,7 +838,7 @@ const graphqlSchema = gql`
     }
 
     type TestPlanRunOperations {
-        createTestResult(input: TestResult): PopulatedData!
+        createTestResult(input: TestResultInput): PopulatedData!
     }
 
     type TestResultOperations {

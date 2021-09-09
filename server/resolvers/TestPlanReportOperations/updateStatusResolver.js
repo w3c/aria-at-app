@@ -4,7 +4,7 @@ const {
     updateTestPlanReport
 } = require('../../models/services/TestPlanReportService');
 const conflictsResolver = require('../TestPlanReport/conflictsResolver');
-const { populateData } = require('../../services/PopulatedData');
+const populateData = require('../../services/PopulatedData/populateData');
 
 const updateStatusResolver = async (
     { parentContext: { id: testPlanReportId } },

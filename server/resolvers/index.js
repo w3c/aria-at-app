@@ -21,7 +21,6 @@ const TestPlanReport = require('./TestPlanReport');
 const TestPlanReportOperations = require('./TestPlanReportOperations');
 const TestPlanRunOperations = require('./TestPlanRunOperations');
 const TestPlanRun = require('./TestPlanRun');
-const PopulatedData = require('./PopulatedData');
 
 const resolvers = {
     Query: {
@@ -48,8 +47,7 @@ const resolvers = {
     TestPlanReport,
     TestPlanRun,
     TestPlanReportOperations,
-    TestPlanRunOperations,
-    PopulatedData
+    TestPlanRunOperations
 };
 
 module.exports = resolvers;

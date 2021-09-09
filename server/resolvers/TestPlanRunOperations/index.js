@@ -1,7 +1,7 @@
-const updateTestResult = require('./updateTestResultResolver');
-const clearTestResult = require('./clearTestResultResolver');
+// const updateTestResult = require('./updateTestResultResolver');
+// const clearTestResult = require('./clearTestResultResolver');
 
 module.exports = {
-    updateTestResult,
-    clearTestResult
+    //     updateTestResult,
+    //     clearTestResult
 };

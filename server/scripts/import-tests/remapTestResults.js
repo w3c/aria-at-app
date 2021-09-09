@@ -3,7 +3,7 @@
 // remove this file.
 
 const { getTestId } = require('./remapTest');
-const { locationOfDataId } = require('../../services/PopulatedData');
+const locationOfDataId = require('../../services/PopulatedData/locationOfDataId');
 
 const unexpectedBehaviors = [
     {
@@ -29,7 +29,7 @@ const getRemapTestResultContext = async ({
     allAts
 }) => {
     const commands = Object.entries(
-        await import('../../client/resources/keys.mjs')
+        await import('../../../client/resources/keys.mjs')
     ).map(([id, text]) => ({ id, text }));
 
     return {

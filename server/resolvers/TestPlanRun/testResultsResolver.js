@@ -29,12 +29,12 @@ const testResultsResolver = async testPlanRun => {
         return {
             ...testResult,
             test,
-            scenarioResults: testResult.scenarioResults(scenarioResult => ({
+            scenarioResults: testResult.scenarioResults.map(scenarioResult => ({
                 ...scenarioResult,
                 scenario: test.scenarios.find(
                     each => each.id === scenarioResult.scenarioId
                 ),
-                assertionResults: scenarioResult.assertionResults(
+                assertionResults: scenarioResult.assertionResults.map(
                     assertionResult => ({
                         ...assertionResult,
                         assertion: test.assertions.find(

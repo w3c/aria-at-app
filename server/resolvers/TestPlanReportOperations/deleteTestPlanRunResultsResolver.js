@@ -2,7 +2,7 @@ const { AuthenticationError } = require('apollo-server');
 const {
     removeTestPlanRunResultsByQuery
 } = require('../../models/services/TestPlanRunService');
-const { populateData } = require('../../services/PopulatedData');
+const populateData = require('../../services/PopulatedData/populateData');
 
 const deleteTestPlanRunResultsResolver = async (
     { parentContext: { id: testPlanReportId } },

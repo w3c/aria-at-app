@@ -2,7 +2,7 @@ const {
     getTestPlanRunById,
     updateTestPlanRun
 } = require('../../models/services/TestPlanRunService');
-const populatedDataResolver = require('../PopulatedData');
+const populateData = require('../../services/PopulatedData/populateData');
 
 const updateTestResultResolver = async (
     { parentContext: { id: testPlanRunId } },
@@ -50,9 +50,7 @@ const updateTestResultResolver = async (
 
     await updateTestPlanRun(testPlanRunId, { testResults });
 
-    return populatedDataResolver({
-        parentContext: { locationOfData: { testPlanRunId } }
-    });
+    return populateData({ testPlanRunId });
 };
 
 module.exports = updateTestResultResolver;

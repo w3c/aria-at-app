@@ -1,4 +1,4 @@
-const { populateData } = require('../services/PopulatedData');
+const populateData = require('../services/PopulatedData/populateData');
 
 const populateDataResolver = async (_, { locationOfData }) => {
     return populateData(locationOfData);

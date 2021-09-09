@@ -9,6 +9,8 @@ const {
     getTestPlanRunById
 } = require('../../models/services/TestPlanRunService');
 const locationOfDataId = require('./locationOfDataId');
+const testsResolver = require('../../resolvers/TestPlanVersion/testsResolver');
+const testResultsResolver = require('../../resolvers/TestPlanRun/testResultsResolver');
 
 /**
  *
@@ -38,6 +40,10 @@ const populateData = async (locationOfData, { preloaded } = {}) => {
         assertionResultId
     } = locationOfData;
 
+    if (testId) {
+        console.log();
+    }
+
     if (assertionId || scenarioId) {
         ({ testId } = locationOfDataId.decode(assertionId || scenarioId));
     }
@@ -64,7 +70,9 @@ const populateData = async (locationOfData, { preloaded } = {}) => {
     if (testPlanRunId) {
         if (preloaded?.testPlanReport) {
             testPlanReport = preloaded.testPlanReport;
-            testPlanRun = testPlanReport.find(r => r.id === testPlanRunId);
+            testPlanRun = testPlanReport.testPlanRuns.find(
+                testPlanRun => testPlanRun.id === testPlanRunId
+            );
         } else if (preloaded?.testPlanRun) {
             testPlanRun = preloaded.testPlanRun;
             testPlanReport = testPlanRun.testPlanReport;
@@ -81,7 +89,9 @@ const populateData = async (locationOfData, { preloaded } = {}) => {
         }
         testPlanVersion = testPlanReport.testPlanVersion;
     } else if (testPlanVersionId) {
-        if (preloaded?.testPlanVersion) {
+        if (preloaded?.testPlanReport) {
+            testPlanVersion = preloaded.testPlanReport.testPlanVersion;
+        } else if (preloaded?.testPlanVersion) {
             testPlanVersion = preloaded.testPlanVersion;
         } else {
             testPlanVersion = await getTestPlanVersionById(testPlanVersionId);
@@ -118,9 +128,9 @@ const populateData = async (locationOfData, { preloaded } = {}) => {
     let assertionResult;
 
     if (testResultId) {
-        testResult = testPlanRun.testResults.find(
-            each => each.id === testResultId
-        );
+        // TODO: run this remapping before saving to database
+        const testResults = await testResultsResolver(testPlanRun);
+        testResult = testResults.find(each => each.id === testResultId);
         testId = testResult.testId;
     }
     if (scenarioResultId) {
@@ -136,7 +146,9 @@ const populateData = async (locationOfData, { preloaded } = {}) => {
         assertionId = assertionResult.assertionId;
     }
     if (testId) {
-        test = testPlanVersion.tests.find(each => each.id === testId);
+        // TODO: run this remapping before saving to database
+        const tests = await testsResolver(testPlanVersion);
+        test = tests.find(each => each.id === testId);
     }
     if (scenarioId) {
         scenario = test.scenarios.find(each => each.id === scenarioId);
@@ -167,6 +179,22 @@ const populateData = async (locationOfData, { preloaded } = {}) => {
         (providedAtVersion && providedAtVersion !== atVersion) ||
         (providedBrowserVersion && providedBrowserVersion !== browserVersion)
     ) {
+        console.log(
+            'locationOfData',
+            locationOfData,
+            'test',
+            test,
+            'scenario',
+            scenario,
+            'assertion',
+            assertion,
+            'testResult',
+            testResult,
+            'scenarioResult',
+            scenarioResult,
+            'assertionResult',
+            assertionResult
+        );
         throw new Error(
             'You provided IDs for both a parent and child model, implying a ' +
                 'relationship, but no relationship was found'

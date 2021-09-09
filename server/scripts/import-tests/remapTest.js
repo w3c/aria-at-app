@@ -3,7 +3,7 @@
 // remove this file.
 
 const { Base64 } = require('js-base64');
-const { locationOfDataId } = require('../../services/PopulatedData');
+const locationOfDataId = require('../../services/PopulatedData/locationOfDataId');
 
 const getTestId = ({ testPlanVersionId, executionOrder }) => {
     return locationOfDataId.encode({ testPlanVersionId }, { executionOrder });

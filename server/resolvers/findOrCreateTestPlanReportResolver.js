@@ -1,7 +1,7 @@
 const {
     getOrCreateTestPlanReport
 } = require('../models/services/TestPlanReportService');
-const { populateData } = require('../services/PopulatedData');
+const populateData = require('../services/PopulatedData/populateData');
 
 const findOrCreateTestPlanReportResolver = async (_, { input }) => {
     const [

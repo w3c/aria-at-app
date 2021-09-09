@@ -1,5 +1,6 @@
 const { isEqual, pick } = require('lodash');
-const { populateData } = require('../../services/PopulatedData');
+const testResultsResolver = require('../TestPlanRun/testResultsResolver');
+const populateData = require('../../services/PopulatedData/populateData');
 
 const allEqual = items => {
     for (let i = 0; i < items.length - 1; i += 1) {
@@ -8,20 +9,25 @@ const allEqual = items => {
     return true;
 };
 
-const conflictsResolver = testPlanReport => {
+const conflictsResolver = async testPlanReport => {
     const conflicts = [];
 
     const testResultsByTestId = {};
-    testPlanReport.testPlanRuns.forEach(testPlanRun => {
-        testPlanRun.testResults.forEach(testResult => {
-            if (!testResultsByTestId[testResult.testId]) {
-                testResultsByTestId[testResult.testId] = [];
-            }
-            testResultsByTestId[testResult.testId].push(testResult);
-        });
-    });
+    await Promise.all(
+        testPlanReport.testPlanRuns.map(async testPlanRun => {
+            // TODO: run this remapping before saving to database
+            testPlanRun.testPlanReport = testPlanReport; // TODO: remove hacky fix
+            const testResults = await testResultsResolver(testPlanRun);
+            testResults.forEach(testResult => {
+                if (!testResultsByTestId[testResult.testId]) {
+                    testResultsByTestId[testResult.testId] = [];
+                }
+                testResultsByTestId[testResult.testId].push(testResult);
+            });
+        })
+    );
 
-    Object.values(testResultsByTestId).forEach(([testId, testResults]) => {
+    Object.entries(testResultsByTestId).forEach(([testId, testResults]) => {
         // See GraphQL TestPlanResultConflict for more info about how the
         // conflicts are formatted
         const conflictDetected = ({ i, j } = {}) => {
@@ -97,14 +103,16 @@ const conflictsResolver = testPlanReport => {
 
     const preloaded = { testPlanReport };
 
-    return Promise.all(async ({ source, conflictingResults }) => ({
-        source: await populateData(source, { preloaded }),
-        conflictingResults: await Promise.all(
-            conflictingResults.map(conflictingResult =>
-                populateData(conflictingResult, { preloaded })
+    return Promise.all(
+        conflicts.map(async ({ source, conflictingResults }) => ({
+            source: await populateData(source, { preloaded }),
+            conflictingResults: await Promise.all(
+                conflictingResults.map(conflictingResult =>
+                    populateData(conflictingResult, { preloaded })
+                )
             )
-        )
-    }));
+        }))
+    );
 };
 
 module.exports = conflictsResolver;
