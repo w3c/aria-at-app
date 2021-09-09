@@ -602,11 +602,20 @@ const graphqlSchema = gql`
         Postgres-provided numeric ID.
         """
         id: ID!
-        # TODO: make optional when automated runs are introduced
+        # TODO: Add a note about this being null if the execution is automated,
+        # once automation is introduced.
         """
-        The person who executed the tests.
+        The person who executed the tests. Note this is not populated on the
+        TestPlanReport's finalizedTestPlanRun field, because in that case the
+        TestPlanRun may reflect the work of multiple testers.
         """
-        tester: User!
+        tester: User
+        """
+        The users whose test executions are represented by these results. Note
+        that this field is only populated on the TestPlanReport's
+        finalizedTestPlanRun field and not the draftTestPlanRuns field.
+        """
+        testers: [User]
         """
         Array of results, each of which correspond to one Test which can be
         found on the TestPlanVersion type.

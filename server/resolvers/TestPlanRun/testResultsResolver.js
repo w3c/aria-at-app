@@ -1,17 +1,16 @@
 const { At } = require('../../models');
-const { remapTest } = require('../../scripts/import-tests/remapTest');
 const {
     getRemapTestResultContext,
     remapTestResults
 } = require('../../scripts/import-tests/remapTestResults');
+const testsResolver = require('../TestPlanVersion/testsResolver');
 
 const testResultsResolver = async testPlanRun => {
+    const testPlanVersion = testPlanRun.testPlanReport.testPlanVersion;
+    const tests = await testsResolver(testPlanVersion);
+
     // TODO: run this remapping before saving to database
     const allAts = await At.findAll();
-    const testPlanVersion = testPlanRun.testPlanReport.testPlanVersion;
-    const tests = testPlanVersion.tests.map(test =>
-        remapTest(test, { testPlanVersionId: testPlanVersion.id, allAts })
-    );
     const testResultContext = await getRemapTestResultContext({
         testPlanVersion,
         testPlanRun,
