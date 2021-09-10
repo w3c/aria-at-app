@@ -36,10 +36,11 @@ const conflictsResolver = testPlanReport => {
             const conflicts = [];
             for (
                 let c = 0;
-                c < baseTestToCheck.result.details.commands.length;
+                c < baseTestToCheck.result.resultsJSON.details.commands.length;
                 c++
             ) {
-                let baseCommand = baseTestToCheck.result.details.commands[c];
+                let baseCommand =
+                    baseTestToCheck.result.resultsJSON.details.commands[c];
 
                 for (let a = 0; a < baseCommand.assertions.length; a++) {
                     let baseAssertion = baseCommand.assertions[a];
@@ -50,7 +51,8 @@ const conflictsResolver = testPlanReport => {
                     const differentAnswers = [];
 
                     for (let otherTest of otherTestsToCheck) {
-                        let otherCommand = otherTest.result.details.commands[c];
+                        let otherCommand =
+                            otherTest.result.resultsJSON.details.commands[c];
                         let otherAssertion = otherCommand.assertions[a];
                         let otherAnswer = otherAssertion.fail
                             ? `FAILED: ${otherAssertion.fail}`
@@ -83,7 +85,8 @@ const conflictsResolver = testPlanReport => {
 
                 const differentAnswers = [];
                 for (let otherResult of otherTestsToCheck) {
-                    let otherCommand = otherResult.result.details.commands[c];
+                    let otherCommand =
+                        otherResult.result.resultsJSON.details.commands[c];
 
                     // If the "unexpected_behaviors" list has different lengths, then
                     // they are different.
