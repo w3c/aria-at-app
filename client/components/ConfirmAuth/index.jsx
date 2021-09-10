@@ -1,10 +1,21 @@
-import React from 'react';
-import { connect } from 'react-redux';
+import React, { useContext, useEffect } from 'react';
 import { Route, Redirect } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import { StoreContext as store } from '../../store';
+import { useQuery } from '@apollo/client';
+import { ME_QUERY } from '../App/queries';
+import { signIn as signInAction } from '../../store/auth';
 
-const ConfirmAuth = ({ auth, children, requiredPermission, ...rest }) => {
-    const { isSignedIn, isAdmin, username, roles } = auth;
+const ConfirmAuth = ({ children, requiredPermission, ...rest }) => {
+    const { data } = useQuery(ME_QUERY);
+    const [state, dispatch] = useContext(store);
+    const { auth } = state;
+    const { isSignOutCalled, isSignedIn, isAdmin, username, roles } = auth;
+
+    useEffect(() => {
+        if (!isSignOutCalled && !username && data && data.me)
+            dispatch(signInAction(data.me));
+    }, [data, auth]);
 
     // to explicitly inform user that something went wrong when signing in
     // need to provide assistance on troubleshooting should this ever happen
@@ -28,13 +39,7 @@ const ConfirmAuth = ({ auth, children, requiredPermission, ...rest }) => {
     );
 };
 
-const mapStateToProps = state => {
-    const { auth } = state;
-    return { auth };
-};
-
 ConfirmAuth.propTypes = {
-    auth: PropTypes.object,
     children: PropTypes.oneOfType([
         PropTypes.arrayOf(PropTypes.node),
         PropTypes.node
@@ -42,4 +47,4 @@ ConfirmAuth.propTypes = {
     requiredPermission: PropTypes.string
 };
 
-export default connect(mapStateToProps)(ConfirmAuth);
+export default ConfirmAuth;

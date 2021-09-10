@@ -1,26 +1,27 @@
-import React, { Fragment } from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import {
-    signIn as signInAction,
-    signOut as signOutAction
-} from '../../redux/actions/auth';
-import { useQuery } from '@apollo/client';
+import React, { Fragment, useEffect, useContext } from 'react';
+import { useQuery, makeVar } from '@apollo/client';
 import { renderRoutes } from 'react-router-config';
 import { Link, useLocation } from 'react-router-dom';
 import { Container, Navbar, Nav } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
+import { StoreContext as store } from '../../store';
+import {
+    signIn as signInAction,
+    signOut as signOutAction
+} from '../../store/auth';
 import { ME_QUERY } from './queries';
 import routes from '../../routes';
 import useSigninUrl from './useSigninUrl';
 import './App.css';
 
-const App = ({ auth, dispatch }) => {
+const App = () => {
     const { client, loading, data } = useQuery(ME_QUERY);
     const signinUrl = useSigninUrl();
     const location = useLocation();
+    const [state, dispatch] = useContext(store);
 
+    const { auth } = state;
     const { isSignedIn, isSignOutCalled, isTester, username } = auth;
 
     const signOut = async () => {
@@ -29,12 +30,14 @@ const App = ({ auth, dispatch }) => {
         await client.resetStore();
     };
 
-    if (loading) return null;
-
-    // cache still being used to prevent redux refresh unless browser refreshed
+    // cache still being used to prevent refresh unless browser refreshed
     // for some instances. `isSignOutCalled` boolean helps prevent this
-    if (!isSignOutCalled && !username && data && data.me)
-        dispatch(signInAction(data.me));
+    useEffect(() => {
+        if (!isSignOutCalled && !username && data && data.me)
+            dispatch(signInAction(data.me));
+    }, [data, auth]);
+
+    if (loading) return null;
 
     return (
         <Fragment>
@@ -96,18 +99,6 @@ const App = ({ auth, dispatch }) => {
                                         Test Queue
                                     </Nav.Link>
                                 )}
-                                {/*{isAdmin && (*/}
-                                {/*    <Nav.Link*/}
-                                {/*        as={Link}*/}
-                                {/*        to="/admin/configure-runs"*/}
-                                {/*        aria-current={*/}
-                                {/*            location.pathname ===*/}
-                                {/*            '/admin/configure-runs'*/}
-                                {/*        }*/}
-                                {/*    >*/}
-                                {/*        Test Configuration*/}
-                                {/*    </Nav.Link>*/}
-                                {/*)}*/}
                                 <Nav.Link
                                     as={Link}
                                     to="/account/settings"
@@ -137,14 +128,4 @@ const App = ({ auth, dispatch }) => {
     );
 };
 
-App.propTypes = {
-    auth: PropTypes.object,
-    dispatch: PropTypes.func
-};
-
-const mapStateToProps = state => {
-    const { auth } = state;
-    return { auth };
-};
-
-export default connect(mapStateToProps)(App);
+export default App;

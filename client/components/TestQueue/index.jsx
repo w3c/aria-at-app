@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import React, { useEffect, useState, useContext } from 'react';
 import { useQuery } from '@apollo/client';
 import { Link } from 'react-router-dom';
 import { Container, Table, Alert } from 'react-bootstrap';
 import { Helmet } from 'react-helmet';
 import nextId from 'react-id-generator';
+import { StoreContext as store } from '../../store';
 import TestQueueRun from '../TestQueueRun';
 import {
     NewTestPlanReportContainer,
@@ -17,9 +16,11 @@ import PageStatus from '../common/PageStatus';
 import { TEST_QUEUE_PAGE_QUERY } from './queries';
 import './TestQueue.css';
 
-const TestQueue = ({ auth }) => {
+const TestQueue = () => {
     const { loading, data, refetch } = useQuery(TEST_QUEUE_PAGE_QUERY);
+    const [state] = useContext(store);
 
+    const { auth } = state;
     const [testers, setTesters] = useState([]);
     const [testPlanReports, setTestPlanReports] = useState([]);
     const [structuredTestPlanTargets, setStructuredTestPlanTargets] = useState(
@@ -287,13 +288,4 @@ const TestQueue = ({ auth }) => {
     );
 };
 
-TestQueue.propTypes = {
-    auth: PropTypes.object
-};
-
-const mapStateToProps = state => {
-    const { auth } = state;
-    return { auth };
-};
-
-export default connect(mapStateToProps)(TestQueue);
+export default TestQueue;

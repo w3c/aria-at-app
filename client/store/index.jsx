@@ -8,7 +8,7 @@ const initialState = {
     auth: authState
 };
 
-const Store = ({ children }) => {
+const StoreProvider = ({ children }) => {
     const [state, dispatch] = useReducer(reducer, initialState);
 
     return (
@@ -20,8 +20,8 @@ const Store = ({ children }) => {
 
 export const StoreContext = createContext(initialState);
 
-Store.propTypes = {
+StoreProvider.propTypes = {
     children: PropTypes.node
 };
 
-export default Store;
+export default StoreProvider;
