@@ -1,13 +1,11 @@
-const {
-    getTestPlanRunById,
-    updateTestPlanRun
-} = require('../../models/services/TestPlanRunService');
-const populateData = require('../../services/PopulatedData/populateData');
+// TODO: revisit as part of reporting migration
+const updateTestResultResolver = async () => {};
 
-const updateTestResultResolver = async (
-    { parentContext: { id: testPlanRunId } },
-    { input }
-) => {
+module.exports = updateTestResultResolver;
+
+/* Previous Implementation! */
+
+/*
     const { index, test, result, state, issues = [] } = input;
 
     const testResultInput = {
@@ -51,6 +49,4 @@ const updateTestResultResolver = async (
     await updateTestPlanRun(testPlanRunId, { testResults });
 
     return populateData({ testPlanRunId });
-};
-
-module.exports = updateTestResultResolver;
+*/

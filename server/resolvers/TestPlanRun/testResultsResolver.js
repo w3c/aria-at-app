@@ -9,7 +9,7 @@ const testResultsResolver = async testPlanRun => {
     const testPlanVersion = testPlanRun.testPlanReport.testPlanVersion;
     const tests = await testsResolver(testPlanVersion);
 
-    // TODO: run this remapping before saving to database
+    // TODO: revisit as part of reporting migration
     const allAts = await At.findAll();
     const testResultContext = await getRemapTestResultContext({
         testPlanVersion,

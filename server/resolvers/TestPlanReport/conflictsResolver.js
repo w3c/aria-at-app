@@ -15,7 +15,7 @@ const conflictsResolver = async testPlanReport => {
     const testResultsByTestId = {};
     await Promise.all(
         testPlanReport.testPlanRuns.map(async testPlanRun => {
-            // TODO: run this remapping before saving to database
+            // TODO: revisit as part of reporting migration
             testPlanRun.testPlanReport = testPlanReport; // TODO: remove hacky fix
             const testResults = await testResultsResolver(testPlanRun);
             testResults.forEach(testResult => {

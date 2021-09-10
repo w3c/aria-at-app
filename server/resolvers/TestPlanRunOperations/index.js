@@ -1,7 +1,5 @@
-// const updateTestResult = require('./updateTestResultResolver');
-// const clearTestResult = require('./clearTestResultResolver');
+const createTestResult = require('./createTestResultResolver');
 
 module.exports = {
-    //     updateTestResult,
-    //     clearTestResult
+    createTestResult
 };

@@ -836,6 +836,9 @@ const graphqlSchema = gql`
 
     # Mutation-specific types below
 
+    """
+    Mutations scoped to a previously-created TestPlanReport.
+    """
     type TestPlanReportOperations {
         """
         Assigns a user to a TestPlanReport, creating an associated TestPlanRun
@@ -843,20 +846,36 @@ const graphqlSchema = gql`
         """
         assignTester(userId: ID!): PopulatedData!
         """
-        Removes the TestPlanRun from the TestPlanReport for the user.
+        Permanently deletes the TestPlanRun from the TestPlanReport for the
+        user.
         """
         deleteTestPlanRun(userId: ID!): PopulatedData!
         deleteTestPlanRunResults(userId: ID!): PopulatedData!
         updateStatus(status: TestPlanReportStatus!): PopulatedData!
     }
 
+    """
+    Mutations scoped to a previously-created TestPlanRun.
+    """
     type TestPlanRunOperations {
+        """
+        Creates a new TestResult.
+        """
         createTestResult(input: TestResultInput): PopulatedData!
     }
 
+    """
+    Mutations scoped to a previously-created TestResult.
+    """
     type TestResultOperations {
-        update(input: TestResultInput!): PopulatedData!
-        delete: PopulatedData!
+        """
+        Update a previously created TestResult.
+        """
+        updateTestResult(input: TestResultInput!): PopulatedData!
+        """
+        Permanently deletes the TestResult.
+        """
+        deleteTestResult: PopulatedData!
     }
 
     """
