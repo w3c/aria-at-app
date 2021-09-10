@@ -1,5 +1,5 @@
 {
     "username": "esmeralda-baggins",
     "email": "esmeralda-baggins@example.com",
-    "roles": ["ADMIN", "TESTER"]
+    "roles": [{ "name": "ADMIN" }, { "name": "TESTER" }]
 }

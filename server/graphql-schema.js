@@ -114,6 +114,8 @@ const graphqlSchema = gql`
         atVersions: [String]!
     }
 
+    # TODO: remove or rework this type in order to support recording exact
+    # versions
     """
     Specifies a AT and browser combination to test, divided into buckets by
     major version.
@@ -169,7 +171,6 @@ const graphqlSchema = gql`
         as a directory, and this allows you to do both.
         """
         id: ID!
-
         """
         Corresponds to directory in the ARIA-AT repo which stores the test plan,
         e.g. "checkbox-tri-state" or "disclosure-navigation"
@@ -288,8 +289,7 @@ const graphqlSchema = gql`
         # TODO: consider converting to an array if we support a larger number of
         # more-focused and "compositional" startup scripts
         """
-        Link to JS content which, when run, will prepare the example for
-        testing.
+        JS content which, when run, will prepare the example for testing.
         """
         startupScriptContent: String
         # TODO: rethink when introducing machine-readable instructions
@@ -577,7 +577,7 @@ const graphqlSchema = gql`
         provide text explaining what occurred. For all other unexpected
         behaviors this field can be ignored.
         """
-        customUnexpectedBehaviorText: String
+        otherUnexpectedBehaviorText: String
     }
 
     """
@@ -591,7 +591,7 @@ const graphqlSchema = gql`
         """
         See UnexpectedBehavior for more information.
         """
-        customUnexpectedBehaviorText: String
+        otherUnexpectedBehaviorText: String
     }
 
     """
@@ -822,6 +822,10 @@ const graphqlSchema = gql`
         # Get all TestPlanTargets.
         # """
         # testPlanTargets: [TestPlanTarget]!
+        """
+        Get a TestPlanRun by ID.
+        """
+        testPlanRun(id: ID): TestPlanRun
         """
         For a given ID, load all the associated data which can be inferred from
         that ID. For more information, take a look at the description of the

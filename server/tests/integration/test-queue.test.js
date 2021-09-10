@@ -307,14 +307,7 @@ describe('test queue', () => {
                                     }
                                 }
                                 created {
-                                    locationOfData {
-                                        testPlanReportId
-                                        testPlanTargetId
-                                        browserId
-                                        browserVersion
-                                        atId
-                                        atVersion
-                                    }
+                                    locationOfData
                                 }
                             }
                         }

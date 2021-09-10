@@ -107,7 +107,8 @@ const remapTestResult = (previous, context) => {
         });
         return {
             id: unexpectedBehavior.id,
-            customUnexpectedBehaviorText: unexpectedBehavior.more?.value
+            text: unexpectedBehavior.text,
+            otherUnexpectedBehaviorText: previousUnexpectedBehavior.more?.value
         };
     };
 

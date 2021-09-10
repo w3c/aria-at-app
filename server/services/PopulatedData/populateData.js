@@ -40,10 +40,6 @@ const populateData = async (locationOfData, { preloaded } = {}) => {
         assertionResultId
     } = locationOfData;
 
-    if (testId) {
-        console.log();
-    }
-
     if (assertionId || scenarioId) {
         ({ testId } = locationOfDataId.decode(assertionId || scenarioId));
     }
@@ -179,22 +175,6 @@ const populateData = async (locationOfData, { preloaded } = {}) => {
         (providedAtVersion && providedAtVersion !== atVersion) ||
         (providedBrowserVersion && providedBrowserVersion !== browserVersion)
     ) {
-        console.log(
-            'locationOfData',
-            locationOfData,
-            'test',
-            test,
-            'scenario',
-            scenario,
-            'assertion',
-            assertion,
-            'testResult',
-            testResult,
-            'scenarioResult',
-            scenarioResult,
-            'assertionResult',
-            assertionResult
-        );
         throw new Error(
             'You provided IDs for both a parent and child model, implying a ' +
                 'relationship, but no relationship was found'

@@ -56,7 +56,7 @@
     "eslint-plugin-json": "^3.0.0",
     "eslint-plugin-prettier": "^3.4.0",
     "eslint-plugin-react": "^7.23.2",
-    "jest": "^25.1.0",
+    "jest": "^27.1.1",
     "moxios": "^0.4.0",
     "node-mocks-http": "^1.8.1",
     "prettier": "^1.19.1",
