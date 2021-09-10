@@ -23,8 +23,10 @@ export default function(conflicts, userId, markdown = null) {
             conflictsText += `
 ${mdheader}Difference ${i + 1} - Testing ${conflict.command} for ${
                 conflict.assertion
-            }Y
-${mdlist}Your result: ${yourAnswer.answer} (for output "${yourAnswer.output}")`;
+            }
+${mdlist}Your result: ${yourAnswer ? yourAnswer.answer : 'N/A'} (for output "${
+                yourAnswer ? yourAnswer.output : 'N/A'
+            }")`;
 
             for (let answer of otherAnswers) {
                 conflictsText += `
@@ -32,7 +34,7 @@ ${mdlist}Other result: ${answer.answer} (for output "${answer.output}")
 `;
             }
         } else {
-            let yourUnexpecteds = conflict.answers.find(
+            let yourUnexpected = conflict.answers.find(
                 a => a.tester.id == userId
             );
             let otherUnexpecteds = conflict.answers.filter(
@@ -43,8 +45,10 @@ ${mdlist}Other result: ${answer.answer} (for output "${answer.output}")
 ${mdheader}Difference ${i + 1} - Unexpected behavior when testing ${
                 conflict.command
             }
-${mdlist}Your unexpected behaviors: ${yourUnexpecteds.answer} (for output "${
-                yourUnexpecteds.output
+${mdlist}Your unexpected behaviors: ${
+                yourUnexpected ? yourUnexpected.answer : 'N/A'
+            } (for output "${
+                yourUnexpected ? yourUnexpected.output : 'N/A'
             }") `;
 
             for (let unexpected of otherUnexpecteds) {
