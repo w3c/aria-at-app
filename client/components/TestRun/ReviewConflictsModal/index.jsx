@@ -33,7 +33,11 @@ const ReviewConflictsModal = ({
                         }" for assertion "${conflict.assertion}"`}</h5>
                         <ul>
                             <li>
-                                {`${currentUsername}'s result: ${yourAnswer.answer} (for output "${yourAnswer.output}")`}
+                                {`${currentUsername}'s result: ${
+                                    yourAnswer ? yourAnswer.answer : 'N/A'
+                                } (for output "${
+                                    yourAnswer ? yourAnswer.output : 'N/A'
+                                }")`}
                             </li>
                             {otherAnswers.map(answer => {
                                 let other = answer.tester.username;
@@ -48,7 +52,7 @@ const ReviewConflictsModal = ({
                 );
             } else {
                 let currentUsername = '';
-                let yourUnexpecteds = conflict.answers.find(a => {
+                let yourUnexpected = conflict.answers.find(a => {
                     if (a.tester.id == userId) {
                         currentUsername = a.tester.username;
                         return true;
@@ -65,7 +69,15 @@ const ReviewConflictsModal = ({
                         }"`}</h5>
                         <ul>
                             <li>
-                                {`${currentUsername}'s result: ${yourUnexpecteds.answer} (for output "${yourUnexpecteds.output}")`}
+                                {`${currentUsername}'s result: ${
+                                    yourUnexpected
+                                        ? yourUnexpected.answer
+                                        : 'N/A'
+                                } (for output "${
+                                    yourUnexpected
+                                        ? yourUnexpected.output
+                                        : 'N/A'
+                                }")`}
                             </li>
                             {otherUnexpecteds.map(answer => {
                                 let other = answer.tester.username;
