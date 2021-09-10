@@ -6,7 +6,18 @@ const testPlanReportsResolver = (_, { statuses }) => {
     const where = {};
     if (statuses) where.status = statuses;
 
-    return getTestPlanReports(null, where);
+    return getTestPlanReports(
+        null,
+        where,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        { order: [['createdAt', 'desc']] }
+    );
 };
 
 module.exports = testPlanReportsResolver;

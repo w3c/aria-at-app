@@ -110,6 +110,20 @@ SELECT pg_catalog.setval('public."Browser_id_seq"', 100, true);
 
 
 --
+-- Name: At_id_seq; Type: SEQUENCE SET; Schema: public; Owner: atr
+--
+
+SELECT pg_catalog.setval('public."At_id_seq"', 100, true);
+
+
+--
+-- Name: Browser_id_seq; Type: SEQUENCE SET; Schema: public; Owner: atr
+--
+
+SELECT pg_catalog.setval('public."Browser_id_seq"', 100, true);
+
+
+--
 -- Name: TestPlanReport_id_seq; Type: SEQUENCE SET; Schema: public; Owner: atr
 --
 
