@@ -7,7 +7,7 @@ const testPlan = require('./testPlanResolver');
 // const testPlanVersions = require('./testPlanVersionsResolver');
 const testPlanReport = require('./testPlanReportResolver');
 const testPlanReports = require('./testPlanReportsResolver');
-// const testPlanRun = require('./testPlanRunResolver');
+const testPlanRun = require('./testPlanRunResolver');
 const findOrCreateTestPlanReport = require('./findOrCreateTestPlanReportResolver');
 const mutateTestPlanReport = require('./mutateTestPlanReportResolver');
 const mutateTestPlanRun = require('./mutateTestPlanRunResolver');
@@ -32,6 +32,7 @@ const resolvers = {
         testPlans,
         testPlanReport,
         testPlanReports,
+        testPlanRun,
         populateData
     },
     Mutation: {

@@ -2,10 +2,9 @@ const { At } = require('../../models');
 const { remapTest } = require('../../scripts/import-tests/remapTest');
 
 const testsResolver = async testPlanVersion => {
-    // TODO: run this remapping before saving to database, so this resolver is
-    // not needed.
+    // TODO: run this remapping before saving to database
     const allAts = await At.findAll();
-    const remapped = testPlanVersion.tests.map(test =>
+    const tests = testPlanVersion.tests.map(test =>
         remapTest(test, { testPlanVersionId: testPlanVersion.id, allAts })
     );
 
@@ -15,7 +14,7 @@ const testsResolver = async testPlanVersion => {
     ).map(([id, text]) => ({ id, text }));
 
     // Populate nested At and Command fields
-    return remapped.map(test => ({
+    return tests.map(test => ({
         ...test,
         ats: test.atIds.map(atId => allAts.find(at => at.id === atId)),
         scenarios: test.scenarios.map(scenario => ({

@@ -11,9 +11,8 @@ const updateStatusResolver = async (
     { status: status },
     { user }
 ) => {
-    const roles = user ? user.roles.map(role => role.name) : [];
-    if (!roles.includes('ADMIN')) {
-        throw new AuthenticationError('Unauthorized');
+    if (!user?.roles.find(role => role.name === 'ADMIN')) {
+        return new AuthenticationError();
     }
 
     const testPlanReport = await getTestPlanReportById(testPlanReportId);
