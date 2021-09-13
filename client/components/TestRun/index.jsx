@@ -1,6 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import { Link, useParams, useHistory } from 'react-router-dom';
 import useRouterQuery from '../../hooks/useRouterQuery';
@@ -29,10 +27,11 @@ import {
     UPDATE_TEST_RUN_RESULT_MUTATION,
     CLEAR_TEST_RESULT_MUTATION
 } from './queries';
+import { evalAuth } from '../../utils/evalAuth';
 import './TestRun.css';
 import supportJson from '../../resources/support.json';
 
-const TestRun = ({ auth }) => {
+const TestRun = () => {
     const params = useParams();
     const history = useHistory();
     const routerQuery = useRouterQuery();
@@ -114,6 +113,7 @@ const TestRun = ({ auth }) => {
     const { testPlanReport, tester } = testPlanRun || {};
     const { testPlanTarget, testPlanVersion, conflicts } = testPlanReport || {};
 
+    const auth = evalAuth(data && data.me ? data.me : {});
     const { id: userId } = auth;
     // check to ensure an admin that manually went to a test run url doesn't
     // run the test as themselves
@@ -609,13 +609,4 @@ const TestRun = ({ auth }) => {
     );
 };
 
-TestRun.propTypes = {
-    auth: PropTypes.object
-};
-
-const mapStateToProps = state => {
-    const { auth } = state;
-    return { auth };
-};
-
-export default connect(mapStateToProps)(TestRun);
+export default TestRun;

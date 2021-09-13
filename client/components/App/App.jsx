@@ -1,41 +1,28 @@
-import React, { Fragment, useEffect, useContext } from 'react';
-import { useQuery, makeVar } from '@apollo/client';
+import React, { Fragment } from 'react';
+import { useQuery } from '@apollo/client';
 import { renderRoutes } from 'react-router-config';
 import { Link, useLocation } from 'react-router-dom';
 import { Container, Navbar, Nav } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
-import { StoreContext as store } from '../../store';
-import {
-    signIn as signInAction,
-    signOut as signOutAction
-} from '../../store/auth';
+import { evalAuth } from '../../utils/evalAuth';
 import { ME_QUERY } from './queries';
 import routes from '../../routes';
 import useSigninUrl from './useSigninUrl';
 import './App.css';
 
 const App = () => {
-    const { client, loading, data } = useQuery(ME_QUERY);
-    const signinUrl = useSigninUrl();
     const location = useLocation();
-    const [state, dispatch] = useContext(store);
+    const signinUrl = useSigninUrl();
+    const { client, loading, data } = useQuery(ME_QUERY);
 
-    const { auth } = state;
-    const { isSignedIn, isSignOutCalled, isTester, username } = auth;
+    const auth = evalAuth(data && data.me ? data.me : {});
+    const { username, isTester, isSignedIn } = auth;
 
     const signOut = async () => {
-        dispatch(signOutAction());
         await fetch('/api/auth/signout', { method: 'POST' });
         await client.resetStore();
     };
-
-    // cache still being used to prevent refresh unless browser refreshed
-    // for some instances. `isSignOutCalled` boolean helps prevent this
-    useEffect(() => {
-        if (!isSignOutCalled && !username && data && data.me)
-            dispatch(signInAction(data.me));
-    }, [data, auth]);
 
     if (loading) return null;
 

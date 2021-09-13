@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
 
 export const CURRENT_SETTINGS_QUERY = gql`
-    query {
+    query CurrentSettings {
         me {
             id
             username

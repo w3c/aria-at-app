@@ -1,7 +1,12 @@
 import { gql } from '@apollo/client';
 
 export const TEST_QUEUE_PAGE_QUERY = gql`
-    query {
+    query TestQueuePage {
+        me {
+            id
+            username
+            roles
+        }
         users {
             id
             username

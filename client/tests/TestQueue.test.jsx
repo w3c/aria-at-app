@@ -12,20 +12,20 @@ import { BrowserRouter } from 'react-router-dom';
 import '@testing-library/jest-dom/extend-expect';
 
 import TestQueue from '../components/TestQueue';
-import { storeFactory } from './util';
 
 // eslint-disable-next-line jest/no-mocks-import
 import {
-    TEST_QUEUE_PAGE_NOT_POPULATED_MOCK,
-    TEST_QUEUE_PAGE_POPULATED_MOCK
+    TEST_QUEUE_PAGE_NOT_POPULATED_MOCK_ADMIN,
+    TEST_QUEUE_PAGE_NOT_POPULATED_MOCK_TESTER,
+    TEST_QUEUE_PAGE_POPULATED_MOCK_ADMIN,
+    TEST_QUEUE_PAGE_POPULATED_MOCK_TESTER
 } from './__mocks__/GraphQLMocks';
 
-const setup = (initialState = {}, mocks = []) => {
-    const store = storeFactory(initialState);
+const setup = (mocks = []) => {
     return render(
         <BrowserRouter>
             <MockedProvider mocks={mocks} cache={new InMemoryCache({})}>
-                <TestQueue store={store} />
+                <TestQueue />
             </MockedProvider>
         </BrowserRouter>
     );
@@ -36,8 +36,7 @@ describe('Render TestQueue/index.jsx', () => {
 
     describe('[NOT ADMIN] when no test plan reports exist', () => {
         beforeEach(() => {
-            const initialState = { auth: { isAdmin: false, isTester: true } };
-            wrapper = setup(initialState, TEST_QUEUE_PAGE_NOT_POPULATED_MOCK);
+            wrapper = setup(TEST_QUEUE_PAGE_NOT_POPULATED_MOCK_TESTER);
         });
 
         it('renders loading state on initialization', async () => {
@@ -98,8 +97,7 @@ describe('Render TestQueue/index.jsx', () => {
 
     describe('[NOT ADMIN] when test plan reports exist', () => {
         beforeEach(() => {
-            const initialState = { auth: { isAdmin: false, isTester: true } };
-            wrapper = setup(initialState, TEST_QUEUE_PAGE_POPULATED_MOCK);
+            wrapper = setup(TEST_QUEUE_PAGE_POPULATED_MOCK_TESTER);
         });
 
         it('renders loading state on initialization', async () => {
@@ -180,8 +178,7 @@ describe('Render TestQueue/index.jsx', () => {
 
     describe('[IS ADMIN] when no test plan reports exist', () => {
         beforeEach(() => {
-            const initialState = { auth: { isAdmin: true, isTester: true } };
-            wrapper = setup(initialState, TEST_QUEUE_PAGE_NOT_POPULATED_MOCK);
+            wrapper = setup(TEST_QUEUE_PAGE_NOT_POPULATED_MOCK_ADMIN);
         });
 
         it('renders loading state on initialization', async () => {
@@ -253,8 +250,7 @@ describe('Render TestQueue/index.jsx', () => {
 
     describe('[IS ADMIN] when test plan reports exist', () => {
         beforeEach(() => {
-            const initialState = { auth: { isAdmin: true, isTester: true } };
-            wrapper = setup(initialState, TEST_QUEUE_PAGE_POPULATED_MOCK);
+            wrapper = setup(TEST_QUEUE_PAGE_POPULATED_MOCK_ADMIN);
         });
 
         it('renders loading state on initialization', async () => {

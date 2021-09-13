@@ -30,7 +30,7 @@
     "@fortawesome/fontawesome-svg-core": "^1.2.32",
     "@fortawesome/free-solid-svg-icons": "^5.15.1",
     "@fortawesome/react-fontawesome": "^0.1.11",
-    "axios": "^0.19.2",
+    "axios": "^0.21.4",
     "bootstrap": "^4.4.1",
     "core-js": "^3.8.0",
     "graphql": "^15.5.0",
@@ -47,12 +47,8 @@
     "react-helmet": "^6.0.0",
     "react-id-generator": "^3.0.0",
     "react-mde": "^10.0.3",
-    "react-redux": "^7.2.0",
     "react-router-config": "^5.1.1",
     "react-router-dom": "^5.1.2",
-    "redux": "^4.0.5",
-    "redux-logger": "^3.0.6",
-    "redux-thunk": "^2.3.0",
     "sass-loader": "^8.0.2",
     "showdown": "^1.9.1"
   },
@@ -111,8 +107,13 @@
     "transform": {
       "^.+\\.(js|jsx|mjs)$": "babel-jest"
     },
-    "testPathIgnorePatterns": ["<rootDir>/node_modules/", "<rootDir>/resources/"],
-    "coveragePathIgnorePatterns": ["<rootDir>/resources/"]
+    "testPathIgnorePatterns": [
+      "<rootDir>/node_modules/",
+      "<rootDir>/resources/"
+    ],
+    "coveragePathIgnorePatterns": [
+      "<rootDir>/resources/"
+    ]
   },
   "resolutions": {
     "jest-environment-jsdom": "^26.0.1"
