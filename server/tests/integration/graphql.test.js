@@ -51,7 +51,6 @@ const getTypeAwareQuery = async ({
                     return !(value === null || value?.length === 0);
                 })
                 .map(keyValue => keyValue[0]);
-
             graphqlQueriedFieldsByType[fieldSet.__typename] = unique([
                 ...(graphqlQueriedFieldsByType[fieldSet.__typename] || []),
                 ...nonNullOrEmptyFieldNames
@@ -153,19 +152,86 @@ describe('graphql', () => {
                             name
                         }
                     }
+                    testPlan(id: "checkbox") {
+                        __typename
+                        id
+                        directory
+                        latestTestPlanVersion {
+                            __typename
+                            id
+                            title
+                            updatedAt
+                            gitSha
+                            gitMessage
+                            updatedAt
+                            exampleUrl
+                            metadata
+                            tests {
+                                __typename
+                                id
+                                title
+                                ats {
+                                    id
+                                }
+                                atMode
+                                startupScriptContent
+                                instructions
+                                scenarios {
+                                    __typename
+                                    id
+                                    at {
+                                        id
+                                    }
+                                    command {
+                                        __typename
+                                        id
+                                        text
+                                    }
+                                }
+                                assertions {
+                                    __typename
+                                    id
+                                    priority
+                                    text
+                                }
+                            }
+                        }
+                        testPlanVersions {
+                            id
+                        }
+                    }
+                    testPlanReport(id: 1) {
+                        testPlanTarget {
+                            __typename
+                            id
+                            title
+                            at {
+                                id
+                            }
+                            atVersion
+                            browser {
+                                id
+                            }
+                            browserVersion
+                        }
+                        draftTestPlanRuns {
+                            __typename
+                            testResults {
+                                id
+                            }
+                        }
+                    }
                 }
             `
         );
-        // console.log(result)
+        // console.log(result);
 
         expect(() => {
             // const missingTypes = checkForMissingTypes();
             // if (missingTypes.length) {
             //     const typeWasOrTypesWere =
             //         missingTypes.length === 1 ? 'type was' : 'types were';
-            //     const missingTypesFormatted = missingTypes
-            //         .map(each => `'${each}'`)
-            //         .join(', ');
+            //     const missingTypesFormatted = missingTypes.join(', ');
             //     throw new Error(
             //         `The following ${typeWasOrTypesWere} not tested: ` +
             //             `${missingTypesFormatted}. Either add tests or ` +
@@ -182,15 +248,13 @@ describe('graphql', () => {
             if (missingTypeName) {
                 const fieldOrFields =
                     missingFields.length === 1 ? 'field' : 'fields';
-                const fieldsFormatted = missingFields
-                    .map(each => `'${each}'`)
-                    .join(', ');
+                const fieldsFormatted = missingFields.join(', ');
                 throw new Error(
                     `The '${missingTypeName}' test did not include tests for ` +
                         `the following ${fieldOrFields}: ${fieldsFormatted}. ` +
                         `Either add tests or add the typename and field to ` +
-                        `excludedTypeNameAndField array. Note that null or ` +
-                        `an empty array does not count!`
+                        `the excludedTypeNameAndField array. Note that null ` +
+                        `or an empty array does not count!`
                 );
             }
         }).not.toThrow();

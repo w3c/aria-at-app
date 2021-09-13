@@ -359,7 +359,7 @@ const graphqlSchema = gql`
     """
     Minimal plain representation of a Command.
     """
-    type CommandInput {
+    input CommandInput {
         """
         See Command type for more information.
         """
@@ -883,7 +883,7 @@ const graphqlSchema = gql`
     expectation of what you want to exist, and it will be made so. It allows you
     to check whether new database records were created.
     """
-    type findOrCreateResult {
+    type FindOrCreateResult {
         """
         The data that was found or created, as well as any implicit
         associations. For example, if you find or create a TestPlanReport, this
@@ -912,7 +912,7 @@ const graphqlSchema = gql`
             The TestPlanReport to find or create.
             """
             input: TestPlanReportInput!
-        ): findOrCreateResult!
+        ): FindOrCreateResult!
         """
         Get the available mutations for the given TestPlanReport.
         """

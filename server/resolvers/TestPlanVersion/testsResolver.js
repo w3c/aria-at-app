@@ -10,7 +10,7 @@ const testsResolver = async testPlanVersion => {
 
     // TODO: fix before PR!
     const commands = Object.entries(
-        await import('../../../client/resources/keys.mjs')
+        require('../../../client/resources/keys.json')
     ).map(([id, text]) => ({ id, text }));
 
     // Populate nested At and Command fields

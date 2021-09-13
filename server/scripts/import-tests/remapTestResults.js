@@ -28,8 +28,9 @@ const getRemapTestResultContext = async ({
     tests,
     allAts
 }) => {
+    // TODO: fix before PR
     const commands = Object.entries(
-        await import('../../../client/resources/keys.mjs')
+        require('../../../client/resources/keys.json')
     ).map(([id, text]) => ({ id, text }));
 
     return {
@@ -116,6 +117,7 @@ const remapTestResult = (previous, context) => {
         const command = commands.find(
             each => each.text === previousScenario.description
         );
+        console.log(test.scenarios, command);
         const scenarioId = test.scenarios.find(
             each => each.commandId === command.id && each.atId === at.id
         ).id;
