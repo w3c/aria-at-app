@@ -70,8 +70,4 @@ const mutate = async (gql, { user = defaultUser } = {}) => {
     return data;
 };
 
-const tearDown = () => {
-    return server.stop();
-};
-
-module.exports = { query, mutate, tearDown };
+module.exports = { query, mutate };

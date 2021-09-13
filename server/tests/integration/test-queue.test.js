@@ -54,7 +54,7 @@ describe('test queue', () => {
                 {
                     id: expect.anything(),
                     status: expect.stringMatching(/^(DRAFT|IN_REVIEW)$/),
-                    conflictCount: expect.any(Number),
+                    conflicts: expect.any(Array),
                     testPlanTarget: {
                         id: expect.anything(),
                         title: expect.any(String)
@@ -63,20 +63,23 @@ describe('test queue', () => {
                         title: expect.any(String),
                         gitSha: expect.any(String),
                         gitMessage: expect.any(String),
-                        tests: expect.objectContaining({
-                            id: expect.anything()
-                        })
+                        tests: expect.arrayContaining([
+                            expect.objectContaining({
+                                id: expect.anything()
+                            })
+                        ])
                     },
                     draftTestPlanRuns: expect.arrayContaining([
                         {
                             id: expect.anything(),
-                            testResultCount: expect.any(Number),
                             tester: expect.objectContaining({
                                 username: expect.any(String)
                             }),
-                            testResults: expect.objectContaining({
-                                id: expect.anything()
-                            })
+                            testResults: expect.arrayContaining([
+                                expect.objectContaining({
+                                    id: expect.anything()
+                                })
+                            ])
                         }
                     ])
                 }

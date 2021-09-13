@@ -1,7 +1,8 @@
 const { gql } = require('apollo-server');
 const { difference, uniq: unique } = require('lodash');
 const deepFlatFilter = require('../../util/deepFlatFilter');
-const { query, tearDown } = require('../util/graphql-test-utilities');
+const { query } = require('../util/graphql-test-utilities');
+const db = require('../../models/index');
 
 /**
  * Get a function for making GraphQL queries - as well as functions to check whether any types or any fields were not queried. Note, for this to work, all queried types must include the __typename property.
@@ -108,12 +109,13 @@ describe('graphql', () => {
             '__Directive',
             'Query',
             'Mutation',
-            // TODO: Figure out similar testing strategy for migrations
+            // TODO: Add a typeAwareMutation as well
             'TestPlanReportOperations',
             'TestPlanRunOperations',
             'TestResultOperations',
             'FindOrCreateResult',
 
+            // TEMP
             'TestPlanReportConflict',
             'UnexpectedBehavior'
         ];
@@ -121,6 +123,7 @@ describe('graphql', () => {
             ['TestResult', 'startedAt'],
             ['TestResult', 'completedAt'],
 
+            // TEMP
             ['TestPlanReport', 'conflicts'],
             ['TestPlanReport', 'finalizedTestPlanRun'],
             ['TestPlanRun', 'testers'],
@@ -138,13 +141,11 @@ describe('graphql', () => {
     });
 
     afterAll(async () => {
-        typeAwareQuery = null;
-        checkForMissingTypes = null;
-        checkForMissingFields = null;
-        await tearDown();
+        // Closing the DB connection allows Jest to exit successfully.
+        await db.sequelize.close();
     });
 
-    it('supports every type and field in the schema', async () => {
+    it('supports querying every type and field in the schema', async () => {
         const assertionResultId =
             'Njc3OeyIxNCI6IlltSXpOZXlJeE15STZJbHBxYXpWWlpYbEplRTFwU1RaTldEQlh' +
             'WbXRaZWlKOURJd09UIn0DUxNz';
@@ -344,14 +345,14 @@ describe('graphql', () => {
                 const typeWasOrTypesWere =
                     missingTypes.length === 1 ? 'type was' : 'types were';
                 const missingTypesFormatted = missingTypes.join(', ');
-                // throw new Error(
-                //     `The following ${typeWasOrTypesWere} not tested: ` +
-                //         `${missingTypesFormatted}. Either add tests or ` +
-                //         `explicitly exclude the types by adding the type ` +
-                //         `name to the excludedTypeNames array. Note this may ` +
-                //         `also occur if the query is missing the __typename ` +
-                //         `field.`
-                // );
+                throw new Error(
+                    `The following ${typeWasOrTypesWere} not tested: ` +
+                        `${missingTypesFormatted}. Either add tests or ` +
+                        `explicitly exclude the types by adding the type ` +
+                        `name to the excludedTypeNames array. Note this may ` +
+                        `also occur if the query is missing the __typename ` +
+                        `field.`
+                );
             }
 
             const missingFieldsByTypeName = checkForMissingFields();
@@ -361,13 +362,14 @@ describe('graphql', () => {
                 const fieldOrFields =
                     missingFields.length === 1 ? 'field' : 'fields';
                 const fieldsFormatted = missingFields.join(', ');
-                // throw new Error(
-                //     `The '${missingTypeName}' test did not include tests for ` +
-                //         `the following ${fieldOrFields}: ${fieldsFormatted}. ` +
-                //         `Either add tests or add the typename and field to ` +
-                //         `the excludedTypeNameAndField array. Note that null ` +
-                //         `or an empty array does not count!`
-                // );
+                throw new Error(
+                    `The '${missingTypeName}' query did not include fields ` +
+                        `for the following ${fieldOrFields}: ` +
+                        `${fieldsFormatted}. Either add tests or add the ` +
+                        `typename and field to the excludedTypeNameAndField ` +
+                        `array. Note that null or an empty array does not ` +
+                        `count!`
+                );
             }
         }).not.toThrow();
     });
