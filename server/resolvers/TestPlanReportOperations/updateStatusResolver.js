@@ -12,7 +12,7 @@ const updateStatusResolver = async (
     { user }
 ) => {
     if (!user?.roles.find(role => role.name === 'ADMIN')) {
-        return new AuthenticationError();
+        throw new AuthenticationError();
     }
 
     const testPlanReport = await getTestPlanReportById(testPlanReportId);

@@ -8,7 +8,8 @@ const testsResolver = async testPlanVersion => {
         remapTest(test, { testPlanVersionId: testPlanVersion.id, allAts })
     );
 
-    // TODO: fix before PR!
+    // TODO: revisit as part of reporting migration - part of improving the
+    // test import script
     const commands = Object.entries(
         require('../../../client/resources/keys.json')
     ).map(([id, text]) => ({ id, text }));

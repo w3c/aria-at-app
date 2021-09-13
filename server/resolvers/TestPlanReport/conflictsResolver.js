@@ -71,8 +71,8 @@ const conflictsResolver = async testPlanReport => {
         for (let i = 0; i < testResults[0].scenarioResults.length; i += 1) {
             const scenarioResultComparisons = testResults.map(testResult => {
                 return {
+                    // Note that output is not considered
                     ...pick(testResult.scenarioResults[i], [
-                        'output',
                         'unexpectedBehaviors'
                     ]),
                     assertionResultCount:

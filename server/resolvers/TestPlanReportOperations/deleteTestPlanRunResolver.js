@@ -16,7 +16,7 @@ const deleteTestPlanRunResolver = async (
                 testerUserId == user.id)
         )
     ) {
-        return new AuthenticationError();
+        throw new AuthenticationError();
     }
 
     await removeTestPlanRunByQuery({

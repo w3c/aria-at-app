@@ -6,7 +6,7 @@ const populateData = require('../services/PopulatedData/populateData');
 
 const findOrCreateTestPlanReportResolver = async (_, { input }, { user }) => {
     if (!user?.roles.find(role => role.name === 'ADMIN')) {
-        return new AuthenticationError();
+        throw new AuthenticationError();
     }
 
     const [

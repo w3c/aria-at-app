@@ -269,7 +269,7 @@ const updateTestPlanVersion = async (
  * @param {boolean} options.includeLatestTestPlanVersion - Whether to load the latestTestPlanVersion field which requires multiple queries.
  * @param {boolean} options.includeTestPlanVersions - Whether to load the testPlanVersions field which requires multiple queries.
  * @param {boolean} options.id - A single ID to load - mainly here to allow the queries to be reused in the getTestPlanById function.
- * @returns
+ * @returns {*} - TestPlans as specified in GraphQL
  */
 const getTestPlans = async ({
     includeLatestTestPlanVersion = true,
@@ -278,6 +278,8 @@ const getTestPlans = async ({
 } = {}) => {
     const getTestPlansAndLatestVersionId = async () => {
         const whereClause = id ? `WHERE metadata->>'directory' = ?` : '';
+        // TODO: revisit as part of reporting migration - make directory a
+        // column instead of a metadata field
         const [results] = await sequelize.query(
             `
                 SELECT * FROM (

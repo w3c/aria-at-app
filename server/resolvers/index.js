@@ -4,7 +4,6 @@ const ats = require('./atsResolver');
 const browsers = require('./browsersResolver');
 const testPlans = require('./testPlansResolver');
 const testPlan = require('./testPlanResolver');
-// const testPlanVersions = require('./testPlanVersionsResolver');
 const testPlanReport = require('./testPlanReportResolver');
 const testPlanReports = require('./testPlanReportsResolver');
 const testPlanRun = require('./testPlanRunResolver');

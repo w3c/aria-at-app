@@ -5,10 +5,15 @@ const { query } = require('../util/graphql-test-utilities');
 const db = require('../../models/index');
 
 /**
- * Get a function for making GraphQL queries - as well as functions to check whether any types or any fields were not queried. Note, for this to work, all queried types must include the __typename property.
+ * Get a function for making GraphQL queries - as well as functions to check
+ * whether any types or any fields were not queried. Note, for this to work,
+ * all queried types must include the __typename property.
  * @param {object} options
- * @param {string[]} options.excludedTypeNames - Array with a string for the type names which should not count as missing.
- * @param {array} options.excludedTypeNameAndField - Array of arrays with a string for the type name and a string for the field name which should not count as missing.
+ * @param {string[]} options.excludedTypeNames - Array with a string for the
+ * type names which should not count as missing.
+ * @param {array} options.excludedTypeNameAndField - Array of arrays with a
+ * string for the type name and a string for the field name which should not
+ * count as missing.
  * @returns {object}
  */
 const getTypeAwareQuery = async ({
@@ -109,14 +114,14 @@ describe('graphql', () => {
             '__Directive',
             'Query',
             'Mutation',
-            // TODO: Add a typeAwareMutation as well
+            // TODO: Add a typeAwareMutation and implement tests for the these:
             'TestPlanReportOperations',
             'TestPlanRunOperations',
             'TestResultOperations',
             'FindOrCreateResult'
         ];
         const excludedTypeNameAndField = [
-            // TODO: Implement as part of frontend changes
+            // TODO: Implement as part of reporting frontend
             ['TestResult', 'startedAt'],
             ['TestResult', 'completedAt']
         ];
@@ -136,10 +141,6 @@ describe('graphql', () => {
     });
 
     it('supports querying every type and field in the schema', async () => {
-        const assertionResultId =
-            'Njc3OeyIxNCI6IlltSXpOZXlJeE15STZJbHBxYXpWWlpYbEplRTFwU1RaTldEQlh' +
-            'WbXRaZWlKOURJd09UIn0DUxNz';
-
         // eslint-disable-next-line no-unused-vars
         const result = await typeAwareQuery(
             gql`
@@ -297,7 +298,9 @@ describe('graphql', () => {
                         }
                     }
                     populateData(locationOfData: {
-                        assertionResultId: "${assertionResultId}"
+                        assertionResultId: "${'Njc3OeyIxNCI6IlltSXpOZXlJeE15S' +
+                            'TZJbHBxYXpWWlpYbEplRTFwU1RaTldEQlhWbXRaZWlKOURJd' +
+                            '09UIn0DUxNz'}"
                     }) {
                         __typename
                         locationOfData

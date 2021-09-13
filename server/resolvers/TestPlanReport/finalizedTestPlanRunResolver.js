@@ -7,7 +7,7 @@ const finalizedTestPlanRunResolver = testPlanReport => {
     }
     return {
         ...testPlanReport.testPlanRuns.dataValues,
-        tester: null,
+        tester: null, // Finalized runs represent the work of all testers
         testers: testPlanReport.testPlanRuns.map(each => each.tester),
         testPlanReport // Needed by child resolvers
     };

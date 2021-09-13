@@ -16,7 +16,7 @@ const assignTesterResolver = async (
                 testerUserId == user.id)
         )
     ) {
-        return new AuthenticationError();
+        throw new AuthenticationError();
     }
 
     const { id: testPlanRunId } = await createTestPlanRun({
