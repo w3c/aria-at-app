@@ -124,7 +124,6 @@ const populateData = async (locationOfData, { preloaded } = {}) => {
     let assertionResult;
 
     if (testResultId) {
-        // TODO: revisit as part of reporting migration
         const testResults = await testResultsResolver(testPlanRun);
         testResult = testResults.find(each => each.id === testResultId);
         testId = testResult.testId;
@@ -142,7 +141,6 @@ const populateData = async (locationOfData, { preloaded } = {}) => {
         assertionId = assertionResult.assertionId;
     }
     if (testId) {
-        // TODO: revisit as part of reporting migration
         const tests = await testsResolver(testPlanVersion);
         test = tests.find(each => each.id === testId);
     }

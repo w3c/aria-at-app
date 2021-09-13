@@ -114,7 +114,7 @@ describe('graphql', () => {
             '__Directive',
             'Query',
             'Mutation',
-            // TODO: Add a typeAwareMutation and implement tests for the these:
+            // TODO: Add a typeAwareMutation and implement the following
             'TestPlanReportOperations',
             'TestPlanRunOperations',
             'TestResultOperations',

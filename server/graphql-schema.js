@@ -45,7 +45,7 @@ const graphqlSchema = gql`
         List of types of actions the user can complete.
         """
         roles: [Role]!
-        # TODO: Either use this field or eliminate it.
+        # TODO: Either use the recorded data somewhere or eliminate the field.
         """
         The ATs the user has indicated they are able to test.
         """
@@ -117,7 +117,7 @@ const graphqlSchema = gql`
     # TODO: remove or rework this type in order to support recording exact
     # versions
     """
-    Specifies a AT and browser combination to test, divided into buckets by
+    Specifies an AT and browser combination to test, divided into buckets by
     major version.
     """
     type TestPlanTarget {
