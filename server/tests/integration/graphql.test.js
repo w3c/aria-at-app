@@ -113,22 +113,12 @@ describe('graphql', () => {
             'TestPlanReportOperations',
             'TestPlanRunOperations',
             'TestResultOperations',
-            'FindOrCreateResult',
-
-            // TEMP
-            'TestPlanReportConflict',
-            'UnexpectedBehavior'
+            'FindOrCreateResult'
         ];
         const excludedTypeNameAndField = [
+            // TODO: Implement as part of frontend changes
             ['TestResult', 'startedAt'],
-            ['TestResult', 'completedAt'],
-
-            // TEMP
-            ['TestPlanReport', 'conflicts'],
-            ['TestPlanReport', 'finalizedTestPlanRun'],
-            ['TestPlanRun', 'testers'],
-            ['ScenarioResult', 'unexpectedBehaviors'],
-            ['AssertionResult', 'failedReason']
+            ['TestResult', 'completedAt']
         ];
         ({
             typeAwareQuery,
@@ -229,7 +219,7 @@ describe('graphql', () => {
                             id
                         }
                     }
-                    testPlanReport(id: 1) {
+                    conflictTestPlanReport: testPlanReport(id: 2) {
                         __typename
                         id
                         status
@@ -282,8 +272,27 @@ describe('graphql', () => {
                                         __typename
                                         id
                                         text
+                                        otherUnexpectedBehaviorText
                                     }
                                 }
+                            }
+                        }
+                        conflicts {
+                            __typename
+                            source {
+                                locationOfData
+                            }
+                            conflictingResults {
+                                locationOfData
+                            }
+                        }
+                    }
+                    finalTestPlanReport: testPlanReport(id: 3) {
+                        __typename
+                        finalizedTestPlanRun {
+                            __typename
+                            testers {
+                                username
                             }
                         }
                     }

@@ -1,3 +1,5 @@
+// TODO: revisit as part of reporting migration (whole file)
+
 const { gql } = require('apollo-server');
 const dbCleaner = require('../util/db-cleaner');
 const { query, mutate } = require('../util/graphql-test-utilities');
@@ -10,7 +12,7 @@ afterAll(async () => {
 });
 
 describe('test queue', () => {
-    it('displays test plan run', async () => {
+    it.skip('displays test plan run', async () => {
         const testPlanRunId = 1;
 
         const result = await query(
@@ -74,7 +76,7 @@ describe('test queue', () => {
         );
     });
 
-    it('updates test plan run state data', async () => {
+    it.skip('updates test plan run state data', async () => {
         await dbCleaner(async () => {
             const testReportId = '1';
             const testerId = '2';
@@ -269,7 +271,7 @@ describe('test queue', () => {
         });
     });
 
-    it('updates test plan run result data', async () => {
+    it.skip('updates test plan run result data', async () => {
         await dbCleaner(async () => {
             const testPlanRunId = 1;
             const testPlanResultIndex = 1;
@@ -426,7 +428,7 @@ describe('test queue', () => {
         });
     });
 
-    it('transforms testResult.test priority keys from numbers to strings', async () => {
+    it.skip('transforms testResult.test priority keys from numbers to strings', async () => {
         const testResult = {
             test: {
                 htmlFile:
