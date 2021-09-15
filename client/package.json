@@ -46,7 +46,6 @@
     "react-dom": "^16.13.0",
     "react-helmet": "^6.0.0",
     "react-id-generator": "^3.0.0",
-    "react-mde": "^10.0.3",
     "react-redux": "^7.2.0",
     "react-router-config": "^5.1.1",
     "react-router-dom": "^5.1.2",
@@ -111,8 +110,13 @@
     "transform": {
       "^.+\\.(js|jsx|mjs)$": "babel-jest"
     },
-    "testPathIgnorePatterns": ["<rootDir>/node_modules/", "<rootDir>/resources/"],
-    "coveragePathIgnorePatterns": ["<rootDir>/resources/"]
+    "testPathIgnorePatterns": [
+      "<rootDir>/node_modules/",
+      "<rootDir>/resources/"
+    ],
+    "coveragePathIgnorePatterns": [
+      "<rootDir>/resources/"
+    ]
   },
   "resolutions": {
     "jest-environment-jsdom": "^26.0.1"

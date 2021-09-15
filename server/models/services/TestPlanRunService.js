@@ -381,17 +381,6 @@ const removeTestPlanRunResultsByQuery = async ({
     );
 };
 
-const getIssuesForTestResult = async (testPlanRunId, testResultIndex) => {
-    const testPlanRun = await getTestPlanRunById(testPlanRunId);
-    if (!testPlanRun) return [];
-
-    const testResult = testPlanRun.testResults.find(
-        result => result.test.executionOrder === testResultIndex
-    );
-
-    return testResult.issues || [];
-};
-
 module.exports = {
     // TestPlanRun
     getTestPlanRunById,
@@ -400,7 +389,5 @@ module.exports = {
     updateTestPlanRun,
     removeTestPlanRun,
     removeTestPlanRunByQuery,
-    removeTestPlanRunResultsByQuery,
-
-    getIssuesForTestResult
+    removeTestPlanRunResultsByQuery
 };

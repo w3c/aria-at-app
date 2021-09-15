@@ -8,7 +8,6 @@ import InvalidRequest from '@components/InvalidRequest';
 import NotFound from '@components/NotFound';
 import ReportsPage from '@components/ReportsPage';
 import TestPlanReportPage from '@components/TestPlanReportPage';
-import RunResultsPage from '@components/RunResultsPage';
 import SignupInstructions from '@components/SignupInstructions';
 import TestQueue from '@components/TestQueue';
 import TestRun from '@components/TestRun';
@@ -57,10 +56,6 @@ export default [
                 </ConfirmAuth>
             );
         }
-    },
-    {
-        path: '/results/run/:runId(\\d+)',
-        component: RunResultsPage
     },
     {
         path: '/run/:runId(\\d+)',

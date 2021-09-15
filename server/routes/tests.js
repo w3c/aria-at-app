@@ -9,7 +9,4 @@ router.post('/result', TestController.saveTestResults);
 
 router.delete('/result/delete', TestController.deleteTestResultsForRunAndUser);
 
-router.get('/issues', TestController.getIssuesByTestId);
-router.post('/issues', TestController.createIssue);
-
 module.exports = router;

@@ -3,7 +3,6 @@ const db = require('../models/index');
 const {
     getTestPlanVersions
 } = require('../models/services/TestPlanVersionService');
-const GithubService = require('./GithubService');
 
 async function runImportScript(git_hash) {
     return new Promise((resolve, reject) => {
@@ -216,81 +215,8 @@ async function saveTestResults(testResult) {
     }
 }
 
-async function getIssuesByTestId({ githubAccessToken, test_id }) {
-    try {
-        const issues = await db.TestIssue.findAll({
-            where: {
-                test_id
-            }
-        });
-
-        const results = await GithubService.getIssues({
-            githubAccessToken,
-            issues
-        });
-
-        const response = {
-            test_id,
-            issues: []
-        };
-
-        for (let result of results) {
-            response.issues.push(result);
-        }
-
-        return response;
-    } catch (error) {
-        console.error(`Error: ${error}`);
-        throw error;
-    }
-}
-
-async function createIssue({
-    githubAccessToken,
-    run_id,
-    test_id,
-    title,
-    body
-}) {
-    try {
-        const issue = await GithubService.createIssue({
-            githubAccessToken,
-            issue: {
-                title,
-                body
-            }
-        });
-
-        if (issue) {
-            const issue_number = issue.number;
-            const record = {
-                run_id,
-                test_id,
-                title,
-                body,
-                issue_number
-            };
-
-            const created = await db.TestIssue.create(record);
-
-            if (created && created.dataValues) {
-                return {
-                    test_id,
-                    issues: [issue]
-                };
-            }
-            throw new Error(`TestIssue was not created, ${created}`);
-        }
-    } catch (error) {
-        console.error(`Error: ${error}`);
-        throw error;
-    }
-}
-
 module.exports = {
     deleteTestResultsForRunAndUser,
     importTests,
-    saveTestResults,
-    getIssuesByTestId,
-    createIssue
+    saveTestResults
 };

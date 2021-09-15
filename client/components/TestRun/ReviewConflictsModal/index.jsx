@@ -8,9 +8,9 @@ import nextId from 'react-id-generator';
 const ReviewConflictsModal = ({
     show = false,
     userId,
+    issueLink,
     conflicts = [],
-    handleClose = () => {},
-    handleRaiseIssueButtonClick = () => {}
+    handleClose = () => {}
 }) => {
     const renderModalBody = () => {
         return conflicts.map((conflict, index) => {
@@ -121,10 +121,7 @@ const ReviewConflictsModal = ({
                         Copy Conflicts to Clipboard
                     </Button>
                 </CopyToClipboard>
-                <Button
-                    variant="secondary"
-                    onClick={handleRaiseIssueButtonClick}
-                >
+                <Button variant="secondary" target="_blank" href={issueLink}>
                     Raise an Issue for Conflict
                 </Button>
             </Modal.Footer>
@@ -136,8 +133,8 @@ ReviewConflictsModal.propTypes = {
     show: PropTypes.bool,
     userId: PropTypes.any,
     conflicts: PropTypes.array,
-    handleClose: PropTypes.func,
-    handleRaiseIssueButtonClick: PropTypes.func
+    issueLink: PropTypes.string,
+    handleClose: PropTypes.func
 };
 
 export default ReviewConflictsModal;
