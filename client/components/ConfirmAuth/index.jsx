@@ -3,12 +3,12 @@ import { Route, Redirect } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { useQuery } from '@apollo/client';
 import { ME_QUERY } from '../App/queries';
-import { evalAuth } from '../../utils/evalAuth';
+import { evaluateAuth } from '../../utils/evaluateAuth';
 
 const ConfirmAuth = ({ children, requiredPermission, ...rest }) => {
     const { data } = useQuery(ME_QUERY);
 
-    const auth = evalAuth(data && data.me ? data.me : {});
+    const auth = evaluateAuth(data && data.me ? data.me : {});
     const { roles, username, isAdmin, isSignedIn } = auth;
 
     if (!username) return <Redirect to={{ pathname: '/invalid-request' }} />;

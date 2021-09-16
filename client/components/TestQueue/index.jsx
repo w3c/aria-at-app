@@ -13,7 +13,7 @@ import DeleteTestPlanReportModal from '../DeleteTestPlanReportModal';
 import DeleteResultsModal from '../DeleteResultsModal';
 import PageStatus from '../common/PageStatus';
 import { TEST_QUEUE_PAGE_QUERY } from './queries';
-import { evalAuth } from '../../utils/evalAuth';
+import { evaluateAuth } from '../../utils/evaluateAuth';
 import './TestQueue.css';
 
 const TestQueue = () => {
@@ -38,7 +38,7 @@ const TestQueue = () => {
     );
     const [isShowingAddToQueueModal, setAddToQueueModal] = useState(false);
 
-    const auth = evalAuth(data && data.me ? data.me : {});
+    const auth = evaluateAuth(data && data.me ? data.me : {});
     const { isAdmin } = auth;
 
     useEffect(() => {

@@ -5,7 +5,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Container, Navbar, Nav } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
-import { evalAuth } from '../../utils/evalAuth';
+import { evaluateAuth } from '../../utils/evaluateAuth';
 import { ME_QUERY } from './queries';
 import routes from '../../routes';
 import useSigninUrl from './useSigninUrl';
@@ -16,7 +16,7 @@ const App = () => {
     const signinUrl = useSigninUrl();
     const { client, loading, data } = useQuery(ME_QUERY);
 
-    const auth = evalAuth(data && data.me ? data.me : {});
+    const auth = evaluateAuth(data && data.me ? data.me : {});
     const { username, isTester, isSignedIn } = auth;
 
     const signOut = async () => {

@@ -27,7 +27,7 @@ import {
     UPDATE_TEST_RUN_RESULT_MUTATION,
     CLEAR_TEST_RESULT_MUTATION
 } from './queries';
-import { evalAuth } from '../../utils/evalAuth';
+import { evaluateAuth } from '../../utils/evaluateAuth';
 import './TestRun.css';
 import supportJson from '../../resources/support.json';
 
@@ -113,7 +113,7 @@ const TestRun = () => {
     const { testPlanReport, tester } = testPlanRun || {};
     const { testPlanTarget, testPlanVersion, conflicts } = testPlanReport || {};
 
-    const auth = evalAuth(data && data.me ? data.me : {});
+    const auth = evaluateAuth(data && data.me ? data.me : {});
     const { id: userId } = auth;
     // check to ensure an admin that manually went to a test run url doesn't
     // run the test as themselves
