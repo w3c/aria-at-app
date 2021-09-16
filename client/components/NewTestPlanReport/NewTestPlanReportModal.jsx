@@ -32,14 +32,20 @@ const NewTestPlanReportModal = ({
 
     useEffect(() => {
         if (data) {
-            const {
-                ats = [],
-                browsers = [],
-                testPlanVersions: testPlans = []
-            } = data;
+            const { ats = [], browsers = [], testPlans = [] } = data;
             setAts(ats);
             setBrowsers(browsers);
-            setTestPlans(testPlans);
+
+            const allTestPlanVersions = testPlans
+                .map(testPlan =>
+                    [...testPlan.testPlanVersions].map(version => ({
+                        ...version,
+                        directory: testPlan.id
+                    }))
+                )
+                .flat();
+
+            setTestPlans(allTestPlanVersions);
         }
     }, [data]);
 

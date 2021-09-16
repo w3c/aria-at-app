@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
 
 export const TEST_QUEUE_PAGE_QUERY = gql`
-    query {
+    query TestQueuePage {
         users {
             id
             username
@@ -10,7 +10,6 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
         testPlanReports(statuses: [DRAFT, IN_REVIEW]) {
             id
             status
-            conflictCount
             testPlanTarget {
                 id
                 title
@@ -30,8 +29,10 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
                 title
                 gitSha
                 gitMessage
-                directory
-                testCount
+                tests {
+                    id
+                    title
+                }
             }
             draftTestPlanRuns {
                 id
@@ -39,11 +40,11 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
                     id
                     username
                 }
-                testResultCount
                 testResults {
-                    index
-                    isComplete
-                    isSkipped
+                    id
+                    test {
+                        id
+                    }
                 }
             }
         }
@@ -51,7 +52,7 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
 `;
 
 export const POPULATE_ADD_TEST_PLAN_TO_QUEUE_MODAL_QUERY = gql`
-    query {
+    query TestQueueAddTestPlanModal {
         ats {
             id
             name
@@ -62,11 +63,18 @@ export const POPULATE_ADD_TEST_PLAN_TO_QUEUE_MODAL_QUERY = gql`
             name
             browserVersions
         }
-        testPlanVersions {
+        testPlans {
             id
-            title
-            gitSha
-            directory
+            latestTestPlanVersion {
+                id
+                title
+                gitSha
+            }
+            testPlanVersions {
+                id
+                title
+                gitSha
+            }
         }
     }
 `;
@@ -111,14 +119,7 @@ export const ADD_TEST_QUEUE_MUTATION = gql`
                 }
             }
             created {
-                locationOfData {
-                    testPlanReportId
-                    testPlanTargetId
-                    browserId
-                    browserVersion
-                    atId
-                    atVersion
-                }
+                locationOfData
             }
         }
     }
