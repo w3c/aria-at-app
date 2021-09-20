@@ -4,8 +4,8 @@ export const TEST_RUN_PAGE_QUERY = gql`
     query TestPlanRunPage($testPlanRunId: ID!) {
         testPlanRun(id: $testPlanRunId) {
             id
-            isComplete
-            testResultCount
+            # isComplete
+            # testResultCount
             tester {
                 id
                 username

@@ -22,7 +22,6 @@ import TestRenderer from '../TestRenderer';
 import OptionButton from './OptionButton';
 import PageStatus from '../common/PageStatus';
 import BasicModal from '../common/BasicModal';
-import { getTestPlanRunIssuesForTest } from '../../network';
 import { evaluateAtNameKey, buildTestPageUri } from '../../utils/aria';
 import {
     TEST_RUN_PAGE_QUERY,
@@ -53,7 +52,6 @@ const TestRun = ({ auth }) => {
     const [isTestSubmitClicked, setIsTestSubmitClicked] = useState(false);
     const [showTestNavigator, setShowTestNavigator] = useState(true);
     const [currentTestIndex, setCurrentTestIndex] = useState(1);
-    const [issues, setIssues] = useState([]);
     const [showStartOverModal, setShowStartOverModal] = useState(false);
     const [showRaiseIssueModal, setShowRaiseIssueModal] = useState(false);
     const [showReviewConflictsModal, setShowReviewConflictsModal] = useState(
@@ -62,22 +60,9 @@ const TestRun = ({ auth }) => {
 
     useEffect(() => {
         if (data && !pageReady) {
-            // get structured UNCLOSED issue data from GitHub for current test
-            (async () => {
-                try {
-                    const currentTestIndex =
-                        data.testPlanRun.testResults[0].index;
-                    const issues = await getTestPlanRunIssuesForTest(
-                        testPlanRunId,
-                        currentTestIndex
-                    );
-                    setIssues(issues.filter(({ closed }) => !closed));
-                    setCurrentTestIndex(currentTestIndex);
-                } catch (error) {
-                    console.error('load.issues.error', error);
-                }
-                setPageReady(true);
-            })();
+            const currentTestIndex = data.testPlanRun.testResults[0].index;
+            setCurrentTestIndex(currentTestIndex);
+            setPageReady(true);
         }
     }, [data, currentTestIndex]);
 
@@ -262,19 +247,14 @@ const TestRun = ({ auth }) => {
         setShowStartOverModal(false);
     };
 
-    const handleUpdateTestPlanRunResultAction = async ({
-        result,
-        state,
-        issues
-    }) => {
+    const handleUpdateTestPlanRunResultAction = async ({ result, state }) => {
         let variables = {
             // required
             testPlanRunId,
             index: currentTestIndex,
 
             // optionals
-            result,
-            issues
+            result
         };
         if (state) variables = { ...variables, state };
 
@@ -410,7 +390,6 @@ const TestRun = ({ auth }) => {
                 <span>{heading}</span>
                 <StatusBar
                     key={nextId()}
-                    issues={issues}
                     conflicts={conflicts[currentTestIndex]}
                     handleReviewConflictsButtonClick={
                         handleReviewConflictsButtonClick
@@ -472,7 +451,6 @@ const TestRun = ({ auth }) => {
                         userId={testerId}
                         test={currentTest}
                         testPlanRun={testPlanRun}
-                        issues={issues}
                         conflicts={conflicts[currentTestIndex]}
                         handleUpdateTestPlanRunResultAction={
                             handleUpdateTestPlanRunResultAction
