@@ -8,14 +8,15 @@ const {
 const {
     getTestPlanRunById
 } = require('../../models/services/TestPlanRunService');
-const locationOfDataId = require('./locationOfDataId');
+const { decodeLocationOfDataId } = require('./locationOfDataId');
 const testsResolver = require('../../resolvers/TestPlanVersion/testsResolver');
-const testResultsResolver = require('../../resolvers/TestPlanRun/testResultsResolver');
+const testsResultsResolver = require('../../resolvers/TestPlanRun/testResultsResolver');
+const testPlanVersionTestPlanResolver = require('../../resolvers/TestPlanVersion/testPlanVersionTestPlanResolver');
 
 /**
  *
  * @param {object} locationOfData - locationOfData as defined in GraphQL
- * @param {object} options - Generic options for Sequelize
+ * @param {*} options
  * @param {*} options.preloaded - Used to prevent unnecessary database fetches,
  * you can provide a testPlanRun, testPlanReport, testPlanVersion or testPlan
  * and no database queries will be run by this function.
@@ -41,19 +42,19 @@ const populateData = async (locationOfData, { preloaded } = {}) => {
     } = locationOfData;
 
     if (assertionId || scenarioId) {
-        ({ testId } = locationOfDataId.decode(assertionId || scenarioId));
+        ({ testId } = decodeLocationOfDataId(assertionId || scenarioId));
     }
     if (testId) {
-        ({ testPlanVersionId } = locationOfDataId.decode(testId));
+        ({ testPlanVersionId } = decodeLocationOfDataId(testId));
     }
     if (assertionResultId) {
-        ({ scenarioResultId } = locationOfDataId.decode(assertionResultId));
+        ({ scenarioResultId } = decodeLocationOfDataId(assertionResultId));
     }
     if (scenarioResultId) {
-        ({ testResultId } = locationOfDataId.decode(scenarioResultId));
+        ({ testResultId } = decodeLocationOfDataId(scenarioResultId));
     }
     if (testResultId) {
-        ({ testPlanRunId } = locationOfDataId.decode(testResultId));
+        ({ testPlanRunId } = decodeLocationOfDataId(testResultId));
     }
 
     let testPlan;
@@ -67,7 +68,7 @@ const populateData = async (locationOfData, { preloaded } = {}) => {
         if (preloaded?.testPlanReport) {
             testPlanReport = preloaded.testPlanReport;
             testPlanRun = testPlanReport.testPlanRuns.find(
-                testPlanRun => testPlanRun.id === testPlanRunId
+                testPlanRun => testPlanRun.id == testPlanRunId
             );
         } else if (preloaded?.testPlanRun) {
             testPlanRun = preloaded.testPlanRun;
@@ -108,10 +109,7 @@ const populateData = async (locationOfData, { preloaded } = {}) => {
 
     testPlan =
         testPlanVersion && !testPlan
-            ? {
-                  id: testPlanVersion.metadata.directory,
-                  directory: testPlanVersion.metadata.directory
-              }
+            ? testPlanVersionTestPlanResolver(testPlanVersion)
             : null;
 
     // Populate data originating in the JSON part of the database
@@ -124,7 +122,7 @@ const populateData = async (locationOfData, { preloaded } = {}) => {
     let assertionResult;
 
     if (testResultId) {
-        const testResults = await testResultsResolver(testPlanRun);
+        const testResults = testsResultsResolver(testPlanRun);
         testResult = testResults.find(each => each.id === testResultId);
         testId = testResult.testId;
     }
@@ -141,7 +139,7 @@ const populateData = async (locationOfData, { preloaded } = {}) => {
         assertionId = assertionResult.assertionId;
     }
     if (testId) {
-        const tests = await testsResolver(testPlanVersion);
+        const tests = testsResolver(testPlanVersion);
         test = tests.find(each => each.id === testId);
     }
     if (scenarioId) {

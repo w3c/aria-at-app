@@ -1,7 +1,7 @@
 const { gql } = require('apollo-server');
 const dbCleaner = require('../util/db-cleaner');
 const { query, mutate } = require('../util/graphql-test-utilities');
-const db = require('../../models/index');
+const db = require('../../models');
 
 afterAll(async () => {
     // Closing the DB connection allows Jest to exit successfully.
@@ -411,5 +411,110 @@ describe('test queue', () => {
             );
             expect(second.created.length).toBe(0);
         });
+    });
+
+    it('displays conflicts', async () => {
+        const conflictingReportId = '2';
+
+        const result = await query(gql`
+            query {
+                testPlanReport(id: ${conflictingReportId}) {
+                    conflicts {
+                        source {
+                            locationOfData
+                        }
+                        conflictingResults {
+                            locationOfData
+                        }
+                    }
+                    conflictsFormatted
+                    md: conflictsFormatted(markdown: true)
+                }
+            }
+        `);
+
+        expect(result.testPlanReport).toMatchInlineSnapshot(`
+            Object {
+              "conflicts": Array [
+                Object {
+                  "conflictingResults": Array [
+                    Object {
+                      "locationOfData": Object {
+                        "assertionResultId": "YzUyZeyIxNCI6Ik5ERTRZZXlJeE15STZJazlYV1RGUFpYbEplRTFwU1RaTmJqQkhWbXhhUkNKOVdObVpEIn0GU0MT",
+                      },
+                    },
+                    Object {
+                      "locationOfData": Object {
+                        "assertionResultId": "YTNjMeyIxNCI6Ik4yTmpPZXlJeE15STZJazVIVFhwUFpYbEplRTFwU1RaTk16QlhSbWxhYWlKOUdSbU1XIn0WY5Y2",
+                      },
+                    },
+                  ],
+                  "source": Object {
+                    "locationOfData": Object {
+                      "assertionId": "MWJjNeyIzIjoiWkRCaU9leUl5SWpvaU1TSjlXWmlZVCJ9zNiZW",
+                    },
+                  },
+                },
+                Object {
+                  "conflictingResults": Array [
+                    Object {
+                      "locationOfData": Object {
+                        "scenarioResultId": "MjlkMeyIxMyI6Ik5XSmpNZXlJeE1pSTZNbjBURXlNVCJ92M5ZW",
+                      },
+                    },
+                    Object {
+                      "locationOfData": Object {
+                        "scenarioResultId": "ZTcwZeyIxMyI6Ik1XVTFNZXlJeE1pSTZNMzBEUmtaVCJ9DdiOD",
+                      },
+                    },
+                  ],
+                  "source": Object {
+                    "locationOfData": Object {
+                      "scenarioId": "NzVjYeyIzIjoiTUdaa1lleUl5SWpvaU1TSjlUZ3haRCJ9TNiMG",
+                    },
+                  },
+                },
+                Object {
+                  "conflictingResults": Array [
+                    Object {
+                      "locationOfData": Object {
+                        "scenarioResultId": "YjQzNeyIxMyI6IllUZzRZZXlJeE1pSTZNbjBXSmlOMiJ9mYwZD",
+                      },
+                    },
+                    Object {
+                      "locationOfData": Object {
+                        "scenarioResultId": "ZTRkYeyIxMyI6IlpqRXhOZXlJeE1pSTZNMzBUUmlOMiJ9jM1Yz",
+                      },
+                    },
+                  ],
+                  "source": Object {
+                    "locationOfData": Object {
+                      "scenarioId": "NjM1MeyIzIjoiTWprME1leUl5SWpvaU1TSjlqUXlPRyJ9mU4YW",
+                    },
+                  },
+                },
+              ],
+              "conflictsFormatted": "Difference 1 - Testing Tab / Shift+Tab for Role 'checkbox' is conveyed
+            Your result: FAILED: No Output (for output \\"output conflicts due to assertions\\")
+            Other result: PASSED: Good Output (for output \\"output will conflict due to assertions\\")
+            Difference 2 - Unexpected behavior when testing Enter
+            Your unexpected behaviors: Different text (for output \\"output conflicts due to unexpected behaviors\\")
+            Other unexpected behaviors: Screen reader became extremely sluggish (for output \\"output will conflict due to unexpected behaviors\\")
+            Difference 3 - Unexpected behavior when testing Space
+            Your unexpected behaviors: Different unexpected behavior (for output \\"null\\")
+            Other unexpected behaviors: No unexpected behaviors (for output \\"null\\")
+            ",
+              "md": "##### Difference 1 - Testing Tab / Shift+Tab for Role 'checkbox' is conveyed
+            * Your result: FAILED: No Output (for output \\"output conflicts due to assertions\\")
+            * Other result: PASSED: Good Output (for output \\"output will conflict due to assertions\\")
+            ##### Difference 2 - Unexpected behavior when testing Enter
+            * Your unexpected behaviors: Different text (for output \\"output conflicts due to unexpected behaviors\\")
+            * Other unexpected behaviors: Screen reader became extremely sluggish (for output \\"output will conflict due to unexpected behaviors\\")
+            ##### Difference 3 - Unexpected behavior when testing Space
+            * Your unexpected behaviors: Different unexpected behavior (for output \\"null\\")
+            * Other unexpected behaviors: No unexpected behaviors (for output \\"null\\")
+            ",
+            }
+        `);
     });
 });

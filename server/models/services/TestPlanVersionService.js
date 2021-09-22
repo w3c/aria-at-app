@@ -166,11 +166,14 @@ const getTestPlanVersions = async (
  */
 const createTestPlanVersion = async (
     {
+        // ID must be provided so it matches the ID which is baked into the Test
+        // IDs (see LocationOfDataId.js for more information).
+        id,
         title,
-        status,
+        directory,
         gitSha,
         gitMessage,
-        exampleUrl,
+        testPageUrl,
         updatedAt,
         metadata,
         tests
@@ -182,17 +185,17 @@ const createTestPlanVersion = async (
     userAttributes = USER_ATTRIBUTES,
     options = {}
 ) => {
-    const testPlanVersionResult = await ModelService.create(TestPlanVersion, {
+    await ModelService.create(TestPlanVersion, {
+        id,
         title,
-        status,
+        directory,
         gitSha,
         gitMessage,
-        exampleUrl,
+        testPageUrl,
         updatedAt,
         metadata,
         tests
     });
-    const { id } = testPlanVersionResult;
 
     return await getTestPlanVersionById(
         id,
@@ -221,10 +224,10 @@ const updateTestPlanVersion = async (
     id,
     {
         title,
-        status,
+        directory,
         gitSha,
         gitMessage,
-        exampleUrl,
+        testPageUrl,
         updatedAt,
         metadata,
         tests
@@ -241,10 +244,10 @@ const updateTestPlanVersion = async (
         { id },
         {
             title,
-            status,
+            directory,
             gitSha,
             gitMessage,
-            exampleUrl,
+            testPageUrl,
             updatedAt,
             metadata,
             tests
@@ -277,21 +280,19 @@ const getTestPlans = async ({
     id
 } = {}) => {
     const getTestPlansAndLatestVersionId = async () => {
-        const whereClause = id ? `WHERE metadata->>'directory' = ?` : '';
-        // TODO: revisit as part of reporting migration - make directory a
-        // column instead of a metadata field
+        const whereClause = id ? `WHERE directory = ?` : '';
         const [results] = await sequelize.query(
             `
                 SELECT * FROM (
                     SELECT DISTINCT
-                        ON (metadata->>'directory')
-                        metadata->>'directory' as "id",
-                        metadata->>'directory' as "directory",
+                        ON (directory)
+                        directory as "id",
+                        directory as "directory",
                         id as "latestTestPlanVersionId",
                         "updatedAt"
                     FROM "TestPlanVersion"
                     ${whereClause}
-                    ORDER BY metadata->>'directory', "updatedAt" DESC
+                    ORDER BY directory, "updatedAt" DESC
                 ) sub
                 ORDER BY "updatedAt"
             `,
@@ -301,14 +302,14 @@ const getTestPlans = async ({
     };
 
     const getTestPlansWithVersionIds = async () => {
-        const having = id ? `HAVING metadata->>'directory' = ?` : '';
+        const having = id ? `HAVING directory = ?` : '';
         const [results] = await sequelize.query(
             `
                 SELECT
-                    metadata->>'directory' as id,
+                    directory as id,
                     ARRAY_AGG(id) as "testPlanVersionIds"
                 FROM "TestPlanVersion"
-                GROUP BY metadata->>'directory'
+                GROUP BY directory
                 ${having}
             `,
             { replacements: [id] }

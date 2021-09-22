@@ -1,37 +1,30 @@
-const { isEqual, pick } = require('lodash');
+const { pick } = require('lodash');
 const testResultsResolver = require('../TestPlanRun/testResultsResolver');
 const populateData = require('../../services/PopulatedData/populateData');
-
-const allEqual = items => {
-    for (let i = 0; i < items.length - 1; i += 1) {
-        if (!isEqual(items[i], items[i + 1])) return false;
-    }
-    return true;
-};
+const allEqual = require('../../util/allEqual');
 
 const conflictsResolver = async testPlanReport => {
     const conflicts = [];
 
     const testResultsByTestId = {};
-    await Promise.all(
-        testPlanReport.testPlanRuns.map(async testPlanRun => {
-            // TODO: revisit as part of reporting migration
-            testPlanRun.testPlanReport = testPlanReport; // TODO: remove hacky fix
-            const testResults = await testResultsResolver(testPlanRun);
-            testResults.forEach(testResult => {
+    testPlanReport.testPlanRuns.forEach(testPlanRun => {
+        testPlanRun.testPlanReport = testPlanReport; // TODO: remove hacky fix
+        const testResults = testResultsResolver(testPlanRun);
+        testResults
+            .filter(testResult => testResult.completedAt)
+            .forEach(testResult => {
                 if (!testResultsByTestId[testResult.testId]) {
                     testResultsByTestId[testResult.testId] = [];
                 }
                 testResultsByTestId[testResult.testId].push(testResult);
             });
-        })
-    );
+    });
 
-    Object.entries(testResultsByTestId).forEach(([testId, testResults]) => {
+    Object.values(testResultsByTestId).forEach(testResults => {
         // See GraphQL TestPlanResultConflict for more info about how the
         // conflicts are formatted
-        const conflictDetected = ({ i, j } = {}) => {
-            if (j) {
+        const conflictDetected = ({ i, j }) => {
+            if (j != null) {
                 const oneScenarioResult = testResults[0].scenarioResults[i];
                 const { assertionId } = oneScenarioResult.assertionResults[j];
                 conflicts.push({
@@ -41,7 +34,7 @@ const conflictsResolver = async testPlanReport => {
                             testResult.scenarioResults[i].assertionResults[j].id
                     }))
                 });
-            } else if (i) {
+            } else {
                 const { scenarioId } = testResults[0].scenarioResults[i];
                 conflicts.push({
                     source: { scenarioId },
@@ -49,35 +42,17 @@ const conflictsResolver = async testPlanReport => {
                         scenarioResultId: testResult.scenarioResults[i].id
                     }))
                 });
-            } else {
-                conflicts.push({
-                    source: { testId },
-                    conflictingResults: testResults.map(testResult => ({
-                        testResultId: testResult.id
-                    }))
-                });
             }
         };
 
         if (testResults.length <= 1) return; // Nothing to compare
 
-        const testResultComparisons = testResults.map(
-            testResult => testResult.scenarioResults.length
-        );
-        if (!allEqual(testResultComparisons)) {
-            return conflictDetected();
-        }
-
         for (let i = 0; i < testResults[0].scenarioResults.length; i += 1) {
             const scenarioResultComparisons = testResults.map(testResult => {
-                return {
-                    // Note that output is not considered
-                    ...pick(testResult.scenarioResults[i], [
-                        'unexpectedBehaviors'
-                    ]),
-                    assertionResultCount:
-                        testResult.scenarioResults[i].assertionResults.length
-                };
+                // Note that output is not considered
+                return pick(testResult.scenarioResults[i], [
+                    'unexpectedBehaviors'
+                ]);
             });
             if (!allEqual(scenarioResultComparisons)) {
                 return conflictDetected({ i });

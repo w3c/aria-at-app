@@ -67,7 +67,7 @@ To connect to the Postgres table locally:
 
 1. Write a migration. Migrations files should be saved to `server/migrations/`. To make a migration file with the appropraite file name, run:
     ```
-    yarn sequelize-cli migration:generate <name>
+    yarn sequelize-cli migration:generate --name <name>
     ```
 2. Write a seed file to add data to a table if appropriate. Seed files should be saved to `server/seeder/`. To make a seeder file with the appropraite file name, run:
     ```

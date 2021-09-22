@@ -1,9 +1,13 @@
+const runnableTests = require('./runnableTestsResolver');
 const draftTestPlanRuns = require('./draftTestPlanRunsResolver');
-const finalizedTestPlanRun = require('./finalizedTestPlanRunResolver');
+const finalizedTestResults = require('./finalizedTestResultsResolver');
 const conflicts = require('./conflictsResolver');
+const conflictsFormatted = require('./conflictsFormattedResolver');
 
 module.exports = {
+    runnableTests,
     draftTestPlanRuns,
-    finalizedTestPlanRun,
-    conflicts
+    finalizedTestResults,
+    conflicts,
+    conflictsFormatted
 };
