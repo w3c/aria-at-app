@@ -242,7 +242,12 @@ describe('graphql', () => {
                         id
                     }
                     testPlanVersion(id: 1) {
+                        __typename
                         id
+                        testPlan {
+                            id
+                            directory
+                        }
                     }
                     conflictTestPlanReport: testPlanReport(id: 2) {
                         __typename

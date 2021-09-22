@@ -11,6 +11,7 @@ const {
 const { decodeLocationOfDataId } = require('./locationOfDataId');
 const testsResolver = require('../../resolvers/TestPlanVersion/testsResolver');
 const testsResultsResolver = require('../../resolvers/TestPlanRun/testResultsResolver');
+const testPlanVersionTestPlanResolver = require('../../resolvers/TestPlanVersion/testPlanVersionTestPlanResolver');
 
 /**
  *
@@ -108,10 +109,7 @@ const populateData = async (locationOfData, { preloaded } = {}) => {
 
     testPlan =
         testPlanVersion && !testPlan
-            ? {
-                  id: testPlanVersion.directory,
-                  directory: testPlanVersion.directory
-              }
+            ? testPlanVersionTestPlanResolver(testPlanVersion)
             : null;
 
     // Populate data originating in the JSON part of the database

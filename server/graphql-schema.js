@@ -229,6 +229,10 @@ const graphqlSchema = gql`
         # """
         # label: String!
         """
+        The TestPlan this TestPlanVersion is a snapshot of.
+        """
+        testPlan: TestPlan!
+        """
         A git sha corresponding to the current git commit at the time the
         version was imported from the ARIA-AT repo. Used to version the test
         plan over time.
@@ -812,7 +816,7 @@ const graphqlSchema = gql`
         """
         testPlanVersions: [TestPlanVersion]!
         """
-        Get a particular TestPlan by ID.
+        Get a particular TestPlanVersion by ID.
         """
         testPlanVersion(id: ID!): TestPlanVersion
         """
