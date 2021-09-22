@@ -6,6 +6,8 @@ const testPlans = require('./testPlansResolver');
 const testPlan = require('./testPlanResolver');
 const testPlanReport = require('./testPlanReportResolver');
 const testPlanReports = require('./testPlanReportsResolver');
+const testPlanVersion = require('./testPlanVersionResolver');
+const testPlanVersions = require('./testPlanVersionsResolver');
 const testPlanRun = require('./testPlanRunResolver');
 const findOrCreateTestPlanReport = require('./findOrCreateTestPlanReportResolver');
 const mutateTestPlanReport = require('./mutateTestPlanReportResolver');
@@ -31,6 +33,8 @@ const resolvers = {
         browsers,
         testPlan,
         testPlans,
+        testPlanVersion,
+        testPlanVersions,
         testPlanReport,
         testPlanReports,
         testPlanRun,

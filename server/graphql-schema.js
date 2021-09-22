@@ -800,7 +800,7 @@ const graphqlSchema = gql`
         """
         browsers: [Browser]!
         """
-        Get all test plans.
+        Get all TestPlans.
         """
         testPlans: [TestPlan]!
         """
@@ -808,14 +808,22 @@ const graphqlSchema = gql`
         """
         testPlan(id: ID!): TestPlan
         """
-        Get a TestPlanReport by ID.
+        Get all TestPlanVersions.
         """
-        testPlanReport(id: ID): TestPlanReport
+        testPlanVersions: [TestPlanVersion]!
+        """
+        Get a particular TestPlan by ID.
+        """
+        testPlanVersion(id: ID!): TestPlanVersion
         """
         Load multiple TestPlanReports, with the optional ability to filter by
         status. See TestPlanReport type for more information.
         """
         testPlanReports(statuses: [TestPlanReportStatus]): [TestPlanReport]!
+        """
+        Get a TestPlanReport by ID.
+        """
+        testPlanReport(id: ID): TestPlanReport
         # TODO: determine if needed
         # """
         # Get all TestPlanTargets.
