@@ -65,13 +65,11 @@ const ariaat = {
             await nodegit.Checkout.tree(repo, commit);
             await repo.setHeadDetached(commit);
         } else {
-            let latestCommit = fse
-                .readFileSync(
-                    path.join(tmpDirectory, '.git', 'refs', 'heads', 'master'),
-                    'utf8'
-                )
-                .trim();
+            // Commit supporing the 2020 version of the app
+            let latestCommit = 'e7212c4e5c96497cc8a2682e07ee2decd19d3f85';
             commit = await nodegit.Commit.lookup(repo, latestCommit);
+            await nodegit.Checkout.tree(repo, commit);
+            await repo.setHeadDetached(commit);
         }
 
         let commitDate = commit.date();

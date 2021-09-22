@@ -21,7 +21,7 @@
     ```
     yarn dev
     ```
-Now you can navigate your browser to: [http://localhost:3000/](http://localhost:3000/). You need to use localhost instead of `0.0.0.0` because the cookie needs to be treated as secure.
+Now you can navigate your browser to: [http://localhost:3020/](http://localhost:3020/). You need to use localhost instead of `0.0.0.0` because the cookie needs to be treated as secure.
 
 ### Signing in as a tester and/or admin
 
@@ -122,10 +122,10 @@ If you have a linux computer, you will have to download a Windows VM in order to
 * Click the windows button and type "command" and click "Run Command Prompt as administrator"
     * Then write the following commands:
     ```
-    netsh interface portproxy add v4tov4 listenaddress=127.0.0.1 listenport=3000 connectaddress=10.0.2.2 connectport=3000
-    netsh interface portproxy add v4tov4 listenaddress=127.0.0.1 listenport=5000 connectaddress=10.0.2.2 connectport=5000
+    netsh interface portproxy add v4tov4 listenaddress=127.0.0.1 listenport=3020 connectaddress=10.0.2.2 connectport=3020
+    netsh interface portproxy add v4tov4 listenaddress=127.0.0.1 listenport=5020 connectaddress=10.0.2.2 connectport=5020
     ```
-* Now open your browser, and navigate to: `localhost:3000` and log in, and turn
+* Now open your browser, and navigate to: `localhost:3020` and log in, and turn
   on the screen reader. There are several helpful [guides](https://dequeuniversity.com/screenreaders/) to the keyboard shortcuts used. 
 
 

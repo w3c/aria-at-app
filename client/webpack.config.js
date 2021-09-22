@@ -57,14 +57,14 @@ module.exports = {
     },
     devServer: {
         contentBase: path.join(__dirname, 'static'),
-        port: process.env.CLIENT_PORT || 3000,
+        port: process.env.CLIENT_PORT || 3020,
         publicPath: '/',
         historyApiFallback: true,
         hotOnly: true,
         proxy: [
             {
                 context: ['/aria-at', '/api'],
-                target: 'http://localhost:5000'
+                target: 'http://localhost:5020'
             }
         ],
         watchOptions: {

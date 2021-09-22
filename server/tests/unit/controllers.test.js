@@ -69,7 +69,7 @@ describe('AuthController', () => {
     beforeEach(() => {
         req = httpMocks.createRequest({
             query: {
-                referer: 'localhost:5000',
+                referer: 'localhost:5020',
                 service: 'github',
                 code: '1345908724adsf32'
             }
@@ -78,7 +78,7 @@ describe('AuthController', () => {
             destroy: callback => {
                 callback();
             },
-            referer: 'localhost:5000'
+            referer: 'localhost:5020'
         };
     });
     describe('AuthController.oauth', () => {
@@ -100,7 +100,7 @@ describe('AuthController', () => {
             expect(res.statusCode).toBe(303);
             expect(res._isEndCalled()).toBeTruthy();
             expect(res._getRedirectUrl()).toBe(
-                'localhost:5000/signup-instructions'
+                'localhost:5020/signup-instructions'
             );
         });
         it('should return 303 response code to referer on sign up auth type', async () => {
@@ -108,7 +108,7 @@ describe('AuthController', () => {
             await AuthController.authorize(req, res, next);
             expect(res.statusCode).toBe(303);
             expect(res._isEndCalled()).toBeTruthy();
-            expect(res._getRedirectUrl()).toBe('localhost:5000/test-queue');
+            expect(res._getRedirectUrl()).toBe('localhost:5020/test-queue');
         });
         it('should provide a user with updated roles assigned on sign in', async () => {
             req.session.authType = OAUTH;
