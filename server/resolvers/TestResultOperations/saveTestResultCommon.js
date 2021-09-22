@@ -63,6 +63,8 @@ const saveTestResultCommon = async ({
     if (isSubmit) {
         assertTestResultIsValid(newTestResult);
         newTestResult.completedAt = new Date();
+    } else {
+        newTestResult.completedAt = null;
     }
 
     const index = oldTestResults.findIndex(each => each.id === testResultId);
