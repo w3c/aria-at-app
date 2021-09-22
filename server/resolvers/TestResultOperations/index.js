@@ -1,7 +1,9 @@
-const updateTestResult = require('./updateTestResultResolver.js');
+const saveTestResult = require('./saveTestResultResolver.js');
+const submitTestResult = require('./submitTestResultResolver.js');
 const deleteTestResult = require('./deleteTestResultResolver.js');
 
 module.exports = {
-    updateTestResult,
+    saveTestResult,
+    submitTestResult,
     deleteTestResult
 };

@@ -6,6 +6,8 @@
  */
 
 export default function(conflicts, userId, markdown = null) {
+    throw new Error('Handled by GraphQL');
+    // eslint-disable-next-line no-unreachable
     let mdheader = markdown ? '##### ' : '';
     let mdlist = markdown ? '* ' : '';
 

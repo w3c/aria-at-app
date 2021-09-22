@@ -1,8 +1,9 @@
 const { gql } = require('apollo-server');
 const { difference, uniq: unique } = require('lodash');
 const deepFlatFilter = require('../../util/deepFlatFilter');
-const { query } = require('../util/graphql-test-utilities');
+const { query, mutate } = require('../util/graphql-test-utilities');
 const db = require('../../models/index');
+const dbCleaner = require('../util/db-cleaner');
 
 /**
  * Get a function for making GraphQL queries - as well as functions to check
@@ -47,8 +48,7 @@ const getTypeAwareQuery = async ({
         }
     });
 
-    const typeAwareQuery = async (...args) => {
-        const result = await query(...args);
+    const trackTypes = result => {
         const fieldSets = deepFlatFilter(result, part => !!part?.__typename);
         fieldSets.forEach(fieldSet => {
             const nonNullOrEmptyFieldNames = Object.entries(fieldSet)
@@ -62,6 +62,17 @@ const getTypeAwareQuery = async ({
                 ...nonNullOrEmptyFieldNames
             ]);
         });
+    };
+
+    const typeAwareQuery = async (...args) => {
+        const result = await query(...args);
+        trackTypes(result);
+        return result;
+    };
+
+    const typeAwareMutate = async (...args) => {
+        const result = await mutate(...args);
+        trackTypes(result);
         return result;
     };
 
@@ -70,7 +81,8 @@ const getTypeAwareQuery = async ({
         Object.keys(graphqlFieldsByType).forEach(typeName => {
             if (
                 !graphqlQueriedFieldsByType[typeName] &&
-                !excludedTypeNames.includes(typeName)
+                !excludedTypeNames.includes(typeName) &&
+                !typeName.startsWith('__')
             ) {
                 missingTypes.push(typeName);
             }
@@ -81,7 +93,12 @@ const getTypeAwareQuery = async ({
     const checkForMissingFields = () => {
         const missingFieldsByType = {};
         Object.entries(graphqlFieldsByType).forEach(([typeName, fields]) => {
-            if (excludedTypeNames.includes(typeName)) return;
+            if (
+                excludedTypeNames.includes(typeName) ||
+                typeName.startsWith('__')
+            ) {
+                return;
+            }
 
             const excludedFields = excludedTypeNameAndField
                 .filter(each => each[0] === typeName)
@@ -98,35 +115,32 @@ const getTypeAwareQuery = async ({
         return missingFieldsByType;
     };
 
-    return { typeAwareQuery, checkForMissingTypes, checkForMissingFields };
+    return {
+        typeAwareQuery,
+        typeAwareMutate,
+        checkForMissingTypes,
+        checkForMissingFields
+    };
 };
 
-let typeAwareQuery, checkForMissingTypes, checkForMissingFields;
+let typeAwareQuery;
+let typeAwareMutate;
+let checkForMissingTypes;
+let checkForMissingFields;
 
 describe('graphql', () => {
     beforeAll(async () => {
         const excludedTypeNames = [
-            '__Schema',
-            '__Type',
-            '__Field',
-            '__InputValue',
-            '__EnumValue',
-            '__Directive',
-            'Query',
-            'Mutation',
-            // TODO: Add a typeAwareMutation and implement the following
-            'TestPlanReportOperations',
-            'TestPlanRunOperations',
-            'TestResultOperations',
-            'FindOrCreateResult'
+            // Items formatted like this:
+            'TestResult'
         ];
         const excludedTypeNameAndField = [
-            // TODO: Implement as part of reporting frontend
-            ['TestResult', 'startedAt'],
-            ['TestResult', 'completedAt']
+            // Items formatted like this:
+            // ['TestResult', 'startedAt'],
         ];
         ({
             typeAwareQuery,
+            typeAwareMutate,
             checkForMissingTypes,
             checkForMissingFields
         } = await getTypeAwareQuery({
@@ -142,9 +156,10 @@ describe('graphql', () => {
 
     it('supports querying every type and field in the schema', async () => {
         // eslint-disable-next-line no-unused-vars
-        const result = await typeAwareQuery(
+        const queryResult = await typeAwareQuery(
             gql`
                 query {
+                    __typename
                     browsers {
                         __typename
                         id
@@ -184,7 +199,7 @@ describe('graphql', () => {
                             gitSha
                             gitMessage
                             updatedAt
-                            exampleUrl
+                            testPageUrl
                             metadata
                             tests {
                                 __typename
@@ -194,7 +209,7 @@ describe('graphql', () => {
                                     id
                                 }
                                 atMode
-                                startupScriptContent
+                                setupScriptUrl
                                 instructions
                                 scenarios {
                                     __typename
@@ -220,12 +235,18 @@ describe('graphql', () => {
                             id
                         }
                     }
+                    testPlans {
+                        directory
+                    }
                     conflictTestPlanReport: testPlanReport(id: 2) {
                         __typename
                         id
                         status
                         createdAt
                         testPlanVersion {
+                            id
+                        }
+                        runnableTests {
                             id
                         }
                         testPlanTarget {
@@ -287,20 +308,31 @@ describe('graphql', () => {
                                 locationOfData
                             }
                         }
+                        conflictsFormatted
                     }
-                    finalTestPlanReport: testPlanReport(id: 3) {
+                    testPlanReport(id: 3) {
                         __typename
-                        finalizedTestPlanRun {
+                        finalizedTestResults {
                             __typename
-                            testers {
-                                username
-                            }
+                            id
+                            startedAt
+                            completedAt
+                        }
+                    }
+                    testPlanReports {
+                        id
+                    }
+                    testPlanRun(id: 3) {
+                        __typename
+                        id
+                        testPlanReport {
+                            id
                         }
                     }
                     populateData(locationOfData: {
-                        assertionResultId: "${'Njc3OeyIxNCI6IlltSXpOZXlJeE15S' +
-                            'TZJbHBxYXpWWlpYbEplRTFwU1RaTldEQlhWbXRaZWlKOURJd' +
-                            '09UIn0DUxNz'}"
+                        assertionResultId: "${'NTA0NeyIxNCI6Ik16ZGxaZXlJeE15S' +
+                            'TZJazB5VFRSTlpYbEplRTFwU1RaTldEQlVhRzFaVkNKOVdVe' +
+                            'k16In0zNmYj'}"
                     }) {
                         __typename
                         locationOfData
@@ -349,7 +381,146 @@ describe('graphql', () => {
                 }
             `
         );
-        // console.log(result);
+        // console.log(queryResult);
+
+        await dbCleaner(async () => {
+            // eslint-disable-next-line no-unused-vars
+            const mutationResults = await typeAwareMutate(
+                gql`
+                    mutation {
+                        __typename
+                        findOrCreateTestPlanReport(
+                            input: {
+                                testPlanVersionId: 2
+                                testPlanTarget: {
+                                    atId: 2
+                                    browserId: 2
+                                    atVersion: "123"
+                                    browserVersion: "123"
+                                }
+                            }
+                        ) {
+                            __typename
+                            populatedData {
+                                locationOfData
+                            }
+                            created {
+                                locationOfData
+                            }
+                        }
+                        testPlanReport(id: 1) {
+                            __typename
+                            assignTester(userId: 2) {
+                                locationOfData
+                            }
+                        }
+                        reportStatus: testPlanReport(id: 1) {
+                            __typename
+                            updateStatus(status: IN_REVIEW) {
+                                locationOfData
+                            }
+                        }
+                        deleteRun: testPlanReport(id: 2) {
+                            __typename
+                            deleteTestPlanRun(userId: 2) {
+                                locationOfData
+                            }
+                        }
+                        testPlanRun(id: 1) {
+                            __typename
+                            createTestResult(testId: "Mjk0MeyIyIjoiMSJ9jQyOG") {
+                                locationOfData
+                            }
+                        }
+                        emptyRun: testPlanRun(id: 2) {
+                            __typename
+                            deleteTestResults {
+                                locationOfData
+                            }
+                        }
+                        testResult(id: "M2M4MeyIxMiI6MX0ThmYT") {
+                            __typename
+                            saveTestResult(
+                                input: {
+                                    id: "M2M4MeyIxMiI6MX0ThmYT"
+                                    scenarioResults: [
+                                        {
+                                            id: "MzdlZeyIxMyI6Ik0yTTRNZXlJeE1pSTZNWDBUaG1ZVCJ9WUzMz"
+                                            output: null
+                                            assertionResults: [
+                                                {
+                                                    id: "M2Q1NeyIxNCI6Ik16ZGxaZXlJeE15STZJazB5VFRSTlpYbEplRTFwU1RaTldEQlVhRzFaVkNKOVdVek16In0jk1ZG"
+                                                    passed: true
+                                                    failedReason: null
+                                                }
+                                                {
+                                                    id: "MDE3ZeyIxNCI6Ik16ZGxaZXlJeE15STZJazB5VFRSTlpYbEplRTFwU1RaTldEQlVhRzFaVkNKOVdVek16In0jZlYj"
+                                                    passed: null
+                                                    failedReason: null
+                                                }
+                                                {
+                                                    id: "NTA0NeyIxNCI6Ik16ZGxaZXlJeE15STZJazB5VFRSTlpYbEplRTFwU1RaTldEQlVhRzFaVkNKOVdVek16In0zNmYj"
+                                                    passed: null
+                                                    failedReason: null
+                                                }
+                                            ]
+                                            unexpectedBehaviors: []
+                                        }
+                                    ]
+                                }
+                            ) {
+                                locationOfData
+                            }
+                        }
+                        submitResult: testResult(id: "M2M4MeyIxMiI6MX0ThmYT") {
+                            __typename
+                            submitTestResult(
+                                input: {
+                                    id: "M2M4MeyIxMiI6MX0ThmYT"
+                                    scenarioResults: [
+                                        {
+                                            id: "MzdlZeyIxMyI6Ik0yTTRNZXlJeE1pSTZNWDBUaG1ZVCJ9WUzMz"
+                                            output: "completed test result"
+                                            assertionResults: [
+                                                {
+                                                    id: "M2Q1NeyIxNCI6Ik16ZGxaZXlJeE15STZJazB5VFRSTlpYbEplRTFwU1RaTldEQlVhRzFaVkNKOVdVek16In0jk1ZG"
+                                                    passed: true
+                                                    failedReason: null
+                                                }
+                                                {
+                                                    id: "MDE3ZeyIxNCI6Ik16ZGxaZXlJeE15STZJazB5VFRSTlpYbEplRTFwU1RaTldEQlVhRzFaVkNKOVdVek16In0jZlYj"
+                                                    passed: false
+                                                    failedReason: NO_OUTPUT
+                                                }
+                                                {
+                                                    id: "NTA0NeyIxNCI6Ik16ZGxaZXlJeE15STZJazB5VFRSTlpYbEplRTFwU1RaTldEQlVhRzFaVkNKOVdVek16In0zNmYj"
+                                                    passed: false
+                                                    failedReason: INCORRECT_OUTPUT
+                                                }
+                                            ]
+                                            unexpectedBehaviors: []
+                                        }
+                                    ]
+                                }
+                            ) {
+                                locationOfData
+                            }
+                        }
+                        deleteResult: testResult(id: "NTQ1MeyIxMiI6MX0DI1MT") {
+                            __typename
+                            deleteTestResult {
+                                locationOfData
+                            }
+                        }
+                        updateMe(input: { atIds: [1, 2, 3] }) {
+                            ats {
+                                id
+                            }
+                        }
+                    }
+                `
+            );
+        });
 
         expect(() => {
             const missingTypes = checkForMissingTypes();
@@ -363,7 +534,7 @@ describe('graphql', () => {
                         `explicitly exclude the types by adding the type ` +
                         `name to the excludedTypeNames array. Note this may ` +
                         `also occur if the query is missing the __typename ` +
-                        `field.`
+                        `field or if the field is renamed inside the query.`
                 );
             }
 

@@ -374,11 +374,28 @@ const removeTestPlanRunResultsByQuery = async ({
     testerUserId,
     testPlanReportId
 }) => {
-    return await ModelService.update(
-        TestPlanRun,
-        { testerUserId, testPlanReportId },
-        { testResults: [] }
-    );
+    const result = await getTestPlanRuns(null, {
+        testerUserId,
+        testPlanReportId
+    });
+    if (result.length) {
+        const testPlanRun = result[0];
+        const { testResults } = testPlanRun;
+
+        return await ModelService.update(
+            TestPlanRun,
+            { testerUserId, testPlanReportId },
+            {
+                testResults: testResults.map(testResult => ({
+                    ...testResult,
+                    result: null,
+                    state: null
+                }))
+            }
+        );
+    }
+
+    return true;
 };
 
 const getIssuesForTestResult = async (testPlanRunId, testResultIndex) => {

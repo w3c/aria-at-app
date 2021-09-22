@@ -20,6 +20,11 @@ const { query: testClientQuery, mutate: testClientMutate } = createTestClient(
 const failWithErrors = errors => {
     let formatted = '';
     errors.forEach(error => {
+        if (error.originalError) {
+            formatted += `${error.originalError.stack}\n\n`;
+            return;
+        }
+
         const formattedType = error.name ? `${error.name}: ` : '';
         const formattedPath = error.path
             ? ` in ${JSON.stringify(error.path)} `

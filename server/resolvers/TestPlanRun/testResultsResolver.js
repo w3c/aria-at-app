@@ -1,29 +1,12 @@
-const { At } = require('../../models');
-const {
-    getRemapTestResultContext,
-    remapTestResults
-} = require('../../scripts/import-tests/remapTestResults');
 const testsResolver = require('../TestPlanVersion/testsResolver');
+const unexpectedBehaviorsJson = require('../../resources/unexpectedBehaviors.json');
 
-const testResultsResolver = async testPlanRun => {
+const testResultsResolver = testPlanRun => {
     const testPlanVersion = testPlanRun.testPlanReport.testPlanVersion;
-    const tests = await testsResolver(testPlanVersion);
+    const tests = testsResolver(testPlanVersion);
 
-    // TODO: revisit as part of reporting migration
-    const allAts = await At.findAll();
-    const testResultContext = await getRemapTestResultContext({
-        testPlanVersion,
-        testPlanRun,
-        tests,
-        allAts
-    });
-    const testResults = remapTestResults(
-        testPlanRun.testResults,
-        testResultContext
-    );
-
-    // Populate nested test, scenario and assertion fields
-    return testResults.map(testResult => {
+    // Populate nested test, scenario, assertion and unexpectedBehavior fields
+    return testPlanRun.testResults.map(testResult => {
         const test = tests.find(each => each.id === testResult.testId);
         return {
             ...testResult,
@@ -39,6 +22,14 @@ const testResultsResolver = async testPlanRun => {
                         assertion: test.assertions.find(
                             each => each.id === assertionResult.assertionId
                         )
+                    })
+                ),
+                unexpectedBehaviors: scenarioResult.unexpectedBehaviors.map(
+                    unexpectedBehavior => ({
+                        ...unexpectedBehavior,
+                        text: unexpectedBehaviorsJson.find(
+                            each => each.id === unexpectedBehavior.id
+                        ).text
                     })
                 )
             }))

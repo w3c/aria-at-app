@@ -20,6 +20,7 @@ const TestPlanVersion = require('./TestPlanVersion');
 const TestPlanReport = require('./TestPlanReport');
 const TestPlanReportOperations = require('./TestPlanReportOperations');
 const TestPlanRunOperations = require('./TestPlanRunOperations');
+const TestResultOperations = require('./TestResultOperations');
 const TestPlanRun = require('./TestPlanRun');
 
 const resolvers = {
@@ -49,7 +50,8 @@ const resolvers = {
     TestPlanReport,
     TestPlanRun,
     TestPlanReportOperations,
-    TestPlanRunOperations
+    TestPlanRunOperations,
+    TestResultOperations
 };
 
 module.exports = resolvers;

@@ -20,10 +20,10 @@ describe('TestPlanVersionModel', () => {
         // A3
         [
             'title',
-            'status',
+            'directory',
             'gitSha',
             'gitMessage',
-            'exampleUrl',
+            'testPageUrl',
             'updatedAt',
             'metadata',
             'tests'

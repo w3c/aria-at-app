@@ -243,12 +243,12 @@ const graphqlSchema = gql`
         """
         updatedAt: Timestamp!
         # TODO: consider moving to the Scenario type if we support multiple
-        # examples for one TestPlanVersion (i.e. testing that
+        # test pages for one TestPlanVersion (i.e. testing that
         # <input type="button"> and <button> have equivalent behavior).
         """
         Link to the HTML page which will be tested.
         """
-        exampleUrl: String!
+        testPageUrl: String!
         """
         Loosely structured data which may or may not be consistent or fully
         populated across all test plan versions.
@@ -285,13 +285,12 @@ const graphqlSchema = gql`
         The AT mode the test was written to expect.
         """
         atMode: AtMode!
-        # TODO: consider switching to a URL which is more standard
         # TODO: consider converting to an array if we support a larger number of
-        # more-focused and "compositional" startup scripts
+        # more-focused and "compositional" setup scripts
         """
-        JS content which, when run, will prepare the example for testing.
+        JS script which, when run, will prepare the test page for testing.
         """
-        startupScriptContent: String
+        setupScriptUrl: String
         # TODO: rethink when introducing machine-readable instructions
         """
         Human-readable sentences detailing steps that must be completed by
@@ -419,14 +418,15 @@ const graphqlSchema = gql`
         """
         test: Test!
         """
-        When this particular test was started, which is interesting to collect
-        for analytics.
+        Automatically set by the server when a new test result is created.
         """
         startedAt: Timestamp!
         """
-        Used to determine if a test was completed or skipped.
+        Automatically set by the server when the test results have been
+        successfully submitted. This means all the scenarios and assertions have
+        been filled in and the user has clicked Submit Results in the UI.
         """
-        completedAt: Timestamp!
+        completedAt: Timestamp
         """
         The captured output for each of the Scenarios required to test the
         AT, including the results of all assertions.
@@ -441,15 +441,7 @@ const graphqlSchema = gql`
         """
         See TestResult type for more information.
         """
-        testId: ID!
-        """
-        See TestResult type for more information.
-        """
-        startedAt: Timestamp!
-        """
-        See TestResult type for more information.
-        """
-        completedAt: Timestamp!
+        id: ID!
         """
         See TestResult type for more information.
         """
@@ -474,8 +466,9 @@ const graphqlSchema = gql`
         """
         After each scenario is executed, the tester will capture the output of
         the AT, and that output will be used as the basis for the assertions.
+        Submitted test results require this field to be filled in.
         """
-        output: String!
+        output: String
         """
         The outcomes of the assertions based on the output field.
         """
@@ -494,11 +487,11 @@ const graphqlSchema = gql`
         """
         See ScenarioResult type for more information.
         """
-        scenarioId: ID!
+        id: ID!
         """
         See ScenarioResult type for more information.
         """
-        output: String!
+        output: String
         """
         See ScenarioResult type for more information.
         """
@@ -530,9 +523,10 @@ const graphqlSchema = gql`
         """
         assertion: Assertion!
         """
-        Whether the assertion is considered passing or failing.
+        Whether the assertion is considered passing or failing. Submitted test
+        results require this field to be filled in.
         """
-        passed: Boolean!
+        passed: Boolean
         # TODO: propose removing this for the reason given above
         """
         When passed is false, a failedReason must be given.
@@ -547,11 +541,11 @@ const graphqlSchema = gql`
         """
         See Assertion for more information.
         """
-        assertionId: ID!
+        id: ID!
         """
         See Assertion for more information.
         """
-        passed: Boolean!
+        passed: Boolean
         """
         See Assertion for more information.
         """
@@ -602,20 +596,15 @@ const graphqlSchema = gql`
         Postgres-provided numeric ID.
         """
         id: ID!
-        # TODO: Add a note about this being null if the execution is automated,
-        # once automation is introduced.
+        # TODO: make optional once automation is introduced.
         """
-        The person who executed the tests. Note this is not populated on the
-        TestPlanReport's finalizedTestPlanRun field, because in that case the
-        TestPlanRun may reflect the work of multiple testers.
+        The person who executed the tests.
         """
-        tester: User
+        tester: User!
         """
-        The users whose test executions are represented by these results. Note
-        that this field is only populated on the TestPlanReport's
-        finalizedTestPlanRun field and not the draftTestPlanRuns field.
+        The TestPlanReport this TestPlanRun is a part of.
         """
-        testers: [User]
+        testPlanReport: TestPlanReport!
         """
         Array of results, each of which correspond to one Test which can be
         found on the TestPlanVersion type.
@@ -655,8 +644,8 @@ const graphqlSchema = gql`
     type TestPlanReportConflict {
         """
         The part of the test where the disagreement occurred. This does not
-        include the actual results and merely points to the test, scenario or
-        assertion.
+        include the actual results and merely points to the differing scenario
+        or assertion.
         """
         source: PopulatedData!
         """
@@ -664,7 +653,7 @@ const graphqlSchema = gql`
         occurred in an assertion, for example, the populated data would include
         a testPlanRun, scenarioResult and assertionResult for each of the
         results which differed (as well as the other associated data
-        PopulatedData will make available.)
+        PopulatedData will make available).
         """
         conflictingResults: [PopulatedData]!
     }
@@ -693,6 +682,11 @@ const graphqlSchema = gql`
         """
         testPlanVersion: TestPlanVersion!
         """
+        The subset of tests which are relevant to this report, i.e. the tests
+        where the AT matches the TestPlanTarget's AT.
+        """
+        runnableTests: [Test]!
+        """
         A list of conflicts between runs, which may occur at the level of the
         Scenario if the output or unexpected behaviors do not match, or even at
         the level of an Assertion, if the result of an assertion does not match.
@@ -702,11 +696,16 @@ const graphqlSchema = gql`
         """
         conflicts: [TestPlanReportConflict]!
         """
+        A few lines of text summarizing the conflicts, or null when no conflicts
+        were detected. Markdown formatting is available.
+        """
+        conflictsFormatted(markdown: Boolean): String
+        """
         Finalizing a test plan report requires resolving any conflicts between
         runs. At this stage a single set of results is able to represent all
         results, and is much more convenient to work with.
         """
-        finalizedTestPlanRun: TestPlanRun
+        finalizedTestResults: [TestResult]!
         """
         These are all the TestPlanRuns which were recorded during the
         TestPlanReport's DRAFT stage.
@@ -850,7 +849,6 @@ const graphqlSchema = gql`
         user.
         """
         deleteTestPlanRun(userId: ID!): PopulatedData!
-        deleteTestPlanRunResults(userId: ID!): PopulatedData!
         updateStatus(status: TestPlanReportStatus!): PopulatedData!
     }
 
@@ -859,9 +857,16 @@ const graphqlSchema = gql`
     """
     type TestPlanRunOperations {
         """
-        Creates a new TestResult.
+        Creates a new TestResult which is populated with all the scenarioResults
+        and assertionResults to be filled out for the AT associated with the
+        TestPlanRun.
         """
-        createTestResult(input: TestResultInput): PopulatedData!
+        createTestResult(testId: ID!): PopulatedData!
+        """
+        Permanently deletes all test results without removing the TestPlanRun.
+        Only available to admins.
+        """
+        deleteTestResults: PopulatedData!
     }
 
     """
@@ -869,9 +874,18 @@ const graphqlSchema = gql`
     """
     type TestResultOperations {
         """
-        Update a previously created TestResult.
+        Saves any changes to the TestResult. Minimal validation is performed
+        since this mutation is meant to be called repeatedly as the user
+        completes the forms.
         """
-        updateTestResult(input: TestResultInput!): PopulatedData!
+        saveTestResult(input: TestResultInput!): PopulatedData!
+        """
+        Should only be called when the TestResult is complete, with all
+        ScenarioResults and AssertionResults filled in, or else this
+        mutation will throw an error. This endpoint will set the completedAt
+        field, indicating the test has been successfully submitted and accepted.
+        """
+        submitTestResult(input: TestResultInput!): PopulatedData!
         """
         Permanently deletes the TestResult.
         """
