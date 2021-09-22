@@ -10,6 +10,17 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
         testPlanReports(statuses: [DRAFT, IN_REVIEW]) {
             id
             status
+            conflicts {
+                source {
+                    locationOfData
+                }
+                conflictingResults {
+                    locationOfData
+                }
+            }
+            runnableTests {
+                id
+            }
             testPlanTarget {
                 id
                 title
@@ -28,11 +39,6 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
                 id
                 title
                 gitSha
-                gitMessage
-                tests {
-                    id
-                    title
-                }
             }
             draftTestPlanRuns {
                 id

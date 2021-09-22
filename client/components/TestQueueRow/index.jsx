@@ -21,7 +21,7 @@ import {
     UPDATE_TEST_PLAN_REPORT_MUTATION
 } from '../TestQueue/queries';
 
-const TestQueueRun = ({
+const TestQueueRow = ({
     user = {},
     testers = [],
     testPlanReport = {},
@@ -40,33 +40,30 @@ const TestQueueRun = ({
     );
 
     const { isAdmin, username } = user;
+    const {
+        testPlanTarget,
+        testPlanVersion,
+        draftTestPlanRuns,
+        runnableTests
+    } = testPlanReport;
 
     const checkIsTesterAssigned = username => {
-        return testPlanReport.draftTestPlanRuns.some(
+        return draftTestPlanRuns.some(
             testPlanRun => testPlanRun.tester.username === username
         );
     };
 
-    const currentUserAssigned = checkIsTesterAssigned(user.username);
+    const currentUserAssigned = checkIsTesterAssigned(username);
     const currentUserTestPlanRun = currentUserAssigned
-        ? testPlanReport.draftTestPlanRuns.find(
-              testPlanRun => testPlanRun.tester.username === user.username
-          )
+        ? draftTestPlanRuns.find(({ tester }) => tester.username === username)
         : {};
-    const testPlanRunTesters = testPlanReport.draftTestPlanRuns;
 
-    const getTestPlanRunsWithResults = () => {
-        const { draftTestPlanRuns } = testPlanReport;
-        return draftTestPlanRuns.filter(
-            testPlanRun => testPlanRun.testResultCount > 0
-        );
-    };
+    const testPlanRunsWithResults = draftTestPlanRuns.filter(
+        ({ testResults }) => testResults.length > 0
+    );
 
     const getTestPlanRunIdByUserId = userId => {
-        const { draftTestPlanRuns } = testPlanReport;
-        return draftTestPlanRuns.find(
-            testPlanRun => testPlanRun.tester.id === userId
-        ).id;
+        return draftTestPlanRuns.find(({ tester }) => tester.id === userId).id;
     };
 
     const toggleTesterAssign = async username => {
@@ -122,14 +119,10 @@ const TestQueueRun = ({
         if (currentUserAssigned)
             return (
                 <Link to={`/run/${currentUserTestPlanRun.id}`}>
-                    {testPlanReport.testPlanVersion.title ||
-                        `"${testPlanReport.testPlanVersion.directory}"`}
+                    {testPlanVersion.title || `"${testPlanVersion.directory}"`}
                 </Link>
             );
-        return (
-            testPlanReport.testPlanVersion.title ||
-            `"${testPlanReport.testPlanVersion.directory}"`
-        );
+        return testPlanVersion.title || `"${testPlanVersion.directory}"`;
     };
 
     const renderAssignMenu = () => {
@@ -145,9 +138,9 @@ const TestQueueRun = ({
                     </Dropdown.Toggle>
                     <Dropdown.Menu role="menu">
                         {testers.length ? (
-                            testers.map(tester => {
+                            testers.map(({ username }) => {
                                 const isTesterAssigned = checkIsTesterAssigned(
-                                    tester.username
+                                    username
                                 );
                                 let classname = isTesterAssigned
                                     ? 'assigned'
@@ -159,9 +152,7 @@ const TestQueueRun = ({
                                         as="button"
                                         key={nextId()}
                                         onClick={async () => {
-                                            await toggleTesterAssign(
-                                                tester.username
-                                            );
+                                            await toggleTesterAssign(username);
                                             setAlertMessage(
                                                 `You have been ${
                                                     classname.includes('not')
@@ -176,7 +167,7 @@ const TestQueueRun = ({
                                             <FontAwesomeIcon icon={faCheck} />
                                         )}
                                         <span className={classname}>
-                                            {`${tester.username}`}
+                                            {`${username}`}
                                         </span>
                                     </Dropdown.Item>
                                 );
@@ -193,7 +184,6 @@ const TestQueueRun = ({
     };
 
     const evaluateTestRunTitle = () => {
-        const { testPlanTarget, testPlanVersion } = testPlanReport;
         const { title: testPlanTargetName } = testPlanTarget;
         const { title: apgExampleName, directory } = testPlanVersion;
 
@@ -207,21 +197,21 @@ const TestQueueRun = ({
                     id={nextId()}
                     variant="secondary"
                     aria-label="Run as other tester"
-                    disabled={!testPlanRunTesters.length}
+                    disabled={!draftTestPlanRuns.length}
                 >
                     Open run as...
                 </Dropdown.Toggle>
                 <Dropdown.Menu role="menu">
-                    {testPlanRunTesters.map(t => {
+                    {draftTestPlanRuns.map(({ tester }) => {
                         return (
                             <Dropdown.Item
                                 role="menuitem"
                                 href={`/run/${getTestPlanRunIdByUserId(
-                                    t.tester.id
-                                )}?user=${t.tester.id}`}
+                                    tester.id
+                                )}?user=${tester.id}`}
                                 key={nextId()}
                             >
-                                {t.tester.username}
+                                {tester.username}
                             </Dropdown.Item>
                         );
                     })}
@@ -231,8 +221,6 @@ const TestQueueRun = ({
     };
 
     const renderDeleteMenu = () => {
-        let testPlanRunsWithResults = getTestPlanRunsWithResults();
-
         if (testPlanRunsWithResults.length) {
             return (
                 <>
@@ -242,7 +230,7 @@ const TestQueueRun = ({
                             Delete for...
                         </Dropdown.Toggle>
                         <Dropdown.Menu role="menu">
-                            {testPlanRunsWithResults.map(t => {
+                            {testPlanRunsWithResults.map(({ tester }) => {
                                 return (
                                     <Dropdown.Item
                                         role="menuitem"
@@ -252,16 +240,16 @@ const TestQueueRun = ({
                                         onClick={() => {
                                             triggerDeleteResultsModal(
                                                 evaluateTestRunTitle(),
-                                                t.tester.username,
+                                                tester.username,
                                                 async () =>
                                                     await handleRemoveTesterResults(
-                                                        t.tester
+                                                        tester
                                                     )
                                             );
                                         }}
                                     >
                                         <FontAwesomeIcon icon={faTrashAlt} />
-                                        {t.tester.username}
+                                        {tester.username}
                                     </Dropdown.Item>
                                 );
                             })}
@@ -283,10 +271,11 @@ const TestQueueRun = ({
     };
 
     const evaluateStatusAndResults = () => {
-        const { status: runStatus, conflictCount = 0 } = testPlanReport;
+        const { status: runStatus, conflicts } = testPlanReport;
         const { id: runId } = currentUserTestPlanRun;
 
         let status, results;
+        const conflictCount = conflicts.length || 0;
 
         if (conflictCount > 0) {
             let pluralizedStatus = `${conflictCount} Conflict${
@@ -321,8 +310,8 @@ const TestQueueRun = ({
     };
 
     const evaluateNewReportStatus = () => {
-        const { status, conflictCount = 0 } = testPlanReport;
-        const testersWithResults = getTestPlanRunsWithResults();
+        const { status, conflicts } = testPlanReport;
+        const conflictCount = conflicts.length || 0;
 
         // If there are no conflicts OR the test has been marked as "final",
         // and admin can mark a test run as "draft"
@@ -330,7 +319,7 @@ const TestQueueRun = ({
         if (
             (status !== 'IN_REVIEW' &&
                 conflictCount === 0 &&
-                testersWithResults.length > 0) ||
+                testPlanRunsWithResults.length > 0) ||
             status === 'FINALIZED'
         ) {
             newStatus = 'IN_REVIEW';
@@ -340,7 +329,7 @@ const TestQueueRun = ({
         else if (
             status === 'IN_REVIEW' &&
             conflictCount === 0 &&
-            testersWithResults.length > 0
+            testPlanRunsWithResults.length > 0
         ) {
             newStatus = 'FINALIZED';
         }
@@ -359,7 +348,7 @@ const TestQueueRun = ({
                     <div className="assign-actions">
                         <Button
                             variant="secondary"
-                            onClick={() => toggleTesterAssign(user.username)}
+                            onClick={() => toggleTesterAssign(username)}
                             aria-label={
                                 !currentUserAssigned
                                     ? 'Assign Yourself'
@@ -375,22 +364,20 @@ const TestQueueRun = ({
                 </div>
                 <div className="secondary-actions">
                     <ul className="assignees">
-                        {testPlanReport.draftTestPlanRuns.length !== 0 ? (
-                            testPlanReport.draftTestPlanRuns.map(
-                                testPlanRun => (
-                                    <li key={nextId()}>
-                                        <a
-                                            href={`https://github.com/${testPlanRun.tester.username}`}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                        >
-                                            {testPlanRun.tester.username}
-                                        </a>
-                                        <br />
-                                        {`(${testPlanRun.testResultCount} of ${testPlanRun.testResults.length} tests complete)`}
-                                    </li>
-                                )
-                            )
+                        {draftTestPlanRuns.length !== 0 ? (
+                            draftTestPlanRuns.map(({ tester, testResults }) => (
+                                <li key={nextId()}>
+                                    <a
+                                        href={`https://github.com/${tester.username}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        {tester.username}
+                                    </a>
+                                    <br />
+                                    {`(${testResults.length} of ${runnableTests.length} tests complete)`}
+                                </li>
+                            ))
                         ) : (
                             <li className="no-assignees">
                                 No testers assigned
@@ -440,9 +427,9 @@ const TestQueueRun = ({
                             disabled={!currentUserAssigned}
                             ref={startTestingButtonRef}
                         >
-                            {currentUserTestPlanRun.testResultCount > 0 &&
-                            currentUserTestPlanRun.testResultCount <
-                                testPlanReport.testPlanVersion.testCount
+                            {currentUserTestPlanRun.testResults.length > 0 &&
+                            currentUserTestPlanRun.testResults.length <
+                                runnableTests.length
                                 ? 'Continue testing'
                                 : 'Start testing'}
                         </Button>
@@ -469,7 +456,7 @@ const TestQueueRun = ({
                 <div className="secondary-actions">
                     {isAdmin && renderOpenAsDropdown()}
                     {isAdmin && renderDeleteMenu()}
-                    {(!isAdmin && currentUserTestPlanRun.testResultCount && (
+                    {(!isAdmin && currentUserTestPlanRun.testResults.length && (
                         <Button
                             variant="danger"
                             onClick={() => {
@@ -490,7 +477,7 @@ const TestQueueRun = ({
 
                     {alertMessage && (
                         <ATAlert
-                            key={`${testPlanReport.testPlanVersion.id}-${testPlanReport.testPlanVersion.gitSha}-${testPlanReport.testPlanVersion.directory}`}
+                            key={`${testPlanVersion.id}-${testPlanVersion.gitSha}-${testPlanVersion.directory}`}
                             message={alertMessage}
                         />
                     )}
@@ -500,7 +487,7 @@ const TestQueueRun = ({
     );
 };
 
-TestQueueRun.propTypes = {
+TestQueueRow.propTypes = {
     user: PropTypes.object,
     testers: PropTypes.array,
     testPlanReport: PropTypes.object,
@@ -509,4 +496,4 @@ TestQueueRun.propTypes = {
     triggerTestPlanReportUpdate: PropTypes.func
 };
 
-export default TestQueueRun;
+export default TestQueueRow;
