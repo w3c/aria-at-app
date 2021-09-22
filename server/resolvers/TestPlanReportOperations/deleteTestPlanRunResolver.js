@@ -23,6 +23,7 @@ const deleteTestPlanRunResolver = async (
         testPlanReportId,
         testerUserId
     });
+
     return populateData({ testPlanReportId });
 };
 

@@ -8,8 +8,8 @@ const {
 
 /**
  * Merges the deeply nested properties of two objects and/or arrays. When
- * merging arrays of objects, it will use the "ID" field to identify which items
- * exist in both arrays.
+ * merging arrays of objects, it will use the identifyArrayItem function to
+ * identify which items exist in both arrays.
  * @param {*} left
  * @param {*} right
  * @param {*} options

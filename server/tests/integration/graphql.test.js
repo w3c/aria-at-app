@@ -132,7 +132,7 @@ describe('graphql', () => {
     beforeAll(async () => {
         const excludedTypeNames = [
             // Items formatted like this:
-            'TestResult'
+            // 'TestResult'
         ];
         const excludedTypeNameAndField = [
             // Items formatted like this:
