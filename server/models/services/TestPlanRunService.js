@@ -359,9 +359,13 @@ const removeTestPlanRunByQuery = async (
     { testerUserId, testPlanReportId },
     deleteOptions = { truncate: false }
 ) => {
+    const deleteWhere =
+        testerUserId === undefined
+            ? { testPlanReportId }
+            : { testPlanReportId, testerUserId };
     return await ModelService.removeByQuery(
         TestPlanRun,
-        { testerUserId, testPlanReportId },
+        deleteWhere,
         deleteOptions
     );
 };

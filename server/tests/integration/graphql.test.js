@@ -437,6 +437,10 @@ describe('graphql', () => {
                                 locationOfData
                             }
                         }
+                        deleteReport: testPlanReport(id: 3) {
+                            __typename
+                            deleteTestPlanReport
+                        }
                         testPlanRun(id: 1) {
                             __typename
                             createTestResult(testId: "Mjk0MeyIyIjoiMSJ9jQyOG") {

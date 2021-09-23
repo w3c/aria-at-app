@@ -2,6 +2,7 @@ const { gql } = require('apollo-server');
 const dbCleaner = require('../util/db-cleaner');
 const { query, mutate } = require('../util/graphql-test-utilities');
 const db = require('../../models');
+const { draftTestPlanRuns } = require('../../resolvers/TestPlanReport');
 
 afterAll(async () => {
     // Closing the DB connection allows Jest to exit successfully.
@@ -410,6 +411,45 @@ describe('test queue', () => {
                 })
             );
             expect(second.created.length).toBe(0);
+        });
+    });
+
+    it('can be deleted along with associated runs', async () => {
+        await dbCleaner(async () => {
+            const testPlanReportId = '2';
+            const queryBefore = await query(gql`
+                query {
+                    testPlanReport(id: ${testPlanReportId}) {
+                        id
+                        draftTestPlanRuns {
+                            id
+                        }
+                    }
+                }
+            `);
+            const { draftTestPlanRuns } = queryBefore.testPlanReport;
+            await mutate(gql`
+                        mutation {
+                            testPlanReport(id: ${testPlanReportId}) {
+                                deleteTestPlanReport
+                            }
+                        }
+                    `);
+            const queryAfter = await query(gql`
+                query {
+                    testPlanReport(id: ${testPlanReportId}) {
+                        id
+                    }
+                    testPlanRun(id: ${draftTestPlanRuns[0].id}) {
+                        id
+                    }
+                }
+            `);
+
+            expect(queryBefore.testPlanReport.id).toBeTruthy();
+            expect(draftTestPlanRuns.length).toBeGreaterThan(0);
+            expect(queryAfter.testPlanReport).toBe(null);
+            expect(queryAfter.testPlanRun).toBe(null);
         });
     });
 

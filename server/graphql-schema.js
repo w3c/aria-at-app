@@ -639,10 +639,6 @@ const graphqlSchema = gql`
         """
         IN_REVIEW
         """
-        Hides the TestPlanReport.
-        """
-        REMOVED
-        """
         Testing is complete and consistent, and ready to be displayed in the
         Reports section of the app.
         """
@@ -870,7 +866,16 @@ const graphqlSchema = gql`
         user.
         """
         deleteTestPlanRun(userId: ID!): PopulatedData!
+        """
+        Update the report status. Remember that all conflicts must be resolved
+        when setting the status to FINALIZED. Only available to admins.
+        """
         updateStatus(status: TestPlanReportStatus!): PopulatedData!
+        """
+        Permanently deletes the TestPlanReport and all associated TestPlanRuns.
+        Only available to admins.
+        """
+        deleteTestPlanReport: NoResponse
     }
 
     """
@@ -938,9 +943,9 @@ const graphqlSchema = gql`
         state of "DRAFT", resulting in the report appearing in the Test Queue.
         In the case an identical report already exists, it will be returned
         without changes and without affecting existing results. In the case an
-        identical report exists but with a status of "REMOVED" or "FINALIZED",
+        identical report exists but with a status of "FINALIZED",
         it will be given a status of "DRAFT" and will therefore be pulled back
-        into the queue.
+        into the queue with its results unaffected.
         """
         findOrCreateTestPlanReport(
             """
