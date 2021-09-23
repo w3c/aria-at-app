@@ -413,6 +413,45 @@ describe('test queue', () => {
         });
     });
 
+    it('can be deleted along with associated runs', async () => {
+        await dbCleaner(async () => {
+            const testPlanReportId = '2';
+            const queryBefore = await query(gql`
+                query {
+                    testPlanReport(id: ${testPlanReportId}) {
+                        id
+                        draftTestPlanRuns {
+                            id
+                        }
+                    }
+                }
+            `);
+            const { draftTestPlanRuns } = queryBefore.testPlanReport;
+            await mutate(gql`
+                        mutation {
+                            testPlanReport(id: ${testPlanReportId}) {
+                                deleteTestPlanReport
+                            }
+                        }
+                    `);
+            const queryAfter = await query(gql`
+                query {
+                    testPlanReport(id: ${testPlanReportId}) {
+                        id
+                    }
+                    testPlanRun(id: ${draftTestPlanRuns[0].id}) {
+                        id
+                    }
+                }
+            `);
+
+            expect(queryBefore.testPlanReport.id).toBeTruthy();
+            expect(draftTestPlanRuns.length).toBeGreaterThan(0);
+            expect(queryAfter.testPlanReport).toBe(null);
+            expect(queryAfter.testPlanRun).toBe(null);
+        });
+    });
+
     it('displays conflicts', async () => {
         const conflictingReportId = '2';
 

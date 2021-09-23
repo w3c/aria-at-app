@@ -556,6 +556,15 @@ const graphqlSchema = gql`
         failedReason: AssertionFailedReason
     }
 
+    enum UnexpectedBehaviorId {
+        EXCESSIVELY_VERBOSE
+        UNEXPECTED_CURSOR_POSITION
+        SLUGGISH
+        AT_CRASHED
+        BROWSER_CRASHED
+        OTHER
+    }
+
     """
     A failure state such as "AT became excessively sluggish" which, if it
     occurs, should count as a scenario failure.
@@ -565,7 +574,7 @@ const graphqlSchema = gql`
         Human-readable ID, e.g. "excessively_sluggish" which is similar to the
         text.
         """
-        id: ID!
+        id: UnexpectedBehaviorId!
         """
         Human-readable sentence describing the failure.
         """
@@ -585,7 +594,7 @@ const graphqlSchema = gql`
         """
         See UnexpectedBehavior for more information.
         """
-        id: ID!
+        id: UnexpectedBehaviorId!
         """
         See UnexpectedBehavior for more information.
         """
@@ -629,10 +638,6 @@ const graphqlSchema = gql`
         No longer accepting testing, but not yet published.
         """
         IN_REVIEW
-        """
-        Hides the TestPlanReport.
-        """
-        REMOVED
         """
         Testing is complete and consistent, and ready to be displayed in the
         Reports section of the app.
@@ -861,7 +866,16 @@ const graphqlSchema = gql`
         user.
         """
         deleteTestPlanRun(userId: ID!): PopulatedData!
+        """
+        Update the report status. Remember that all conflicts must be resolved
+        when setting the status to FINALIZED. Only available to admins.
+        """
         updateStatus(status: TestPlanReportStatus!): PopulatedData!
+        """
+        Permanently deletes the TestPlanReport and all associated TestPlanRuns.
+        Only available to admins.
+        """
+        deleteTestPlanReport: NoResponse
     }
 
     """
@@ -929,9 +943,9 @@ const graphqlSchema = gql`
         state of "DRAFT", resulting in the report appearing in the Test Queue.
         In the case an identical report already exists, it will be returned
         without changes and without affecting existing results. In the case an
-        identical report exists but with a status of "REMOVED" or "FINALIZED",
+        identical report exists but with a status of "FINALIZED",
         it will be given a status of "DRAFT" and will therefore be pulled back
-        into the queue.
+        into the queue with its results unaffected.
         """
         findOrCreateTestPlanReport(
             """
