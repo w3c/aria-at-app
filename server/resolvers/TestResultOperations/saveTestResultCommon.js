@@ -5,7 +5,6 @@ const {
 const populateData = require('../../services/PopulatedData/populateData');
 const deepCustomMerge = require('../../util/deepCustomMerge');
 const deepPickEqual = require('../../util/deepPickEqual');
-const unexpectedBehaviors = require('../../resources/unexpectedBehaviors.json');
 const createTestResultSkeleton = require('../TestPlanRunOperations/createTestResultSkeleton');
 
 const saveTestResultCommon = async ({
@@ -94,11 +93,11 @@ const assertTestResultIsValid = newTestResult => {
     };
 
     const checkUnexpectedBehavior = unexpectedBehavior => {
-        const unexpectedBehaviorIds = Object.keys(unexpectedBehaviors);
         if (
-            !unexpectedBehaviorIds.includes(unexpectedBehavior.id) ||
             (!!unexpectedBehavior.otherUnexpectedBehaviorText &&
-                unexpectedBehavior.id === 'other')
+                unexpectedBehavior.id !== 'OTHER') ||
+            (!unexpectedBehavior.otherUnexpectedBehaviorText &&
+                unexpectedBehavior.id === 'OTHER')
         ) {
             failed = true;
         }

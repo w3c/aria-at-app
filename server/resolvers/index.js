@@ -24,6 +24,8 @@ const TestPlanReportOperations = require('./TestPlanReportOperations');
 const TestPlanRunOperations = require('./TestPlanRunOperations');
 const TestResultOperations = require('./TestResultOperations');
 const TestPlanRun = require('./TestPlanRun');
+const Test = require('./Test');
+const ScenarioResult = require('./ScenarioResult');
 
 const resolvers = {
     Query: {
@@ -53,6 +55,8 @@ const resolvers = {
     TestPlanVersion,
     TestPlanReport,
     TestPlanRun,
+    Test,
+    ScenarioResult,
     TestPlanReportOperations,
     TestPlanRunOperations,
     TestResultOperations

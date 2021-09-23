@@ -92,13 +92,18 @@ const importTestPlanVersions = async () => {
             sourceDirectoryPath
         });
 
-        const tests = getTests({ builtDirectoryPath, testPlanVersionId, ats });
+        const tests = getTests({
+            builtDirectoryPath,
+            testPlanVersionId,
+            ats,
+            gitSha
+        });
 
         await createTestPlanVersion({
             id: testPlanVersionId,
             title,
             directory,
-            testPageUrl,
+            testPageUrl: getAppUrl(testPageUrl, { gitSha, builtDirectoryPath }),
             gitSha,
             gitMessage,
             updatedAt: gitCommitDate,
@@ -150,6 +155,18 @@ const readRepo = async () => {
         gitMessage: commit.message(),
         gitSha: commit.id().tostrS()
     };
+};
+
+const getAppUrl = (directoryRelativePath, { gitSha, builtDirectoryPath }) => {
+    return path.join(
+        '/',
+        'aria-at', // The app's proxy to the ARIA-AT repo
+        gitSha,
+        path.relative(
+            gitCloneDirectory,
+            path.join(builtDirectoryPath, directoryRelativePath)
+        )
+    );
 };
 
 const readCsv = ({ sourceDirectoryPath }) => {
@@ -205,7 +222,7 @@ const updateAtsJson = async ats => {
     );
 };
 
-const getTests = ({ builtDirectoryPath, testPlanVersionId, ats }) => {
+const getTests = ({ builtDirectoryPath, testPlanVersionId, ats, gitSha }) => {
     const tests = [];
 
     const allCollectedByNumber = {};
@@ -236,6 +253,14 @@ const getTests = ({ builtDirectoryPath, testPlanVersionId, ats }) => {
 
         const testId = createTestId(testPlanVersionId, common.info.testId);
 
+        let setupScriptUrl = null;
+        if (common.target.setupScript) {
+            setupScriptUrl = getAppUrl(common.target.setupScript.modulePath, {
+                gitSha,
+                builtDirectoryPath
+            });
+        }
+
         tests.push({
             id: testId,
             title: common.info.title,
@@ -244,7 +269,7 @@ const getTests = ({ builtDirectoryPath, testPlanVersionId, ats }) => {
                     ats.find(at => at.name === collected.target.at.name).id
             ),
             atMode: common.target.mode.toUpperCase(),
-            setupScriptUrl: common.target.setupScript?.modulePath,
+            setupScriptUrl,
             instructions: common.instructions.user,
             scenarios: (() => {
                 const scenarios = [];
