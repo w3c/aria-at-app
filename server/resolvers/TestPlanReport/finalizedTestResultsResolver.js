@@ -1,3 +1,4 @@
+const testResultsResolver = require('../TestPlanRun/testResultsResolver');
 const deepCustomMerge = require('../../util/deepCustomMerge');
 
 const finalizedTestResultsResolver = testPlanReport => {
@@ -13,14 +14,14 @@ const finalizedTestResultsResolver = testPlanReport => {
     for (let i = 0; i < testPlanReport.testPlanRuns.length; i += 1) {
         merged = deepCustomMerge(
             merged,
-            testPlanReport.testPlanRuns[i].testResults,
-            {
-                identifyArrayItem: item => item.id
-            }
+            testPlanReport.testPlanRuns[i].testResults.filter(
+                testResult => !!testResult.completedAt
+            ),
+            { identifyArrayItem: item => item.id }
         );
     }
 
-    return merged;
+    return testResultsResolver({ testPlanReport, testResults: merged });
 };
 
 module.exports = finalizedTestResultsResolver;
