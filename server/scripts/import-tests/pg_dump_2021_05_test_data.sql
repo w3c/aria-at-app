@@ -301,7 +301,7 @@ INSERT INTO public."TestPlanRun" (id, "testerUserId", "testPlanReportId", "testR
 			],
 			\"unexpectedBehaviors\": [
 				{
-					\"id\": \"other\",
+					\"id\": \"OTHER\",
 					\"otherUnexpectedBehaviorText\": \"Different text\"
 				}
 			]
@@ -341,7 +341,7 @@ INSERT INTO public."TestPlanRun" (id, "testerUserId", "testPlanReportId", "testR
 			],
 			\"unexpectedBehaviors\": [
 				{
-					\"id\": \"other\",
+					\"id\": \"OTHER\",
 					\"otherUnexpectedBehaviorText\": \"Different unexpected behavior\"
 				}
 			]
@@ -402,7 +402,7 @@ INSERT INTO public."TestPlanRun" (id, "testerUserId", "testPlanReportId", "testR
 				}
 			],
 			\"unexpectedBehaviors\": [
-				{ \"id\": \"sluggish\" }
+				{ \"id\": \"SLUGGISH\" }
 			]
 		},
 		{
@@ -418,7 +418,7 @@ INSERT INTO public."TestPlanRun" (id, "testerUserId", "testPlanReportId", "testR
 				}
 			],
 			\"unexpectedBehaviors\": [
-				{ \"id\": \"excessively_verbose\" }
+				{ \"id\": \"EXCESSIVELY_VERBOSE\" }
 			]
 		}
 	]
@@ -532,7 +532,7 @@ INSERT INTO public."TestPlanRun" (id, "testerUserId", "testPlanReportId", "testR
 					}
 				],
 				\"unexpectedBehaviors\": [
-					{ \"id\": \"sluggish\" }
+					{ \"id\": \"SLUGGISH\" }
 				]
 			}
 		]
@@ -568,7 +568,7 @@ INSERT INTO public."TestPlanRun" (id, "testerUserId", "testPlanReportId", "testR
 				],
 				\"unexpectedBehaviors\": [
 					{
-						\"id\": \"other\",
+						\"id\": \"OTHER\",
 						\"otherUnexpectedBehaviorText\": \"Another failure reason\"
 					}
 				]

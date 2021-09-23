@@ -556,6 +556,15 @@ const graphqlSchema = gql`
         failedReason: AssertionFailedReason
     }
 
+    enum UnexpectedBehaviorId {
+        EXCESSIVELY_VERBOSE
+        UNEXPECTED_CURSOR_POSITION
+        SLUGGISH
+        AT_CRASHED
+        BROWSER_CRASHED
+        OTHER
+    }
+
     """
     A failure state such as "AT became excessively sluggish" which, if it
     occurs, should count as a scenario failure.
@@ -565,7 +574,7 @@ const graphqlSchema = gql`
         Human-readable ID, e.g. "excessively_sluggish" which is similar to the
         text.
         """
-        id: ID!
+        id: UnexpectedBehaviorId!
         """
         Human-readable sentence describing the failure.
         """
@@ -585,7 +594,7 @@ const graphqlSchema = gql`
         """
         See UnexpectedBehavior for more information.
         """
-        id: ID!
+        id: UnexpectedBehaviorId!
         """
         See UnexpectedBehavior for more information.
         """
