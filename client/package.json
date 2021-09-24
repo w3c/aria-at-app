@@ -34,6 +34,7 @@
     "bootstrap": "^4.4.1",
     "core-js": "^3.8.0",
     "graphql": "^15.5.0",
+    "lodash": "^4.17.21",
     "moment": "^2.25.3",
     "node-fetch": "^2.6.1",
     "node-sass": "^4.13.1",
@@ -74,6 +75,7 @@
     "@testing-library/user-event": "^13.1.9",
     "babel-jest": "^25.1.0",
     "babel-loader": "^8.0.6",
+    "babel-plugin-lodash": "^3.3.4",
     "babel-polyfill": "^6.26.0",
     "copy-webpack-plugin": "^5.1.1",
     "dotenv-webpack": "^1.8.0",
@@ -111,8 +113,13 @@
     "transform": {
       "^.+\\.(js|jsx|mjs)$": "babel-jest"
     },
-    "testPathIgnorePatterns": ["<rootDir>/node_modules/", "<rootDir>/resources/"],
-    "coveragePathIgnorePatterns": ["<rootDir>/resources/"]
+    "testPathIgnorePatterns": [
+      "<rootDir>/node_modules/",
+      "<rootDir>/resources/"
+    ],
+    "coveragePathIgnorePatterns": [
+      "<rootDir>/resources/"
+    ]
   },
   "resolutions": {
     "jest-environment-jsdom": "^26.0.1"

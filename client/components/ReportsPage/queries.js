@@ -23,6 +23,7 @@ export const REPORTS_PAGE_QUERY = gql`
                 testPlan {
                     directory
                 }
+                metadata
             }
             runnableTests {
                 id
