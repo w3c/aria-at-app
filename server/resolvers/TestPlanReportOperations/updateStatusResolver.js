@@ -22,18 +22,6 @@ const updateStatusResolver = async (
         throw new Error('Cannot finalize test plan report due to conflicts');
     }
 
-    /*
-    TODO: The previous implementation did allow for runs to be finalized with 'skipped' test results. May want to review throwing this exception?
-    const isIncomplete = testPlanReport.testPlanRuns.find(
-        testPlanRun => !isCompleteResolver(testPlanRun)
-    );
-
-    if (isIncomplete) {
-        throw new Error(
-            'Cannot finalize test plan due to incomplete test runs'
-        );
-    }*/
-
     await updateTestPlanReport(testPlanReportId, { status });
 
     return populateData({ testPlanReportId });

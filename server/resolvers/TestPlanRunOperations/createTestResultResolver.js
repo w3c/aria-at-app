@@ -10,15 +10,10 @@ const createTestResultResolver = async (
     { testId },
     { user }
 ) => {
-    let testPlanRun, testPlanTarget, test;
-    try {
-        ({ testPlanRun, testPlanTarget } = await populateData({
-            testPlanRunId
-        }));
-        ({ test } = await populateData({ testId }));
-    } catch {
-        throw new UserInputError('Failed to load data for the given ID');
-    }
+    const { testPlanRun, testPlanTarget } = await populateData({
+        testPlanRunId
+    });
+    const { test } = await populateData({ testId });
 
     if (
         !(

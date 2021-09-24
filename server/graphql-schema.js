@@ -425,6 +425,7 @@ const graphqlSchema = gql`
         Automatically set by the server when a new test result is created.
         """
         startedAt: Timestamp!
+        # TODO: update explanation once automation is introduced
         """
         Automatically set by the server when the test results have been
         successfully submitted. This means all the scenarios and assertions have
