@@ -229,7 +229,7 @@ describe('testPlanRun', () => {
                                                 failedReason: null
                                             }
                                             {
-                                                # id: "${assertionResultId3}"
+                                                id: "invalid-id-123" # invalid
                                                 passed: null
                                                 failedReason: null
                                             }
@@ -246,7 +246,9 @@ describe('testPlanRun', () => {
             `).catch(err => {
                 error = err;
             });
-            expect(error).toBeTruthy();
+            expect(error.message).toContain(
+                'Data was received in an unexpected shape'
+            );
         });
     });
 
@@ -330,8 +332,8 @@ describe('testPlanRun', () => {
                                                 failedReason: NO_OUTPUT
                                             }
                                             {
-                                                # id: "${assertionResultId3}"
-                                                passed: false
+                                                id: "${assertionResultId3}"
+                                                passed: null # invalid
                                                 failedReason: INCORRECT_OUTPUT
                                             }
                                         ]

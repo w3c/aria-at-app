@@ -209,8 +209,7 @@ describe('graphql', () => {
                                     id
                                 }
                                 atMode
-                                setupScriptUrl
-                                instructions
+                                renderableContent(atId: 1)
                                 scenarios {
                                     __typename
                                     id

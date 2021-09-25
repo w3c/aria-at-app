@@ -88,16 +88,11 @@ const importTestPlanVersions = async () => {
             )
         ).rows[0].nextval;
 
-        const { title, exampleUrl, designPattern, testPageUrl } = readCsv({
+        const { title, exampleUrl, designPatternUrl, testPageUrl } = readCsv({
             sourceDirectoryPath
         });
 
-        const tests = getTests({
-            builtDirectoryPath,
-            testPlanVersionId,
-            ats,
-            gitSha
-        });
+        const tests = getTests({ builtDirectoryPath, testPlanVersionId, ats });
 
         await createTestPlanVersion({
             id: testPlanVersionId,
@@ -108,7 +103,7 @@ const importTestPlanVersions = async () => {
             gitMessage,
             updatedAt: gitCommitDate,
             metadata: {
-                designPattern,
+                designPatternUrl,
                 exampleUrl
             },
             tests
@@ -193,7 +188,7 @@ const readCsv = ({ sourceDirectoryPath }) => {
     return {
         title: getCsvValue('title'),
         exampleUrl: getCsvValue('example'),
-        designPattern: getCsvValue('designPattern'),
+        designPatternUrl: getCsvValue('designPattern'),
         testPageUrl: getCsvValue('reference')
     };
 };
@@ -222,7 +217,7 @@ const updateAtsJson = async ats => {
     );
 };
 
-const getTests = ({ builtDirectoryPath, testPlanVersionId, ats, gitSha }) => {
+const getTests = ({ builtDirectoryPath, testPlanVersionId, ats }) => {
     const tests = [];
 
     const allCollectedByNumber = {};
@@ -244,8 +239,8 @@ const getTests = ({ builtDirectoryPath, testPlanVersionId, ats, gitSha }) => {
             })
         ) {
             throw new Error(
-                'Difference found in a part of a collection.json ' +
-                    'file which should be equivalent'
+                'Difference found in a part of a .collected.json file which ' +
+                    'should be equivalent'
             );
         }
 
@@ -253,24 +248,20 @@ const getTests = ({ builtDirectoryPath, testPlanVersionId, ats, gitSha }) => {
 
         const testId = createTestId(testPlanVersionId, common.info.testId);
 
-        let setupScriptUrl = null;
-        if (common.target.setupScript) {
-            setupScriptUrl = getAppUrl(common.target.setupScript.modulePath, {
-                gitSha,
-                builtDirectoryPath
-            });
-        }
+        const atIds = allCollected.map(
+            collected => ats.find(at => at.name === collected.target.at.name).id
+        );
 
         tests.push({
             id: testId,
             title: common.info.title,
-            atIds: allCollected.map(
-                collected =>
-                    ats.find(at => at.name === collected.target.at.name).id
-            ),
+            atIds,
             atMode: common.target.mode.toUpperCase(),
-            setupScriptUrl,
-            instructions: common.instructions.user,
+            renderableContent: Object.fromEntries(
+                allCollected.map((collected, index) => {
+                    return [atIds[index], collected];
+                })
+            ),
             scenarios: (() => {
                 const scenarios = [];
                 allCollected.forEach(collected => {
