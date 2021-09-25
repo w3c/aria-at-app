@@ -289,18 +289,13 @@ const graphqlSchema = gql`
         The AT mode the test was written to expect.
         """
         atMode: AtMode!
-        # TODO: consider converting to an array if we support a larger number of
-        # more-focused and "compositional" setup scripts
         """
-        JS script which, when run, will prepare the test page for testing.
+        Raw execution-specific data such as inputs needed to generate the
+        manual test instructions or links to the setup scripts which must be
+        executed on the testPage. This data is unchanged from its original form
+        found in the ARIA-AT repo's ".collected.json" files.
         """
-        setupScriptUrl: String
-        # TODO: rethink when introducing machine-readable instructions
-        """
-        Human-readable sentences detailing steps that must be completed by
-        testers before capturing the AT output.
-        """
-        instructions: [String]!
+        renderableContent(atId: ID!): Any
         """
         List of ways the test can be completed, each of which needs to be
         executed separately. There might be a different number of Scenarios
