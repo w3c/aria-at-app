@@ -1,4 +1,4 @@
-const { UserInputError, AuthenticationError } = require('apollo-server');
+const { AuthenticationError } = require('apollo-server');
 const {
     updateTestPlanRun
 } = require('../../models/services/TestPlanRunService');
@@ -9,12 +9,7 @@ const deleteTestResultResolver = async (
     _,
     { user }
 ) => {
-    let testPlanRun;
-    try {
-        ({ testPlanRun } = await populateData({ testResultId }));
-    } catch {
-        throw new UserInputError('Failed to load data for the given ID');
-    }
+    const { testPlanRun } = await populateData({ testResultId });
 
     if (
         !(

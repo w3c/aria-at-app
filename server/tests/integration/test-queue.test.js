@@ -428,12 +428,12 @@ describe('test queue', () => {
             `);
             const { draftTestPlanRuns } = queryBefore.testPlanReport;
             await mutate(gql`
-                        mutation {
-                            testPlanReport(id: ${testPlanReportId}) {
-                                deleteTestPlanReport
-                            }
-                        }
-                    `);
+                mutation {
+                    testPlanReport(id: ${testPlanReportId}) {
+                        deleteTestPlanReport
+                    }
+                }
+            `);
             const queryAfter = await query(gql`
                 query {
                     testPlanReport(id: ${testPlanReportId}) {

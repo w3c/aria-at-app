@@ -75,9 +75,9 @@ const populateData = async (locationOfData, { preloaded } = {}) => {
             testPlanReport = testPlanRun.testPlanReport;
         } else {
             testPlanRun = await getTestPlanRunById(testPlanRunId);
-            testPlanReport = testPlanRun.testPlanReport;
+            testPlanReport = testPlanRun?.testPlanReport;
         }
-        testPlanVersion = testPlanReport.testPlanVersion;
+        testPlanVersion = testPlanReport?.testPlanVersion;
     } else if (testPlanReportId) {
         if (preloaded?.testPlanReport) {
             testPlanReport = preloaded.testPlanReport;
@@ -99,6 +99,15 @@ const populateData = async (locationOfData, { preloaded } = {}) => {
         } else {
             testPlan = await getTestPlanById(testPlanId);
         }
+    }
+
+    const failedToLoad = !testPlanVersion;
+    if (failedToLoad) {
+        throwFailedToLoadError({
+            testPlanVersionId,
+            testPlanRunId,
+            locationOfData
+        });
     }
 
     const testPlanTarget = testPlanReport?.testPlanTarget;
@@ -197,4 +206,45 @@ const populateData = async (locationOfData, { preloaded } = {}) => {
     };
 };
 
+const throwFailedToLoadError = ({
+    testPlanVersionId,
+    testPlanRunId,
+    locationOfData
+}) => {
+    const locationOfDataIdForTestPlanVersion = [
+        'testId',
+        'scenarioId',
+        'assertionId'
+    ].find(each => !!locationOfData[each]);
+
+    const locationOfDataIdForTestPlanRun = [
+        'testResultId',
+        'scenarioResultId',
+        'assertionResultId'
+    ].find(each => !!locationOfData[each]);
+
+    const locationOfDataInfo =
+        `Using the IDs returned from the createTestResult mutation should ` +
+        `fix this error. For additional information see locationOfDataId.js.`;
+
+    if (locationOfDataIdForTestPlanVersion) {
+        const idValue = locationOfData[locationOfDataIdForTestPlanVersion];
+        throw new Error(
+            `Failed to load the ${locationOfDataIdForTestPlanVersion} ` +
+                `${idValue} because it encodes a reference to a ` +
+                `testPlanVersion with ID ${testPlanVersionId} which does ` +
+                `not exist. ${locationOfDataInfo}`
+        );
+    }
+    if (locationOfDataIdForTestPlanRun) {
+        const idValue = locationOfData[locationOfDataIdForTestPlanRun];
+        throw new Error(
+            `Failed to load the ${locationOfDataIdForTestPlanRun} ` +
+                `${idValue} because it encodes a reference to a testPlanRun ` +
+                `with ID ${testPlanRunId} which does not exist. ` +
+                `${locationOfDataInfo}`
+        );
+    }
+    throw new Error(`Failed to load ${JSON.stringify(locationOfData)}`);
+};
 module.exports = populateData;

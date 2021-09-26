@@ -23,17 +23,12 @@ const saveTestResultCommon = async ({
         throw new AuthenticationError();
     }
 
-    let testPlanRun, testPlanTarget, test, oldTestResult;
-    try {
-        ({
-            testPlanRun,
-            testPlanTarget,
-            test,
-            testResult: oldTestResult
-        } = await populateData({ testResultId }));
-    } catch {
-        throw new UserInputError('Failed to load data for the given ID');
-    }
+    const {
+        testPlanRun,
+        testPlanTarget,
+        test,
+        testResult: oldTestResult
+    } = await populateData({ testResultId });
 
     const oldTestResults = testPlanRun.testResults;
 
