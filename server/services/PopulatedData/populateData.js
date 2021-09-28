@@ -148,7 +148,7 @@ const populateData = async (locationOfData, { preloaded } = {}) => {
         assertionId = assertionResult.assertionId;
     }
     if (testId) {
-        const tests = testsResolver(testPlanVersion);
+        const tests = testsResolver(testPlanReport ?? testPlanVersion);
         test = tests.find(each => each.id === testId);
     }
     if (scenarioId) {

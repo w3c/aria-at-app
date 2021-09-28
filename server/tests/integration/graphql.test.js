@@ -209,7 +209,6 @@ describe('graphql', () => {
                                     id
                                 }
                                 atMode
-                                renderableContent(atId: 1)
                                 scenarios {
                                     __typename
                                     id
@@ -257,7 +256,10 @@ describe('graphql', () => {
                             id
                         }
                         runnableTests {
+                            __typename
                             id
+                            renderableContent
+                            renderedUrl
                         }
                         testPlanTarget {
                             __typename

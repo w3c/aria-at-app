@@ -1,5 +1,6 @@
 const testResultsResolver = require('../TestPlanRun/testResultsResolver');
 const deepCustomMerge = require('../../util/deepCustomMerge');
+const testResultsResolver = require('../TestPlanRun/testResultsResolver');
 
 const finalizedTestResultsResolver = testPlanReport => {
     if (
