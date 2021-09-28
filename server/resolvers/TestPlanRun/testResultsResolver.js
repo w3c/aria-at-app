@@ -2,8 +2,7 @@ const testsResolver = require('../TestPlanVersion/testsResolver');
 const unexpectedBehaviorsJson = require('../../resources/unexpectedBehaviors.json');
 
 const testResultsResolver = testPlanRun => {
-    const testPlanVersion = testPlanRun.testPlanReport.testPlanVersion;
-    const tests = testsResolver(testPlanVersion);
+    const tests = testsResolver(testPlanRun.testPlanReport);
 
     // Populate nested test, scenario, assertion and unexpectedBehavior fields
     return testPlanRun.testResults.map(testResult => {

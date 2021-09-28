@@ -1,4 +1,5 @@
 const deepCustomMerge = require('../../util/deepCustomMerge');
+const testResultsResolver = require('../TestPlanRun/testResultsResolver');
 
 const finalizedTestResultsResolver = testPlanReport => {
     if (
@@ -20,7 +21,7 @@ const finalizedTestResultsResolver = testPlanReport => {
         );
     }
 
-    return merged;
+    return testResultsResolver({ testPlanReport, testResults: merged });
 };
 
 module.exports = finalizedTestResultsResolver;
