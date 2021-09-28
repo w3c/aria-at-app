@@ -1,3 +1,7 @@
+/// <reference path="../../types/aria-at-file.js" />
+/// <reference path="./types/aria-at-test-run.js" />
+/// <reference path="./types/aria-at-test-result.js" />
+
 import {
   HasUnexpectedBehaviorMap,
   createEnumMap,
@@ -64,8 +68,9 @@ class KeysInput {
     const atKey = configInput.at().key;
 
     invariant(
-      ['jaws', 'nvda', 'voiceover_macos'].includes(atKey),
-      '%s is one of "jaws", "nvda", or "voiceover_macos"', atKey
+      ["jaws", "nvda", "voiceover_macos"].includes(atKey),
+      '%s is one of "jaws", "nvda", or "voiceover_macos"',
+      atKey
     );
 
     return new KeysInput({
@@ -84,6 +89,19 @@ class KeysInput {
           voiceover_macos: `Toggle Quick Nav OFF by pressing the ${keys.LEFT} and ${keys.RIGHT} keys at the same time.`,
         }[atKey],
       },
+    });
+  }
+
+  /** @param {AriaATFile.CollectedTest} collectedTest */
+  static fromCollectedTest(collectedTest) {
+    return new KeysInput({
+      origin: "test.collected.json",
+      keys: collectedTest.commands.reduce((carry, {id, keystroke}) => {
+        carry[id] = keystroke;
+        return carry;
+      }, {}),
+      at: collectedTest.target.at.key,
+      modeInstructions: collectedTest.instructions.mode,
     });
   }
 }
@@ -118,6 +136,17 @@ class SupportInput {
    */
   static fromJSON(json) {
     return new SupportInput(json);
+  }
+
+  /**
+   * @param {AriaATFile.CollectedTest} collectedTest
+   */
+  static fromCollectedTest(collectedTest) {
+    return new SupportInput({
+      ats: [{key: collectedTest.target.at.key, name: collectedTest.target.at.name}],
+      applies_to: {},
+      examples: [],
+    });
   }
 }
 
@@ -189,6 +218,29 @@ class CommandsInput {
   static fromJSONAndConfigKeys(json, {configInput, keysInput}) {
     return new CommandsInput({commands: json, at: configInput.at()}, keysInput);
   }
+
+  /**
+   * @param {AriaATFile.CollectedTest} collectedTest
+   * @param {object} data
+   * @param {KeysInput} data.keysInput
+   */
+  static fromCollectedTestKeys(collectedTest, {keysInput}) {
+    return new CommandsInput(
+      {
+        commands: {
+          [collectedTest.info.task]: {
+            [collectedTest.target.mode]: {
+              [collectedTest.target.at.key]: collectedTest.commands.map(({id, extraInstruction}) =>
+                extraInstruction ? [id, extraInstruction] : [id]
+              ),
+            },
+          },
+        },
+        at: collectedTest.target.at,
+      },
+      keysInput
+    );
+  }
 }
 
 /**
@@ -201,6 +253,8 @@ class ConfigInput {
    * @param {ATJSON} value.at
    * @param {boolean} value.displaySubmitButton
    * @param {boolean} value.renderResultsAfterSubmit
+   * @param {"SubmitResultsJSON" | "TestResultJSON"} value.resultFormat
+   * @param {AriaATTestResult.JSON | null} value.resultJSON
    * @private
    */
   constructor(errors, value) {
@@ -222,6 +276,14 @@ class ConfigInput {
     return this._value.renderResultsAfterSubmit;
   }
 
+  resultFormat() {
+    return this._value.resultFormat;
+  }
+
+  resultJSON() {
+    return this._value.resultJSON;
+  }
+
   /**
    * @param {ConfigQueryParams} queryParams
    * @param {object} data
@@ -233,6 +295,8 @@ class ConfigInput {
     let at = supportInput.defaultAT();
     let displaySubmitButton = true;
     let renderResultsAfterSubmit = true;
+    let resultFormat = "SubmitResultsJSON";
+    let resultJSON = null;
 
     for (const [key, value] of queryParams) {
       if (key === "at") {
@@ -249,13 +313,32 @@ class ConfigInput {
         displaySubmitButton = decodeBooleanParam(value, displaySubmitButton);
       } else if (key === "showSubmitButton") {
         renderResultsAfterSubmit = decodeBooleanParam(value, renderResultsAfterSubmit);
+      } else if (key === "resultFormat") {
+        if (value !== "SubmitResultsJSON" && value !== "TestResultJSON") {
+          errors.push(`resultFormat can be 'SubmitResultsJSON' or 'TestResultJSON'. '${value}' is not supported.`);
+          continue;
+        }
+        resultFormat = value;
+      } else if (key === "resultJSON") {
+        try {
+          resultJSON = JSON.parse(value);
+        } catch (error) {
+          errors.push(`Failed to parse resultJSON: ${error.message}`);
+        }
       }
+    }
+
+    if (resultJSON && resultFormat !== "TestResultJSON") {
+      errors.push(`resultJSON requires resultFormat to be set to 'TestResultJSON'.`);
+      resultJSON = null;
     }
 
     return new ConfigInput(errors, {
       at,
       displaySubmitButton,
       renderResultsAfterSubmit,
+      resultFormat,
+      resultJSON,
     });
 
     /**
@@ -296,6 +379,63 @@ class ScriptsInput {
    */
   static fromScriptsMap(scripts) {
     return new ScriptsInput({scripts});
+  }
+
+  /**
+   * @param {{source: string}} script
+   * @private
+   */
+  static scriptsFromSource(script) {
+    return {[script.name]: new Function("testPageDocument", script.source)};
+  }
+
+  /**
+   * @param {{modulePath: string}} script
+   * @param {string} dataUrl
+   * @private
+   */
+  static async scriptsFromModuleAsync(script, dataUrl) {
+    return await import(`${dataUrl}/${script.modulePath}`);
+  }
+
+  /**
+   * @param {{jsonpPath: string}} script
+   * @param {string} dataUrl
+   * @private
+   */
+  static async scriptsFromJsonpAsync(script, dataUrl) {
+    return await Promise.race([
+      new Promise(resolve => {
+        window.scriptsJsonpLoaded = resolve;
+        const scriptTag = document.createElement("script");
+        scriptTag.src = script.jsonpPath;
+        document.body.appendChild(scriptTag);
+      }),
+      new Promise((_, reject) => setTimeout(() => reject(new Error("Loading scripts timeout error")), 10000)),
+    ]);
+  }
+
+  /**
+   * @param {AriaATFile.CollectedTest} collectedAsync
+   * @param {string} dataUrl url to directory where CollectedTest was loaded from
+   */
+  static async fromCollectedTestAsync({target: {setupScript}}, dataUrl) {
+    if (!setupScript) {
+      return new ScriptsInput({scripts: {}});
+    }
+    try {
+      return new ScriptsInput({scripts: ScriptsInput.scriptsFromSource(setupScript)});
+    } catch (error) {
+      try {
+        return new ScriptsInput({scripts: await ScriptsInput.scriptsFromModuleAsync(setupScript, dataUrl)});
+      } catch (error2) {
+        try {
+          return new ScriptsInput({scripts: await ScriptsInput.scriptsFromJsonpAsync(setupScript, dataUrl)});
+        } catch (error3) {
+          throw new Error([error, error2, error3].map(error => error.stack || error.message).join("\n\n"));
+        }
+      }
+    }
   }
 }
 
@@ -409,6 +549,38 @@ class BehaviorInput {
       },
     });
   }
+
+  /**
+   * @param {AriaATFile.CollectedTest} collectedTest
+   * @param {object} data
+   * @param {CommandsInput} data.commandsInput
+   * @param {KeysInput} data.keysInput
+   * @param {UnexpectedInput} data.unexpectedInput
+   */
+  static fromCollectedTestCommandsKeysUnexpected(
+    {info, target, instructions, assertions},
+    {commandsInput, keysInput, unexpectedInput}
+  ) {
+    return new BehaviorInput({
+      behavior: {
+        description: info.title,
+        task: info.task,
+        mode: target.mode,
+        modeInstructions: instructions.mode,
+        appliesTo: [target.at.name],
+        specificUserInstruction: instructions.raw,
+        setupScriptDescription: target.setupScript ? target.setupScript.description : undefined,
+        setupTestPage: target.setupScript ? target.setupScript.name : undefined,
+        commands: commandsInput.getCommands(info.task, target.mode),
+        assertions: assertions.map(({priority, expectation: assertion}) => ({
+          priority,
+          assertion,
+        })),
+        additionalAssertions: [],
+        unexpectedBehaviors: unexpectedInput.behaviors(),
+      },
+    });
+  }
 }
 
 class PageUriInput {
@@ -508,6 +680,37 @@ export class TestRunInputOutput {
         unexpectedInput: this.unexpectedInput,
       })
     );
+  }
+
+  /**
+   * Set all inputs but ConfigInput.
+   * @param {AriaATFile.CollectedTest} collectedTest
+   * @param {string} dataUrl url to directory where CollectedTest was loaded from
+   */
+  async setInputsFromCollectedTestAsync(collectedTest, dataUrl) {
+    const pageUriInput = PageUriInput.fromPageUri(collectedTest.target.referencePage);
+    const titleInput = TitleInput.fromTitle(collectedTest.info.title);
+    const supportInput = SupportInput.fromCollectedTest(collectedTest);
+    const scriptsInput = await ScriptsInput.fromCollectedTestAsync(collectedTest, dataUrl);
+
+    const unexpectedInput = UnexpectedInput.fromBuiltin();
+    const keysInput = KeysInput.fromCollectedTest(collectedTest);
+    const commandsInput = CommandsInput.fromCollectedTestKeys(collectedTest, {keysInput});
+    const behaviorInput = BehaviorInput.fromCollectedTestCommandsKeysUnexpected(collectedTest, {
+      commandsInput,
+      keysInput,
+      unexpectedInput,
+    });
+
+    this.setTitleInput(titleInput);
+    this.setPageUriInput(pageUriInput);
+    this.setSupportInput(supportInput);
+    this.setScriptsInput(scriptsInput);
+
+    this.setUnexpectedInput(unexpectedInput);
+    this.setKeysInput(keysInput);
+    this.setCommandsInput(commandsInput);
+    this.setBehaviorInput(behaviorInput);
   }
 
   /** @param {CommandsInput} commandsInput */
@@ -628,7 +831,7 @@ export class TestRunInputOutput {
     this.setUnexpectedInput(UnexpectedInput.fromBuiltin());
   }
 
-  /** @returns {import("./aria-at-test-run.mjs").TestRunState} */
+  /** @returns {AriaATTestRun.State} */
   testRunState() {
     invariant(
       this.behaviorInput !== null,
@@ -649,7 +852,7 @@ export class TestRunInputOutput {
     const test = this.behaviorInput.behavior();
     const config = this.configInput;
 
-    return {
+    let state = {
       errors,
       info: {
         description: test.description,
@@ -701,6 +904,12 @@ export class TestRunInputOutput {
           })
       ),
     };
+
+    if (this.configInput.resultJSON()) {
+      state = this.testRunStateFromTestResultJSON(this.configInput.resultJSON(), state);
+    }
+
+    return state;
   }
 
   testWindowOptions() {
@@ -734,7 +943,7 @@ export class TestRunInputOutput {
   }
 
   /**
-   * @param {import("./aria-at-test-run.mjs").TestRunState} state
+   * @param {AriaATTestRun.State} state
    * @returns {import("./aria-at-harness.mjs").SubmitResultJSON}
    */
   submitResultsJSON(state) {
@@ -838,6 +1047,125 @@ export class TestRunInputOutput {
           };
     }
   }
+
+  /**
+   * Transform a test run state into a test result json for serialization.
+   * @param {AriaATTestRun.State} state
+   * @returns {AriaATTestResult.JSON}
+   */
+  testResultJSON(state) {
+    return {
+      test: {
+        title: state.info.description,
+        at: {
+          id: state.config.at.key,
+        },
+        atMode: state.info.mode,
+      },
+      scenarioResults: state.commands.map(command => ({
+        scenario: {
+          command: {
+            id: command.description,
+          },
+        },
+        output: command.atOutput.value,
+        assertionResults: command.assertions.map(assertion => ({
+          assertion: {
+            priority: assertion.priority === 1 ? "REQUIRED" : "OPTIONAL",
+            text: assertion.description,
+          },
+          passed: assertion.result === "pass",
+          failedReason:
+            assertion.result === "failIncorrect"
+              ? "INCORRECT_OUTPUT"
+              : assertion.result === "failMissing"
+              ? "NO_OUTPUT"
+              : null,
+        })),
+        unexpectedBehaviors: command.unexpected.behaviors
+          .map(behavior =>
+            behavior.checked
+              ? {
+                  text: behavior.description,
+                  otherUnexpectedBehaviorText: behavior.more ? behavior.more.value : null,
+                }
+              : null
+          )
+          .filter(Boolean),
+      })),
+    };
+  }
+
+  /**
+   * @param {AriaATTestRun.State} state
+   * @returns {SubmitResultJSON | AriaATTestResult.JSON}
+   */
+  resultJSON(state) {
+    // If ConfigInput is available and resultFormat is TestResultJSON return result in that format.
+    if (this.configInput !== null) {
+      const resultFormat = this.configInput.resultFormat();
+      if (resultFormat === "TestResultJSON") {
+        return this.testResultJSON(state);
+      }
+    }
+
+    return this.submitResultsJSON(state);
+  }
+
+  /**
+   * Set a default or given test run state with the recorded results json. Intermediate state not stored into
+   * testResult, like highlightRequired, is to the default.
+   * @param {AriaATTestResult.JSON} testResult
+   * @param {AriaATTestRun.State} [state]
+   * @returns {AriaATTestRun.State}
+   */
+  testRunStateFromTestResultJSON(testResult, state = this.testRunState()) {
+    return {
+      ...state,
+      commands: state.commands.map((command, commandIndex) => {
+        const scenarioResult = testResult.scenarioResults[commandIndex];
+        return {
+          ...command,
+          atOutput: {highlightRequired: false, value: scenarioResult.output},
+          assertions: command.assertions.map((assertion, assertionIndex) => {
+            const assertionResult = scenarioResult.assertionResults[assertionIndex];
+            return {
+              ...assertion,
+              highlightRequired: false,
+              result: assertionResult.passed
+                ? "pass"
+                : assertionResult.failedReason === "INCORRECT_OUTPUT"
+                ? "failIncorrect"
+                : assertionResult.failedReason === "NO_OUTPUT"
+                ? "failMissing"
+                : "notSet",
+            };
+          }),
+          unexpected: {
+            ...command.unexpected,
+            highlightRequired: false,
+            hasUnexpected: scenarioResult.unexpectedBehaviors.length > 0 ? "hasUnexpected" : "doesNotHaveUnexpected",
+            tabbedBehavior: 0,
+            behaviors: command.unexpected.behaviors.map(behavior => {
+              const behaviorResult = scenarioResult.unexpectedBehaviors.find(
+                unexpectedResult => unexpectedResult.text === behavior.description
+              );
+              return {
+                ...behavior,
+                checked: behaviorResult ? true : false,
+                more: behavior.more
+                  ? {
+                      highlightRequired: false,
+                      value: behaviorResult ? behaviorResult.otherUnexpectedBehaviorText : "",
+                    }
+                  : behavior.more,
+              };
+            }),
+          },
+        };
+      }),
+    };
+  }
 }
 
 /**
@@ -864,7 +1192,8 @@ export class TestRunExport extends TestRun {
     }
     return {
       ...testPage,
-      resultsJSON: this.state.currentUserAction === UserActionMap.CLOSE_TEST_WINDOW ? this.resultsJSON(this.state) : null,
+      resultsJSON:
+        this.state.currentUserAction === UserActionMap.CLOSE_TEST_WINDOW ? this.resultsJSON(this.state) : null,
     };
   }
 }
@@ -956,7 +1285,7 @@ function invariant(test, message, ...args) {
 /** @typedef {ConstructorParameters<typeof TestRun>[0]} TestRunOptions */
 /**
  * @typedef TestRunExportOptions
- * @property {(state: TestRunState) => SubmitResultJSON} resultsJSON
+ * @property {(state: AriaATTestRun.State) => SubmitResultJSON} resultsJSON
  */
 
 /**
@@ -969,7 +1298,6 @@ function invariant(test, message, ...args) {
  * @typedef SupportJSON
  * @property {ATJSON[]} ats
  * @property {object} applies_to
- * @property {string[]} applies_to.system
  * @property {object[]} examples
  * @property {string} examples[].directory
  * @property {string} examples[].name
@@ -1095,7 +1423,6 @@ function invariant(test, message, ...args) {
  * @template T
  */
 
-/** @typedef {import('./aria-at-test-run.mjs').TestRunState} TestRunState */
 /** @typedef {import('./aria-at-test-run.mjs').TestRunAssertion} TestRunAssertion */
 /** @typedef {import('./aria-at-test-run.mjs').TestRunAdditionalAssertion} TestRunAdditionalAssertion */
 /** @typedef {import('./aria-at-test-run.mjs').TestRunCommand} TestRunCommand */

@@ -295,7 +295,7 @@ const graphqlSchema = gql`
         executed on the testPage. This data is unchanged from its original form
         found in the ARIA-AT repo's ".collected.json" files.
         """
-        renderableContent(atId: ID!): Any
+        renderableContent(atId: ID): Any
         """
         List of ways the test can be completed, each of which needs to be
         executed separately. There might be a different number of Scenarios

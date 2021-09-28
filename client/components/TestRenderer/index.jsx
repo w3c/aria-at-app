@@ -1,4 +1,4 @@
-import React, { Fragment, useLayoutEffect, useState } from 'react';
+import React, { Fragment, useEffect, useLayoutEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import PropTypes from 'prop-types';
 import nextId from 'react-id-generator';
@@ -11,6 +11,7 @@ import {
     TestRunInputOutput
 } from '../../resources/aria-at-test-io-format.mjs';
 import { TestWindow } from '../../resources/aria-at-test-window.mjs';
+import { evaluateAtNameKey } from '../../utils/aria';
 
 const Container = styled.div`
     width: 100%;
@@ -217,99 +218,158 @@ const ErrorComponent = ({ hasErrors = false }) => {
 };
 
 const TestRenderer = ({
-    test,
-    testPageUri,
-    support,
-    configQueryParams = [[]],
+    at,
+    testResult,
+    testPageUrl,
     testRunStateRef,
     testRunResultRef,
     submitButtonRef,
     isSubmitted = false
 }) => {
-    const { title, testJson, commandJson, scripts, state, result } = test;
+    const { scenarioResults, test, completedAt } = testResult;
+    const { renderableContent } = test;
 
+    const [testRunExport, setTestRunExport] = useState();
     const [pageContent, setPageContent] = useState(null);
-    const [submitResult, setSubmitResult] = useState(result);
+    const [submitResult, setSubmitResult] = useState(null);
+    const [submitCalled, setSubmitCalled] = useState(false);
 
-    /**
-     * Script tag parsed from test page html can contain structure like:
-     * @example
-     * var scripts = {
-     *   <func>: function(...) {
-     *     // ...
-     *   }
-     * };
-     *
-     * where <func> is a setup script intended to be ran when the test window
-     * is triggered.
-     *
-     * This is constructing the 'scripts' STRING variable as an internal object,
-     * '_scripts' if there are an available 'scripts' variable using eval.
-     */
-    let _scripts = null;
-    const _scriptsString = scripts.replace('var scripts', '_scripts');
-    eval(_scriptsString);
+    const setup = async () => {
+        const testRunIO = new TestRunInputOutput();
 
-    const testRunIO = new TestRunInputOutput();
-    testRunIO.setTitleInputFromTitle(title);
-    testRunIO.setUnexpectedInputFromBuiltin();
-    testRunIO.setScriptsInputFromMap(
-        typeof _scripts === 'object' ? _scripts : {}
-    );
-    testRunIO.setSupportInputFromJSON(support);
-    testRunIO.setConfigInputFromQueryParamsAndSupport(configQueryParams); // Array.from(new URL(document.location).searchParams)
-    testRunIO.setKeysInputFromBuiltinAndConfig();
-    testRunIO.setCommandsInputFromJSONAndConfigKeys(commandJson);
-    testRunIO.setBehaviorInputFromJSONAndCommandsConfigKeysTitleUnexpected(
-        testJson
-    );
-    testRunIO.setPageUriInputFromPageUri(testPageUri);
+        // Array.from(new URL(document.location).searchParams)
+        const configQueryParams = [['at', evaluateAtNameKey(at.name)]];
 
-    const testWindow = new TestWindow({
-        ...testRunIO.testWindowOptions(),
-        hooks: {
-            windowOpened() {
-                testRunExport.dispatch(userOpenWindow());
-            },
-            windowClosed() {
-                testRunExport.dispatch(userCloseWindow());
+        const collectedTestJson = renderableContent[at.id];
+        await testRunIO.setInputsFromCollectedTestAsync(collectedTestJson);
+        testRunIO.setConfigInputFromQueryParamsAndSupport(configQueryParams);
+        testRunIO.setPageUriInputFromPageUri(testPageUrl);
+
+        const testWindow = new TestWindow({
+            ...testRunIO.testWindowOptions(),
+            hooks: {
+                windowOpened() {
+                    testRunExport.dispatch(userOpenWindow());
+                },
+                windowClosed() {
+                    testRunExport.dispatch(userCloseWindow());
+                }
             }
-        }
-    });
-
-    const testRunExport = new TestRunExport({
-        hooks: {
-            openTestPage() {
-                testWindow.open();
-            },
-            closeTestPage() {
-                testWindow.close();
-            }
-        },
-        state: state || testRunIO.testRunState(),
-        resultsJSON: state => testRunIO.submitResultsJSON(state)
-    });
-
-    useLayoutEffect(() => {
-        testRunExport.observe(result => {
-            const { state: newState } = result;
-            const pageContent = testRunExport.instructions();
-            const submitResult = testRunExport.testPageAndResults();
-
-            setPageContent(pageContent);
-            setSubmitResult(submitResult);
-
-            testRunStateRef.current = newState;
-            testRunResultRef.current =
-                submitResult && submitResult.resultsJSON && submitResult.results
-                    ? submitResult
-                    : null;
         });
 
-        if (state) testRunStateRef.current = state;
-        if (result) testRunResultRef.current = result;
-        setPageContent(testRunExport.instructions());
+        const testRunExport = new TestRunExport({
+            hooks: {
+                openTestPage() {
+                    testWindow.open();
+                },
+                closeTestPage() {
+                    testWindow.close();
+                }
+            },
+            state: mergeState(testRunIO.testRunState(), scenarioResults),
+            resultsJSON: state => testRunIO.submitResultsJSON(state)
+        });
+        setTestRunExport(testRunExport);
+    };
+
+    const mergeState = (state, scenarioResults = []) => {
+        const { commands } = state;
+
+        if (
+            !scenarioResults.length ||
+            commands.length !== scenarioResults.length
+        ) {
+            return state;
+        }
+
+        for (let i = 0; i < scenarioResults.length; i++) {
+            const {
+                output,
+                assertionResults,
+                unexpectedBehaviors
+            } = scenarioResults[i];
+
+            if (output) commands[i].atOutput.value = output;
+
+            for (let j = 0; j < assertionResults.length; j++) {
+                const assertionResult = assertionResults[j];
+                if (assertionResult.passed)
+                    commands[i].assertions[j].result = 'pass';
+                else if (assertionResult.failedReason === 'NO_OUTPUT')
+                    commands[i].assertions[j].result = 'failMissing';
+                else if (assertionResult.failedReason === 'INCORRECT_OUTPUT')
+                    commands[i].assertions[j].result = 'failIncorrect';
+            }
+
+            if (unexpectedBehaviors.length) {
+                commands[i].unexpected.hasUnexpected = 'hasUnexpected';
+
+                for (let k = 0; k < unexpectedBehaviors.length; k++) {
+                    /**
+                     * 0 = EXCESSIVELY_VERBOSE
+                     * 1 = UNEXPECTED_CURSOR_POSITION
+                     * 2 = SLUGGISH
+                     * 3 = AT_CRASHED
+                     * 4 = BROWSER_CRASHED
+                     * 5 = OTHER
+                     */
+                    const unexpectedBehavior = unexpectedBehaviors[k];
+                    if (unexpectedBehavior.id === 'EXCESSIVELY_VERBOSE')
+                        commands[i].unexpected.behaviors[0].checked = true;
+                    if (unexpectedBehavior.id === 'UNEXPECTED_CURSOR_POSITION')
+                        commands[i].unexpected.behaviors[1].checked = true;
+                    if (unexpectedBehavior.id === 'SLUGGISH')
+                        commands[i].unexpected.behaviors[2].checked = true;
+                    if (unexpectedBehavior.id === 'AT_CRASHED')
+                        commands[i].unexpected.behaviors[3].checked = true;
+                    if (unexpectedBehavior.id === 'BROWSER_CRASHED')
+                        commands[i].unexpected.behaviors[4].checked = true;
+                    if (unexpectedBehavior.id === 'OTHER') {
+                        commands[i].unexpected.behaviors[5].checked = true;
+                        commands[i].unexpected.behaviors[5].more.value =
+                            unexpectedBehavior.otherUnexpectedBehaviorText;
+                    }
+                }
+            } else
+                commands[i].unexpected.hasUnexpected = 'doesNotHaveUnexpected';
+        }
+
+        return state;
+    };
+
+    useEffect(() => {
+        (async () => await setup())();
     }, []);
+
+    useLayoutEffect(() => {
+        if (testRunExport) {
+            testRunExport.observe(result => {
+                const { state: newState } = result;
+                const pageContent = testRunExport.instructions();
+                const submitResult = testRunExport.testPageAndResults();
+
+                setPageContent(pageContent);
+                setSubmitResult(submitResult);
+
+                testRunStateRef.current = newState;
+                testRunResultRef.current =
+                    submitResult &&
+                    submitResult.resultsJSON &&
+                    submitResult.results
+                        ? submitResult
+                        : null;
+            });
+
+            setPageContent(testRunExport.instructions());
+        }
+    }, [testRunExport]);
+
+    useEffect(() => {
+        if (!submitCalled && completedAt && pageContent) {
+            pageContent.submit.click();
+            setSubmitCalled(true);
+        }
+    }, [pageContent]);
 
     const parseRichContent = (instruction = []) => {
         let content = null;
@@ -437,7 +497,7 @@ const TestRenderer = ({
                                     <td>{support}</td>
                                     <td>
                                         <p>
-                                            {state.config.at.name}{' '}
+                                            {at.name}{' '}
                                             {parseLinebreakOutput(
                                                 details.output
                                             )}
@@ -1016,10 +1076,10 @@ ErrorComponent.propTypes = {
 };
 
 TestRenderer.propTypes = {
-    test: PropTypes.object,
+    at: PropTypes.object,
+    testResult: PropTypes.object,
     support: PropTypes.object,
-    configQueryParams: PropTypes.array,
-    testPageUri: PropTypes.string,
+    testPageUrl: PropTypes.string,
     testRunStateRef: PropTypes.any,
     testRunResultRef: PropTypes.any,
     submitButtonRef: PropTypes.any,

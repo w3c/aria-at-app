@@ -24,7 +24,10 @@ const setup = (initialState = {}, mocks = []) => {
     const store = storeFactory(initialState);
     return render(
         <BrowserRouter>
-            <MockedProvider mocks={mocks} cache={new InMemoryCache({})}>
+            <MockedProvider
+                mocks={mocks}
+                cache={new InMemoryCache({ addTypename: false })}
+            >
                 <TestQueue store={store} />
             </MockedProvider>
         </BrowserRouter>

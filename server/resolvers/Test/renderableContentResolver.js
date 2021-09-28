@@ -1,5 +1,5 @@
 const renderableContent = (test, { atId }) => {
-    return test.renderableContent[atId];
+    return atId ? test.renderableContent[atId] : test.renderableContent;
 };
 
 module.exports = renderableContent;

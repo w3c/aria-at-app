@@ -71,11 +71,6 @@ export const POPULATE_ADD_TEST_PLAN_TO_QUEUE_MODAL_QUERY = gql`
         }
         testPlans {
             id
-            latestTestPlanVersion {
-                id
-                title
-                gitSha
-            }
             testPlanVersions {
                 id
                 title

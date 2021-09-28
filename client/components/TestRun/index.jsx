@@ -22,14 +22,15 @@ import TestRenderer from '../TestRenderer';
 import OptionButton from './OptionButton';
 import PageStatus from '../common/PageStatus';
 import BasicModal from '../common/BasicModal';
-import { evaluateAtNameKey, buildTestPageUri } from '../../utils/aria';
 import {
     TEST_RUN_PAGE_QUERY,
     UPDATE_TEST_RUN_RESULT_MUTATION,
-    CLEAR_TEST_RESULT_MUTATION
+    CLEAR_TEST_RESULT_MUTATION,
+    CREATE_TEST_RESULT_MUTATION,
+    SAVE_TEST_RESULT_MUTATION,
+    SUBMIT_TEST_RESULT_MUTATION
 } from './queries';
 import './TestRun.css';
-import supportJson from '../../resources/support.json';
 
 const TestRun = ({ auth }) => {
     const params = useParams();
@@ -47,24 +48,18 @@ const TestRun = ({ auth }) => {
     });
     const [updateTestRunResult] = useMutation(UPDATE_TEST_RUN_RESULT_MUTATION);
     const [clearTestResult] = useMutation(CLEAR_TEST_RESULT_MUTATION);
+    const [createTestResult] = useMutation(CREATE_TEST_RESULT_MUTATION);
+    const [saveTestResult] = useMutation(SAVE_TEST_RESULT_MUTATION);
+    const [submitTestResult] = useMutation(SUBMIT_TEST_RESULT_MUTATION);
 
-    const [pageReady, setPageReady] = useState(false);
     const [isTestSubmitClicked, setIsTestSubmitClicked] = useState(false);
     const [showTestNavigator, setShowTestNavigator] = useState(true);
-    const [currentTestIndex, setCurrentTestIndex] = useState(1);
+    const [currentTestIndex, setCurrentTestIndex] = useState(0);
     const [showStartOverModal, setShowStartOverModal] = useState(false);
     const [showRaiseIssueModal, setShowRaiseIssueModal] = useState(false);
     const [showReviewConflictsModal, setShowReviewConflictsModal] = useState(
         false
     );
-
-    useEffect(() => {
-        if (data && !pageReady) {
-            const currentTestIndex = data.testPlanRun.testResults[0].index;
-            setCurrentTestIndex(currentTestIndex);
-            setPageReady(true);
-        }
-    }, [data, currentTestIndex]);
 
     useEffect(() => {
         testRunStateRef.current = null;
@@ -86,7 +81,7 @@ const TestRun = ({ auth }) => {
         );
     }
 
-    if (!pageReady || !data || loading) {
+    if (!data || loading) {
         return (
             <PageStatus
                 title="Loading - Test Results | ARIA-AT"
@@ -96,8 +91,13 @@ const TestRun = ({ auth }) => {
     }
 
     const { testPlanRun, users } = data;
-    const { testPlanReport, tester } = testPlanRun || {};
-    const { testPlanTarget, testPlanVersion, conflicts } = testPlanReport || {};
+    const { testPlanReport, tester, testResults = [] } = testPlanRun || {};
+    const {
+        testPlanTarget,
+        testPlanVersion,
+        runnableTests = [],
+        conflicts = []
+    } = testPlanReport || {};
 
     const { id: userId } = auth;
     // check to ensure an admin that manually went to a test run url doesn't
@@ -119,14 +119,31 @@ const TestRun = ({ auth }) => {
         );
     }
 
-    const testResults = testPlanRun.testResults.map((testResult, index) => ({
-        ...testResult,
+    const toggleTestNavigator = () => setShowTestNavigator(!showTestNavigator);
+
+    const tests = runnableTests.map((test, index) => ({
+        ...test,
+        index,
         seq: index + 1
     }));
-    const currentTest = testResults.find(t => t.index === currentTestIndex);
-    const hasTestsToRun = testResults.length;
+    const currentTest = tests[currentTestIndex];
+    const currentTestResult = testResults.find(
+        t => t.test.id === currentTest.id
+    );
+    const hasTestsToRun = tests.length;
 
-    const toggleTestNavigator = () => setShowTestNavigator(!showTestNavigator);
+    if (!currentTestResult) {
+        (async () => {
+            const { id: testId } = currentTest;
+            await createTestResult({
+                variables: {
+                    testPlanRunId,
+                    testId
+                }
+            });
+            await refetch();
+        })();
+    }
 
     const navigateTests = (previous = false) => {
         // assume navigation forward if previous is false
@@ -134,35 +151,109 @@ const TestRun = ({ auth }) => {
         if (!previous) {
             // next
             const newTestIndexToEval = currentTest.seq + 1;
-            if (newTestIndexToEval <= testResults.length)
+            if (newTestIndexToEval <= tests.length)
                 newTestIndex = newTestIndexToEval;
         } else {
             // previous
             const newTestIndexToEval = currentTest.seq - 1;
-            if (
-                newTestIndexToEval >= 1 &&
-                newTestIndexToEval <= testResults.length
-            )
+            if (newTestIndexToEval >= 1 && newTestIndexToEval <= tests.length)
                 newTestIndex = newTestIndexToEval;
         }
-        setCurrentTestIndex(
-            testResults.find(t => t.seq === newTestIndex).index
-        );
+        setCurrentTestIndex(tests.find(t => t.seq === newTestIndex).index);
+    };
+
+    const mergeResults = (rendererState, scenarioResults) => {
+        // console.info('mergeResults', rendererState, scenarioResults);
+        let newScenarioResults = [];
+        if (!rendererState || !scenarioResults)
+            throw new Error('Unable to merge invalid results');
+
+        const { commands } = rendererState;
+        if (!commands || commands.length !== scenarioResults.length)
+            throw new Error('Unable to merge invalid results');
+
+        for (let i = 0; i < commands.length; i++) {
+            let scenarioResult = { ...scenarioResults[i] };
+            let assertionResults = [];
+            let unexpectedBehaviors = [];
+
+            // collect variables
+            const { atOutput, assertions, unexpected } = commands[i];
+
+            // process assertion results
+            for (let j = 0; j < assertions.length; j++) {
+                const { result } = assertions[j];
+                assertionResults.push({
+                    ...scenarioResult.assertionResults[j],
+                    passed: result === 'pass',
+                    failedReason:
+                        result === 'failMissing'
+                            ? 'NO_OUTPUT'
+                            : result === 'failIncorrect'
+                            ? 'INCORRECT_OUTPUT'
+                            : null
+                });
+            }
+
+            // process unexpected behaviors
+            const { hasUnexpected, behaviors } = unexpected;
+            if (hasUnexpected === 'hasUnexpected') {
+                /**
+                 * 0 = EXCESSIVELY_VERBOSE
+                 * 1 = UNEXPECTED_CURSOR_POSITION
+                 * 2 = SLUGGISH
+                 * 3 = AT_CRASHED
+                 * 4 = BROWSER_CRASHED
+                 * 5 = OTHER
+                 */
+                for (let i = 0; i < behaviors.length; i++) {
+                    const behavior = behaviors[i];
+                    if (behavior.checked) {
+                        if (i === 0)
+                            unexpectedBehaviors.push({
+                                id: 'EXCESSIVELY_VERBOSE'
+                            });
+                        if (i === 1)
+                            unexpectedBehaviors.push({
+                                id: 'UNEXPECTED_CURSOR_POSITION'
+                            });
+                        if (i === 2)
+                            unexpectedBehaviors.push({ id: 'SLUGGISH' });
+                        if (i === 3)
+                            unexpectedBehaviors.push({ id: 'AT_CRASHED' });
+                        if (i === 4)
+                            unexpectedBehaviors.push({ id: 'BROWSER_CRASHED' });
+                        if (i === 5)
+                            unexpectedBehaviors.push({
+                                id: 'OTHER',
+                                otherUnexpectedBehaviorText: behavior.more.value
+                            });
+                    }
+                }
+            }
+
+            // re-assign scenario result due to read only values
+            scenarioResult.output = atOutput.value ? atOutput.value : null;
+            scenarioResult.assertionResults = [...assertionResults];
+            scenarioResult.unexpectedBehaviors = [...unexpectedBehaviors];
+
+            newScenarioResults.push(scenarioResult);
+        }
+
+        return newScenarioResults;
     };
 
     const performButtonAction = async (action, index) => {
-        const saveForm = async (withResult = false) => {
-            await handleUpdateTestPlanRunResultAction(
-                withResult
-                    ? {
-                          state: testRunStateRef.current,
-                          result: testRunResultRef.current
-                      }
-                    : {
-                          state: testRunStateRef.current
-                      }
+        const saveForm = async () => {
+            const scenarioResults = mergeResults(
+                testRunStateRef.current,
+                currentTestResult.scenarioResults
             );
-            if (withResult) return !!testRunResultRef.current;
+
+            await handleSaveOrSubmitTestResultAction(
+                { scenarioResults },
+                testRunResultRef.current
+            );
             return true;
         };
 
@@ -247,18 +338,18 @@ const TestRun = ({ auth }) => {
         setShowStartOverModal(false);
     };
 
-    const handleUpdateTestPlanRunResultAction = async ({ result, state }) => {
+    const handleSaveOrSubmitTestResultAction = async (
+        { scenarioResults = [] },
+        isSubmit = false
+    ) => {
+        const { id } = currentTestResult;
         let variables = {
-            // required
-            testPlanRunId,
-            index: currentTestIndex,
-
-            // optionals
-            result
+            id,
+            scenarioResults
         };
-        if (state) variables = { ...variables, state };
 
-        await updateTestRunResult({ variables });
+        await saveTestResult({ variables });
+        if (isSubmit) await submitTestResult({ variables });
         // await refetch();
     };
 
@@ -267,8 +358,8 @@ const TestRun = ({ auth }) => {
 
     const renderTestContent = (testPlanReport, testResult, heading) => {
         const { isComplete, index, result, state } = testResult;
-        const isFirstTest = index === 1;
-        const isLastTest = currentTest.seq === testResults.length;
+        const isFirstTest = index === 0;
+        const isLastTest = currentTest.seq === tests.length;
 
         let primaryButtons = []; // These are the list of buttons that will appear below the tests
         let forwardButtons = []; // These are buttons that navigate to next tests and continue
@@ -390,7 +481,7 @@ const TestRun = ({ auth }) => {
                 <span>{heading}</span>
                 <StatusBar
                     key={nextId()}
-                    conflicts={conflicts[currentTestIndex]}
+                    // conflicts={conflicts[currentTestIndex]}
                     handleReviewConflictsButtonClick={
                         handleReviewConflictsButtonClick
                     }
@@ -400,22 +491,11 @@ const TestRun = ({ auth }) => {
                     <Col className="test-iframe-container" md={9}>
                         <Row>
                             <TestRenderer
-                                key={nextId()}
-                                test={currentTest}
-                                support={supportJson}
-                                testPageUri={buildTestPageUri(
-                                    testPlanVersion.gitSha,
-                                    testPlanVersion.directory,
-                                    testPlanVersion.testReferencePath
-                                )}
-                                configQueryParams={[
-                                    [
-                                        'at',
-                                        evaluateAtNameKey(
-                                            testPlanTarget.at.name
-                                        )
-                                    ]
-                                ]} // Array.from(new URL(document.location).searchParams)
+                                // key={nextId()}
+                                key={`TestRenderer__${currentTestIndex}`}
+                                at={testPlanTarget.at}
+                                testResult={currentTestResult}
+                                testPageUrl={testPlanVersion.testPageUrl}
                                 testRunStateRef={testRunStateRef}
                                 testRunResultRef={testRunResultRef}
                                 submitButtonRef={testRendererSubmitButtonRef}
@@ -451,7 +531,7 @@ const TestRun = ({ auth }) => {
                         userId={testerId}
                         test={currentTest}
                         testPlanRun={testPlanRun}
-                        conflicts={conflicts[currentTestIndex]}
+                        // conflicts={conflicts[currentTestIndex]}
                         handleUpdateTestPlanRunResultAction={
                             handleUpdateTestPlanRunResultAction
                         }
@@ -463,7 +543,7 @@ const TestRun = ({ auth }) => {
                         key={`ReviewConflictsModal__${currentTestIndex}`}
                         show={showReviewConflictsModal}
                         userId={testerId}
-                        conflicts={conflicts[currentTestIndex]}
+                        // conflicts={conflicts[currentTestIndex]}
                         handleClose={() => setShowReviewConflictsModal(false)}
                         handleRaiseIssueButtonClick={
                             handleRaiseIssueButtonClick
@@ -519,7 +599,7 @@ const TestRun = ({ auth }) => {
                         {hasTestsToRun ? (
                             <>
                                 {' '}
-                                <b>{`${testPlanRun.testResultCount} of ${testResults.length}`}</b>{' '}
+                                <b>{`${testPlanRun.testResults.length} of ${tests.length}`}</b>{' '}
                                 tests completed
                             </>
                         ) : (
@@ -536,11 +616,7 @@ const TestRun = ({ auth }) => {
 
     if (!testPlanRun.isComplete) {
         content = hasTestsToRun ? (
-            renderTestContent(
-                testPlanReport,
-                testResults.find(t => t.index === currentTestIndex),
-                heading
-            )
+            renderTestContent(testPlanReport, currentTest, heading)
         ) : (
             // No tests loaded
             <>
@@ -571,8 +647,8 @@ const TestRun = ({ auth }) => {
             <Row>
                 <TestNavigator
                     show={showTestNavigator}
-                    testResults={testResults}
-                    conflicts={conflicts}
+                    tests={tests}
+                    // conflicts={conflicts}
                     currentTestIndex={currentTestIndex}
                     toggleShowClick={toggleTestNavigator}
                     handleTestClick={handleTestClick}
