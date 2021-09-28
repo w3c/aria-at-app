@@ -5,6 +5,16 @@ import React from 'react';
 import { useQuery } from '@apollo/client';
 import { differenceBy } from 'lodash';
 import { REPORTS_PAGE_QUERY } from './queries';
+import { createGitHubIssueWithTitleAndBody } from '../TestRun';
+
+const alphabetizeObjectBy = (object, getString) => {
+    return Object.fromEntries(
+        Object.entries(object).sort((a, b) => {
+            // https://stackoverflow.com/a/45544166/3888572
+            return getString(a).localeCompare(getString(b));
+        })
+    );
+};
 
 const sum = arr => arr.reduce((total, item) => total + item, 0);
 
@@ -103,6 +113,38 @@ const getFormattedMetrics = ({
     };
 };
 
+const getTestPlanTargetTitle = ({ browser, browserVersion, at, atVersion }) => {
+    return `${browser.name} ${browserVersion} / ${at.name} ${atVersion}`;
+};
+
+const getTestPlanVersionTitle = testPlanVersion => {
+    return testPlanVersion.title || `"${testPlanVersion.testPlan.directory}"`;
+};
+
+const TestResultSummary = ({ testPlanReport, testResult }) => {
+    const gitHubIssueLinkWithTitleAndBody = createGitHubIssueWithTitleAndBody({
+        test: testResult.test,
+        testPlanReport,
+        isReportViewer: true
+    });
+    return (
+        <>
+            <h2>Details for test: {testResult.test.title}</h2>
+            <a
+                href={gitHubIssueLinkWithTitleAndBody}
+                target="_blank"
+                rel="noreferrer"
+            >
+                Raise an Issue
+            </a>
+            <a href={test.renderedUrl} target="_blank" rel="noreferrer">
+                Open Test
+            </a>
+            <table></table>
+        </>
+    );
+};
+
 const TestPlanReportSummary = ({ testPlanReport }) => {
     const skippedTests = differenceBy(
         testPlanReport.runnableTests,
@@ -111,8 +153,8 @@ const TestPlanReportSummary = ({ testPlanReport }) => {
     );
     const overallMetrics = getFormattedMetrics({ testPlanReport });
 
-    const { testPlanVersion } = testPlanReport;
-    const { exampleUrl, designPattern } = testPlanVersion.metadata;
+    const { testPlanVersion, testPlanTarget } = testPlanReport;
+    const { exampleUrl, designPatternUrl } = testPlanVersion.metadata;
     return (
         <>
             <h3>Metadata</h3>
@@ -124,10 +166,10 @@ const TestPlanReportSummary = ({ testPlanReport }) => {
                         </a>
                     </li>
                 ) : null}
-                {designPattern ? (
+                {designPatternUrl ? (
                     <li>
                         <a
-                            href={designPattern}
+                            href={designPatternUrl}
                             target="_blank"
                             rel="noreferrer"
                         >
@@ -137,6 +179,7 @@ const TestPlanReportSummary = ({ testPlanReport }) => {
                 ) : null}
             </ul>
 
+            <h3>{getTestPlanTargetTitle(testPlanTarget)}</h3>
             <table>
                 <thead>
                     <tr>
@@ -184,26 +227,98 @@ const ReportsPage = () => {
     const { data } = useQuery(REPORTS_PAGE_QUERY);
     if (!data) return null;
 
+    const testPlanReportsById = {};
+    let testPlanTargetsById = {};
+    let testPlanVersionsById = {};
+    data.testPlanReports.forEach(testPlanReport => {
+        const { testPlanTarget, testPlanVersion } = testPlanReport;
+        testPlanReportsById[testPlanReport.id] = testPlanReport;
+        testPlanTargetsById[testPlanTarget.id] = testPlanTarget;
+        testPlanVersionsById[testPlanVersion.id] = testPlanVersion;
+    });
+    testPlanTargetsById = alphabetizeObjectBy(
+        testPlanTargetsById,
+        (key, value) => getTestPlanTargetTitle(value)
+    );
+    testPlanVersionsById = alphabetizeObjectBy(
+        testPlanVersionsById,
+        (key, value) => getTestPlanVersionTitle(value)
+    );
+
+    const tabularReports = {};
+    Object.keys(testPlanVersionsById).forEach(testPlanVersionId => {
+        tabularReports[testPlanVersionId] = {};
+        Object.keys(testPlanTargetsById).forEach(testPlanTargetId => {
+            tabularReports[testPlanVersionId][testPlanTargetId] = null;
+        });
+    });
+    data.testPlanReports.forEach(testPlanReport => {
+        const { testPlanTarget, testPlanVersion } = testPlanReport;
+        tabularReports[testPlanVersion.id][testPlanTarget.id] = testPlanReport;
+    });
+
     return (
         <>
             <h1>Test Reports</h1>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Test Plan</th>
+                        {Object.values(testPlanTargetsById).map(
+                            testPlanTarget => (
+                                <th key={testPlanTarget.id}>
+                                    {getTestPlanTargetTitle(testPlanTarget)}
+                                </th>
+                            )
+                        )}
+                    </tr>
+                </thead>
+                <tbody>
+                    {Object.values(testPlanVersionsById).map(
+                        testPlanVersion => {
+                            const title = getTestPlanVersionTitle(
+                                testPlanVersion
+                            );
+
+                            return (
+                                <tr key={testPlanVersion.id}>
+                                    <td>{title}</td>
+                                    {Object.values(testPlanTargetsById).map(
+                                        testPlanTarget => {
+                                            const testPlanReport =
+                                                tabularReports[
+                                                    testPlanVersion.id
+                                                ][testPlanTarget.id];
+                                            return (
+                                                <td key={testPlanReport.id}>
+                                                    {getSupportPercent(
+                                                        testPlanReport
+                                                    )}
+                                                </td>
+                                            );
+                                        }
+                                    )}
+                                </tr>
+                            );
+                        }
+                    )}
+                </tbody>
+            </table>
+
+            <h1>Test Report</h1>
             {data.testPlanReports.map(testPlanReport => (
                 <>
-                    <h2>Test Plan</h2>
-                    {testPlanReport.testPlanVersion.title}
-                    <h2>Target</h2>
-                    {testPlanReport.testPlanTarget.browser.name}&nbsp;
-                    {testPlanReport.testPlanTarget.browserVersion}&nbsp;/&nbsp;
-                    {testPlanReport.testPlanTarget.at.name}&nbsp;
-                    {testPlanReport.testPlanTarget.atVersion}
-                    <h2>Support Percent</h2>
-                    {getSupportPercent(testPlanReport)}
-                    <br />
+                    <TestPlanReportSummary
+                        key={testPlanReport.id}
+                        testPlanReport={testPlanReport}
+                    />
+                    <TestResultSummary
+                        testPlanReport={testPlanReport}
+                        testResult={testPlanReport.finalizedTestResults[0]}
+                    />
                 </>
             ))}
-            <br />
-            <h1>Test Report</h1>
-            <TestPlanReportSummary testPlanReport={data.testPlanReports[0]} />
+            <div style={{ height: '200px' }} />
         </>
     );
 };

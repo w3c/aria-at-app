@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
 
 export const REPORTS_PAGE_QUERY = gql`
-    query {
+    query ReportsPageQuery($atId: ID!) {
         testPlanReports(statuses: [FINALIZED]) {
             id
             testPlanTarget {
@@ -20,6 +20,7 @@ export const REPORTS_PAGE_QUERY = gql`
             testPlanVersion {
                 id
                 title
+                gitSha
                 testPlan {
                     directory
                 }
@@ -34,6 +35,8 @@ export const REPORTS_PAGE_QUERY = gql`
                 test {
                     id
                     title
+                    renderableContent
+                    renderedUrl
                 }
                 scenarioResults {
                     scenario {

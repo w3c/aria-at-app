@@ -33,10 +33,10 @@ import formatConflictsAsText from '../../utils/formatConflictsAsText';
 
 const createGitHubIssueWithTitleAndBody = ({
     test,
-    testPlanRun,
+    testPlanReport,
     conflicts,
     userId,
-    isReportViewer = false // Not currently used
+    isReportViewer = false
 }) => {
     const appendConflicts = (body, conflicts, userId) => {
         const useMarkdown = true;
@@ -50,7 +50,7 @@ const createGitHubIssueWithTitleAndBody = ({
     const issueRaiser = isReportViewer ? 'Report Viewer' : 'Tester';
     const title = `${issueRaiser}'s Issue Report for "${test.title}"`;
 
-    const { testPlanVersion, testPlanTarget } = testPlanRun.testPlanReport;
+    const { testPlanVersion, testPlanTarget } = testPlanReport;
     const { at, browser } = testPlanTarget;
 
     const testUrl =
@@ -67,7 +67,7 @@ const createGitHubIssueWithTitleAndBody = ({
         `### Description\n\n` +
         `_type your description here_`;
 
-    if (conflicts && conflicts.length) {
+    if (conflicts?.length) {
         body = appendConflicts(body, conflicts, userId);
     }
 
@@ -181,7 +181,7 @@ const TestRun = ({ auth }) => {
 
     const gitHubIssueLinkWithTitleAndBody = createGitHubIssueWithTitleAndBody({
         test: currentTest,
-        testPlanRun,
+        testPlanReport,
         conflicts: conflicts[currentTestIndex],
         userId: testerId
     });
@@ -640,4 +640,5 @@ const mapStateToProps = state => {
     return { auth };
 };
 
+export { createGitHubIssueWithTitleAndBody };
 export default connect(mapStateToProps)(TestRun);
