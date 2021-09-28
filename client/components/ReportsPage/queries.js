@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
 
 export const REPORTS_PAGE_QUERY = gql`
-    query ReportsPageQuery($atId: ID!) {
+    query {
         testPlanReports(statuses: [FINALIZED]) {
             id
             testPlanTarget {
@@ -46,6 +46,13 @@ export const REPORTS_PAGE_QUERY = gql`
                         }
                     }
                     output
+                    assertionResults {
+                        assertion {
+                            text
+                        }
+                        passed
+                        failedReason
+                    }
                     requiredAssertionResults: assertionResults(
                         priority: REQUIRED
                     ) {

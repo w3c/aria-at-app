@@ -50,16 +50,13 @@ const createGitHubIssueWithTitleAndBody = ({
     const issueRaiser = isReportViewer ? 'Report Viewer' : 'Tester';
     const title = `${issueRaiser}'s Issue Report for "${test.title}"`;
 
-    const { testPlanVersion, testPlanTarget } = testPlanReport;
+    const { testPlanTarget } = testPlanReport;
     const { at, browser } = testPlanTarget;
-
-    const testUrl =
-        `https://aria-at.w3.org/aria-at/${testPlanVersion.gitSha}/` +
-        `${test.testFilePath}?at=${evaluateAtNameKey(at.name)}`;
+    const shortenedUrl = test.renderedUrl.match(/[^/]+$/)[0];
 
     let body =
         `### Test File at exact Commit\n\n` +
-        `[${test.testFilePath}](${testUrl})\n\n` +
+        `[${shortenedUrl}](https://aria-at.w3.org${test.renderedUrl})\n\n` +
         `### AT\n\n` +
         `${at.name} (version ${testPlanTarget.atVersion})\n\n` +
         `### Browser\n\n` +

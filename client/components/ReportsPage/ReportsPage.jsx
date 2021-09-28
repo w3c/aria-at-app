@@ -62,54 +62,83 @@ const countUnexpectedBehaviors = ({
     return countScenarioResult(scenarioResult);
 };
 
-const getSupportPercent = testPlanReport => {
-    const passedCount = countAssertions({
-        testPlanReport,
-        priority: 'REQUIRED',
-        passedOnly: true
-    });
-    const totalCount = countAssertions({
-        testPlanReport,
-        priority: 'REQUIRED'
-    });
-    return Math.round((passedCount / totalCount) * 100);
+const getAssertionResultString = assertionResult => {
+    let output = 'Good output';
+    if (!assertionResult.passed) {
+        output =
+            assertionResult.failedReason === 'INCORRECT_OUTPUT'
+                ? 'Incorrect output'
+                : 'No output';
+    }
+    return `${output}: ${assertionResult.assertion.text}`;
 };
 
-const getFormattedMetrics = ({
+const getMetrics = ({
     scenarioResult, // Choose one to provide
     testResult, // Choose one to provide
     testPlanReport // Choose one to provide
 }) => {
     const result = { scenarioResult, testResult, testPlanReport };
-    const requiredPassing = countAssertions({
+    const requiredAssertionsPassedCount = countAssertions({
         ...result,
         priority: 'REQUIRED',
         passedOnly: true
     });
-    const requiredAll = countAssertions({
+    const requiredAssertionsCount = countAssertions({
         ...result,
         priority: 'REQUIRED'
     });
-    const optionalPassing = countAssertions({
+    const requiredAssertionsFailedCount =
+        requiredAssertionsCount - requiredAssertionsPassedCount;
+
+    const optionalAssertionsPassedCount = countAssertions({
         ...result,
         priority: 'OPTIONAL',
         passedOnly: true
     });
-    const optionalAll = countAssertions({
+    const optionalAssertionsCount = countAssertions({
         ...result,
         priority: 'OPTIONAL'
     });
-    const required = `${requiredPassing} / ${requiredAll}`;
-    const optional =
-        optionalAll === 0 ? '-' : `${optionalPassing} / ${optionalAll}`;
+    const optionalAssertionsFailedCount =
+        optionalAssertionsCount - optionalAssertionsPassedCount;
+
+    const requiredFormatted = `${requiredAssertionsPassedCount} / ${requiredAssertionsCount}`;
+    const optionalFormatted =
+        optionalAssertionsCount === 0
+            ? '-'
+            : `${optionalAssertionsPassedCount} / ${optionalAssertionsCount}`;
+
     const unexpectedBehaviorCount = countUnexpectedBehaviors({ ...result });
-    const unexpectedBehaviors =
+    const unexpectedBehaviorsFormatted =
         unexpectedBehaviorCount === 0 ? '-' : unexpectedBehaviorCount;
 
+    let supportLevel;
+    if (unexpectedBehaviorCount > 0 || requiredAssertionsFailedCount > 0) {
+        supportLevel = 'FAILING';
+    } else if (optionalAssertionsFailedCount > 0) {
+        supportLevel = 'ALL_REQUIRED';
+    } else {
+        supportLevel = 'FULL';
+    }
+
+    const supportPercent = Math.round(
+        (requiredAssertionsPassedCount / requiredAssertionsCount) * 100
+    );
+
     return {
-        required,
-        optional,
-        unexpectedBehaviors
+        requiredAssertionsPassedCount,
+        requiredAssertionsCount,
+        requiredAssertionsFailedCount,
+        optionalAssertionsPassedCount,
+        optionalAssertionsCount,
+        optionalAssertionsFailedCount,
+        unexpectedBehaviorCount,
+        requiredFormatted,
+        optionalFormatted,
+        unexpectedBehaviorsFormatted,
+        supportLevel,
+        supportPercent
     };
 };
 
@@ -122,14 +151,17 @@ const getTestPlanVersionTitle = testPlanVersion => {
 };
 
 const TestResultSummary = ({ testPlanReport, testResult }) => {
+    const test = testResult.test;
+
     const gitHubIssueLinkWithTitleAndBody = createGitHubIssueWithTitleAndBody({
-        test: testResult.test,
+        test,
         testPlanReport,
         isReportViewer: true
     });
+
     return (
         <>
-            <h2>Details for test: {testResult.test.title}</h2>
+            <h2>Details for test: {test.title}</h2>
             <a
                 href={gitHubIssueLinkWithTitleAndBody}
                 target="_blank"
@@ -137,10 +169,108 @@ const TestResultSummary = ({ testPlanReport, testResult }) => {
             >
                 Raise an Issue
             </a>
+            <br />
             <a href={test.renderedUrl} target="_blank" rel="noreferrer">
                 Open Test
             </a>
-            <table></table>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Command</th>
+                        <th>Support</th>
+                        <th>Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {testResult.scenarioResults.map(scenarioResult => {
+                        const passedAssertions = scenarioResult.assertionResults.filter(
+                            assertionResult => assertionResult.passed
+                        );
+                        const failedAssertions = scenarioResult.assertionResults.filter(
+                            assertionResult => !assertionResult.passed
+                        );
+                        const metrics = getMetrics({ scenarioResult });
+                        return (
+                            <tr key={scenarioResult.id}>
+                                <td>{scenarioResult.scenario.command.text}</td>
+                                <td>{metrics.supportLevel}</td>
+                                <td>
+                                    <dl>
+                                        <dt>Output:</dt>
+                                        <dd>{scenarioResult.output}</dd>
+                                        <dt>Passing Assertions:</dt>
+                                        <dd>
+                                            {passedAssertions.length ? (
+                                                <ul>
+                                                    {passedAssertions.map(
+                                                        assertionResult => (
+                                                            <li
+                                                                key={
+                                                                    assertionResult.id
+                                                                }
+                                                            >
+                                                                {getAssertionResultString(
+                                                                    assertionResult
+                                                                )}
+                                                            </li>
+                                                        )
+                                                    )}
+                                                </ul>
+                                            ) : (
+                                                'None'
+                                            )}
+                                        </dd>
+                                        <dt>Failing Assertions:</dt>
+                                        <dd>
+                                            {failedAssertions.length ? (
+                                                <ul>
+                                                    {failedAssertions.map(
+                                                        assertionResult => (
+                                                            <li
+                                                                key={
+                                                                    assertionResult.id
+                                                                }
+                                                            >
+                                                                {getAssertionResultString(
+                                                                    assertionResult
+                                                                )}
+                                                            </li>
+                                                        )
+                                                    )}
+                                                </ul>
+                                            ) : (
+                                                'None'
+                                            )}
+                                        </dd>
+                                        <dt>Unexpected Behaviors:</dt>
+                                        <dd>
+                                            {scenarioResult.unexpectedBehaviors
+                                                .length ? (
+                                                <ul>
+                                                    {scenarioResult.unexpectedBehaviors.map(
+                                                        unexpected => (
+                                                            <li
+                                                                key={
+                                                                    unexpected.id
+                                                                }
+                                                            >
+                                                                {unexpected.otherUnexpectedBehaviorText ??
+                                                                    unexpected.text}
+                                                            </li>
+                                                        )
+                                                    )}
+                                                </ul>
+                                            ) : (
+                                                'None'
+                                            )}
+                                        </dd>
+                                    </dl>
+                                </td>
+                            </tr>
+                        );
+                    })}
+                </tbody>
+            </table>
         </>
     );
 };
@@ -151,7 +281,7 @@ const TestPlanReportSummary = ({ testPlanReport }) => {
         testPlanReport.finalizedTestResults,
         testOrTestResult => testOrTestResult.test?.id ?? testOrTestResult.id
     );
-    const overallMetrics = getFormattedMetrics({ testPlanReport });
+    const overallMetrics = getMetrics({ testPlanReport });
 
     const { testPlanVersion, testPlanTarget } = testPlanReport;
     const { exampleUrl, designPatternUrl } = testPlanVersion.metadata;
@@ -192,20 +322,22 @@ const TestPlanReportSummary = ({ testPlanReport }) => {
                 <tbody>
                     <tr>
                         <td>All Tests</td>
-                        <td>{overallMetrics.required}</td>
-                        <td>{overallMetrics.optional}</td>
-                        <td>{overallMetrics.unexpectedBehaviors}</td>
+                        <td>{overallMetrics.requiredFormatted}</td>
+                        <td>{overallMetrics.optionalFormatted}</td>
+                        <td>{overallMetrics.unexpectedBehaviorsFormatted}</td>
                     </tr>
                     {testPlanReport.finalizedTestResults.map(testResult => {
-                        const testResultMetrics = getFormattedMetrics({
-                            testResult
-                        });
+                        const testResultMetrics = getMetrics({ testResult });
                         return (
                             <tr key={testResult.id}>
                                 <td>{testResult.test.title}</td>
-                                <td>{testResultMetrics.required}</td>
-                                <td>{testResultMetrics.optional}</td>
-                                <td>{testResultMetrics.unexpectedBehaviors}</td>
+                                <td>{testResultMetrics.requiredFormatted}</td>
+                                <td>{testResultMetrics.optionalFormatted}</td>
+                                <td>
+                                    {
+                                        testResultMetrics.unexpectedBehaviorsFormatted
+                                    }
+                                </td>
                             </tr>
                         );
                     })}
@@ -289,11 +421,12 @@ const ReportsPage = () => {
                                                 tabularReports[
                                                     testPlanVersion.id
                                                 ][testPlanTarget.id];
+                                            const metrics = getMetrics({
+                                                testPlanReport
+                                            });
                                             return (
                                                 <td key={testPlanReport.id}>
-                                                    {getSupportPercent(
-                                                        testPlanReport
-                                                    )}
+                                                    {metrics.supportPercent}
                                                 </td>
                                             );
                                         }
@@ -312,10 +445,13 @@ const ReportsPage = () => {
                         key={testPlanReport.id}
                         testPlanReport={testPlanReport}
                     />
-                    <TestResultSummary
-                        testPlanReport={testPlanReport}
-                        testResult={testPlanReport.finalizedTestResults[0]}
-                    />
+                    {testPlanReport.finalizedTestResults.map(testResult => (
+                        <TestResultSummary
+                            key={testResult.id}
+                            testPlanReport={testPlanReport}
+                            testResult={testResult}
+                        />
+                    ))}
                 </>
             ))}
             <div style={{ height: '200px' }} />
