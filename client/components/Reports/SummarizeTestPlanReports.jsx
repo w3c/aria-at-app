@@ -1,5 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Helmet } from 'react-helmet';
+import { Link } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Breadcrumb, Container } from 'react-bootstrap';
+import { faHome } from '@fortawesome/free-solid-svg-icons';
 import alphabetizeObjectBy from '../../utils/alphabetizeObjectBy';
 import getMetrics from './getMetrics';
 import { getTestPlanTargetTitle, getTestPlanVersionTitle } from './getTitles';
@@ -34,7 +39,16 @@ const SummarizeTestPlanReports = ({ testPlanReports }) => {
     });
 
     return (
-        <>
+        <Container as="main">
+            <Helmet>
+                <title>ARIA-AT Reports Summary</title>
+            </Helmet>
+            <Breadcrumb>
+                <Breadcrumb.Item active>
+                    <FontAwesomeIcon icon={faHome} />
+                    Summary
+                </Breadcrumb.Item>
+            </Breadcrumb>
             <h1>Summary</h1>
             <table>
                 <thead>
@@ -52,13 +66,17 @@ const SummarizeTestPlanReports = ({ testPlanReports }) => {
                 <tbody>
                     {Object.values(testPlanVersionsById).map(
                         testPlanVersion => {
-                            const title = getTestPlanVersionTitle(
-                                testPlanVersion
-                            );
-
                             return (
                                 <tr key={testPlanVersion.id}>
-                                    <td>{title}</td>
+                                    <td>
+                                        <Link
+                                            to={`/reports/${testPlanVersion.id}`}
+                                        >
+                                            {getTestPlanVersionTitle(
+                                                testPlanVersion
+                                            )}
+                                        </Link>
+                                    </td>
                                     {Object.values(testPlanTargetsById).map(
                                         testPlanTarget => {
                                             const testPlanReport =
@@ -70,7 +88,14 @@ const SummarizeTestPlanReports = ({ testPlanReports }) => {
                                             });
                                             return (
                                                 <td key={testPlanReport.id}>
-                                                    {metrics.supportPercent}
+                                                    <Link
+                                                        to={
+                                                            `/reports/${testPlanVersion.id}` +
+                                                            `/targets/${testPlanReport.id}`
+                                                        }
+                                                    >
+                                                        {metrics.supportPercent}
+                                                    </Link>
                                                 </td>
                                             );
                                         }
@@ -81,7 +106,7 @@ const SummarizeTestPlanReports = ({ testPlanReports }) => {
                     )}
                 </tbody>
             </table>
-        </>
+        </Container>
     );
 };
 

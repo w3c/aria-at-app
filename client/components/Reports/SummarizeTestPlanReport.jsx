@@ -35,7 +35,7 @@ const SummarizeTestPlanReport = ({ testPlanReport }) => {
                 );
 
                 return (
-                    <Fragment key={testResult.id}>
+                    <div key={testResult.id} id={`result-${testResult.id}`}>
                         <h2>Details for test: {test.title}</h2>
                         <a
                             href={gitHubIssueLinkWithTitleAndBody}
@@ -173,7 +173,7 @@ const SummarizeTestPlanReport = ({ testPlanReport }) => {
                                 )}
                             </tbody>
                         </table>
-                    </Fragment>
+                    </div>
                 );
             })}
         </Fragment>

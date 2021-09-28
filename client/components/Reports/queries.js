@@ -29,13 +29,13 @@ export const REPORTS_PAGE_QUERY = gql`
             runnableTests {
                 id
                 title
+                renderedUrl
             }
             finalizedTestResults {
                 id
                 test {
                     id
                     title
-                    renderableContent
                     renderedUrl
                 }
                 scenarioResults {

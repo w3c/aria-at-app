@@ -1,34 +1,69 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import { useQuery } from '@apollo/client';
 import { REPORTS_PAGE_QUERY } from './queries';
 import SummarizeTestPlanReports from './SummarizeTestPlanReports';
 import SummarizeTestPlanVersion from './SummarizeTestPlanVersion';
 import SummarizeTestPlanReport from './SummarizeTestPlanReport';
+import { Redirect, Route, Switch } from 'react-router';
 
 const Reports = () => {
     const { data } = useQuery(REPORTS_PAGE_QUERY);
     if (!data) return null;
 
-    const testPlanVersion = data.testPlanReports[0].testPlanVersion;
-    const testPlanReports = data.testPlanReports.filter(
-        testPlanReport =>
-            testPlanReport.testPlanVersion.id === testPlanVersion.id
-    );
-
-    const testPlanReport = data.testPlanReports[0];
-
     return (
-        <Fragment>
-            <SummarizeTestPlanReports testPlanReports={data.testPlanReports} />
-            <div style={{ height: '200px' }} />
-            <SummarizeTestPlanVersion
-                testPlanVersion={testPlanVersion}
-                testPlanReports={testPlanReports}
+        <Switch>
+            <Route
+                exact
+                path="/reports"
+                render={() => (
+                    <SummarizeTestPlanReports
+                        testPlanReports={data.testPlanReports}
+                    />
+                )}
             />
-            <div style={{ height: '200px' }} />
-            <SummarizeTestPlanReport testPlanReport={testPlanReport} />
-            <div style={{ height: '200px' }} />
-        </Fragment>
+            <Route
+                exact
+                path="/reports/:testPlanVersionId"
+                render={({ match: { params } }) => {
+                    const { testPlanVersionId } = params;
+
+                    const testPlanReports = data.testPlanReports.filter(
+                        each => each.testPlanVersion.id === testPlanVersionId
+                    );
+
+                    if (!testPlanReports.length) return <Redirect to="/404" />;
+
+                    return (
+                        <SummarizeTestPlanVersion
+                            testPlanVersion={testPlanReports[0].testPlanVersion}
+                            testPlanReports={testPlanReports}
+                        />
+                    );
+                }}
+            />
+            <Route
+                exact
+                path="/reports/:testPlanVersionId/targets/:testPlanReportId"
+                render={({ match: { params } }) => {
+                    const { testPlanVersionId, testPlanReportId } = params;
+
+                    const testPlanReport = data.testPlanReports.find(
+                        each =>
+                            each.testPlanVersion.id === testPlanVersionId &&
+                            each.id == testPlanReportId
+                    );
+
+                    if (!testPlanReport) return <Redirect to="/404" />;
+
+                    return (
+                        <SummarizeTestPlanReport
+                            testPlanReport={testPlanReport}
+                        />
+                    );
+                }}
+            />
+            <Redirect to="/404" />
+        </Switch>
     );
 };
 
