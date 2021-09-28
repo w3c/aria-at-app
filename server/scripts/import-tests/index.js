@@ -92,7 +92,12 @@ const importTestPlanVersions = async () => {
             sourceDirectoryPath
         });
 
-        const tests = getTests({ builtDirectoryPath, testPlanVersionId, ats });
+        const tests = getTests({
+            builtDirectoryPath,
+            testPlanVersionId,
+            ats,
+            gitSha
+        });
 
         await createTestPlanVersion({
             id: testPlanVersionId,
@@ -217,22 +222,28 @@ const updateAtsJson = async ats => {
     );
 };
 
-const getTests = ({ builtDirectoryPath, testPlanVersionId, ats }) => {
+const getTests = ({ builtDirectoryPath, testPlanVersionId, ats, gitSha }) => {
     const tests = [];
 
+    const renderedUrlsByNumber = {};
     const allCollectedByNumber = {};
     fse.readdirSync(builtDirectoryPath).forEach(filePath => {
         if (!filePath.endsWith('.collected.json')) return;
         const jsonPath = path.join(builtDirectoryPath, filePath);
         const jsonString = fse.readFileSync(jsonPath, 'utf8');
         const collected = JSON.parse(jsonString);
+        const renderedUrl = filePath.replace(/\.json$/, '.html');
         if (!allCollectedByNumber[collected.info.testId]) {
             allCollectedByNumber[collected.info.testId] = [];
+            renderedUrlsByNumber[collected.info.testId] = [];
         }
         allCollectedByNumber[collected.info.testId].push(collected);
+        renderedUrlsByNumber[collected.info.testId].push(renderedUrl);
     });
 
-    Object.values(allCollectedByNumber).forEach(allCollected => {
+    Object.entries(allCollectedByNumber).forEach(([number, allCollected]) => {
+        const renderedUrls = renderedUrlsByNumber[number];
+
         if (
             !deepPickEqual(allCollected, {
                 excludeKeys: ['at', 'mode', 'commands']
@@ -260,6 +271,17 @@ const getTests = ({ builtDirectoryPath, testPlanVersionId, ats }) => {
             renderableContent: Object.fromEntries(
                 allCollected.map((collected, index) => {
                     return [atIds[index], collected];
+                })
+            ),
+            renderedUrls: Object.fromEntries(
+                atIds.map((atId, index) => {
+                    return [
+                        atId,
+                        getAppUrl(renderedUrls[index], {
+                            gitSha,
+                            builtDirectoryPath
+                        })
+                    ];
                 })
             ),
             scenarios: (() => {

@@ -290,12 +290,20 @@ const graphqlSchema = gql`
         """
         atMode: AtMode!
         """
-        Raw execution-specific data such as inputs needed to generate the
-        manual test instructions or links to the setup scripts which must be
-        executed on the testPage. This data is unchanged from its original form
-        found in the ARIA-AT repo's ".collected.json" files.
+        Raw execution-specific data for the Test Renderer such as inputs needed
+        to generate the manual test instructions or links to the setup scripts
+        which must be executed on the testPage. This data is unchanged from its
+        original form found in the ARIA-AT repo's ".collected.json" files. The
+        atId is optional in cases where it can be inferred from context (i.e.
+        the test is a child of a TestPlanReport with a known AT).
         """
         renderableContent(atId: ID): Any
+        """
+        The URL to a HTML page which loads the Test Renderer and displays
+        the Test. The atId is optional in cases where it can be inferred from
+        context (i.e. the test is a child of a TestPlanReport with a known AT).
+        """
+        renderedUrl(atId: ID): String
         """
         List of ways the test can be completed, each of which needs to be
         executed separately. There might be a different number of Scenarios

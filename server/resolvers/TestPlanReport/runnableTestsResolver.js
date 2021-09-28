@@ -1,9 +1,9 @@
 const testsResolver = require('../TestPlanVersion/testsResolver');
 
 const runnableTestsResolver = testPlanReport => {
-    const { testPlanTarget, testPlanVersion } = testPlanReport;
+    const { testPlanTarget } = testPlanReport;
 
-    const tests = testsResolver(testPlanVersion);
+    const tests = testsResolver(testPlanReport);
 
     return tests.filter(test => test.atIds.includes(testPlanTarget.at.id));
 };
