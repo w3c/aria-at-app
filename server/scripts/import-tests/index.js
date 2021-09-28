@@ -92,7 +92,12 @@ const importTestPlanVersions = async () => {
             sourceDirectoryPath
         });
 
-        const tests = getTests({ builtDirectoryPath, testPlanVersionId, ats });
+        const tests = getTests({
+            builtDirectoryPath,
+            testPlanVersionId,
+            ats,
+            gitSha
+        });
 
         await createTestPlanVersion({
             id: testPlanVersionId,
@@ -217,7 +222,7 @@ const updateAtsJson = async ats => {
     );
 };
 
-const getTests = ({ builtDirectoryPath, testPlanVersionId, ats }) => {
+const getTests = ({ builtDirectoryPath, testPlanVersionId, ats, gitSha }) => {
     const tests = [];
 
     const renderedUrlsByNumber = {};
@@ -270,7 +275,13 @@ const getTests = ({ builtDirectoryPath, testPlanVersionId, ats }) => {
             ),
             renderedUrls: Object.fromEntries(
                 atIds.map((atId, index) => {
-                    return [atId, renderedUrls[index]];
+                    return [
+                        atId,
+                        getAppUrl(renderedUrls[index], {
+                            gitSha,
+                            builtDirectoryPath
+                        })
+                    ];
                 })
             ),
             scenarios: (() => {
