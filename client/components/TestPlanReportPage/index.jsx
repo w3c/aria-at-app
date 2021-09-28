@@ -12,7 +12,7 @@ import {
     formatFraction,
     formatInteger,
     formatNoResults
-} from '../ReportsPage/utils';
+} from '../Reports/utils';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome } from '@fortawesome/free-solid-svg-icons';
 

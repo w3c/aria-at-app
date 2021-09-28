@@ -6,7 +6,7 @@ import ConfirmAuth from '@components/ConfirmAuth';
 import Home from '@components/Home';
 import InvalidRequest from '@components/InvalidRequest';
 import NotFound from '@components/NotFound';
-import ReportsPage from '@components/ReportsPage';
+import Reports from '@components/Reports';
 import TestPlanReportPage from '@components/TestPlanReportPage';
 import SignupInstructions from '@components/SignupInstructions';
 import TestQueue from '@components/TestQueue';
@@ -73,7 +73,7 @@ export default [
     },
     {
         path: '/reports',
-        component: ReportsPage
+        component: Reports
     },
     {
         path: '/invalid-request',
