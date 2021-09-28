@@ -23,26 +23,30 @@ const oauthRedirectFromGithubController = async (req, res) => {
         }
         res.redirect(303, `${APP_SERVER}/signup-instructions`);
     };
-    const loginFailed = () => {
-        res.status(401);
-        res.end();
+    const loginFailedDueToGitHub = () => {
+        res.status(401).send(
+            `<body>
+                ARIA-AT App failed to access GitHub.
+                <a href="${process.env.APP_SERVER}/">Return to home page.</a>
+            </body>`
+        );
     };
 
     const { code, state: dataFromFrontend } = req.query;
 
     const githubAccessToken = await GithubService.getGithubAccessToken(code);
-    if (!githubAccessToken) return loginFailed();
+    if (!githubAccessToken) return loginFailedDueToGitHub();
 
     const githubUsername = await GithubService.getGithubUsername(
         githubAccessToken
     );
-    if (!githubUsername) return loginFailed();
+    if (!githubUsername) return loginFailedDueToGitHub();
 
     const isAdmin = await GithubService.isMemberOfAdminTeam({
         githubAccessToken,
         githubUsername
     });
-    if (isAdmin == null) return loginFailed();
+    if (isAdmin == null) return loginFailedDueToGitHub();
 
     const testers = await getTesters();
 
@@ -81,7 +85,6 @@ const oauthRedirectFromGithubController = async (req, res) => {
     }
     if (user.roles.length === 0) return loginFailedDueToRole();
 
-    req.session.githubAccessToken = githubAccessToken;
     req.session.user = user;
 
     return loginSucceeded();

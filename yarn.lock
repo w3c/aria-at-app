@@ -13469,11 +13469,6 @@ react-lifecycles-compat@^3.0.4:
   resolved "https://registry.yarnpkg.com/react-lifecycles-compat/-/react-lifecycles-compat-3.0.4.tgz#4f1a273afdfc8f3488a8c516bfda78f872352362"
   integrity sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==
 
-react-mde@^10.0.3:
-  version "10.0.3"
-  resolved "https://registry.yarnpkg.com/react-mde/-/react-mde-10.0.3.tgz#0dea122ee8ba8741eec929d7cabf53b1c27d16ca"
-  integrity sha512-t8c1h6jkXHoCQpHcZ3Ex2cq/sGmsonS+tsoQ/YGUrijO4CL6wnwdIUpcApn2qeFZnkyqr7tyLwZ5GMOfiy8L/w==
-
 react-overlays@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/react-overlays/-/react-overlays-3.0.1.tgz#0a007d8d8b97d8e85bb23b2fbe2fb336d82422db"
