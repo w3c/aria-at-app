@@ -12,28 +12,28 @@ export const TEST_RUN_PAGE_QUERY = gql`
                 id
                 test {
                     id
-                    title
-                    ats {
-                        id
-                        name
-                    }
-                    atMode
-                    scenarios {
-                        id
-                        at {
-                            id
-                            name
-                        }
-                        command {
-                            id
-                            text
-                        }
-                    }
-                    assertions {
-                        id
-                        priority
-                        text
-                    }
+                    # title
+                    # ats {
+                    #     id
+                    #     name
+                    # }
+                    # atMode
+                    # scenarios {
+                    #     id
+                    #     at {
+                    #         id
+                    #         name
+                    #     }
+                    #     command {
+                    #         id
+                    #         text
+                    #     }
+                    # }
+                    # assertions {
+                    #     id
+                    #     priority
+                    #     text
+                    # }
                     renderableContent
                 }
                 startedAt
@@ -64,6 +64,7 @@ export const TEST_RUN_PAGE_QUERY = gql`
                         locationOfData
                     }
                 }
+                conflictsFormatted(markdown: true)
                 testPlanTarget {
                     title
                     at {
@@ -155,6 +156,16 @@ export const SUBMIT_TEST_RESULT_MUTATION = gql`
             submitTestResult(
                 input: { id: $id, scenarioResults: $scenarioResults }
             ) {
+                locationOfData
+            }
+        }
+    }
+`;
+
+export const DELETE_TEST_RESULT_MUTATION = gql`
+    mutation DeleteTestResult($id: ID!) {
+        testResult(id: $id) {
+            deleteTestResult(input: { id: $id, scenarioResults: [] }) {
                 locationOfData
             }
         }

@@ -375,7 +375,13 @@ const TestQueueRow = ({
                                         {tester.username}
                                     </a>
                                     <br />
-                                    {`(${testResults.length} of ${runnableTests.length} tests complete)`}
+                                    {`(${testResults.reduce(
+                                        (acc, { completedAt }) =>
+                                            acc + (completedAt ? 1 : 0),
+                                        0
+                                    )} of ${
+                                        runnableTests.length
+                                    } tests complete)`}
                                 </li>
                             ))
                         ) : (

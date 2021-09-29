@@ -15,7 +15,6 @@ import {
 import nextId from 'react-id-generator';
 import { Alert, Button, Col, Container, Row } from 'react-bootstrap';
 import TestNavigator from './TestNavigator';
-import RaiseIssueModal from '../RaiseIssueModal';
 import ReviewConflictsModal from './ReviewConflictsModal';
 import StatusBar from './StatusBar';
 import TestRenderer from '../TestRenderer';
@@ -24,11 +23,10 @@ import PageStatus from '../common/PageStatus';
 import BasicModal from '../common/BasicModal';
 import {
     TEST_RUN_PAGE_QUERY,
-    UPDATE_TEST_RUN_RESULT_MUTATION,
-    CLEAR_TEST_RESULT_MUTATION,
     CREATE_TEST_RESULT_MUTATION,
     SAVE_TEST_RESULT_MUTATION,
-    SUBMIT_TEST_RESULT_MUTATION
+    SUBMIT_TEST_RESULT_MUTATION,
+    DELETE_TEST_RESULT_MUTATION
 } from './queries';
 import './TestRun.css';
 
@@ -46,11 +44,10 @@ const TestRun = ({ auth }) => {
     const { loading, data, error, refetch } = useQuery(TEST_RUN_PAGE_QUERY, {
         variables: { testPlanRunId }
     });
-    const [updateTestRunResult] = useMutation(UPDATE_TEST_RUN_RESULT_MUTATION);
-    const [clearTestResult] = useMutation(CLEAR_TEST_RESULT_MUTATION);
     const [createTestResult] = useMutation(CREATE_TEST_RESULT_MUTATION);
     const [saveTestResult] = useMutation(SAVE_TEST_RESULT_MUTATION);
     const [submitTestResult] = useMutation(SUBMIT_TEST_RESULT_MUTATION);
+    const [deleteTestResult] = useMutation(DELETE_TEST_RESULT_MUTATION);
 
     const [isTestSubmitClicked, setIsTestSubmitClicked] = useState(false);
     const [showTestNavigator, setShowTestNavigator] = useState(true);
@@ -96,7 +93,8 @@ const TestRun = ({ auth }) => {
         testPlanTarget,
         testPlanVersion,
         runnableTests = [],
-        conflicts = []
+        conflicts = [],
+        conflictsFormatted
     } = testPlanReport || {};
 
     const { id: userId } = auth;
@@ -121,18 +119,52 @@ const TestRun = ({ auth }) => {
 
     const toggleTestNavigator = () => setShowTestNavigator(!showTestNavigator);
 
+    /**
+     * Check to see if scenarioId and scenarioResultId
+     * exists in source.locationOfData and
+     * conflictingResults.locationOfData objects
+     * respectively. If it does exist, check to see if
+     * scenarioId/scenarioTestId exists in the current
+     * test.
+     */
+    const conflictScenarioIds = [];
+
+    for (let i = 0; i < conflicts.length; i++) {
+        const conflict = conflicts[i];
+        if (
+            conflict.source &&
+            conflict.source.locationOfData &&
+            conflict.source.locationOfData.scenarioId
+        )
+            conflictScenarioIds.push(conflict.source.locationOfData.scenarioId);
+
+        if (conflict.conflictingResults) {
+            for (let j = 0; j < conflict.conflictingResults.length; j++) {
+                const conflictingResult = conflict.conflictingResults[j];
+                if (
+                    conflictingResult.locationOfData &&
+                    conflictingResult.locationOfData.scenarioResultId
+                )
+                    conflictScenarioIds.push(
+                        conflictingResult.locationOfData.scenarioResultId
+                    );
+            }
+        }
+    }
+
     const tests = runnableTests.map((test, index) => ({
         ...test,
         index,
-        seq: index + 1
+        seq: index + 1,
+        testResult: testResults.find(t => t.test.id === test.id),
+        hasConflicts: test.scenarios.some(({ id }) =>
+            conflictScenarioIds.includes(id)
+        )
     }));
     const currentTest = tests[currentTestIndex];
-    const currentTestResult = testResults.find(
-        t => t.test.id === currentTest.id
-    );
     const hasTestsToRun = tests.length;
 
-    if (!currentTestResult) {
+    if (!currentTest.testResult) {
         (async () => {
             const { id: testId } = currentTest;
             await createTestResult({
@@ -247,7 +279,7 @@ const TestRun = ({ auth }) => {
         const saveForm = async () => {
             const scenarioResults = mergeResults(
                 testRunStateRef.current,
-                currentTestResult.scenarioResults
+                currentTest.testResult.scenarioResults
             );
 
             await handleSaveOrSubmitTestResultAction(
@@ -277,9 +309,7 @@ const TestRun = ({ auth }) => {
                 break;
             }
             case 'editTest': {
-                await handleUpdateTestPlanRunResultAction({
-                    result: null
-                });
+                await handleStartOverAction();
                 if (titleRef.current) titleRef.current.focus();
                 break;
             }
@@ -326,12 +356,11 @@ const TestRun = ({ auth }) => {
     const handleStartOverButtonClick = async () => setShowStartOverModal(true);
 
     const handleStartOverAction = async () => {
-        await clearTestResult({
-            variables: {
-                testPlanRunId,
-                index: currentTestIndex
-            }
-        });
+        const { id } = currentTest.testResult;
+        let variables = {
+            id
+        };
+        await deleteTestResult({ variables });
         await refetch();
 
         // close modal after action
@@ -342,7 +371,7 @@ const TestRun = ({ auth }) => {
         { scenarioResults = [] },
         isSubmit = false
     ) => {
-        const { id } = currentTestResult;
+        const { id } = currentTest.testResult;
         let variables = {
             id,
             scenarioResults
@@ -350,14 +379,17 @@ const TestRun = ({ auth }) => {
 
         await saveTestResult({ variables });
         if (isSubmit) await submitTestResult({ variables });
-        // await refetch();
+        await refetch();
     };
 
     const handleReviewConflictsButtonClick = async () =>
         setShowReviewConflictsModal(true);
 
-    const renderTestContent = (testPlanReport, testResult, heading) => {
-        const { isComplete, index, result, state } = testResult;
+    const renderTestContent = (testPlanReport, test, heading) => {
+        const { index } = test;
+        const isComplete = test.testResult
+            ? !!test.testResult.completedAt
+            : false;
         const isFirstTest = index === 0;
         const isLastTest = currentTest.seq === tests.length;
 
@@ -454,7 +486,6 @@ const TestRun = ({ auth }) => {
 
                     <OptionButton
                         text="Start Over"
-                        disabled={!result && !state}
                         icon={<FontAwesomeIcon icon={faRedo} />}
                         onClick={handleStartOverButtonClick}
                     />
@@ -476,12 +507,13 @@ const TestRun = ({ auth }) => {
             <>
                 <h1 ref={titleRef} data-test="testing-task" tabIndex={-1}>
                     <span className="task-label">Testing task:</span>{' '}
-                    {`${currentTest.seq}.`} {testResult.title}
+                    {`${currentTest.seq}.`} {test.title}
                 </h1>
                 <span>{heading}</span>
                 <StatusBar
                     key={nextId()}
-                    // conflicts={conflicts[currentTestIndex]}
+                    hasConflicts={currentTest.hasConflicts}
+                    conflictsFormatted={conflictsFormatted}
                     handleReviewConflictsButtonClick={
                         handleReviewConflictsButtonClick
                     }
@@ -491,10 +523,9 @@ const TestRun = ({ auth }) => {
                     <Col className="test-iframe-container" md={9}>
                         <Row>
                             <TestRenderer
-                                // key={nextId()}
                                 key={`TestRenderer__${currentTestIndex}`}
                                 at={testPlanTarget.at}
-                                testResult={currentTestResult}
+                                testResult={currentTest.testResult}
                                 testPageUrl={testPlanVersion.testPageUrl}
                                 testRunStateRef={testRunStateRef}
                                 testRunResultRef={testRunResultRef}
@@ -524,6 +555,8 @@ const TestRun = ({ auth }) => {
                         handleClose={() => setShowStartOverModal(false)}
                     />
                 )}
+                {/*
+                TODO: This is handled in other PRs
                 {showRaiseIssueModal && (
                     <RaiseIssueModal
                         key={`RaiseIssueModal__${currentTestIndex}`}
@@ -537,13 +570,13 @@ const TestRun = ({ auth }) => {
                         }
                         handleClose={() => setShowRaiseIssueModal(false)}
                     />
-                )}
+                )}*/}
                 {showReviewConflictsModal && (
                     <ReviewConflictsModal
                         key={`ReviewConflictsModal__${currentTestIndex}`}
                         show={showReviewConflictsModal}
                         userId={testerId}
-                        // conflicts={conflicts[currentTestIndex]}
+                        conflictsFormatted={conflictsFormatted}
                         handleClose={() => setShowReviewConflictsModal(false)}
                         handleRaiseIssueButtonClick={
                             handleRaiseIssueButtonClick
@@ -599,7 +632,11 @@ const TestRun = ({ auth }) => {
                         {hasTestsToRun ? (
                             <>
                                 {' '}
-                                <b>{`${testPlanRun.testResults.length} of ${tests.length}`}</b>{' '}
+                                <b>{`${testPlanRun.testResults.reduce(
+                                    (acc, { completedAt }) =>
+                                        acc + (completedAt ? 1 : 0),
+                                    0
+                                )} of ${tests.length}`}</b>{' '}
                                 tests completed
                             </>
                         ) : (
@@ -648,7 +685,6 @@ const TestRun = ({ auth }) => {
                 <TestNavigator
                     show={showTestNavigator}
                     tests={tests}
-                    // conflicts={conflicts}
                     currentTestIndex={currentTestIndex}
                     toggleShowClick={toggleTestNavigator}
                     handleTestClick={handleTestClick}

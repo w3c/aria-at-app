@@ -219,18 +219,19 @@ const ErrorComponent = ({ hasErrors = false }) => {
 
 const TestRenderer = ({
     at,
-    testResult,
+    testResult = {},
     testPageUrl,
     testRunStateRef,
     testRunResultRef,
     submitButtonRef,
     isSubmitted = false
 }) => {
-    const { scenarioResults, test, completedAt } = testResult;
+    const { scenarioResults, test = {}, completedAt } = testResult;
     const { renderableContent } = test;
 
     const [testRunExport, setTestRunExport] = useState();
     const [pageContent, setPageContent] = useState(null);
+    const [state, setState] = useState(null);
     const [submitResult, setSubmitResult] = useState(null);
     const [submitCalled, setSubmitCalled] = useState(false);
 
@@ -240,10 +241,11 @@ const TestRenderer = ({
         // Array.from(new URL(document.location).searchParams)
         const configQueryParams = [['at', evaluateAtNameKey(at.name)]];
 
-        const collectedTestJson = renderableContent[at.id];
-        await testRunIO.setInputsFromCollectedTestAsync(collectedTestJson);
+        await testRunIO.setInputsFromCollectedTestAsync(renderableContent);
         testRunIO.setConfigInputFromQueryParamsAndSupport(configQueryParams);
         testRunIO.setPageUriInputFromPageUri(testPageUrl);
+
+        const state = mergeState(testRunIO.testRunState(), scenarioResults);
 
         const testWindow = new TestWindow({
             ...testRunIO.testWindowOptions(),
@@ -266,13 +268,15 @@ const TestRenderer = ({
                     testWindow.close();
                 }
             },
-            state: mergeState(testRunIO.testRunState(), scenarioResults),
-            resultsJSON: state => testRunIO.submitResultsJSON(state)
+            resultsJSON: state => testRunIO.submitResultsJSON(state),
+            state
         });
+        setState(state);
         setTestRunExport(testRunExport);
     };
 
     const mergeState = (state, scenarioResults = []) => {
+        // console.info('mergeState', state, scenarioResults);
         const { commands } = state;
 
         if (
@@ -362,6 +366,8 @@ const TestRenderer = ({
 
             setPageContent(testRunExport.instructions());
         }
+
+        testRunStateRef.current = state;
     }, [testRunExport]);
 
     useEffect(() => {

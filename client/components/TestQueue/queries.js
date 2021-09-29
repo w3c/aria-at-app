@@ -51,6 +51,7 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
                     test {
                         id
                     }
+                    completedAt
                 }
             }
         }

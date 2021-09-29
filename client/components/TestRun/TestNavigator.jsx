@@ -11,7 +11,6 @@ import React from 'react';
 const TestNavigator = ({
     show = true,
     tests = [],
-    conflicts = {},
     currentTestIndex = 0,
     toggleShowClick = () => {},
     handleTestClick = () => {}
@@ -46,18 +45,18 @@ const TestNavigator = ({
                             let resultClassName = 'not-started';
                             let resultStatus = 'Not Started:';
 
-                            const testConflicts = conflicts[test.index] || [];
-
                             if (test) {
-                                if (test.isSkipped) {
-                                    resultClassName = 'in-progress';
-                                    resultStatus = 'In Progress:';
-                                } else if (testConflicts.length) {
+                                if (test.hasConflicts) {
                                     resultClassName = 'conflicts';
                                     resultStatus = 'Has Conflicts:';
-                                } else if (test.isComplete) {
-                                    resultClassName = 'complete';
-                                    resultStatus = 'Complete Test:';
+                                } else if (test.testResult) {
+                                    resultClassName = test.testResult
+                                        .completedAt
+                                        ? 'complete'
+                                        : 'in-progress';
+                                    resultStatus = test.testResult.completedAt
+                                        ? 'Complete Test:'
+                                        : 'In Progress:';
                                 }
                             }
 
@@ -96,6 +95,7 @@ const TestNavigator = ({
 TestNavigator.propTypes = {
     show: PropTypes.bool,
     tests: PropTypes.array,
+    testResult: PropTypes.object,
     conflicts: PropTypes.object,
     currentTestIndex: PropTypes.number,
     toggleShowClick: PropTypes.func,
