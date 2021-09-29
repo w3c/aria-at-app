@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Breadcrumb, Container } from 'react-bootstrap';
+import { Breadcrumb, Container, Table } from 'react-bootstrap';
 import { faHome } from '@fortawesome/free-solid-svg-icons';
 import alphabetizeObjectBy from '../../utils/alphabetizeObjectBy';
 import getMetrics from './getMetrics';
@@ -41,16 +41,27 @@ const SummarizeTestPlanReports = ({ testPlanReports }) => {
     return (
         <Container as="main">
             <Helmet>
-                <title>ARIA-AT Reports Summary</title>
+                <title>ARIA-AT Test Reports</title>
             </Helmet>
+            <h1>Summary</h1>
             <Breadcrumb>
                 <Breadcrumb.Item active>
                     <FontAwesomeIcon icon={faHome} />
                     Summary
                 </Breadcrumb.Item>
             </Breadcrumb>
-            <h1>Summary</h1>
-            <table>
+            <h2>Introduction</h2>
+            <p>
+                This page offers a high-level view of all results collected by
+                the ARIA-AT project. Follow a link in the table below to view
+                detailed results.
+            </p>
+            <h2>Support Levels</h2>
+            <p id="support-levels-table-description">
+                The percentage of assertions which passed when each Test Plan
+                was executed by a given Assistive Technology.
+            </p>
+            <Table bordered hover aria-label="Support Levels">
                 <thead>
                     <tr>
                         <th>Test Plan</th>
@@ -94,7 +105,19 @@ const SummarizeTestPlanReports = ({ testPlanReports }) => {
                                                             `/targets/${testPlanReport.id}`
                                                         }
                                                     >
-                                                        {metrics.supportPercent}
+                                                        <div className="progress">
+                                                            <div
+                                                                className="progress-bar bg-info"
+                                                                style={{
+                                                                    width: `${metrics.supportPercent}%`
+                                                                }}
+                                                            >
+                                                                {
+                                                                    metrics.supportPercent
+                                                                }
+                                                                %
+                                                            </div>
+                                                        </div>
                                                     </Link>
                                                 </td>
                                             );
@@ -105,7 +128,7 @@ const SummarizeTestPlanReports = ({ testPlanReports }) => {
                         }
                     )}
                 </tbody>
-            </table>
+            </Table>
         </Container>
     );
 };

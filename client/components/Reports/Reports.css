@@ -97,9 +97,13 @@
     margin-top: 2em;
 }
 
-.skipped-tests-heading h2,
+.skipped-tests-heading h3,
 .test-result-heading h2 {
     margin-top: 0;
+}
+
+.skipped-tests-heading h3 {
+    font-size: 1.5em;
 }
 
 .test-result-buttons {
@@ -130,4 +134,11 @@
 
 .progress .progress-bar.bg-info {
     background-color: #0b60ab !important;
+}
+
+.test-details {
+    display: block;
+    font-size: 0.7em;
+    font-weight: normal;
+    margin-bottom: 0.25em;
 }

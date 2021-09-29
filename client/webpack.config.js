@@ -58,6 +58,11 @@ module.exports = {
     devServer: {
         contentBase: path.join(__dirname, 'static'),
         port: process.env.CLIENT_PORT || 3000,
+        // Allows access to the dev server over your local network. Note that
+        // you will need to use your computers address, e.g. 192.168.0.20:3000,
+        // and that logging in will require you to manually change the URL from
+        // localhost:3000 to 192.168.0.20:3000 each time a redirect occurs.
+        host: '0.0.0.0',
         publicPath: '/',
         historyApiFallback: true,
         hotOnly: true,

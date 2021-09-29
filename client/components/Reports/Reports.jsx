@@ -5,6 +5,7 @@ import SummarizeTestPlanReports from './SummarizeTestPlanReports';
 import SummarizeTestPlanVersion from './SummarizeTestPlanVersion';
 import SummarizeTestPlanReport from './SummarizeTestPlanReport';
 import { Redirect, Route, Switch } from 'react-router';
+import './Reports.css';
 
 const Reports = () => {
     const { data } = useQuery(REPORTS_PAGE_QUERY);

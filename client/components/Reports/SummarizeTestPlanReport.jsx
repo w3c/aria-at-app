@@ -1,8 +1,17 @@
 import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
+import { Helmet } from 'react-helmet';
 import { createGitHubIssueWithTitleAndBody } from '../TestRun';
 import getMetrics from './getMetrics';
 import { getTestPlanTargetTitle, getTestPlanVersionTitle } from './getTitles';
+import { Breadcrumb, Button, Container, Table } from 'react-bootstrap';
+import { LinkContainer } from 'react-router-bootstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+    faExclamationCircle,
+    faExternalLinkAlt,
+    faHome
+} from '@fortawesome/free-solid-svg-icons';
 
 const getAssertionResultString = assertionResult => {
     let output = 'Good output';
@@ -18,11 +27,42 @@ const getAssertionResultString = assertionResult => {
 const SummarizeTestPlanReport = ({ testPlanReport }) => {
     const { testPlanVersion, testPlanTarget } = testPlanReport;
     return (
-        <Fragment>
+        <Container as="main">
+            <Helmet>
+                <title>
+                    {getTestPlanTargetTitle(testPlanTarget)}&nbsp;for&nbsp;
+                    {getTestPlanVersionTitle(testPlanVersion)} | ARIA-AT Reports
+                </title>
+            </Helmet>
             <h1>
                 {getTestPlanVersionTitle(testPlanVersion)}&nbsp;with&nbsp;
                 {getTestPlanTargetTitle(testPlanTarget)}
             </h1>
+            <Breadcrumb>
+                <LinkContainer to="/reports">
+                    <Breadcrumb.Item>
+                        <FontAwesomeIcon icon={faHome} />
+                        Summary
+                    </Breadcrumb.Item>
+                </LinkContainer>
+                <LinkContainer to={`/reports/${testPlanVersion.id}`}>
+                    <Breadcrumb.Item>
+                        {getTestPlanVersionTitle(testPlanVersion)}
+                    </Breadcrumb.Item>
+                </LinkContainer>
+                <Breadcrumb.Item active>
+                    {getTestPlanTargetTitle(testPlanTarget)}
+                </Breadcrumb.Item>
+            </Breadcrumb>
+            <h2>Introduction</h2>
+            <p>
+                This page shows detailed results for each test, including
+                individual commands that the tester entered into the AT, the
+                output which was captured from the AT in response, and whether
+                that output was deemed passing or failing for each of the
+                assertions. The open test button next to each test allows you to
+                preview the test in your browser.
+            </p>
             {testPlanReport.finalizedTestResults.map(testResult => {
                 const test = testResult.test;
 
@@ -35,24 +75,38 @@ const SummarizeTestPlanReport = ({ testPlanReport }) => {
                 );
 
                 return (
-                    <div key={testResult.id} id={`result-${testResult.id}`}>
-                        <h2>Details for test: {test.title}</h2>
-                        <a
-                            href={gitHubIssueLinkWithTitleAndBody}
-                            target="_blank"
-                            rel="noreferrer"
-                        >
-                            Raise an Issue
-                        </a>
-                        <br />
-                        <a
-                            href={test.renderedUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                        >
-                            Open Test
-                        </a>
-                        <table>
+                    <Fragment key={testResult.id}>
+                        <div className="test-result-heading">
+                            <h2 id={`result-${testResult.id}`}>
+                                <span className="test-details">
+                                    Details for test:
+                                </span>
+                                {test.title}
+                            </h2>
+                            <div className="test-result-buttons">
+                                <Button
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    href={gitHubIssueLinkWithTitleAndBody}
+                                    variant="secondary"
+                                >
+                                    <FontAwesomeIcon
+                                        icon={faExclamationCircle}
+                                    />
+                                    Raise an Issue
+                                </Button>
+                                <Button
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    href={test.renderedUrl}
+                                    variant="secondary"
+                                >
+                                    <FontAwesomeIcon icon={faExternalLinkAlt} />
+                                    Open Test
+                                </Button>
+                            </div>
+                        </div>
+                        <Table bordered hover>
                             <thead>
                                 <tr>
                                     <th>Command</th>
@@ -172,11 +226,11 @@ const SummarizeTestPlanReport = ({ testPlanReport }) => {
                                     }
                                 )}
                             </tbody>
-                        </table>
-                    </div>
+                        </Table>
+                    </Fragment>
                 );
             })}
-        </Fragment>
+        </Container>
     );
 };
 

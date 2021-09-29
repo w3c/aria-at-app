@@ -58,9 +58,9 @@ const App = ({ auth, dispatch }) => {
                                 <Nav.Link
                                     as={Link}
                                     to="/reports"
-                                    aria-current={
-                                        location.pathname === '/reports'
-                                    }
+                                    aria-current={location.pathname.startsWith(
+                                        '/reports'
+                                    )}
                                 >
                                     Test Reports
                                 </Nav.Link>
@@ -79,9 +79,9 @@ const App = ({ auth, dispatch }) => {
                                 <Nav.Link
                                     as={Link}
                                     to="/reports"
-                                    aria-current={
-                                        location.pathname === '/reports'
-                                    }
+                                    aria-current={location.pathname.startsWith(
+                                        '/reports'
+                                    )}
                                 >
                                     Test Reports
                                 </Nav.Link>

@@ -5,17 +5,37 @@ import { differenceBy } from 'lodash';
 import { HashLink } from 'react-router-hash-link';
 import getMetrics from './getMetrics';
 import { getTestPlanTargetTitle, getTestPlanVersionTitle } from './getTitles';
+import { Breadcrumb, Container, Table } from 'react-bootstrap';
+import { LinkContainer } from 'react-router-bootstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHome } from '@fortawesome/free-solid-svg-icons';
 
 const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
     const { exampleUrl, designPatternUrl } = testPlanVersion.metadata;
     return (
-        <Fragment>
+        <Container as="main">
             <Helmet>
                 <title>
-                    ARIA-AT Reports {getTestPlanVersionTitle(testPlanVersion)}
+                    {getTestPlanVersionTitle(testPlanVersion)} | ARIA-AT Reports
                 </title>
             </Helmet>
             <h1>{getTestPlanVersionTitle(testPlanVersion)}</h1>
+            <Breadcrumb>
+                <LinkContainer to="/reports">
+                    <Breadcrumb.Item>
+                        <FontAwesomeIcon icon={faHome} />
+                        Summary
+                    </Breadcrumb.Item>
+                </LinkContainer>
+                <Breadcrumb.Item active>
+                    {getTestPlanVersionTitle(testPlanVersion)}
+                </Breadcrumb.Item>
+            </Breadcrumb>
+            <h2>Introduction</h2>
+            <p>
+                This page summarizes the test results for each AT which executed
+                the Test Plan.
+            </p>
             <h2>Metadata</h2>
             <ul>
                 {exampleUrl ? (
@@ -52,7 +72,11 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
                 return (
                     <Fragment key={testPlanReport.id}>
                         <h2>{getTestPlanTargetTitle(testPlanTarget)}</h2>
-                        <table>
+                        <Table
+                            bordered
+                            hover
+                            aria-label={getTestPlanTargetTitle(testPlanTarget)}
+                        >
                             <thead>
                                 <tr>
                                     <th>Test Name</th>
@@ -106,11 +130,17 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
                                     </td>
                                 </tr>
                             </tbody>
-                        </table>
+                        </Table>
                         {skippedTests.length ? (
                             <Fragment>
-                                <h3>Skipped Tests</h3>
-                                <ol>
+                                <div className="skipped-tests-heading">
+                                    <h3>Skipped Tests</h3>
+                                    <p>
+                                        The following tests have been skipped in
+                                        this test run:
+                                    </p>
+                                </div>
+                                <ol className="skipped-tests">
                                     {skippedTests.map(test => (
                                         <li key={test.id}>
                                             <a href={test.renderedUrl}>
@@ -124,7 +154,7 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
                     </Fragment>
                 );
             })}
-        </Fragment>
+        </Container>
     );
 };
 

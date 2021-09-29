@@ -55,7 +55,7 @@ const createGitHubIssueWithTitleAndBody = ({
     const shortenedUrl = test.renderedUrl.match(/[^/]+$/)[0];
 
     let body =
-        `### Test File at exact Commit\n\n` +
+        `### Test File at Exact Commit\n\n` +
         `[${shortenedUrl}](https://aria-at.w3.org${test.renderedUrl})\n\n` +
         `### AT\n\n` +
         `${at.name} (version ${testPlanTarget.atVersion})\n\n` +
