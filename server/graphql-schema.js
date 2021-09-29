@@ -919,7 +919,7 @@ const graphqlSchema = gql`
         """
         Permanently deletes the TestResult.
         """
-        deleteTestResult(input: TestResultInput!): PopulatedData!
+        deleteTestResult: PopulatedData!
     }
 
     """

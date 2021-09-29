@@ -16,9 +16,10 @@ import { capitalizeEachWord } from '../../utils/formatter';
 import './TestQueueRun.css';
 import {
     ASSIGN_TESTER_MUTATION,
+    UPDATE_TEST_PLAN_REPORT_MUTATION,
+    REMOVE_TEST_PLAN_REPORT_MUTATION,
     REMOVE_TESTER_MUTATION,
-    REMOVE_TESTER_RESULTS_MUTATION,
-    UPDATE_TEST_PLAN_REPORT_MUTATION
+    REMOVE_TESTER_RESULTS_MUTATION
 } from '../TestQueue/queries';
 
 const TestQueueRow = ({
@@ -33,11 +34,14 @@ const TestQueueRow = ({
     const [alertMessage, setAlertMessage] = useState('');
 
     const [assignTester] = useMutation(ASSIGN_TESTER_MUTATION);
-    const [removeTester] = useMutation(REMOVE_TESTER_MUTATION);
-    const [removeTesterResults] = useMutation(REMOVE_TESTER_RESULTS_MUTATION);
     const [updateTestPlanReportStatus] = useMutation(
         UPDATE_TEST_PLAN_REPORT_MUTATION
     );
+    const [removeTestPlanReport] = useMutation(
+        REMOVE_TEST_PLAN_REPORT_MUTATION
+    );
+    const [removeTester] = useMutation(REMOVE_TESTER_MUTATION);
+    const [removeTesterResults] = useMutation(REMOVE_TESTER_RESULTS_MUTATION);
 
     const { isAdmin, username } = user;
     const {
@@ -93,20 +97,18 @@ const TestQueueRow = ({
     };
 
     const handleRemoveTestPlanReport = async () => {
-        await updateReportStatus('REMOVED');
-
-        // force data after assignment changes
+        await removeTestPlanReport({
+            variables: {
+                testReportId: testPlanReport.id
+            }
+        });
         await triggerTestPlanReportUpdate();
     };
 
-    const handleRemoveTesterResults = async tester => {
-        const { id: testReportId } = testPlanReport;
-        const { id: testerId } = tester;
-
+    const handleRemoveTesterResults = async testPlanRunId => {
         await removeTesterResults({
             variables: {
-                testReportId,
-                testerId
+                testPlanRunId
             }
         });
 
@@ -230,7 +232,7 @@ const TestQueueRow = ({
                             Delete for...
                         </Dropdown.Toggle>
                         <Dropdown.Menu role="menu">
-                            {testPlanRunsWithResults.map(({ tester }) => {
+                            {testPlanRunsWithResults.map(({ id, tester }) => {
                                 return (
                                     <Dropdown.Item
                                         role="menuitem"
@@ -243,7 +245,7 @@ const TestQueueRow = ({
                                                 tester.username,
                                                 async () =>
                                                     await handleRemoveTesterResults(
-                                                        tester
+                                                        id
                                                     )
                                             );
                                         }}
@@ -449,9 +451,7 @@ const TestQueueRow = ({
                                     testPlanReport.id,
                                     evaluateTestRunTitle(),
                                     async () =>
-                                        await handleRemoveTestPlanReport(
-                                            testPlanReport
-                                        )
+                                        await handleRemoveTestPlanReport()
                                 );
                             }}
                         >

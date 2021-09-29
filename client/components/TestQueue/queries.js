@@ -144,6 +144,29 @@ export const ASSIGN_TESTER_MUTATION = gql`
     }
 `;
 
+export const UPDATE_TEST_PLAN_REPORT_MUTATION = gql`
+    mutation UpdateTestPlanReportStatus(
+        $testReportId: ID!
+        $status: TestPlanReportStatus!
+    ) {
+        testPlanReport(id: $testReportId) {
+            updateStatus(status: $status) {
+                testPlanReport {
+                    status
+                }
+            }
+        }
+    }
+`;
+
+export const REMOVE_TEST_PLAN_REPORT_MUTATION = gql`
+    mutation RemoveTestPlanReport($testReportId: ID!) {
+        testPlanReport(id: $testReportId) {
+            deleteTestPlanReport
+        }
+    }
+`;
+
 export const REMOVE_TESTER_MUTATION = gql`
     mutation RemoveTester($testReportId: ID!, $testerId: ID!) {
         testPlanReport(id: $testReportId) {
@@ -162,32 +185,10 @@ export const REMOVE_TESTER_MUTATION = gql`
 `;
 
 export const REMOVE_TESTER_RESULTS_MUTATION = gql`
-    mutation RemoveTester($testReportId: ID!, $testerId: ID!) {
-        testPlanReport(id: $testReportId) {
-            deleteTestPlanRunResults(userId: $testerId) {
-                testPlanReport {
-                    draftTestPlanRuns {
-                        tester {
-                            id
-                            username
-                        }
-                    }
-                }
-            }
-        }
-    }
-`;
-
-export const UPDATE_TEST_PLAN_REPORT_MUTATION = gql`
-    mutation UpdateTestPlanReportStatus(
-        $testReportId: ID!
-        $status: TestPlanReportStatus!
-    ) {
-        testPlanReport(id: $testReportId) {
-            updateStatus(status: $status) {
-                testPlanReport {
-                    status
-                }
+    mutation RemoveTesterResult($testPlanRunId: ID!) {
+        testPlanRun(id: $testPlanRunId) {
+            deleteTestResults {
+                locationOfData
             }
         }
     }
