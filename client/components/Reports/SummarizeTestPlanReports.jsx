@@ -4,12 +4,32 @@ import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Breadcrumb, Container, Table } from 'react-bootstrap';
+import styled from '@emotion/styled';
 import { faHome } from '@fortawesome/free-solid-svg-icons';
 import alphabetizeObjectBy from '../../utils/alphabetizeObjectBy';
 import getMetrics from './getMetrics';
 import { getTestPlanTargetTitle, getTestPlanVersionTitle } from './getTitles';
 
+const FullHeightContainer = styled(Container)`
+    min-height: calc(100vh - 64px);
+`;
+
 const SummarizeTestPlanReports = ({ testPlanReports }) => {
+    if (!testPlanReports.length) {
+        return (
+            <FullHeightContainer as="main">
+                <Helmet>
+                    <title>ARIA-AT Test Reports</title>
+                </Helmet>
+                <h1>Test Reports</h1>
+                <p>
+                    There are no results to show just yet. Please check back
+                    soon!
+                </p>
+            </FullHeightContainer>
+        );
+    }
+
     const testPlanReportsById = {};
     let testPlanTargetsById = {};
     let testPlanVersionsById = {};
@@ -39,15 +59,15 @@ const SummarizeTestPlanReports = ({ testPlanReports }) => {
     });
 
     return (
-        <Container as="main">
+        <FullHeightContainer as="main">
             <Helmet>
                 <title>ARIA-AT Test Reports</title>
             </Helmet>
-            <h1>Summary</h1>
+            <h1>Test Reports</h1>
             <Breadcrumb>
                 <Breadcrumb.Item active>
                     <FontAwesomeIcon icon={faHome} />
-                    Summary
+                    Reports
                 </Breadcrumb.Item>
             </Breadcrumb>
             <h2>Introduction</h2>
@@ -61,7 +81,7 @@ const SummarizeTestPlanReports = ({ testPlanReports }) => {
                 The percentage of assertions which passed when each Test Plan
                 was executed by a given Assistive Technology.
             </p>
-            <Table bordered hover aria-label="Support Levels">
+            <Table bordered responsive aria-label="Support Levels">
                 <thead>
                     <tr>
                         <th>Test Plan</th>
@@ -129,7 +149,7 @@ const SummarizeTestPlanReports = ({ testPlanReports }) => {
                     )}
                 </tbody>
             </Table>
-        </Container>
+        </FullHeightContainer>
     );
 };
 

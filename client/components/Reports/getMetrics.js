@@ -1,3 +1,13 @@
+import React from 'react';
+import styled from '@emotion/styled';
+
+const StyledNone = styled.span`
+    font-style: italic;
+    color: #959595;
+`;
+
+const none = <StyledNone>None</StyledNone>;
+
 const sum = arr => arr.reduce((total, item) => total + item, 0);
 
 const countAssertions = ({
@@ -77,13 +87,13 @@ const getMetrics = ({
     const requiredFormatted = `${requiredAssertionsPassedCount} of ${requiredAssertionsCount} passed`;
     const optionalFormatted =
         optionalAssertionsCount === 0
-            ? 'None'
+            ? none
             : `${optionalAssertionsPassedCount} of ${optionalAssertionsCount} passed`;
 
     const unexpectedBehaviorCount = countUnexpectedBehaviors({ ...result });
     const unexpectedBehaviorsFormatted =
         unexpectedBehaviorCount === 0
-            ? 'None'
+            ? none
             : `${unexpectedBehaviorCount} found`;
 
     let supportLevel;

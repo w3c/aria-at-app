@@ -1,11 +1,6 @@
-import React from 'react';
 import PropTypes from 'prop-types';
-import { useEffect, useRef } from 'react';
+import { useLayoutEffect } from 'react';
 import { useLocation } from 'react-router';
-
-const scrollTop = () => {
-    window.scroll(0, 0);
-};
 
 /**
  * Fixes scroll issues inherent in single page apps such as jumping the scroll
@@ -15,17 +10,22 @@ const scrollTop = () => {
  */
 const ScrollFixer = ({ children }) => {
     const location = useLocation();
-    const wrapperRef = useRef();
 
-    useEffect(() => {
+    useLayoutEffect(() => {
+        const scrollTop = () => {
+            window.scroll(0, 0);
+            // When switching pages, the focus should jump to the top. Otherwise
+            // screen readers' focus might be lingering partly down the page.
+            document.querySelector('a').focus();
+        };
         if (!location.hash) return scrollTop();
-        const element = wrapperRef.current.querySelector(location.hash);
+        const element = document.querySelector(location.hash);
         if (!element) return scrollTop();
         element.scrollIntoView();
         element.focus();
     }, [location]);
 
-    return <div ref={wrapperRef}>{children}</div>;
+    return children;
 };
 
 ScrollFixer.propTypes = {

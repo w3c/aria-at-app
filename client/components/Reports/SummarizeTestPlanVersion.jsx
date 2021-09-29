@@ -24,7 +24,7 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
                 <LinkContainer to="/reports">
                     <Breadcrumb.Item>
                         <FontAwesomeIcon icon={faHome} />
-                        Summary
+                        Reports
                     </Breadcrumb.Item>
                 </LinkContainer>
                 <Breadcrumb.Item active>
@@ -85,7 +85,7 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
                         <Table
                             className="mt-3"
                             bordered
-                            hover
+                            responsive
                             aria-label={
                                 `Results for ` +
                                 `${getTestPlanTargetTitle(testPlanTarget)}`

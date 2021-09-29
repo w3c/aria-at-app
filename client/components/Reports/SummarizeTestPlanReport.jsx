@@ -42,7 +42,7 @@ const SummarizeTestPlanReport = ({ testPlanReport }) => {
                 <LinkContainer to="/reports">
                     <Breadcrumb.Item>
                         <FontAwesomeIcon icon={faHome} />
-                        Summary
+                        Reports
                     </Breadcrumb.Item>
                 </LinkContainer>
                 <LinkContainer to={`/reports/${testPlanVersion.id}`}>
@@ -108,7 +108,7 @@ const SummarizeTestPlanReport = ({ testPlanReport }) => {
                         </div>
                         <Table
                             bordered
-                            hover
+                            responsive
                             aria-label={`Results for test ${test.title}`}
                         >
                             <thead>
