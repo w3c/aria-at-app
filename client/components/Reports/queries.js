@@ -39,6 +39,7 @@ export const REPORTS_PAGE_QUERY = gql`
                     renderedUrl
                 }
                 scenarioResults {
+                    id
                     scenario {
                         command {
                             id
@@ -47,6 +48,7 @@ export const REPORTS_PAGE_QUERY = gql`
                     }
                     output
                     assertionResults {
+                        id
                         assertion {
                             text
                         }

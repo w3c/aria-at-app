@@ -261,13 +261,15 @@ SummarizeTestPlanReport.propTypes = {
                                 assertion: PropTypes.shape({
                                     text: PropTypes.string.isRequired
                                 }).isRequired
-                            })
-                        ),
-                        unexpectedBehaviors: PropTypes.arrayOf({
-                            id: PropTypes.string.isRequired,
-                            text: PropTypes.string.isRequired,
-                            otherUnexpectedBehaviorText: PropTypes.string
-                        }).isRequired
+                            }).isRequired
+                        ).isRequired,
+                        unexpectedBehaviors: PropTypes.arrayOf(
+                            PropTypes.shape({
+                                id: PropTypes.string.isRequired,
+                                text: PropTypes.string.isRequired,
+                                otherUnexpectedBehaviorText: PropTypes.string
+                            }).isRequired
+                        ).isRequired
                     }).isRequired
                 ).isRequired
             }).isRequired
