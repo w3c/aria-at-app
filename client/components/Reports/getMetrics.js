@@ -3,7 +3,7 @@ import styled from '@emotion/styled';
 
 const StyledNone = styled.span`
     font-style: italic;
-    color: #959595;
+    color: #727272;
 `;
 
 const none = <StyledNone>None</StyledNone>;
