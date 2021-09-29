@@ -74,15 +74,17 @@ const getMetrics = ({
     const optionalAssertionsFailedCount =
         optionalAssertionsCount - optionalAssertionsPassedCount;
 
-    const requiredFormatted = `${requiredAssertionsPassedCount} / ${requiredAssertionsCount}`;
+    const requiredFormatted = `${requiredAssertionsPassedCount} of ${requiredAssertionsCount} passed`;
     const optionalFormatted =
         optionalAssertionsCount === 0
             ? 'None'
-            : `${optionalAssertionsPassedCount} / ${optionalAssertionsCount}`;
+            : `${optionalAssertionsPassedCount} of ${optionalAssertionsCount} passed`;
 
     const unexpectedBehaviorCount = countUnexpectedBehaviors({ ...result });
     const unexpectedBehaviorsFormatted =
-        unexpectedBehaviorCount === 0 ? 'None' : unexpectedBehaviorCount;
+        unexpectedBehaviorCount === 0
+            ? 'None'
+            : `${unexpectedBehaviorCount} found`;
 
     let supportLevel;
     if (unexpectedBehaviorCount > 0 || requiredAssertionsFailedCount > 0) {

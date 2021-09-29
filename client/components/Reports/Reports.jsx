@@ -6,65 +6,72 @@ import SummarizeTestPlanVersion from './SummarizeTestPlanVersion';
 import SummarizeTestPlanReport from './SummarizeTestPlanReport';
 import { Redirect, Route, Switch } from 'react-router';
 import './Reports.css';
+import ScrollFixer from '../../utils/ScrollFixer';
 
 const Reports = () => {
     const { data } = useQuery(REPORTS_PAGE_QUERY);
     if (!data) return null;
 
     return (
-        <Switch>
-            <Route
-                exact
-                path="/reports"
-                render={() => (
-                    <SummarizeTestPlanReports
-                        testPlanReports={data.testPlanReports}
-                    />
-                )}
-            />
-            <Route
-                exact
-                path="/reports/:testPlanVersionId"
-                render={({ match: { params } }) => {
-                    const { testPlanVersionId } = params;
-
-                    const testPlanReports = data.testPlanReports.filter(
-                        each => each.testPlanVersion.id === testPlanVersionId
-                    );
-
-                    if (!testPlanReports.length) return <Redirect to="/404" />;
-
-                    return (
-                        <SummarizeTestPlanVersion
-                            testPlanVersion={testPlanReports[0].testPlanVersion}
-                            testPlanReports={testPlanReports}
+        <ScrollFixer>
+            <Switch>
+                <Route
+                    exact
+                    path="/reports"
+                    render={() => (
+                        <SummarizeTestPlanReports
+                            testPlanReports={data.testPlanReports}
                         />
-                    );
-                }}
-            />
-            <Route
-                exact
-                path="/reports/:testPlanVersionId/targets/:testPlanReportId"
-                render={({ match: { params } }) => {
-                    const { testPlanVersionId, testPlanReportId } = params;
+                    )}
+                />
+                <Route
+                    exact
+                    path="/reports/:testPlanVersionId"
+                    render={({ match: { params } }) => {
+                        const { testPlanVersionId } = params;
 
-                    const testPlanReport = data.testPlanReports.find(
-                        each =>
-                            each.testPlanVersion.id === testPlanVersionId &&
-                            each.id == testPlanReportId
-                    );
+                        const testPlanReports = data.testPlanReports.filter(
+                            each =>
+                                each.testPlanVersion.id === testPlanVersionId
+                        );
 
-                    if (!testPlanReport) return <Redirect to="/404" />;
+                        if (!testPlanReports.length)
+                            return <Redirect to="/404" />;
 
-                    return (
-                        <SummarizeTestPlanReport
-                            testPlanReport={testPlanReport}
-                        />
-                    );
-                }}
-            />
-            <Redirect to="/404" />
-        </Switch>
+                        return (
+                            <SummarizeTestPlanVersion
+                                testPlanVersion={
+                                    testPlanReports[0].testPlanVersion
+                                }
+                                testPlanReports={testPlanReports}
+                            />
+                        );
+                    }}
+                />
+                <Route
+                    exact
+                    path="/reports/:testPlanVersionId/targets/:testPlanReportId"
+                    render={({ match: { params } }) => {
+                        const { testPlanVersionId, testPlanReportId } = params;
+
+                        const testPlanReport = data.testPlanReports.find(
+                            each =>
+                                each.testPlanVersion.id === testPlanVersionId &&
+                                each.id == testPlanReportId
+                        );
+
+                        if (!testPlanReport) return <Redirect to="/404" />;
+
+                        return (
+                            <SummarizeTestPlanReport
+                                testPlanReport={testPlanReport}
+                            />
+                        );
+                    }}
+                />
+                <Redirect to="/404" />
+            </Switch>
+        </ScrollFixer>
     );
 };
 

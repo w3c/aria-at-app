@@ -77,7 +77,7 @@ const SummarizeTestPlanReport = ({ testPlanReport }) => {
                 return (
                     <Fragment key={testResult.id}>
                         <div className="test-result-heading">
-                            <h2 id={`result-${testResult.id}`}>
+                            <h2 id={`result-${testResult.id}`} tabIndex="-1">
                                 <span className="test-details">
                                     Details for test:
                                 </span>
@@ -106,7 +106,11 @@ const SummarizeTestPlanReport = ({ testPlanReport }) => {
                                 </Button>
                             </div>
                         </div>
-                        <Table bordered hover>
+                        <Table
+                            bordered
+                            hover
+                            aria-label={`Results for test ${test.title}`}
+                        >
                             <thead>
                                 <tr>
                                     <th>Command</th>

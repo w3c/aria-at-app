@@ -2,11 +2,11 @@ import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
 import { differenceBy } from 'lodash';
-import { HashLink } from 'react-router-hash-link';
 import getMetrics from './getMetrics';
 import { getTestPlanTargetTitle, getTestPlanVersionTitle } from './getTitles';
-import { Breadcrumb, Container, Table } from 'react-bootstrap';
+import { Breadcrumb, Button, Container, Table } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
+import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome } from '@fortawesome/free-solid-svg-icons';
 
@@ -72,10 +72,24 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
                 return (
                     <Fragment key={testPlanReport.id}>
                         <h2>{getTestPlanTargetTitle(testPlanTarget)}</h2>
+                        <LinkContainer
+                            to={
+                                `/reports/${testPlanVersion.id}` +
+                                `/targets/${testPlanReport.id}`
+                            }
+                        >
+                            <Button variant="secondary">
+                                View Complete Results
+                            </Button>
+                        </LinkContainer>
                         <Table
+                            className="mt-3"
                             bordered
                             hover
-                            aria-label={getTestPlanTargetTitle(testPlanTarget)}
+                            aria-label={
+                                `Results for ` +
+                                `${getTestPlanTargetTitle(testPlanTarget)}`
+                            }
                         >
                             <thead>
                                 <tr>
@@ -98,7 +112,7 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
                                         return (
                                             <tr key={testResult.id}>
                                                 <td>
-                                                    <HashLink
+                                                    <Link
                                                         to={
                                                             `/reports/${testPlanVersion.id}` +
                                                             `/targets/${testPlanReport.id}` +
@@ -106,7 +120,7 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
                                                         }
                                                     >
                                                         {testResult.test.title}
-                                                    </HashLink>
+                                                    </Link>
                                                 </td>
                                                 <td>{requiredFormatted}</td>
                                                 <td>{optionalFormatted}</td>
