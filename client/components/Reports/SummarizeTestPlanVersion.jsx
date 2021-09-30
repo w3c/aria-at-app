@@ -9,11 +9,16 @@ import { LinkContainer } from 'react-router-bootstrap';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome } from '@fortawesome/free-solid-svg-icons';
+import styled from '@emotion/styled';
+
+const FullHeightContainer = styled(Container)`
+    min-height: calc(100vh - 64px);
+`;
 
 const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
     const { exampleUrl, designPatternUrl } = testPlanVersion.metadata;
     return (
-        <Container as="main">
+        <FullHeightContainer as="main">
             <Helmet>
                 <title>
                     {getTestPlanVersionTitle(testPlanVersion)} | ARIA-AT Reports
@@ -24,7 +29,7 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
                 <LinkContainer to="/reports">
                     <Breadcrumb.Item>
                         <FontAwesomeIcon icon={faHome} />
-                        Reports
+                        Test Reports
                     </Breadcrumb.Item>
                 </LinkContainer>
                 <Breadcrumb.Item active>
@@ -78,10 +83,21 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
                                 `/targets/${testPlanReport.id}`
                             }
                         >
-                            <Button variant="secondary">
+                            <Button variant="secondary" className="mr-3">
                                 View Complete Results
                             </Button>
                         </LinkContainer>
+                        {skippedTests.length ? (
+                            <Link
+                                to={
+                                    `/reports/${testPlanVersion.id}` +
+                                    `/targets/${testPlanReport.id}` +
+                                    `#skipped-tests`
+                                }
+                            >
+                                {skippedTests.length} Tests Were Skipped
+                            </Link>
+                        ) : null}
                         <Table
                             className="mt-3"
                             bordered
@@ -145,30 +161,10 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
                                 </tr>
                             </tbody>
                         </Table>
-                        {skippedTests.length ? (
-                            <Fragment>
-                                <div className="skipped-tests-heading">
-                                    <h3>Skipped Tests</h3>
-                                    <p>
-                                        The following tests have been skipped in
-                                        this test run:
-                                    </p>
-                                </div>
-                                <ol className="skipped-tests">
-                                    {skippedTests.map(test => (
-                                        <li key={test.id}>
-                                            <a href={test.renderedUrl}>
-                                                {test.title}
-                                            </a>
-                                        </li>
-                                    ))}
-                                </ol>
-                            </Fragment>
-                        ) : null}
                     </Fragment>
                 );
             })}
-        </Container>
+        </FullHeightContainer>
     );
 };
 

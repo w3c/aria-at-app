@@ -12,6 +12,7 @@ import {
     faExternalLinkAlt,
     faHome
 } from '@fortawesome/free-solid-svg-icons';
+import { differenceBy } from 'lodash';
 
 const getAssertionResultString = assertionResult => {
     let output = 'Good output';
@@ -26,6 +27,13 @@ const getAssertionResultString = assertionResult => {
 
 const SummarizeTestPlanReport = ({ testPlanReport }) => {
     const { testPlanVersion, testPlanTarget } = testPlanReport;
+
+    const skippedTests = differenceBy(
+        testPlanReport.runnableTests,
+        testPlanReport.finalizedTestResults,
+        testOrTestResult => testOrTestResult.test?.id ?? testOrTestResult.id
+    );
+
     return (
         <Container as="main">
             <Helmet>
@@ -42,7 +50,7 @@ const SummarizeTestPlanReport = ({ testPlanReport }) => {
                 <LinkContainer to="/reports">
                     <Breadcrumb.Item>
                         <FontAwesomeIcon icon={faHome} />
-                        Reports
+                        Test Reports
                     </Breadcrumb.Item>
                 </LinkContainer>
                 <LinkContainer to={`/reports/${testPlanVersion.id}`}>
@@ -230,6 +238,26 @@ const SummarizeTestPlanReport = ({ testPlanReport }) => {
                     </Fragment>
                 );
             })}
+            {skippedTests.length ? (
+                <Fragment>
+                    <div className="skipped-tests-heading">
+                        <h3 id="skipped-tests" tabIndex="-1">
+                            Skipped Tests
+                        </h3>
+                        <p>
+                            The following tests have been skipped in this test
+                            run:
+                        </p>
+                    </div>
+                    <ol className="skipped-tests">
+                        {skippedTests.map(test => (
+                            <li key={test.id}>
+                                <a href={test.renderedUrl}>{test.title}</a>
+                            </li>
+                        ))}
+                    </ol>
+                </Fragment>
+            ) : null}
         </Container>
     );
 };
@@ -238,6 +266,8 @@ SummarizeTestPlanReport.propTypes = {
     testPlanReport: PropTypes.shape({
         testPlanVersion: PropTypes.object.isRequired,
         testPlanTarget: PropTypes.object.isRequired,
+        runnableTests: PropTypes.arrayOf(PropTypes.object.isRequired)
+            .isRequired,
         finalizedTestResults: PropTypes.arrayOf(
             PropTypes.shape({
                 id: PropTypes.string.isRequired,

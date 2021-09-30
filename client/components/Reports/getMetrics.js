@@ -125,4 +125,5 @@ const getMetrics = ({
     };
 };
 
+export { none };
 export default getMetrics;

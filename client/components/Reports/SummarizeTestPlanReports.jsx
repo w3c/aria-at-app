@@ -7,7 +7,7 @@ import { Breadcrumb, Container, Table } from 'react-bootstrap';
 import styled from '@emotion/styled';
 import { faHome } from '@fortawesome/free-solid-svg-icons';
 import alphabetizeObjectBy from '../../utils/alphabetizeObjectBy';
-import getMetrics from './getMetrics';
+import getMetrics, { none } from './getMetrics';
 import { getTestPlanTargetTitle, getTestPlanVersionTitle } from './getTitles';
 
 const FullHeightContainer = styled(Container)`
@@ -67,7 +67,7 @@ const SummarizeTestPlanReports = ({ testPlanReports }) => {
             <Breadcrumb>
                 <Breadcrumb.Item active>
                     <FontAwesomeIcon icon={faHome} />
-                    Reports
+                    Test Reports
                 </Breadcrumb.Item>
             </Breadcrumb>
             <h2>Introduction</h2>
@@ -114,6 +114,15 @@ const SummarizeTestPlanReports = ({ testPlanReports }) => {
                                                 tabularReports[
                                                     testPlanVersion.id
                                                 ][testPlanTarget.id];
+                                            if (!testPlanReport) {
+                                                return (
+                                                    <td
+                                                        key={`${testPlanVersion.id}-${testPlanTarget.id}`}
+                                                    >
+                                                        {none}
+                                                    </td>
+                                                );
+                                            }
                                             const metrics = getMetrics({
                                                 testPlanReport
                                             });
