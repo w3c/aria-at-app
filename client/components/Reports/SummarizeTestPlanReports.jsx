@@ -79,7 +79,7 @@ const SummarizeTestPlanReports = ({ testPlanReports }) => {
             <h2>Support Levels</h2>
             <p id="support-levels-table-description">
                 The percentage of assertions which passed when each Test Plan
-                was executed by a given Assistive Technology.
+                was executed by a given Assistive Technology and Browser.
             </p>
             <Table bordered responsive aria-label="Support Levels">
                 <thead>

@@ -1,13 +1,11 @@
 import React from 'react';
 import { Route, Redirect } from 'react-router-dom';
-
 import ConfigureActiveRuns from '@components/ConfigureActiveRuns';
 import ConfirmAuth from '@components/ConfirmAuth';
 import Home from '@components/Home';
 import InvalidRequest from '@components/InvalidRequest';
 import NotFound from '@components/NotFound';
 import Reports from '@components/Reports';
-import TestPlanReportPage from '@components/TestPlanReportPage';
 import SignupInstructions from '@components/SignupInstructions';
 import TestQueue from '@components/TestQueue';
 import TestRun from '@components/TestRun';
@@ -68,10 +66,7 @@ export default [
         }
     },
     {
-        path: '/reports/test-plans/:testPlanId(\\d+)',
-        component: TestPlanReportPage
-    },
-    {
+        // Note that this component includes a nested router!
         path: '/reports',
         component: Reports
     },
