@@ -10,10 +10,14 @@ const createTestResultResolver = async (
     { testId },
     { user }
 ) => {
-    const { testPlanRun, testPlanTarget } = await populateData({
+    const {
+        testPlanRun,
+        testPlanTarget,
+        testPlanVersion: testPlanRunTestPlanVersion
+    } = await populateData({
         testPlanRunId
     });
-    const { test } = await populateData({ testId });
+    const { test, testPlanVersion } = await populateData({ testId });
 
     if (
         !(
@@ -25,7 +29,10 @@ const createTestResultResolver = async (
         throw new AuthenticationError();
     }
 
-    if (!test.atIds.find(atId => atId === testPlanTarget.at.id)) {
+    if (
+        !test.atIds.find(atId => atId === testPlanTarget.at.id) ||
+        testPlanRunTestPlanVersion.id !== testPlanVersion.id
+    ) {
         throw new UserInputError(
             'The given test is not runnable as part of this TestPlanReport'
         );
