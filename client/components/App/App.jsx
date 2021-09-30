@@ -11,8 +11,9 @@ import { Link, useLocation } from 'react-router-dom';
 import { Container, Navbar, Nav } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
-import { ME_QUERY } from './queries';
+import ScrollFixer from '../../utils/ScrollFixer';
 import routes from '../../routes';
+import { ME_QUERY } from './queries';
 import useSigninUrl from './useSigninUrl';
 import './App.css';
 
@@ -37,7 +38,7 @@ const App = ({ auth, dispatch }) => {
         dispatch(signInAction(data.me));
 
     return (
-        <Fragment>
+        <ScrollFixer>
             <Container fluid>
                 <Navbar bg="light" expand="lg" aria-label="Main Menu">
                     <Navbar.Brand
@@ -133,7 +134,7 @@ const App = ({ auth, dispatch }) => {
             <Container fluid>
                 <div>{renderRoutes(routes)}</div>
             </Container>
-        </Fragment>
+        </ScrollFixer>
     );
 };
 
