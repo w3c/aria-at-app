@@ -6,7 +6,7 @@ const OptionButton = ({
     text,
     icon = null,
     disabled = false,
-    onClick = undefined,
+    onClick,
     children,
     ...restProps
 }) => {
