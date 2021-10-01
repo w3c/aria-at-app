@@ -35,6 +35,8 @@ const TestRun = ({ auth }) => {
     const history = useHistory();
     const routerQuery = useRouterQuery();
     const titleRef = useRef();
+
+    const pageReadyRef = useRef(false);
     const testRunStateRef = useRef();
     const testRunResultRef = useRef();
     const testRendererSubmitButtonRef = useRef();
@@ -44,7 +46,9 @@ const TestRun = ({ auth }) => {
     const { loading, data, error, refetch } = useQuery(TEST_RUN_PAGE_QUERY, {
         variables: { testPlanRunId }
     });
-    const [createTestResult] = useMutation(CREATE_TEST_RESULT_MUTATION);
+    const [createTestResult, { loading: createTestLoading }] = useMutation(
+        CREATE_TEST_RESULT_MUTATION
+    );
     const [saveTestResult] = useMutation(SAVE_TEST_RESULT_MUTATION);
     const [submitTestResult] = useMutation(SUBMIT_TEST_RESULT_MUTATION);
     const [deleteTestResult] = useMutation(DELETE_TEST_RESULT_MUTATION);
@@ -59,6 +63,7 @@ const TestRun = ({ auth }) => {
     );
 
     useEffect(() => {
+        pageReadyRef.current = false;
         testRunStateRef.current = null;
         testRunResultRef.current = null;
         setIsTestSubmitClicked(false);
@@ -78,7 +83,7 @@ const TestRun = ({ auth }) => {
         );
     }
 
-    if (!data || loading) {
+    if (!data || loading || createTestLoading) {
         return (
             <PageStatus
                 title="Loading - Test Results | ARIA-AT"
@@ -118,6 +123,17 @@ const TestRun = ({ auth }) => {
     }
 
     const toggleTestNavigator = () => setShowTestNavigator(!showTestNavigator);
+
+    const createTestResultForRenderer = async testId => {
+        await createTestResult({
+            variables: {
+                testPlanRunId,
+                testId
+            }
+        });
+        pageReadyRef.current = true;
+        await refetch();
+    };
 
     /**
      * Check to see if scenarioId and scenarioResultId
@@ -164,18 +180,9 @@ const TestRun = ({ auth }) => {
     const currentTest = tests[currentTestIndex];
     const hasTestsToRun = tests.length;
 
-    if (!currentTest.testResult) {
-        (async () => {
-            const { id: testId } = currentTest;
-            await createTestResult({
-                variables: {
-                    testPlanRunId,
-                    testId
-                }
-            });
-            await refetch();
-        })();
-    }
+    if (!currentTest.testResult && !pageReadyRef.current)
+        (async () => await createTestResultForRenderer(currentTest.id))();
+    else pageReadyRef.current = true;
 
     const navigateTests = (previous = false) => {
         // assume navigation forward if previous is false
@@ -522,16 +529,20 @@ const TestRun = ({ auth }) => {
                 <Row>
                     <Col className="test-iframe-container" md={9}>
                         <Row>
-                            <TestRenderer
-                                key={`TestRenderer__${currentTestIndex}`}
-                                at={testPlanTarget.at}
-                                testResult={currentTest.testResult}
-                                testPageUrl={testPlanVersion.testPageUrl}
-                                testRunStateRef={testRunStateRef}
-                                testRunResultRef={testRunResultRef}
-                                submitButtonRef={testRendererSubmitButtonRef}
-                                isSubmitted={isTestSubmitClicked}
-                            />
+                            {pageReadyRef.current && currentTest.testResult && (
+                                <TestRenderer
+                                    key={`TestRenderer__${currentTestIndex}`}
+                                    at={testPlanTarget.at}
+                                    testResult={currentTest.testResult}
+                                    testPageUrl={testPlanVersion.testPageUrl}
+                                    testRunStateRef={testRunStateRef}
+                                    testRunResultRef={testRunResultRef}
+                                    submitButtonRef={
+                                        testRendererSubmitButtonRef
+                                    }
+                                    isSubmitted={isTestSubmitClicked}
+                                />
+                            )}
                         </Row>
                         <Row>{primaryButtonGroup}</Row>
                     </Col>
