@@ -484,8 +484,9 @@ const graphqlSchema = gql`
         """
         Failure states like "AT became excessively sluggish" which would count
         as a failure for any scenario, even when the assertions otherwise pass.
+        Submitted test results require this field to be filled in.
         """
-        unexpectedBehaviors: [UnexpectedBehavior]!
+        unexpectedBehaviors: [UnexpectedBehavior]
     }
 
     """
@@ -507,7 +508,7 @@ const graphqlSchema = gql`
         """
         See ScenarioResult type for more information.
         """
-        unexpectedBehaviors: [UnexpectedBehaviorInput]!
+        unexpectedBehaviors: [UnexpectedBehaviorInput]
     }
 
     # TODO: figure out if this type can be removed and NO_OUTPUT can become an
@@ -887,11 +888,11 @@ const graphqlSchema = gql`
     """
     type TestPlanRunOperations {
         """
-        Creates a new TestResult which is populated with all the scenarioResults
-        and assertionResults to be filled out for the AT associated with the
-        TestPlanRun.
+        Creates a TestResult which is populated with all the ScenarioResults
+        and AssertionResults to be filled out for the AT associated with the
+        TestPlanRun, or returns the already existing TestResult.
         """
-        createTestResult(testId: ID!): PopulatedData!
+        findOrCreateTestResult(testId: ID!): PopulatedData!
         """
         Permanently deletes all test results without removing the TestPlanRun.
         Only available to admins.

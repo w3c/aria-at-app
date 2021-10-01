@@ -63,7 +63,7 @@ const prepopulateTestResult = async () => {
     const mutationResult = await mutate(gql`
         mutation {
             testPlanRun(id: "${testPlanRunId}") {
-                createTestResult(testId: "${testId}") {
+                findOrCreateTestResult(testId: "${testId}") {
                     testResult {
                         id
                         scenarioResults {
@@ -80,7 +80,8 @@ const prepopulateTestResult = async () => {
             }
         }
     `);
-    const testResult = mutationResult.testPlanRun.createTestResult.testResult;
+    const testResult =
+        mutationResult.testPlanRun.findOrCreateTestResult.testResult;
     testResultId = testResult.id;
     scenarioResultId = testResult.scenarioResults[0].id;
     assertionResultId1 = testResult.scenarioResults[0].assertionResults[0].id;
@@ -126,7 +127,7 @@ describe('testPlanRun', () => {
             const mutationResult = await mutate(gql`
                 mutation {
                     testPlanRun(id: "${testPlanRunId}") {
-                        createTestResult(testId: "${testId}") {
+                        findOrCreateTestResult(testId: "${testId}") {
                             testResult {
                                 id
                                 test {
@@ -137,7 +138,9 @@ describe('testPlanRun', () => {
                     }
                 }
             `);
-            const { testResult } = mutationResult.testPlanRun.createTestResult;
+            const {
+                testResult
+            } = mutationResult.testPlanRun.findOrCreateTestResult;
 
             expect(testResult.id).toBeTruthy();
             expect(testResult.test.id).toBe(testId);

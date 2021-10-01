@@ -1,7 +1,7 @@
-const createTestResult = require('./createTestResultResolver');
+const findOrCreateTestResult = require('./findOrCreateTestResultResolver');
 const deleteTestResults = require('./deleteTestResultsResolver');
 
 module.exports = {
-    createTestResult,
+    findOrCreateTestResult,
     deleteTestResults
 };
