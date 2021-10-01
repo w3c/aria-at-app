@@ -4,6 +4,7 @@ const {
     updateTestPlanReport
 } = require('../../models/services/TestPlanReportService');
 const conflictsResolver = require('../TestPlanReport/conflictsResolver');
+const finalizedTestResultsResolver = require('../TestPlanReport/finalizedTestResultsResolver');
 const populateData = require('../../services/PopulatedData/populateData');
 
 const updateStatusResolver = async (
@@ -17,9 +18,24 @@ const updateStatusResolver = async (
 
     const testPlanReport = await getTestPlanReportById(testPlanReportId);
 
-    const conflicts = await conflictsResolver(testPlanReport);
-    if (conflicts.length > 0) {
-        throw new Error('Cannot finalize test plan report due to conflicts');
+    if (status === 'FINALIZED') {
+        const conflicts = await conflictsResolver(testPlanReport);
+        if (conflicts.length > 0) {
+            throw new Error(
+                'Cannot finalize test plan report due to conflicts'
+            );
+        }
+
+        const finalizedTestResults = finalizedTestResultsResolver({
+            ...testPlanReport,
+            status: 'FINALIZED'
+        });
+        if (finalizedTestResults.length === 0) {
+            throw new Error(
+                'Cannot finalize test plan report because there are no ' +
+                    'completed test results'
+            );
+        }
     }
 
     await updateTestPlanReport(testPlanReportId, { status });
