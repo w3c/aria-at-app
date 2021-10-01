@@ -198,7 +198,20 @@ describe('test queue', () => {
 
     it('can be finalized', async () => {
         await dbCleaner(async () => {
-            const testPlanReportId = '1';
+            const testPlanReportId = '3';
+            // This report starts in a FINALIZED state. Let's set it to DRAFT.
+            await mutate(gql`
+                mutation {
+                    testPlanReport(id: ${testPlanReportId}) {
+                        updateStatus(status: DRAFT) {
+                            testPlanReport {
+                                status
+                            }
+                        }
+                    }
+                }
+            `);
+
             const previous = await query(gql`
                 query {
                     testPlanReport(id: ${testPlanReportId}) {

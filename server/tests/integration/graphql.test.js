@@ -444,7 +444,9 @@ describe('graphql', () => {
                         }
                         testPlanRun(id: 1) {
                             __typename
-                            createTestResult(testId: "Mjk0MeyIyIjoiMSJ9jQyOG") {
+                            findOrCreateTestResult(
+                                testId: "Mjk0MeyIyIjoiMSJ9jQyOG"
+                            ) {
                                 locationOfData
                             }
                         }

@@ -50,7 +50,7 @@ const saveTestResultCommon = async ({
     if (isCorrupted) {
         throw new UserInputError(
             'Data was received in an unexpected shape, it must match the ' +
-                'format provided by the createTestResult mutation.'
+                'format provided by the findOrCreateTestResult mutation.'
         );
     }
 
@@ -75,6 +75,7 @@ const saveTestResultCommon = async ({
 
 const assertTestResultIsValid = newTestResult => {
     let failed = false;
+
     const checkAssertionResult = assertionResult => {
         if (
             !(
@@ -99,9 +100,11 @@ const assertTestResultIsValid = newTestResult => {
     };
 
     const checkScenarioResult = scenarioResult => {
-        if (!scenarioResult.output) failed = true;
+        if (!scenarioResult.output || !scenarioResult.unexpectedBehaviors) {
+            failed = true;
+        }
         scenarioResult.assertionResults.forEach(checkAssertionResult);
-        scenarioResult.unexpectedBehaviors.forEach(checkUnexpectedBehavior);
+        scenarioResult.unexpectedBehaviors?.forEach(checkUnexpectedBehavior);
     };
 
     newTestResult.scenarioResults.forEach(checkScenarioResult);
