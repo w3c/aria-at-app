@@ -224,7 +224,7 @@ const throwFailedToLoadError = ({
     ].find(each => !!locationOfData[each]);
 
     const locationOfDataInfo =
-        `Using the IDs returned from the createTestResult mutation should ` +
+        `Using the IDs returned from the findOrCreateTestResult mutation should ` +
         `fix this error. For additional information see locationOfDataId.js.`;
 
     if (locationOfDataIdForTestPlanVersion) {

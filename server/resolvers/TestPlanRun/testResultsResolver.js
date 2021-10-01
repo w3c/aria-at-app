@@ -23,7 +23,7 @@ const testResultsResolver = testPlanRun => {
                         )
                     })
                 ),
-                unexpectedBehaviors: scenarioResult.unexpectedBehaviors.map(
+                unexpectedBehaviors: scenarioResult.unexpectedBehaviors?.map(
                     unexpectedBehavior => ({
                         ...unexpectedBehavior,
                         text: unexpectedBehaviorsJson.find(

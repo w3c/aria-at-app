@@ -5,7 +5,7 @@ const {
 const populateData = require('../../services/PopulatedData/populateData');
 const createTestResultSkeleton = require('./createTestResultSkeleton');
 
-const createTestResultResolver = async (
+const findOrCreateTestResultResolver = async (
     { parentContext: { id: testPlanRunId } },
     { testId },
     { user }
@@ -57,4 +57,4 @@ const createTestResultResolver = async (
     return populateData({ testResultId: newTestResult.id });
 };
 
-module.exports = createTestResultResolver;
+module.exports = findOrCreateTestResultResolver;

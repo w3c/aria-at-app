@@ -32,7 +32,7 @@ const createTestResultSkeleton = ({ test, testPlanRun, testPlanTarget }) => {
                             failedReason: null
                         };
                     }),
-                    unexpectedBehaviors: []
+                    unexpectedBehaviors: null
                 };
             })
     };
