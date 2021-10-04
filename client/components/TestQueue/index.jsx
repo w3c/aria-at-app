@@ -190,7 +190,7 @@ const TestQueue = ({ auth }) => {
     }
 
     if (!testPlanReports.length) {
-        const noTestPlansMessage = 'There are no Test Plans available';
+        const noTestPlansMessage = 'There are no test plans available';
         const settingsLink = <Link to="/account/settings">Settings</Link>;
 
         return (

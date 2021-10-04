@@ -462,23 +462,27 @@ const TestQueueRow = ({
                 <div className="secondary-actions">
                     {isAdmin && renderOpenAsDropdown()}
                     {isAdmin && renderDeleteMenu()}
-                    {(!isAdmin && currentUserTestPlanRun.testResults.length && (
-                        <Button
-                            variant="danger"
-                            onClick={() => {
-                                triggerDeleteResultsModal(
-                                    evaluateTestRunTitle(),
-                                    username,
-                                    async () =>
-                                        await handleRemoveTesterResults(user)
-                                );
-                            }}
-                            aria-label="Delete my results"
-                        >
-                            <FontAwesomeIcon icon={faTrashAlt} />
-                            Delete Results
-                        </Button>
-                    )) ||
+                    {(!isAdmin &&
+                        currentUserTestPlanRun.testResults &&
+                        currentUserTestPlanRun.testResults.length && (
+                            <Button
+                                variant="danger"
+                                onClick={() => {
+                                    triggerDeleteResultsModal(
+                                        evaluateTestRunTitle(),
+                                        username,
+                                        async () =>
+                                            await handleRemoveTesterResults(
+                                                user
+                                            )
+                                    );
+                                }}
+                                aria-label="Delete my results"
+                            >
+                                <FontAwesomeIcon icon={faTrashAlt} />
+                                Delete Results
+                            </Button>
+                        )) ||
                         null}
 
                     {alertMessage && (
