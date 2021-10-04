@@ -39,6 +39,9 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
                 id
                 title
                 gitSha
+                testPlan {
+                    directory
+                }
             }
             draftTestPlanRuns {
                 id
@@ -76,6 +79,9 @@ export const POPULATE_ADD_TEST_PLAN_TO_QUEUE_MODAL_QUERY = gql`
                 id
                 title
                 gitSha
+                testPlan {
+                    directory
+                }
             }
         }
     }
