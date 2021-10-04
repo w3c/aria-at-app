@@ -171,7 +171,7 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
 SummarizeTestPlanVersion.propTypes = {
     testPlanVersion: PropTypes.shape({
         id: PropTypes.string.isRequired,
-        title: PropTypes.string.isRequired,
+        title: PropTypes.string,
         metadata: PropTypes.shape({
             exampleUrl: PropTypes.string.isRequired,
             designPatternUrl: PropTypes.string.isRequired
