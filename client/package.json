@@ -46,7 +46,7 @@
     "react-dom": "^16.13.0",
     "react-helmet": "^6.0.0",
     "react-id-generator": "^3.0.0",
-    "react-markdown": "^7.0.1",
+    "react-markdown-renderer": "^1.4.0",
     "react-mde": "^10.0.3",
     "react-redux": "^7.2.0",
     "react-router-config": "^5.1.1",
