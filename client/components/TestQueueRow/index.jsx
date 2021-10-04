@@ -12,7 +12,7 @@ import { Button, Dropdown } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import ATAlert from '../ATAlert';
 import { capitalizeEachWord } from '../../utils/formatter';
-import './TestQueueRun.css';
+import './TestQueueRow.css';
 import {
     ASSIGN_TESTER_MUTATION,
     UPDATE_TEST_PLAN_REPORT_MUTATION,

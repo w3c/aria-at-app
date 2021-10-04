@@ -245,7 +245,7 @@ const TestRenderer = ({
         testRunIO.setConfigInputFromQueryParamsAndSupport(configQueryParams);
         testRunIO.setPageUriInputFromPageUri(testPageUrl);
 
-        const _state = remapState(testRunIO.testRunState(), scenarioResults);
+        const testRendererState = remapState(testRunIO.testRunState(), scenarioResults);
 
         const testWindow = new TestWindow({
             ...testRunIO.testWindowOptions(),
@@ -269,9 +269,9 @@ const TestRenderer = ({
                 }
             },
             resultsJSON: state => testRunIO.submitResultsJSON(state),
-            state: _state
+            state: testRendererState
         });
-        setState(_state);
+        setState(testRendererState);
         setTestRunExport(testRunExport);
     };
 
