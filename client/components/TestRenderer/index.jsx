@@ -245,7 +245,7 @@ const TestRenderer = ({
         testRunIO.setConfigInputFromQueryParamsAndSupport(configQueryParams);
         testRunIO.setPageUriInputFromPageUri(testPageUrl);
 
-        const _state = mergeState(testRunIO.testRunState(), scenarioResults);
+        const _state = remapState(testRunIO.testRunState(), scenarioResults);
 
         const testWindow = new TestWindow({
             ...testRunIO.testWindowOptions(),
@@ -275,7 +275,7 @@ const TestRenderer = ({
         setTestRunExport(testRunExport);
     };
 
-    const mergeState = (state, scenarioResults = []) => {
+    const remapState = (state, scenarioResults = []) => {
         const { commands } = state;
 
         if (

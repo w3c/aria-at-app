@@ -201,7 +201,7 @@ const TestRun = ({ auth }) => {
         setCurrentTestIndex(tests.find(t => t.seq === newTestIndex).index);
     };
 
-    const mergeScenarioResults = (
+    const remapScenarioResults = (
         rendererState,
         scenarioResults,
         captureHighlightRequired = false
@@ -308,7 +308,7 @@ const TestRun = ({ auth }) => {
         return newScenarioResults;
     };
 
-    const mergeState = (rendererState, testResult) => {
+    const remapState = (rendererState, testResult) => {
         if (
             !rendererState ||
             !testResult.scenarioResults ||
@@ -316,7 +316,7 @@ const TestRun = ({ auth }) => {
         )
             return testResult;
 
-        const scenarioResults = mergeScenarioResults(
+        const scenarioResults = remapScenarioResults(
             rendererState,
             testResult.scenarioResults,
             true
@@ -326,7 +326,7 @@ const TestRun = ({ auth }) => {
 
     const performButtonAction = async (action, index) => {
         const saveForm = async (withResult = false) => {
-            const scenarioResults = mergeScenarioResults(
+            const scenarioResults = remapScenarioResults(
                 testRunStateRef.current,
                 currentTest.testResult.scenarioResults,
                 false
@@ -577,7 +577,7 @@ const TestRun = ({ auth }) => {
                                 <TestRenderer
                                     key={nextId()}
                                     at={testPlanTarget.at}
-                                    testResult={mergeState(
+                                    testResult={remapState(
                                         testRunStateRef.current,
                                         currentTest.testResult
                                     )}
