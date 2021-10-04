@@ -38,8 +38,8 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
             </Breadcrumb>
             <h2>Introduction</h2>
             <p>
-                This page summarizes the test results for each AT which executed
-                the Test Plan.
+                This page summarizes the test results for each AT and Browser
+                which executed the Test Plan.
             </p>
             <h2>Metadata</h2>
             <ul>

@@ -20,10 +20,16 @@ const ScrollFixer = ({ children }) => {
             document.querySelector('a').focus();
         };
         if (!location.hash) return scrollTop();
-        const element = document.querySelector(location.hash);
-        if (!element) return scrollTop();
-        element.scrollIntoView();
-        element.focus();
+        (async () => {
+            // The point at which the window jumping down the page would become
+            // disorienting. This must include time for the page's API requests
+            // to complete.
+            const timeout = 8000;
+            const element = await pollForElement(location.hash, { timeout });
+            if (!element) return scrollTop();
+            element.scrollIntoView();
+            element.focus();
+        })();
     }, [location]);
 
     return children;
@@ -31,6 +37,33 @@ const ScrollFixer = ({ children }) => {
 
 ScrollFixer.propTypes = {
     children: PropTypes.node.isRequired
+};
+
+const pollForElement = async (selector, { timeout }) => {
+    let element = document.querySelector(selector);
+    if (element) return element;
+
+    let timeoutExceeded = false;
+    window.setTimeout(() => {
+        timeoutExceeded = true;
+    }, timeout);
+
+    return new Promise(resolve => {
+        const interval = window.setInterval(() => {
+            element = document.querySelector(selector);
+
+            if (element) {
+                clearInterval(interval);
+                resolve(element);
+                return;
+            }
+
+            if (timeoutExceeded) {
+                clearInterval(interval);
+                resolve(null);
+            }
+        }, 10);
+    });
 };
 
 export default ScrollFixer;
