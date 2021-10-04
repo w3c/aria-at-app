@@ -242,8 +242,8 @@ const TestQueueRow = ({
                                             triggerDeleteResultsModal(
                                                 evaluateTestPlanRunTitle(),
                                                 tester.username,
-                                                async () =>
-                                                    await handleRemoveTesterResults(
+                                                () =>
+                                                    handleRemoveTesterResults(
                                                         id
                                                     )
                                             );
@@ -449,8 +449,7 @@ const TestQueueRow = ({
                                 triggerDeleteTestPlanReportModal(
                                     testPlanReport.id,
                                     evaluateTestPlanRunTitle(),
-                                    async () =>
-                                        await handleRemoveTestPlanReport()
+                                    () => handleRemoveTestPlanReport()
                                 );
                             }}
                         >
