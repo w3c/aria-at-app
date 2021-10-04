@@ -15,7 +15,9 @@ const NewTestPlanReportModal = ({
     const [ats, setAts] = useState([]);
     const [browsers, setBrowsers] = useState([]);
     const [allTestPlanVersions, setAllTestPlanVersions] = useState([]);
-    const [filteredTestPlanVersions, setFilteredTestPlanVersions] = useState([]);
+    const [filteredTestPlanVersions, setFilteredTestPlanVersions] = useState(
+        []
+    );
     const [testPlanVersions, setTestPlanVersions] = useState([]);
     const [selectedAt, setSelectedAt] = useState('');
     const [selectedBrowser, setSelectedBrowser] = useState('');

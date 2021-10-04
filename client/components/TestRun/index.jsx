@@ -201,8 +201,11 @@ const TestRun = ({ auth }) => {
         setCurrentTestIndex(tests.find(t => t.seq === newTestIndex).index);
     };
 
-    const mergeResults = (rendererState, scenarioResults) => {
-        // console.info('mergeResults', rendererState, scenarioResults);
+    const mergeScenarioResults = (
+        rendererState,
+        scenarioResults,
+        captureHighlightRequired = false
+    ) => {
         let newScenarioResults = [];
         if (!rendererState || !scenarioResults)
             throw new Error('Unable to merge invalid results');
@@ -214,15 +217,15 @@ const TestRun = ({ auth }) => {
         for (let i = 0; i < commands.length; i++) {
             let scenarioResult = { ...scenarioResults[i] };
             let assertionResults = [];
-            let unexpectedBehaviors = [];
+            let unexpectedBehaviors = null;
 
             // collect variables
             const { atOutput, assertions, unexpected } = commands[i];
 
             // process assertion results
             for (let j = 0; j < assertions.length; j++) {
-                const { result } = assertions[j];
-                assertionResults.push({
+                const { result, highlightRequired } = assertions[j];
+                const assertionResult = {
                     ...scenarioResult.assertionResults[j],
                     passed: result === 'pass',
                     failedReason:
@@ -231,12 +234,18 @@ const TestRun = ({ auth }) => {
                             : result === 'failIncorrect'
                             ? 'INCORRECT_OUTPUT'
                             : null
-                });
+                };
+                assertionResults.push(
+                    captureHighlightRequired
+                        ? { ...assertionResult, highlightRequired }
+                        : assertionResult
+                );
             }
 
             // process unexpected behaviors
-            const { hasUnexpected, behaviors } = unexpected;
+            const { hasUnexpected, behaviors, highlightRequired } = unexpected;
             if (hasUnexpected === 'hasUnexpected') {
+                unexpectedBehaviors = [];
                 /**
                  * 0 = EXCESSIVELY_VERBOSE
                  * 1 = UNEXPECTED_CURSOR_POSITION
@@ -262,24 +271,57 @@ const TestRun = ({ auth }) => {
                             unexpectedBehaviors.push({ id: 'AT_CRASHED' });
                         if (i === 4)
                             unexpectedBehaviors.push({ id: 'BROWSER_CRASHED' });
-                        if (i === 5)
-                            unexpectedBehaviors.push({
+                        if (i === 5) {
+                            const moreResult = {
                                 id: 'OTHER',
                                 otherUnexpectedBehaviorText: behavior.more.value
-                            });
+                            };
+                            unexpectedBehaviors.push(
+                                captureHighlightRequired
+                                    ? {
+                                          ...moreResult,
+                                          highlightRequired:
+                                              behavior.more.highlightRequired
+                                      }
+                                    : moreResult
+                            );
+                        }
                     }
                 }
-            }
+            } else if (hasUnexpected === 'doesNotHaveUnexpected')
+                unexpectedBehaviors = [];
 
             // re-assign scenario result due to read only values
             scenarioResult.output = atOutput.value ? atOutput.value : null;
+            if (captureHighlightRequired)
+                scenarioResult.highlightRequired = atOutput.highlightRequired;
             scenarioResult.assertionResults = [...assertionResults];
-            scenarioResult.unexpectedBehaviors = [...unexpectedBehaviors];
+            scenarioResult.unexpectedBehaviors = unexpectedBehaviors
+                ? [...unexpectedBehaviors]
+                : null;
+            if (captureHighlightRequired)
+                scenarioResult.unexpectedBehaviorHighlightRequired = highlightRequired;
 
             newScenarioResults.push(scenarioResult);
         }
 
         return newScenarioResults;
+    };
+
+    const mergeState = (rendererState, testResult) => {
+        if (
+            !rendererState ||
+            !testResult.scenarioResults ||
+            rendererState.commands.length !== testResult.scenarioResults.length
+        )
+            return testResult;
+
+        const scenarioResults = mergeScenarioResults(
+            rendererState,
+            testResult.scenarioResults,
+            true
+        );
+        return { ...testResult, scenarioResults };
     };
 
     const performButtonAction = async (action, index) => {
@@ -533,9 +575,12 @@ const TestRun = ({ auth }) => {
                         <Row>
                             {pageReadyRef.current && currentTest.testResult && (
                                 <TestRenderer
-                                    key={`TestRenderer__${currentTestIndex}`}
+                                    key={nextId()}
                                     at={testPlanTarget.at}
-                                    testResult={currentTest.testResult}
+                                    testResult={mergeState(
+                                        testRunStateRef.current,
+                                        currentTest.testResult
+                                    )}
                                     testPageUrl={testPlanVersion.testPageUrl}
                                     testRunStateRef={testRunStateRef}
                                     testRunResultRef={testRunResultRef}

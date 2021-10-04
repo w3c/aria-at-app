@@ -245,7 +245,7 @@ const TestRenderer = ({
         testRunIO.setConfigInputFromQueryParamsAndSupport(configQueryParams);
         testRunIO.setPageUriInputFromPageUri(testPageUrl);
 
-        const state = mergeState(testRunIO.testRunState(), scenarioResults);
+        const _state = mergeState(testRunIO.testRunState(), scenarioResults);
 
         const testWindow = new TestWindow({
             ...testRunIO.testWindowOptions(),
@@ -269,14 +269,13 @@ const TestRenderer = ({
                 }
             },
             resultsJSON: state => testRunIO.submitResultsJSON(state),
-            state
+            state: _state
         });
-        setState(state);
+        setState(_state);
         setTestRunExport(testRunExport);
     };
 
     const mergeState = (state, scenarioResults = []) => {
-        // console.info('mergeState', state, scenarioResults);
         const { commands } = state;
 
         if (
@@ -290,24 +289,30 @@ const TestRenderer = ({
             const {
                 output,
                 assertionResults,
-                unexpectedBehaviors
+                unexpectedBehaviors,
+                highlightRequired = false, // atOutput
+                unexpectedBehaviorHighlightRequired = false
             } = scenarioResults[i];
 
             if (output) commands[i].atOutput.value = output;
+            commands[i].atOutput.highlightRequired = highlightRequired;
 
             for (let j = 0; j < assertionResults.length; j++) {
                 const assertionResult = assertionResults[j];
+                const { highlightRequired } = assertionResult;
+
                 if (assertionResult.passed)
                     commands[i].assertions[j].result = 'pass';
                 else if (assertionResult.failedReason === 'NO_OUTPUT')
                     commands[i].assertions[j].result = 'failMissing';
                 else if (assertionResult.failedReason === 'INCORRECT_OUTPUT')
                     commands[i].assertions[j].result = 'failIncorrect';
+                else commands[i].assertions[j].result = 'notSet';
+
+                commands[i].assertions[j].highlightRequired = highlightRequired;
             }
 
-            if (!unexpectedBehaviors)
-                commands[i].unexpected.hasUnexpected = 'notSet';
-            else if (unexpectedBehaviors.length) {
+            if (unexpectedBehaviors && unexpectedBehaviors.length) {
                 commands[i].unexpected.hasUnexpected = 'hasUnexpected';
 
                 for (let k = 0; k < unexpectedBehaviors.length; k++) {
@@ -334,13 +339,23 @@ const TestRenderer = ({
                         commands[i].unexpected.behaviors[5].checked = true;
                         commands[i].unexpected.behaviors[5].more.value =
                             unexpectedBehavior.otherUnexpectedBehaviorText;
+                        commands[
+                            i
+                        ].unexpected.behaviors[5].more.highlightRequired =
+                            unexpectedBehavior.highlightRequired;
                     }
                 }
-            } else
+            } else if (unexpectedBehaviors)
+                // but not populated
                 commands[i].unexpected.hasUnexpected = 'doesNotHaveUnexpected';
+            else commands[i].unexpected.hasUnexpected = 'notSet';
+
+            commands[
+                i
+            ].unexpected.highlightRequired = unexpectedBehaviorHighlightRequired;
         }
 
-        return state;
+        return { ...state, commands, currentUserAction: 'validateResults' };
     };
 
     useEffect(() => {
@@ -369,7 +384,7 @@ const TestRenderer = ({
             setPageContent(testRunExport.instructions());
         }
 
-        testRunStateRef.current = state;
+        if (!testRunStateRef.current) testRunStateRef.current = state;
     }, [testRunExport]);
 
     useEffect(() => {
