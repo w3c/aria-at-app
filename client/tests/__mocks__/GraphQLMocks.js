@@ -129,7 +129,10 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK = [
                         testPlanVersion: {
                             id: '65',
                             title: 'Checkbox Example (Two State)',
-                            gitSha: 'aea64f84b8fa8b21e94f5d9afd7035570bc1bed3'
+                            gitSha: 'aea64f84b8fa8b21e94f5d9afd7035570bc1bed3',
+                            testPlan: {
+                                directory: 'checkbox'
+                            }
                         },
                         draftTestPlanRuns: [
                             {
@@ -267,7 +270,10 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK = [
                         testPlanVersion: {
                             id: '65',
                             title: 'Checkbox Example (Two State)',
-                            gitSha: 'aea64f84b8fa8b21e94f5d9afd7035570bc1bed3'
+                            gitSha: 'aea64f84b8fa8b21e94f5d9afd7035570bc1bed3',
+                            testPlan: {
+                                directory: 'checkbox'
+                            }
                         },
                         draftTestPlanRuns: [
                             {
@@ -348,7 +354,10 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK = [
                         testPlanVersion: {
                             id: '74',
                             title: 'Editor Menubar Example',
-                            gitSha: 'aea64f84b8fa8b21e94f5d9afd7035570bc1bed3'
+                            gitSha: 'aea64f84b8fa8b21e94f5d9afd7035570bc1bed3',
+                            testPlan: {
+                                directory: 'menubar-editor'
+                            }
                         },
                         draftTestPlanRuns: []
                     }
