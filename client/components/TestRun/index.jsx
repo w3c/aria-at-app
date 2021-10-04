@@ -23,7 +23,7 @@ import PageStatus from '../common/PageStatus';
 import BasicModal from '../common/BasicModal';
 import {
     TEST_RUN_PAGE_QUERY,
-    CREATE_TEST_RESULT_MUTATION,
+    FIND_OR_CREATE_TEST_RESULT_MUTATION,
     SAVE_TEST_RESULT_MUTATION,
     SUBMIT_TEST_RESULT_MUTATION,
     DELETE_TEST_RESULT_MUTATION
@@ -47,7 +47,7 @@ const TestRun = ({ auth }) => {
         variables: { testPlanRunId }
     });
     const [createTestResult, { loading: createTestLoading }] = useMutation(
-        CREATE_TEST_RESULT_MUTATION
+        FIND_OR_CREATE_TEST_RESULT_MUTATION
     );
     const [saveTestResult] = useMutation(SAVE_TEST_RESULT_MUTATION);
     const [submitTestResult] = useMutation(SUBMIT_TEST_RESULT_MUTATION);
@@ -283,16 +283,18 @@ const TestRun = ({ auth }) => {
     };
 
     const performButtonAction = async (action, index) => {
-        const saveForm = async () => {
-            const scenarioResults = mergeResults(
+        const saveForm = async (withResult = false) => {
+            const scenarioResults = mergeScenarioResults(
                 testRunStateRef.current,
-                currentTest.testResult.scenarioResults
+                currentTest.testResult.scenarioResults,
+                false
             );
 
             await handleSaveOrSubmitTestResultAction(
                 { scenarioResults },
-                testRunResultRef.current
+                !!testRunResultRef.current
             );
+            if (withResult) return !!testRunResultRef.current;
             return true;
         };
 

@@ -99,10 +99,10 @@ export const TEST_RUN_PAGE_QUERY = gql`
     }
 `;
 
-export const CREATE_TEST_RESULT_MUTATION = gql`
-    mutation CreateTestResult($testPlanRunId: ID!, $testId: ID!) {
+export const FIND_OR_CREATE_TEST_RESULT_MUTATION = gql`
+    mutation FindOrCreateTestResult($testPlanRunId: ID!, $testId: ID!) {
         testPlanRun(id: $testPlanRunId) {
-            createTestResult(testId: $testId) {
+            findOrCreateTestResult(testId: $testId) {
                 locationOfData
             }
         }

@@ -305,7 +305,9 @@ const TestRenderer = ({
                     commands[i].assertions[j].result = 'failIncorrect';
             }
 
-            if (unexpectedBehaviors.length) {
+            if (!unexpectedBehaviors)
+                commands[i].unexpected.hasUnexpected = 'notSet';
+            else if (unexpectedBehaviors.length) {
                 commands[i].unexpected.hasUnexpected = 'hasUnexpected';
 
                 for (let k = 0; k < unexpectedBehaviors.length; k++) {
