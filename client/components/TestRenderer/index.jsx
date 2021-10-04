@@ -231,7 +231,7 @@ const TestRenderer = ({
 
     const [testRunExport, setTestRunExport] = useState();
     const [pageContent, setPageContent] = useState(null);
-    const [state, setState] = useState(null);
+    const [testRendererState, setTestRendererState] = useState(null);
     const [submitResult, setSubmitResult] = useState(null);
     const [submitCalled, setSubmitCalled] = useState(false);
 
@@ -245,7 +245,7 @@ const TestRenderer = ({
         testRunIO.setConfigInputFromQueryParamsAndSupport(configQueryParams);
         testRunIO.setPageUriInputFromPageUri(testPageUrl);
 
-        const testRendererState = remapState(testRunIO.testRunState(), scenarioResults);
+        const _state = remapState(testRunIO.testRunState(), scenarioResults);
 
         const testWindow = new TestWindow({
             ...testRunIO.testWindowOptions(),
@@ -269,9 +269,9 @@ const TestRenderer = ({
                 }
             },
             resultsJSON: state => testRunIO.submitResultsJSON(state),
-            state: testRendererState
+            state: _state
         });
-        setState(testRendererState);
+        setTestRendererState(_state);
         setTestRunExport(testRunExport);
     };
 
@@ -384,7 +384,8 @@ const TestRenderer = ({
             setPageContent(testRunExport.instructions());
         }
 
-        if (!testRunStateRef.current) testRunStateRef.current = state;
+        if (!testRunStateRef.current)
+            testRunStateRef.current = testRendererState;
     }, [testRunExport]);
 
     useEffect(() => {
