@@ -27,7 +27,7 @@ const Home = () => {
     return (
         <Container className="home-page" as="main">
             <Helmet>
-                <title>ARIA-AT App</title>
+                <title>Home | ARIA-AT</title>
             </Helmet>
             <section className="hero-section about">
                 <div className="hero-copy">
@@ -76,36 +76,36 @@ const Home = () => {
             <section className="get-involved">
                 <div className="get-involved-container">
                     <h2>Get Involved</h2>
-                    <div className="resources">
-                        <article>
+                    <ul className="resources">
+                        <li>
                             <img src={iconJoinCommunity} alt="" />
                             <a href="https://www.w3.org/community/aria-at/">
                                 Join the community group
                             </a>
-                        </article>
-                        <article>
+                        </li>
+                        <li>
                             <img src={iconWriteTests} alt="" />
                             <a href="https://github.com/w3c/aria-at/wiki/How-to-contribute-tests">
                                 Help write more tests
                             </a>
-                        </article>
-                        <article>
+                        </li>
+                        <li>
                             <img src={iconReviewAssertions} alt="" />
                             <a href="https://w3c.github.io/aria-at/">
                                 Review existing test plans
                             </a>
-                        </article>
-                        <article>
+                        </li>
+                        <li>
                             <img src={iconReviewTests} alt="" />
                             <Link to="/reports">Review test results</Link>
-                        </article>
-                        <article>
+                        </li>
+                        <li>
                             <img src={iconFixIssue} alt="" />
                             <a href="https://github.com/w3c/aria-at/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22">
                                 Fix a good first issue
                             </a>
-                        </article>
-                    </div>
+                        </li>
+                    </ul>
                 </div>
             </section>
             <section className="app-screenshots">
@@ -122,7 +122,7 @@ const Home = () => {
                     <div className="screenshot">
                         <img
                             src={testReviewScreenshot}
-                            alt="A table with a summary of the results recorded for a test plan."
+                            alt="Summary of JAWS and Chrome results for the menubar test plan."
                         />
                     </div>
                 </div>

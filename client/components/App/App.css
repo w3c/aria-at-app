@@ -67,6 +67,13 @@ nav.navbar {
 .nav-link[aria-current='true']:after {
     background: #0b60ab;
 }
+@media (max-width: 991px) {
+    .nav-link[aria-current='true']:after,
+    .nav-link:hover:after {
+        bottom: 3px;
+        margin: 0;
+    }
+}
 
 main.container-fluid .row {
     padding: 0.5rem 1rem;
@@ -282,7 +289,6 @@ ul li {
     padding: 0.25em 0.65em 0.15em;
     border-radius: 22px;
     font-weight: 500;
-    text-transform: uppercase;
     display: inline-block;
     white-space: nowrap;
 }
@@ -398,7 +404,7 @@ img {
     column-gap: 3%;
 }
 
-.get-involved .resources article {
+.get-involved .resources li {
     background: white;
     padding: 2em 1em;
     margin-bottom: 1em;

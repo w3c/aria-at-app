@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import {
@@ -20,6 +20,7 @@ const App = ({ auth, dispatch }) => {
     const { client, loading, data } = useQuery(ME_QUERY);
     const signinUrl = useSigninUrl();
     const location = useLocation();
+    const [isNavbarExpanded, setIsNavbarExpanded] = useState(false);
 
     const { isSignedIn, isSignOutCalled, isTester, username } = auth;
 
@@ -28,6 +29,10 @@ const App = ({ auth, dispatch }) => {
         await fetch('/api/auth/signout', { method: 'POST' });
         await client.resetStore();
     };
+
+    useEffect(() => {
+        setIsNavbarExpanded(false);
+    }, [location]);
 
     if (loading) return null;
 
@@ -39,7 +44,13 @@ const App = ({ auth, dispatch }) => {
     return (
         <Fragment>
             <Container fluid>
-                <Navbar bg="light" expand="lg" aria-label="Main Menu">
+                <Navbar
+                    bg="light"
+                    expand="lg"
+                    aria-label="Main Menu"
+                    expanded={isNavbarExpanded}
+                    onToggle={() => setIsNavbarExpanded(previous => !previous)}
+                >
                     <Navbar.Brand
                         className="logo"
                         as={Link}

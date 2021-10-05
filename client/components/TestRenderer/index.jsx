@@ -599,7 +599,7 @@ const TestRenderer = ({
                         }
                     />
                     <InstructionsSection>
-                        <HeadingText id="behavior-header" tabIndex={0}>
+                        <HeadingText id="behavior-header" tabIndex="-1">
                             {pageContent.instructions.header.header}
                         </HeadingText>
                         <Text>{pageContent.instructions.description}</Text>

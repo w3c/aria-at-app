@@ -547,8 +547,9 @@ const TestRun = ({ auth }) => {
                     />
 
                     <div className="help-link">
-                        Need Help?{' '}
-                        <a href="mailto:public-aria-at@w3.org">Email Us</a>
+                        <a href="mailto:public-aria-at@w3.org">
+                            Email us if you need help
+                        </a>
                     </div>
                 </div>
             </div>
@@ -737,7 +738,12 @@ const TestRun = ({ auth }) => {
     return (
         <Container className="test-run-container">
             <Helmet>
-                <title>{testPlanTarget.title}</title>
+                <title>
+                    {hasTestsToRun
+                        ? `${currentTest.title} for ${testPlanTarget.title} ` +
+                          `| ARIA-AT`
+                        : 'No tests for this AT and Browser | ARIA-AT'}
+                </title>
             </Helmet>
             <Row>
                 <TestNavigator

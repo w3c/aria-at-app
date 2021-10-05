@@ -116,17 +116,6 @@ const TestQueueRow = ({
         await triggerTestPlanReportUpdate();
     };
 
-    const renderAssignedUserToTestPlan = () => {
-        // Determine if current user is assigned to testPlan
-        if (currentUserAssigned)
-            return (
-                <Link to={`/run/${currentUserTestPlanRun.id}`}>
-                    {testPlanVersion.title || `"${testPlanVersion.directory}"`}
-                </Link>
-            );
-        return testPlanVersion.title || `"${testPlanVersion.directory}"`;
-    };
-
     const renderAssignMenu = () => {
         return (
             <>
@@ -343,7 +332,7 @@ const TestQueueRow = ({
 
     return (
         <tr className="test-queue-run-row">
-            <th>{renderAssignedUserToTestPlan()}</th>
+            <th>{testPlanVersion.title || `"${testPlanVersion.directory}"`}</th>
             <td>
                 <div className="testers-wrapper">
                     {isAdmin && renderAssignMenu()}
@@ -365,12 +354,15 @@ const TestQueueRow = ({
                     </div>
                 </div>
                 <div className="secondary-actions">
-                    <ul className="assignees">
-                        {draftTestPlanRuns.length !== 0 ? (
-                            draftTestPlanRuns.map(({ tester, testResults }) => (
-                                <li key={nextId()}>
+                    {draftTestPlanRuns.length !== 0 ? (
+                        draftTestPlanRuns.map(({ tester, testResults }) => (
+                            <ul className="assignees" key={nextId()}>
+                                <li>
                                     <a
-                                        href={`https://github.com/${tester.username}`}
+                                        href={
+                                            `https://github.com/` +
+                                            `${tester.username}`
+                                        }
                                         target="_blank"
                                         rel="noopener noreferrer"
                                     >
@@ -385,13 +377,11 @@ const TestQueueRow = ({
                                         runnableTests.length
                                     } tests complete)`}
                                 </li>
-                            ))
-                        ) : (
-                            <li className="no-assignees">
-                                No testers assigned
-                            </li>
-                        )}
-                    </ul>
+                            </ul>
+                        ))
+                    ) : (
+                        <div className="no-assignees">No testers assigned</div>
+                    )}
                 </div>
             </td>
             <td>
