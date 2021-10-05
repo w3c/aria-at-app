@@ -69,6 +69,7 @@ export const TEST_RUN_PAGE_QUERY = gql`
                         name
                     }
                     atMode
+                    renderedUrl
                     scenarios {
                         id
                         at {

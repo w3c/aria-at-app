@@ -29,6 +29,39 @@ import {
 import { evaluateAuth } from '../../utils/evaluateAuth';
 import './TestRun.css';
 
+const createGitHubIssueWithTitleAndBody = ({
+    test,
+    testPlanReport,
+    conflictsFormatted,
+    isReportViewer = false
+}) => {
+    const issueRaiser = isReportViewer ? 'Report Viewer' : 'Tester';
+    const title = `${issueRaiser}'s Issue Report for "${test.title}"`;
+
+    const { testPlanTarget } = testPlanReport;
+    const { at, browser } = testPlanTarget;
+    const shortenedUrl = test.renderedUrl.match(/[^/]+$/)[0];
+
+    let body =
+        `### Test File at Exact Commit\n\n` +
+        `[${shortenedUrl}](https://aria-at.w3.org${test.renderedUrl})\n\n` +
+        `### AT\n\n` +
+        `${at.name} (version ${testPlanTarget.atVersion})\n\n` +
+        `### Browser\n\n` +
+        `${browser.name} (version ${testPlanTarget.browserVersion})\n\n` +
+        `### Description\n\n` +
+        `_type your description here_`;
+
+    if (conflictsFormatted) {
+        body += `\n\n### Conflicts with other results\n${conflictsFormatted}`;
+    }
+
+    return (
+        `https://github.com/w3c/aria-at/issues/new?title=${encodeURI(title)}&` +
+        `body=${encodeURIComponent(body)}`
+    );
+};
+
 const TestRun = () => {
     const params = useParams();
     const history = useHistory();
@@ -56,7 +89,6 @@ const TestRun = () => {
     const [showTestNavigator, setShowTestNavigator] = useState(true);
     const [currentTestIndex, setCurrentTestIndex] = useState(0);
     const [showStartOverModal, setShowStartOverModal] = useState(false);
-    const [showRaiseIssueModal, setShowRaiseIssueModal] = useState(false);
     const [showReviewConflictsModal, setShowReviewConflictsModal] = useState(
         false
     );
@@ -183,6 +215,12 @@ const TestRun = () => {
     if (!currentTest.testResult && !pageReadyRef.current)
         (async () => await createTestResultForRenderer(currentTest.id))();
     else pageReadyRef.current = true;
+
+    const gitHubIssueLinkWithTitleAndBody = createGitHubIssueWithTitleAndBody({
+        test: currentTest,
+        testPlanReport,
+        conflictsFormatted
+    });
 
     const navigateTests = (previous = false) => {
         // assume navigation forward if previous is false
@@ -399,11 +437,6 @@ const TestRun = () => {
 
     const handleEditClick = async () => performButtonAction('editTest');
 
-    const handleRaiseIssueButtonClick = async () => {
-        setShowRaiseIssueModal(!showRaiseIssueModal);
-        setShowReviewConflictsModal(false);
-    };
-
     const handleStartOverButtonClick = async () => setShowStartOverModal(true);
 
     const handleStartOverAction = async () => {
@@ -532,7 +565,8 @@ const TestRun = () => {
                     <OptionButton
                         text="Raise An Issue"
                         icon={<FontAwesomeIcon icon={faExclamationCircle} />}
-                        onClick={handleRaiseIssueButtonClick}
+                        target="_blank"
+                        href={gitHubIssueLinkWithTitleAndBody}
                     />
 
                     <OptionButton
@@ -568,7 +602,6 @@ const TestRun = () => {
                     handleReviewConflictsButtonClick={
                         handleReviewConflictsButtonClick
                     }
-                    handleRaiseIssueButtonClick={handleRaiseIssueButtonClick}
                 />
                 <Row>
                     <Col className="test-iframe-container" md={9}>
@@ -613,32 +646,14 @@ const TestRun = () => {
                         handleClose={() => setShowStartOverModal(false)}
                     />
                 )}
-                {/*
-                TODO: This is handled in other PRs
-                {showRaiseIssueModal && (
-                    <RaiseIssueModal
-                        key={`RaiseIssueModal__${currentTestIndex}`}
-                        show={showRaiseIssueModal}
-                        userId={testerId}
-                        test={currentTest}
-                        testPlanRun={testPlanRun}
-                        // conflicts={conflicts[currentTestIndex]}
-                        handleUpdateTestPlanRunResultAction={
-                            handleUpdateTestPlanRunResultAction
-                        }
-                        handleClose={() => setShowRaiseIssueModal(false)}
-                    />
-                )}*/}
                 {showReviewConflictsModal && (
                     <ReviewConflictsModal
                         key={`ReviewConflictsModal__${currentTestIndex}`}
                         show={showReviewConflictsModal}
                         userId={testerId}
                         conflictsFormatted={conflictsFormatted}
+                        issueLink={gitHubIssueLinkWithTitleAndBody}
                         handleClose={() => setShowReviewConflictsModal(false)}
-                        handleRaiseIssueButtonClick={
-                            handleRaiseIssueButtonClick
-                        }
                     />
                 )}
             </>
@@ -757,4 +772,5 @@ const TestRun = () => {
     );
 };
 
+export { createGitHubIssueWithTitleAndBody };
 export default TestRun;

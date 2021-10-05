@@ -8,7 +8,7 @@ const ReviewConflictsModal = ({
     show = false,
     conflictsFormatted = '',
     handleClose = () => {},
-    handleRaiseIssueButtonClick = () => {}
+    issueLink
 }) => {
     return (
         <Modal
@@ -38,10 +38,7 @@ const ReviewConflictsModal = ({
                         Copy Conflicts to Clipboard
                     </Button>
                 </CopyToClipboard>
-                <Button
-                    variant="secondary"
-                    onClick={handleRaiseIssueButtonClick}
-                >
+                <Button variant="secondary" target="_blank" href={issueLink}>
                     Raise an Issue for Conflict
                 </Button>
             </Modal.Footer>
@@ -53,7 +50,7 @@ ReviewConflictsModal.propTypes = {
     show: PropTypes.bool,
     conflictsFormatted: PropTypes.string,
     handleClose: PropTypes.func,
-    handleRaiseIssueButtonClick: PropTypes.func
+    issueLink: PropTypes.string
 };
 
 export default ReviewConflictsModal;

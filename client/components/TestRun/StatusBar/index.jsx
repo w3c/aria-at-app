@@ -5,37 +5,13 @@ import { Octicon, Octicons } from 'octicons-react';
 import nextId from 'react-id-generator';
 
 const StatusBar = ({
-    issues = [],
     hasConflicts = false,
-    handleRaiseIssueButtonClick = () => {},
     handleReviewConflictsButtonClick = () => {}
 }) => {
     const [statuses, setStatuses] = useState([]);
 
     useEffect(() => {
         const statuses = [];
-
-        if (issues.length) {
-            // TODO: Replace with a loader to prevent flickers
-            const variant = 'warning';
-            const action = (
-                <Button
-                    className="ml-auto"
-                    variant={variant}
-                    onClick={handleRaiseIssueButtonClick}
-                >
-                    Review Issues
-                </Button>
-            );
-            const icon = 'alert';
-            const message = 'This test has open issues';
-            statuses.push({
-                action,
-                icon,
-                message,
-                variant
-            });
-        }
 
         if (hasConflicts) {
             const variant = 'warning';
@@ -83,7 +59,6 @@ const StatusBar = ({
 StatusBar.propTypes = {
     issues: PropTypes.array,
     hasConflicts: PropTypes.bool,
-    handleRaiseIssueButtonClick: PropTypes.func,
     handleReviewConflictsButtonClick: PropTypes.func
 };
 

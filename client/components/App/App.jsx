@@ -6,8 +6,9 @@ import { Container, Navbar, Nav } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
 import { evaluateAuth } from '../../utils/evaluateAuth';
-import { ME_QUERY } from './queries';
+import ScrollFixer from '../../utils/ScrollFixer';
 import routes from '../../routes';
+import { ME_QUERY } from './queries';
 import useSigninUrl from './useSigninUrl';
 import './App.css';
 
@@ -27,7 +28,7 @@ const App = () => {
     if (loading) return null;
 
     return (
-        <Fragment>
+        <ScrollFixer>
             <Container fluid>
                 <Navbar bg="light" expand="lg" aria-label="Main Menu">
                     <Navbar.Brand
@@ -48,9 +49,9 @@ const App = () => {
                                 <Nav.Link
                                     as={Link}
                                     to="/reports"
-                                    aria-current={
-                                        location.pathname === '/reports'
-                                    }
+                                    aria-current={location.pathname.startsWith(
+                                        '/reports'
+                                    )}
                                 >
                                     Test Reports
                                 </Nav.Link>
@@ -69,9 +70,9 @@ const App = () => {
                                 <Nav.Link
                                     as={Link}
                                     to="/reports"
-                                    aria-current={
-                                        location.pathname === '/reports'
-                                    }
+                                    aria-current={location.pathname.startsWith(
+                                        '/reports'
+                                    )}
                                 >
                                     Test Reports
                                 </Nav.Link>
@@ -111,7 +112,7 @@ const App = () => {
             <Container fluid>
                 <div>{renderRoutes(routes)}</div>
             </Container>
-        </Fragment>
+        </ScrollFixer>
     );
 };
 

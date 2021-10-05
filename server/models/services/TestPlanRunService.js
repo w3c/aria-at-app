@@ -370,15 +370,19 @@ const removeTestPlanRunByQuery = async (
     );
 };
 
-const getIssuesForTestResult = async (testPlanRunId, testResultIndex) => {
-    const testPlanRun = await getTestPlanRunById(testPlanRunId);
-    if (!testPlanRun) return [];
-
-    const testResult = testPlanRun.testResults.find(
-        result => result.test.executionOrder === testResultIndex
+/**
+ * @param {number} queryParams - conditions to be passed to Sequelize's where clause
+ * @returns {Promise<boolean>}
+ */
+const removeTestPlanRunResultsByQuery = async ({
+    testerUserId,
+    testPlanReportId
+}) => {
+    return await ModelService.update(
+        TestPlanRun,
+        { testerUserId, testPlanReportId },
+        { testResults: [] }
     );
-
-    return testResult.issues || [];
 };
 
 module.exports = {
@@ -389,6 +393,5 @@ module.exports = {
     updateTestPlanRun,
     removeTestPlanRun,
     removeTestPlanRunByQuery,
-
-    getIssuesForTestResult
+    removeTestPlanRunResultsByQuery
 };

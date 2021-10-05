@@ -1,13 +1,10 @@
 import React from 'react';
 import { Route, Redirect } from 'react-router-dom';
-
 import ConfirmAuth from '@components/ConfirmAuth';
 import Home from '@components/Home';
 import InvalidRequest from '@components/InvalidRequest';
 import NotFound from '@components/NotFound';
-import ReportsPage from '@components/ReportsPage';
-import TestPlanReportPage from '@components/TestPlanReportPage';
-import RunResultsPage from '@components/RunResultsPage';
+import Reports from '@components/Reports';
 import SignupInstructions from '@components/SignupInstructions';
 import TestQueue from '@components/TestQueue';
 import TestRun from '@components/TestRun';
@@ -47,10 +44,6 @@ export default [
         }
     },
     {
-        path: '/results/run/:runId(\\d+)',
-        component: RunResultsPage
-    },
-    {
         path: '/run/:runId(\\d+)',
         component: () => {
             return (
@@ -61,12 +54,9 @@ export default [
         }
     },
     {
-        path: '/reports/test-plans/:testPlanId(\\d+)',
-        component: TestPlanReportPage
-    },
-    {
+        // Note that this component includes a nested router!
         path: '/reports',
-        component: ReportsPage
+        component: Reports
     },
     {
         path: '/invalid-request',

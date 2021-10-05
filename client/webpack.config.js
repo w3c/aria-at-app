@@ -58,6 +58,11 @@ module.exports = {
     devServer: {
         contentBase: path.join(__dirname, 'static'),
         port: process.env.CLIENT_PORT || 3000,
+        // Allows access to the dev server over your local network. Note that
+        // you will need to use your computer's address, e.g. 192.168.0.20:3000,
+        // and that logging in will require you to manually change the URL from
+        // localhost:3000 to 192.168.0.20:3000 each time a redirect occurs.
+        host: '0.0.0.0',
         publicPath: '/',
         historyApiFallback: true,
         hotOnly: true,
@@ -81,13 +86,7 @@ module.exports = {
         ]),
         new webpack.DefinePlugin({
             'process.env.API_SERVER': JSON.stringify(process.env.API_SERVER),
-            'process.env.ENVIRONMENT': JSON.stringify(process.env.ENVIRONMENT),
-            'process.env.GITHUB_REPO_OWNER': JSON.stringify(
-                process.env.GITHUB_REPO_OWNER
-            ),
-            'process.env.GITHUB_REPO_NAME': JSON.stringify(
-                process.env.GITHUB_REPO_NAME
-            )
+            'process.env.ENVIRONMENT': JSON.stringify(process.env.ENVIRONMENT)
         })
     ]
 };
