@@ -277,6 +277,7 @@ const updateTestPlanVersion = async (
 const getTestPlans = async ({
     includeLatestTestPlanVersion = true,
     includeTestPlanVersions = true,
+    testPlanVersionOrder = null,
     id
 } = {}) => {
     const getTestPlansAndLatestVersionId = async () => {
@@ -339,7 +340,16 @@ const getTestPlans = async ({
 
     if (includeTestPlanVersions) {
         const testPlansHistoric = await getTestPlansWithVersionIds();
-        const testPlanVersions = await getTestPlanVersions();
+        const testPlanVersions = await getTestPlanVersions(
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            testPlanVersionOrder ? { order: testPlanVersionOrder } : undefined
+        );
         testPlans = testPlans.map(testPlan => {
             const { testPlanVersionIds } = testPlansHistoric.find(
                 historicTestPlan => historicTestPlan.id === testPlan.id
