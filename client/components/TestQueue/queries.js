@@ -73,15 +73,12 @@ export const POPULATE_ADD_TEST_PLAN_TO_QUEUE_MODAL_QUERY = gql`
             name
             browserVersions
         }
-        testPlans {
+        testPlanVersions {
             id
-            testPlanVersions {
-                id
-                title
-                gitSha
-                testPlan {
-                    directory
-                }
+            title
+            gitSha
+            testPlan {
+                directory
             }
         }
     }

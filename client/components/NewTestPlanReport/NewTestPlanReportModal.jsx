@@ -34,17 +34,14 @@ const NewTestPlanReportModal = ({
 
     useEffect(() => {
         if (data) {
-            const { ats = [], browsers = [], testPlans = [] } = data;
+            const { ats = [], browsers = [], testPlanVersions = [] } = data;
             setAts(ats);
             setBrowsers(browsers);
 
-            const allTestPlanVersions = testPlans
-                .map(testPlan =>
-                    [...testPlan.testPlanVersions].map(version => ({
-                        ...version,
-                        directory: testPlan.id
-                    }))
-                )
+            const allTestPlanVersions = testPlanVersions
+                .map(version => ({
+                    ...version
+                }))
                 .flat();
 
             setAllTestPlanVersions(allTestPlanVersions);
@@ -55,7 +52,9 @@ const NewTestPlanReportModal = ({
         const filteredTestPlanVersions = allTestPlanVersions.filter(
             (v, i, a) =>
                 a.findIndex(
-                    t => t.title === v.title && t.directory === v.directory
+                    t =>
+                        t.title === v.title &&
+                        t.testPlan.directory === v.testPlan.directory
                 ) === i
         );
         setFilteredTestPlanVersions(filteredTestPlanVersions);
@@ -149,12 +148,11 @@ const NewTestPlanReportModal = ({
                         </option>
                         {primaryDropdownOptions.map(item => (
                             <option
-                                key={`${item.title || item.directory}-${
-                                    item.id
-                                }`}
+                                key={`${item.title ||
+                                    item.testPlan.directory}-${item.id}`}
                                 value={item.id}
                             >
-                                {item.title || `"${item.directory}"`}
+                                {item.title || `"${item.testPlan.directory}"`}
                             </option>
                         ))}
                     </Form.Control>
@@ -235,14 +233,14 @@ const NewTestPlanReportModal = ({
                         handlePrimaryDropdownSelected: value => {
                             // update test plan versions based on selected test plan
                             const retrievedTestPlan = allTestPlanVersions.find(
-                                testPlan => testPlan.id === value
+                                testPlanVersion => testPlanVersion.id == value
                             );
                             const testPlanVersions = allTestPlanVersions.filter(
-                                testPlan =>
-                                    testPlan.title ===
+                                testPlanVersion =>
+                                    testPlanVersion.title ==
                                         retrievedTestPlan.title &&
-                                    testPlan.directory ===
-                                        retrievedTestPlan.directory
+                                    testPlanVersion.testPlan.directory ==
+                                        retrievedTestPlan.testPlan.directory
                             );
                             setTestPlanVersions(testPlanVersions);
                             setSelectedTestPlanVersion('');
