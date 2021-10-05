@@ -167,47 +167,12 @@ const TestRun = () => {
         await refetch();
     };
 
-    /**
-     * Check to see if scenarioId and scenarioResultId
-     * exists in source.locationOfData and
-     * conflictingResults.locationOfData objects
-     * respectively. If it does exist, check to see if
-     * scenarioId/scenarioTestId exists in the current
-     * test.
-     */
-    const conflictScenarioIds = [];
-
-    for (let i = 0; i < conflicts.length; i++) {
-        const conflict = conflicts[i];
-        if (
-            conflict.source &&
-            conflict.source.locationOfData &&
-            conflict.source.locationOfData.scenarioId
-        )
-            conflictScenarioIds.push(conflict.source.locationOfData.scenarioId);
-
-        if (conflict.conflictingResults) {
-            for (let j = 0; j < conflict.conflictingResults.length; j++) {
-                const conflictingResult = conflict.conflictingResults[j];
-                if (
-                    conflictingResult.locationOfData &&
-                    conflictingResult.locationOfData.scenarioResultId
-                )
-                    conflictScenarioIds.push(
-                        conflictingResult.locationOfData.scenarioResultId
-                    );
-            }
-        }
-    }
-
     const tests = runnableTests.map((test, index) => ({
         ...test,
         index,
         seq: index + 1,
         testResult: testResults.find(t => t.test.id === test.id),
-        hasConflicts: test.scenarios.some(({ id }) =>
-            conflictScenarioIds.includes(id)
-        )
+        hasConflicts: !!conflicts.find(c => c.source.test.id === test.id)
     }));
     const currentTest = tests[currentTestIndex];
     const hasTestsToRun = tests.length;
