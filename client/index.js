@@ -8,7 +8,7 @@ import App from './components/App';
 
 const client = new ApolloClient({
     uri: '/api/graphql',
-    cache: new InMemoryCache()
+    cache: new InMemoryCache({ addTypename: false })
 });
 
 ReactDOM.render(

@@ -1,13 +1,11 @@
-const testCount = require('./testCountResolver');
+const testPlan = require('./testPlanVersionTestPlanResolver');
 const gitMessage = require('./gitMessageResolver');
-const directory = require('./directoryResolver');
-const testReferencePath = require('./testReferencePathResolver');
+const tests = require('./testsResolver');
 
 const TestPlanVersion = {
-    testCount,
+    testPlan,
     gitMessage,
-    directory,
-    testReferencePath
+    tests
 };
 
 module.exports = TestPlanVersion;

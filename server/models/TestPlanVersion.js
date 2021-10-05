@@ -17,19 +17,10 @@ module.exports = function(sequelize, DataTypes) {
                 autoIncrement: true
             },
             title: { type: DataTypes.TEXT },
-            status: {
-                type: DataTypes.TEXT,
-                // type: DataTypes.ENUM(
-                //     STATUS.DRAFT,
-                //     STATUS.IN_REVIEW,
-                //     STATUS.FINALIZED
-                // ),
-                allowNull: false,
-                defaultValue: STATUS.DRAFT
-            },
+            directory: { type: DataTypes.TEXT },
             gitSha: { type: DataTypes.TEXT },
             gitMessage: { type: DataTypes.TEXT },
-            exampleUrl: { type: DataTypes.TEXT },
+            testPageUrl: { type: DataTypes.TEXT },
             updatedAt: {
                 type: DataTypes.DATE,
                 defaultValue: DataTypes.NOW

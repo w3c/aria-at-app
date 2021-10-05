@@ -1,0 +1,26 @@
+[
+    {
+        "id": "EXCESSIVELY_VERBOSE",
+        "text": "Output is excessively verbose, e.g., includes redundant and/or irrelevant speech"
+    },
+    {
+        "id": "UNEXPECTED_CURSOR_POSITION",
+        "text": "Reading cursor position changed in an unexpected manner"
+    },
+    {
+        "id": "SLUGGISH",
+        "text": "Screen reader became extremely sluggish"
+    },
+    {
+        "id": "AT_CRASHED",
+        "text": "Screen reader crashed"
+    },
+    {
+        "id": "BROWSER_CRASHED",
+        "text": "Browser crashed"
+    },
+    {
+        "id": "OTHER",
+        "text": "Other"
+    }
+]

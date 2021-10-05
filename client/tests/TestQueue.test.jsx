@@ -24,7 +24,10 @@ import {
 const setup = (mocks = []) => {
     return render(
         <BrowserRouter>
-            <MockedProvider mocks={mocks} cache={new InMemoryCache({})}>
+            <MockedProvider
+                mocks={mocks}
+                cache={new InMemoryCache({ addTypename: false })}
+            >
                 <TestQueue />
             </MockedProvider>
         </BrowserRouter>

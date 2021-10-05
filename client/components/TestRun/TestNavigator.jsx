@@ -10,9 +10,8 @@ import React from 'react';
 
 const TestNavigator = ({
     show = true,
-    testResults = [],
-    conflicts = {},
-    currentTestIndex = 1,
+    tests = [],
+    currentTestIndex = 0,
     toggleShowClick = () => {},
     handleTestClick = () => {}
 }) => {
@@ -44,46 +43,42 @@ const TestNavigator = ({
             {show && (
                 <nav role="complementary">
                     <ol className="test-navigator-list">
-                        {testResults.map(testResult => {
+                        {tests.map(test => {
                             let resultClassName = 'not-started';
                             let resultStatus = 'Not Started:';
 
-                            const testConflicts =
-                                conflicts[testResult.index] || [];
-
-                            if (testResult) {
-                                if (testResult.isSkipped) {
-                                    resultClassName = 'in-progress';
-                                    resultStatus = 'In Progress:';
-                                } else if (testConflicts.length) {
+                            if (test) {
+                                if (test.hasConflicts) {
                                     resultClassName = 'conflicts';
                                     resultStatus = 'Has Conflicts:';
-                                } else if (testResult.isComplete) {
-                                    resultClassName = 'complete';
-                                    resultStatus = 'Complete Test:';
+                                } else if (test.testResult) {
+                                    resultClassName = test.testResult
+                                        .completedAt
+                                        ? 'complete'
+                                        : 'in-progress';
+                                    resultStatus = test.testResult.completedAt
+                                        ? 'Complete Test:'
+                                        : 'In Progress:';
                                 }
                             }
 
                             return (
                                 <li
                                     className={`test-name-wrapper ${resultClassName}`}
-                                    key={`TestNavigatorItem_${testResult.index}`}
+                                    key={`TestNavigatorItem_${test.id}`}
                                 >
                                     <a
                                         href="#"
                                         onClick={async () =>
-                                            await handleTestClick(
-                                                testResult.index
-                                            )
+                                            await handleTestClick(test.index)
                                         }
                                         className="test-name"
-                                        aria-label={`${resultStatus} ${testResult.title}`}
+                                        aria-label={`${resultStatus} ${test.title}`}
                                         aria-current={
-                                            testResult.index ===
-                                            currentTestIndex
+                                            test.index === currentTestIndex
                                         }
                                     >
-                                        {testResult.title}
+                                        {test.title}
                                     </a>
                                     <span
                                         className="progress-indicator"
@@ -101,7 +96,8 @@ const TestNavigator = ({
 
 TestNavigator.propTypes = {
     show: PropTypes.bool,
-    testResults: PropTypes.array,
+    tests: PropTypes.array,
+    testResult: PropTypes.object,
     conflicts: PropTypes.object,
     currentTestIndex: PropTypes.number,
     toggleShowClick: PropTypes.func,

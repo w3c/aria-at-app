@@ -280,6 +280,18 @@ const updateTestPlanReport = async (
 };
 
 /**
+ * @param {number} id - id of the TestPlanRun record to be removed
+ * @param {object} deleteOptions - Sequelize specific deletion options that could be passed
+ * @returns {Promise<boolean>}
+ */
+const removeTestPlanReport = async (
+    id,
+    deleteOptions = { truncate: false }
+) => {
+    return await ModelService.removeById(TestPlanReport, id, deleteOptions);
+};
+
+/**
  * Gets one TestPlanReport, or creates it if it doesn't exist, and then optionally updates it. Supports nested / associated values.
  * @param {*} nestedGetOrCreateValues - These values will be used to find a matching record, or they will be used to create one
  * @param {*} nestedUpdateValues - Values which will be used when a record is found or created, but not used for the initial find
@@ -406,5 +418,6 @@ module.exports = {
     getTestPlanReports,
     createTestPlanReport,
     updateTestPlanReport,
+    removeTestPlanReport,
     getOrCreateTestPlanReport
 };

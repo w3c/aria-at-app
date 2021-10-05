@@ -359,25 +359,14 @@ const removeTestPlanRunByQuery = async (
     { testerUserId, testPlanReportId },
     deleteOptions = { truncate: false }
 ) => {
+    const deleteWhere =
+        testerUserId === undefined
+            ? { testPlanReportId }
+            : { testPlanReportId, testerUserId };
     return await ModelService.removeByQuery(
         TestPlanRun,
-        { testerUserId, testPlanReportId },
+        deleteWhere,
         deleteOptions
-    );
-};
-
-/**
- * @param {number} queryParams - conditions to be passed to Sequelize's where clause
- * @returns {Promise<boolean>}
- */
-const removeTestPlanRunResultsByQuery = async ({
-    testerUserId,
-    testPlanReportId
-}) => {
-    return await ModelService.update(
-        TestPlanRun,
-        { testerUserId, testPlanReportId },
-        { testResults: [] }
     );
 };
 
@@ -400,7 +389,6 @@ module.exports = {
     updateTestPlanRun,
     removeTestPlanRun,
     removeTestPlanRunByQuery,
-    removeTestPlanRunResultsByQuery,
 
     getIssuesForTestResult
 };

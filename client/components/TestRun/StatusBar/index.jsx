@@ -6,7 +6,7 @@ import nextId from 'react-id-generator';
 
 const StatusBar = ({
     issues = [],
-    conflicts = [],
+    hasConflicts = false,
     handleRaiseIssueButtonClick = () => {},
     handleReviewConflictsButtonClick = () => {}
 }) => {
@@ -37,7 +37,7 @@ const StatusBar = ({
             });
         }
 
-        if (conflicts.length) {
+        if (hasConflicts) {
             const variant = 'warning';
             const action = (
                 <Button
@@ -82,7 +82,7 @@ const StatusBar = ({
 
 StatusBar.propTypes = {
     issues: PropTypes.array,
-    conflicts: PropTypes.array,
+    hasConflicts: PropTypes.bool,
     handleRaiseIssueButtonClick: PropTypes.func,
     handleReviewConflictsButtonClick: PropTypes.func
 };

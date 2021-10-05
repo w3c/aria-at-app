@@ -1,7 +1,7 @@
 const { gql } = require('apollo-server');
 const dbCleaner = require('../util/db-cleaner');
 const { query, mutate } = require('../util/graphql-test-utilities');
-const db = require('../../models/index');
+const db = require('../../models');
 
 afterAll(async () => {
     // Closing the DB connection allows Jest to exit successfully.
@@ -16,7 +16,13 @@ describe('test queue', () => {
                     testPlanReports(statuses: [DRAFT, IN_REVIEW]) {
                         id
                         status
-                        conflictCount
+                        conflicts {
+                            source {
+                                test {
+                                    id
+                                }
+                            }
+                        }
                         testPlanTarget {
                             id
                             title
@@ -25,14 +31,18 @@ describe('test queue', () => {
                             title
                             gitSha
                             gitMessage
-                            testCount
+                            tests {
+                                id
+                            }
                         }
                         draftTestPlanRuns {
                             id
                             tester {
                                 username
                             }
-                            testResultCount
+                            testResults {
+                                id
+                            }
                         }
                     }
                 }
@@ -44,24 +54,32 @@ describe('test queue', () => {
                 {
                     id: expect.anything(),
                     status: expect.stringMatching(/^(DRAFT|IN_REVIEW)$/),
-                    conflictCount: expect.any(Number),
+                    conflicts: expect.any(Array),
                     testPlanTarget: {
                         id: expect.anything(),
                         title: expect.any(String)
                     },
                     testPlanVersion: {
+                        title: expect.any(String),
                         gitSha: expect.any(String),
                         gitMessage: expect.any(String),
-                        title: expect.any(String),
-                        testCount: expect.any(Number)
+                        tests: expect.arrayContaining([
+                            expect.objectContaining({
+                                id: expect.anything()
+                            })
+                        ])
                     },
                     draftTestPlanRuns: expect.arrayContaining([
                         {
                             id: expect.anything(),
-                            testResultCount: expect.any(Number),
                             tester: expect.objectContaining({
                                 username: expect.any(String)
-                            })
+                            }),
+                            testResults: expect.arrayContaining([
+                                expect.objectContaining({
+                                    id: expect.anything()
+                                })
+                            ])
                         }
                     ])
                 }
@@ -180,7 +198,20 @@ describe('test queue', () => {
 
     it('can be finalized', async () => {
         await dbCleaner(async () => {
-            const testPlanReportId = '1';
+            const testPlanReportId = '3';
+            // This report starts in a FINALIZED state. Let's set it to DRAFT.
+            await mutate(gql`
+                mutation {
+                    testPlanReport(id: ${testPlanReportId}) {
+                        updateStatus(status: DRAFT) {
+                            testPlanReport {
+                                status
+                            }
+                        }
+                    }
+                }
+            `);
+
             const previous = await query(gql`
                 query {
                     testPlanReport(id: ${testPlanReportId}) {
@@ -223,7 +254,7 @@ describe('test queue', () => {
                     browserVersions
                 }
                 testPlans {
-                    latestTestPlanVersion(status: FINALIZED) {
+                    latestTestPlanVersion {
                         id
                         title
                     }
@@ -292,14 +323,7 @@ describe('test queue', () => {
                                     }
                                 }
                                 created {
-                                    locationOfData {
-                                        testPlanReportId
-                                        testPlanTargetId
-                                        browserId
-                                        browserVersion
-                                        atId
-                                        atVersion
-                                    }
+                                    locationOfData
                                 }
                             }
                         }
@@ -400,5 +424,149 @@ describe('test queue', () => {
             );
             expect(second.created.length).toBe(0);
         });
+    });
+
+    it('can be deleted along with associated runs', async () => {
+        await dbCleaner(async () => {
+            const testPlanReportId = '2';
+            const queryBefore = await query(gql`
+                query {
+                    testPlanReport(id: ${testPlanReportId}) {
+                        id
+                        draftTestPlanRuns {
+                            id
+                        }
+                    }
+                }
+            `);
+            const { draftTestPlanRuns } = queryBefore.testPlanReport;
+            await mutate(gql`
+                mutation {
+                    testPlanReport(id: ${testPlanReportId}) {
+                        deleteTestPlanReport
+                    }
+                }
+            `);
+            const queryAfter = await query(gql`
+                query {
+                    testPlanReport(id: ${testPlanReportId}) {
+                        id
+                    }
+                    testPlanRun(id: ${draftTestPlanRuns[0].id}) {
+                        id
+                    }
+                }
+            `);
+
+            expect(queryBefore.testPlanReport.id).toBeTruthy();
+            expect(draftTestPlanRuns.length).toBeGreaterThan(0);
+            expect(queryAfter.testPlanReport).toBe(null);
+            expect(queryAfter.testPlanRun).toBe(null);
+        });
+    });
+
+    it('displays conflicts', async () => {
+        const conflictingReportId = '2';
+
+        const result = await query(gql`
+            query {
+                testPlanReport(id: ${conflictingReportId}) {
+                    conflicts {
+                        source {
+                            locationOfData
+                        }
+                        conflictingResults {
+                            locationOfData
+                        }
+                    }
+                    conflictsFormatted
+                    md: conflictsFormatted(markdown: true)
+                }
+            }
+        `);
+
+        expect(result.testPlanReport).toMatchInlineSnapshot(`
+            Object {
+              "conflicts": Array [
+                Object {
+                  "conflictingResults": Array [
+                    Object {
+                      "locationOfData": Object {
+                        "assertionResultId": "YzUyZeyIxNCI6Ik5ERTRZZXlJeE15STZJazlYV1RGUFpYbEplRTFwU1RaTmJqQkhWbXhhUkNKOVdObVpEIn0GU0MT",
+                      },
+                    },
+                    Object {
+                      "locationOfData": Object {
+                        "assertionResultId": "YTNjMeyIxNCI6Ik4yTmpPZXlJeE15STZJazVIVFhwUFpYbEplRTFwU1RaTk16QlhSbWxhYWlKOUdSbU1XIn0WY5Y2",
+                      },
+                    },
+                  ],
+                  "source": Object {
+                    "locationOfData": Object {
+                      "assertionId": "MWJjNeyIzIjoiWkRCaU9leUl5SWpvaU1TSjlXWmlZVCJ9zNiZW",
+                    },
+                  },
+                },
+                Object {
+                  "conflictingResults": Array [
+                    Object {
+                      "locationOfData": Object {
+                        "scenarioResultId": "MjlkMeyIxMyI6Ik5XSmpNZXlJeE1pSTZNbjBURXlNVCJ92M5ZW",
+                      },
+                    },
+                    Object {
+                      "locationOfData": Object {
+                        "scenarioResultId": "ZTcwZeyIxMyI6Ik1XVTFNZXlJeE1pSTZNMzBEUmtaVCJ9DdiOD",
+                      },
+                    },
+                  ],
+                  "source": Object {
+                    "locationOfData": Object {
+                      "scenarioId": "NzVjYeyIzIjoiTUdaa1lleUl5SWpvaU1TSjlUZ3haRCJ9TNiMG",
+                    },
+                  },
+                },
+                Object {
+                  "conflictingResults": Array [
+                    Object {
+                      "locationOfData": Object {
+                        "scenarioResultId": "YjQzNeyIxMyI6IllUZzRZZXlJeE1pSTZNbjBXSmlOMiJ9mYwZD",
+                      },
+                    },
+                    Object {
+                      "locationOfData": Object {
+                        "scenarioResultId": "ZTRkYeyIxMyI6IlpqRXhOZXlJeE1pSTZNMzBUUmlOMiJ9jM1Yz",
+                      },
+                    },
+                  ],
+                  "source": Object {
+                    "locationOfData": Object {
+                      "scenarioId": "NjM1MeyIzIjoiTWprME1leUl5SWpvaU1TSjlqUXlPRyJ9mU4YW",
+                    },
+                  },
+                },
+              ],
+              "conflictsFormatted": "Difference 1 - Testing Tab / Shift+Tab for Role 'checkbox' is conveyed
+            Your result: FAILED: No Output (for output \\"output conflicts due to assertions\\")
+            Other result: PASSED: Good Output (for output \\"output will conflict due to assertions\\")
+            Difference 2 - Unexpected behavior when testing Enter
+            Your unexpected behaviors: Different text (for output \\"output conflicts due to unexpected behaviors\\")
+            Other unexpected behaviors: Screen reader became extremely sluggish (for output \\"output will conflict due to unexpected behaviors\\")
+            Difference 3 - Unexpected behavior when testing Space
+            Your unexpected behaviors: Different unexpected behavior (for output \\"null\\")
+            Other unexpected behaviors: No unexpected behaviors (for output \\"null\\")
+            ",
+              "md": "##### Difference 1 - Testing Tab / Shift+Tab for Role 'checkbox' is conveyed
+            * Your result: FAILED: No Output (for output \\"output conflicts due to assertions\\")
+            * Other result: PASSED: Good Output (for output \\"output will conflict due to assertions\\")
+            ##### Difference 2 - Unexpected behavior when testing Enter
+            * Your unexpected behaviors: Different text (for output \\"output conflicts due to unexpected behaviors\\")
+            * Other unexpected behaviors: Screen reader became extremely sluggish (for output \\"output will conflict due to unexpected behaviors\\")
+            ##### Difference 3 - Unexpected behavior when testing Space
+            * Your unexpected behaviors: Different unexpected behavior (for output \\"null\\")
+            * Other unexpected behaviors: No unexpected behaviors (for output \\"null\\")
+            ",
+            }
+        `);
     });
 });

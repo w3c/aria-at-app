@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { Container, Table, Alert } from 'react-bootstrap';
 import { Helmet } from 'react-helmet';
 import nextId from 'react-id-generator';
-import TestQueueRun from '../TestQueueRun';
+import TestQueueRow from '../TestQueueRow';
 import {
     NewTestPlanReportContainer,
     NewTestPlanReportModal
@@ -109,7 +109,7 @@ const TestQueue = () => {
                         {testPlanReports.map(testPlanReport => {
                             const key = `test_plan_report_${testPlanReport.id}`;
                             return (
-                                <TestQueueRun
+                                <TestQueueRow
                                     key={key}
                                     user={auth}
                                     testers={testers}
@@ -190,7 +190,7 @@ const TestQueue = () => {
     }
 
     if (!testPlanReports.length) {
-        const noTestPlansMessage = 'There are no Test Plans available';
+        const noTestPlansMessage = 'There are no test plans available';
         const settingsLink = <Link to="/account/settings">Settings</Link>;
 
         return (
