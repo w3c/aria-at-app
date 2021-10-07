@@ -42,13 +42,15 @@ const TestQueueRow = ({
     const [removeTester] = useMutation(REMOVE_TESTER_MUTATION);
     const [removeTesterResults] = useMutation(REMOVE_TESTER_RESULTS_MUTATION);
 
-    const { isAdmin, username } = user;
+    const { id, isAdmin, username } = user;
     const {
         testPlanTarget,
         testPlanVersion,
         draftTestPlanRuns,
         runnableTests
     } = testPlanReport;
+
+    const isSignedIn = !!id;
 
     const checkIsTesterAssigned = username => {
         return draftTestPlanRuns.some(
@@ -114,7 +116,7 @@ const TestQueueRow = ({
 
     const renderAssignedUserToTestPlan = () => {
         // Determine if current user is assigned to testPlan
-        if (currentUserAssigned)
+        if (currentUserAssigned || !isSignedIn)
             return (
                 <Link to={`/run/${currentUserTestPlanRun.id}`}>
                     {testPlanVersion.title ||
@@ -344,26 +346,28 @@ const TestQueueRow = ({
         <tr className="test-queue-run-row">
             <th>{renderAssignedUserToTestPlan()}</th>
             <td>
-                <div className="testers-wrapper">
-                    {isAdmin && renderAssignMenu()}
-                    <div className="assign-actions">
-                        <Button
-                            variant="secondary"
-                            onClick={() => toggleTesterAssign(username)}
-                            aria-label={
-                                !currentUserAssigned
+                {isSignedIn && (
+                    <div className="testers-wrapper">
+                        {isAdmin && renderAssignMenu()}
+                        <div className="assign-actions">
+                            <Button
+                                variant="secondary"
+                                onClick={() => toggleTesterAssign(username)}
+                                aria-label={
+                                    !currentUserAssigned
+                                        ? 'Assign Yourself'
+                                        : 'Unassign Yourself'
+                                }
+                                className="assign-self"
+                            >
+                                {!currentUserAssigned
                                     ? 'Assign Yourself'
-                                    : 'Unassign Yourself'
-                            }
-                            className="assign-self"
-                        >
-                            {!currentUserAssigned
-                                ? 'Assign Yourself'
-                                : 'Unassign Yourself'}
-                        </Button>
+                                    : 'Unassign Yourself'}
+                            </Button>
+                        </div>
                     </div>
-                </div>
-                <div className="secondary-actions">
+                )}
+                <div className={isSignedIn && 'secondary-actions'}>
                     <ul className="assignees">
                         {draftTestPlanRuns.length !== 0 ? (
                             draftTestPlanRuns.map(({ tester, testResults }) => (
@@ -395,102 +399,109 @@ const TestQueueRow = ({
             </td>
             <td>
                 <div className="status-wrapper">{status}</div>
-                <div className="secondary-actions">
-                    {isAdmin && nextReportStatus && (
-                        <>
-                            <Button
-                                variant="secondary"
-                                onClick={() =>
-                                    updateReportStatus(nextReportStatus)
-                                }
-                            >
-                                Mark as{' '}
-                                {capitalizeEachWord(nextReportStatus, {
-                                    splitChar: '_'
-                                })}
-                            </Button>
-                            {nextReportStatus === 'Final' ? (
+                {isSignedIn && (
+                    <div className="secondary-actions">
+                        {isAdmin && nextReportStatus && (
+                            <>
                                 <Button
-                                    variant="link"
-                                    className="mt-1"
-                                    onClick={() => updateReportStatus('DRAFT')}
+                                    variant="secondary"
+                                    onClick={() =>
+                                        updateReportStatus(nextReportStatus)
+                                    }
                                 >
-                                    Mark as Draft
+                                    Mark as{' '}
+                                    {capitalizeEachWord(nextReportStatus, {
+                                        splitChar: '_'
+                                    })}
                                 </Button>
-                            ) : (
-                                <></>
-                            )}
-                        </>
-                    )}
-                    {results}
-                </div>
+                                {nextReportStatus === 'Final' ? (
+                                    <Button
+                                        variant="link"
+                                        className="mt-1"
+                                        onClick={() =>
+                                            updateReportStatus('DRAFT')
+                                        }
+                                    >
+                                        Mark as Draft
+                                    </Button>
+                                ) : (
+                                    <></>
+                                )}
+                            </>
+                        )}
+                        {results}
+                    </div>
+                )}
             </td>
-            <td className="actions">
-                <div className="test-cta-wrapper">
-                    {currentUserAssigned && (
-                        <Button
-                            variant="primary"
-                            href={`/run/${currentUserTestPlanRun.id}`}
-                            disabled={!currentUserAssigned}
-                            ref={startTestingButtonRef}
-                        >
-                            {currentUserTestPlanRun.testResults.length > 0 &&
-                            currentUserTestPlanRun.testResults.length <
-                                runnableTests.length
-                                ? 'Continue testing'
-                                : 'Start testing'}
-                        </Button>
-                    )}
+            {isSignedIn && (
+                <td className="actions">
+                    <div className="test-cta-wrapper">
+                        {currentUserAssigned && (
+                            <Button
+                                variant="primary"
+                                href={`/run/${currentUserTestPlanRun.id}`}
+                                disabled={!currentUserAssigned}
+                                ref={startTestingButtonRef}
+                            >
+                                {currentUserTestPlanRun.testResults.length >
+                                    0 &&
+                                currentUserTestPlanRun.testResults.length <
+                                    runnableTests.length
+                                    ? 'Continue testing'
+                                    : 'Start testing'}
+                            </Button>
+                        )}
 
-                    {isAdmin && (
-                        <Button
-                            variant="danger"
-                            onClick={() => {
-                                triggerDeleteTestPlanReportModal(
-                                    testPlanReport.id,
-                                    evaluateTestPlanRunTitle(),
-                                    () => handleRemoveTestPlanReport()
-                                );
-                            }}
-                        >
-                            Remove
-                        </Button>
-                    )}
-                </div>
-                <div className="secondary-actions">
-                    {isAdmin && renderOpenAsDropdown()}
-                    {isAdmin && renderDeleteMenu()}
-                    {(!isAdmin &&
-                        currentUserTestPlanRun.testResults &&
-                        currentUserTestPlanRun.testResults.length && (
+                        {isAdmin && (
                             <Button
                                 variant="danger"
                                 onClick={() => {
-                                    triggerDeleteResultsModal(
+                                    triggerDeleteTestPlanReportModal(
+                                        testPlanReport.id,
                                         evaluateTestPlanRunTitle(),
-                                        username,
-                                        async () =>
-                                            await handleRemoveTesterResults(
-                                                user
-                                            )
+                                        () => handleRemoveTestPlanReport()
                                     );
                                 }}
-                                aria-label="Delete my results"
                             >
-                                <FontAwesomeIcon icon={faTrashAlt} />
-                                Delete Results
+                                Remove
                             </Button>
-                        )) ||
-                        null}
+                        )}
+                    </div>
+                    <div className="secondary-actions">
+                        {isAdmin && renderOpenAsDropdown()}
+                        {isAdmin && renderDeleteMenu()}
+                        {(!isAdmin &&
+                            currentUserTestPlanRun.testResults &&
+                            currentUserTestPlanRun.testResults.length && (
+                                <Button
+                                    variant="danger"
+                                    onClick={() => {
+                                        triggerDeleteResultsModal(
+                                            evaluateTestPlanRunTitle(),
+                                            username,
+                                            async () =>
+                                                await handleRemoveTesterResults(
+                                                    user
+                                                )
+                                        );
+                                    }}
+                                    aria-label="Delete my results"
+                                >
+                                    <FontAwesomeIcon icon={faTrashAlt} />
+                                    Delete Results
+                                </Button>
+                            )) ||
+                            null}
 
-                    {alertMessage && (
-                        <ATAlert
-                            key={`${testPlanVersion.id}-${testPlanVersion.gitSha}-${testPlanVersion.directory}`}
-                            message={alertMessage}
-                        />
-                    )}
-                </div>
-            </td>
+                        {alertMessage && (
+                            <ATAlert
+                                key={`${testPlanVersion.id}-${testPlanVersion.gitSha}-${testPlanVersion.directory}`}
+                                message={alertMessage}
+                            />
+                        )}
+                    </div>
+                </td>
+            )}
         </tr>
     );
 };

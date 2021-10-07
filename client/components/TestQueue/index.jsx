@@ -39,7 +39,8 @@ const TestQueue = () => {
     const [isShowingAddToQueueModal, setAddToQueueModal] = useState(false);
 
     const auth = evaluateAuth(data && data.me ? data.me : {});
-    const { isAdmin } = auth;
+    const { id, isAdmin } = auth;
+    const isSignedIn = !!id;
 
     useEffect(() => {
         if (data) {
@@ -102,7 +103,7 @@ const TestQueue = () => {
                             <th className="test-plan">Test Plan</th>
                             <th className="testers">Testers</th>
                             <th className="report-status">Report Status</th>
-                            <th className="actions">Actions</th>
+                            {isSignedIn && <th className="actions">Actions</th>}
                         </tr>
                     </thead>
                     <tbody>
@@ -201,7 +202,7 @@ const TestQueue = () => {
                 <h2 data-testid="test-queue-no-test-plans-h2">
                     {noTestPlansMessage}
                 </h2>
-                {!isAdmin && (
+                {!isAdmin && isSignedIn && (
                     <Alert
                         key="alert-configure"
                         variant="danger"
@@ -245,8 +246,10 @@ const TestQueue = () => {
             </Helmet>
             <h1>Test Queue</h1>
             <p data-testid="test-queue-instructions">
-                Assign yourself a test plan or start executing one that is
-                already assigned to you.
+                {isSignedIn
+                    ? 'Assign yourself a test plan or start executing one that is\n' +
+                      '                already assigned to you.'
+                    : 'Select a test plan to view anonymously. Your results will not be saved.'}
             </p>
 
             {isAdmin && (
@@ -259,13 +262,15 @@ const TestQueue = () => {
                 renderAtBrowserList(key, structuredTestPlanTargets[key])
             )}
 
-            <DeleteResultsModal
-                show={isShowingDeleteResultsModal}
-                isAdmin={isAdmin}
-                details={deleteResultsDetails}
-                handleClose={handleCloseDeleteResultsModal}
-                handleAction={handleDeleteResults}
-            />
+            {isSignedIn && (
+                <DeleteResultsModal
+                    show={isShowingDeleteResultsModal}
+                    isAdmin={isAdmin}
+                    details={deleteResultsDetails}
+                    handleClose={handleCloseDeleteResultsModal}
+                    handleAction={handleDeleteResults}
+                />
+            )}
 
             {isAdmin && isShowingDeleteTestPlanReportModal && (
                 <DeleteTestPlanReportModal

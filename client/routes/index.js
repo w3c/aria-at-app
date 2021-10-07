@@ -35,13 +35,7 @@ export default [
     {
         path: '/test-queue',
         exact: true,
-        component: () => {
-            return (
-                <ConfirmAuth requiredPermission="TESTER">
-                    <Route component={TestQueue} />
-                </ConfirmAuth>
-            );
-        }
+        component: TestQueue
     },
     {
         path: '/run/:runId(\\d+)',
