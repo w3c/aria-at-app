@@ -385,14 +385,14 @@ const TestRenderer = ({
             setPageContent(testRunExport.instructions());
         }
 
-        if (!testRunStateRef.current)
-            testRunStateRef.current = testRendererState;
+        testRunStateRef.current = testRendererState;
 
         setIsRendererReady(true);
     }, [testRunExport]);
 
     useEffect(() => {
         if (!submitCalled && completedAt && pageContent) {
+            testRunStateRef.current = testRendererState;
             pageContent.submit.click();
             setSubmitCalled(true);
         }
@@ -1088,7 +1088,10 @@ const TestRenderer = ({
                         ref={submitButtonRef}
                         type="button"
                         hidden
-                        onClick={pageContent.submit.click}
+                        onClick={() => {
+                            testRunStateRef.current = testRendererState;
+                            pageContent.submit.click();
+                        }}
                     >
                         {pageContent.submit.button}
                     </button>

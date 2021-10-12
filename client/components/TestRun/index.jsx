@@ -94,7 +94,9 @@ const TestRun = () => {
         false
     );
 
-    useEffect(() => {
+    useEffect(() => setup(), [currentTestIndex]);
+
+    const setup = () => {
         pageReadyRef.current = false;
         testRunStateRef.current = null;
         testRunResultRef.current = null;
@@ -102,7 +104,7 @@ const TestRun = () => {
         setIsTestSubmitClicked(false);
 
         if (titleRef.current) titleRef.current.focus();
-    }, [currentTestIndex]);
+    };
 
     if (error) {
         const { message } = error;
@@ -412,7 +414,9 @@ const TestRun = () => {
             id
         };
         await deleteTestResult({ variables });
-        await refetch();
+
+        setup();
+        await createTestResultForRenderer(currentTest.id);
 
         // close modal after action
         setShowStartOverModal(false);
@@ -436,10 +440,10 @@ const TestRun = () => {
     const handleReviewConflictsButtonClick = async () =>
         setShowReviewConflictsModal(true);
 
-    const renderTestContent = (testPlanReport, test, heading) => {
-        const { index } = test;
-        const isComplete = test.testResult
-            ? !!test.testResult.completedAt
+    const renderTestContent = (testPlanReport, currentTest, heading) => {
+        const { index } = currentTest;
+        const isComplete = currentTest.testResult
+            ? !!currentTest.testResult.completedAt
             : false;
         const isFirstTest = index === 0;
         const isLastTest = currentTest.seq === tests.length;
@@ -559,7 +563,7 @@ const TestRun = () => {
             <>
                 <h1 ref={titleRef} data-test="testing-task" tabIndex={-1}>
                     <span className="task-label">Testing task:</span>{' '}
-                    {`${currentTest.seq}.`} {test.title}
+                    {`${currentTest.seq}.`} {currentTest.title}
                 </h1>
                 <span>{heading}</span>
                 <StatusBar
