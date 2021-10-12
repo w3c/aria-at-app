@@ -304,16 +304,14 @@ describe('Render TestQueue/index.jsx', () => {
             });
 
             const { queryAllByText } = wrapper;
-            const userAAssignedElements = queryAllByText(/foo-bar/gi);
-            const userBAssignedElements = queryAllByText(/bar-foo/gi);
-            const userCAssignedElements = queryAllByText(/boo-far/gi);
+            const userAAssignedElements = queryAllByText(/esmeralda-baggins/gi);
+            const userBAssignedElements = queryAllByText(/tom-proudfeet/gi);
             const assignedTestsElements = queryAllByText(
                 /\d+ of \d+ tests complete/gi
             );
 
             expect(userAAssignedElements.length).toBeGreaterThanOrEqual(1);
             expect(userBAssignedElements.length).toBeGreaterThanOrEqual(1);
-            expect(userCAssignedElements.length).toBeGreaterThanOrEqual(1);
             expect(assignedTestsElements.length).toBeGreaterThanOrEqual(1);
         });
 
