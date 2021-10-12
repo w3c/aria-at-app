@@ -85,6 +85,7 @@ const TestRun = () => {
     const [submitTestResult] = useMutation(SUBMIT_TEST_RESULT_MUTATION);
     const [deleteTestResult] = useMutation(DELETE_TEST_RESULT_MUTATION);
 
+    const [isRendererReady, setIsRendererReady] = useState(false);
     const [isTestSubmitClicked, setIsTestSubmitClicked] = useState(false);
     const [showTestNavigator, setShowTestNavigator] = useState(true);
     const [currentTestIndex, setCurrentTestIndex] = useState(0);
@@ -97,6 +98,7 @@ const TestRun = () => {
         pageReadyRef.current = false;
         testRunStateRef.current = null;
         testRunResultRef.current = null;
+        setIsRendererReady(false);
         setIsTestSubmitClicked(false);
 
         if (titleRef.current) titleRef.current.focus();
@@ -568,10 +570,10 @@ const TestRun = () => {
                         handleReviewConflictsButtonClick
                     }
                 />
-                <Row>
-                    <Col className="test-iframe-container" md={9}>
-                        <Row>
-                            {pageReadyRef.current && currentTest.testResult && (
+                {pageReadyRef.current && currentTest.testResult && (
+                    <Row>
+                        <Col className="test-iframe-container" md={9}>
+                            <Row>
                                 <TestRenderer
                                     key={nextId()}
                                     at={testPlanTarget.at}
@@ -586,15 +588,16 @@ const TestRun = () => {
                                         testRendererSubmitButtonRef
                                     }
                                     isSubmitted={isTestSubmitClicked}
+                                    setIsRendererReady={setIsRendererReady}
                                 />
-                            )}
-                        </Row>
-                        <Row>{primaryButtonGroup}</Row>
-                    </Col>
-                    <Col className="current-test-options" md={3}>
-                        {menuRightOfContent}
-                    </Col>
-                </Row>
+                            </Row>
+                            {isRendererReady && <Row>{primaryButtonGroup}</Row>}
+                        </Col>
+                        <Col className="current-test-options" md={3}>
+                            {menuRightOfContent}
+                        </Col>
+                    </Row>
+                )}
 
                 {/* Modals */}
                 {showStartOverModal && (

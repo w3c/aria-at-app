@@ -139,7 +139,7 @@ export function instructionDocument(resultState, hooks) {
             },
             `.`,
           ],
-          `Activate the "Open test page" button below, which opens the example to test in a new window${setupScriptDescription}`,
+          `Activate the "Open test page" button below, which opens the example to test in a new window${setupScriptDescription || '.'}`,
         ],
         strongInstructions: [modeInstructions, ...userInstructions],
         commands: {

@@ -224,7 +224,8 @@ const TestRenderer = ({
     testRunStateRef,
     testRunResultRef,
     submitButtonRef,
-    isSubmitted = false
+    isSubmitted = false,
+    setIsRendererReady = () => {}
 }) => {
     const { scenarioResults, test = {}, completedAt } = testResult;
     const { renderableContent } = test;
@@ -386,6 +387,8 @@ const TestRenderer = ({
 
         if (!testRunStateRef.current)
             testRunStateRef.current = testRendererState;
+
+        setIsRendererReady(true);
     }, [testRunExport]);
 
     useEffect(() => {
@@ -1107,7 +1110,8 @@ TestRenderer.propTypes = {
     testRunStateRef: PropTypes.any,
     testRunResultRef: PropTypes.any,
     submitButtonRef: PropTypes.any,
-    isSubmitted: PropTypes.bool
+    isSubmitted: PropTypes.bool,
+    setIsRendererReady: PropTypes.func
 };
 
 export default TestRenderer;
