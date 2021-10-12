@@ -332,7 +332,14 @@ const TestRun = () => {
     };
 
     const performButtonAction = async (action, index) => {
-        const saveForm = async (withResult = false) => {
+        // TODO: Revise function
+        const saveForm = async (
+            withResult = false,
+            forceSave = false,
+            forceEdit = false
+        ) => {
+            if (!forceEdit && currentTest.testResult.completedAt) return true;
+
             const scenarioResults = remapScenarioResults(
                 testRunStateRef.current,
                 currentTest.testResult.scenarioResults,
@@ -341,33 +348,34 @@ const TestRun = () => {
 
             await handleSaveOrSubmitTestResultAction(
                 { scenarioResults },
-                !!testRunResultRef.current
+                forceSave ? false : !!testRunResultRef.current
             );
-            if (withResult) return !!testRunResultRef.current;
+            if (withResult && !forceSave) return !!testRunResultRef.current;
             return true;
         };
 
         switch (action) {
             case 'goToTestAtIndex': {
                 // Save renderer's form state
-                await saveForm();
+                await saveForm(false, true);
                 setCurrentTestIndex(index);
                 break;
             }
             case 'goToNextTest': {
                 // Save renderer's form state
-                await saveForm();
+                await saveForm(false, true);
                 navigateTests();
                 break;
             }
             case 'goToPreviousTest': {
                 // Save renderer's form state
-                await saveForm();
+                await saveForm(false, true);
                 navigateTests(true);
                 break;
             }
             case 'editTest': {
-                await handleStartOverAction();
+                testRunResultRef.current = null;
+                await saveForm(false, true, true);
                 if (titleRef.current) titleRef.current.focus();
                 break;
             }
