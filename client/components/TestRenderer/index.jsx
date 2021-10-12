@@ -244,7 +244,15 @@ const TestRenderer = ({
 
         await testRunIO.setInputsFromCollectedTestAsync(renderableContent);
         testRunIO.setConfigInputFromQueryParamsAndSupport(configQueryParams);
-        testRunIO.setPageUriInputFromPageUri(testPageUrl);
+
+        if (renderableContent.target?.referencePage) {
+            const replaceIndex = testPageUrl.indexOf('reference/');
+            // sync with proxy url expected for aria-at-app to work properly
+            const constructedTestPageUrl =
+                testPageUrl.substring(0, replaceIndex) +
+                renderableContent.target?.referencePage;
+            testRunIO.setPageUriInputFromPageUri(constructedTestPageUrl);
+        } else testRunIO.setPageUriInputFromPageUri(testPageUrl);
 
         const _state = remapState(testRunIO.testRunState(), scenarioResults);
 
