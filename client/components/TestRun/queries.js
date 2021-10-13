@@ -59,6 +59,9 @@ export const TEST_RUN_PAGE_QUERY = gql`
                     title
                     gitSha
                     testPageUrl
+                    testPlan {
+                        directory
+                    }
                 }
                 runnableTests {
                     id

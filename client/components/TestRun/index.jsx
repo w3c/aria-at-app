@@ -666,7 +666,8 @@ const TestRun = () => {
                     <div className="info-label">
                         <b>Test Plan:</b>{' '}
                         {`${testPlanVersion.title ||
-                            testPlanVersion.directory}`}
+                            testPlanVersion.testPlan?.directory ||
+                            ''}`}
                     </div>
                 </div>
                 <div
