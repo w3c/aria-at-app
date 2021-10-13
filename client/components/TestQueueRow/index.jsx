@@ -12,8 +12,7 @@ import { Button, Dropdown } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import ATAlert from '../ATAlert';
 import { capitalizeEachWord } from '../../utils/formatter';
-
-import './TestQueueRun.css';
+import './TestQueueRow.css';
 import {
     ASSIGN_TESTER_MUTATION,
     UPDATE_TEST_PLAN_REPORT_MUTATION,
@@ -75,7 +74,6 @@ const TestQueueRow = ({
         const tester = testers.find(tester => tester.username === username);
 
         if (isTesterAssigned) {
-            // unassign tester
             await removeTester({
                 variables: {
                     testReportId: testPlanReport.id,
@@ -83,7 +81,6 @@ const TestQueueRow = ({
                 }
             });
         } else {
-            // assign tester
             await assignTester({
                 variables: {
                     testReportId: testPlanReport.id,
@@ -92,7 +89,6 @@ const TestQueueRow = ({
             });
         }
 
-        // force data after assignment changes
         await triggerTestPlanReportUpdate();
     };
 
@@ -174,7 +170,7 @@ const TestQueueRow = ({
         );
     };
 
-    const evaluateTestRunTitle = () => {
+    const evaluateTestPlanRunTitle = () => {
         const { title: testPlanTargetName } = testPlanTarget;
         const { title: apgExampleName, directory } = testPlanVersion;
 
@@ -230,10 +226,10 @@ const TestQueueRow = ({
                                         key={nextId()}
                                         onClick={() => {
                                             triggerDeleteResultsModal(
-                                                evaluateTestRunTitle(),
+                                                evaluateTestPlanRunTitle(),
                                                 tester.username,
-                                                async () =>
-                                                    await handleRemoveTesterResults(
+                                                () =>
+                                                    handleRemoveTesterResults(
                                                         id
                                                     )
                                             );
@@ -266,7 +262,7 @@ const TestQueueRow = ({
         const { id: runId } = currentUserTestPlanRun;
 
         let status, results;
-        const conflictCount = conflicts.length || 0;
+        const conflictCount = conflicts.length;
 
         if (conflictCount > 0) {
             let pluralizedStatus = `${conflictCount} Conflict${
@@ -302,7 +298,7 @@ const TestQueueRow = ({
 
     const evaluateNewReportStatus = () => {
         const { status, conflicts } = testPlanReport;
-        const conflictCount = conflicts.length || 0;
+        const conflictCount = conflicts.length;
 
         // If there are no conflicts OR the test has been marked as "final",
         // and admin can mark a test run as "draft"
@@ -332,7 +328,10 @@ const TestQueueRow = ({
 
     return (
         <tr className="test-queue-run-row">
-            <th>{testPlanVersion.title || `"${testPlanVersion.directory}"`}</th>
+            <th>
+                {testPlanVersion.title ||
+                    `"${testPlanVersion.testPlan.directory}"`}
+            </th>
             <td>
                 <div className="testers-wrapper">
                     {isAdmin && renderAssignMenu()}
@@ -439,9 +438,8 @@ const TestQueueRow = ({
                             onClick={() => {
                                 triggerDeleteTestPlanReportModal(
                                     testPlanReport.id,
-                                    evaluateTestRunTitle(),
-                                    async () =>
-                                        await handleRemoveTestPlanReport()
+                                    evaluateTestPlanRunTitle(),
+                                    () => handleRemoveTestPlanReport()
                                 );
                             }}
                         >
@@ -452,23 +450,27 @@ const TestQueueRow = ({
                 <div className="secondary-actions">
                     {isAdmin && renderOpenAsDropdown()}
                     {isAdmin && renderDeleteMenu()}
-                    {(!isAdmin && currentUserTestPlanRun.testResults.length && (
-                        <Button
-                            variant="danger"
-                            onClick={() => {
-                                triggerDeleteResultsModal(
-                                    evaluateTestRunTitle(),
-                                    username,
-                                    async () =>
-                                        await handleRemoveTesterResults(user)
-                                );
-                            }}
-                            aria-label="Delete my results"
-                        >
-                            <FontAwesomeIcon icon={faTrashAlt} />
-                            Delete Results
-                        </Button>
-                    )) ||
+                    {(!isAdmin &&
+                        currentUserTestPlanRun.testResults &&
+                        currentUserTestPlanRun.testResults.length && (
+                            <Button
+                                variant="danger"
+                                onClick={() => {
+                                    triggerDeleteResultsModal(
+                                        evaluateTestPlanRunTitle(),
+                                        username,
+                                        async () =>
+                                            await handleRemoveTesterResults(
+                                                user
+                                            )
+                                    );
+                                }}
+                                aria-label="Delete my results"
+                            >
+                                <FontAwesomeIcon icon={faTrashAlt} />
+                                Delete Results
+                            </Button>
+                        )) ||
                         null}
 
                     {alertMessage && (

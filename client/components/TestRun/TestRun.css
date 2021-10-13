@@ -20,9 +20,27 @@ button.test-navigator-toggle.show:hover {
 }
 
 .test-navigator-toggle-container {
-    position: absolute;
-    left: -3.75em;
-    top: -0.15em;
+    display: flex;
+    flex-direction: row;
+}
+
+.test-navigator-toggle-inner-container {
+    width: fit-content;
+}
+
+@media all and (max-width: 767px) {
+    .test-navigator-toggle-inner-container {
+        position: relative;
+        top: -0.15em;
+    }
+}
+
+@media all and (min-width: 768px) {
+    .test-navigator-toggle-inner-container {
+        position: absolute;
+        top: -0.15em;
+        left: -2.75em;
+    }
 }
 
 .test-navigator-list {
@@ -136,6 +154,7 @@ button.test-navigator-toggle.show:hover {
     -webkit-transform: rotate(45deg); /* Chrome, Safari, Opera */
     transform: rotate(45deg);
 }
+
 .test-name-wrapper.complete .progress-indicator:before {
     width: 4px;
     height: 3px;

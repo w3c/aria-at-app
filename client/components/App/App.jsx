@@ -1,31 +1,27 @@
 import React, { Fragment, useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import {
-    signIn as signInAction,
-    signOut as signOutAction
-} from '../../redux/actions/auth';
 import { useQuery } from '@apollo/client';
 import { renderRoutes } from 'react-router-config';
 import { Link, useLocation } from 'react-router-dom';
 import { Container, Navbar, Nav } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
-import { ME_QUERY } from './queries';
+import { evaluateAuth } from '../../utils/evaluateAuth';
+import ScrollFixer from '../../utils/ScrollFixer';
 import routes from '../../routes';
+import { ME_QUERY } from './queries';
 import useSigninUrl from './useSigninUrl';
 import './App.css';
 
-const App = ({ auth, dispatch }) => {
-    const { client, loading, data } = useQuery(ME_QUERY);
-    const signinUrl = useSigninUrl();
+const App = () => {
     const location = useLocation();
+    const signinUrl = useSigninUrl();
+    const { client, loading, data } = useQuery(ME_QUERY);
     const [isNavbarExpanded, setIsNavbarExpanded] = useState(false);
 
-    const { isSignedIn, isSignOutCalled, isTester, username } = auth;
+    const auth = evaluateAuth(data && data.me ? data.me : {});
+    const { username, isTester, isSignedIn } = auth;
 
     const signOut = async () => {
-        dispatch(signOutAction());
         await fetch('/api/auth/signout', { method: 'POST' });
         await client.resetStore();
     };
@@ -36,13 +32,8 @@ const App = ({ auth, dispatch }) => {
 
     if (loading) return null;
 
-    // cache still being used to prevent redux refresh unless browser refreshed
-    // for some instances. `isSignOutCalled` boolean helps prevent this
-    if (!isSignOutCalled && !username && data && data.me)
-        dispatch(signInAction(data.me));
-
     return (
-        <Fragment>
+        <ScrollFixer>
             <Container fluid>
                 <Navbar
                     bg="light"
@@ -69,9 +60,9 @@ const App = ({ auth, dispatch }) => {
                                 <Nav.Link
                                     as={Link}
                                     to="/reports"
-                                    aria-current={
-                                        location.pathname === '/reports'
-                                    }
+                                    aria-current={location.pathname.startsWith(
+                                        '/reports'
+                                    )}
                                 >
                                     Test Reports
                                 </Nav.Link>
@@ -90,9 +81,9 @@ const App = ({ auth, dispatch }) => {
                                 <Nav.Link
                                     as={Link}
                                     to="/reports"
-                                    aria-current={
-                                        location.pathname === '/reports'
-                                    }
+                                    aria-current={location.pathname.startsWith(
+                                        '/reports'
+                                    )}
                                 >
                                     Test Reports
                                 </Nav.Link>
@@ -107,18 +98,6 @@ const App = ({ auth, dispatch }) => {
                                         Test Queue
                                     </Nav.Link>
                                 )}
-                                {/*{isAdmin && (*/}
-                                {/*    <Nav.Link*/}
-                                {/*        as={Link}*/}
-                                {/*        to="/admin/configure-runs"*/}
-                                {/*        aria-current={*/}
-                                {/*            location.pathname ===*/}
-                                {/*            '/admin/configure-runs'*/}
-                                {/*        }*/}
-                                {/*    >*/}
-                                {/*        Test Configuration*/}
-                                {/*    </Nav.Link>*/}
-                                {/*)}*/}
                                 <Nav.Link
                                     as={Link}
                                     to="/account/settings"
@@ -144,18 +123,8 @@ const App = ({ auth, dispatch }) => {
             <Container fluid>
                 <div>{renderRoutes(routes)}</div>
             </Container>
-        </Fragment>
+        </ScrollFixer>
     );
 };
 
-App.propTypes = {
-    auth: PropTypes.object,
-    dispatch: PropTypes.func
-};
-
-const mapStateToProps = state => {
-    const { auth } = state;
-    return { auth };
-};
-
-export default connect(mapStateToProps)(App);
+export default App;

@@ -17,26 +17,28 @@ const TestNavigator = ({
 }) => {
     return (
         <Col className="test-navigator" md={show ? 3 : 12}>
-            {show && <h2>Test Navigator</h2>}
             <div className="test-navigator-toggle-container">
-                <button
-                    aria-label={`${
-                        show
-                            ? 'Toggle button to close test navigator'
-                            : 'Toggle button to open test navigator'
-                    }`}
-                    onClick={toggleShowClick}
-                    className={`test-navigator-toggle ${
-                        show ? 'hide' : 'show'
-                    }`}
-                >
-                    {show ? (
-                        <FontAwesomeIcon icon={faArrowLeft} />
-                    ) : (
-                        <FontAwesomeIcon icon={faArrowRight} />
-                    )}
-                    <FontAwesomeIcon icon={faAlignLeft} />
-                </button>
+                <div className="test-navigator-toggle-inner-container">
+                    <button
+                        aria-label={`${
+                            show
+                                ? 'Toggle button to close test navigator'
+                                : 'Toggle button to open test navigator'
+                        }`}
+                        onClick={toggleShowClick}
+                        className={`test-navigator-toggle ${
+                            show ? 'hide' : 'show'
+                        }`}
+                    >
+                        {show ? (
+                            <FontAwesomeIcon icon={faArrowLeft} />
+                        ) : (
+                            <FontAwesomeIcon icon={faArrowRight} />
+                        )}
+                        <FontAwesomeIcon icon={faAlignLeft} />
+                    </button>
+                </div>
+                {show && <h2>Test Navigator</h2>}
             </div>
             {show && (
                 <nav role="complementary">

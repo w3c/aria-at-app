@@ -224,14 +224,15 @@ const TestRenderer = ({
     testRunStateRef,
     testRunResultRef,
     submitButtonRef,
-    isSubmitted = false
+    isSubmitted = false,
+    setIsRendererReady = () => {}
 }) => {
     const { scenarioResults, test = {}, completedAt } = testResult;
     const { renderableContent } = test;
 
     const [testRunExport, setTestRunExport] = useState();
     const [pageContent, setPageContent] = useState(null);
-    const [state, setState] = useState(null);
+    const [testRendererState, setTestRendererState] = useState(null);
     const [submitResult, setSubmitResult] = useState(null);
     const [submitCalled, setSubmitCalled] = useState(false);
 
@@ -243,9 +244,17 @@ const TestRenderer = ({
 
         await testRunIO.setInputsFromCollectedTestAsync(renderableContent);
         testRunIO.setConfigInputFromQueryParamsAndSupport(configQueryParams);
-        testRunIO.setPageUriInputFromPageUri(testPageUrl);
 
-        const _state = mergeState(testRunIO.testRunState(), scenarioResults);
+        if (renderableContent.target?.referencePage) {
+            const replaceIndex = testPageUrl.indexOf('reference/');
+            // sync with proxy url expected for aria-at-app to work properly
+            const constructedTestPageUrl =
+                testPageUrl.substring(0, replaceIndex) +
+                renderableContent.target?.referencePage;
+            testRunIO.setPageUriInputFromPageUri(constructedTestPageUrl);
+        } else testRunIO.setPageUriInputFromPageUri(testPageUrl);
+
+        const _state = remapState(testRunIO.testRunState(), scenarioResults);
 
         const testWindow = new TestWindow({
             ...testRunIO.testWindowOptions(),
@@ -271,11 +280,11 @@ const TestRenderer = ({
             resultsJSON: state => testRunIO.submitResultsJSON(state),
             state: _state
         });
-        setState(_state);
+        setTestRendererState(_state);
         setTestRunExport(testRunExport);
     };
 
-    const mergeState = (state, scenarioResults = []) => {
+    const remapState = (state, scenarioResults = []) => {
         const { commands } = state;
 
         if (
@@ -384,11 +393,14 @@ const TestRenderer = ({
             setPageContent(testRunExport.instructions());
         }
 
-        if (!testRunStateRef.current) testRunStateRef.current = state;
+        testRunStateRef.current = testRendererState;
+
+        setIsRendererReady(true);
     }, [testRunExport]);
 
     useEffect(() => {
         if (!submitCalled && completedAt && pageContent) {
+            testRunStateRef.current = testRendererState;
             pageContent.submit.click();
             setSubmitCalled(true);
         }
@@ -1084,7 +1096,10 @@ const TestRenderer = ({
                         ref={submitButtonRef}
                         type="button"
                         hidden
-                        onClick={pageContent.submit.click}
+                        onClick={() => {
+                            testRunStateRef.current = testRendererState;
+                            pageContent.submit.click();
+                        }}
                     >
                         {pageContent.submit.button}
                     </button>
@@ -1106,7 +1121,8 @@ TestRenderer.propTypes = {
     testRunStateRef: PropTypes.any,
     testRunResultRef: PropTypes.any,
     submitButtonRef: PropTypes.any,
-    isSubmitted: PropTypes.bool
+    isSubmitted: PropTypes.bool,
+    setIsRendererReady: PropTypes.func
 };
 
 export default TestRenderer;

@@ -2,13 +2,13 @@ import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { Button, Modal } from 'react-bootstrap';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
-import ReactMarkdown from 'react-markdown';
+import MarkdownRenderer from 'react-markdown-renderer';
 
 const ReviewConflictsModal = ({
     show = false,
     conflictsFormatted = '',
     handleClose = () => {},
-    handleRaiseIssueButtonClick = () => {}
+    issueLink
 }) => {
     return (
         <Modal
@@ -29,7 +29,7 @@ const ReviewConflictsModal = ({
             </Modal.Header>
             <Modal.Body>
                 <Fragment>
-                    <ReactMarkdown>{conflictsFormatted}</ReactMarkdown>
+                    <MarkdownRenderer markdown={conflictsFormatted} />
                 </Fragment>
             </Modal.Body>
             <Modal.Footer>
@@ -38,10 +38,7 @@ const ReviewConflictsModal = ({
                         Copy Conflicts to Clipboard
                     </Button>
                 </CopyToClipboard>
-                <Button
-                    variant="secondary"
-                    onClick={handleRaiseIssueButtonClick}
-                >
+                <Button variant="secondary" target="_blank" href={issueLink}>
                     Raise an Issue for Conflict
                 </Button>
             </Modal.Footer>
@@ -53,7 +50,7 @@ ReviewConflictsModal.propTypes = {
     show: PropTypes.bool,
     conflictsFormatted: PropTypes.string,
     handleClose: PropTypes.func,
-    handleRaiseIssueButtonClick: PropTypes.func
+    issueLink: PropTypes.string
 };
 
 export default ReviewConflictsModal;

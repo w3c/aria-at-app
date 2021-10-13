@@ -11,7 +11,8 @@ const testPlans = async (_, __, ___, info) => {
 
     return getTestPlans({
         includeLatestTestPlanVersion: includeLatest,
-        includeTestPlanVersions: includeHistoric
+        includeTestPlanVersions: includeHistoric,
+        testPlanVersionOrder: [['updatedAt', 'desc']]
     });
 };
 

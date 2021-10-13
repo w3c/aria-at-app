@@ -36,10 +36,9 @@ export const TEST_RUN_PAGE_QUERY = gql`
                 status
                 conflicts {
                     source {
-                        locationOfData
-                    }
-                    conflictingResults {
-                        locationOfData
+                        test {
+                            id
+                        }
                     }
                 }
                 conflictsFormatted(markdown: true)
@@ -60,6 +59,9 @@ export const TEST_RUN_PAGE_QUERY = gql`
                     title
                     gitSha
                     testPageUrl
+                    testPlan {
+                        directory
+                    }
                 }
                 runnableTests {
                     id
@@ -69,6 +71,7 @@ export const TEST_RUN_PAGE_QUERY = gql`
                         name
                     }
                     atMode
+                    renderedUrl
                     scenarios {
                         id
                         at {
@@ -91,6 +94,11 @@ export const TEST_RUN_PAGE_QUERY = gql`
                 id
                 username
             }
+        }
+        me {
+            id
+            username
+            roles
         }
         users {
             id

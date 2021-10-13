@@ -1,6 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import { Link, useParams, useHistory } from 'react-router-dom';
 import useRouterQuery from '../../hooks/useRouterQuery';
@@ -28,9 +26,43 @@ import {
     SUBMIT_TEST_RESULT_MUTATION,
     DELETE_TEST_RESULT_MUTATION
 } from './queries';
+import { evaluateAuth } from '../../utils/evaluateAuth';
 import './TestRun.css';
 
-const TestRun = ({ auth }) => {
+const createGitHubIssueWithTitleAndBody = ({
+    test,
+    testPlanReport,
+    conflictsFormatted,
+    isReportViewer = false
+}) => {
+    const issueRaiser = isReportViewer ? 'Report Viewer' : 'Tester';
+    const title = `${issueRaiser}'s Issue Report for "${test.title}"`;
+
+    const { testPlanTarget } = testPlanReport;
+    const { at, browser } = testPlanTarget;
+    const shortenedUrl = test.renderedUrl.match(/[^/]+$/)[0];
+
+    let body =
+        `### Test File at Exact Commit\n\n` +
+        `[${shortenedUrl}](https://aria-at.w3.org${test.renderedUrl})\n\n` +
+        `### AT\n\n` +
+        `${at.name} (version ${testPlanTarget.atVersion})\n\n` +
+        `### Browser\n\n` +
+        `${browser.name} (version ${testPlanTarget.browserVersion})\n\n` +
+        `### Description\n\n` +
+        `_type your description here_`;
+
+    if (conflictsFormatted) {
+        body += `\n\n### Conflicts with other results\n${conflictsFormatted}`;
+    }
+
+    return (
+        `https://github.com/w3c/aria-at/issues/new?title=${encodeURI(title)}&` +
+        `body=${encodeURIComponent(body)}`
+    );
+};
+
+const TestRun = () => {
     const params = useParams();
     const history = useHistory();
     const routerQuery = useRouterQuery();
@@ -53,23 +85,26 @@ const TestRun = ({ auth }) => {
     const [submitTestResult] = useMutation(SUBMIT_TEST_RESULT_MUTATION);
     const [deleteTestResult] = useMutation(DELETE_TEST_RESULT_MUTATION);
 
+    const [isRendererReady, setIsRendererReady] = useState(false);
     const [isTestSubmitClicked, setIsTestSubmitClicked] = useState(false);
     const [showTestNavigator, setShowTestNavigator] = useState(true);
     const [currentTestIndex, setCurrentTestIndex] = useState(0);
     const [showStartOverModal, setShowStartOverModal] = useState(false);
-    const [showRaiseIssueModal, setShowRaiseIssueModal] = useState(false);
     const [showReviewConflictsModal, setShowReviewConflictsModal] = useState(
         false
     );
 
-    useEffect(() => {
+    useEffect(() => setup(), [currentTestIndex]);
+
+    const setup = () => {
         pageReadyRef.current = false;
         testRunStateRef.current = null;
         testRunResultRef.current = null;
+        setIsRendererReady(false);
         setIsTestSubmitClicked(false);
 
         if (titleRef.current) titleRef.current.focus();
-    }, [currentTestIndex]);
+    };
 
     if (error) {
         const { message } = error;
@@ -102,6 +137,7 @@ const TestRun = ({ auth }) => {
         conflictsFormatted
     } = testPlanReport || {};
 
+    const auth = evaluateAuth(data && data.me ? data.me : {});
     const { id: userId } = auth;
     // check to ensure an admin that manually went to a test run url doesn't
     // run the test as themselves
@@ -135,47 +171,12 @@ const TestRun = ({ auth }) => {
         await refetch();
     };
 
-    /**
-     * Check to see if scenarioId and scenarioResultId
-     * exists in source.locationOfData and
-     * conflictingResults.locationOfData objects
-     * respectively. If it does exist, check to see if
-     * scenarioId/scenarioTestId exists in the current
-     * test.
-     */
-    const conflictScenarioIds = [];
-
-    for (let i = 0; i < conflicts.length; i++) {
-        const conflict = conflicts[i];
-        if (
-            conflict.source &&
-            conflict.source.locationOfData &&
-            conflict.source.locationOfData.scenarioId
-        )
-            conflictScenarioIds.push(conflict.source.locationOfData.scenarioId);
-
-        if (conflict.conflictingResults) {
-            for (let j = 0; j < conflict.conflictingResults.length; j++) {
-                const conflictingResult = conflict.conflictingResults[j];
-                if (
-                    conflictingResult.locationOfData &&
-                    conflictingResult.locationOfData.scenarioResultId
-                )
-                    conflictScenarioIds.push(
-                        conflictingResult.locationOfData.scenarioResultId
-                    );
-            }
-        }
-    }
-
     const tests = runnableTests.map((test, index) => ({
         ...test,
         index,
         seq: index + 1,
         testResult: testResults.find(t => t.test.id === test.id),
-        hasConflicts: test.scenarios.some(({ id }) =>
-            conflictScenarioIds.includes(id)
-        )
+        hasConflicts: !!conflicts.find(c => c.source.test.id === test.id)
     }));
     const currentTest = tests[currentTestIndex];
     const hasTestsToRun = tests.length;
@@ -183,6 +184,12 @@ const TestRun = ({ auth }) => {
     if (!currentTest.testResult && !pageReadyRef.current)
         (async () => await createTestResultForRenderer(currentTest.id))();
     else pageReadyRef.current = true;
+
+    const gitHubIssueLinkWithTitleAndBody = createGitHubIssueWithTitleAndBody({
+        test: currentTest,
+        testPlanReport,
+        conflictsFormatted
+    });
 
     const navigateTests = (previous = false) => {
         // assume navigation forward if previous is false
@@ -201,7 +208,7 @@ const TestRun = ({ auth }) => {
         setCurrentTestIndex(tests.find(t => t.seq === newTestIndex).index);
     };
 
-    const mergeScenarioResults = (
+    const remapScenarioResults = (
         rendererState,
         scenarioResults,
         captureHighlightRequired = false
@@ -308,7 +315,7 @@ const TestRun = ({ auth }) => {
         return newScenarioResults;
     };
 
-    const mergeState = (rendererState, testResult) => {
+    const remapState = (rendererState, testResult) => {
         if (
             !rendererState ||
             !testResult.scenarioResults ||
@@ -316,7 +323,7 @@ const TestRun = ({ auth }) => {
         )
             return testResult;
 
-        const scenarioResults = mergeScenarioResults(
+        const scenarioResults = remapScenarioResults(
             rendererState,
             testResult.scenarioResults,
             true
@@ -325,8 +332,15 @@ const TestRun = ({ auth }) => {
     };
 
     const performButtonAction = async (action, index) => {
-        const saveForm = async (withResult = false) => {
-            const scenarioResults = mergeScenarioResults(
+        // TODO: Revise function
+        const saveForm = async (
+            withResult = false,
+            forceSave = false,
+            forceEdit = false
+        ) => {
+            if (!forceEdit && currentTest.testResult.completedAt) return true;
+
+            const scenarioResults = remapScenarioResults(
                 testRunStateRef.current,
                 currentTest.testResult.scenarioResults,
                 false
@@ -334,33 +348,34 @@ const TestRun = ({ auth }) => {
 
             await handleSaveOrSubmitTestResultAction(
                 { scenarioResults },
-                !!testRunResultRef.current
+                forceSave ? false : !!testRunResultRef.current
             );
-            if (withResult) return !!testRunResultRef.current;
+            if (withResult && !forceSave) return !!testRunResultRef.current;
             return true;
         };
 
         switch (action) {
             case 'goToTestAtIndex': {
                 // Save renderer's form state
-                await saveForm();
+                await saveForm(false, true);
                 setCurrentTestIndex(index);
                 break;
             }
             case 'goToNextTest': {
                 // Save renderer's form state
-                await saveForm();
+                await saveForm(false, true);
                 navigateTests();
                 break;
             }
             case 'goToPreviousTest': {
                 // Save renderer's form state
-                await saveForm();
+                await saveForm(false, true);
                 navigateTests(true);
                 break;
             }
             case 'editTest': {
-                await handleStartOverAction();
+                testRunResultRef.current = null;
+                await saveForm(false, true, true);
                 if (titleRef.current) titleRef.current.focus();
                 break;
             }
@@ -399,11 +414,6 @@ const TestRun = ({ auth }) => {
 
     const handleEditClick = async () => performButtonAction('editTest');
 
-    const handleRaiseIssueButtonClick = async () => {
-        setShowRaiseIssueModal(!showRaiseIssueModal);
-        setShowReviewConflictsModal(false);
-    };
-
     const handleStartOverButtonClick = async () => setShowStartOverModal(true);
 
     const handleStartOverAction = async () => {
@@ -412,7 +422,9 @@ const TestRun = ({ auth }) => {
             id
         };
         await deleteTestResult({ variables });
-        await refetch();
+
+        setup();
+        await createTestResultForRenderer(currentTest.id);
 
         // close modal after action
         setShowStartOverModal(false);
@@ -436,10 +448,10 @@ const TestRun = ({ auth }) => {
     const handleReviewConflictsButtonClick = async () =>
         setShowReviewConflictsModal(true);
 
-    const renderTestContent = (testPlanReport, test, heading) => {
-        const { index } = test;
-        const isComplete = test.testResult
-            ? !!test.testResult.completedAt
+    const renderTestContent = (testPlanReport, currentTest, heading) => {
+        const { index } = currentTest;
+        const isComplete = currentTest.testResult
+            ? !!currentTest.testResult.completedAt
             : false;
         const isFirstTest = index === 0;
         const isLastTest = currentTest.seq === tests.length;
@@ -532,7 +544,8 @@ const TestRun = ({ auth }) => {
                     <OptionButton
                         text="Raise An Issue"
                         icon={<FontAwesomeIcon icon={faExclamationCircle} />}
-                        onClick={handleRaiseIssueButtonClick}
+                        target="_blank"
+                        href={gitHubIssueLinkWithTitleAndBody}
                     />
 
                     <OptionButton
@@ -559,7 +572,7 @@ const TestRun = ({ auth }) => {
             <>
                 <h1 ref={titleRef} data-test="testing-task" tabIndex={-1}>
                     <span className="task-label">Testing task:</span>{' '}
-                    {`${currentTest.seq}.`} {test.title}
+                    {`${currentTest.seq}.`} {currentTest.title}
                 </h1>
                 <span>{heading}</span>
                 <StatusBar
@@ -569,16 +582,15 @@ const TestRun = ({ auth }) => {
                     handleReviewConflictsButtonClick={
                         handleReviewConflictsButtonClick
                     }
-                    handleRaiseIssueButtonClick={handleRaiseIssueButtonClick}
                 />
-                <Row>
-                    <Col className="test-iframe-container" md={9}>
-                        <Row>
-                            {pageReadyRef.current && currentTest.testResult && (
+                {pageReadyRef.current && currentTest.testResult && (
+                    <Row>
+                        <Col className="test-iframe-container" md={9}>
+                            <Row>
                                 <TestRenderer
                                     key={nextId()}
                                     at={testPlanTarget.at}
-                                    testResult={mergeState(
+                                    testResult={remapState(
                                         testRunStateRef.current,
                                         currentTest.testResult
                                     )}
@@ -589,15 +601,16 @@ const TestRun = ({ auth }) => {
                                         testRendererSubmitButtonRef
                                     }
                                     isSubmitted={isTestSubmitClicked}
+                                    setIsRendererReady={setIsRendererReady}
                                 />
-                            )}
-                        </Row>
-                        <Row>{primaryButtonGroup}</Row>
-                    </Col>
-                    <Col className="current-test-options" md={3}>
-                        {menuRightOfContent}
-                    </Col>
-                </Row>
+                            </Row>
+                            {isRendererReady && <Row>{primaryButtonGroup}</Row>}
+                        </Col>
+                        <Col className="current-test-options" md={3}>
+                            {menuRightOfContent}
+                        </Col>
+                    </Row>
+                )}
 
                 {/* Modals */}
                 {showStartOverModal && (
@@ -614,32 +627,14 @@ const TestRun = ({ auth }) => {
                         handleClose={() => setShowStartOverModal(false)}
                     />
                 )}
-                {/*
-                TODO: This is handled in other PRs
-                {showRaiseIssueModal && (
-                    <RaiseIssueModal
-                        key={`RaiseIssueModal__${currentTestIndex}`}
-                        show={showRaiseIssueModal}
-                        userId={testerId}
-                        test={currentTest}
-                        testPlanRun={testPlanRun}
-                        // conflicts={conflicts[currentTestIndex]}
-                        handleUpdateTestPlanRunResultAction={
-                            handleUpdateTestPlanRunResultAction
-                        }
-                        handleClose={() => setShowRaiseIssueModal(false)}
-                    />
-                )}*/}
                 {showReviewConflictsModal && (
                     <ReviewConflictsModal
                         key={`ReviewConflictsModal__${currentTestIndex}`}
                         show={showReviewConflictsModal}
                         userId={testerId}
                         conflictsFormatted={conflictsFormatted}
+                        issueLink={gitHubIssueLinkWithTitleAndBody}
                         handleClose={() => setShowReviewConflictsModal(false)}
-                        handleRaiseIssueButtonClick={
-                            handleRaiseIssueButtonClick
-                        }
                     />
                 )}
             </>
@@ -672,7 +667,8 @@ const TestRun = ({ auth }) => {
                     <div className="info-label">
                         <b>Test Plan:</b>{' '}
                         {`${testPlanVersion.title ||
-                            testPlanVersion.directory}`}
+                            testPlanVersion.testPlan?.directory ||
+                            ''}`}
                     </div>
                 </div>
                 <div
@@ -763,13 +759,5 @@ const TestRun = ({ auth }) => {
     );
 };
 
-TestRun.propTypes = {
-    auth: PropTypes.object
-};
-
-const mapStateToProps = state => {
-    const { auth } = state;
-    return { auth };
-};
-
-export default connect(mapStateToProps)(TestRun);
+export { createGitHubIssueWithTitleAndBody };
+export default TestRun;

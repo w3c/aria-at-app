@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 import { useQuery } from '@apollo/client';
 import { Link } from 'react-router-dom';
 import { Container, Table, Alert } from 'react-bootstrap';
@@ -15,9 +13,10 @@ import DeleteTestPlanReportModal from '../DeleteTestPlanReportModal';
 import DeleteResultsModal from '../DeleteResultsModal';
 import PageStatus from '../common/PageStatus';
 import { TEST_QUEUE_PAGE_QUERY } from './queries';
+import { evaluateAuth } from '../../utils/evaluateAuth';
 import './TestQueue.css';
 
-const TestQueue = ({ auth }) => {
+const TestQueue = () => {
     const { loading, data, refetch } = useQuery(TEST_QUEUE_PAGE_QUERY);
 
     const [testers, setTesters] = useState([]);
@@ -39,6 +38,7 @@ const TestQueue = ({ auth }) => {
     );
     const [isShowingAddToQueueModal, setAddToQueueModal] = useState(false);
 
+    const auth = evaluateAuth(data && data.me ? data.me : {});
     const { isAdmin } = auth;
 
     useEffect(() => {
@@ -190,7 +190,7 @@ const TestQueue = ({ auth }) => {
     }
 
     if (!testPlanReports.length) {
-        const noTestPlansMessage = 'There are no Test Plans available';
+        const noTestPlansMessage = 'There are no test plans available';
         const settingsLink = <Link to="/account/settings">Settings</Link>;
 
         return (
@@ -287,13 +287,4 @@ const TestQueue = ({ auth }) => {
     );
 };
 
-TestQueue.propTypes = {
-    auth: PropTypes.object
-};
-
-const mapStateToProps = state => {
-    const { auth } = state;
-    return { auth };
-};
-
-export default connect(mapStateToProps)(TestQueue);
+export default TestQueue;

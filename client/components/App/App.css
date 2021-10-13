@@ -1,5 +1,5 @@
 #root {
-    width: 100vw;
+    width: 100%;
     height: 100vh;
     background: #eaeaea;
 }
@@ -53,17 +53,6 @@ nav.navbar {
     background: #cfcece;
 }
 
-.nav-link[aria-current='true']:after,
-.nav-link:hover:after {
-    position: absolute;
-    content: '';
-    width: 90%;
-    height: 2px;
-    left: 0;
-    bottom: -12px;
-    right: 0;
-    margin: auto;
-}
 .nav-link[aria-current='true']:after {
     background: #0b60ab;
 }
@@ -86,6 +75,12 @@ main.container-fluid .row {
 nav .logo.navbar-brand {
     font-weight: 700;
     font-size: 1.6em;
+    /* The logo is focused on every page navigation, making this particular
+    outline quite distracting. It looks like part of the logo design.
+    Furthermore, the top left of the page is where focus is implicitly
+    expected to be, so the outline is not really adding anything. And
+    Browsers are not consistently showing the outline anyway. */
+    outline: none;
 }
 
 a {
@@ -135,7 +130,6 @@ button {
 
 table thead th {
     background: #e9ebee;
-    white-space: nowrap;
 }
 
 table tbody th {

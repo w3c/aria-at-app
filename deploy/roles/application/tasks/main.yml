@@ -10,9 +10,9 @@
 
 - include: upload-source-code.yml
 
-# TODO: this can be removed when the import tests feature is fully complete
-# This is a workaround solution for shelling out to the import script
-- name: Make server folder writable for import tests API endpoint
+# TODO: these permissions changes are a workaround solution
+
+- name: Make server scripts folder writable for import tests API endpoint
   file:
     path: '{{source_dir}}/server/scripts'
     mode: '0777'
@@ -20,8 +20,14 @@
   when: deployment_mode != 'development'
   notify: "restart server"
 
-# TODO: this can be removed when the import tests feature is fully complete
-# This is a workaround solution for shelling out to the import script
+- name: Make server resources folder writable for import tests API endpoint
+  file:
+    path: '{{source_dir}}/server/resources'
+    mode: '0777'
+    recurse: yes
+  when: deployment_mode != 'development'
+  notify: "restart server"
+
 - name: Make vagrant folder writable
   file:
     path: /vagrant/server/scripts
