@@ -116,13 +116,22 @@ const TestQueueRow = ({
 
     const renderAssignedUserToTestPlan = () => {
         // Determine if current user is assigned to testPlan
-        if (currentUserAssigned || !isSignedIn)
+        if (currentUserAssigned)
             return (
                 <Link to={`/run/${currentUserTestPlanRun.id}`}>
                     {testPlanVersion.title ||
                         `"${testPlanVersion.testPlan.directory}"`}
                 </Link>
             );
+
+        if (!isSignedIn)
+            return (
+                <Link to={`/run/anon/${testPlanReport.id}`}>
+                    {testPlanVersion.title ||
+                        `"${testPlanVersion.testPlan.directory}"`}
+                </Link>
+            );
+
         return (
             testPlanVersion.title || `"${testPlanVersion.testPlan.directory}"`
         );
@@ -367,7 +376,7 @@ const TestQueueRow = ({
                         </div>
                     </div>
                 )}
-                <div className={isSignedIn && 'secondary-actions'}>
+                <div className={(isSignedIn && 'secondary-actions') || ''}>
                     <ul className="assignees">
                         {draftTestPlanRuns.length !== 0 ? (
                             draftTestPlanRuns.map(({ tester, testResults }) => (

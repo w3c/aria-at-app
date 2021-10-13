@@ -1,0 +1,328 @@
+.main-test-area {
+    position: relative;
+}
+
+/* Test Navigator */
+.test-navigator h2 {
+    margin-top: 0;
+}
+
+button.test-navigator-toggle.hide,
+button.test-navigator-toggle.show {
+    border: 0;
+    background-color: transparent;
+    color: #929292;
+}
+
+button.test-navigator-toggle.hide:hover,
+button.test-navigator-toggle.show:hover {
+    color: #0b60ab;
+}
+
+.test-navigator-toggle-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.test-navigator-toggle-inner-container {
+    width: fit-content;
+}
+
+@media all and (max-width: 767px) {
+    .test-navigator-toggle-inner-container {
+        position: relative;
+        top: -0.15em;
+    }
+}
+
+@media all and (min-width: 768px) {
+    .test-navigator-toggle-inner-container {
+        position: absolute;
+        top: -0.15em;
+        left: -2.75em;
+    }
+}
+
+.test-navigator-list {
+    position: relative;
+    margin-top: 1em;
+    font-size: 0.9em;
+    padding-left: 3.25em;
+}
+
+.test-name-wrapper {
+    position: relative;
+    margin: 0 0 1em 0.25em;
+    list-style: unset;
+}
+
+.test-name-wrapper:before {
+    content: '';
+    height: 100%;
+    left: -2.8em;
+    position: absolute;
+    top: 1.2em;
+    background: #d2d5d9;
+    width: 2px;
+}
+
+.test-name-wrapper:last-child:before {
+    height: 0%;
+}
+
+.complete.test-name-wrapper:before {
+    background: #1d8f37;
+}
+
+.progress-indicator {
+    position: absolute;
+    left: -3.35em;
+    top: 0.2em;
+    width: 18px;
+    height: 18px;
+    border-radius: 50px;
+}
+
+.test-name-wrapper .test-name {
+    display: block;
+    color: #2f2f2f;
+}
+
+.test-name-wrapper .test-name:hover {
+    color: #0b60ab;
+}
+
+.test-navigator a[aria-current='true'] ~ span {
+    box-shadow: 0px 0px 0px 2px #ffffff, 0px 0px 0px 4px #1d8f37;
+}
+
+/* Test States in Test Navigator */
+.test-name-wrapper.not-started .progress-indicator {
+    background: #d2d5d9;
+}
+
+.test-name-wrapper.in-progress .progress-indicator {
+    background: #1e8f37;
+    background: linear-gradient(
+        135deg,
+        #1e8f37 0%,
+        #1e8f37 50%,
+        rgba(255, 255, 255, 1) 50%,
+        rgba(255, 255, 255, 1) 100%
+    );
+    border: 2px solid #1e8f37;
+}
+
+.test-name-wrapper.skipped .progress-indicator {
+    background: White;
+    border: 2px dashed black;
+}
+
+.test-name-wrapper.conflicts .progress-indicator {
+    background: #ffcd00;
+}
+
+.test-name-wrapper.conflicts .progress-indicator:before,
+.test-name-wrapper.conflicts .progress-indicator:after {
+    content: '';
+    position: absolute;
+    background: #976005;
+    width: 2px;
+    left: 8px;
+}
+
+.test-name-wrapper.conflicts .progress-indicator:before {
+    top: 3px;
+    height: 7px;
+}
+
+.test-name-wrapper.conflicts .progress-indicator:after {
+    top: 12px;
+    height: 2px;
+}
+
+.test-name-wrapper.complete .progress-indicator {
+    background: #1e8f37;
+}
+
+.test-name-wrapper.complete .progress-indicator:before,
+.test-name-wrapper.complete .progress-indicator:after {
+    content: '';
+    position: absolute;
+    background: white;
+    -ms-transform: rotate(45deg); /* IE 9 */
+    -webkit-transform: rotate(45deg); /* Chrome, Safari, Opera */
+    transform: rotate(45deg);
+}
+
+.test-name-wrapper.complete .progress-indicator:before {
+    width: 4px;
+    height: 3px;
+    top: 8px;
+    left: 4px;
+}
+
+.test-name-wrapper.complete .progress-indicator:after {
+    width: 3px;
+    height: 9px;
+    top: 5px;
+    left: 9px;
+}
+
+.test-iframe-container {
+    padding: 0;
+}
+
+main.container-fluid .test-iframe-container > .row {
+    padding-top: 0;
+}
+
+#test-iframe {
+    width: 80vw;
+    height: 65vh;
+    border: 1px solid #d2d5d9;
+    border-radius: 3px;
+    padding: 0 1em;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+        'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji',
+        'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+.testrun__button-toolbar {
+    margin: 1em 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row-reverse;
+}
+
+.testrun__button-toolbar-group {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.testrun__button-toolbar-group .btn-primary,
+.edit-results {
+    margin-left: 1em;
+}
+
+.testrun__button-toolbar .btn {
+    margin-right: 0.5rem;
+}
+
+.testrun__button-right {
+    margin-right: auto;
+}
+
+.dot {
+    height: 10px;
+    width: 10px;
+    background-color: #6bda84;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.test-navigator a[aria-current='true'] {
+    color: black;
+    font-weight: bold;
+}
+
+.test-navigator a[aria-current='true']:hover {
+    text-decoration: none;
+    color: black;
+}
+
+/* Test Headings and information */
+.task-label {
+    display: table;
+    font-size: 0.6em;
+    font-weight: normal;
+    border-radius: 3px;
+}
+
+.test-info-wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.test-info-entity {
+    padding: 0.5em 0.75em;
+    border-radius: 3px;
+    margin-bottom: 1em;
+    font-size: 0.9em;
+}
+
+.apg-example-name,
+.at-browser,
+.tests-completed {
+    background: #f5f8fa;
+    border: 1px solid #d2d5d9;
+    width: 37%;
+    text-align: center;
+}
+
+.tests-completed {
+    width: 23.5%;
+}
+
+.reviewing-as {
+    background: #ecf6ff;
+    border: 1px solid #c4d1e2;
+    width: 100%;
+}
+
+.reviewing-as p {
+    margin: 0;
+    font-style: italic;
+    margin-left: 0.5em;
+    display: inline-block;
+}
+
+/* Current Test Options */
+.current-test-options {
+    padding-right: 0;
+}
+
+.current-test-options > div {
+    background: #f5f8fa;
+    border: 1px solid #d2d5d9;
+    border-radius: 3px;
+}
+
+.current-test-options h3 {
+    margin-top: 0;
+    padding: 0.9em;
+    background: #e9ebee;
+    font-size: 1em;
+    font-weight: 700;
+    border-bottom: 1px solid #d2d5d9;
+    text-align: center;
+}
+
+.current-test-options .options-wrapper {
+    padding: 0.05em 0.75em;
+}
+
+.help-link {
+    font-size: 0.9em;
+    text-align: center;
+    padding: 0.5em;
+}
+
+.fa-exclamation-circle,
+.fa-redo,
+.fa-pen,
+.fa-external-link-alt {
+    color: #959595;
+}
+
+.fa-check {
+    color: #1e8f37;
+}
+
+.status-bar {
+    display: flex;
+    align-items: center;
+}

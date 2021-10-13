@@ -38,6 +38,10 @@ export default [
         component: TestQueue
     },
     {
+        path: '/run/anon/:testPlanReportId(\\d+)',
+        component: TestRun
+    },
+    {
         path: '/run/:runId(\\d+)',
         component: () => {
             return (
