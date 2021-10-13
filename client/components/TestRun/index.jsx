@@ -85,6 +85,7 @@ const TestRun = () => {
     const [submitTestResult] = useMutation(SUBMIT_TEST_RESULT_MUTATION);
     const [deleteTestResult] = useMutation(DELETE_TEST_RESULT_MUTATION);
 
+    const [isRendererReady, setIsRendererReady] = useState(false);
     const [isTestSubmitClicked, setIsTestSubmitClicked] = useState(false);
     const [showTestNavigator, setShowTestNavigator] = useState(true);
     const [currentTestIndex, setCurrentTestIndex] = useState(0);
@@ -93,14 +94,17 @@ const TestRun = () => {
         false
     );
 
-    useEffect(() => {
+    useEffect(() => setup(), [currentTestIndex]);
+
+    const setup = () => {
         pageReadyRef.current = false;
         testRunStateRef.current = null;
         testRunResultRef.current = null;
+        setIsRendererReady(false);
         setIsTestSubmitClicked(false);
 
         if (titleRef.current) titleRef.current.focus();
-    }, [currentTestIndex]);
+    };
 
     if (error) {
         const { message } = error;
@@ -328,7 +332,14 @@ const TestRun = () => {
     };
 
     const performButtonAction = async (action, index) => {
-        const saveForm = async (withResult = false) => {
+        // TODO: Revise function
+        const saveForm = async (
+            withResult = false,
+            forceSave = false,
+            forceEdit = false
+        ) => {
+            if (!forceEdit && currentTest.testResult.completedAt) return true;
+
             const scenarioResults = remapScenarioResults(
                 testRunStateRef.current,
                 currentTest.testResult.scenarioResults,
@@ -337,33 +348,34 @@ const TestRun = () => {
 
             await handleSaveOrSubmitTestResultAction(
                 { scenarioResults },
-                !!testRunResultRef.current
+                forceSave ? false : !!testRunResultRef.current
             );
-            if (withResult) return !!testRunResultRef.current;
+            if (withResult && !forceSave) return !!testRunResultRef.current;
             return true;
         };
 
         switch (action) {
             case 'goToTestAtIndex': {
                 // Save renderer's form state
-                await saveForm();
+                await saveForm(false, true);
                 setCurrentTestIndex(index);
                 break;
             }
             case 'goToNextTest': {
                 // Save renderer's form state
-                await saveForm();
+                await saveForm(false, true);
                 navigateTests();
                 break;
             }
             case 'goToPreviousTest': {
                 // Save renderer's form state
-                await saveForm();
+                await saveForm(false, true);
                 navigateTests(true);
                 break;
             }
             case 'editTest': {
-                await handleStartOverAction();
+                testRunResultRef.current = null;
+                await saveForm(false, true, true);
                 if (titleRef.current) titleRef.current.focus();
                 break;
             }
@@ -410,7 +422,9 @@ const TestRun = () => {
             id
         };
         await deleteTestResult({ variables });
-        await refetch();
+
+        setup();
+        await createTestResultForRenderer(currentTest.id);
 
         // close modal after action
         setShowStartOverModal(false);
@@ -434,10 +448,10 @@ const TestRun = () => {
     const handleReviewConflictsButtonClick = async () =>
         setShowReviewConflictsModal(true);
 
-    const renderTestContent = (testPlanReport, test, heading) => {
-        const { index } = test;
-        const isComplete = test.testResult
-            ? !!test.testResult.completedAt
+    const renderTestContent = (testPlanReport, currentTest, heading) => {
+        const { index } = currentTest;
+        const isComplete = currentTest.testResult
+            ? !!currentTest.testResult.completedAt
             : false;
         const isFirstTest = index === 0;
         const isLastTest = currentTest.seq === tests.length;
@@ -557,7 +571,7 @@ const TestRun = () => {
             <>
                 <h1 ref={titleRef} data-test="testing-task" tabIndex={-1}>
                     <span className="task-label">Testing task:</span>{' '}
-                    {`${currentTest.seq}.`} {test.title}
+                    {`${currentTest.seq}.`} {currentTest.title}
                 </h1>
                 <span>{heading}</span>
                 <StatusBar
@@ -568,10 +582,10 @@ const TestRun = () => {
                         handleReviewConflictsButtonClick
                     }
                 />
-                <Row>
-                    <Col className="test-iframe-container" md={9}>
-                        <Row>
-                            {pageReadyRef.current && currentTest.testResult && (
+                {pageReadyRef.current && currentTest.testResult && (
+                    <Row>
+                        <Col className="test-iframe-container" md={9}>
+                            <Row>
                                 <TestRenderer
                                     key={nextId()}
                                     at={testPlanTarget.at}
@@ -586,15 +600,16 @@ const TestRun = () => {
                                         testRendererSubmitButtonRef
                                     }
                                     isSubmitted={isTestSubmitClicked}
+                                    setIsRendererReady={setIsRendererReady}
                                 />
-                            )}
-                        </Row>
-                        <Row>{primaryButtonGroup}</Row>
-                    </Col>
-                    <Col className="current-test-options" md={3}>
-                        {menuRightOfContent}
-                    </Col>
-                </Row>
+                            </Row>
+                            {isRendererReady && <Row>{primaryButtonGroup}</Row>}
+                        </Col>
+                        <Col className="current-test-options" md={3}>
+                            {menuRightOfContent}
+                        </Col>
+                    </Row>
+                )}
 
                 {/* Modals */}
                 {showStartOverModal && (

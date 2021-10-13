@@ -3,6 +3,7 @@ const {
     updateTestPlanRun
 } = require('../../models/services/TestPlanRunService');
 const populateData = require('../../services/PopulatedData/populateData');
+const sortArrayLikeArray = require('../../util/sortArrayLikeArray');
 const createTestResultSkeleton = require('./createTestResultSkeleton');
 
 const findOrCreateTestResultResolver = async (
@@ -48,7 +49,18 @@ const findOrCreateTestResultResolver = async (
         testResult => testResult.id === newTestResult.id
     );
     if (!alreadyExists) {
-        const newTestResults = [...testPlanRun.testResults, newTestResult];
+        const unorderedResults = [...testPlanRun.testResults, newTestResult];
+
+        // Test Results should be in the same order as the tests
+        const newTestResults = sortArrayLikeArray(
+            unorderedResults,
+            testPlanVersion.tests,
+            {
+                identifyArrayItem: testOrTestResult =>
+                    testOrTestResult.testId ?? testOrTestResult.id
+            }
+        );
+
         await updateTestPlanRun(testPlanRun.id, {
             testResults: newTestResults
         });
