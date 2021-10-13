@@ -247,9 +247,8 @@ const TestQueue = () => {
             <h1>Test Queue</h1>
             <p data-testid="test-queue-instructions">
                 {isSignedIn
-                    ? 'Assign yourself a test plan or start executing one that is\n' +
-                      '                already assigned to you.'
-                    : 'Select a test plan to view anonymously. Your results will not be saved.'}
+                    ? 'Assign yourself a test plan or start executing one that is already assigned to you.'
+                    : 'Select a test plan to view. Your results will not be saved.'}
             </p>
 
             {isAdmin && (
