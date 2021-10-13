@@ -110,10 +110,9 @@ export const TEST_RUN_PAGE_ANON_QUERY = gql`
             status
             conflicts {
                 source {
-                    locationOfData
-                }
-                conflictingResults {
-                    locationOfData
+                    test {
+                        id
+                    }
                 }
             }
             conflictsFormatted(markdown: true)
@@ -146,6 +145,8 @@ export const TEST_RUN_PAGE_ANON_QUERY = gql`
                     name
                 }
                 atMode
+                renderedUrl
+                renderableContent
                 scenarios {
                     id
                     at {

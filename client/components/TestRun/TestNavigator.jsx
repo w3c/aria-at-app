@@ -10,6 +10,7 @@ import React from 'react';
 
 const TestNavigator = ({
     show = true,
+    isSignedIn = false,
     tests = [],
     currentTestIndex = 0,
     toggleShowClick = () => {},
@@ -59,6 +60,12 @@ const TestNavigator = ({
                                     resultStatus = test.testResult.completedAt
                                         ? 'Complete Test:'
                                         : 'In Progress:';
+                                } else if (
+                                    !isSignedIn &&
+                                    test.index === currentTestIndex
+                                ) {
+                                    resultClassName = 'in-progress';
+                                    resultStatus = 'In Progress:';
                                 }
                             }
 
@@ -96,6 +103,7 @@ const TestNavigator = ({
 
 TestNavigator.propTypes = {
     show: PropTypes.bool,
+    isSignedIn: PropTypes.bool,
     tests: PropTypes.array,
     testResult: PropTypes.object,
     conflicts: PropTypes.object,
