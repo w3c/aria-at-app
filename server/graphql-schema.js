@@ -895,7 +895,6 @@ const graphqlSchema = gql`
         findOrCreateTestResult(testId: ID!): PopulatedData!
         """
         Permanently deletes all test results without removing the TestPlanRun.
-        Only available to admins.
         """
         deleteTestResults: PopulatedData!
     }
