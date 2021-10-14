@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useMutation } from '@apollo/client';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -29,7 +29,6 @@ const TestQueueRow = ({
     triggerDeleteResultsModal = () => {},
     triggerTestPlanReportUpdate = () => {}
 }) => {
-    const startTestingButtonRef = useRef();
     const [alertMessage, setAlertMessage] = useState('');
 
     const [assignTester] = useMutation(ASSIGN_TESTER_MUTATION);
@@ -126,7 +125,7 @@ const TestQueueRow = ({
 
         if (!isSignedIn)
             return (
-                <Link to={`/run/anon/${testPlanReport.id}`}>
+                <Link to={`/test-plan-report/${testPlanReport.id}`}>
                     {testPlanVersion.title ||
                         `"${testPlanVersion.testPlan.directory}"`}
                 </Link>
@@ -442,40 +441,47 @@ const TestQueueRow = ({
                     </div>
                 )}
             </td>
-            {isSignedIn && (
-                <td className="actions">
-                    <div className="test-cta-wrapper">
-                        {currentUserAssigned && (
-                            <Button
-                                variant="primary"
-                                href={`/run/${currentUserTestPlanRun.id}`}
-                                disabled={!currentUserAssigned}
-                                ref={startTestingButtonRef}
-                            >
-                                {currentUserTestPlanRun.testResults.length >
-                                    0 &&
-                                currentUserTestPlanRun.testResults.length <
-                                    runnableTests.length
-                                    ? 'Continue testing'
-                                    : 'Start testing'}
-                            </Button>
-                        )}
+            <td className="actions">
+                <div className="test-cta-wrapper">
+                    {currentUserAssigned && (
+                        <Button
+                            variant="primary"
+                            href={`/run/${currentUserTestPlanRun.id}`}
+                            disabled={!currentUserAssigned}
+                        >
+                            {currentUserTestPlanRun.testResults.length > 0 &&
+                            currentUserTestPlanRun.testResults.length <
+                                runnableTests.length
+                                ? 'Continue testing'
+                                : 'Start testing'}
+                        </Button>
+                    )}
 
-                        {isAdmin && (
-                            <Button
-                                variant="danger"
-                                onClick={() => {
-                                    triggerDeleteTestPlanReportModal(
-                                        testPlanReport.id,
-                                        evaluateTestPlanRunTitle(),
-                                        () => handleRemoveTestPlanReport()
-                                    );
-                                }}
-                            >
-                                Remove
-                            </Button>
-                        )}
-                    </div>
+                    {isAdmin && (
+                        <Button
+                            variant="danger"
+                            onClick={() => {
+                                triggerDeleteTestPlanReportModal(
+                                    testPlanReport.id,
+                                    evaluateTestPlanRunTitle(),
+                                    () => handleRemoveTestPlanReport()
+                                );
+                            }}
+                        >
+                            Remove
+                        </Button>
+                    )}
+
+                    {!isSignedIn && (
+                        <Button
+                            variant="primary"
+                            href={`/test-plan-report/${testPlanReport.id}`}
+                        >
+                            View tests
+                        </Button>
+                    )}
+                </div>
+                {isSignedIn && (
                     <div className="secondary-actions">
                         {isAdmin && renderOpenAsDropdown()}
                         {isAdmin && renderDeleteMenu()}
@@ -509,8 +515,8 @@ const TestQueueRow = ({
                             />
                         )}
                     </div>
-                </td>
-            )}
+                )}
+            </td>
         </tr>
     );
 };

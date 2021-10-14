@@ -9,6 +9,7 @@ import { faHome } from '@fortawesome/free-solid-svg-icons';
 import alphabetizeObjectBy from '../../utils/alphabetizeObjectBy';
 import getMetrics, { none } from './getMetrics';
 import { getTestPlanTargetTitle, getTestPlanVersionTitle } from './getTitles';
+import DisclaimerInfo from '../DisclaimerInfo';
 
 const FullHeightContainer = styled(Container)`
     min-height: calc(100vh - 64px);
@@ -21,6 +22,14 @@ const SummarizeTestPlanReports = ({ testPlanReports }) => {
                 <Helmet>
                     <title>ARIA-AT Test Reports</title>
                 </Helmet>
+                <DisclaimerInfo
+                    title="Disclaimer Title"
+                    message="Disclaimer message ipsum dolor sit amet, consectetur
+                        adipiscing elit, sed do eiusmod tempor incididunt ut
+                        labore et dolore magna aliqua. Ut enim ad minim veniam,
+                        quis nostrud exercitation ullamco laboris nisi ut
+                        aliquip ex ea commodo consequat."
+                />
                 <h1>Test Reports</h1>
                 <p>
                     There are no results to show just yet. Please check back

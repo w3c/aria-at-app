@@ -12,7 +12,6 @@ import {
 import DeleteTestPlanReportModal from '../DeleteTestPlanReportModal';
 import DeleteResultsModal from '../DeleteResultsModal';
 import PageStatus from '../common/PageStatus';
-import DisclaimerInfo from '../DisclaimerInfo';
 import { TEST_QUEUE_PAGE_QUERY } from './queries';
 import { evaluateAuth } from '../../utils/evaluateAuth';
 import './TestQueue.css';
@@ -104,7 +103,7 @@ const TestQueue = () => {
                             <th className="test-plan">Test Plan</th>
                             <th className="testers">Testers</th>
                             <th className="report-status">Report Status</th>
-                            {isSignedIn && <th className="actions">Actions</th>}
+                            <th className="actions">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -245,14 +244,6 @@ const TestQueue = () => {
             <Helmet>
                 <title>{`Test Queue | ARIA-AT`}</title>
             </Helmet>
-            <DisclaimerInfo
-                title="Disclaimer Title"
-                message="Disclaimer message ipsum dolor sit amet, consectetur
-                        adipiscing elit, sed do eiusmod tempor incididunt ut
-                        labore et dolore magna aliqua. Ut enim ad minim veniam,
-                        quis nostrud exercitation ullamco laboris nisi ut
-                        aliquip ex ea commodo consequat."
-            />
             <h1>Test Queue</h1>
             <p data-testid="test-queue-instructions">
                 {isSignedIn

@@ -132,12 +132,16 @@ const TestRun = () => {
     }
 
     const auth = evaluateAuth(data && data.me ? data.me : {});
-    const { id: userId, isSignedIn } = auth;
+    const { id: userId } = auth;
+    let { isSignedIn } = auth;
 
     const { testPlanRun, users } = data;
     const { tester, testResults = [] } = testPlanRun || {};
     let { testPlanReport } = testPlanRun || {};
 
+    // if a signed in user navigates to this page, treat them as anon to prevent
+    // invalid save attempts
+    if (testPlanReportId) isSignedIn = false;
     if (!isSignedIn) testPlanReport = data.testPlanReport;
 
     const {
@@ -529,6 +533,8 @@ const TestRun = () => {
                     key="continueButton"
                     variant="primary"
                     onClick={handleSaveClick}
+                    disabled={!isSignedIn}
+                    aria-disabled={!isSignedIn}
                 >
                     Submit Results
                 </Button>
@@ -562,10 +568,11 @@ const TestRun = () => {
                         text="Start Over"
                         icon={<FontAwesomeIcon icon={faRedo} />}
                         onClick={handleStartOverButtonClick}
+                        disabled={!isSignedIn}
                     />
 
                     <OptionButton
-                        text="Save and Close"
+                        text={!isSignedIn ? 'Close' : 'Save and Close'}
                         onClick={handleCloseRunClick}
                     />
 
@@ -602,7 +609,14 @@ const TestRun = () => {
                                         at={testPlanTarget.at}
                                         testResult={
                                             !isSignedIn
-                                                ? { test: currentTest }
+                                                ? {
+                                                      test: currentTest,
+                                                      // force the summary to be shown for an anonymous user
+                                                      completedAt: !!(
+                                                          !isSignedIn &&
+                                                          testRunResultRef.current
+                                                      )
+                                                  }
                                                 : remapState(
                                                       testRunStateRef.current,
                                                       currentTest.testResult
@@ -704,7 +718,7 @@ const TestRun = () => {
                         />
                         {!isSignedIn ? (
                             <>
-                                <b>{tests.length} tests</b>
+                                <b>{tests.length} tests to view</b>
                             </>
                         ) : hasTestsToRun ? (
                             <>
