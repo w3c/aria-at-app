@@ -9,7 +9,15 @@ const deleteTestResultsResolver = async (
     _,
     { user }
 ) => {
-    if (!user?.roles.find(role => role.name === 'ADMIN')) {
+    const { testPlanRun } = await populateData({ testPlanRunId });
+
+    if (
+        !(
+            user?.roles.find(role => role.name === 'ADMIN') ||
+            (user?.roles.find(role => role.name === 'TESTER') &&
+                testPlanRun.testerUserId == user.id)
+        )
+    ) {
         throw new AuthenticationError();
     }
 

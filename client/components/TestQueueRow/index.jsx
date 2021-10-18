@@ -485,7 +485,7 @@ const TestQueueRow = ({
                                         username,
                                         async () =>
                                             await handleRemoveTesterResults(
-                                                user
+                                                currentUserTestPlanRun.id
                                             )
                                     );
                                 }}
