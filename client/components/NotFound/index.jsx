@@ -4,7 +4,7 @@ import { Helmet } from 'react-helmet';
 
 const NotFound = () => {
     return (
-        <Container as="main">
+        <Container id="main" as="main" tabIndex="-1">
             <Helmet>
                 <title>Page Not Found | ARIA-AT</title>
             </Helmet>

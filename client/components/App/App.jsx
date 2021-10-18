@@ -10,12 +10,8 @@ import ScrollFixer from '../../utils/ScrollFixer';
 import routes from '../../routes';
 import { ME_QUERY } from './queries';
 import useSigninUrl from './useSigninUrl';
+import SkipLink from '../SkipLink';
 import './App.css';
-
-// const NavbarCollapseDiv = styled(Navbar.Collapse)``;
-// const NavbarCollapse = NavbarCollapseDiv.withComponent('ul');
-
-const NavbarCollapse = Navbar.Collapse;
 
 const App = () => {
     const location = useLocation();
@@ -55,9 +51,9 @@ const App = () => {
                     >
                         ARIA-AT
                     </Navbar.Brand>
+                    <SkipLink />
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
-                    <NavbarCollapse
-                        withComponent="ul"
+                    <Navbar.Collapse
                         id="basic-navbar-nav"
                         className="justify-content-end"
                     >
@@ -138,7 +134,7 @@ const App = () => {
                                 </li>
                             </ul>
                         )}
-                    </NavbarCollapse>
+                    </Navbar.Collapse>
                 </Navbar>
             </Container>
             <Container fluid>

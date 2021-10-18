@@ -15,7 +15,7 @@ const FullHeightContainer = styled(Container)`
 const SummarizeTestPlanReports = ({ testPlanReports }) => {
     if (!testPlanReports.length) {
         return (
-            <FullHeightContainer as="main">
+            <FullHeightContainer id="main" as="main" tabIndex="-1">
                 <Helmet>
                     <title>ARIA-AT Test Reports</title>
                 </Helmet>
@@ -57,7 +57,7 @@ const SummarizeTestPlanReports = ({ testPlanReports }) => {
     });
 
     return (
-        <FullHeightContainer as="main">
+        <FullHeightContainer id="main" as="main" tabIndex="-1">
             <Helmet>
                 <title>ARIA-AT Test Reports</title>
             </Helmet>

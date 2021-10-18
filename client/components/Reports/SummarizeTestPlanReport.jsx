@@ -35,7 +35,7 @@ const SummarizeTestPlanReport = ({ testPlanReport }) => {
     );
 
     return (
-        <Container as="main">
+        <Container id="main" as="main" tabIndex="-1">
             <Helmet>
                 <title>
                     {getTestPlanTargetTitle(testPlanTarget)}&nbsp;for&nbsp;

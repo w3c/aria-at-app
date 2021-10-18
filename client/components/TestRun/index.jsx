@@ -744,7 +744,12 @@ const TestRun = () => {
                     toggleShowClick={toggleTestNavigator}
                     handleTestClick={handleTestClick}
                 />
-                <Col className="main-test-area" as="main">
+                <Col
+                    className="main-test-area"
+                    id="main"
+                    as="main"
+                    tabIndex="-1"
+                >
                     <Row>
                         <Col>{content}</Col>
                     </Row>

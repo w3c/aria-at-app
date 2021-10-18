@@ -25,7 +25,7 @@ const Home = () => {
     const isSignedIn = !!(data && data.me && data.me.username);
 
     return (
-        <Container className="home-page" as="main">
+        <Container className="home-page" id="main" as="main" tabIndex="-1">
             <Helmet>
                 <title>Home | ARIA-AT</title>
             </Helmet>
