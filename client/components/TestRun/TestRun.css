@@ -199,33 +199,6 @@ main.container-fluid .test-iframe-container > .row {
     padding-right: 0;
 }
 
-/* .testrun__button-toolbar {
-    margin: 1em 0;
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    flex-direction: row-reverse;
-}
-
-.testrun__button-toolbar-group {
-    width: 100%;
-    display: flex;
-    justify-content: flex-end;
-}
-
-.testrun__button-toolbar-group .btn-primary,
-.edit-results {
-    margin-left: 1em;
-}
-
-.testrun__button-toolbar .btn {
-    margin-right: 0.5rem;
-}
-
-.testrun__button-right {
-    margin-right: auto;
-} */
-
 .dot {
     height: 10px;
     width: 10px;

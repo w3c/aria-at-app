@@ -375,9 +375,9 @@ const TestQueueRow = ({
                                         }
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        // Instructs the AT to read the number
-                                        // of completed tests when tabbing to
-                                        // this link
+                                        // Allows ATs to read the number of
+                                        // completed tests when tabbing to this
+                                        // link
                                         aria-describedby={
                                             `assignee-${tester.username}-` +
                                             `completed`
