@@ -16,12 +16,6 @@
     width: 100%;
 }
 
-.status-wrapper {
-    display: flex;
-    flex-direction: row;
-    min-height: 3.75rem;
-}
-
 .assignees {
     margin-top: 0.3em;
     font-size: 0.9rem;

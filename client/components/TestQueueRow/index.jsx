@@ -112,6 +112,20 @@ const TestQueueRow = ({
         await triggerTestPlanReportUpdate();
     };
 
+    const renderAssignedUserToTestPlan = () => {
+        // Determine if current user is assigned to testPlan
+        if (currentUserAssigned)
+            return (
+                <Link to={`/run/${currentUserTestPlanRun.id}`}>
+                    {testPlanVersion.title ||
+                        `"${testPlanVersion.testPlan.directory}"`}
+                </Link>
+            );
+        return (
+            testPlanVersion.title || `"${testPlanVersion.testPlan.directory}"`
+        );
+    };
+
     const renderAssignMenu = () => {
         return (
             <>
@@ -328,10 +342,7 @@ const TestQueueRow = ({
 
     return (
         <tr className="test-queue-run-row">
-            <th>
-                {testPlanVersion.title ||
-                    `"${testPlanVersion.testPlan.directory}"`}
-            </th>
+            <th>{renderAssignedUserToTestPlan()}</th>
             <td>
                 <div className="testers-wrapper">
                     {isAdmin && renderAssignMenu()}
@@ -364,17 +375,30 @@ const TestQueueRow = ({
                                         }
                                         target="_blank"
                                         rel="noopener noreferrer"
+                                        // Instructs the AT to read the number
+                                        // of completed tests when tabbing to
+                                        // this link
+                                        aria-describedby={
+                                            `assignee-${tester.username}-` +
+                                            `completed`
+                                        }
                                     >
                                         {tester.username}
                                     </a>
-                                    <br />
-                                    {`(${testResults.reduce(
-                                        (acc, { completedAt }) =>
-                                            acc + (completedAt ? 1 : 0),
-                                        0
-                                    )} of ${
-                                        runnableTests.length
-                                    } tests complete)`}
+                                    <div
+                                        id={
+                                            `assignee-${tester.username}-` +
+                                            `completed`
+                                        }
+                                    >
+                                        {`(${testResults.reduce(
+                                            (acc, { completedAt }) =>
+                                                acc + (completedAt ? 1 : 0),
+                                            0
+                                        )} of ${
+                                            runnableTests.length
+                                        } tests complete)`}
+                                    </div>
                                 </li>
                             </ul>
                         ))

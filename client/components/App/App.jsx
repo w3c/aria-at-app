@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useQuery } from '@apollo/client';
 import { renderRoutes } from 'react-router-config';
 import { Link, useLocation } from 'react-router-dom';
@@ -12,6 +12,11 @@ import { ME_QUERY } from './queries';
 import useSigninUrl from './useSigninUrl';
 import './App.css';
 
+// const NavbarCollapseDiv = styled(Navbar.Collapse)``;
+// const NavbarCollapse = NavbarCollapseDiv.withComponent('ul');
+
+const NavbarCollapse = Navbar.Collapse;
+
 const App = () => {
     const location = useLocation();
     const signinUrl = useSigninUrl();
@@ -19,7 +24,7 @@ const App = () => {
     const [isNavbarExpanded, setIsNavbarExpanded] = useState(false);
 
     const auth = evaluateAuth(data && data.me ? data.me : {});
-    const { username, isTester, isSignedIn } = auth;
+    const { username, isSignedIn } = auth;
 
     const signOut = async () => {
         await fetch('/api/auth/signout', { method: 'POST' });
@@ -51,43 +56,50 @@ const App = () => {
                         ARIA-AT
                     </Navbar.Brand>
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
-                    <Navbar.Collapse
+                    <NavbarCollapse
+                        withComponent="ul"
                         id="basic-navbar-nav"
                         className="justify-content-end"
                     >
                         {(!isSignedIn && (
-                            <Fragment>
-                                <Nav.Link
-                                    as={Link}
-                                    to="/reports"
-                                    aria-current={location.pathname.startsWith(
-                                        '/reports'
-                                    )}
-                                >
-                                    Test Reports
-                                </Nav.Link>
-                                <Nav.Link
-                                    as={Link}
-                                    to="/"
-                                    onClick={() =>
-                                        (window.location.href = signinUrl)
-                                    }
-                                >
-                                    Sign in with GitHub
-                                </Nav.Link>
-                            </Fragment>
+                            <ul>
+                                <li>
+                                    <Nav.Link
+                                        as={Link}
+                                        to="/reports"
+                                        aria-current={location.pathname.startsWith(
+                                            '/reports'
+                                        )}
+                                    >
+                                        Test Reports
+                                    </Nav.Link>
+                                </li>
+                                <li>
+                                    <Nav.Link
+                                        as={Link}
+                                        to="/"
+                                        onClick={() =>
+                                            (window.location.href = signinUrl)
+                                        }
+                                    >
+                                        Sign in with GitHub
+                                    </Nav.Link>
+                                </li>
+                            </ul>
                         )) || (
-                            <Fragment>
-                                <Nav.Link
-                                    as={Link}
-                                    to="/reports"
-                                    aria-current={location.pathname.startsWith(
-                                        '/reports'
-                                    )}
-                                >
-                                    Test Reports
-                                </Nav.Link>
-                                {isTester && (
+                            <ul>
+                                <li>
+                                    <Nav.Link
+                                        as={Link}
+                                        to="/reports"
+                                        aria-current={location.pathname.startsWith(
+                                            '/reports'
+                                        )}
+                                    >
+                                        Test Reports
+                                    </Nav.Link>
+                                </li>
+                                <li>
                                     <Nav.Link
                                         as={Link}
                                         to="/test-queue"
@@ -97,27 +109,36 @@ const App = () => {
                                     >
                                         Test Queue
                                     </Nav.Link>
-                                )}
-                                <Nav.Link
-                                    as={Link}
-                                    to="/account/settings"
-                                    aria-current={
-                                        location.pathname ===
-                                        '/account/settings'
-                                    }
-                                >
-                                    Settings
-                                </Nav.Link>
-                                <Nav.Link as={Link} to="/" onClick={signOut}>
-                                    Sign out
-                                </Nav.Link>
-                                <div className="signed-in">
-                                    <FontAwesomeIcon icon={faUserCircle} />
-                                    Signed in as <b>{username}</b>
-                                </div>
-                            </Fragment>
+                                </li>
+                                <li>
+                                    <Nav.Link
+                                        as={Link}
+                                        to="/account/settings"
+                                        aria-current={
+                                            location.pathname ===
+                                            '/account/settings'
+                                        }
+                                    >
+                                        Settings
+                                    </Nav.Link>
+                                </li>
+                                <li className="signed-in-wrapper">
+                                    <Nav.Link
+                                        as={Link}
+                                        to="/"
+                                        onClick={signOut}
+                                        aria-describedby="signed-in"
+                                    >
+                                        Sign out
+                                    </Nav.Link>
+                                    <div className="signed-in" id="signed-in">
+                                        <FontAwesomeIcon icon={faUserCircle} />
+                                        Signed in as <b>{username}</b>
+                                    </div>
+                                </li>
+                            </ul>
                         )}
-                    </Navbar.Collapse>
+                    </NavbarCollapse>
                 </Navbar>
             </Container>
             <Container fluid>

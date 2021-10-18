@@ -241,9 +241,9 @@ const SummarizeTestPlanReport = ({ testPlanReport }) => {
             {skippedTests.length ? (
                 <Fragment>
                     <div className="skipped-tests-heading">
-                        <h3 id="skipped-tests" tabIndex="-1">
+                        <h2 id="skipped-tests" tabIndex="-1">
                             Skipped Tests
-                        </h3>
+                        </h2>
                         <p>
                             The following tests have been skipped in this test
                             run:
