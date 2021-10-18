@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from '@emotion/styled';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 
-const Container = styled.div`
+const Container = styled.dl`
     display: flex;
     flex-direction: column;
 
@@ -15,40 +15,65 @@ const Container = styled.div`
     border: 2px solid #d3d5d9;
     border-radius: 0.5rem;
 
-    div {
-        display: grid;
-        align-items: center;
-        grid-auto-flow: row;
-        grid-template-columns: 2rem auto;
-
+    dt,
+    dd {
         :not(:last-child) {
             margin-bottom: 0.5rem;
         }
     }
 `;
 
-const DisclaimerInfo = ({ title = '', message = '' }) => {
+const DisclaimerTitle = styled.button`
+    width: fit-content;
+
+    font-weight: bold;
+    text-align: left;
+    border: thin solid transparent;
+    background-color: transparent;
+
+    :hover,
+    :focus {
+        background-color: #eee;
+    }
+`;
+
+const DisclaimerInfo = ({
+    title = '',
+    message = '',
+    messageContent = null
+}) => {
+    const [expanded, setExpanded] = useState(false);
+
     return (
         <Container>
-            <div>
+            <dt>
                 <FontAwesomeIcon
-                    icon={faInfoCircle}
+                    icon={faExclamationCircle}
                     color="#94979b"
                     size="lg"
                 />
-                <b>{title}</b>
-            </div>
-            <div>
-                <span />
-                <span>{message}</span>
-            </div>
+                <DisclaimerTitle
+                    aria-expanded={expanded}
+                    aria-controls="description"
+                    onClick={() => setExpanded(!expanded)}
+                >
+                    {title}
+                </DisclaimerTitle>
+            </dt>
+            {expanded && (
+                <dd>
+                    <span id="description">{messageContent || message}</span>
+                </dd>
+            )}
         </Container>
     );
 };
 
 DisclaimerInfo.propTypes = {
     title: PropTypes.string,
-    message: PropTypes.string
+    message: PropTypes.string,
+    messageContent: PropTypes.node,
+    expanded: PropTypes.bool
 };
 
 export default DisclaimerInfo;

@@ -22,14 +22,6 @@ const SummarizeTestPlanReports = ({ testPlanReports }) => {
                 <Helmet>
                     <title>ARIA-AT Test Reports</title>
                 </Helmet>
-                <DisclaimerInfo
-                    title="Disclaimer Title"
-                    message="Disclaimer message ipsum dolor sit amet, consectetur
-                        adipiscing elit, sed do eiusmod tempor incididunt ut
-                        labore et dolore magna aliqua. Ut enim ad minim veniam,
-                        quis nostrud exercitation ullamco laboris nisi ut
-                        aliquip ex ea commodo consequat."
-                />
                 <h1>Test Reports</h1>
                 <p>
                     There are no results to show just yet. Please check back
