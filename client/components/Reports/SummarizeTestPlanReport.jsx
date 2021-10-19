@@ -13,6 +13,7 @@ import {
     faHome
 } from '@fortawesome/free-solid-svg-icons';
 import { differenceBy } from 'lodash';
+import DisclaimerInfo from '../DisclaimerInfo';
 
 const getAssertionResultString = assertionResult => {
     let output = 'Good output';
@@ -86,6 +87,7 @@ const SummarizeTestPlanReport = ({ testPlanReport }) => {
                                     Details for test:
                                 </span>
                                 {test.title}
+                                <DisclaimerInfo />
                             </h2>
                             <div className="test-result-buttons">
                                 <Button

@@ -9,7 +9,6 @@ import { faHome } from '@fortawesome/free-solid-svg-icons';
 import alphabetizeObjectBy from '../../utils/alphabetizeObjectBy';
 import getMetrics, { none } from './getMetrics';
 import { getTestPlanTargetTitle, getTestPlanVersionTitle } from './getTitles';
-import DisclaimerInfo from '../DisclaimerInfo';
 
 const FullHeightContainer = styled(Container)`
     min-height: calc(100vh - 64px);

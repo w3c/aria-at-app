@@ -8,8 +8,10 @@ const Container = styled.dl`
     display: flex;
     flex-direction: column;
 
-    padding: 1rem;
-    margin-bottom: 1rem;
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
     background: #f7f7f7;
 
     border: 2px solid #d3d5d9;
@@ -17,8 +19,11 @@ const Container = styled.dl`
 
     dt,
     dd {
-        :not(:last-child) {
-            margin-bottom: 0.5rem;
+        font-weight: normal;
+        font-size: 1rem;
+
+        span > ol {
+            margin-bottom: 0;
         }
     }
 `;
@@ -37,43 +42,59 @@ const DisclaimerTitle = styled.button`
     }
 `;
 
+const DefinitionDescription = styled.dd`
+    display: ${({ expanded }) => (expanded ? 'block' : 'none')};
+`;
+
+const defaultTitle = 'Unapproved Report';
+const defaultMessageContent = (
+    <>
+        The information in this report is generated from candidate tests.
+        Candidate aria-at tests are in review by assistive technology developers
+        and lack consensus regarding:
+        <ol>
+            <li>applicability and validity of the tests, and</li>
+            <li>accuracy of test results.</li>
+        </ol>
+    </>
+);
+
 const DisclaimerInfo = ({
-    title = '',
-    message = '',
-    messageContent = null
+    title = defaultTitle,
+    messageContent = defaultMessageContent
 }) => {
     const [expanded, setExpanded] = useState(false);
 
     return (
         <Container>
             <dt>
-                <FontAwesomeIcon
-                    icon={faExclamationCircle}
-                    color="#94979b"
-                    size="lg"
-                />
                 <DisclaimerTitle
+                    id="disclaimer-title"
                     aria-expanded={expanded}
                     aria-controls="description"
                     onClick={() => setExpanded(!expanded)}
+                    aria-label={`Warning! ${title}`}
                 >
+                    <FontAwesomeIcon
+                        icon={faExclamationCircle}
+                        color="#94979b"
+                        size="lg"
+                        aria-hidden={true}
+                    />
                     {title}
                 </DisclaimerTitle>
             </dt>
-            {expanded && (
-                <dd>
-                    <span id="description">{messageContent || message}</span>
-                </dd>
-            )}
+            <DefinitionDescription expanded={expanded}>
+                <span id="description">{messageContent}</span>
+            </DefinitionDescription>
         </Container>
     );
 };
 
 DisclaimerInfo.propTypes = {
     title: PropTypes.string,
-    message: PropTypes.string,
-    messageContent: PropTypes.node,
-    expanded: PropTypes.bool
+    messageContent: PropTypes.element
 };
 
+export { defaultTitle, defaultMessageContent };
 export default DisclaimerInfo;
