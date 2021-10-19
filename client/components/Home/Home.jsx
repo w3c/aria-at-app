@@ -122,7 +122,7 @@ const Home = () => {
                     <div className="screenshot">
                         <img
                             src={testReviewScreenshot}
-                            alt="Summary of JAWS and Chrome results for the menubar test plan."
+                            alt="Example of results for JAWS and Chrome menubar test plan."
                         />
                     </div>
                 </div>
