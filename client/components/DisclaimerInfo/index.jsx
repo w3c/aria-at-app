@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
 
-const Container = styled.dl`
+const Container = styled.div`
     display: flex;
     flex-direction: column;
 
@@ -17,33 +17,34 @@ const Container = styled.dl`
     border: 2px solid #d3d5d9;
     border-radius: 0.5rem;
 
-    dt,
-    dd {
+    details {
         font-weight: normal;
         font-size: 1rem;
 
         span > ol {
             margin-bottom: 0;
         }
+
+        summary {
+            width: fit-content;
+
+            list-style: none;
+
+            font-weight: bold;
+            text-align: left;
+            border: thin solid transparent;
+            background-color: transparent;
+
+            :hover,
+            :focus {
+                background-color: #eee;
+            }
+
+            ::-webkit-details-marker {
+                display: none;
+            }
+        }
     }
-`;
-
-const DisclaimerTitle = styled.button`
-    width: fit-content;
-
-    font-weight: bold;
-    text-align: left;
-    border: thin solid transparent;
-    background-color: transparent;
-
-    :hover,
-    :focus {
-        background-color: #eee;
-    }
-`;
-
-const DefinitionDescription = styled.dd`
-    display: ${({ expanded }) => (expanded ? 'block' : 'none')};
 `;
 
 const defaultTitle = 'Unapproved Report';
@@ -67,8 +68,8 @@ const DisclaimerInfo = ({
 
     return (
         <Container>
-            <dt>
-                <DisclaimerTitle
+            <details>
+                <summary
                     id="disclaimer-title"
                     aria-expanded={expanded}
                     aria-controls="description"
@@ -82,11 +83,9 @@ const DisclaimerInfo = ({
                         aria-hidden={true}
                     />
                     {title}
-                </DisclaimerTitle>
-            </dt>
-            <DefinitionDescription expanded={expanded}>
-                <span id="description">{messageContent}</span>
-            </DefinitionDescription>
+                </summary>
+                {messageContent}
+            </details>
         </Container>
     );
 };
