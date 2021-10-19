@@ -79,24 +79,7 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
                 return (
                     <Fragment key={testPlanReport.id}>
                         <h2>{getTestPlanTargetTitle(testPlanTarget)}</h2>
-                        <DisclaimerInfo
-                            title="Unapproved Report"
-                            messageContent={
-                                <>
-                                    The information in this report is generated
-                                    from candidate tests. Candidate aria-at
-                                    tests are in review by assistive technology
-                                    developers and lack consensus regarding:
-                                    <ol>
-                                        <li>
-                                            applicability and validity of the
-                                            tests, and
-                                        </li>
-                                        <li>accuracy of test results.</li>
-                                    </ol>
-                                </>
-                            }
-                        />
+                        <DisclaimerInfo />
                         <LinkContainer
                             to={
                                 `/reports/${testPlanVersion.id}` +
