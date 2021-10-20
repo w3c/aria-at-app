@@ -99,7 +99,7 @@ INSERT INTO public."TestPlanRun" (id, "testerUserId", "testPlanReportId", "testR
 		\"id\": \"M2M4MeyIxMiI6MX0ThmYT\",
 		\"testId\": \"ZDBiOeyIyIjoiMSJ9WZiYT\",
 		\"startedAt\": \"2021-09-21T14:09:37.262Z\",
-		\"completedAt\": null,
+		\"completedAt\": \"2021-05-14 14:19:24.602-05\",
 		\"scenarioResults\": [
 			{
 				\"id\": \"MzdlZeyIxMyI6Ik0yTTRNZXlJeE1pSTZNWDBUaG1ZVCJ9WUzMz\",

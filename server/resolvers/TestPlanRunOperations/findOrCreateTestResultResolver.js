@@ -13,6 +13,7 @@ const findOrCreateTestResultResolver = async (
 ) => {
     const {
         testPlanRun,
+        testPlanReport,
         testPlanTarget,
         testPlanVersion: testPlanRunTestPlanVersion
     } = await populateData({
@@ -36,6 +37,12 @@ const findOrCreateTestResultResolver = async (
     ) {
         throw new UserInputError(
             'The given test is not runnable as part of this TestPlanReport'
+        );
+    }
+
+    if (testPlanReport.status !== 'DRAFT') {
+        throw new UserInputError(
+            'Test plan report can only be changed while in a draft state.'
         );
     }
 

@@ -1,4 +1,4 @@
-const { AuthenticationError } = require('apollo-server');
+const { AuthenticationError, UserInputError } = require('apollo-server');
 const {
     updateTestPlanRun
 } = require('../../models/services/TestPlanRunService');
@@ -9,7 +9,9 @@ const deleteTestResultsResolver = async (
     _,
     { user }
 ) => {
-    const { testPlanRun } = await populateData({ testPlanRunId });
+    const { testPlanRun, testPlanReport } = await populateData({
+        testPlanRunId
+    });
 
     if (
         !(
@@ -19,6 +21,12 @@ const deleteTestResultsResolver = async (
         )
     ) {
         throw new AuthenticationError();
+    }
+
+    if (testPlanReport.status !== 'DRAFT') {
+        throw new UserInputError(
+            'Test plan report can only be changed while in a draft state.'
+        );
     }
 
     await updateTestPlanRun(testPlanRunId, { testResults: [] });

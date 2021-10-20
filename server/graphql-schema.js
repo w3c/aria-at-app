@@ -717,9 +717,10 @@ const graphqlSchema = gql`
         """
         Finalizing a test plan report requires resolving any conflicts between
         runs. At this stage a single set of results is able to represent all
-        results, and is much more convenient to work with.
+        results, and is much more convenient to work with. This will be
+        populated on IN_REVIEW and FINALIZED test TestPlanReports.
         """
-        finalizedTestResults: [TestResult]!
+        finalizedTestResults: [TestResult]
         """
         These are all the TestPlanRuns which were recorded during the
         TestPlanReport's DRAFT stage.
@@ -863,22 +864,24 @@ const graphqlSchema = gql`
     type TestPlanReportOperations {
         """
         Assigns a user to a TestPlanReport, creating an associated TestPlanRun
-        with no results.
+        with no results. Only available when the TestPlanReport is in a DRAFT
+        state.
         """
         assignTester(userId: ID!): PopulatedData!
         """
         Permanently deletes the TestPlanRun from the TestPlanReport for the
-        user.
+        user. Only available when the TestPlanReport is in a DRAFT state.
         """
         deleteTestPlanRun(userId: ID!): PopulatedData!
         """
         Update the report status. Remember that all conflicts must be resolved
-        when setting the status to FINALIZED. Only available to admins.
+        when setting the status to IN_REVIEW or FINALIZED. Only available to
+        admins.
         """
         updateStatus(status: TestPlanReportStatus!): PopulatedData!
         """
         Permanently deletes the TestPlanReport and all associated TestPlanRuns.
-        Only available to admins.
+        Only available to admins when the TestPlanReport is in a DRAFT state.
         """
         deleteTestPlanReport: NoResponse
     }

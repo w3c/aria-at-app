@@ -18,6 +18,9 @@ const FullHeightContainer = styled(Container)`
 
 const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
     const { exampleUrl, designPatternUrl } = testPlanVersion.metadata;
+    const finalizedReports = testPlanReports.filter(
+        each => each.status === 'FINALIZED'
+    );
     return (
         <FullHeightContainer as="main">
             <Helmet>
@@ -37,153 +40,194 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
                     {getTestPlanVersionTitle(testPlanVersion)}
                 </Breadcrumb.Item>
             </Breadcrumb>
-            <h2>Introduction</h2>
-            <DisclaimerInfo />
-            <p>
-                This page summarizes the test results for each AT and Browser
-                which executed the Test Plan.
-            </p>
-            <h2>Metadata</h2>
-            <ul>
-                {exampleUrl ? (
-                    <li>
-                        <a href={exampleUrl} target="_blank" rel="noreferrer">
-                            Example Under Test
-                        </a>
-                    </li>
-                ) : null}
-                {designPatternUrl ? (
-                    <li>
-                        <a
-                            href={designPatternUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                        >
-                            Design Pattern
-                        </a>
-                    </li>
-                ) : null}
-            </ul>
 
-            {testPlanReports.map(testPlanReport => {
-                const skippedTests = differenceBy(
-                    testPlanReport.runnableTests,
-                    testPlanReport.finalizedTestResults,
-                    testOrTestResult =>
-                        testOrTestResult.test?.id ?? testOrTestResult.id
-                );
-                const overallMetrics = getMetrics({ testPlanReport });
-
-                const { testPlanTarget } = testPlanReport;
-
-                return (
-                    <Fragment key={testPlanReport.id}>
-                        <h2>{getTestPlanTargetTitle(testPlanTarget)}</h2>
-                        <DisclaimerInfo
-                            title="Unapproved Report"
-                            messageContent={
-                                <>
-                                    The information in this report is generated
-                                    from candidate tests. Candidate aria-at
-                                    tests are in review by assistive technology
-                                    developers and lack consensus regarding:
-                                    <ol>
-                                        <li>
-                                            applicability and validity of the
-                                            tests, and
-                                        </li>
-                                        <li>accuracy of test results.</li>
-                                    </ol>
-                                </>
-                            }
-                        />
-                        <LinkContainer
-                            to={
-                                `/reports/${testPlanVersion.id}` +
-                                `/targets/${testPlanReport.id}`
-                            }
-                        >
-                            <Button variant="secondary" className="mr-3">
-                                View Complete Results
-                            </Button>
-                        </LinkContainer>
-                        {skippedTests.length ? (
-                            <Link
-                                to={
-                                    `/reports/${testPlanVersion.id}` +
-                                    `/targets/${testPlanReport.id}` +
-                                    `#skipped-tests`
-                                }
-                            >
-                                {skippedTests.length} Tests Were Skipped
-                            </Link>
+            {finalizedReports.length === 0 ? (
+                <>
+                    <h2>No Test Reports</h2>
+                    <p>There are no published reports for this test plan.</p>
+                </>
+            ) : (
+                <>
+                    <h2>Introduction</h2>
+                    <DisclaimerInfo />
+                    <p>
+                        This page summarizes the test results for each AT and
+                        Browser which executed the Test Plan.
+                    </p>
+                    <h2>Metadata</h2>
+                    <ul>
+                        {exampleUrl ? (
+                            <li>
+                                <a
+                                    href={exampleUrl}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                >
+                                    Example Under Test
+                                </a>
+                            </li>
                         ) : null}
-                        <Table
-                            className="mt-3"
-                            bordered
-                            responsive
-                            aria-label={
-                                `Results for ` +
-                                `${getTestPlanTargetTitle(testPlanTarget)}`
-                            }
-                        >
-                            <thead>
-                                <tr>
-                                    <th>Test Name</th>
-                                    <th>Required Assertions</th>
-                                    <th>Optional Assertions</th>
-                                    <th>Unexpected Behaviors</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {testPlanReport.finalizedTestResults.map(
-                                    testResult => {
-                                        const {
-                                            requiredFormatted,
-                                            optionalFormatted,
-                                            unexpectedBehaviorsFormatted
-                                        } = getMetrics({
-                                            testResult
-                                        });
-                                        return (
-                                            <tr key={testResult.id}>
-                                                <td>
-                                                    <Link
-                                                        to={
-                                                            `/reports/${testPlanVersion.id}` +
-                                                            `/targets/${testPlanReport.id}` +
-                                                            `#result-${testResult.id}`
-                                                        }
-                                                    >
-                                                        {testResult.test.title}
-                                                    </Link>
-                                                </td>
-                                                <td>{requiredFormatted}</td>
-                                                <td>{optionalFormatted}</td>
-                                                <td>
-                                                    {
-                                                        unexpectedBehaviorsFormatted
-                                                    }
-                                                </td>
-                                            </tr>
-                                        );
+                        {designPatternUrl ? (
+                            <li>
+                                <a
+                                    href={designPatternUrl}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                >
+                                    Design Pattern
+                                </a>
+                            </li>
+                        ) : null}
+                    </ul>
+
+                    {finalizedReports.map(testPlanReport => {
+                        const skippedTests = differenceBy(
+                            testPlanReport.runnableTests,
+                            testPlanReport.finalizedTestResults,
+                            testOrTestResult =>
+                                testOrTestResult.test?.id ?? testOrTestResult.id
+                        );
+                        const overallMetrics = getMetrics({ testPlanReport });
+
+                        const { testPlanTarget } = testPlanReport;
+
+                        return (
+                            <Fragment key={testPlanReport.id}>
+                                <h2>
+                                    {getTestPlanTargetTitle(testPlanTarget)}
+                                </h2>
+                                <DisclaimerInfo
+                                    title="Unapproved Report"
+                                    messageContent={
+                                        <>
+                                            The information in this report is
+                                            generated from candidate tests.
+                                            Candidate aria-at tests are in
+                                            review by assistive technology
+                                            developers and lack consensus
+                                            regarding:
+                                            <ol>
+                                                <li>
+                                                    applicability and validity
+                                                    of the tests, and
+                                                </li>
+                                                <li>
+                                                    accuracy of test results.
+                                                </li>
+                                            </ol>
+                                        </>
                                     }
-                                )}
-                                <tr>
-                                    <td>All Tests</td>
-                                    <td>{overallMetrics.requiredFormatted}</td>
-                                    <td>{overallMetrics.optionalFormatted}</td>
-                                    <td>
-                                        {
-                                            overallMetrics.unexpectedBehaviorsFormatted
+                                />
+                                <LinkContainer
+                                    to={
+                                        `/reports/${testPlanVersion.id}` +
+                                        `/targets/${testPlanReport.id}`
+                                    }
+                                >
+                                    <Button
+                                        variant="secondary"
+                                        className="mr-3"
+                                    >
+                                        View Complete Results
+                                    </Button>
+                                </LinkContainer>
+                                {skippedTests.length ? (
+                                    <Link
+                                        to={
+                                            `/reports/${testPlanVersion.id}` +
+                                            `/targets/${testPlanReport.id}` +
+                                            `#skipped-tests`
                                         }
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </Table>
-                    </Fragment>
-                );
-            })}
+                                    >
+                                        {skippedTests.length} Tests Were Skipped
+                                    </Link>
+                                ) : null}
+                                <Table
+                                    className="mt-3"
+                                    bordered
+                                    responsive
+                                    aria-label={
+                                        `Results for ` +
+                                        `${getTestPlanTargetTitle(
+                                            testPlanTarget
+                                        )}`
+                                    }
+                                >
+                                    <thead>
+                                        <tr>
+                                            <th>Test Name</th>
+                                            <th>Required Assertions</th>
+                                            <th>Optional Assertions</th>
+                                            <th>Unexpected Behaviors</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {testPlanReport.finalizedTestResults.map(
+                                            testResult => {
+                                                const {
+                                                    requiredFormatted,
+                                                    optionalFormatted,
+                                                    unexpectedBehaviorsFormatted
+                                                } = getMetrics({
+                                                    testResult
+                                                });
+                                                return (
+                                                    <tr key={testResult.id}>
+                                                        <td>
+                                                            <Link
+                                                                to={
+                                                                    `/reports/${testPlanVersion.id}` +
+                                                                    `/targets/${testPlanReport.id}` +
+                                                                    `#result-${testResult.id}`
+                                                                }
+                                                            >
+                                                                {
+                                                                    testResult
+                                                                        .test
+                                                                        .title
+                                                                }
+                                                            </Link>
+                                                        </td>
+                                                        <td>
+                                                            {requiredFormatted}
+                                                        </td>
+                                                        <td>
+                                                            {optionalFormatted}
+                                                        </td>
+                                                        <td>
+                                                            {
+                                                                unexpectedBehaviorsFormatted
+                                                            }
+                                                        </td>
+                                                    </tr>
+                                                );
+                                            }
+                                        )}
+                                        <tr>
+                                            <td>All Tests</td>
+                                            <td>
+                                                {
+                                                    overallMetrics.requiredFormatted
+                                                }
+                                            </td>
+                                            <td>
+                                                {
+                                                    overallMetrics.optionalFormatted
+                                                }
+                                            </td>
+                                            <td>
+                                                {
+                                                    overallMetrics.unexpectedBehaviorsFormatted
+                                                }
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </Table>
+                            </Fragment>
+                        );
+                    })}
+                </>
+            )}
         </FullHeightContainer>
     );
 };

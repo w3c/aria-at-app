@@ -2,8 +2,9 @@ import { gql } from '@apollo/client';
 
 export const REPORTS_PAGE_QUERY = gql`
     query {
-        testPlanReports(statuses: [FINALIZED]) {
+        testPlanReports(statuses: [IN_REVIEW, FINALIZED]) {
             id
+            status
             testPlanTarget {
                 id
                 at {

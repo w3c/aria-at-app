@@ -1,6 +1,5 @@
 const { AuthenticationError } = require('apollo-server');
 const {
-    getTestPlanReportById,
     updateTestPlanReport
 } = require('../../models/services/TestPlanReportService');
 const conflictsResolver = require('../TestPlanReport/conflictsResolver');
@@ -16,23 +15,23 @@ const updateStatusResolver = async (
         throw new AuthenticationError();
     }
 
-    const testPlanReport = await getTestPlanReportById(testPlanReportId);
+    const { testPlanReport } = await populateData({ testPlanReportId });
 
-    if (status === 'FINALIZED') {
+    if (status === 'FINALIZED' || status === 'IN_REVIEW') {
         const conflicts = await conflictsResolver(testPlanReport);
         if (conflicts.length > 0) {
             throw new Error(
-                'Cannot finalize test plan report due to conflicts'
+                'Cannot change test plan report status due to conflicts'
             );
         }
 
         const finalizedTestResults = finalizedTestResultsResolver({
             ...testPlanReport,
-            status: 'FINALIZED'
+            status
         });
         if (finalizedTestResults.length === 0) {
             throw new Error(
-                'Cannot finalize test plan report because there are no ' +
+                'Cannot change test plan report status because there are no ' +
                     'completed test results'
             );
         }

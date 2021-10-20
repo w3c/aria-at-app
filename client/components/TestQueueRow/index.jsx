@@ -65,6 +65,10 @@ const TestQueueRow = ({
     const testPlanRunsWithResults = draftTestPlanRuns.filter(
         ({ testResults }) => testResults.length > 0
     );
+    const testPlanRunsWithCompletedResults =
+        testPlanRunsWithResults.filter(({ testResults }) =>
+            testResults.find(testResult => testResult.completedAt)
+        ) ?? [];
 
     const getTestPlanRunIdByUserId = userId => {
         return draftTestPlanRuns.find(({ tester }) => tester.id === userId).id;
@@ -282,8 +286,7 @@ const TestQueueRow = ({
     };
 
     const evaluateStatusAndResults = () => {
-        const { status: runStatus, conflicts } = testPlanReport;
-        const { id: runId } = currentUserTestPlanRun;
+        const { status: reportStatus, conflicts } = testPlanReport;
 
         let status, results;
         const conflictCount = conflicts.length;
@@ -297,22 +300,21 @@ const TestQueueRow = ({
                     {pluralizedStatus}
                 </span>
             );
-        } else if (runStatus === 'DRAFT' || !runStatus) {
+        } else if (reportStatus === 'DRAFT' || !reportStatus) {
             status = <span className="status-label not-started">Draft</span>;
-        } else if (runStatus === 'IN_REVIEW') {
+        } else if (reportStatus === 'IN_REVIEW') {
             status = (
                 <span className="status-label in-progress">In Review</span>
             );
             results = (
-                <Link className="reports-link" to={`/results/run/${runId}`}>
+                <Link
+                    className="reports-link"
+                    to={
+                        `/reports/${testPlanReport.testPlanVersion.id}` +
+                        `/targets/${testPlanReport.id}`
+                    }
+                >
                     View Results
-                </Link>
-            );
-        } else if (runStatus === 'FINALIZED') {
-            status = <span className="status-label complete">Final</span>;
-            results = (
-                <Link className="reports-link" to={`/results/run/${runId}`}>
-                    View Final Results
                 </Link>
             );
         }
@@ -324,23 +326,17 @@ const TestQueueRow = ({
         const { status, conflicts } = testPlanReport;
         const conflictCount = conflicts.length;
 
-        // If there are no conflicts OR the test has been marked as "final",
-        // and admin can mark a test run as "draft"
         let newStatus;
         if (
-            (status !== 'IN_REVIEW' &&
-                conflictCount === 0 &&
-                testPlanRunsWithResults.length > 0) ||
-            status === 'FINALIZED'
+            status !== 'IN_REVIEW' &&
+            conflictCount === 0 &&
+            testPlanRunsWithCompletedResults.length > 0
         ) {
             newStatus = 'IN_REVIEW';
-        }
-        // If the results have been marked as draft and there is no conflict,
-        // they can be marked as "final"
-        else if (
+        } else if (
             status === 'IN_REVIEW' &&
             conflictCount === 0 &&
-            testPlanRunsWithResults.length > 0
+            testPlanRunsWithCompletedResults.length > 0
         ) {
             newStatus = 'FINALIZED';
         }

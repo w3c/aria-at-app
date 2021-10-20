@@ -64,6 +64,15 @@ const SummarizeTestPlanReport = ({ testPlanReport }) => {
                 </Breadcrumb.Item>
             </Breadcrumb>
             <h2>Introduction</h2>
+            {testPlanReport.status === 'IN_REVIEW' ? (
+                <DisclaimerInfo
+                    title="In Review"
+                    messageContent={
+                        'These results are in review and have not been published.'
+                    }
+                    colorClassName="yellow"
+                />
+            ) : null}
             <p>
                 This page shows detailed results for each test, including
                 individual commands that the tester entered into the AT, the
@@ -266,6 +275,7 @@ const SummarizeTestPlanReport = ({ testPlanReport }) => {
 
 SummarizeTestPlanReport.propTypes = {
     testPlanReport: PropTypes.shape({
+        status: PropTypes.oneOf(['FINALIZED', 'IN_REVIEW']),
         testPlanVersion: PropTypes.object.isRequired,
         testPlanTarget: PropTypes.object.isRequired,
         runnableTests: PropTypes.arrayOf(PropTypes.object.isRequired)

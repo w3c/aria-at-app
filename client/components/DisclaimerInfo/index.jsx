@@ -45,6 +45,18 @@ const Container = styled.div`
             }
         }
     }
+
+    &.yellow {
+        background-color: #fff2d2;
+        border-color: #f2d691;
+        summary:hover,
+        summary:focus {
+            background-color: #f5e3b9;
+        }
+        .fa-exclamation-circle {
+            color: #765c1c;
+        }
+    }
 `;
 
 const defaultTitle = 'Unapproved Report';
@@ -62,12 +74,13 @@ const defaultMessageContent = (
 
 const DisclaimerInfo = ({
     title = defaultTitle,
-    messageContent = defaultMessageContent
+    messageContent = defaultMessageContent,
+    colorClassName = ''
 }) => {
     const [expanded, setExpanded] = useState(false);
 
     return (
-        <Container>
+        <Container className={colorClassName}>
             <details>
                 <summary
                     id="disclaimer-title"
@@ -92,7 +105,8 @@ const DisclaimerInfo = ({
 
 DisclaimerInfo.propTypes = {
     title: PropTypes.string,
-    messageContent: PropTypes.element
+    messageContent: PropTypes.node,
+    colorClassName: PropTypes.oneOf(['yellow'])
 };
 
 export { defaultTitle, defaultMessageContent };

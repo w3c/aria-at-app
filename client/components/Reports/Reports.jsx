@@ -18,7 +18,9 @@ const Reports = () => {
                 path="/reports"
                 render={() => (
                     <SummarizeTestPlanReports
-                        testPlanReports={data.testPlanReports}
+                        testPlanReports={data.testPlanReports.filter(
+                            each => each.status === 'FINALIZED'
+                        )}
                     />
                 )}
             />
