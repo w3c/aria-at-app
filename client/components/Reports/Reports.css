@@ -97,6 +97,10 @@
     margin-top: 2em;
 }
 
+.test-result-heading h2 {
+    margin-bottom: 0;
+}
+
 .skipped-tests-heading h2,
 .test-result-heading h2 {
     margin-top: 0;
@@ -104,6 +108,8 @@
 
 .test-result-buttons {
     margin-bottom: 0.5em;
+    margin-left: 0.5rem;
+    flex-shrink: 0;
 }
 
 .test-result-buttons button {

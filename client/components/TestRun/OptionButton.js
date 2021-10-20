@@ -16,6 +16,7 @@ const OptionButton = ({
             variant="secondary"
             onClick={onClick}
             disabled={disabled}
+            aria-disabled={disabled}
             {...restProps}
         >
             {icon}

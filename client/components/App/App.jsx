@@ -57,19 +57,65 @@ const App = () => {
                         id="basic-navbar-nav"
                         className="justify-content-end"
                     >
-                        {(!isSignedIn && (
-                            <ul>
-                                <li>
-                                    <Nav.Link
-                                        as={Link}
-                                        to="/reports"
-                                        aria-current={location.pathname.startsWith(
-                                            '/reports'
-                                        )}
-                                    >
-                                        Test Reports
-                                    </Nav.Link>
-                                </li>
+                        <ul>
+                            <li>
+                                <Nav.Link
+                                    as={Link}
+                                    to="/reports"
+                                    aria-current={location.pathname.startsWith(
+                                        '/reports'
+                                    )}
+                                >
+                                    Test Reports
+                                </Nav.Link>
+                            </li>
+                            <li>
+                                <Nav.Link
+                                    as={Link}
+                                    to="/test-queue"
+                                    aria-current={
+                                        location.pathname === '/test-queue'
+                                    }
+                                >
+                                    Test Queue
+                                </Nav.Link>
+                            </li>
+                            {isSignedIn && (
+                                <>
+                                    <li>
+                                        <Nav.Link
+                                            as={Link}
+                                            to="/account/settings"
+                                            aria-current={
+                                                location.pathname ===
+                                                '/account/settings'
+                                            }
+                                        >
+                                            Settings
+                                        </Nav.Link>
+                                    </li>
+                                    <li className="signed-in-wrapper">
+                                        <Nav.Link
+                                            as={Link}
+                                            to="/"
+                                            onClick={signOut}
+                                            aria-describedby="signed-in"
+                                        >
+                                            Sign out
+                                        </Nav.Link>
+                                        <div
+                                            className="signed-in"
+                                            id="signed-in"
+                                        >
+                                            <FontAwesomeIcon
+                                                icon={faUserCircle}
+                                            />
+                                            Signed in as <b>{username}</b>
+                                        </div>
+                                    </li>
+                                </>
+                            )}
+                            {!isSignedIn && (
                                 <li>
                                     <Nav.Link
                                         as={Link}
@@ -81,59 +127,8 @@ const App = () => {
                                         Sign in with GitHub
                                     </Nav.Link>
                                 </li>
-                            </ul>
-                        )) || (
-                            <ul>
-                                <li>
-                                    <Nav.Link
-                                        as={Link}
-                                        to="/reports"
-                                        aria-current={location.pathname.startsWith(
-                                            '/reports'
-                                        )}
-                                    >
-                                        Test Reports
-                                    </Nav.Link>
-                                </li>
-                                <li>
-                                    <Nav.Link
-                                        as={Link}
-                                        to="/test-queue"
-                                        aria-current={
-                                            location.pathname === '/test-queue'
-                                        }
-                                    >
-                                        Test Queue
-                                    </Nav.Link>
-                                </li>
-                                <li>
-                                    <Nav.Link
-                                        as={Link}
-                                        to="/account/settings"
-                                        aria-current={
-                                            location.pathname ===
-                                            '/account/settings'
-                                        }
-                                    >
-                                        Settings
-                                    </Nav.Link>
-                                </li>
-                                <li className="signed-in-wrapper">
-                                    <Nav.Link
-                                        as={Link}
-                                        to="/"
-                                        onClick={signOut}
-                                        aria-describedby="signed-in"
-                                    >
-                                        Sign out
-                                    </Nav.Link>
-                                    <div className="signed-in" id="signed-in">
-                                        <FontAwesomeIcon icon={faUserCircle} />
-                                        Signed in as <b>{username}</b>
-                                    </div>
-                                </li>
-                            </ul>
-                        )}
+                            )}
+                        </ul>
                     </Navbar.Collapse>
                 </Navbar>
             </Container>

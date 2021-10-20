@@ -10,6 +10,7 @@ import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome } from '@fortawesome/free-solid-svg-icons';
 import styled from '@emotion/styled';
+import DisclaimerInfo from '../DisclaimerInfo';
 
 const FullHeightContainer = styled(Container)`
     min-height: calc(100vh - 64px);
@@ -37,6 +38,7 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
                 </Breadcrumb.Item>
             </Breadcrumb>
             <h2>Introduction</h2>
+            <DisclaimerInfo />
             <p>
                 This page summarizes the test results for each AT and Browser
                 which executed the Test Plan.
@@ -77,6 +79,7 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
                 return (
                     <Fragment key={testPlanReport.id}>
                         <h2>{getTestPlanTargetTitle(testPlanTarget)}</h2>
+                        <DisclaimerInfo />
                         <LinkContainer
                             to={
                                 `/reports/${testPlanVersion.id}` +

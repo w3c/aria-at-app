@@ -90,10 +90,6 @@ export const TEST_RUN_PAGE_QUERY = gql`
                     }
                 }
             }
-            tester {
-                id
-                username
-            }
         }
         me {
             id
@@ -103,6 +99,71 @@ export const TEST_RUN_PAGE_QUERY = gql`
         users {
             id
             username
+        }
+    }
+`;
+
+export const TEST_RUN_PAGE_ANON_QUERY = gql`
+    query TestPlanRunAnonPage($testPlanReportId: ID!) {
+        testPlanReport(id: $testPlanReportId) {
+            id
+            status
+            conflicts {
+                source {
+                    test {
+                        id
+                    }
+                }
+            }
+            conflictsFormatted(markdown: true)
+            testPlanTarget {
+                title
+                at {
+                    id
+                    name
+                }
+                atVersion
+                browser {
+                    name
+                }
+                browserVersion
+            }
+            testPlanVersion {
+                id
+                title
+                gitSha
+                testPageUrl
+                testPlan {
+                    directory
+                }
+            }
+            runnableTests {
+                id
+                title
+                ats {
+                    id
+                    name
+                }
+                atMode
+                renderedUrl
+                renderableContent
+                scenarios {
+                    id
+                    at {
+                        id
+                        name
+                    }
+                    command {
+                        id
+                        text
+                    }
+                }
+                assertions {
+                    id
+                    priority
+                    text
+                }
+            }
         }
     }
 `;
