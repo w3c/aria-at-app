@@ -19,7 +19,7 @@ const FullHeightContainer = styled(Container)`
 const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
     const { exampleUrl, designPatternUrl } = testPlanVersion.metadata;
     return (
-        <FullHeightContainer as="main">
+        <FullHeightContainer id="main" as="main" tabIndex="-1">
             <Helmet>
                 <title>
                     {getTestPlanVersionTitle(testPlanVersion)} | ARIA-AT Reports

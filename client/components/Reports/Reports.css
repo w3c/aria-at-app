@@ -101,13 +101,9 @@
     margin-bottom: 0;
 }
 
-.skipped-tests-heading h3,
+.skipped-tests-heading h2,
 .test-result-heading h2 {
     margin-top: 0;
-}
-
-.skipped-tests-heading h3 {
-    font-size: 1.5em;
 }
 
 .test-result-buttons {

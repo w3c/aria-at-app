@@ -13,6 +13,13 @@ const saveTestResultCommon = async ({
     user,
     isSubmit
 }) => {
+    const {
+        testPlanRun,
+        testPlanTarget,
+        test,
+        testResult: oldTestResult
+    } = await populateData({ testResultId });
+
     if (
         !(
             user?.roles.find(role => role.name === 'ADMIN') ||
@@ -22,13 +29,6 @@ const saveTestResultCommon = async ({
     ) {
         throw new AuthenticationError();
     }
-
-    const {
-        testPlanRun,
-        testPlanTarget,
-        test,
-        testResult: oldTestResult
-    } = await populateData({ testResultId });
 
     const oldTestResults = testPlanRun.testResults;
 

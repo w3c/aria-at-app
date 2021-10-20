@@ -195,7 +195,7 @@ const TestQueue = () => {
         const settingsLink = <Link to="/account/settings">Settings</Link>;
 
         return (
-            <Container as="main">
+            <Container id="main" as="main" tabIndex="-1">
                 <Helmet>
                     <title>{noTestPlansMessage} | ARIA-AT</title>
                 </Helmet>
@@ -240,7 +240,7 @@ const TestQueue = () => {
     }
 
     return (
-        <Container as="main">
+        <Container id="main" as="main" tabIndex="-1">
             <Helmet>
                 <title>{`Test Queue | ARIA-AT`}</title>
             </Helmet>

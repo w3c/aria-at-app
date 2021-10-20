@@ -48,7 +48,7 @@ const UserSettings = () => {
     const savedAts = userAtsData.map(at => at.id);
 
     return (
-        <Container as="main">
+        <Container id="main" as="main" tabIndex="-1">
             <Container fluid data-test="user-settings-contents">
                 <Helmet>
                     <title>Settings | ARIA-AT</title>
