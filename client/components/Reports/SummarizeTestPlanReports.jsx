@@ -2,10 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Breadcrumb, Container, Table } from 'react-bootstrap';
+import { Container, Table } from 'react-bootstrap';
 import styled from '@emotion/styled';
-import { faHome } from '@fortawesome/free-solid-svg-icons';
 import alphabetizeObjectBy from '../../utils/alphabetizeObjectBy';
 import getMetrics, { none } from './getMetrics';
 import { getTestPlanTargetTitle, getTestPlanVersionTitle } from './getTitles';
@@ -17,7 +15,7 @@ const FullHeightContainer = styled(Container)`
 const SummarizeTestPlanReports = ({ testPlanReports }) => {
     if (!testPlanReports.length) {
         return (
-            <FullHeightContainer as="main">
+            <FullHeightContainer id="main" as="main" tabIndex="-1">
                 <Helmet>
                     <title>ARIA-AT Test Reports</title>
                 </Helmet>
@@ -59,17 +57,11 @@ const SummarizeTestPlanReports = ({ testPlanReports }) => {
     });
 
     return (
-        <FullHeightContainer as="main">
+        <FullHeightContainer id="main" as="main" tabIndex="-1">
             <Helmet>
                 <title>ARIA-AT Test Reports</title>
             </Helmet>
             <h1>Test Reports</h1>
-            <Breadcrumb>
-                <Breadcrumb.Item active>
-                    <FontAwesomeIcon icon={faHome} />
-                    Test Reports
-                </Breadcrumb.Item>
-            </Breadcrumb>
             <h2>Introduction</h2>
             <p>
                 This page offers a high-level view of all results which have

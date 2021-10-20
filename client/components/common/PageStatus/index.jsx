@@ -10,7 +10,7 @@ const Loading = ({
     isError = false
 }) => {
     return (
-        <Container as="main">
+        <Container id="main" as="main" tabIndex="-1">
             <Helmet>
                 <title>{title}</title>
             </Helmet>

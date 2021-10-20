@@ -460,21 +460,15 @@ const TestRun = () => {
         let forwardButtons = []; // These are buttons that navigate to next tests and continue
 
         const nextButton = (
-            <Button
-                key="nextButton"
-                variant="secondary"
-                onClick={handleNextTestClick}
-            >
+            <Button variant="secondary" onClick={handleNextTestClick}>
                 Next Test
             </Button>
         );
 
         const previousButton = (
             <Button
-                key="previousButton"
                 variant="secondary"
                 onClick={handlePreviousTestClick}
-                className="testrun__button-right"
                 disabled={isFirstTest}
             >
                 Previous Test
@@ -484,7 +478,6 @@ const TestRun = () => {
         if (isComplete) {
             const editButton = (
                 <Button
-                    key="editButton"
                     className="edit-results"
                     variant="secondary"
                     onClick={handleEditClick}
@@ -496,7 +489,6 @@ const TestRun = () => {
 
             const continueButton = (
                 <Button
-                    key="continueButton"
                     variant="primary"
                     disabled={isLastTest}
                     onClick={handleNextTestClick}
@@ -515,11 +507,7 @@ const TestRun = () => {
         } else {
             // same key to maintain focus
             const saveResultsButton = (
-                <Button
-                    key="continueButton"
-                    variant="primary"
-                    onClick={handleSaveClick}
-                >
+                <Button variant="primary" onClick={handleSaveClick}>
                     Submit Results
                 </Button>
             );
@@ -531,39 +519,39 @@ const TestRun = () => {
             ];
         }
 
-        const primaryButtonGroup = (
-            <div className="testrun__button-toolbar-group">
-                {primaryButtons}
-            </div>
-        );
-
         const menuRightOfContent = (
             <div role="complementary">
                 <h3>Test Options</h3>
-                <div className="options-wrapper">
-                    <OptionButton
-                        text="Raise An Issue"
-                        icon={<FontAwesomeIcon icon={faExclamationCircle} />}
-                        target="_blank"
-                        href={gitHubIssueLinkWithTitleAndBody}
-                    />
-
-                    <OptionButton
-                        text="Start Over"
-                        icon={<FontAwesomeIcon icon={faRedo} />}
-                        onClick={handleStartOverButtonClick}
-                    />
-
-                    <OptionButton
-                        text="Save and Close"
-                        onClick={handleCloseRunClick}
-                    />
-
-                    <div className="help-link">
-                        Need Help?{' '}
-                        <a href="mailto:public-aria-at@w3.org">Email Us</a>
-                    </div>
-                </div>
+                <ul className="options-wrapper">
+                    <li>
+                        <OptionButton
+                            text="Raise An Issue"
+                            icon={
+                                <FontAwesomeIcon icon={faExclamationCircle} />
+                            }
+                            target="_blank"
+                            href={gitHubIssueLinkWithTitleAndBody}
+                        />
+                    </li>
+                    <li>
+                        <OptionButton
+                            text="Start Over"
+                            icon={<FontAwesomeIcon icon={faRedo} />}
+                            onClick={handleStartOverButtonClick}
+                        />
+                    </li>
+                    <li>
+                        <OptionButton
+                            text="Save and Close"
+                            onClick={handleCloseRunClick}
+                        />
+                    </li>
+                    <li className="help-link">
+                        <a href="mailto:public-aria-at@w3.org">
+                            Email us if you need help
+                        </a>
+                    </li>
+                </ul>
             </div>
         );
 
@@ -603,7 +591,15 @@ const TestRun = () => {
                                     setIsRendererReady={setIsRendererReady}
                                 />
                             </Row>
-                            {isRendererReady && <Row>{primaryButtonGroup}</Row>}
+                            {isRendererReady && (
+                                <Row>
+                                    <ul className="test-run-toolbar mt-1">
+                                        {primaryButtons.map(button => (
+                                            <li key={nextId()}>{button}</li>
+                                        ))}
+                                    </ul>
+                                </Row>
+                            )}
                         </Col>
                         <Col className="current-test-options" md={3}>
                             {menuRightOfContent}
@@ -733,7 +729,12 @@ const TestRun = () => {
     return (
         <Container className="test-run-container">
             <Helmet>
-                <title>{testPlanTarget.title}</title>
+                <title>
+                    {hasTestsToRun
+                        ? `${currentTest.title} for ${testPlanTarget.title} ` +
+                          `| ARIA-AT`
+                        : 'No tests for this AT and Browser | ARIA-AT'}
+                </title>
             </Helmet>
             <Row>
                 <TestNavigator
@@ -743,7 +744,12 @@ const TestRun = () => {
                     toggleShowClick={toggleTestNavigator}
                     handleTestClick={handleTestClick}
                 />
-                <Col className="main-test-area" as="main">
+                <Col
+                    className="main-test-area"
+                    id="main"
+                    as="main"
+                    tabIndex="-1"
+                >
                     <Row>
                         <Col>{content}</Col>
                     </Row>

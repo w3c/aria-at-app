@@ -45,20 +45,20 @@ const TestNavigator = ({
                     <ol className="test-navigator-list">
                         {tests.map(test => {
                             let resultClassName = 'not-started';
-                            let resultStatus = 'Not Started:';
+                            let resultStatus = 'Not Started';
 
                             if (test) {
                                 if (test.hasConflicts) {
                                     resultClassName = 'conflicts';
-                                    resultStatus = 'Has Conflicts:';
+                                    resultStatus = 'Has Conflicts';
                                 } else if (test.testResult) {
                                     resultClassName = test.testResult
                                         .completedAt
                                         ? 'complete'
                                         : 'in-progress';
                                     resultStatus = test.testResult.completedAt
-                                        ? 'Complete Test:'
-                                        : 'In Progress:';
+                                        ? 'Complete Test'
+                                        : 'In Progress';
                                 }
                             }
 
@@ -73,7 +73,6 @@ const TestNavigator = ({
                                             await handleTestClick(test.index)
                                         }
                                         className="test-name"
-                                        aria-label={`${resultStatus} ${test.title}`}
                                         aria-current={
                                             test.index === currentTestIndex
                                         }
