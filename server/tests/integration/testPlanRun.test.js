@@ -3,6 +3,7 @@ const { query, mutate } = require('../util/graphql-test-utilities');
 const db = require('../../models');
 const { gql } = require('apollo-server-core');
 
+let testPlanVersionId;
 let testPlanReportId;
 let testPlanRunId;
 let testId;
@@ -12,12 +13,27 @@ let assertionResultId1;
 let assertionResultId2;
 let assertionResultId3;
 
+const getTestPlanVersionId = async () => {
+    const queryResult = await query(gql`
+        query {
+            testPlanVersions {
+                id
+                title
+            }
+        }
+    `);
+    testPlanVersionId = queryResult.testPlanVersions.find(
+        each => each.title === 'Checkbox Example (Two State)'
+    ).id;
+};
+
 const prepopulateTestPlanReport = async () => {
+    if (!testPlanVersionId) await getTestPlanVersionId();
     const mutationResult = await mutate(gql`
         mutation {
             findOrCreateTestPlanReport(
                 input: {
-                    testPlanVersionId: 1
+                    testPlanVersionId: ${testPlanVersionId}
                     testPlanTarget: {
                         atId: 1
                         browserId: 1

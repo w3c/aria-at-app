@@ -16,16 +16,17 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
-
---
--- Data for Name: AtMode; Type: TABLE DATA; Schema: public; Owner: atr
---
-
-INSERT INTO public."AtMode" ("atId", name) VALUES (2, 'reading');
-INSERT INTO public."AtMode" ("atId", name) VALUES (2, 'interaction');
-INSERT INTO public."AtMode" ("atId", name) VALUES (3, 'modeless');
-INSERT INTO public."AtMode" ("atId", name) VALUES (1, 'reading');
-INSERT INTO public."AtMode" ("atId", name) VALUES (1, 'interaction');
+CREATE FUNCTION public.get_test_plan_version_id(testPlanVersionTitle text) RETURNS integer
+LANGUAGE plpgsql
+AS $$
+  DECLARE test_plan_version_id integer;
+BEGIN
+  SELECT id INTO test_plan_version_id
+  FROM public."TestPlanVersion"
+  WHERE public."TestPlanVersion".title = testPlanVersionTitle;
+  RETURN test_plan_version_id;
+END;
+$$;
 
 
 --
@@ -71,9 +72,9 @@ INSERT INTO public."TestPlanTarget" (id, title, "atId", "browserId", "atVersion"
 -- Data for Name: TestPlanReport; Type: TABLE DATA; Schema: public; Owner: atr
 --
 
-INSERT INTO public."TestPlanReport" (id, "status", "testPlanTargetId", "testPlanVersionId", "createdAt") VALUES (1, 'DRAFT', 1, 1, '2021-05-14 14:18:23.602-05');
-INSERT INTO public."TestPlanReport" (id, "status", "testPlanTargetId", "testPlanVersionId", "createdAt") VALUES (2, 'DRAFT', 2, 1, '2021-05-14 14:18:23.602-05');
-INSERT INTO public."TestPlanReport" (id, "status", "testPlanTargetId", "testPlanVersionId", "createdAt") VALUES (3, 'FINALIZED', 3, 1, '2021-05-14 14:18:23.602-05');
+INSERT INTO public."TestPlanReport" (id, "status", "testPlanTargetId", "testPlanVersionId", "createdAt") VALUES (1, 'DRAFT', 1, public.get_test_plan_version_id(text 'Checkbox Example (Two State)'), '2021-05-14 14:18:23.602-05');
+INSERT INTO public."TestPlanReport" (id, "status", "testPlanTargetId", "testPlanVersionId", "createdAt") VALUES (2, 'DRAFT', 2, public.get_test_plan_version_id(text 'Checkbox Example (Two State)'), '2021-05-14 14:18:23.602-05');
+INSERT INTO public."TestPlanReport" (id, "status", "testPlanTargetId", "testPlanVersionId", "createdAt") VALUES (3, 'FINALIZED', 3, public.get_test_plan_version_id(text 'Checkbox Example (Two State)'), '2021-05-14 14:18:23.602-05');
 
 
 --
@@ -444,7 +445,8 @@ INSERT INTO public."TestPlanRun" (id, "testerUserId", "testPlanReportId", "testR
 		}
 	]
 }"}');
-INSERT INTO public."TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults") VALUES (4, 1, 3, '{"{
+INSERT INTO public."TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults") VALUES (4, 1, 3,
+'{"{
 		\"id\": \"NGIzMeyIxMiI6NH0zliY2\",
 		\"testId\": \"ZDBiOeyIyIjoiMSJ9WZiYT\",
 		\"startedAt\": \"2021-09-21T14:09:37.262Z\",
