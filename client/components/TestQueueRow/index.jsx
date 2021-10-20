@@ -273,7 +273,6 @@ const TestQueueRow = ({
 
     const evaluateStatusAndResults = () => {
         const { status: runStatus, conflicts } = testPlanReport;
-        const { id: runId } = currentUserTestPlanRun;
 
         let status, results;
         const conflictCount = conflicts.length;
@@ -292,18 +291,6 @@ const TestQueueRow = ({
         } else if (runStatus === 'IN_REVIEW') {
             status = (
                 <span className="status-label in-progress">In Review</span>
-            );
-            results = (
-                <Link className="reports-link" to={`/results/run/${runId}`}>
-                    View Results
-                </Link>
-            );
-        } else if (runStatus === 'FINALIZED') {
-            status = <span className="status-label complete">Final</span>;
-            results = (
-                <Link className="reports-link" to={`/results/run/${runId}`}>
-                    View Final Results
-                </Link>
             );
         }
 
