@@ -553,13 +553,13 @@ const TestRun = () => {
                         />
                     </li>
                     <li>
-                    <OptionButton
-                        text="Start Over"
-                        icon={<FontAwesomeIcon icon={faRedo} />}
-                        onClick={handleStartOverButtonClick}
-                        disabled={!isSignedIn}
-                    />
-</li>
+                        <OptionButton
+                            text="Start Over"
+                            icon={<FontAwesomeIcon icon={faRedo} />}
+                            onClick={handleStartOverButtonClick}
+                            disabled={!isSignedIn}
+                        />
+                    </li>
                     <li>
                         <OptionButton
                             text={!isSignedIn ? 'Close' : 'Save and Close'}
@@ -626,11 +626,13 @@ const TestRun = () => {
                                     />
                                 </Row>
                                 {isRendererReady && (
-                                    <Row><ul className="test-run-toolbar mt-1">
-                                        {primaryButtons.map(button => (
-                                            <li key={nextId()}>{button}</li>
-                                        ))}
-                                    </ul></Row>
+                                    <Row>
+                                        <ul className="test-run-toolbar mt-1">
+                                            {primaryButtons.map(button => (
+                                                <li key={nextId()}>{button}</li>
+                                            ))}
+                                        </ul>
+                                    </Row>
                                 )}
                             </Col>
                             <Col className="current-test-options" md={3}>
