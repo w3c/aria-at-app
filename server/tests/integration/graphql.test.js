@@ -155,6 +155,8 @@ describe('graphql', () => {
     });
 
     it('supports querying every type and field in the schema', async () => {
+        const { assertionResultId } = await getQueryInputs();
+
         // eslint-disable-next-line no-unused-vars
         const queryResult = await typeAwareQuery(
             gql`
@@ -342,9 +344,7 @@ describe('graphql', () => {
                         }
                     }
                     populateData(locationOfData: {
-                        assertionResultId: "${'NTA0NeyIxNCI6Ik16ZGxaZXlJeE15S' +
-                            'TZJazB5VFRSTlpYbEplRTFwU1RaTldEQlVhRzFaVkNKOVdVe' +
-                            'k16In0zNmYj'}"
+                        assertionResultId: "${assertionResultId}"
                     }) {
                         __typename
                         locationOfData
@@ -393,13 +393,27 @@ describe('graphql', () => {
                 }
             `
         );
-        // console.log(queryResult);
+        // console.info(queryResult);
 
         await dbCleaner(async () => {
+            const {
+                emptyTestResultInput,
+                passingTestResultInput,
+                testPlanRun1DeletableTestResultId,
+                testPlanRun1TestId
+            } = await getTestResultInputs();
+
             // eslint-disable-next-line no-unused-vars
             const mutationResults = await typeAwareMutate(
                 gql`
-                    mutation {
+                    mutation AllMutations(
+                        $emptyTestResultInput: TestResultInput!
+                        $emptyTestResultId: ID!
+                        $passingTestResultInput: TestResultInput!
+                        $passingTestResultId: ID!
+                        $testPlanRun1DeletableTestResultId: ID!
+                        $testPlanRun1TestId: ID!
+                    ) {
                         __typename
                         findOrCreateTestPlanReport(
                             input: {
@@ -445,7 +459,7 @@ describe('graphql', () => {
                         testPlanRun(id: 1) {
                             __typename
                             findOrCreateTestResult(
-                                testId: "Mjk0MeyIyIjoiMSJ9jQyOG"
+                                testId: $testPlanRun1TestId
                             ) {
                                 locationOfData
                             }
@@ -456,75 +470,21 @@ describe('graphql', () => {
                                 locationOfData
                             }
                         }
-                        testResult(id: "M2M4MeyIxMiI6MX0ThmYT") {
+                        testResult(id: $emptyTestResultId) {
                             __typename
-                            saveTestResult(
-                                input: {
-                                    id: "M2M4MeyIxMiI6MX0ThmYT"
-                                    scenarioResults: [
-                                        {
-                                            id: "MzdlZeyIxMyI6Ik0yTTRNZXlJeE1pSTZNWDBUaG1ZVCJ9WUzMz"
-                                            output: null
-                                            assertionResults: [
-                                                {
-                                                    id: "M2Q1NeyIxNCI6Ik16ZGxaZXlJeE15STZJazB5VFRSTlpYbEplRTFwU1RaTldEQlVhRzFaVkNKOVdVek16In0jk1ZG"
-                                                    passed: true
-                                                    failedReason: null
-                                                }
-                                                {
-                                                    id: "MDE3ZeyIxNCI6Ik16ZGxaZXlJeE15STZJazB5VFRSTlpYbEplRTFwU1RaTldEQlVhRzFaVkNKOVdVek16In0jZlYj"
-                                                    passed: null
-                                                    failedReason: null
-                                                }
-                                                {
-                                                    id: "NTA0NeyIxNCI6Ik16ZGxaZXlJeE15STZJazB5VFRSTlpYbEplRTFwU1RaTldEQlVhRzFaVkNKOVdVek16In0zNmYj"
-                                                    passed: null
-                                                    failedReason: null
-                                                }
-                                            ]
-                                            unexpectedBehaviors: []
-                                        }
-                                    ]
-                                }
-                            ) {
+                            saveTestResult(input: $emptyTestResultInput) {
                                 locationOfData
                             }
                         }
-                        submitResult: testResult(id: "M2M4MeyIxMiI6MX0ThmYT") {
+                        submitResult: testResult(id: $passingTestResultId) {
                             __typename
-                            submitTestResult(
-                                input: {
-                                    id: "M2M4MeyIxMiI6MX0ThmYT"
-                                    scenarioResults: [
-                                        {
-                                            id: "MzdlZeyIxMyI6Ik0yTTRNZXlJeE1pSTZNWDBUaG1ZVCJ9WUzMz"
-                                            output: "completed test result"
-                                            assertionResults: [
-                                                {
-                                                    id: "M2Q1NeyIxNCI6Ik16ZGxaZXlJeE15STZJazB5VFRSTlpYbEplRTFwU1RaTldEQlVhRzFaVkNKOVdVek16In0jk1ZG"
-                                                    passed: true
-                                                    failedReason: null
-                                                }
-                                                {
-                                                    id: "MDE3ZeyIxNCI6Ik16ZGxaZXlJeE15STZJazB5VFRSTlpYbEplRTFwU1RaTldEQlVhRzFaVkNKOVdVek16In0jZlYj"
-                                                    passed: false
-                                                    failedReason: NO_OUTPUT
-                                                }
-                                                {
-                                                    id: "NTA0NeyIxNCI6Ik16ZGxaZXlJeE15STZJazB5VFRSTlpYbEplRTFwU1RaTldEQlVhRzFaVkNKOVdVek16In0zNmYj"
-                                                    passed: false
-                                                    failedReason: INCORRECT_OUTPUT
-                                                }
-                                            ]
-                                            unexpectedBehaviors: []
-                                        }
-                                    ]
-                                }
-                            ) {
+                            submitTestResult(input: $passingTestResultInput) {
                                 locationOfData
                             }
                         }
-                        deleteResult: testResult(id: "NTQ1MeyIxMiI6MX0DI1MT") {
+                        deleteResult: testResult(
+                            id: $testPlanRun1DeletableTestResultId
+                        ) {
                             __typename
                             deleteTestResult {
                                 locationOfData
@@ -536,7 +496,17 @@ describe('graphql', () => {
                             }
                         }
                     }
-                `
+                `,
+                {
+                    variables: {
+                        emptyTestResultInput,
+                        emptyTestResultId: emptyTestResultInput.id,
+                        passingTestResultInput,
+                        passingTestResultId: passingTestResultInput.id,
+                        testPlanRun1DeletableTestResultId,
+                        testPlanRun1TestId
+                    }
+                }
             );
         });
 
@@ -575,3 +545,107 @@ describe('graphql', () => {
         }).not.toThrow();
     });
 });
+
+const getQueryInputs = async () => {
+    const { testPlanRun } = await query(gql`
+        query {
+            testPlanRun(id: 1) {
+                testResults {
+                    scenarioResults {
+                        assertionResults {
+                            id
+                        }
+                    }
+                }
+            }
+        }
+    `);
+
+    return {
+        assertionResultId:
+            testPlanRun.testResults[0].scenarioResults[0].assertionResults[0].id
+    };
+};
+
+const getTestResultInputs = async () => {
+    const {
+        populateData: {
+            testPlanReport: { runnableTests }
+        }
+    } = await query(gql`
+        query {
+            populateData(locationOfData: { testPlanRunId: 1 }) {
+                testPlanReport {
+                    runnableTests {
+                        id
+                    }
+                }
+            }
+        }
+    `);
+
+    const {
+        testPlanRun: { empty, toBePassing, toBeDeleted }
+    } = await mutate(gql`
+        fragment TestResultFields on TestResult {
+            id
+            scenarioResults {
+                id
+                output
+                assertionResults {
+                    id
+                    passed
+                    failedReason
+                }
+                unexpectedBehaviors {
+                    id
+                    otherUnexpectedBehaviorText
+                }
+            }
+        }
+
+        mutation {
+            testPlanRun(id: 1) {
+                empty: findOrCreateTestResult(testId: "${runnableTests[0].id}") {
+                    testResult {
+                        ...TestResultFields
+                    }
+                }
+                toBePassing: findOrCreateTestResult(testId: "${runnableTests[1].id}") {
+                    testResult {
+                        ...TestResultFields
+                    }
+                }
+                toBeDeleted:  findOrCreateTestResult(testId: "${runnableTests[2].id}") {
+                    testResult {
+                        id
+                    }
+                }
+            }
+        }
+    `);
+
+    const passingTestResultInput = {
+        ...toBePassing.testResult,
+        scenarioResults: toBePassing.testResult.scenarioResults.map(
+            scenarioResult => ({
+                ...scenarioResult,
+                output: 'automatically seeded sample output',
+                assertionResults: scenarioResult.assertionResults.map(
+                    assertionResult => ({
+                        ...assertionResult,
+                        passed: true
+                    })
+                ),
+                unexpectedBehaviors: []
+            })
+        )
+    };
+
+    return {
+        passingTestResultInput,
+        emptyTestResultInput: empty.testResult,
+        testPlanRun1DeletableTestResultId: toBeDeleted.testResult.id,
+        testPlanRun1TestId: runnableTests[3].id
+    };
+};

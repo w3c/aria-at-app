@@ -554,7 +554,7 @@ describe('test queue', () => {
             Other result: FAILED: No Output (for output \\"automatically seeded sample output\\")
             Difference 3 - Unexpected behavior when testing Insert+Tab
             Your unexpected behaviors: No unexpected behaviors (for output \\"automatically seeded sample output\\")
-            Other unexpected behaviors: Output is excessively verbose, e.g., includes redundant and/or irrelevant speech (for output \\"automatically seeded sample output\\")
+            Other unexpected behaviors: Seeded other unexpected behavior (for output \\"automatically seeded sample output\\")
             ",
               "md": "##### Difference 1 - Testing Shift+Tab for Role 'combobox' is conveyed
             * Your result: PASSED: Good Output (for output \\"automatically seeded sample output\\")
@@ -564,7 +564,7 @@ describe('test queue', () => {
             * Other result: FAILED: No Output (for output \\"automatically seeded sample output\\")
             ##### Difference 3 - Unexpected behavior when testing Insert+Tab
             * Your unexpected behaviors: No unexpected behaviors (for output \\"automatically seeded sample output\\")
-            * Other unexpected behaviors: Output is excessively verbose, e.g., includes redundant and/or irrelevant speech (for output \\"automatically seeded sample output\\")
+            * Other unexpected behaviors: Seeded other unexpected behavior (for output \\"automatically seeded sample output\\")
             ",
             }
         `);

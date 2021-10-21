@@ -180,7 +180,8 @@ const getFake = async ({
             break;
         case 'failingDueToUnexpectedBehaviors':
             testResult.scenarioResults[0].unexpectedBehaviors.push({
-                id: 'EXCESSIVELY_VERBOSE'
+                id: 'OTHER',
+                otherUnexpectedBehaviorText: 'Seeded other unexpected behavior'
             });
             break;
         default:

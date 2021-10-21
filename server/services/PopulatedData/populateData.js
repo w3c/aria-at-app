@@ -156,6 +156,12 @@ const populateData = async (locationOfData, { preloaded } = {}) => {
     if (testId) {
         const tests = testsResolver(testPlanReport ?? testPlanVersion);
         test = tests.find(each => each.id === testId);
+        if (!test) {
+            throw new Error(
+                `Failed to load the testId ${testId} because it does not ` +
+                    `exist on the TestPlanVersion with ID ${testPlanVersionId}`
+            );
+        }
     }
     if (scenarioId) {
         scenario = test.scenarios.find(each => each.id === scenarioId);
