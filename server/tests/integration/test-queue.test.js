@@ -492,18 +492,18 @@ describe('test queue', () => {
                   "conflictingResults": Array [
                     Object {
                       "locationOfData": Object {
-                        "assertionResultId": "YzUyZeyIxNCI6Ik5ERTRZZXlJeE15STZJazlYV1RGUFpYbEplRTFwU1RaTmJqQkhWbXhhUkNKOVdObVpEIn0GU0MT",
+                        "assertionResultId": "ZDhmNeyIxNCI6IlltRXdNZXlJeE15STZJazU2YUd4TlpYbEplRTFwU1RaTmJqQkViR2xQUnlKOVRKaE5UIn0TBjMj",
                       },
                     },
                     Object {
                       "locationOfData": Object {
-                        "assertionResultId": "YTNjMeyIxNCI6Ik4yTmpPZXlJeE15STZJazVIVFhwUFpYbEplRTFwU1RaTk16QlhSbWxhYWlKOUdSbU1XIn0WY5Y2",
+                        "assertionResultId": "MTIwYeyIxNCI6Ik1qRTVNZXlJeE15STZJbGw2Um1sWlpYbEplRTFwU1RaTk16QlVaR3RPTWlKOWpGbU5tIn0jBmOT",
                       },
                     },
                   ],
                   "source": Object {
                     "locationOfData": Object {
-                      "assertionId": "MWJjNeyIzIjoiWkRCaU9leUl5SWpvaU1TSjlXWmlZVCJ9zNiZW",
+                      "assertionId": "MmEzMeyIzIjoiTmpBeU9leUl5SWpvaU5pSjlHTmhORCJ9jlhMW",
                     },
                   },
                 },
@@ -511,18 +511,18 @@ describe('test queue', () => {
                   "conflictingResults": Array [
                     Object {
                       "locationOfData": Object {
-                        "scenarioResultId": "MjlkMeyIxMyI6Ik5XSmpNZXlJeE1pSTZNbjBURXlNVCJ92M5ZW",
+                        "assertionResultId": "YjA4YeyIxNCI6Ik1UQmtPZXlJeE15STZJbHBYV214TlpYbEplRTFwU1RaTmJqQXlUVEJOVkNKOUdaaU5EIn02UwYm",
                       },
                     },
                     Object {
                       "locationOfData": Object {
-                        "scenarioResultId": "ZTcwZeyIxMyI6Ik1XVTFNZXlJeE1pSTZNMzBEUmtaVCJ9DdiOD",
+                        "assertionResultId": "YTA4MeyIxNCI6IlpUWmxZZXlJeE15STZJazVFV1hsYVpYbEplRTFwU1RaTk16QlhVVEZaYWlKOXpnelpEIn0zdhMG",
                       },
                     },
                   ],
                   "source": Object {
                     "locationOfData": Object {
-                      "scenarioId": "NzVjYeyIzIjoiTUdaa1lleUl5SWpvaU1TSjlUZ3haRCJ9TNiMG",
+                      "assertionId": "ODVlNeyIzIjoiTlRnd1pleUl5SWpvaU5pSjlXWTJPVCJ9zgzMj",
                     },
                   },
                 },
@@ -530,41 +530,41 @@ describe('test queue', () => {
                   "conflictingResults": Array [
                     Object {
                       "locationOfData": Object {
-                        "scenarioResultId": "YjQzNeyIxMyI6IllUZzRZZXlJeE1pSTZNbjBXSmlOMiJ9mYwZD",
+                        "scenarioResultId": "ZWE3MeyIxMyI6IlpqaGtZZXlJeE1pSTZNbjBXUTVNaiJ9WJkYm",
                       },
                     },
                     Object {
                       "locationOfData": Object {
-                        "scenarioResultId": "ZTRkYeyIxMyI6IlpqRXhOZXlJeE1pSTZNMzBUUmlOMiJ9jM1Yz",
+                        "scenarioResultId": "MjRjNeyIxMyI6Ik5UYzNZZXlJeE1pSTZNMzBUVTVObSJ9jkwMm",
                       },
                     },
                   ],
                   "source": Object {
                     "locationOfData": Object {
-                      "scenarioId": "NjM1MeyIzIjoiTWprME1leUl5SWpvaU1TSjlqUXlPRyJ9mU4YW",
+                      "scenarioId": "OTFhZeyIzIjoiTVRVNE1leUl5SWpvaU5pSjlUTXpabSJ9DM2Ym",
                     },
                   },
                 },
               ],
-              "conflictsFormatted": "Difference 1 - Testing Tab / Shift+Tab for Role 'checkbox' is conveyed
-            Your result: FAILED: No Output (for output \\"output conflicts due to assertions\\")
-            Other result: PASSED: Good Output (for output \\"output will conflict due to assertions\\")
-            Difference 2 - Unexpected behavior when testing Enter
-            Your unexpected behaviors: Different text (for output \\"output conflicts due to unexpected behaviors\\")
-            Other unexpected behaviors: Screen reader became extremely sluggish (for output \\"output will conflict due to unexpected behaviors\\")
-            Difference 3 - Unexpected behavior when testing Space
-            Your unexpected behaviors: Different unexpected behavior (for output \\"null\\")
-            Other unexpected behaviors: No unexpected behaviors (for output \\"null\\")
+              "conflictsFormatted": "Difference 1 - Testing Shift+Tab for Role 'combobox' is conveyed
+            Your result: PASSED: Good Output (for output \\"automatically seeded sample output\\")
+            Other result: FAILED: Incorrect Output (for output \\"automatically seeded sample output\\")
+            Difference 2 - Testing Insert+Tab for Role 'combobox' is conveyed
+            Your result: FAILED: Incorrect Output (for output \\"automatically seeded sample output\\")
+            Other result: FAILED: No Output (for output \\"automatically seeded sample output\\")
+            Difference 3 - Unexpected behavior when testing Insert+Tab
+            Your unexpected behaviors: No unexpected behaviors (for output \\"automatically seeded sample output\\")
+            Other unexpected behaviors: Output is excessively verbose, e.g., includes redundant and/or irrelevant speech (for output \\"automatically seeded sample output\\")
             ",
-              "md": "##### Difference 1 - Testing Tab / Shift+Tab for Role 'checkbox' is conveyed
-            * Your result: FAILED: No Output (for output \\"output conflicts due to assertions\\")
-            * Other result: PASSED: Good Output (for output \\"output will conflict due to assertions\\")
-            ##### Difference 2 - Unexpected behavior when testing Enter
-            * Your unexpected behaviors: Different text (for output \\"output conflicts due to unexpected behaviors\\")
-            * Other unexpected behaviors: Screen reader became extremely sluggish (for output \\"output will conflict due to unexpected behaviors\\")
-            ##### Difference 3 - Unexpected behavior when testing Space
-            * Your unexpected behaviors: Different unexpected behavior (for output \\"null\\")
-            * Other unexpected behaviors: No unexpected behaviors (for output \\"null\\")
+              "md": "##### Difference 1 - Testing Shift+Tab for Role 'combobox' is conveyed
+            * Your result: PASSED: Good Output (for output \\"automatically seeded sample output\\")
+            * Other result: FAILED: Incorrect Output (for output \\"automatically seeded sample output\\")
+            ##### Difference 2 - Testing Insert+Tab for Role 'combobox' is conveyed
+            * Your result: FAILED: Incorrect Output (for output \\"automatically seeded sample output\\")
+            * Other result: FAILED: No Output (for output \\"automatically seeded sample output\\")
+            ##### Difference 3 - Unexpected behavior when testing Insert+Tab
+            * Your unexpected behaviors: No unexpected behaviors (for output \\"automatically seeded sample output\\")
+            * Other unexpected behaviors: Output is excessively verbose, e.g., includes redundant and/or irrelevant speech (for output \\"automatically seeded sample output\\")
             ",
             }
         `);

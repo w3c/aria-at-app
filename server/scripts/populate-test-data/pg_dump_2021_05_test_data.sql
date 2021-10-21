@@ -5,12 +5,8 @@
 -- Dumped from database version 13.3
 -- Dumped by pg_dump version 13.3
 
--- SET statement_timeout = 0;
--- SET lock_timeout = 0;
--- SET idle_in_transaction_session_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
--- SELECT pg_catalog.set_config('search_path', '', false);
 SET check_function_bodies = false;
 SET xmloption = content;
 SET client_min_messages = warning;
@@ -28,6 +24,16 @@ BEGIN
 END;
 $$;
 
+
+--
+-- Data for Name: AtMode; Type: TABLE DATA; Schema: public; Owner: atr
+--
+
+INSERT INTO public."AtMode" ("atId", name) VALUES (1, 'READING');
+INSERT INTO public."AtMode" ("atId", name) VALUES (1, 'INTERACTION');
+INSERT INTO public."AtMode" ("atId", name) VALUES (2, 'READING');
+INSERT INTO public."AtMode" ("atId", name) VALUES (2, 'INTERACTION');
+INSERT INTO public."AtMode" ("atId", name) VALUES (3, 'INTERACTION');
 
 --
 -- Data for Name: AtVersion; Type: TABLE DATA; Schema: public; Owner: atr
