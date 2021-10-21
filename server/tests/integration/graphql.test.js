@@ -401,7 +401,7 @@ describe('graphql', () => {
                 passingTestResultInput,
                 testPlanRun1DeletableTestResultId,
                 testPlanRun1TestId
-            } = await getTestResultInputs();
+            } = await getMutationInputs();
 
             // eslint-disable-next-line no-unused-vars
             const mutationResults = await typeAwareMutate(
@@ -567,7 +567,7 @@ const getQueryInputs = async () => {
     };
 };
 
-const getTestResultInputs = async () => {
+const getMutationInputs = async () => {
     const {
         populateData: {
             testPlanReport: { runnableTests }
