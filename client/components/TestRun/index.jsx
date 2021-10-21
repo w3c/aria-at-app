@@ -21,6 +21,7 @@ import PageStatus from '../common/PageStatus';
 import BasicModal from '../common/BasicModal';
 import {
     TEST_RUN_PAGE_QUERY,
+    TEST_RUN_PAGE_ANON_QUERY,
     FIND_OR_CREATE_TEST_RESULT_MUTATION,
     SAVE_TEST_RESULT_MUTATION,
     SUBMIT_TEST_RESULT_MUTATION,
@@ -66,18 +67,21 @@ const TestRun = () => {
     const params = useParams();
     const history = useHistory();
     const routerQuery = useRouterQuery();
-    const titleRef = useRef();
 
+    const titleRef = useRef();
     const pageReadyRef = useRef(false);
     const testRunStateRef = useRef();
     const testRunResultRef = useRef();
     const testRendererSubmitButtonRef = useRef();
 
-    const { runId: testPlanRunId } = params;
+    const { runId: testPlanRunId, testPlanReportId } = params;
 
-    const { loading, data, error, refetch } = useQuery(TEST_RUN_PAGE_QUERY, {
-        variables: { testPlanRunId }
-    });
+    const { loading, data, error, refetch } = useQuery(
+        testPlanRunId ? TEST_RUN_PAGE_QUERY : TEST_RUN_PAGE_ANON_QUERY,
+        {
+            variables: { testPlanRunId, testPlanReportId }
+        }
+    );
     const [createTestResult, { loading: createTestLoading }] = useMutation(
         FIND_OR_CREATE_TEST_RESULT_MUTATION
     );
@@ -127,8 +131,19 @@ const TestRun = () => {
         );
     }
 
+    const auth = evaluateAuth(data && data.me ? data.me : {});
+    const { id: userId } = auth;
+    let { isSignedIn } = auth;
+
     const { testPlanRun, users } = data;
-    const { testPlanReport, tester, testResults = [] } = testPlanRun || {};
+    const { tester, testResults = [] } = testPlanRun || {};
+    let { testPlanReport } = testPlanRun || {};
+
+    // if a signed in user navigates to this page, treat them as anon to prevent
+    // invalid save attempts
+    if (testPlanReportId) isSignedIn = false;
+    if (!isSignedIn) testPlanReport = data.testPlanReport;
+
     const {
         testPlanTarget,
         testPlanVersion,
@@ -137,8 +152,6 @@ const TestRun = () => {
         conflictsFormatted
     } = testPlanReport || {};
 
-    const auth = evaluateAuth(data && data.me ? data.me : {});
-    const { id: userId } = auth;
     // check to ensure an admin that manually went to a test run url doesn't
     // run the test as themselves
     const openAsUserId =
@@ -147,7 +160,7 @@ const TestRun = () => {
             : null;
     const testerId = openAsUserId || userId;
 
-    if (!testPlanRun || !testPlanTarget) {
+    if (isSignedIn ? !testPlanRun || !testPlanTarget : !testPlanTarget) {
         return (
             <PageStatus
                 title="Error - Test Results | ARIA-AT"
@@ -181,7 +194,7 @@ const TestRun = () => {
     const currentTest = tests[currentTestIndex];
     const hasTestsToRun = tests.length;
 
-    if (!currentTest.testResult && !pageReadyRef.current)
+    if (!currentTest.testResult && !pageReadyRef.current && isSignedIn)
         (async () => await createTestResultForRenderer(currentTest.id))();
     else pageReadyRef.current = true;
 
@@ -338,6 +351,7 @@ const TestRun = () => {
             forceSave = false,
             forceEdit = false
         ) => {
+            if (!isSignedIn) return true;
             if (!forceEdit && currentTest.testResult.completedAt) return true;
 
             const scenarioResults = remapScenarioResults(
@@ -507,7 +521,12 @@ const TestRun = () => {
         } else {
             // same key to maintain focus
             const saveResultsButton = (
-                <Button variant="primary" onClick={handleSaveClick}>
+                <Button
+                    variant="primary"
+                    onClick={handleSaveClick}
+                    disabled={!isSignedIn}
+                    aria-disabled={!isSignedIn}
+                >
                     Submit Results
                 </Button>
             );
@@ -538,11 +557,12 @@ const TestRun = () => {
                             text="Start Over"
                             icon={<FontAwesomeIcon icon={faRedo} />}
                             onClick={handleStartOverButtonClick}
+                            disabled={!isSignedIn}
                         />
                     </li>
                     <li>
                         <OptionButton
-                            text="Save and Close"
+                            text={!isSignedIn ? 'Close' : 'Save and Close'}
                             onClick={handleCloseRunClick}
                         />
                     </li>
@@ -570,42 +590,56 @@ const TestRun = () => {
                         handleReviewConflictsButtonClick
                     }
                 />
-                {pageReadyRef.current && currentTest.testResult && (
-                    <Row>
-                        <Col className="test-iframe-container" md={9}>
-                            <Row>
-                                <TestRenderer
-                                    key={nextId()}
-                                    at={testPlanTarget.at}
-                                    testResult={remapState(
-                                        testRunStateRef.current,
-                                        currentTest.testResult
-                                    )}
-                                    testPageUrl={testPlanVersion.testPageUrl}
-                                    testRunStateRef={testRunStateRef}
-                                    testRunResultRef={testRunResultRef}
-                                    submitButtonRef={
-                                        testRendererSubmitButtonRef
-                                    }
-                                    isSubmitted={isTestSubmitClicked}
-                                    setIsRendererReady={setIsRendererReady}
-                                />
-                            </Row>
-                            {isRendererReady && (
+                {pageReadyRef.current &&
+                    (isSignedIn ? currentTest.testResult : true) && (
+                        <Row>
+                            <Col className="test-iframe-container" md={9}>
                                 <Row>
-                                    <ul className="test-run-toolbar mt-1">
-                                        {primaryButtons.map(button => (
-                                            <li key={nextId()}>{button}</li>
-                                        ))}
-                                    </ul>
+                                    <TestRenderer
+                                        key={nextId()}
+                                        at={testPlanTarget.at}
+                                        testResult={
+                                            !isSignedIn
+                                                ? {
+                                                      test: currentTest,
+                                                      // force the summary to be shown for an anonymous user
+                                                      completedAt: !!(
+                                                          !isSignedIn &&
+                                                          testRunResultRef.current
+                                                      )
+                                                  }
+                                                : remapState(
+                                                      testRunStateRef.current,
+                                                      currentTest.testResult
+                                                  )
+                                        }
+                                        testPageUrl={
+                                            testPlanVersion.testPageUrl
+                                        }
+                                        testRunStateRef={testRunStateRef}
+                                        testRunResultRef={testRunResultRef}
+                                        submitButtonRef={
+                                            testRendererSubmitButtonRef
+                                        }
+                                        isSubmitted={isTestSubmitClicked}
+                                        setIsRendererReady={setIsRendererReady}
+                                    />
                                 </Row>
-                            )}
-                        </Col>
-                        <Col className="current-test-options" md={3}>
-                            {menuRightOfContent}
-                        </Col>
-                    </Row>
-                )}
+                                {isRendererReady && (
+                                    <Row>
+                                        <ul className="test-run-toolbar mt-1">
+                                            {primaryButtons.map(button => (
+                                                <li key={nextId()}>{button}</li>
+                                            ))}
+                                        </ul>
+                                    </Row>
+                                )}
+                            </Col>
+                            <Col className="current-test-options" md={3}>
+                                {menuRightOfContent}
+                            </Col>
+                        </Row>
+                    )}
 
                 {/* Modals */}
                 {showStartOverModal && (
@@ -679,7 +713,11 @@ const TestRun = () => {
                         <FontAwesomeIcon
                             icon={hasTestsToRun ? faCheck : faExclamationCircle}
                         />
-                        {hasTestsToRun ? (
+                        {!isSignedIn ? (
+                            <>
+                                <b>{tests.length} tests to view</b>
+                            </>
+                        ) : hasTestsToRun ? (
                             <>
                                 {' '}
                                 <b>{`${testPlanRun.testResults.reduce(
@@ -701,7 +739,7 @@ const TestRun = () => {
         </>
     );
 
-    if (!testPlanRun.isComplete) {
+    if (!isSignedIn || !testPlanRun?.isComplete) {
         content = hasTestsToRun ? (
             renderTestContent(testPlanReport, currentTest, heading)
         ) : (

@@ -18,11 +18,11 @@ const conflictsFormattedResolver = async (
         const { source, conflictingResults } = conflicts[i];
 
         const yourScenarioResult = conflictingResults.find(
-            ({ testPlanRun }) => testPlanRun.tester.id == user.id
+            ({ testPlanRun }) => testPlanRun.tester.id == user?.id
         )?.scenarioResult;
 
         const otherScenarioResults = conflictingResults
-            .filter(({ testPlanRun }) => testPlanRun.tester.id != user.id)
+            .filter(({ testPlanRun }) => testPlanRun.tester.id != user?.id)
             .map(testResult => testResult.scenarioResult);
 
         if (source.assertion) {
