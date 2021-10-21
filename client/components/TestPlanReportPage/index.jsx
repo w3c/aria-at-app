@@ -157,7 +157,7 @@ class TestPlanReportPage extends Component {
                                 bordered
                                 hover
                                 key={`table-${techPairIndex}`}
-                                aria-labelledby={`tabel-${techPairIndex}`}
+                                aria-labelledby={`table-${techPairIndex}`}
                             >
                                 <thead>
                                     <tr>
