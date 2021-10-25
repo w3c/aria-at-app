@@ -630,7 +630,7 @@ const getMutationInputs = async () => {
         scenarioResults: toBePassing.testResult.scenarioResults.map(
             scenarioResult => ({
                 ...scenarioResult,
-                output: 'automatically seeded sample output',
+                output: 'sample output',
                 assertionResults: scenarioResult.assertionResults.map(
                     assertionResult => ({
                         ...assertionResult,

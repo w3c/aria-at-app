@@ -29,11 +29,11 @@ $$;
 -- Data for Name: AtMode; Type: TABLE DATA; Schema: public; Owner: atr
 --
 
-INSERT INTO public."AtMode" ("atId", name) VALUES (1, 'READING');
-INSERT INTO public."AtMode" ("atId", name) VALUES (1, 'INTERACTION');
-INSERT INTO public."AtMode" ("atId", name) VALUES (2, 'READING');
-INSERT INTO public."AtMode" ("atId", name) VALUES (2, 'INTERACTION');
-INSERT INTO public."AtMode" ("atId", name) VALUES (3, 'INTERACTION');
+INSERT INTO "AtMode" ("atId", name) VALUES (1, 'READING');
+INSERT INTO "AtMode" ("atId", name) VALUES (1, 'INTERACTION');
+INSERT INTO "AtMode" ("atId", name) VALUES (2, 'READING');
+INSERT INTO "AtMode" ("atId", name) VALUES (2, 'INTERACTION');
+INSERT INTO "AtMode" ("atId", name) VALUES (3, 'INTERACTION');
 
 --
 -- Data for Name: AtVersion; Type: TABLE DATA; Schema: public; Owner: atr
