@@ -133,6 +133,12 @@ const populateData = async (locationOfData, { preloaded } = {}) => {
     if (testResultId) {
         const testResults = testsResultsResolver(testPlanRun);
         testResult = testResults.find(each => each.id === testResultId);
+        if (!testResult) {
+            throw new Error(
+                `Failed to load the testResultId ${testResultId} because it ` +
+                    `does not exist on the TestPlanRun with ID ${testPlanRunId}`
+            );
+        }
         testId = testResult.testId;
     }
     if (scenarioResultId) {
@@ -150,6 +156,12 @@ const populateData = async (locationOfData, { preloaded } = {}) => {
     if (testId) {
         const tests = testsResolver(testPlanReport ?? testPlanVersion);
         test = tests.find(each => each.id === testId);
+        if (!test) {
+            throw new Error(
+                `Failed to load the testId ${testId} because it does not ` +
+                    `exist on the TestPlanVersion with ID ${testPlanVersionId}`
+            );
+        }
     }
     if (scenarioId) {
         scenario = test.scenarios.find(each => each.id === scenarioId);
@@ -227,22 +239,28 @@ const throwFailedToLoadError = ({
         `Using the IDs returned from the findOrCreateTestResult mutation should ` +
         `fix this error. For additional information see locationOfDataId.js.`;
 
+    const undefinedInfo =
+        `An undefined value might imply that you are using the wrong id, ` +
+        `e.g. you are using a testResultId in place of a testId. `;
+
     if (locationOfDataIdForTestPlanVersion) {
         const idValue = locationOfData[locationOfDataIdForTestPlanVersion];
+        const undefNote = testPlanVersionId === undefined ? undefinedInfo : '';
         throw new Error(
             `Failed to load the ${locationOfDataIdForTestPlanVersion} ` +
                 `${idValue} because it encodes a reference to a ` +
                 `testPlanVersion with ID ${testPlanVersionId} which does ` +
-                `not exist. ${locationOfDataInfo}`
+                `not exist. ${undefNote}${locationOfDataInfo}`
         );
     }
     if (locationOfDataIdForTestPlanRun) {
         const idValue = locationOfData[locationOfDataIdForTestPlanRun];
+        const undefinedNote = testPlanRunId === undefined ? undefinedInfo : '';
         throw new Error(
             `Failed to load the ${locationOfDataIdForTestPlanRun} ` +
                 `${idValue} because it encodes a reference to a testPlanRun ` +
                 `with ID ${testPlanRunId} which does not exist. ` +
-                `${locationOfDataInfo}`
+                `${undefinedNote}${locationOfDataInfo}`
         );
     }
     throw new Error(`Failed to load ${JSON.stringify(locationOfData)}`);

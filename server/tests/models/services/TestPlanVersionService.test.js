@@ -35,10 +35,6 @@ describe('TestPlanReportModel Data Checks', () => {
         expect(metadata).toBeTruthy();
         expect(tests).toBeTruthy();
         expect(testPlanReports).toBeInstanceOf(Array);
-        expect(testPlanReports.length).not.toBe(0);
-        expect(testPlanReports).toContainEqual(
-            expect.objectContaining({ id: expect.any(Number) })
-        );
         expect(testPlanVersion).toHaveProperty('testPlanReports');
     });
 
