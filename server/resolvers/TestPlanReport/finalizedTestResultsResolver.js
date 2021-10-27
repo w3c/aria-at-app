@@ -17,7 +17,10 @@ const finalizedTestResultsResolver = testPlanReport => {
             testPlanReport.testPlanRuns[i].testResults.filter(
                 testResult => !!testResult.completedAt
             ),
-            { identifyArrayItem: item => item.id }
+            {
+                identifyArrayItem: each =>
+                    each.testId ?? each.scenarioId ?? each.assertionId
+            }
         );
     }
 
