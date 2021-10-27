@@ -719,7 +719,7 @@ const graphqlSchema = gql`
         runs. At this stage a single set of results is able to represent all
         results, and is much more convenient to work with.
         """
-        finalizedTestResults: [TestResult]!
+        finalizedTestResults: [TestResult]
         """
         These are all the TestPlanRuns which were recorded during the
         TestPlanReport's DRAFT stage.
