@@ -18,8 +18,8 @@ const finalizedTestResultsResolver = testPlanReport => {
                 testResult => !!testResult.completedAt
             ),
             {
-                identifyArrayItem: each =>
-                    each.testId ?? each.scenarioId ?? each.assertionId
+                identifyArrayItem: item =>
+                    item.testId ?? item.scenarioId ?? item.assertionId
             }
         );
     }
