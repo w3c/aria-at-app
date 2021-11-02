@@ -368,8 +368,16 @@
         "text": "Shift+F"
     },
     {
+        "id": "SHIFT_I",
+        "text": "Shift+I"
+    },
+    {
         "id": "SHIFT_K",
         "text": "Shift+K"
+    },
+    {
+        "id": "SHIFT_L",
+        "text": "Shift+L"
     },
     {
         "id": "SHIFT_R",
