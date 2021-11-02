@@ -1,6 +1,10 @@
 const testResultsResolver = require('../TestPlanRun/testResultsResolver');
 const deepCustomMerge = require('../../util/deepCustomMerge');
 
+/**
+ * Completed test results sourced from all the report's runs. The runs must be
+ * merged because each run might have skipped different tests.
+ */
 const finalizedTestResultsResolver = testPlanReport => {
     if (
         testPlanReport.status !== 'FINALIZED' ||

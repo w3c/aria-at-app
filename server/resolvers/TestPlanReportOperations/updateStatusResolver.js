@@ -30,7 +30,7 @@ const updateStatusResolver = async (
             ...testPlanReport,
             status: 'FINALIZED'
         });
-        if (finalizedTestResults.length === 0) {
+        if (!finalizedTestResults || !finalizedTestResults.length) {
             throw new Error(
                 'Cannot finalize test plan report because there are no ' +
                     'completed test results'
