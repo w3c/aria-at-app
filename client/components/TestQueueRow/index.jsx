@@ -364,43 +364,45 @@ const TestQueueRow = ({
                 )}
                 <div className={(isSignedIn && 'secondary-actions') || ''}>
                     {draftTestPlanRuns.length !== 0 ? (
-                        draftTestPlanRuns.map(({ tester, testResults }) => (
-                            <ul className="assignees" key={nextId()}>
-                                <li>
-                                    <a
-                                        href={
-                                            `https://github.com/` +
-                                            `${tester.username}`
-                                        }
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        // Allows ATs to read the number of
-                                        // completed tests when tabbing to this
-                                        // link
-                                        aria-describedby={
-                                            `assignee-${tester.username}-` +
-                                            `completed`
-                                        }
-                                    >
-                                        {tester.username}
-                                    </a>
-                                    <div
-                                        id={
-                                            `assignee-${tester.username}-` +
-                                            `completed`
-                                        }
-                                    >
-                                        {`(${testResults.reduce(
-                                            (acc, { completedAt }) =>
-                                                acc + (completedAt ? 1 : 0),
-                                            0
-                                        )} of ${
-                                            runnableTests.length
-                                        } tests complete)`}
-                                    </div>
-                                </li>
-                            </ul>
-                        ))
+                        <ul className="assignees">
+                            {draftTestPlanRuns.map(
+                                ({ tester, testResults }) => (
+                                    <li key={nextId()}>
+                                        <a
+                                            href={
+                                                `https://github.com/` +
+                                                `${tester.username}`
+                                            }
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            // Allows ATs to read the number of
+                                            // completed tests when tabbing to this
+                                            // link
+                                            aria-describedby={
+                                                `assignee-${tester.username}-` +
+                                                `completed`
+                                            }
+                                        >
+                                            {tester.username}
+                                        </a>
+                                        <div
+                                            id={
+                                                `assignee-${tester.username}-` +
+                                                `completed`
+                                            }
+                                        >
+                                            {`(${testResults.reduce(
+                                                (acc, { completedAt }) =>
+                                                    acc + (completedAt ? 1 : 0),
+                                                0
+                                            )} of ${
+                                                runnableTests.length
+                                            } tests complete)`}
+                                        </div>
+                                    </li>
+                                )
+                            )}
+                        </ul>
                     ) : (
                         <div className="no-assignees">No testers assigned</div>
                     )}
