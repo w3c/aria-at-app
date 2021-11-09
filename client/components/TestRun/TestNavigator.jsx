@@ -39,11 +39,14 @@ const TestNavigator = ({
                         <FontAwesomeIcon icon={faAlignLeft} />
                     </button>
                 </div>
-                {show && <h2>Test Navigator</h2>}
+                {show && <h2 id="test-navigator-heading">Test Navigator</h2>}
             </div>
             {show && (
-                <nav role="complementary">
-                    <ol className="test-navigator-list">
+                <nav aria-labelledby="test-navigator-heading">
+                    <ol
+                        aria-labelledby="test-navigator-heading"
+                        className="test-navigator-list"
+                    >
                         {tests.map(test => {
                             let resultClassName = 'not-started';
                             let resultStatus = 'Not Started';
