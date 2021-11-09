@@ -275,7 +275,7 @@ main.container-fluid .test-iframe-container > .row {
     border-radius: 3px;
 }
 
-.current-test-options h3 {
+.current-test-options h2 {
     margin-top: 0;
     padding: 0.9em;
     background: #e9ebee;
