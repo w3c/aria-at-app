@@ -177,7 +177,7 @@ SummarizeTestPlanVersion.propTypes = {
         title: PropTypes.string,
         metadata: PropTypes.shape({
             exampleUrl: PropTypes.string.isRequired,
-            designPatternUrl: PropTypes.string.isRequired
+            designPatternUrl: PropTypes.string
         }).isRequired
     }).isRequired,
     testPlanReports: PropTypes.arrayOf(

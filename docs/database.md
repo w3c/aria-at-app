@@ -29,6 +29,12 @@ The database migrations are managed by [Sequelize](https://sequelize.org/). To r
     yarn db-import-tests:dev
     ```
 
+The sample data which is used in test environments can also be populated on development environments.
+
+```
+yarn workspace server db-populate-sample-data:dev;
+```
+
 All at once:
 
 ```
