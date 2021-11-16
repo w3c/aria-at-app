@@ -30,7 +30,7 @@ const conflictsFormattedResolver = async (
             const scenario = conflictingResults[0].scenario;
             const commandsFormatted = scenario.commands
                 .map(({ text }) => text)
-                .join(', then');
+                .join(', then ');
 
             const yourAssertionDifferenceFormatted = yourScenarioResult
                 ? formatAssertionDifference(yourScenarioResult)
@@ -52,7 +52,7 @@ const conflictsFormattedResolver = async (
             const scenario = source.scenario;
             const commandsFormatted = scenario.commands
                 .map(({ text }) => text)
-                .join(', then');
+                .join(', then ');
 
             const yourDifferenceFormatted = yourScenarioResult
                 ? formatUnexpectedBehaviorDifference(yourScenarioResult)
