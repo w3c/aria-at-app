@@ -1,5 +1,4 @@
 const axios = require('axios');
-const { AuthorizationError } = require('../errors/auth');
 
 const {
     GITHUB_GRAPHQL_SERVER,
@@ -8,31 +7,20 @@ const {
     GITHUB_CLIENT_SECRET,
     GITHUB_TEAM_ADMIN,
     GITHUB_TEAM_ORGANIZATION,
-    GITHUB_TEAM_QUERY,
-    GITHUB_REPO_OWNER,
-    GITHUB_REPO_NAME,
-    GITHUB_REPO_ID
+    GITHUB_TEAM_QUERY
 } = process.env;
 
 const permissionScopes = [
+    // Not currently used, but this permissions scope will allow us to query for
+    // the user's private email address via the REST API in the future (Note
+    // that accessing private email addresses is not supported by GitHub's
+    // GraphQL API)
     'user:email',
-    'read:org',
-    'read:discussion',
-    'public_repo'
+
+    // Allows checking whether the user is in the admin team
+    'read:org'
 ];
-const permissionScopesURI = encodeURI(
-    permissionScopes.reduce((a, b) => `${a} ${b}`)
-);
-
-function unwrapGraphQLResponse(response) {
-    if (response.data && response.data.data) {
-        return response.data.data;
-    }
-
-    if (response.data && response.data.errors) {
-        return response.data.errors;
-    }
-}
+const permissionScopesURI = encodeURI(permissionScopes.join(' '));
 
 module.exports = {
     graphQLEndpoint: `${GITHUB_GRAPHQL_SERVER}/graphql`,
@@ -57,7 +45,13 @@ module.exports = {
         return response && response.data && response.data.access_token;
     },
     async getGithubUsername(githubAccessToken) {
-        const query = '{ viewer { username: login } }';
+        const query = `
+            query {
+                viewer {
+                    username: login
+                }
+            }
+        `;
         const response = await axios.post(
             this.graphQLEndpoint,
             { query },
@@ -72,7 +66,7 @@ module.exports = {
     },
     async isMemberOfAdminTeam({ githubAccessToken, githubUsername }) {
         const query = `
-            {
+            query {
                 organization(login: "${GITHUB_TEAM_ORGANIZATION}") {
                     teams(
                         userLogins: "${githubUsername}",
@@ -99,123 +93,5 @@ module.exports = {
             .find(teamName => teamName === GITHUB_TEAM_ADMIN);
 
         return isMember;
-    },
-    async getIssues(options) {
-        if (
-            typeof options === 'undefined' ||
-            !('githubAccessToken' in options)
-        ) {
-            throw new AuthorizationError('Not authorized.');
-        }
-
-        const { githubAccessToken, issueNumbers } = options;
-
-        let queryIssues = '';
-
-        for (let number of issueNumbers) {
-            queryIssues = `${queryIssues}
-                _${number}: issue(number: ${number}) {
-                    closed,
-                    closedAt,
-                    publishedAt,
-                    updatedAt,
-                    number,
-                    author {
-                      avatarUrl,
-                      login
-                    },
-                    state,
-                    title,
-                    body,
-                    bodyHTML
-                }
-            `.trim();
-        }
-
-        const query = `
-        query FindIssues {
-            repository(owner:"${GITHUB_REPO_OWNER}", name:"${GITHUB_REPO_NAME}") {
-                ${queryIssues}
-            }
-        }
-        `;
-
-        const response = await axios.post(
-            this.graphQLEndpoint,
-            { query },
-            { headers: { Authorization: `bearer ${githubAccessToken}` } }
-        );
-
-        const result = unwrapGraphQLResponse(response);
-
-        if (result.repository) {
-            return Object.values(result.repository);
-        }
-
-        return [];
-    },
-    async createIssue(options) {
-        if (
-            typeof options === 'undefined' ||
-            !('githubAccessToken' in options)
-        ) {
-            throw new AuthorizationError('Not authorized.');
-        }
-        const { title, body } = options.issue;
-
-        const query = `
-        mutation createIssue ($title:String, $body:String, $repositoryId:String) {
-          createIssue(
-            input: {
-              repositoryId: $repositoryId,
-              title: $title,
-              body: $body
-            }
-          ) {
-            issue {
-                closed,
-                closedAt,
-                publishedAt,
-                updatedAt,
-                number,
-                author {
-                  avatarUrl,
-                  login
-                },
-                state,
-                title,
-                body,
-                bodyHTML
-            }
-          }
-        }
-        `;
-
-        const variables = {
-            repositoryId: GITHUB_REPO_ID,
-            title,
-            body
-        };
-
-        const response = await axios.post(
-            this.graphQLEndpoint,
-            {
-                query,
-                variables
-            },
-            {
-                headers: {
-                    Authorization: `bearer ${options.githubAccessToken}`
-                }
-            }
-        );
-
-        const result = unwrapGraphQLResponse(response);
-
-        if (result.createIssue && result.createIssue.issue) {
-            return result.createIssue.issue;
-        }
-
-        return null;
     }
 };

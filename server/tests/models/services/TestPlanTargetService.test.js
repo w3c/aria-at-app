@@ -24,7 +24,7 @@ describe('TestPlanTargetModel data Checks', () => {
         } = testPlanTarget;
 
         expect(id).toEqual(_id);
-        expect(title).toEqual('NVDA 2020.4 with Chrome 91.0.4472');
+        expect(title).toEqual('JAWS 2021.2103.174 with Chrome 91.0.4472');
         expect(atId).toBeTruthy();
         expect(atVersion).toBeTruthy();
         expect(browserId).toBeTruthy();

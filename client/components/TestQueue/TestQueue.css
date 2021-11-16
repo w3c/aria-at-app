@@ -56,12 +56,6 @@ table button {
     margin: 0;
 }
 
-.status-label {
-    width: 100%;
-    text-align: center;
-    margin: 0.45em 0;
-}
-
 .add-test-plan-queue-container {
     display: flex;
     align-items: center;

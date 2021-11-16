@@ -1,5 +1,4 @@
 const { ApolloServer } = require('apollo-server');
-const { createTestClient } = require('apollo-server-testing');
 const typeDefs = require('../../graphql-schema');
 const getGraphQLContext = require('../../graphql-context');
 const resolvers = require('../../resolvers');
@@ -13,13 +12,13 @@ const server = new ApolloServer({
     resolvers
 });
 
-const { query: testClientQuery, mutate: testClientMutate } = createTestClient(
-    server
-);
-
 const failWithErrors = errors => {
     let formatted = '';
     errors.forEach(error => {
+        if (error.originalError) {
+            formatted += `${error.originalError.stack}\n\n`;
+        }
+
         const formattedType = error.name ? `${error.name}: ` : '';
         const formattedPath = error.path
             ? ` in ${JSON.stringify(error.path)} `
@@ -48,7 +47,7 @@ const failWithErrors = errors => {
 
 /**
  * Returns the data from a given query, useful for situations where errors are
- * not expected and no query variables are needed.
+ * not expected.
  * @param {GraphQLSyntaxTree} gql - GraphQL query from a gql template string.
  * @example gql`query { me { username } }`
  * @param {object=} options
@@ -56,18 +55,18 @@ const failWithErrors = errors => {
  * to simulate being logged out.
  * @returns {any} Data matching the query.
  */
-const query = async (gql, { user = defaultUser } = {}) => {
+const query = async (gql, { user = defaultUser, ...queryOptions } = {}) => {
     mockReq = { session: { user } };
-    const { data, errors } = await testClientQuery({ query: gql });
+    const { data, errors } = await server.executeOperation({
+        query: gql,
+        ...queryOptions
+    });
     if (errors) failWithErrors(errors);
     return data;
 };
 
-const mutate = async (gql, { user = defaultUser } = {}) => {
-    mockReq = { session: { user } };
-    const { data, errors } = await testClientMutate({ mutation: gql });
-    if (errors) failWithErrors(errors);
-    return data;
+const mutate = async (gql, options) => {
+    return query(gql, options); // same as query
 };
 
 module.exports = { query, mutate };

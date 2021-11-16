@@ -10,78 +10,81 @@ import React from 'react';
 
 const TestNavigator = ({
     show = true,
-    testResults = [],
-    conflicts = {},
-    currentTestIndex = 1,
+    isSignedIn = false,
+    tests = [],
+    currentTestIndex = 0,
     toggleShowClick = () => {},
     handleTestClick = () => {}
 }) => {
     return (
         <Col className="test-navigator" md={show ? 3 : 12}>
-            {show && <h2>Test Navigator</h2>}
             <div className="test-navigator-toggle-container">
-                <button
-                    aria-label={`${
-                        show
-                            ? 'Toggle button to close test navigator'
-                            : 'Toggle button to open test navigator'
-                    }`}
-                    onClick={toggleShowClick}
-                    className={`test-navigator-toggle ${
-                        show ? 'hide' : 'show'
-                    }`}
-                >
-                    {show ? (
-                        <FontAwesomeIcon icon={faArrowLeft} />
-                    ) : (
-                        <FontAwesomeIcon icon={faArrowRight} />
-                    )}
-                    <FontAwesomeIcon icon={faAlignLeft} />
-                </button>
+                <div className="test-navigator-toggle-inner-container">
+                    <button
+                        aria-label={`${
+                            show
+                                ? 'Toggle button to close test navigator'
+                                : 'Toggle button to open test navigator'
+                        }`}
+                        onClick={toggleShowClick}
+                        className={`test-navigator-toggle ${
+                            show ? 'hide' : 'show'
+                        }`}
+                    >
+                        {show ? (
+                            <FontAwesomeIcon icon={faArrowLeft} />
+                        ) : (
+                            <FontAwesomeIcon icon={faArrowRight} />
+                        )}
+                        <FontAwesomeIcon icon={faAlignLeft} />
+                    </button>
+                </div>
+                {show && <h2>Test Navigator</h2>}
             </div>
             {show && (
                 <nav role="complementary">
                     <ol className="test-navigator-list">
-                        {testResults.map(testResult => {
+                        {tests.map(test => {
                             let resultClassName = 'not-started';
-                            let resultStatus = 'Not Started:';
+                            let resultStatus = 'Not Started';
 
-                            const testConflicts =
-                                conflicts[testResult.index] || [];
-
-                            if (testResult) {
-                                if (testResult.isSkipped) {
+                            if (test) {
+                                if (test.hasConflicts) {
+                                    resultClassName = 'conflicts';
+                                    resultStatus = 'Has Conflicts';
+                                } else if (test.testResult) {
+                                    resultClassName = test.testResult
+                                        .completedAt
+                                        ? 'complete'
+                                        : 'in-progress';
+                                    resultStatus = test.testResult.completedAt
+                                        ? 'Complete Test'
+                                        : 'In Progress';
+                                } else if (
+                                    !isSignedIn &&
+                                    test.index === currentTestIndex
+                                ) {
                                     resultClassName = 'in-progress';
                                     resultStatus = 'In Progress:';
-                                } else if (testConflicts.length) {
-                                    resultClassName = 'conflicts';
-                                    resultStatus = 'Has Conflicts:';
-                                } else if (testResult.isComplete) {
-                                    resultClassName = 'complete';
-                                    resultStatus = 'Complete Test:';
                                 }
                             }
 
                             return (
                                 <li
                                     className={`test-name-wrapper ${resultClassName}`}
-                                    key={`TestNavigatorItem_${testResult.index}`}
+                                    key={`TestNavigatorItem_${test.id}`}
                                 >
                                     <a
                                         href="#"
                                         onClick={async () =>
-                                            await handleTestClick(
-                                                testResult.index
-                                            )
+                                            await handleTestClick(test.index)
                                         }
                                         className="test-name"
-                                        aria-label={`${resultStatus} ${testResult.title}`}
                                         aria-current={
-                                            testResult.index ===
-                                            currentTestIndex
+                                            test.index === currentTestIndex
                                         }
                                     >
-                                        {testResult.title}
+                                        {test.title}
                                     </a>
                                     <span
                                         className="progress-indicator"
@@ -99,7 +102,9 @@ const TestNavigator = ({
 
 TestNavigator.propTypes = {
     show: PropTypes.bool,
-    testResults: PropTypes.array,
+    isSignedIn: PropTypes.bool,
+    tests: PropTypes.array,
+    testResult: PropTypes.object,
     conflicts: PropTypes.object,
     currentTestIndex: PropTypes.number,
     toggleShowClick: PropTypes.func,

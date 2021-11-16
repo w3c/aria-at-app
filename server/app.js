@@ -5,10 +5,7 @@ const proxyMiddleware = require('rawgit/lib/middleware');
 const { ApolloServer } = require('apollo-server-express');
 const { session } = require('./middleware/session');
 const authRoutes = require('./routes/auth');
-const atRoutes = require('./routes/at');
-const runRoutes = require('./routes/run');
 const testRoutes = require('./routes/tests');
-const testVersionRoutes = require('./routes/test-version');
 const path = require('path');
 const graphqlSchema = require('./graphql-schema');
 const getGraphQLContext = require('./graphql-context');
@@ -20,10 +17,7 @@ const app = express();
 app.use(session);
 app.use(bodyParser.json());
 app.use('/auth', authRoutes);
-app.use('/at', atRoutes);
-app.use('/run', runRoutes);
 app.use('/test', testRoutes);
-app.use('/test-versions', testVersionRoutes);
 
 const server = new ApolloServer({
     typeDefs: graphqlSchema,
@@ -37,7 +31,7 @@ server.start().then(() => {
 const listener = express();
 listener.use('/api', app);
 
-const BaseURL = 'https://raw.githubusercontent.com';
+const baseUrl = 'https://raw.githubusercontent.com';
 const onlyStatus200 = (req, res) => res.statusCode === 200;
 
 listener.route('/aria-at/:branch/*').get(
@@ -46,8 +40,8 @@ listener.route('/aria-at/:branch/*').get(
         req.url = path.join('w3c', req.url);
         next();
     },
-    proxyMiddleware.fileRedirect(BaseURL),
-    proxyMiddleware.proxyPath(BaseURL)
+    proxyMiddleware.fileRedirect(baseUrl),
+    proxyMiddleware.proxyPath(baseUrl)
 );
 
 // Error handling must be the last middleware

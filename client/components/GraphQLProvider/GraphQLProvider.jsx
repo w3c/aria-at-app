@@ -4,7 +4,7 @@ import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
 
 const client = new ApolloClient({
     uri: '/api/graphql',
-    cache: new InMemoryCache()
+    cache: new InMemoryCache({ addTypename: false })
 });
 
 const GraphQLProvider = ({ children }) => {

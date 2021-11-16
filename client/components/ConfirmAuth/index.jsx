@@ -1,13 +1,16 @@
 import React from 'react';
-import { connect } from 'react-redux';
 import { Route, Redirect } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import { useQuery } from '@apollo/client';
+import { ME_QUERY } from '../App/queries';
+import { evaluateAuth } from '../../utils/evaluateAuth';
 
-const ConfirmAuth = ({ auth, children, requiredPermission, ...rest }) => {
-    const { isSignedIn, isAdmin, username, roles } = auth;
+const ConfirmAuth = ({ children, requiredPermission, ...rest }) => {
+    const { data } = useQuery(ME_QUERY);
 
-    // to explicitly inform user that something went wrong when signing in
-    // need to provide assistance on troubleshooting should this ever happen
+    const auth = evaluateAuth(data && data.me ? data.me : {});
+    const { roles, username, isAdmin, isSignedIn } = auth;
+
     if (!username) return <Redirect to={{ pathname: '/invalid-request' }} />;
 
     // If you are an admin, you can access all other role actions by default
@@ -28,13 +31,7 @@ const ConfirmAuth = ({ auth, children, requiredPermission, ...rest }) => {
     );
 };
 
-const mapStateToProps = state => {
-    const { auth } = state;
-    return { auth };
-};
-
 ConfirmAuth.propTypes = {
-    auth: PropTypes.object,
     children: PropTypes.oneOfType([
         PropTypes.arrayOf(PropTypes.node),
         PropTypes.node
@@ -42,4 +39,4 @@ ConfirmAuth.propTypes = {
     requiredPermission: PropTypes.string
 };
 
-export default connect(mapStateToProps)(ConfirmAuth);
+export default ConfirmAuth;

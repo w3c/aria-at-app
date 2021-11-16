@@ -1,32 +1,27 @@
+const { AuthenticationError } = require('apollo-server-errors');
 const {
     getOrCreateTestPlanReport
 } = require('../models/services/TestPlanReportService');
-const populatedDataResolver = require('./PopulatedData');
+const populateData = require('../services/PopulatedData/populateData');
 
-const findOrCreateTestPlanReportResolver = async (_, { input }) => {
-    const [result, createdLocationsOfData] = await getOrCreateTestPlanReport(
-        input,
-        { status: 'DRAFT' },
-        null,
-        [],
-        [],
-        [],
-        [],
-        [],
-        []
-    );
+const findOrCreateTestPlanReportResolver = async (_, { input }, { user }) => {
+    if (!user?.roles.find(role => role.name === 'ADMIN')) {
+        throw new AuthenticationError();
+    }
 
-    const locationOfData = { testPlanReportId: result.id };
+    const [
+        testPlanReport,
+        createdLocationsOfData
+    ] = await getOrCreateTestPlanReport(input, { status: 'DRAFT' });
+
+    const locationOfData = { testPlanReportId: testPlanReport.id };
+    const preloaded = { testPlanReport };
 
     return {
-        populatedData: await populatedDataResolver({
-            parentContext: { locationOfData }
-        }),
+        populatedData: await populateData(locationOfData, { preloaded }),
         created: await Promise.all(
-            createdLocationsOfData.map(each =>
-                populatedDataResolver({
-                    parentContext: { locationOfData: each }
-                })
+            createdLocationsOfData.map(createdLocationOfData =>
+                populateData(createdLocationOfData, { preloaded })
             )
         )
     };
