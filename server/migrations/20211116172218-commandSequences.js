@@ -2,7 +2,7 @@ const { omit } = require('lodash');
 const { TestPlanVersion } = require('../models');
 
 module.exports = {
-    up: async (/* queryInterface, Sequelize */) => {
+    up: async () => {
         const testPlanVersions = await TestPlanVersion.findAll();
         await Promise.all(
             testPlanVersions.map(testPlanVersion => {

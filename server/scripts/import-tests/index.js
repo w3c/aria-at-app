@@ -228,9 +228,6 @@ const getTests = ({ builtDirectoryPath, testPlanVersionId, ats, gitSha }) => {
     const renderedUrlsByNumber = {};
     const allCollectedByNumber = {};
     fse.readdirSync(builtDirectoryPath).forEach(filePath => {
-        if (filePath.includes('breadcrumb')) {
-            console.log();
-        }
         if (!filePath.endsWith('.collected.json')) return;
         const jsonPath = path.join(builtDirectoryPath, filePath);
         const jsonString = fse.readFileSync(jsonPath, 'utf8');
