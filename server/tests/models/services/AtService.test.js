@@ -449,7 +449,7 @@ describe('AtModeModel Data Checks', () => {
     it('should return valid atMode with at for query with all associations', async () => {
         // A1
         const _atId = 1;
-        const _name = 'reading';
+        const _name = 'READING';
 
         // A2
         const atMode = await AtService.getAtModeByQuery({
@@ -478,7 +478,7 @@ describe('AtModeModel Data Checks', () => {
     it('should return valid atMode for query with no associations', async () => {
         // A1
         const _atId = 1;
-        const _name = 'reading';
+        const _name = 'READING';
 
         // A2
         const atMode = await AtService.getAtModeByQuery(
@@ -589,7 +589,7 @@ describe('AtModeModel Data Checks', () => {
         await dbCleaner(async () => {
             // A1
             const _atId = 1;
-            const _name = 'reading';
+            const _name = 'READING';
 
             // A2
             const originalAtMode = await AtService.getAtModeByQuery({

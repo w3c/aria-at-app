@@ -4,9 +4,17 @@ const path = require('path');
 const nodegit = require('nodegit');
 const { Client } = require('pg');
 const fse = require('fs-extra');
-const np = require('node-html-parser');
-const db = require('../../models/index');
-const validUrl = require('valid-url');
+const { At } = require('../../models');
+const {
+    createTestPlanVersion,
+    getTestPlanVersions
+} = require('../../models/services/TestPlanVersionService');
+const {
+    createTestId,
+    createScenarioId,
+    createAssertionId
+} = require('../../services/PopulatedData/locationOfDataId');
+const deepPickEqual = require('../../util/deepPickEqual');
 
 const args = require('minimist')(process.argv.slice(2), {
     alias: {
@@ -34,392 +42,280 @@ const client = new Client();
 
 const ariaAtRepo = 'https://github.com/w3c/aria-at.git';
 const DEFAULT_BRANCH = 'master';
-const tmpDirectory = path.resolve(__dirname, 'tmp');
-const testsBuildDirectory = path.resolve(tmpDirectory, 'build', 'tests');
-const testsDirectory = path.resolve(tmpDirectory, 'tests');
+const gitCloneDirectory = path.resolve(__dirname, 'tmp');
+const builtTestsDirectory = path.resolve(gitCloneDirectory, 'build', 'tests');
+const testsDirectory = path.resolve(gitCloneDirectory, 'tests');
 
-const ariaAtImport = {
-    /**
-     * Get all tests in the default HEAD commit for the repository
-     */
-    async getMostRecentTests() {
-        await client.connect();
+const importTestPlanVersions = async () => {
+    return;
+    // THE TEST IMPORT SCRIPT IS TEMPORARILY DISABLED!
+    // This is a preventative measure to protect the integrity of the database
+    // with the addition of command sequences in the ARIA-AT repo.
+    /* eslint-disable no-unreachable */
+    await client.connect();
 
-        fse.ensureDirSync(tmpDirectory);
-        let repo = await nodegit.Clone(ariaAtRepo, tmpDirectory, {});
-        console.log(`Cloned ${path.basename(ariaAtRepo)} to ${repo.workdir()}`);
+    const { gitCommitDate, gitMessage, gitSha } = await readRepo();
 
-        let commit;
-        if (args.commit) {
-            try {
-                commit = await nodegit.Commit.lookup(repo, args.commit);
-            } catch (error) {
-                console.log(
-                    `IMPORT FAILED! Cannot checkout repo at commit: ${args.commit}`
-                );
-                throw error;
-            }
+    const ats = await At.findAll();
+    await updateAtsJson(ats);
 
-            await nodegit.Checkout.tree(repo, commit);
-            await repo.setHeadDetached(commit);
-        } else {
-            let latestCommit = fse
-                .readFileSync(
-                    path.join(
-                        tmpDirectory,
-                        '.git',
-                        'refs',
-                        'heads',
-                        DEFAULT_BRANCH
-                    ),
-                    'utf8'
-                )
-                .trim();
-            commit = await nodegit.Commit.lookup(repo, latestCommit);
+    await updateCommandsJson();
+
+    for (const directory of fse.readdirSync(builtTestsDirectory)) {
+        if (directory === 'resources') continue;
+
+        const builtDirectoryPath = path.join(builtTestsDirectory, directory);
+        const sourceDirectoryPath = path.join(testsDirectory, directory);
+
+        if (
+            !(
+                fse.existsSync(sourceDirectoryPath) &&
+                fse.statSync(builtDirectoryPath).isDirectory()
+            )
+        ) {
+            continue;
         }
 
-        // use to conditionally determine paths to use based on whether or not
-        // the commit pulled for the aria-at repo is the old or new structure
-        const buildDirExists = fse.existsSync(testsBuildDirectory);
-        const supportFile = buildDirExists
-            ? path.resolve(testsBuildDirectory, 'support.json')
-            : path.resolve(testsDirectory, 'support.json');
+        const existing = await getTestPlanVersions('', {
+            directory,
+            gitSha
+        });
 
-        let commitDate = commit.date();
-        let commitMessage = commit.message();
-        let commitHash = commit.id().tostrS();
+        if (existing.length) continue;
 
-        const support = JSON.parse(fse.readFileSync(supportFile));
-        const ats = support.ats;
-        for (let at of ats) await this.upsertAt(at.name);
-
-        const exampleNames = {};
-        for (let example of support.examples)
-            exampleNames[example.directory] = example.name;
-
-        let testPlanDirs = fse.readdirSync(
-            buildDirExists ? testsBuildDirectory : testsDirectory
-        );
-        for (let i = 0; i < testPlanDirs.length; i++) {
-            const testPlanDir = testPlanDirs[i];
-            const testPlanDirPath = path.join(
-                buildDirExists ? testsBuildDirectory : testsDirectory,
-                testPlanDir
-            );
-
-            // check source location of test plan directories because of the new 'build' directory set up
-            const sourceTestPlanDirPath = path.join(
-                testsDirectory,
-                testPlanDir
-            );
-            const stat = fse.statSync(testPlanDirPath); // folder stats
-
-            // <repo>.git/tests/resources folder shouldn't be factored in the tests
-            if (
-                fse.existsSync(sourceTestPlanDirPath) && // explicitly check if source test plan directory exists
-                stat.isDirectory() &&
-                testPlanDir !== 'resources'
-            ) {
-                // check multiple locations for relevant data folder that contains references.csv
-                const dataPath = path.join(
-                    buildDirExists ? sourceTestPlanDirPath : testPlanDirPath,
-                    'data'
-                );
-
-                // 'references.csv' only exists in <root>/tests/<directory>/data/references.csv
-                // doesn't exist in <root>/build/tests/<directory>/data/references.csv
-                const referencesCsvPath = path.join(dataPath, 'references.csv');
-
-                let referencesCsv;
-                try {
-                    referencesCsv = fse.readFileSync(referencesCsvPath, {
-                        encoding: 'utf-8'
-                    });
-                } catch (error) {
-                    console.error(
-                        `Reference file, ${referencesCsvPath}, does not exist!`
-                    );
-                    throw error;
-                }
-
-                // example url parsed from <repo>.git/tests/<directory>/data/references.csv
-                const exampleRefLine = referencesCsv
-                    .split('\n')
-                    .filter(line => line.includes('example'));
-
-                const testReferenceRefLine = referencesCsv
-                    .split('\n')
-                    .filter(line => line.includes('reference'));
-
-                // designPattern url parsed from <repo>.git/tests/<directory>/data/references.csv
-                const practiceGuidelinesRefLine = referencesCsv
-                    .split('\n')
-                    .filter(line => line.includes('designPattern'));
-
-                const tests = [];
-                const testFiles = fse.readdirSync(testPlanDirPath);
-
-                for (let j = 0; j < testFiles.length; j++) {
-                    const testFile = testFiles[j];
-                    const testPath = path.join(testPlanDirPath, testFile);
-                    if (
-                        path.extname(testFile) === '.html' &&
-                        !testFile.includes('.collected.html') &&
-                        testFile !== 'index.html'
-                    ) {
-                        // Get the testFile name from the html file
-                        const htmlFile = path.relative(tmpDirectory, testPath);
-                        const root = np.parse(
-                            fse.readFileSync(testPath, 'utf8'),
-                            { script: true }
-                        );
-
-                        // parse test's name
-                        const testFullName = root.querySelector('title')
-                            .innerHTML;
-
-                        // parse scripts to be ran from html
-                        const { text: scripts } = root.querySelectorAll(
-                            'script'
-                        )[0];
-
-                        // parse testJson and commandJson from html
-                        const {
-                            text: testCommandScriptText
-                        } = root.querySelectorAll('script')[1];
-
-                        const testJsonStartPattern = 'const testJson = {';
-                        const commandJsonStartPattern = 'const commandJson = {';
-                        const endPattern = '};';
-
-                        const getJsonTestCommandStringFromText = (
-                            text,
-                            startPattern,
-                            endPattern
-                        ) => {
-                            let string = '';
-                            if (text.indexOf(startPattern) > -1) {
-                                string = text.substring(
-                                    text.indexOf(startPattern)
-                                );
-                                string = string.substring(
-                                    0,
-                                    string.indexOf(endPattern) + 1
-                                );
-                                string = string.substring(string.indexOf('{'));
-                                return string;
-                            }
-                            return string;
-                        };
-
-                        const testJsonString = getJsonTestCommandStringFromText(
-                            testCommandScriptText,
-                            testJsonStartPattern,
-                            endPattern
-                        );
-                        const commandJsonString = getJsonTestCommandStringFromText(
-                            testCommandScriptText,
-                            commandJsonStartPattern,
-                            endPattern
-                        );
-
-                        let testJson = {};
-                        let commandJson = {};
-
-                        try {
-                            testJson = JSON.parse(testJsonString);
-                        } catch (e) {
-                            console.error(
-                                `error.parse.testJson:${testJsonString}`
-                            );
-                        }
-
-                        try {
-                            commandJson = JSON.parse(commandJsonString);
-                        } catch (e) {
-                            console.error(
-                                `error.parse.testJson:${testJsonString}`
-                            );
-                        }
-
-                        // Get the testFile order from the file name
-                        const executionOrder = parseInt(testFile.split('-')[1]);
-
-                        tests.push({
-                            testFullName,
-                            htmlFile,
-                            commitHash,
-                            executionOrder,
-                            testJson,
-                            commandJson,
-                            scripts: scripts.trim()
-                        });
-                    }
-                }
-                await this.upsertTestPlanVersion(
-                    testPlanDir,
-                    exampleNames[testPlanDir],
-                    ariaAtRepo,
-                    commitHash,
-                    commitMessage,
-                    commitDate,
-                    exampleRefLine,
-                    practiceGuidelinesRefLine,
-                    testReferenceRefLine,
-                    tests
-                );
-            }
-        }
-    },
-
-    /**
-     * Gets At.id and inserts an At record if it doesn't exist
-     * @param {string} atName - name of AT (Assistive Technology)
-     * @returns {number} - returns At.id
-     */
-    async upsertAt(atName) {
-        const atResult = await client.query(
-            'SELECT id FROM "At" WHERE name=$1',
-            [atName]
-        );
-
-        const at = atResult.rowCount
-            ? atResult.rows[0]
-            : await this.upsertRowReturnId(
-                  'INSERT INTO "At" (name) VALUES($1) RETURNING id',
-                  [atName]
-              );
-        return at.id;
-    },
-
-    /**
-     * Gets TestPlanVersion.id and inserts a TestPlanVersion record if it doesn't exist
-     * @param {string} exampleDir - the name of the test directory to be processed
-     * @param {string} exampleName - the name of the example test being processed
-     * @param {string} ariaAtRepo - the repository url the tests are being pulled from (ideally {@link https://github.com/w3c/aria-at.git})
-     * @param {string} commitHash - the hash of the latest version of tests pulled from the {@param ariaAtRepo} repository
-     * @param {string} commitMessage - the message of the latest version of tests pulled from the {@param ariaAtRepo} repository
-     * @param {string} commitDate - the date of the latest versions of the tests pulled from the {@param ariaAtRepo} repository
-     * @param {string[]} exampleRefLine - the example url link pulled from the references.csv file related to the test
-     * @param {string[]} practiceGuidelinesRefLine - the APG (ARIA Practices Guidelines) link pulled from the references.csv file related to the test
-     * @param {string[]} testReferenceRefLine - the relative link that's opened for the test page, pulled from the references.csv file related to the test
-     * @param {object[]} tests - test steps for the test plan pulled from the {@param ariaAtRepo} repository
-     * @returns {number} - returns TestPlanVersion.id
-     */
-    async upsertTestPlanVersion(
-        exampleDir,
-        exampleName,
-        ariaAtRepo,
-        commitHash,
-        commitMessage,
-        commitDate,
-        exampleRefLine,
-        practiceGuidelinesRefLine,
-        testReferenceRefLine,
-        tests
-    ) {
-        const getReferenceUrl = (referenceLine, ignoreValidation = false) => {
-            let url = null;
-            if (referenceLine.length) {
-                const [referenceType, link] = referenceLine[0].split(',');
-                if (ignoreValidation) url = link;
-                else {
-                    if (validUrl.isUri(link)) url = link;
-                    else
-                        console.error(
-                            `WARNING: The ${referenceType} link ${link} is not valid for ${exampleName}. Not writing to database.`
-                        );
-                }
-            }
-            return url;
-        };
-
-        const exampleUrl = getReferenceUrl(exampleRefLine);
-        const designPattern = getReferenceUrl(practiceGuidelinesRefLine);
-        const testReferencePath = getReferenceUrl(testReferenceRefLine, true);
-
-        let metadata = {
-            gitRepo: ariaAtRepo,
-            directory: exampleDir,
-            designPattern,
-            testReferencePath
-        };
-
-        // checking to see if unique testPlanVersion row (gitSha + directory provides a unique row)
-        const testPlanVersionResult = await client.query(
-            'SELECT id, "gitSha" FROM "TestPlanVersion" WHERE "gitSha"=$1 and metadata ->> \'directory\'=$2',
-            [commitHash, exampleDir]
-        );
-
-        if (testPlanVersionResult.rowCount) {
+        // Gets the next ID and increments the ID counter in Postgres
+        // Needed to create the testIds - see LocationOfDataId.js for more info
+        const testPlanVersionId = (
             await client.query(
-                'UPDATE "TestPlanVersion" SET title=$1, "exampleUrl"=$2, metadata=$3, tests=$4 WHERE "gitSha"=$5 and metadata ->> \'directory\'=$6',
-                [
-                    exampleName,
-                    exampleUrl,
-                    metadata,
-                    tests,
-                    commitHash,
-                    exampleDir
-                ]
-            );
-            return;
-        }
+                `SELECT nextval(
+                    pg_get_serial_sequence('"TestPlanVersion"', 'id')
+                )`
+            )
+        ).rows[0].nextval;
 
-        await db.TestPlanVersion.create({
-            title: exampleName,
-            status: 'DRAFT',
-            gitSha: commitHash,
-            gitMessage: commitMessage,
-            updatedAt: commitDate,
-            exampleUrl,
-            metadata,
+        const { title, exampleUrl, designPatternUrl, testPageUrl } = readCsv({
+            sourceDirectoryPath
+        });
+
+        const tests = getTests({
+            builtDirectoryPath,
+            testPlanVersionId,
+            ats,
+            gitSha
+        });
+
+        await createTestPlanVersion({
+            id: testPlanVersionId,
+            title,
+            directory,
+            testPageUrl: getAppUrl(testPageUrl, { gitSha, builtDirectoryPath }),
+            gitSha,
+            gitMessage,
+            updatedAt: gitCommitDate,
+            metadata: {
+                designPatternUrl,
+                exampleUrl
+            },
             tests
         });
-    },
-
-    /**
-     * PostgreSQL query handler to return a single result's id following a successful query
-     * @param {string} query - the PostgreSQL query to be processed
-     * @param {any[]} params - the params to be used when creating the PostgreSQL query
-     * @returns {* | null} - returns id for queried row
-     */
-    async upsertRowReturnId(query, params) {
-        let result;
-        try {
-            result = (await client.query(query, params)).rows[0];
-        } catch (err) {
-            console.log(
-                `ERROR: Upsert Query '${query}' with parameters '[${params}]' should return id.`
-            );
-            throw err;
-        }
-        if (result && result.id) return result.id;
-        return null;
-    },
-
-    /**
-     * PostgreSQL query handler to return a single result following a successful query
-     * @param {string} query - the PostgreSQL query to be processed
-     * @param {any[]} params - the params to be used when creating the PostgreSQL query
-     * @returns {* | null} - returns record for queried row
-     */
-    async performQuery(query, params) {
-        let result;
-        try {
-            result = (await client.query(query, params)).rows[0];
-        } catch (err) {
-            console.log(
-                `ERROR: Query '${query}' with parameters '[${params}]' should return id.`
-            );
-            throw err;
-        }
-        return result;
     }
 };
 
-ariaAtImport
-    .getMostRecentTests()
+const readRepo = async () => {
+    fse.ensureDirSync(gitCloneDirectory);
+    let repo = await nodegit.Clone(ariaAtRepo, gitCloneDirectory, {});
+    console.log(`Cloned ${path.basename(ariaAtRepo)} to ${repo.workdir()}`);
+
+    let commit;
+    if (args.commit) {
+        try {
+            commit = await nodegit.Commit.lookup(repo, args.commit);
+        } catch (error) {
+            console.log(
+                `IMPORT FAILED! Cannot checkout repo at commit: ${args.commit}`
+            );
+            throw error;
+        }
+
+        await nodegit.Checkout.tree(repo, commit);
+        await repo.setHeadDetached(commit);
+    } else {
+        let latestCommit = fse
+            .readFileSync(
+                path.join(
+                    gitCloneDirectory,
+                    '.git',
+                    'refs',
+                    'heads',
+                    DEFAULT_BRANCH
+                ),
+                'utf8'
+            )
+            .trim();
+        commit = await nodegit.Commit.lookup(repo, latestCommit);
+    }
+
+    return {
+        gitCommitDate: commit.date(),
+        gitMessage: commit.message(),
+        gitSha: commit.id().tostrS()
+    };
+};
+
+const getAppUrl = (directoryRelativePath, { gitSha, builtDirectoryPath }) => {
+    return path.join(
+        '/',
+        'aria-at', // The app's proxy to the ARIA-AT repo
+        gitSha,
+        path.relative(
+            gitCloneDirectory,
+            path.join(builtDirectoryPath, directoryRelativePath)
+        )
+    );
+};
+
+const readCsv = ({ sourceDirectoryPath }) => {
+    // 'references.csv' only exists in <root>/tests/<directory>/data/references.csv
+    // doesn't exist in <root>/build/tests/<directory>/data/references.csv
+    const referencesCsvPath = path.join(
+        sourceDirectoryPath,
+        'data',
+        'references.csv'
+    );
+
+    const referencesCsv = fse.readFileSync(referencesCsvPath, {
+        encoding: 'utf-8'
+    });
+
+    const getCsvValue = refId => {
+        const line = referencesCsv
+            .split('\n')
+            .find(line => line.includes(refId));
+        const columns = line?.split(',');
+        return columns?.[1];
+    };
+
+    return {
+        title: getCsvValue('title'),
+        exampleUrl: getCsvValue('example'),
+        designPatternUrl: getCsvValue('designPattern'),
+        testPageUrl: getCsvValue('reference')
+    };
+};
+
+const updateCommandsJson = async () => {
+    const keysMjsPath = path.join(testsDirectory, 'resources', 'keys.mjs');
+
+    const commands = Object.entries(
+        await import(keysMjsPath)
+    ).map(([id, text]) => ({ id, text }));
+
+    await fse.writeFile(
+        path.resolve(__dirname, '../../resources/commands.json'),
+        JSON.stringify(commands, null, 4)
+    );
+};
+
+const updateAtsJson = async ats => {
+    await fse.writeFile(
+        path.resolve(__dirname, '../../resources/ats.json'),
+        JSON.stringify(
+            ats.map(at => at.dataValues),
+            null,
+            4
+        )
+    );
+};
+
+const getTests = ({ builtDirectoryPath, testPlanVersionId, ats, gitSha }) => {
+    const tests = [];
+
+    const renderedUrlsByNumber = {};
+    const allCollectedByNumber = {};
+    fse.readdirSync(builtDirectoryPath).forEach(filePath => {
+        if (!filePath.endsWith('.collected.json')) return;
+        const jsonPath = path.join(builtDirectoryPath, filePath);
+        const jsonString = fse.readFileSync(jsonPath, 'utf8');
+        const collected = JSON.parse(jsonString);
+        const renderedUrl = filePath.replace(/\.json$/, '.html');
+        if (!allCollectedByNumber[collected.info.testId]) {
+            allCollectedByNumber[collected.info.testId] = [];
+            renderedUrlsByNumber[collected.info.testId] = [];
+        }
+        allCollectedByNumber[collected.info.testId].push(collected);
+        renderedUrlsByNumber[collected.info.testId].push(renderedUrl);
+    });
+
+    Object.entries(allCollectedByNumber).forEach(([number, allCollected]) => {
+        const renderedUrls = renderedUrlsByNumber[number];
+
+        if (
+            !deepPickEqual(allCollected, {
+                excludeKeys: ['at', 'mode', 'commands']
+            })
+        ) {
+            throw new Error(
+                'Difference found in a part of a .collected.json file which ' +
+                    'should be equivalent'
+            );
+        }
+
+        const common = allCollected[0];
+
+        const testId = createTestId(testPlanVersionId, common.info.testId);
+
+        const atIds = allCollected.map(
+            collected => ats.find(at => at.name === collected.target.at.name).id
+        );
+
+        tests.push({
+            id: testId,
+            title: common.info.title,
+            atIds,
+            atMode: common.target.mode.toUpperCase(),
+            renderableContent: Object.fromEntries(
+                allCollected.map((collected, index) => {
+                    return [atIds[index], collected];
+                })
+            ),
+            renderedUrls: Object.fromEntries(
+                atIds.map((atId, index) => {
+                    return [
+                        atId,
+                        getAppUrl(renderedUrls[index], {
+                            gitSha,
+                            builtDirectoryPath
+                        })
+                    ];
+                })
+            ),
+            scenarios: (() => {
+                const scenarios = [];
+                allCollected.forEach(collected => {
+                    collected.commands.forEach(command => {
+                        scenarios.push({
+                            id: createScenarioId(testId, scenarios.length),
+                            atId: ats.find(
+                                at => at.name === collected.target.at.name
+                            ).id,
+                            commandId: command.id
+                        });
+                    });
+                });
+                return scenarios;
+            })(),
+            assertions: common.assertions.map((assertion, index) => ({
+                id: createAssertionId(testId, index),
+                priority: assertion.priority === 1 ? 'REQUIRED' : 'OPTIONAL',
+                text: assertion.expectation
+            }))
+        });
+    });
+
+    return tests;
+};
+
+importTestPlanVersions()
     .then(
         () => console.log('Done, no errors'),
         err => {
@@ -429,7 +325,7 @@ ariaAtImport
     )
     .finally(() => {
         // Delete temporary files
-        fse.removeSync(tmpDirectory);
+        fse.removeSync(gitCloneDirectory);
         client.end();
         process.exit();
     });

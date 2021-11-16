@@ -1,7 +1,7 @@
-const updateTestResult = require('./updateTestResultResolver');
-const clearTestResult = require('./clearTestResultResolver');
+const findOrCreateTestResult = require('./findOrCreateTestResultResolver');
+const deleteTestResults = require('./deleteTestResultsResolver');
 
 module.exports = {
-    updateTestResult,
-    clearTestResult
+    findOrCreateTestResult,
+    deleteTestResults
 };

@@ -6,8 +6,9 @@ const OptionButton = ({
     text,
     icon = null,
     disabled = false,
-    onClick = () => {},
-    children
+    onClick,
+    children,
+    ...restProps
 }) => {
     return (
         <Button
@@ -15,6 +16,8 @@ const OptionButton = ({
             variant="secondary"
             onClick={onClick}
             disabled={disabled}
+            aria-disabled={disabled}
+            {...restProps}
         >
             {icon}
             {text || children}

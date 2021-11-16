@@ -87,6 +87,15 @@ export function verifyATBehavior(atBehavior) {
   testRunIO.setBehaviorInputFromJSONAndCommandsConfigKeysTitleUnexpected(atBehavior);
 }
 
+export async function loadCollectedTestAsync(testRoot, testFileName) {
+  const collectedTestResponse = await fetch(`${testRoot}/${testFileName}`);
+  const collectedTestJson = await collectedTestResponse.json();
+  await testRunIO.setInputsFromCollectedTestAsync(collectedTestJson, testRoot);
+  testRunIO.setConfigInputFromQueryParamsAndSupport([['at', collectedTestJson.target.at.key], ...Array.from(new URL(document.location).searchParams)]);
+
+  displayInstructionsForBehaviorTest();
+}
+
 export function displayTestPageAndInstructions(testPage) {
   if (document.readyState !== "complete") {
     window.setTimeout(() => {
@@ -129,10 +138,10 @@ function displayInstructionsForBehaviorTest() {
       closeTestPage() {
         windowManager.close();
       },
-      postResults: () => postResults(testRunIO.submitResultsJSON(app.state)),
+      postResults: () => postResults(testRunIO.resultJSON(app.state)),
     },
     state: testRunIO.testRunState(),
-    resultsJSON: state => testRunIO.submitResultsJSON(state),
+    resultsJSON: state => testRunIO.resultJSON(state),
   });
   app.observe(() => {
     render(document.body, renderVirtualTestPage(app.testPageAndResults()));
@@ -275,7 +284,7 @@ function renderVirtualTestPage(doc) {
           section(
             id("errors"),
             style({display: doc.errors && doc.errors.visible ? "block" : "none"}),
-            h2("Test cannot be performed due to error(s)!"),
+            h2(doc.errors ? doc.errors.header : ''),
             ul(...(doc.errors && doc.errors.errors ? doc.errors.errors.map(error => li(error)) : [])),
             hr()
           ),

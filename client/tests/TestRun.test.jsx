@@ -2,14 +2,13 @@ import React from 'react';
 import Enzyme, { shallow } from 'enzyme';
 import EnzymeAdapter from 'enzyme-adapter-react-16';
 Enzyme.configure({ adapter: new EnzymeAdapter() });
-import { findByTestAttr, storeFactory } from './util';
+import { findByTestAttr } from './util';
 import TestRun from '../components/TestRun';
 
-const setup = (initialState = {}) => {
-    const store = storeFactory(initialState);
+const setup = () => {
     // Step into the higher order connected component and step into the contents of the UserSettings component
     const wrapper = shallow(
-        <TestRun store={store} match={{ params: { runId: 1 } }} location={{}} />
+        <TestRun match={{ params: { runId: 1 } }} location={{}} />
     )
         .dive()
         .dive();
@@ -20,8 +19,7 @@ describe.skip('render', () => {
     describe('loading when there are no tests', () => {
         let wrapper;
         beforeEach(() => {
-            const initialState = {};
-            wrapper = setup(initialState);
+            wrapper = setup();
         });
         test('renders not logged in text', () => {
             const component = findByTestAttr(wrapper, 'test-run-page-status');
@@ -31,29 +29,7 @@ describe.skip('render', () => {
     describe('tests are loaded', () => {
         let wrapper;
         beforeEach(() => {
-            const initialState = {
-                runs: {
-                    activeRunsById: {
-                        1: {
-                            apg_example_name: 'apg_example_name',
-                            at_name: 'at_name',
-                            at_version: 'at_version',
-                            browser_name: 'browser_name',
-                            browser_version: 'browser_version',
-                            tests: [{ name: 'Test 1' }]
-                        }
-                    },
-                    activeRunConfiguration: {
-                        active_test_version: {
-                            git_commit_msg: 'commit message',
-                            git_hash: '123412345',
-                            git_repo: 'https://github.com/foo/foo.git',
-                            id: 1
-                        }
-                    }
-                }
-            };
-            wrapper = setup(initialState);
+            wrapper = setup();
             wrapper.setState({ currentTestIndex: 1 });
         });
         test('renders testing headings', () => {
