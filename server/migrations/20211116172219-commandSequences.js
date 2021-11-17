@@ -1,0 +1,73 @@
+const { omit } = require('lodash');
+const { TestPlanVersion } = require('../models');
+const commandList = require('../resources/commands.json');
+
+module.exports = {
+    up: async () => {
+        const testPlanVersions = await TestPlanVersion.findAll();
+        await Promise.all(
+            testPlanVersions.map(testPlanVersion => {
+                const newTests = testPlanVersion.tests.map(test => ({
+                    ...test,
+                    scenarios: test.scenarios.map(scenario => ({
+                        ...omit(scenario, ['commandId']),
+                        commandIds: (() => {
+                            // This special case only applies to the sandbox
+                            // due to a previous version of this migration.
+                            if (scenario.commandIds) {
+                                if (scenario.commandIds[0].includes(',')) {
+                                    return scenario.commandIds[0].split(',');
+                                }
+                                return scenario.commandIds;
+                            }
+                            if (scenario.commandId.includes(',')) {
+                                return scenario.commandId.split(',');
+                            }
+                            return [scenario.commandId];
+                        })()
+                    })),
+                    renderableContent: Object.fromEntries(
+                        Object.entries(test.renderableContent).map(
+                            ([atId, content]) => [
+                                atId,
+                                {
+                                    ...content,
+                                    // prettier-ignore
+                                    commands: content.commands.map(command => {
+                                        const keypresses = (() => {
+                                            if (command.id.includes(',')) {
+                                                const ids = command.id.split(',');
+                                                return ids.map(id => ({
+                                                    id,
+                                                    keystroke: commandList
+                                                        .find(each => each.id === id)
+                                                        ?.text || (() => {
+                                                            throw new Error(
+                                                                'Not expected to ever fail'
+                                                            );
+                                                        })()
+                                                }));
+                                            }
+                                            const { id, keystroke } = command;
+                                            return [{ id, keystroke }];
+                                        })();
+
+                                        return {
+                                            ...command,
+                                            keystroke: keypresses
+                                                .map(({ keystroke }) => keystroke)
+                                                .join(', then '),
+                                            keypresses
+                                        };
+                                    })
+                                }
+                            ]
+                        )
+                    )
+                }));
+                testPlanVersion.tests = newTests;
+                return testPlanVersion.save();
+            })
+        );
+    }
+};
