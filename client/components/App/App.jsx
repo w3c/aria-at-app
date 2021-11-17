@@ -119,7 +119,7 @@ const App = () => {
                                 <li>
                                     <Nav.Link
                                         as={Link}
-                                        to="/"
+                                        to="#"
                                         onClick={() =>
                                             (window.location.href = signinUrl)
                                         }
