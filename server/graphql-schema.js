@@ -276,6 +276,11 @@ const graphqlSchema = gql`
         """
         id: ID!
         """
+        Since each TestPlan originates from a CSV, this number corresponds to
+        the row within the CSV where this test originated.
+        """
+        rowNumber: Int!
+        """
         A human-readable sentence describing the function of the test.
         """
         title: String!
