@@ -35,6 +35,7 @@ export const REPORTS_PAGE_QUERY = gql`
                 id
                 test {
                     id
+                    rowNumber
                     title
                     renderedUrl
                 }

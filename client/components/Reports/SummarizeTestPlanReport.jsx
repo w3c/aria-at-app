@@ -76,7 +76,7 @@ const SummarizeTestPlanReport = ({ testPlanReport }) => {
                 const test = testResult.test;
 
                 const gitHubIssueLinkWithTitleAndBody = createGitHubIssueWithTitleAndBody(
-                    { test, testPlanReport, isReportViewer: true }
+                    { test, testPlanReport }
                 );
 
                 return (

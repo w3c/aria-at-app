@@ -33,28 +33,30 @@ import './TestRun.css';
 const createGitHubIssueWithTitleAndBody = ({
     test,
     testPlanReport,
-    conflictsFormatted,
-    isReportViewer = false
+    conflictsFormatted
 }) => {
-    const issueRaiser = isReportViewer ? 'Report Viewer' : 'Tester';
-    const title = `${issueRaiser}'s Issue Report for "${test.title}"`;
-
-    const { testPlanTarget } = testPlanReport;
+    const { testPlanVersion, testPlanTarget } = testPlanReport;
     const { at, browser } = testPlanTarget;
+
+    const title =
+        `Feedback: "${test.title}" (${testPlanVersion.title}, ` +
+        `Test ${test.rowNumber})`;
+
     const shortenedUrl = test.renderedUrl.match(/[^/]+$/)[0];
 
     let body =
-        `### Test File at Exact Commit\n\n` +
-        `[${shortenedUrl}](https://aria-at.w3.org${test.renderedUrl})\n\n` +
-        `### AT\n\n` +
-        `${at.name} (version ${testPlanTarget.atVersion})\n\n` +
-        `### Browser\n\n` +
-        `${browser.name} (version ${testPlanTarget.browserVersion})\n\n` +
-        `### Description\n\n` +
-        `_type your description here_`;
+        `#### Description of Behavior\n\n` +
+        `<!-- write your description here -->\n\n` +
+        `#### Test Setup\n\n` +
+        `- Test File at Exact Commit: ` +
+        `[${shortenedUrl}](https://aria-at.w3.org${test.renderedUrl})\n` +
+        `- AT: ` +
+        `${at.name} (version ${testPlanTarget.atVersion})\n` +
+        `- Browser: ` +
+        `${browser.name} (version ${testPlanTarget.browserVersion})\n`;
 
     if (conflictsFormatted) {
-        body += `\n\n### Conflicts with other results\n${conflictsFormatted}`;
+        body += `\n#### Conflicts With Other Results\n${conflictsFormatted}`;
     }
 
     return (

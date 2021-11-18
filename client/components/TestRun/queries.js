@@ -65,6 +65,7 @@ export const TEST_RUN_PAGE_QUERY = gql`
                 }
                 runnableTests {
                     id
+                    rowNumber
                     title
                     ats {
                         id
@@ -139,6 +140,7 @@ export const TEST_RUN_PAGE_ANON_QUERY = gql`
             }
             runnableTests {
                 id
+                rowNumber
                 title
                 ats {
                     id
