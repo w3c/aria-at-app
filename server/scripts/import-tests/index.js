@@ -265,6 +265,7 @@ const getTests = ({ builtDirectoryPath, testPlanVersionId, ats, gitSha }) => {
 
         tests.push({
             id: testId,
+            rowNumber: number,
             title: common.info.title,
             atIds,
             atMode: common.target.mode.toUpperCase(),
