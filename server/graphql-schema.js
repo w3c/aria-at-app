@@ -335,15 +335,15 @@ const graphqlSchema = gql`
         The AT which this scenario is testing.
         """
         at: At
-        # TODO: rethink when adding machine-readable instuctions
         """
-        The command accomplishes the purpose given by the last instruction on
-        the Test type. There will be one scenario for each command the AT
-        supports, so navigating to an unchecked checkbox might have four
-        scenarios for the keys "X", "F", "TAB" and "DOWN" which all accomplish
-        that purpose.
+        The commands accomplish the task described in the Test title.
+        Generally there will be a single command, such as "X" or "F", but there
+        can also be a sequence of commands, such as "DOWN", "DOWN", "DOWN".
+        There will be one scenario for each command the AT supports, so
+        navigating to an unchecked checkbox might have four scenarios for the
+        keys "X", "F", "TAB" and "DOWN" which all accomplish that purpose.
         """
-        command: Command!
+        commands: [Command]!
     }
 
     """

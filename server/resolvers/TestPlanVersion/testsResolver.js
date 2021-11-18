@@ -25,7 +25,9 @@ const testsResolver = parentRecord => {
         scenarios: test.scenarios.map(scenario => ({
             ...scenario,
             at: ats.find(at => at.id === scenario.atId),
-            command: commands.find(command => command.id === scenario.commandId)
+            commands: scenario.commandIds.map(commandId => {
+                return commands.find(command => command.id === commandId);
+            })
         }))
     }));
 };

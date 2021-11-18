@@ -141,10 +141,9 @@ const SummarizeTestPlanReport = ({ testPlanReport }) => {
                                         return (
                                             <tr key={scenarioResult.id}>
                                                 <td>
-                                                    {
-                                                        scenarioResult.scenario
-                                                            .command.text
-                                                    }
+                                                    {scenarioResult.scenario.commands
+                                                        .map(({ text }) => text)
+                                                        .join(', then ')}
                                                 </td>
                                                 <td>{metrics.supportLevel}</td>
                                                 <td>

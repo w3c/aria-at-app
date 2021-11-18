@@ -41,7 +41,7 @@ export const REPORTS_PAGE_QUERY = gql`
                 scenarioResults {
                     id
                     scenario {
-                        command {
+                        commands {
                             id
                             text
                         }
