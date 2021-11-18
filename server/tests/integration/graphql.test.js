@@ -206,6 +206,7 @@ describe('graphql', () => {
                             tests {
                                 __typename
                                 id
+                                rowNumber
                                 title
                                 ats {
                                     id
