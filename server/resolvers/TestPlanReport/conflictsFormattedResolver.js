@@ -28,6 +28,9 @@ const conflictsFormattedResolver = async (
         if (source.assertion) {
             const assertion = source.assertion;
             const scenario = conflictingResults[0].scenario;
+            const commandsFormatted = scenario.commands
+                .map(({ text }) => text)
+                .join(', then ');
 
             const yourAssertionDifferenceFormatted = yourScenarioResult
                 ? formatAssertionDifference(yourScenarioResult)
@@ -39,7 +42,7 @@ const conflictsFormattedResolver = async (
 
             conflictsText +=
                 `${mdheader}Difference ${i + 1} - ` +
-                `Testing ${scenario.command.text} for ${assertion.text}\n` +
+                `Testing ${commandsFormatted} for ${assertion.text}\n` +
                 `${mdlist}Your result: ${yourAssertionDifferenceFormatted}\n`;
 
             otherAssertionDifferencesFormatted.forEach(other => {
@@ -47,6 +50,9 @@ const conflictsFormattedResolver = async (
             });
         } else {
             const scenario = source.scenario;
+            const commandsFormatted = scenario.commands
+                .map(({ text }) => text)
+                .join(', then ');
 
             const yourDifferenceFormatted = yourScenarioResult
                 ? formatUnexpectedBehaviorDifference(yourScenarioResult)
@@ -59,7 +65,7 @@ const conflictsFormattedResolver = async (
 
             conflictsText +=
                 `${mdheader}Difference ${i + 1} - ` +
-                `Unexpected behavior when testing ${scenario.command.text}\n` +
+                `Unexpected behavior when testing ${commandsFormatted}\n` +
                 `${mdlist}Your unexpected behaviors: ` +
                 `${yourDifferenceFormatted}\n`;
 

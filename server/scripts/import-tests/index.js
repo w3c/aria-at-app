@@ -47,11 +47,6 @@ const builtTestsDirectory = path.resolve(gitCloneDirectory, 'build', 'tests');
 const testsDirectory = path.resolve(gitCloneDirectory, 'tests');
 
 const importTestPlanVersions = async () => {
-    return;
-    // THE TEST IMPORT SCRIPT IS TEMPORARILY DISABLED!
-    // This is a preventative measure to protect the integrity of the database
-    // with the addition of command sequences in the ARIA-AT repo.
-    /* eslint-disable no-unreachable */
     await client.connect();
 
     const { gitCommitDate, gitMessage, gitSha } = await readRepo();
@@ -298,7 +293,7 @@ const getTests = ({ builtDirectoryPath, testPlanVersionId, ats, gitSha }) => {
                             atId: ats.find(
                                 at => at.name === collected.target.at.name
                             ).id,
-                            commandId: command.id
+                            commandIds: command.keypresses.map(({ id }) => id)
                         });
                     });
                 });

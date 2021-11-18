@@ -78,7 +78,7 @@ export const TEST_RUN_PAGE_QUERY = gql`
                             id
                             name
                         }
-                        command {
+                        commands {
                             id
                             text
                         }
@@ -153,7 +153,7 @@ export const TEST_RUN_PAGE_ANON_QUERY = gql`
                         id
                         name
                     }
-                    command {
+                    commands {
                         id
                         text
                     }

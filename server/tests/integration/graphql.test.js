@@ -217,7 +217,7 @@ describe('graphql', () => {
                                     at {
                                         id
                                     }
-                                    command {
+                                    commands {
                                         __typename
                                         id
                                         text
