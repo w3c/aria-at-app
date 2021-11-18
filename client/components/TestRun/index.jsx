@@ -99,6 +99,7 @@ const TestRun = () => {
     const [showReviewConflictsModal, setShowReviewConflictsModal] = useState(
         false
     );
+    const [showGetInvolvedModal, setShowGetInvolvedModal] = useState(false);
 
     useEffect(() => setup(), [currentTestIndex]);
 
@@ -396,6 +397,10 @@ const TestRun = () => {
                 break;
             }
             case 'saveTest': {
+                if (!isSignedIn) {
+                    setShowGetInvolvedModal(true);
+                    break;
+                }
                 if (testRendererSubmitButtonRef.current) {
                     testRendererSubmitButtonRef.current.click();
                     setIsTestSubmitClicked(true);
@@ -523,12 +528,7 @@ const TestRun = () => {
         } else {
             // same key to maintain focus
             const saveResultsButton = (
-                <Button
-                    variant="primary"
-                    onClick={handleSaveClick}
-                    disabled={!isSignedIn}
-                    aria-disabled={!isSignedIn}
-                >
+                <Button variant="primary" onClick={handleSaveClick}>
                     Submit Results
                 </Button>
             );
@@ -646,7 +646,7 @@ const TestRun = () => {
                 {/* Modals */}
                 {showStartOverModal && (
                     <BasicModal
-                        key={`BasicModal__${currentTestIndex}`}
+                        key={`StartOver__${currentTestIndex}`}
                         show={showStartOverModal}
                         centered={true}
                         animation={false}
@@ -656,6 +656,28 @@ const TestRun = () => {
                         }}
                         handleAction={handleStartOverAction}
                         handleClose={() => setShowStartOverModal(false)}
+                    />
+                )}
+                {showGetInvolvedModal && (
+                    <BasicModal
+                        key={`GetInvolved__${currentTestIndex}`}
+                        show={showGetInvolvedModal}
+                        centered={true}
+                        animation={false}
+                        details={{
+                            title: 'Ready to Get Involved?',
+                            description: (
+                                <>
+                                    Only members of the ARIA-AT test team can
+                                    submit data. If you fill in this form, your
+                                    data will not be saved! Check out the{' '}
+                                    <a href="/">home page</a> to learn more
+                                    about how to get involved.
+                                </>
+                            )
+                        }}
+                        closeLabel="Close"
+                        handleClose={() => setShowGetInvolvedModal(false)}
                     />
                 )}
                 {showReviewConflictsModal && (
