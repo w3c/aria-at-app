@@ -6,6 +6,8 @@
  */
 
 export default function(results, userId) {
+    throw new Error('Handled by GraphQL');
+    // eslint-disable-next-line no-unreachable
     let allResults = Object.values(results).filter(
         r => r.status === 'complete'
     );

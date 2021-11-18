@@ -4,7 +4,7 @@ import { Helmet } from 'react-helmet';
 
 const InvalidRequest = () => {
     return (
-        <Container as="main">
+        <Container id="main" as="main" tabIndex="-1">
             <Helmet>
                 <title>Invalid Request | ARIA-AT</title>
             </Helmet>

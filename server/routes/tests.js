@@ -1,15 +1,8 @@
 const { Router } = require('express');
-const TestController = require('../controllers/TestController');
+const { importTests } = require('../controllers/TestController');
 
 const router = Router();
 
-router.post('/import', TestController.importTests);
-
-router.post('/result', TestController.saveTestResults);
-
-router.delete('/result/delete', TestController.deleteTestResultsForRunAndUser);
-
-router.get('/issues', TestController.getIssuesByTestId);
-router.post('/issues', TestController.createIssue);
+router.post('/import', importTests);
 
 module.exports = router;

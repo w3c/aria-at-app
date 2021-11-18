@@ -3,7 +3,7 @@ import { Container } from 'react-bootstrap';
 
 const SignupInstructions = () => {
     return (
-        <Container as="main">
+        <Container id="main" as="main" tabIndex="-1">
             <p>
                 You are not yet registered to participate! Let us know you want
                 to help by&nbsp;

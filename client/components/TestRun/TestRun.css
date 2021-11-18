@@ -20,9 +20,27 @@ button.test-navigator-toggle.show:hover {
 }
 
 .test-navigator-toggle-container {
-    position: absolute;
-    left: -3.75em;
-    top: -0.15em;
+    display: flex;
+    flex-direction: row;
+}
+
+.test-navigator-toggle-inner-container {
+    width: fit-content;
+}
+
+@media all and (max-width: 767px) {
+    .test-navigator-toggle-inner-container {
+        position: relative;
+        top: -0.15em;
+    }
+}
+
+@media all and (min-width: 768px) {
+    .test-navigator-toggle-inner-container {
+        position: absolute;
+        top: -0.15em;
+        left: -2.75em;
+    }
 }
 
 .test-navigator-list {
@@ -136,6 +154,7 @@ button.test-navigator-toggle.show:hover {
     -webkit-transform: rotate(45deg); /* Chrome, Safari, Opera */
     transform: rotate(45deg);
 }
+
 .test-name-wrapper.complete .progress-indicator:before {
     width: 4px;
     height: 3px;
@@ -169,31 +188,15 @@ main.container-fluid .test-iframe-container > .row {
         'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 }
 
-.testrun__button-toolbar {
-    margin: 1em 0;
-    width: 100%;
+.test-run-toolbar {
     display: flex;
-    justify-content: space-between;
-    flex-direction: row-reverse;
-}
-
-.testrun__button-toolbar-group {
     width: 100%;
-    display: flex;
-    justify-content: flex-end;
 }
-
-.testrun__button-toolbar-group .btn-primary,
-.edit-results {
-    margin-left: 1em;
+.test-run-toolbar li:first-of-type {
+    flex-grow: 1;
 }
-
-.testrun__button-toolbar .btn {
-    margin-right: 0.5rem;
-}
-
-.testrun__button-right {
-    margin-right: auto;
+.test-run-toolbar li:last-of-type {
+    padding-right: 0;
 }
 
 .dot {
@@ -216,7 +219,7 @@ main.container-fluid .test-iframe-container > .row {
 
 /* Test Headings and information */
 .task-label {
-    display: table;
+    display: block;
     font-size: 0.6em;
     font-weight: normal;
     border-radius: 3px;
@@ -289,7 +292,7 @@ main.container-fluid .test-iframe-container > .row {
 .help-link {
     font-size: 0.9em;
     text-align: center;
-    padding: 0.5em;
+    padding-top: 0.7em;
 }
 
 .fa-exclamation-circle,

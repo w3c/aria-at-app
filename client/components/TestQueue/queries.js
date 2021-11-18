@@ -1,7 +1,12 @@
 import { gql } from '@apollo/client';
 
 export const TEST_QUEUE_PAGE_QUERY = gql`
-    query {
+    query TestQueuePage {
+        me {
+            id
+            username
+            roles
+        }
         users {
             id
             username
@@ -10,7 +15,17 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
         testPlanReports(statuses: [DRAFT, IN_REVIEW]) {
             id
             status
-            conflictCount
+            conflicts {
+                source {
+                    locationOfData
+                }
+                conflictingResults {
+                    locationOfData
+                }
+            }
+            runnableTests {
+                id
+            }
             testPlanTarget {
                 id
                 title
@@ -29,9 +44,9 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
                 id
                 title
                 gitSha
-                gitMessage
-                directory
-                testCount
+                testPlan {
+                    directory
+                }
             }
             draftTestPlanRuns {
                 id
@@ -39,11 +54,12 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
                     id
                     username
                 }
-                testResultCount
                 testResults {
-                    index
-                    isComplete
-                    isSkipped
+                    id
+                    test {
+                        id
+                    }
+                    completedAt
                 }
             }
         }
@@ -51,7 +67,7 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
 `;
 
 export const POPULATE_ADD_TEST_PLAN_TO_QUEUE_MODAL_QUERY = gql`
-    query {
+    query TestQueueAddTestPlanModal {
         ats {
             id
             name
@@ -66,7 +82,9 @@ export const POPULATE_ADD_TEST_PLAN_TO_QUEUE_MODAL_QUERY = gql`
             id
             title
             gitSha
-            directory
+            testPlan {
+                directory
+            }
         }
     }
 `;
@@ -111,14 +129,7 @@ export const ADD_TEST_QUEUE_MUTATION = gql`
                 }
             }
             created {
-                locationOfData {
-                    testPlanReportId
-                    testPlanTargetId
-                    browserId
-                    browserVersion
-                    atId
-                    atVersion
-                }
+                locationOfData
             }
         }
     }
@@ -128,40 +139,6 @@ export const ASSIGN_TESTER_MUTATION = gql`
     mutation AssignTester($testReportId: ID!, $testerId: ID!) {
         testPlanReport(id: $testReportId) {
             assignTester(userId: $testerId) {
-                testPlanReport {
-                    draftTestPlanRuns {
-                        tester {
-                            id
-                            username
-                        }
-                    }
-                }
-            }
-        }
-    }
-`;
-
-export const REMOVE_TESTER_MUTATION = gql`
-    mutation RemoveTester($testReportId: ID!, $testerId: ID!) {
-        testPlanReport(id: $testReportId) {
-            deleteTestPlanRun(userId: $testerId) {
-                testPlanReport {
-                    draftTestPlanRuns {
-                        tester {
-                            id
-                            username
-                        }
-                    }
-                }
-            }
-        }
-    }
-`;
-
-export const REMOVE_TESTER_RESULTS_MUTATION = gql`
-    mutation RemoveTester($testReportId: ID!, $testerId: ID!) {
-        testPlanReport(id: $testReportId) {
-            deleteTestPlanRunResults(userId: $testerId) {
                 testPlanReport {
                     draftTestPlanRuns {
                         tester {
@@ -185,6 +162,41 @@ export const UPDATE_TEST_PLAN_REPORT_MUTATION = gql`
                 testPlanReport {
                     status
                 }
+            }
+        }
+    }
+`;
+
+export const REMOVE_TEST_PLAN_REPORT_MUTATION = gql`
+    mutation RemoveTestPlanReport($testReportId: ID!) {
+        testPlanReport(id: $testReportId) {
+            deleteTestPlanReport
+        }
+    }
+`;
+
+export const REMOVE_TESTER_MUTATION = gql`
+    mutation RemoveTester($testReportId: ID!, $testerId: ID!) {
+        testPlanReport(id: $testReportId) {
+            deleteTestPlanRun(userId: $testerId) {
+                testPlanReport {
+                    draftTestPlanRuns {
+                        tester {
+                            id
+                            username
+                        }
+                    }
+                }
+            }
+        }
+    }
+`;
+
+export const REMOVE_TESTER_RESULTS_MUTATION = gql`
+    mutation RemoveTesterResult($testPlanRunId: ID!) {
+        testPlanRun(id: $testPlanRunId) {
+            deleteTestResults {
+                locationOfData
             }
         }
     }

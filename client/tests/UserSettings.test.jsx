@@ -2,13 +2,12 @@ import React from 'react';
 import Enzyme, { shallow } from 'enzyme';
 import EnzymeAdapter from 'enzyme-adapter-react-16';
 Enzyme.configure({ adapter: new EnzymeAdapter() });
-import { findByTestAttr, storeFactory } from './util';
+import { findByTestAttr } from './util';
 import UserSettings from '../components/UserSettings';
 
-const setup = (initialState = {}) => {
-    const store = storeFactory(initialState);
+const setup = () => {
     // Step into the higher order connected component and step into the contents of the UserSettings component
-    const wrapper = shallow(<UserSettings store={store} />)
+    const wrapper = shallow(<UserSettings />)
         .dive()
         .dive();
     return wrapper;
@@ -18,8 +17,7 @@ describe.skip('render', () => {
     describe('user is not signed in', () => {
         let wrapper;
         beforeEach(() => {
-            const initialState = { user: { isSignedIn: false } };
-            wrapper = setup(initialState);
+            wrapper = setup();
         });
         test('renders component without error', () => {
             const component = findByTestAttr(wrapper, 'user-settings-contents');
@@ -36,15 +34,7 @@ describe.skip('render', () => {
     describe('user is signed in', () => {
         let wrapper;
         beforeEach(() => {
-            const initialState = {
-                user: {
-                    isSignedIn: true,
-                    loadedUserData: true,
-                    username: 'foobar',
-                    name: 'Foo Bar'
-                }
-            };
-            wrapper = setup(initialState);
+            wrapper = setup();
         });
         test('renders component without error', () => {
             const component = findByTestAttr(wrapper, 'user-settings-contents');

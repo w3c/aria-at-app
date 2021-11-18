@@ -1,5 +1,7 @@
+const populateData = require('../services/PopulatedData/populateData');
+
 const populateDataResolver = async (_, { locationOfData }) => {
-    return { parentContext: { locationOfData } };
+    return populateData(locationOfData);
 };
 
 module.exports = populateDataResolver;

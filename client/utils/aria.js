@@ -4,7 +4,7 @@ export const evaluateAtNameKey = atName => {
     else return atName.toLowerCase();
 };
 
-export const buildTestPageUri = (gitSha, directory, testReferencePath) => {
+export const buildTestPageUrl = (gitSha, directory, testReferencePath) => {
     const BASE_PATH = '/aria-at';
     return `${BASE_PATH}/${gitSha}/build/tests/${directory}/${testReferencePath}`;
 };

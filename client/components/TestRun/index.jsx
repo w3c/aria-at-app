@@ -1,6 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import { Link, useParams, useHistory } from 'react-router-dom';
 import useRouterQuery from '../../hooks/useRouterQuery';
@@ -15,79 +13,105 @@ import {
 import nextId from 'react-id-generator';
 import { Alert, Button, Col, Container, Row } from 'react-bootstrap';
 import TestNavigator from './TestNavigator';
-import RaiseIssueModal from '../RaiseIssueModal';
 import ReviewConflictsModal from './ReviewConflictsModal';
 import StatusBar from './StatusBar';
 import TestRenderer from '../TestRenderer';
 import OptionButton from './OptionButton';
 import PageStatus from '../common/PageStatus';
 import BasicModal from '../common/BasicModal';
-import { getTestPlanRunIssuesForTest } from '../../network';
-import { evaluateAtNameKey, buildTestPageUri } from '../../utils/aria';
 import {
     TEST_RUN_PAGE_QUERY,
-    UPDATE_TEST_RUN_RESULT_MUTATION,
-    CLEAR_TEST_RESULT_MUTATION
+    TEST_RUN_PAGE_ANON_QUERY,
+    FIND_OR_CREATE_TEST_RESULT_MUTATION,
+    SAVE_TEST_RESULT_MUTATION,
+    SUBMIT_TEST_RESULT_MUTATION,
+    DELETE_TEST_RESULT_MUTATION
 } from './queries';
+import { evaluateAuth } from '../../utils/evaluateAuth';
 import './TestRun.css';
-import supportJson from '../../resources/support.json';
 
-const TestRun = ({ auth }) => {
+const createGitHubIssueWithTitleAndBody = ({
+    test,
+    testPlanReport,
+    conflictsFormatted
+}) => {
+    const { testPlanVersion, testPlanTarget } = testPlanReport;
+    const { at, browser } = testPlanTarget;
+
+    const title =
+        `Feedback: "${test.title}" (${testPlanVersion.title}, ` +
+        `Test ${test.rowNumber})`;
+
+    const shortenedUrl = test.renderedUrl.match(/[^/]+$/)[0];
+
+    let body =
+        `#### Description of Behavior\n\n` +
+        `<!-- write your description here -->\n\n` +
+        `#### Test Setup\n\n` +
+        `- Test File at Exact Commit: ` +
+        `[${shortenedUrl}](https://aria-at.w3.org${test.renderedUrl})\n` +
+        `- AT: ` +
+        `${at.name} (version ${testPlanTarget.atVersion})\n` +
+        `- Browser: ` +
+        `${browser.name} (version ${testPlanTarget.browserVersion})\n`;
+
+    if (conflictsFormatted) {
+        body += `\n#### Conflicts With Other Results\n${conflictsFormatted}`;
+    }
+
+    return (
+        `https://github.com/w3c/aria-at/issues/new?title=${encodeURI(title)}&` +
+        `body=${encodeURIComponent(body)}`
+    );
+};
+
+const TestRun = () => {
     const params = useParams();
     const history = useHistory();
     const routerQuery = useRouterQuery();
+
     const titleRef = useRef();
+    const pageReadyRef = useRef(false);
     const testRunStateRef = useRef();
     const testRunResultRef = useRef();
     const testRendererSubmitButtonRef = useRef();
 
-    const { runId: testPlanRunId } = params;
+    const { runId: testPlanRunId, testPlanReportId } = params;
 
-    const { loading, data, error, refetch } = useQuery(TEST_RUN_PAGE_QUERY, {
-        variables: { testPlanRunId }
-    });
-    const [updateTestRunResult] = useMutation(UPDATE_TEST_RUN_RESULT_MUTATION);
-    const [clearTestResult] = useMutation(CLEAR_TEST_RESULT_MUTATION);
+    const { loading, data, error, refetch } = useQuery(
+        testPlanRunId ? TEST_RUN_PAGE_QUERY : TEST_RUN_PAGE_ANON_QUERY,
+        {
+            variables: { testPlanRunId, testPlanReportId }
+        }
+    );
+    const [createTestResult, { loading: createTestLoading }] = useMutation(
+        FIND_OR_CREATE_TEST_RESULT_MUTATION
+    );
+    const [saveTestResult] = useMutation(SAVE_TEST_RESULT_MUTATION);
+    const [submitTestResult] = useMutation(SUBMIT_TEST_RESULT_MUTATION);
+    const [deleteTestResult] = useMutation(DELETE_TEST_RESULT_MUTATION);
 
-    const [pageReady, setPageReady] = useState(false);
+    const [isRendererReady, setIsRendererReady] = useState(false);
     const [isTestSubmitClicked, setIsTestSubmitClicked] = useState(false);
     const [showTestNavigator, setShowTestNavigator] = useState(true);
-    const [currentTestIndex, setCurrentTestIndex] = useState(1);
-    const [issues, setIssues] = useState([]);
+    const [currentTestIndex, setCurrentTestIndex] = useState(0);
     const [showStartOverModal, setShowStartOverModal] = useState(false);
-    const [showRaiseIssueModal, setShowRaiseIssueModal] = useState(false);
     const [showReviewConflictsModal, setShowReviewConflictsModal] = useState(
         false
     );
+    const [showGetInvolvedModal, setShowGetInvolvedModal] = useState(false);
 
-    useEffect(() => {
-        if (data && !pageReady) {
-            // get structured UNCLOSED issue data from GitHub for current test
-            (async () => {
-                try {
-                    const currentTestIndex =
-                        data.testPlanRun.testResults[0].index;
-                    const issues = await getTestPlanRunIssuesForTest(
-                        testPlanRunId,
-                        currentTestIndex
-                    );
-                    setIssues(issues.filter(({ closed }) => !closed));
-                    setCurrentTestIndex(currentTestIndex);
-                } catch (error) {
-                    console.error('load.issues.error', error);
-                }
-                setPageReady(true);
-            })();
-        }
-    }, [data, currentTestIndex]);
+    useEffect(() => setup(), [currentTestIndex]);
 
-    useEffect(() => {
+    const setup = () => {
+        pageReadyRef.current = false;
         testRunStateRef.current = null;
         testRunResultRef.current = null;
+        setIsRendererReady(false);
         setIsTestSubmitClicked(false);
 
         if (titleRef.current) titleRef.current.focus();
-    }, [currentTestIndex]);
+    };
 
     if (error) {
         const { message } = error;
@@ -101,7 +125,7 @@ const TestRun = ({ auth }) => {
         );
     }
 
-    if (!pageReady || !data || loading) {
+    if (!data || loading || createTestLoading) {
         return (
             <PageStatus
                 title="Loading - Test Results | ARIA-AT"
@@ -110,11 +134,27 @@ const TestRun = ({ auth }) => {
         );
     }
 
-    const { testPlanRun, users } = data;
-    const { testPlanReport, tester } = testPlanRun || {};
-    const { testPlanTarget, testPlanVersion, conflicts } = testPlanReport || {};
-
+    const auth = evaluateAuth(data && data.me ? data.me : {});
     const { id: userId } = auth;
+    let { isSignedIn } = auth;
+
+    const { testPlanRun, users } = data;
+    const { tester, testResults = [] } = testPlanRun || {};
+    let { testPlanReport } = testPlanRun || {};
+
+    // if a signed in user navigates to this page, treat them as anon to prevent
+    // invalid save attempts
+    if (testPlanReportId) isSignedIn = false;
+    if (!isSignedIn) testPlanReport = data.testPlanReport;
+
+    const {
+        testPlanTarget,
+        testPlanVersion,
+        runnableTests = [],
+        conflicts = [],
+        conflictsFormatted
+    } = testPlanReport || {};
+
     // check to ensure an admin that manually went to a test run url doesn't
     // run the test as themselves
     const openAsUserId =
@@ -123,7 +163,7 @@ const TestRun = ({ auth }) => {
             : null;
     const testerId = openAsUserId || userId;
 
-    if (!testPlanRun || !testPlanTarget) {
+    if (isSignedIn ? !testPlanRun || !testPlanTarget : !testPlanTarget) {
         return (
             <PageStatus
                 title="Error - Test Results | ARIA-AT"
@@ -134,14 +174,38 @@ const TestRun = ({ auth }) => {
         );
     }
 
-    const testResults = testPlanRun.testResults.map((testResult, index) => ({
-        ...testResult,
-        seq: index + 1
-    }));
-    const currentTest = testResults.find(t => t.index === currentTestIndex);
-    const hasTestsToRun = testResults.length;
-
     const toggleTestNavigator = () => setShowTestNavigator(!showTestNavigator);
+
+    const createTestResultForRenderer = async testId => {
+        await createTestResult({
+            variables: {
+                testPlanRunId,
+                testId
+            }
+        });
+        pageReadyRef.current = true;
+        await refetch();
+    };
+
+    const tests = runnableTests.map((test, index) => ({
+        ...test,
+        index,
+        seq: index + 1,
+        testResult: testResults.find(t => t.test.id === test.id),
+        hasConflicts: !!conflicts.find(c => c.source.test.id === test.id)
+    }));
+    const currentTest = tests[currentTestIndex];
+    const hasTestsToRun = tests.length;
+
+    if (!currentTest.testResult && !pageReadyRef.current && isSignedIn)
+        (async () => await createTestResultForRenderer(currentTest.id))();
+    else pageReadyRef.current = true;
+
+    const gitHubIssueLinkWithTitleAndBody = createGitHubIssueWithTitleAndBody({
+        test: currentTest,
+        testPlanReport,
+        conflictsFormatted
+    });
 
     const navigateTests = (previous = false) => {
         // assume navigation forward if previous is false
@@ -149,65 +213,194 @@ const TestRun = ({ auth }) => {
         if (!previous) {
             // next
             const newTestIndexToEval = currentTest.seq + 1;
-            if (newTestIndexToEval <= testResults.length)
+            if (newTestIndexToEval <= tests.length)
                 newTestIndex = newTestIndexToEval;
         } else {
             // previous
             const newTestIndexToEval = currentTest.seq - 1;
-            if (
-                newTestIndexToEval >= 1 &&
-                newTestIndexToEval <= testResults.length
-            )
+            if (newTestIndexToEval >= 1 && newTestIndexToEval <= tests.length)
                 newTestIndex = newTestIndexToEval;
         }
-        setCurrentTestIndex(
-            testResults.find(t => t.seq === newTestIndex).index
+        setCurrentTestIndex(tests.find(t => t.seq === newTestIndex).index);
+    };
+
+    const remapScenarioResults = (
+        rendererState,
+        scenarioResults,
+        captureHighlightRequired = false
+    ) => {
+        let newScenarioResults = [];
+        if (!rendererState || !scenarioResults)
+            throw new Error('Unable to merge invalid results');
+
+        const { commands } = rendererState;
+        if (!commands || commands.length !== scenarioResults.length)
+            throw new Error('Unable to merge invalid results');
+
+        for (let i = 0; i < commands.length; i++) {
+            let scenarioResult = { ...scenarioResults[i] };
+            let assertionResults = [];
+            let unexpectedBehaviors = null;
+
+            // collect variables
+            const { atOutput, assertions, unexpected } = commands[i];
+
+            // process assertion results
+            for (let j = 0; j < assertions.length; j++) {
+                const { result, highlightRequired } = assertions[j];
+                const assertionResult = {
+                    ...scenarioResult.assertionResults[j],
+                    passed: result === 'pass',
+                    failedReason:
+                        result === 'failMissing'
+                            ? 'NO_OUTPUT'
+                            : result === 'failIncorrect'
+                            ? 'INCORRECT_OUTPUT'
+                            : null
+                };
+                assertionResults.push(
+                    captureHighlightRequired
+                        ? { ...assertionResult, highlightRequired }
+                        : assertionResult
+                );
+            }
+
+            // process unexpected behaviors
+            const { hasUnexpected, behaviors, highlightRequired } = unexpected;
+            if (hasUnexpected === 'hasUnexpected') {
+                unexpectedBehaviors = [];
+                /**
+                 * 0 = EXCESSIVELY_VERBOSE
+                 * 1 = UNEXPECTED_CURSOR_POSITION
+                 * 2 = SLUGGISH
+                 * 3 = AT_CRASHED
+                 * 4 = BROWSER_CRASHED
+                 * 5 = OTHER
+                 */
+                for (let i = 0; i < behaviors.length; i++) {
+                    const behavior = behaviors[i];
+                    if (behavior.checked) {
+                        if (i === 0)
+                            unexpectedBehaviors.push({
+                                id: 'EXCESSIVELY_VERBOSE'
+                            });
+                        if (i === 1)
+                            unexpectedBehaviors.push({
+                                id: 'UNEXPECTED_CURSOR_POSITION'
+                            });
+                        if (i === 2)
+                            unexpectedBehaviors.push({ id: 'SLUGGISH' });
+                        if (i === 3)
+                            unexpectedBehaviors.push({ id: 'AT_CRASHED' });
+                        if (i === 4)
+                            unexpectedBehaviors.push({ id: 'BROWSER_CRASHED' });
+                        if (i === 5) {
+                            const moreResult = {
+                                id: 'OTHER',
+                                otherUnexpectedBehaviorText: behavior.more.value
+                            };
+                            unexpectedBehaviors.push(
+                                captureHighlightRequired
+                                    ? {
+                                          ...moreResult,
+                                          highlightRequired:
+                                              behavior.more.highlightRequired
+                                      }
+                                    : moreResult
+                            );
+                        }
+                    }
+                }
+            } else if (hasUnexpected === 'doesNotHaveUnexpected')
+                unexpectedBehaviors = [];
+
+            // re-assign scenario result due to read only values
+            scenarioResult.output = atOutput.value ? atOutput.value : null;
+            if (captureHighlightRequired)
+                scenarioResult.highlightRequired = atOutput.highlightRequired;
+            scenarioResult.assertionResults = [...assertionResults];
+            scenarioResult.unexpectedBehaviors = unexpectedBehaviors
+                ? [...unexpectedBehaviors]
+                : null;
+            if (captureHighlightRequired)
+                scenarioResult.unexpectedBehaviorHighlightRequired = highlightRequired;
+
+            newScenarioResults.push(scenarioResult);
+        }
+
+        return newScenarioResults;
+    };
+
+    const remapState = (rendererState, testResult) => {
+        if (
+            !rendererState ||
+            !testResult.scenarioResults ||
+            rendererState.commands.length !== testResult.scenarioResults.length
+        )
+            return testResult;
+
+        const scenarioResults = remapScenarioResults(
+            rendererState,
+            testResult.scenarioResults,
+            true
         );
+        return { ...testResult, scenarioResults };
     };
 
     const performButtonAction = async (action, index) => {
-        const saveForm = async (withResult = false) => {
-            await handleUpdateTestPlanRunResultAction(
-                withResult
-                    ? {
-                          state: testRunStateRef.current,
-                          result: testRunResultRef.current
-                      }
-                    : {
-                          state: testRunStateRef.current
-                      }
+        // TODO: Revise function
+        const saveForm = async (
+            withResult = false,
+            forceSave = false,
+            forceEdit = false
+        ) => {
+            if (!isSignedIn) return true;
+            if (!forceEdit && currentTest.testResult.completedAt) return true;
+
+            const scenarioResults = remapScenarioResults(
+                testRunStateRef.current,
+                currentTest.testResult.scenarioResults,
+                false
             );
-            if (withResult) return !!testRunResultRef.current;
+
+            await handleSaveOrSubmitTestResultAction(
+                { scenarioResults },
+                forceSave ? false : !!testRunResultRef.current
+            );
+            if (withResult && !forceSave) return !!testRunResultRef.current;
             return true;
         };
 
         switch (action) {
             case 'goToTestAtIndex': {
                 // Save renderer's form state
-                await saveForm();
+                await saveForm(false, true);
                 setCurrentTestIndex(index);
                 break;
             }
             case 'goToNextTest': {
                 // Save renderer's form state
-                await saveForm();
+                await saveForm(false, true);
                 navigateTests();
                 break;
             }
             case 'goToPreviousTest': {
                 // Save renderer's form state
-                await saveForm();
+                await saveForm(false, true);
                 navigateTests(true);
                 break;
             }
             case 'editTest': {
-                await handleUpdateTestPlanRunResultAction({
-                    result: null
-                });
+                testRunResultRef.current = null;
+                await saveForm(false, true, true);
                 if (titleRef.current) titleRef.current.focus();
                 break;
             }
             case 'saveTest': {
+                if (!isSignedIn) {
+                    setShowGetInvolvedModal(true);
+                    break;
+                }
                 if (testRendererSubmitButtonRef.current) {
                     testRendererSubmitButtonRef.current.click();
                     setIsTestSubmitClicked(true);
@@ -242,73 +435,61 @@ const TestRun = ({ auth }) => {
 
     const handleEditClick = async () => performButtonAction('editTest');
 
-    const handleRaiseIssueButtonClick = async () => {
-        setShowRaiseIssueModal(!showRaiseIssueModal);
-        setShowReviewConflictsModal(false);
-    };
-
     const handleStartOverButtonClick = async () => setShowStartOverModal(true);
 
     const handleStartOverAction = async () => {
-        await clearTestResult({
-            variables: {
-                testPlanRunId,
-                index: currentTestIndex
-            }
-        });
-        await refetch();
+        const { id } = currentTest.testResult;
+        let variables = {
+            id
+        };
+        await deleteTestResult({ variables });
+
+        setup();
+        await createTestResultForRenderer(currentTest.id);
 
         // close modal after action
         setShowStartOverModal(false);
     };
 
-    const handleUpdateTestPlanRunResultAction = async ({
-        result,
-        state,
-        issues
-    }) => {
+    const handleSaveOrSubmitTestResultAction = async (
+        { scenarioResults = [] },
+        isSubmit = false
+    ) => {
+        const { id } = currentTest.testResult;
         let variables = {
-            // required
-            testPlanRunId,
-            index: currentTestIndex,
-
-            // optionals
-            result,
-            issues
+            id,
+            scenarioResults
         };
-        if (state) variables = { ...variables, state };
 
-        await updateTestRunResult({ variables });
-        // await refetch();
+        await saveTestResult({ variables });
+        if (isSubmit) await submitTestResult({ variables });
+        await refetch();
     };
 
     const handleReviewConflictsButtonClick = async () =>
         setShowReviewConflictsModal(true);
 
-    const renderTestContent = (testPlanReport, testResult, heading) => {
-        const { isComplete, index, result, state } = testResult;
-        const isFirstTest = index === 1;
-        const isLastTest = currentTest.seq === testResults.length;
+    const renderTestContent = (testPlanReport, currentTest, heading) => {
+        const { index } = currentTest;
+        const isComplete = currentTest.testResult
+            ? !!currentTest.testResult.completedAt
+            : false;
+        const isFirstTest = index === 0;
+        const isLastTest = currentTest.seq === tests.length;
 
         let primaryButtons = []; // These are the list of buttons that will appear below the tests
         let forwardButtons = []; // These are buttons that navigate to next tests and continue
 
         const nextButton = (
-            <Button
-                key="nextButton"
-                variant="secondary"
-                onClick={handleNextTestClick}
-            >
+            <Button variant="secondary" onClick={handleNextTestClick}>
                 Next Test
             </Button>
         );
 
         const previousButton = (
             <Button
-                key="previousButton"
                 variant="secondary"
                 onClick={handlePreviousTestClick}
-                className="testrun__button-right"
                 disabled={isFirstTest}
             >
                 Previous Test
@@ -318,7 +499,6 @@ const TestRun = ({ auth }) => {
         if (isComplete) {
             const editButton = (
                 <Button
-                    key="editButton"
                     className="edit-results"
                     variant="secondary"
                     onClick={handleEditClick}
@@ -330,7 +510,6 @@ const TestRun = ({ auth }) => {
 
             const continueButton = (
                 <Button
-                    key="continueButton"
                     variant="primary"
                     disabled={isLastTest}
                     onClick={handleNextTestClick}
@@ -349,11 +528,7 @@ const TestRun = ({ auth }) => {
         } else {
             // same key to maintain focus
             const saveResultsButton = (
-                <Button
-                    key="continueButton"
-                    variant="primary"
-                    onClick={handleSaveClick}
-                >
+                <Button variant="primary" onClick={handleSaveClick}>
                     Submit Results
                 </Button>
             );
@@ -365,39 +540,40 @@ const TestRun = ({ auth }) => {
             ];
         }
 
-        const primaryButtonGroup = (
-            <div className="testrun__button-toolbar-group">
-                {primaryButtons}
-            </div>
-        );
-
         const menuRightOfContent = (
             <div role="complementary">
                 <h3>Test Options</h3>
-                <div className="options-wrapper">
-                    <OptionButton
-                        text="Raise An Issue"
-                        icon={<FontAwesomeIcon icon={faExclamationCircle} />}
-                        onClick={handleRaiseIssueButtonClick}
-                    />
-
-                    <OptionButton
-                        text="Start Over"
-                        disabled={!result && !state}
-                        icon={<FontAwesomeIcon icon={faRedo} />}
-                        onClick={handleStartOverButtonClick}
-                    />
-
-                    <OptionButton
-                        text="Save and Close"
-                        onClick={handleCloseRunClick}
-                    />
-
-                    <div className="help-link">
-                        Need Help?{' '}
-                        <a href="mailto:public-aria-at@w3.org">Email Us</a>
-                    </div>
-                </div>
+                <ul className="options-wrapper">
+                    <li>
+                        <OptionButton
+                            text="Raise An Issue"
+                            icon={
+                                <FontAwesomeIcon icon={faExclamationCircle} />
+                            }
+                            target="_blank"
+                            href={gitHubIssueLinkWithTitleAndBody}
+                        />
+                    </li>
+                    <li>
+                        <OptionButton
+                            text="Start Over"
+                            icon={<FontAwesomeIcon icon={faRedo} />}
+                            onClick={handleStartOverButtonClick}
+                            disabled={!isSignedIn}
+                        />
+                    </li>
+                    <li>
+                        <OptionButton
+                            text={!isSignedIn ? 'Close' : 'Save and Close'}
+                            onClick={handleCloseRunClick}
+                        />
+                    </li>
+                    <li className="help-link">
+                        <a href="mailto:public-aria-at@w3.org">
+                            Email us if you need help
+                        </a>
+                    </li>
+                </ul>
             </div>
         );
 
@@ -405,55 +581,72 @@ const TestRun = ({ auth }) => {
             <>
                 <h1 ref={titleRef} data-test="testing-task" tabIndex={-1}>
                     <span className="task-label">Testing task:</span>{' '}
-                    {`${currentTest.seq}.`} {testResult.title}
+                    {`${currentTest.seq}.`} {currentTest.title}
                 </h1>
                 <span>{heading}</span>
                 <StatusBar
                     key={nextId()}
-                    issues={issues}
-                    conflicts={conflicts[currentTestIndex]}
+                    hasConflicts={currentTest.hasConflicts}
+                    conflictsFormatted={conflictsFormatted}
                     handleReviewConflictsButtonClick={
                         handleReviewConflictsButtonClick
                     }
-                    handleRaiseIssueButtonClick={handleRaiseIssueButtonClick}
                 />
-                <Row>
-                    <Col className="test-iframe-container" md={9}>
+                {pageReadyRef.current &&
+                    (isSignedIn ? currentTest.testResult : true) && (
                         <Row>
-                            <TestRenderer
-                                key={nextId()}
-                                test={currentTest}
-                                support={supportJson}
-                                testPageUri={buildTestPageUri(
-                                    testPlanVersion.gitSha,
-                                    testPlanVersion.directory,
-                                    testPlanVersion.testReferencePath
+                            <Col className="test-iframe-container" md={9}>
+                                <Row>
+                                    <TestRenderer
+                                        key={nextId()}
+                                        at={testPlanTarget.at}
+                                        testResult={
+                                            !isSignedIn
+                                                ? {
+                                                      test: currentTest,
+                                                      // force the summary to be shown for an anonymous user
+                                                      completedAt: !!(
+                                                          !isSignedIn &&
+                                                          testRunResultRef.current
+                                                      )
+                                                  }
+                                                : remapState(
+                                                      testRunStateRef.current,
+                                                      currentTest.testResult
+                                                  )
+                                        }
+                                        testPageUrl={
+                                            testPlanVersion.testPageUrl
+                                        }
+                                        testRunStateRef={testRunStateRef}
+                                        testRunResultRef={testRunResultRef}
+                                        submitButtonRef={
+                                            testRendererSubmitButtonRef
+                                        }
+                                        isSubmitted={isTestSubmitClicked}
+                                        setIsRendererReady={setIsRendererReady}
+                                    />
+                                </Row>
+                                {isRendererReady && (
+                                    <Row>
+                                        <ul className="test-run-toolbar mt-1">
+                                            {primaryButtons.map(button => (
+                                                <li key={nextId()}>{button}</li>
+                                            ))}
+                                        </ul>
+                                    </Row>
                                 )}
-                                configQueryParams={[
-                                    [
-                                        'at',
-                                        evaluateAtNameKey(
-                                            testPlanTarget.at.name
-                                        )
-                                    ]
-                                ]} // Array.from(new URL(document.location).searchParams)
-                                testRunStateRef={testRunStateRef}
-                                testRunResultRef={testRunResultRef}
-                                submitButtonRef={testRendererSubmitButtonRef}
-                                isSubmitted={isTestSubmitClicked}
-                            />
+                            </Col>
+                            <Col className="current-test-options" md={3}>
+                                {menuRightOfContent}
+                            </Col>
                         </Row>
-                        <Row>{primaryButtonGroup}</Row>
-                    </Col>
-                    <Col className="current-test-options" md={3}>
-                        {menuRightOfContent}
-                    </Col>
-                </Row>
+                    )}
 
                 {/* Modals */}
                 {showStartOverModal && (
                     <BasicModal
-                        key={`BasicModal__${currentTestIndex}`}
+                        key={`StartOver__${currentTestIndex}`}
                         show={showStartOverModal}
                         centered={true}
                         animation={false}
@@ -465,19 +658,26 @@ const TestRun = ({ auth }) => {
                         handleClose={() => setShowStartOverModal(false)}
                     />
                 )}
-                {showRaiseIssueModal && (
-                    <RaiseIssueModal
-                        key={`RaiseIssueModal__${currentTestIndex}`}
-                        show={showRaiseIssueModal}
-                        userId={testerId}
-                        test={currentTest}
-                        testPlanRun={testPlanRun}
-                        issues={issues}
-                        conflicts={conflicts[currentTestIndex]}
-                        handleUpdateTestPlanRunResultAction={
-                            handleUpdateTestPlanRunResultAction
-                        }
-                        handleClose={() => setShowRaiseIssueModal(false)}
+                {showGetInvolvedModal && (
+                    <BasicModal
+                        key={`GetInvolved__${currentTestIndex}`}
+                        show={showGetInvolvedModal}
+                        centered={true}
+                        animation={false}
+                        details={{
+                            title: 'Ready to Get Involved?',
+                            description: (
+                                <>
+                                    Only members of the ARIA-AT test team can
+                                    submit data. If you fill in this form, your
+                                    data will not be saved! Check out the{' '}
+                                    <a href="/">home page</a> to learn more
+                                    about how to get involved.
+                                </>
+                            )
+                        }}
+                        closeLabel="Close"
+                        handleClose={() => setShowGetInvolvedModal(false)}
                     />
                 )}
                 {showReviewConflictsModal && (
@@ -485,11 +685,9 @@ const TestRun = ({ auth }) => {
                         key={`ReviewConflictsModal__${currentTestIndex}`}
                         show={showReviewConflictsModal}
                         userId={testerId}
-                        conflicts={conflicts[currentTestIndex]}
+                        conflictsFormatted={conflictsFormatted}
+                        issueLink={gitHubIssueLinkWithTitleAndBody}
                         handleClose={() => setShowReviewConflictsModal(false)}
-                        handleRaiseIssueButtonClick={
-                            handleRaiseIssueButtonClick
-                        }
                     />
                 )}
             </>
@@ -522,7 +720,8 @@ const TestRun = ({ auth }) => {
                     <div className="info-label">
                         <b>Test Plan:</b>{' '}
                         {`${testPlanVersion.title ||
-                            testPlanVersion.directory}`}
+                            testPlanVersion.testPlan?.directory ||
+                            ''}`}
                     </div>
                 </div>
                 <div
@@ -538,10 +737,18 @@ const TestRun = ({ auth }) => {
                         <FontAwesomeIcon
                             icon={hasTestsToRun ? faCheck : faExclamationCircle}
                         />
-                        {hasTestsToRun ? (
+                        {!isSignedIn ? (
+                            <>
+                                <b>{tests.length} tests to view</b>
+                            </>
+                        ) : hasTestsToRun ? (
                             <>
                                 {' '}
-                                <b>{`${testPlanRun.testResultCount} of ${testResults.length}`}</b>{' '}
+                                <b>{`${testPlanRun.testResults.reduce(
+                                    (acc, { completedAt }) =>
+                                        acc + (completedAt ? 1 : 0),
+                                    0
+                                )} of ${tests.length}`}</b>{' '}
                                 tests completed
                             </>
                         ) : (
@@ -556,13 +763,9 @@ const TestRun = ({ auth }) => {
         </>
     );
 
-    if (!testPlanRun.isComplete) {
+    if (!isSignedIn || !testPlanRun?.isComplete) {
         content = hasTestsToRun ? (
-            renderTestContent(
-                testPlanReport,
-                testResults.find(t => t.index === currentTestIndex),
-                heading
-            )
+            renderTestContent(testPlanReport, currentTest, heading)
         ) : (
             // No tests loaded
             <>
@@ -588,18 +791,27 @@ const TestRun = ({ auth }) => {
     return (
         <Container className="test-run-container">
             <Helmet>
-                <title>{testPlanTarget.title}</title>
+                <title>
+                    {hasTestsToRun
+                        ? `${currentTest.title} for ${testPlanTarget.title} ` +
+                          `| ARIA-AT`
+                        : 'No tests for this AT and Browser | ARIA-AT'}
+                </title>
             </Helmet>
             <Row>
                 <TestNavigator
                     show={showTestNavigator}
-                    testResults={testResults}
-                    conflicts={conflicts}
+                    tests={tests}
                     currentTestIndex={currentTestIndex}
                     toggleShowClick={toggleTestNavigator}
                     handleTestClick={handleTestClick}
                 />
-                <Col className="main-test-area" as="main">
+                <Col
+                    className="main-test-area"
+                    id="main"
+                    as="main"
+                    tabIndex="-1"
+                >
                     <Row>
                         <Col>{content}</Col>
                     </Row>
@@ -609,13 +821,5 @@ const TestRun = ({ auth }) => {
     );
 };
 
-TestRun.propTypes = {
-    auth: PropTypes.object
-};
-
-const mapStateToProps = state => {
-    const { auth } = state;
-    return { auth };
-};
-
-export default connect(mapStateToProps)(TestRun);
+export { createGitHubIssueWithTitleAndBody };
+export default TestRun;

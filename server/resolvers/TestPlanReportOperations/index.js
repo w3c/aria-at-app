@@ -1,11 +1,11 @@
 const assignTester = require('./assignTesterResolver');
 const deleteTestPlanRun = require('./deleteTestPlanRunResolver');
-const deleteTestPlanRunResults = require('./deleteTestPlanRunResultsResolver');
 const updateStatus = require('./updateStatusResolver');
+const deleteTestPlanReport = require('./deleteTestPlanReportResolver');
 
 module.exports = {
     assignTester,
     deleteTestPlanRun,
-    deleteTestPlanRunResults,
-    updateStatus
+    updateStatus,
+    deleteTestPlanReport
 };

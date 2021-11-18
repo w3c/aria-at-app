@@ -6,7 +6,7 @@ const {
     TEST_PLAN_RUN_ATTRIBUTES,
     USER_ATTRIBUTES
 } = require('./helpers');
-const { Sequelize, TestPlanVersion } = require('../');
+const { Sequelize, sequelize, TestPlanVersion } = require('../');
 const { Op } = Sequelize;
 
 // association helpers to be included with Models' results
@@ -166,11 +166,14 @@ const getTestPlanVersions = async (
  */
 const createTestPlanVersion = async (
     {
+        // ID must be provided so it matches the ID which is baked into the Test
+        // IDs (see LocationOfDataId.js for more information).
+        id,
         title,
-        status,
+        directory,
         gitSha,
         gitMessage,
-        exampleUrl,
+        testPageUrl,
         updatedAt,
         metadata,
         tests
@@ -182,17 +185,17 @@ const createTestPlanVersion = async (
     userAttributes = USER_ATTRIBUTES,
     options = {}
 ) => {
-    const testPlanVersionResult = await ModelService.create(TestPlanVersion, {
+    await ModelService.create(TestPlanVersion, {
+        id,
         title,
-        status,
+        directory,
         gitSha,
         gitMessage,
-        exampleUrl,
+        testPageUrl,
         updatedAt,
         metadata,
         tests
     });
-    const { id } = testPlanVersionResult;
 
     return await getTestPlanVersionById(
         id,
@@ -221,10 +224,10 @@ const updateTestPlanVersion = async (
     id,
     {
         title,
-        status,
+        directory,
         gitSha,
         gitMessage,
-        exampleUrl,
+        testPageUrl,
         updatedAt,
         metadata,
         tests
@@ -241,10 +244,10 @@ const updateTestPlanVersion = async (
         { id },
         {
             title,
-            status,
+            directory,
             gitSha,
             gitMessage,
-            exampleUrl,
+            testPageUrl,
             updatedAt,
             metadata,
             tests
@@ -263,10 +266,122 @@ const updateTestPlanVersion = async (
     );
 };
 
+/**
+ * Custom function to load the TestPlan GraphQL type, which is derived from the TestPlanVersion table.
+ * @param {object} options
+ * @param {boolean} options.includeLatestTestPlanVersion - Whether to load the latestTestPlanVersion field which requires multiple queries.
+ * @param {boolean} options.includeTestPlanVersions - Whether to load the testPlanVersions field which requires multiple queries.
+ * @param {boolean} options.id - A single ID to load - mainly here to allow the queries to be reused in the getTestPlanById function.
+ * @returns {*} - TestPlans as specified in GraphQL
+ */
+const getTestPlans = async ({
+    includeLatestTestPlanVersion = true,
+    includeTestPlanVersions = true,
+    testPlanVersionOrder = null,
+    id
+} = {}) => {
+    const getTestPlansAndLatestVersionId = async () => {
+        const whereClause = id ? `WHERE directory = ?` : '';
+        const [results] = await sequelize.query(
+            `
+                SELECT * FROM (
+                    SELECT DISTINCT
+                        ON (directory)
+                        directory as "id",
+                        directory as "directory",
+                        id as "latestTestPlanVersionId",
+                        "updatedAt"
+                    FROM "TestPlanVersion"
+                    ${whereClause}
+                    ORDER BY directory, "updatedAt" DESC
+                ) sub
+                ORDER BY "updatedAt"
+            `,
+            { replacements: [id] }
+        );
+        return results;
+    };
+
+    const getTestPlansWithVersionIds = async () => {
+        const having = id ? `HAVING directory = ?` : '';
+        const [results] = await sequelize.query(
+            `
+                SELECT
+                    directory as id,
+                    ARRAY_AGG(id) as "testPlanVersionIds"
+                FROM "TestPlanVersion"
+                GROUP BY directory
+                ${having}
+            `,
+            { replacements: [id] }
+        );
+        return results;
+    };
+
+    let testPlans = await getTestPlansAndLatestVersionId();
+
+    if (includeLatestTestPlanVersion) {
+        const latestTestPlanVersionIds = testPlans.map(
+            testPlan => testPlan.latestTestPlanVersionId
+        );
+        const latestTestPlanVersions = await getTestPlanVersions('', {
+            id: latestTestPlanVersionIds
+        });
+        testPlans = testPlans.map(testPlan => {
+            return {
+                ...testPlan,
+                latestTestPlanVersion: latestTestPlanVersions.find(
+                    testPlanVersion =>
+                        testPlanVersion.id === testPlan.latestTestPlanVersionId
+                )
+            };
+        });
+    }
+
+    if (includeTestPlanVersions) {
+        const testPlansHistoric = await getTestPlansWithVersionIds();
+        const testPlanVersions = await getTestPlanVersions(
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            testPlanVersionOrder ? { order: testPlanVersionOrder } : undefined
+        );
+        testPlans = testPlans.map(testPlan => {
+            const { testPlanVersionIds } = testPlansHistoric.find(
+                historicTestPlan => historicTestPlan.id === testPlan.id
+            );
+            return {
+                ...testPlan,
+                testPlanVersions: testPlanVersionIds.map(testPlanVersionId =>
+                    testPlanVersions.find(
+                        testPlanVersion =>
+                            testPlanVersion.id === testPlanVersionId
+                    )
+                )
+            };
+        });
+    }
+
+    return testPlans;
+};
+
+const getTestPlanById = async id => {
+    const result = await getTestPlans({ id });
+    return result[0];
+};
+
 module.exports = {
     // Basic CRUD
     getTestPlanVersionById,
     getTestPlanVersions,
     createTestPlanVersion,
-    updateTestPlanVersion
+    updateTestPlanVersion,
+
+    // Custom functions
+    getTestPlans,
+    getTestPlanById
 };

@@ -7,7 +7,7 @@ const testPlanVersionsResolver = async () => {
         order: [
             ['updatedAt', 'desc'],
             ['title', 'asc'],
-            ['metadata.directory', 'asc']
+            ['directory', 'asc']
         ]
     });
 };

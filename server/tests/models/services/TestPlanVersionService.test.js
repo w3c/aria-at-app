@@ -17,7 +17,7 @@ describe('TestPlanReportModel Data Checks', () => {
         const {
             id,
             title,
-            status,
+            directory,
             gitSha,
             gitMessage,
             updatedAt,
@@ -28,17 +28,13 @@ describe('TestPlanReportModel Data Checks', () => {
 
         expect(id).toEqual(_id);
         expect(title).toBeTruthy();
-        expect(status).toMatch(/^(DRAFT|IN_REVIEW|FINALIZED)$/);
+        expect(directory).toBeTruthy();
         expect(gitSha).toBeTruthy();
         expect(gitMessage).toBeTruthy();
         expect(updatedAt).toBeTruthy();
         expect(metadata).toBeTruthy();
         expect(tests).toBeTruthy();
         expect(testPlanReports).toBeInstanceOf(Array);
-        expect(testPlanReports.length).not.toBe(0);
-        expect(testPlanReports).toContainEqual(
-            expect.objectContaining({ id: expect.any(Number) })
-        );
         expect(testPlanVersion).toHaveProperty('testPlanReports');
     });
 
@@ -56,7 +52,7 @@ describe('TestPlanReportModel Data Checks', () => {
         const {
             id,
             title,
-            status,
+            directory,
             gitSha,
             gitMessage,
             updatedAt,
@@ -66,7 +62,7 @@ describe('TestPlanReportModel Data Checks', () => {
 
         expect(id).toEqual(_id);
         expect(title).toBeTruthy();
-        expect(status).toMatch(/^(DRAFT|IN_REVIEW|FINALIZED)$/);
+        expect(directory).toBeTruthy();
         expect(gitSha).toBeTruthy();
         expect(gitMessage).toBeTruthy();
         expect(updatedAt).toBeTruthy();
@@ -88,25 +84,27 @@ describe('TestPlanReportModel Data Checks', () => {
     it('should create and update testPlanVersion', async () => {
         await dbCleaner(async () => {
             // A1
+            const _id = 99;
             const _title = randomStringGenerator();
-            const _status = 'DRAFT';
+            const _directory = 'checkbox';
             const _gitSha = randomStringGenerator();
             const _gitMessage = randomStringGenerator();
-            const _exampleUrl = randomStringGenerator();
+            const _testPageUrl = randomStringGenerator();
             const _updatedAt = new Date();
-            const _metadata = { directory: 'checkbox' };
+            const _metadata = { designPattern: 'https://google.com' };
             const _tests = [{ test: 'goes here' }];
 
-            const _updatedStatus = 'FINALIZED';
+            const _updatedTitle = randomStringGenerator();
 
             // A2
             const testPlanVersion = await TestPlanVersionService.createTestPlanVersion(
                 {
+                    id: _id,
                     title: _title,
-                    status: _status,
+                    directory: _directory,
                     gitSha: _gitSha,
                     gitMessage: _gitMessage,
-                    exampleUrl: _exampleUrl,
+                    testPageUrl: _testPageUrl,
                     updatedAt: _updatedAt,
                     metadata: _metadata,
                     tests: _tests
@@ -115,10 +113,10 @@ describe('TestPlanReportModel Data Checks', () => {
             const {
                 id: createdId,
                 title: createdTitle,
-                status: createdStatus,
+                directory: createdDirectory,
                 gitSha: createdGitSha,
                 gitMessage: createdGitMessage,
-                exampleUrl: createdExampleUrl,
+                testPageUrl: createdTestPageUrl,
                 updatedAt: createdUpdatedAt,
                 metadata: createdMetadata,
                 tests: createdTests
@@ -127,29 +125,27 @@ describe('TestPlanReportModel Data Checks', () => {
             // A2
             const updatedTestPlanVersion = await TestPlanVersionService.updateTestPlanVersion(
                 createdId,
-                { status: _updatedStatus }
+                { title: _updatedTitle }
             );
             const {
                 title: updatedTitle,
-                status: updatedStatus,
                 updatedAt: updatedUpdatedAt
             } = updatedTestPlanVersion;
 
             // A3
             // After testPlanVersion created
-            expect(createdId).toBeTruthy();
+            expect(createdId).toBe(_id);
             expect(createdTitle).toBe(_title);
-            expect(createdStatus).toBe(_status);
+            expect(createdDirectory).toBe(_directory);
             expect(createdGitSha).toBe(_gitSha);
             expect(createdGitMessage).toBe(_gitMessage);
-            expect(createdExampleUrl).toBe(_exampleUrl);
+            expect(createdTestPageUrl).toBe(_testPageUrl);
             expect(createdUpdatedAt).toEqual(_updatedAt);
             expect(createdMetadata).toEqual(_metadata);
             expect(createdTests).toEqual(_tests);
 
-            // After updated status
-            expect(updatedTitle).toBe(createdTitle);
-            expect(updatedStatus).toBe(_updatedStatus);
+            // After update
+            expect(updatedTitle).toBe(_updatedTitle);
 
             // Confirm that updates are not automatically managed - this
             // updatedAt refers to the source code.
