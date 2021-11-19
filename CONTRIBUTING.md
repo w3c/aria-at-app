@@ -14,7 +14,7 @@ We use GitHub issues to track bugs, feature requests, and implementation proposa
 If your issue relates to a specific ARIA-AT test plan or the behavior of the ARIA-AT test renderer, please open an issue in the [aria-at repo](https://github.com/w3c/aria-at/issues).
 
 ## Pull Requests
-Pull requests are the best way to propose changes to the codebase. We use [Github Flow](https://guides.github.com/introduction/flow/index.html) as a development methodology.
+Pull requests are the best way to propose changes to the codebase. We use [GitHub Flow](https://guides.github.com/introduction/flow/index.html) as a development methodology.
 
 If the pull request is not a bug fix, an implementation proposal should first be submitted via a new issue, in order to reach consensus with the maintainers on scope, technical approach, and design implications. 
 Implementation proposals and pull requests that affect the overall design or user experience of the app may require a design review before implementation.
@@ -23,7 +23,7 @@ Pull requests should be small and granular, ideally addressing one issue or feat
 
 In order to open a pull request:
 
-1. Fork the repo and create your branch from `develop`.
+1. Fork the repo and create your branch from `main`.
 1. If you've added code that should be tested, add tests.
 1. If you've changed APIs, update the documentation.
 1. Ensure the test suite passes.
@@ -33,8 +33,8 @@ In order to open a pull request:
 ## Reviewing pull requests, merging, and deploying
 
 All pull requests require code review from a maintainer before merging.
-Maintainers are responsible for merging pull requests into the protected `develop` branch.
-Maintainers will periodically deploy the `develop` branch to the [staging environments](https://github.com/w3c/aria-at-app/wiki).
+Maintainers are responsible for merging pull requests into the protected `main` branch.
+Maintainers will periodically deploy the `main` branch to the [staging environments](https://github.com/w3c/aria-at-app/wiki).
 
 ## License
-When you submit code changes, your submissions are understood to be under the same [W3C Document License](https://github.com/w3c/aria-at-app/blob/develop/LICENSE.md) that covers the project. Feel free to contact the maintainers if that's a concern.
+When you submit code changes, your submissions are understood to be under the same [W3C Document License](https://github.com/w3c/aria-at-app/blob/main/LICENSE.md) that covers the project. Feel free to contact the maintainers if that's a concern.
