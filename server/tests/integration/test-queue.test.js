@@ -677,6 +677,125 @@ describe('test queue', () => {
                     },
                   },
                 },
+                Object {
+                  "conflictingResults": Array [
+                    Object {
+                      "assertionResult": null,
+                      "scenarioResult": Object {
+                        "output": "automatically seeded sample output",
+                        "unexpectedBehaviors": Array [],
+                      },
+                      "testPlanRun": Object {
+                        "id": "2",
+                        "tester": Object {
+                          "username": "esmeralda-baggins",
+                        },
+                      },
+                    },
+                    Object {
+                      "assertionResult": null,
+                      "scenarioResult": Object {
+                        "output": "automatically seeded sample output",
+                        "unexpectedBehaviors": Array [
+                          Object {
+                            "otherUnexpectedBehaviorText": null,
+                            "text": "Output is excessively verbose, e.g., includes redundant and/or irrelevant speech",
+                          },
+                          Object {
+                            "otherUnexpectedBehaviorText": "Seeded other unexpected behavior",
+                            "text": "Other",
+                          },
+                        ],
+                      },
+                      "testPlanRun": Object {
+                        "id": "3",
+                        "tester": Object {
+                          "username": "tom-proudfeet",
+                        },
+                      },
+                    },
+                  ],
+                  "source": Object {
+                    "assertion": null,
+                    "scenario": Object {
+                      "commands": Array [
+                        Object {
+                          "text": "Alt+Down",
+                        },
+                      ],
+                      "id": "MmI1ZeyIzIjoiWVRKbE9leUl5SWpvaU5pSjlUTXdZVCJ9TJlZT",
+                    },
+                    "test": Object {
+                      "id": "YTJlOeyIyIjoiNiJ9TMwYT",
+                      "rowNumber": 10,
+                      "title": "Open a collapsed select-only combobox in reading mode",
+                    },
+                  },
+                },
+                Object {
+                  "conflictingResults": Array [
+                    Object {
+                      "assertionResult": Object {
+                        "failedReason": "NO_OUTPUT",
+                        "passed": false,
+                      },
+                      "scenarioResult": Object {
+                        "output": "automatically seeded sample output",
+                        "unexpectedBehaviors": Array [],
+                      },
+                      "testPlanRun": Object {
+                        "id": "2",
+                        "tester": Object {
+                          "username": "esmeralda-baggins",
+                        },
+                      },
+                    },
+                    Object {
+                      "assertionResult": Object {
+                        "failedReason": "INCORRECT_OUTPUT",
+                        "passed": false,
+                      },
+                      "scenarioResult": Object {
+                        "output": "automatically seeded sample output",
+                        "unexpectedBehaviors": Array [
+                          Object {
+                            "otherUnexpectedBehaviorText": null,
+                            "text": "Output is excessively verbose, e.g., includes redundant and/or irrelevant speech",
+                          },
+                          Object {
+                            "otherUnexpectedBehaviorText": "Seeded other unexpected behavior",
+                            "text": "Other",
+                          },
+                        ],
+                      },
+                      "testPlanRun": Object {
+                        "id": "3",
+                        "tester": Object {
+                          "username": "tom-proudfeet",
+                        },
+                      },
+                    },
+                  ],
+                  "source": Object {
+                    "assertion": Object {
+                      "id": "OTI0MeyIzIjoiWVRKbE9leUl5SWpvaU5pSjlUTXdZVCJ9mQ5N2",
+                      "text": "State of the combobox (expanded) is conveyed",
+                    },
+                    "scenario": Object {
+                      "commands": Array [
+                        Object {
+                          "text": "Alt+Down",
+                        },
+                      ],
+                      "id": "MmI1ZeyIzIjoiWVRKbE9leUl5SWpvaU5pSjlUTXdZVCJ9TJlZT",
+                    },
+                    "test": Object {
+                      "id": "YTJlOeyIyIjoiNiJ9TMwYT",
+                      "rowNumber": 10,
+                      "title": "Open a collapsed select-only combobox in reading mode",
+                    },
+                  },
+                },
               ],
             }
         `);

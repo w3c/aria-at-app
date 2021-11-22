@@ -56,7 +56,7 @@ const ConflictingTestResults = ({
                 assertionResultFormatted = 'passing';
             } else {
                 const reasonFormatted =
-                    assertion.failedReason === 'INCORRECT_OUTPUT'
+                    assertionResult.failedReason === 'INCORRECT_OUTPUT'
                         ? 'incorrect output'
                         : 'no output';
                 assertionResultFormatted = `failing with ${reasonFormatted}`;
