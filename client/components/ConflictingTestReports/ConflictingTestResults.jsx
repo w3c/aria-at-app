@@ -1,8 +1,6 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
-import { useQuery } from '@apollo/client';
 import styled from '@emotion/styled';
-import { CONFLICTING_TEST_RESULT_QUERY } from './queries';
 import TurndownService from 'turndown';
 
 const Wrapper = styled.div`
@@ -16,36 +14,26 @@ const Wrapper = styled.div`
 `;
 
 const ConflictingTestResults = ({
-    testPlanReportId,
-    testId,
-    copyMarkdownToClipboardRef
+    testPlanVersion,
+    testPlanReport,
+    test,
+    conflictMarkdownRef = null
 }) => {
-    const { data } = useQuery(CONFLICTING_TEST_RESULT_QUERY, {
-        variables: { testPlanReportId }
-    });
-
     const contentRef = useRef();
 
-    if (copyMarkdownToClipboardRef) {
-        copyMarkdownToClipboardRef.current = () => {
-            const turndownService = new TurndownService({
-                headingStyle: 'atx'
-            });
-            const markdown = turndownService.turndown(
-                contentRef.current.outerHTML
-            );
-            navigator.clipboard.writeText(markdown);
-        };
-    }
+    useEffect(() => {
+        if (!contentRef.current || !conflictMarkdownRef) return;
+        const turndownService = new TurndownService({ headingStyle: 'atx' });
+        conflictMarkdownRef.current = turndownService.turndown(
+            contentRef.current.outerHTML
+        );
+    });
 
-    if (!data) return null;
-
-    const { testPlanReport } = data;
-    const { testPlanVersion } = testPlanReport;
     const conflicts = testPlanReport.conflicts.filter(
-        conflict => conflict.source.test.id === testId
+        conflict => conflict.source.test.id === test.id
     );
-    const { test } = conflicts[0].source;
+
+    if (conflicts.length === 0) return null;
 
     const commandString = scenario => {
         return scenario.commands.map(command => command.text).join(', then ');
@@ -143,11 +131,64 @@ const ConflictingTestResults = ({
 };
 
 ConflictingTestResults.propTypes = {
-    testPlanReportId: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
-        .isRequired,
-    testId: PropTypes.string.isRequired,
-    copyMarkdownToClipboardRef: PropTypes.shape({
-        current: PropTypes.any
+    testPlanVersion: PropTypes.shape({
+        title: PropTypes.string.isRequired
+    }).isRequired,
+    testPlanReport: PropTypes.shape({
+        id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+        conflicts: PropTypes.arrayOf(
+            PropTypes.shape({
+                source: PropTypes.shape({
+                    test: PropTypes.shape({
+                        id: PropTypes.string.isRequired
+                    }).isRequired,
+                    scenario: PropTypes.shape({
+                        id: PropTypes.string.isRequired,
+                        commands: PropTypes.arrayOf(
+                            PropTypes.shape({
+                                text: PropTypes.string.isRequired
+                            })
+                        ).isRequired
+                    }).isRequired,
+                    assertion: PropTypes.shape({
+                        id: PropTypes.string.isRequired,
+                        text: PropTypes.string.isRequired
+                    })
+                }).isRequired,
+                conflictingResults: PropTypes.arrayOf(
+                    PropTypes.shape({
+                        testPlanRun: PropTypes.shape({
+                            id: PropTypes.string.isRequired,
+                            tester: PropTypes.shape({
+                                username: PropTypes.string.isRequired
+                            }).isRequired
+                        }).isRequired,
+                        scenarioResult: PropTypes.shape({
+                            output: PropTypes.string.isRequired,
+                            unexpectedBehaviors: PropTypes.arrayOf(
+                                PropTypes.shape({
+                                    text: PropTypes.string.isRequired,
+                                    otherUnexpectedBehaviorText:
+                                        PropTypes.string
+                                })
+                            ).isRequired
+                        }),
+                        assertionResult: PropTypes.shape({
+                            passed: PropTypes.bool.isRequired,
+                            failedReason: PropTypes.string
+                        })
+                    })
+                ).isRequired
+            })
+        ).isRequired
+    }),
+    test: PropTypes.shape({
+        id: PropTypes.string.isRequired,
+        title: PropTypes.string.isRequired,
+        rowNumber: PropTypes.number.isRequired
+    }),
+    conflictMarkdownRef: PropTypes.shape({
+        current: PropTypes.string
     })
 };
 

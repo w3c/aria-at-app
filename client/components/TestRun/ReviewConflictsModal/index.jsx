@@ -1,17 +1,17 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { Button, Modal } from 'react-bootstrap';
 import ConflictingTestResults from '../../ConflictingTestReports';
 
 const ReviewConflictsModal = ({
+    testPlanVersion,
     testPlanReport,
     test,
+    issueLink,
+    conflictMarkdown,
     show = false,
-    handleClose = () => {},
-    issueLink
+    handleClose = () => {}
 }) => {
-    const copyMarkdownToClipboardRef = useRef();
-
     return (
         <Modal
             show={show}
@@ -31,15 +31,17 @@ const ReviewConflictsModal = ({
             </Modal.Header>
             <Modal.Body>
                 <ConflictingTestResults
-                    testPlanReportId={testPlanReport.id}
-                    testId={test.id}
-                    copyMarkdownToClipboardRef={copyMarkdownToClipboardRef}
+                    testPlanVersion={testPlanVersion}
+                    testPlanReport={testPlanReport}
+                    test={test}
                 />
             </Modal.Body>
             <Modal.Footer>
                 <Button
                     variant="secondary"
-                    onClick={() => copyMarkdownToClipboardRef.current()}
+                    onClick={() =>
+                        navigator.clipboard.writeText(conflictMarkdown)
+                    }
                 >
                     Copy Conflicts to Clipboard
                 </Button>
@@ -53,14 +55,12 @@ const ReviewConflictsModal = ({
 
 ReviewConflictsModal.propTypes = {
     show: PropTypes.bool,
-    testPlanReport: PropTypes.shape({
-        id: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
-    }).isRequired,
-    test: PropTypes.shape({
-        id: PropTypes.string.isRequired
-    }).isRequired,
+    testPlanVersion: PropTypes.object.isRequired,
+    testPlanReport: PropTypes.object.isRequired,
+    test: PropTypes.object.isRequired,
     handleClose: PropTypes.func,
-    issueLink: PropTypes.string
+    conflictMarkdown: PropTypes.string,
+    issueLink: PropTypes.string.isRequired
 };
 
 export default ReviewConflictsModal;

@@ -19,6 +19,7 @@ import TestRenderer from '../TestRenderer';
 import OptionButton from './OptionButton';
 import PageStatus from '../common/PageStatus';
 import BasicModal from '../common/BasicModal';
+import DisplayNone from '../../utils/DisplayNone';
 import {
     TEST_RUN_PAGE_QUERY,
     TEST_RUN_PAGE_ANON_QUERY,
@@ -29,11 +30,12 @@ import {
 } from './queries';
 import { evaluateAuth } from '../../utils/evaluateAuth';
 import './TestRun.css';
+import ConflictingTestResults from '../ConflictingTestReports';
 
 const createGitHubIssueWithTitleAndBody = ({
     test,
     testPlanReport,
-    conflictsFormatted
+    conflictMarkdown = null
 }) => {
     const { testPlanVersion, testPlanTarget } = testPlanReport;
     const { at, browser } = testPlanTarget;
@@ -45,9 +47,9 @@ const createGitHubIssueWithTitleAndBody = ({
     const shortenedUrl = test.renderedUrl.match(/[^/]+$/)[0];
 
     let body =
-        `#### Description of Behavior\n\n` +
+        `## Description of Behavior\n\n` +
         `<!-- write your description here -->\n\n` +
-        `#### Test Setup\n\n` +
+        `## Test Setup\n\n` +
         `- Test File at Exact Commit: ` +
         `[${shortenedUrl}](https://aria-at.w3.org${test.renderedUrl})\n` +
         `- AT: ` +
@@ -55,8 +57,8 @@ const createGitHubIssueWithTitleAndBody = ({
         `- Browser: ` +
         `${browser.name} (version ${testPlanTarget.browserVersion})\n`;
 
-    if (conflictsFormatted) {
-        body += `\n#### Conflicts With Other Results\n${conflictsFormatted}`;
+    if (conflictMarkdown) {
+        body += `\n${conflictMarkdown}`;
     }
 
     return (
@@ -75,6 +77,7 @@ const TestRun = () => {
     const testRunStateRef = useRef();
     const testRunResultRef = useRef();
     const testRendererSubmitButtonRef = useRef();
+    const conflictMarkdownRef = useRef();
 
     const { runId: testPlanRunId, testPlanReportId } = params;
 
@@ -204,7 +207,7 @@ const TestRun = () => {
     const gitHubIssueLinkWithTitleAndBody = createGitHubIssueWithTitleAndBody({
         test: currentTest,
         testPlanReport,
-        conflictsFormatted
+        conflictMarkdown: conflictMarkdownRef.current
     });
 
     const navigateTests = (previous = false) => {
@@ -642,6 +645,14 @@ const TestRun = () => {
                             </Col>
                         </Row>
                     )}
+                <DisplayNone>
+                    <ConflictingTestResults
+                        testPlanVersion={testPlanVersion}
+                        testPlanReport={testPlanReport}
+                        test={currentTest}
+                        conflictMarkdownRef={conflictMarkdownRef}
+                    />
+                </DisplayNone>
 
                 {/* Modals */}
                 {showStartOverModal && (
@@ -683,7 +694,9 @@ const TestRun = () => {
                 {showReviewConflictsModal && (
                     <ReviewConflictsModal
                         show={showReviewConflictsModal}
+                        testPlanVersion={testPlanVersion}
                         testPlanReport={testPlanReport}
+                        conflictMarkdown={conflictMarkdownRef.current}
                         test={currentTest}
                         key={`ReviewConflictsModal__${currentTestIndex}`}
                         userId={testerId}
