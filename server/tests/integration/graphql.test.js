@@ -323,7 +323,6 @@ describe('graphql', () => {
                                 locationOfData
                             }
                         }
-                        conflictsFormatted
                     }
                     testPlanReport(id: 3) {
                         __typename

@@ -154,8 +154,7 @@ const TestRun = () => {
         testPlanTarget,
         testPlanVersion,
         runnableTests = [],
-        conflicts = [],
-        conflictsFormatted
+        conflicts = []
     } = testPlanReport || {};
 
     // check to ensure an admin that manually went to a test run url doesn't
@@ -590,7 +589,6 @@ const TestRun = () => {
                 <StatusBar
                     key={nextId()}
                     hasConflicts={currentTest.hasConflicts}
-                    conflictsFormatted={conflictsFormatted}
                     handleReviewConflictsButtonClick={
                         handleReviewConflictsButtonClick
                     }

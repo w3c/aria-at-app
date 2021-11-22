@@ -64,7 +64,7 @@ const ConflictingTestResults = ({
             return (
                 <li key={testPlanRun.id}>
                     Tester {testPlanRun.tester.username} recorded output &quot;
-                    {scenarioResult.output}&quot; and marked assertion as&nbsp;
+                    {scenarioResult.output}&quot; and marked assertion as{' '}
                     {assertionResultFormatted}.
                 </li>
             );
