@@ -715,11 +715,6 @@ const graphqlSchema = gql`
         """
         conflicts: [TestPlanReportConflict]!
         """
-        A few lines of text summarizing the conflicts, or null when no conflicts
-        were detected. Markdown formatting is available.
-        """
-        conflictsFormatted(markdown: Boolean): String
-        """
         Finalizing a test plan report requires resolving any conflicts between
         runs. At this stage a single set of results is able to represent all
         results, and is much more convenient to work with.
@@ -842,7 +837,7 @@ const graphqlSchema = gql`
         """
         Get a TestPlanReport by ID.
         """
-        testPlanReport(id: ID): TestPlanReport
+        testPlanReport(id: ID!): TestPlanReport
         # TODO: determine if needed
         # """
         # Get all TestPlanTargets.
@@ -851,7 +846,7 @@ const graphqlSchema = gql`
         """
         Get a TestPlanRun by ID.
         """
-        testPlanRun(id: ID): TestPlanRun
+        testPlanRun(id: ID!): TestPlanRun
         """
         For a given ID, load all the associated data which can be inferred from
         that ID. For more information, take a look at the description of the

@@ -682,10 +682,11 @@ const TestRun = () => {
                 )}
                 {showReviewConflictsModal && (
                     <ReviewConflictsModal
-                        key={`ReviewConflictsModal__${currentTestIndex}`}
                         show={showReviewConflictsModal}
+                        testPlanReport={testPlanReport}
+                        test={currentTest}
+                        key={`ReviewConflictsModal__${currentTestIndex}`}
                         userId={testerId}
-                        conflictsFormatted={conflictsFormatted}
                         issueLink={gitHubIssueLinkWithTitleAndBody}
                         handleClose={() => setShowReviewConflictsModal(false)}
                     />

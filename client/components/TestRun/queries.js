@@ -41,7 +41,6 @@ export const TEST_RUN_PAGE_QUERY = gql`
                         }
                     }
                 }
-                conflictsFormatted(markdown: true)
                 testPlanTarget {
                     title
                     at {
@@ -116,7 +115,6 @@ export const TEST_RUN_PAGE_ANON_QUERY = gql`
                     }
                 }
             }
-            conflictsFormatted(markdown: true)
             testPlanTarget {
                 title
                 at {

@@ -1,15 +1,17 @@
-import React, { Fragment } from 'react';
+import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
 import { Button, Modal } from 'react-bootstrap';
-import { CopyToClipboard } from 'react-copy-to-clipboard';
-import MarkdownRenderer from 'react-markdown-renderer';
+import ConflictingTestResults from '../../ConflictingTestReports';
 
 const ReviewConflictsModal = ({
+    testPlanReport,
+    test,
     show = false,
-    conflictsFormatted = '',
     handleClose = () => {},
     issueLink
 }) => {
+    const copyMarkdownToClipboardRef = useRef();
+
     return (
         <Modal
             show={show}
@@ -28,16 +30,19 @@ const ReviewConflictsModal = ({
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <Fragment>
-                    <MarkdownRenderer markdown={conflictsFormatted} />
-                </Fragment>
+                <ConflictingTestResults
+                    testPlanReportId={testPlanReport.id}
+                    testId={test.id}
+                    copyMarkdownToClipboardRef={copyMarkdownToClipboardRef}
+                />
             </Modal.Body>
             <Modal.Footer>
-                <CopyToClipboard text={conflictsFormatted}>
-                    <Button variant="secondary">
-                        Copy Conflicts to Clipboard
-                    </Button>
-                </CopyToClipboard>
+                <Button
+                    variant="secondary"
+                    onClick={() => copyMarkdownToClipboardRef.current()}
+                >
+                    Copy Conflicts to Clipboard
+                </Button>
                 <Button variant="secondary" target="_blank" href={issueLink}>
                     Raise an Issue for Conflict
                 </Button>
@@ -48,7 +53,12 @@ const ReviewConflictsModal = ({
 
 ReviewConflictsModal.propTypes = {
     show: PropTypes.bool,
-    conflictsFormatted: PropTypes.string,
+    testPlanReport: PropTypes.shape({
+        id: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
+    }).isRequired,
+    test: PropTypes.shape({
+        id: PropTypes.string.isRequired
+    }).isRequired,
     handleClose: PropTypes.func,
     issueLink: PropTypes.string
 };
