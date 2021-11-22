@@ -6,6 +6,7 @@ import TurndownService from 'turndown';
 const Wrapper = styled.div`
     & h2 {
         margin-top: 0;
+        ${props => props.hideHeadline && `display: none;`}
     }
     & ul li {
         list-style: disc;
@@ -13,10 +14,10 @@ const Wrapper = styled.div`
     }
 `;
 
-const ConflictingTestResults = ({
-    testPlanVersion,
+const ReviewConflicts = ({
     testPlanReport,
     test,
+    hideHeadline = false,
     conflictMarkdownRef = null
 }) => {
     const contentRef = useRef();
@@ -118,22 +119,14 @@ const ConflictingTestResults = ({
     };
 
     return (
-        <Wrapper ref={contentRef}>
-            <h2>Conflicting Test Results</h2>
-            <p>
-                The following differences were found in submitted test results
-                for test {test.rowNumber}, &quot;{test.title}&quot;, of the{' '}
-                {testPlanVersion.title} test plan.
-            </p>
+        <Wrapper ref={contentRef} hideHeadline={hideHeadline}>
+            <h2>Review Conflicts for &quot;{test.title}&quot;</h2>
             <ol>{conflicts.map(renderConflict)}</ol>
         </Wrapper>
     );
 };
 
-ConflictingTestResults.propTypes = {
-    testPlanVersion: PropTypes.shape({
-        title: PropTypes.string.isRequired
-    }).isRequired,
+ReviewConflicts.propTypes = {
     testPlanReport: PropTypes.shape({
         id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
         conflicts: PropTypes.arrayOf(
@@ -187,9 +180,10 @@ ConflictingTestResults.propTypes = {
         title: PropTypes.string.isRequired,
         rowNumber: PropTypes.number.isRequired
     }),
+    hideHeadline: PropTypes.bool,
     conflictMarkdownRef: PropTypes.shape({
         current: PropTypes.string
     })
 };
 
-export default ConflictingTestResults;
+export default ReviewConflicts;

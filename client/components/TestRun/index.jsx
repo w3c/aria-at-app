@@ -30,7 +30,7 @@ import {
 } from './queries';
 import { evaluateAuth } from '../../utils/evaluateAuth';
 import './TestRun.css';
-import ConflictingTestResults from '../ConflictingTestReports';
+import ReviewConflicts from '../ReviewConflicts';
 
 const createGitHubIssueWithTitleAndBody = ({
     test,
@@ -644,8 +644,7 @@ const TestRun = () => {
                         </Row>
                     )}
                 <DisplayNone>
-                    <ConflictingTestResults
-                        testPlanVersion={testPlanVersion}
+                    <ReviewConflicts
                         testPlanReport={testPlanReport}
                         test={currentTest}
                         conflictMarkdownRef={conflictMarkdownRef}

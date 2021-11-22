@@ -1,10 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Button, Modal } from 'react-bootstrap';
-import ConflictingTestResults from '../../ConflictingTestReports';
+import styled from '@emotion/styled';
+import ReviewConflicts from '../../ReviewConflicts';
+
+const H2 = styled.h2`
+    margin-top: 0;
+`;
 
 const ReviewConflictsModal = ({
-    testPlanVersion,
     testPlanReport,
     test,
     issueLink,
@@ -25,13 +29,13 @@ const ReviewConflictsModal = ({
             onHide={handleClose}
         >
             <Modal.Header closeButton>
-                <Modal.Title id="review-conflicts-modal-title">
-                    Reviewing Conflicts
+                <Modal.Title as={H2} id="review-conflicts-modal-title">
+                    Review Conflicts for &quot;{test.title}&quot;
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <ConflictingTestResults
-                    testPlanVersion={testPlanVersion}
+                <ReviewConflicts
+                    hideHeadline
                     testPlanReport={testPlanReport}
                     test={test}
                 />
