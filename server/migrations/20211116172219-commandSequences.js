@@ -36,14 +36,16 @@ module.exports = {
                                     commands: content.commands.map(command => {
                                         const keypresses = (() => {
                                             if (command.id.includes(',')) {
-                                                const ids = command.id.split(',');
+                                                const ids = command.id
+                                                    .split(',')
+                                                    .map(id => id.replace(/"/g, '')); // remove quotes
                                                 return ids.map(id => ({
                                                     id,
                                                     keystroke: commandList
                                                         .find(each => each.id === id)
                                                         ?.text || (() => {
                                                             throw new Error(
-                                                                'Not expected to ever fail'
+                                                                `Command '${id}' found which is not in commands.json`
                                                             );
                                                         })()
                                                 }));
