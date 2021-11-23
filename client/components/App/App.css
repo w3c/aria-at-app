@@ -365,35 +365,13 @@ main.home-page.container h1 {
     color: #5c728e;
 }
 
-.hero-illustration {
-    display: none;
+.hero-copy {
+    margin-bottom: 2em;
 }
 
-.hero-section .hero-buttons button {
-    margin-right: 0.5em;
-}
-
-.app-screenshots .container {
-    padding: 0;
-    margin: 0 0 2em 0;
+.hero-video iframe {
     max-width: 100%;
-    border-bottom: 1px solid #d8d8d8;
-}
-
-.app-screenshots .description {
-    padding: 2em;
-}
-
-.app-screenshots .description p {
-    font-weight: 400;
-    font-size: 1.2em;
-    color: #5c728e;
-}
-
-.app-screenshots .description h2 {
-    margin-top: 0;
-    font-size: 2em;
-    font-weight: 700;
+    max-height: calc(calc(100vw - 2em) / 1.75);
 }
 
 .right {
@@ -404,49 +382,51 @@ img {
     max-width: 100%;
 }
 
-.get-involved {
+.improvements {
     background-color: #f6fbfe;
     padding: 1em;
 }
 
-.get-involved-container {
+.improvements-container {
     background: none;
 }
 
-.get-involved-container h2 {
+.improvements-container h2 {
     margin: 0 0 1em 0;
     text-align: center;
     font-weight: bold;
 }
 
-.get-involved .resources {
-    display: grid;
-    grid-template-columns: 48.5% 48.5%;
-    column-gap: 3%;
-}
-
-.get-involved .resources li {
+.improvement-list li {
     background: white;
     padding: 2em 1em;
     margin-bottom: 1em;
     box-shadow: 0px 6px 11px 0px rgba(0, 0, 0, 0.15);
     border-radius: 5px;
-    text-align: center;
+    padding: 40px;
 }
 
-.get-involved .resources img {
+.improvement-list img {
     width: 100px;
     height: 100px;
     display: block;
-    margin: auto;
+    margin: 0 auto 40px auto;
 }
 
-.get-involved .resources a {
-    color: black;
-    margin-top: 1em;
-    display: block;
-    font-size: 1.1em;
-    line-height: 1.2;
+.get-involved {
+    padding: 1em;
+    min-height: 40vh;
+}
+
+.get-involved h2 {
+    text-align: center;
+    font-weight: bold;
+    margin: 1em 0 1.5em;
+}
+
+.get-involved .container {
+    max-width: 660px;
+    padding-bottom: 2em;
 }
 
 @media (min-width: 700px) {
@@ -457,42 +437,19 @@ img {
     main.container,
     .test-run-container,
     .hero-section,
-    .get-involved {
+    .get-involved,
+    .improvements {
         padding: 3rem;
     }
 
-    .get-involved .resources {
-        grid-template-columns: 32.5% 32.5% 32.5%;
-        column-gap: 1.25%;
+    .get-involved h2 {
+        margin: 1em 0 1.5em;
     }
 }
 
 @media (min-width: 800px) {
-    .app-screenshots .description,
-    .app-screenshots .screenshot {
-        width: 50%;
-        display: inline-block;
-        vertical-align: top;
-    }
-
     .hero-section {
         padding: 5rem;
-    }
-
-    .app-screenshots {
-        margin-top: 3em;
-        padding-top: 3em;
-    }
-    .app-screenshots .container {
-        margin-bottom: 5em;
-    }
-
-    .app-screenshots .container .screenshot {
-        display: inline-block;
-    }
-
-    .app-screenshots .container img {
-        max-width: 100%;
     }
 }
 
@@ -503,46 +460,55 @@ img {
 
     main.container,
     .test-run-container,
-    .get-involved {
+    .get-involved,
+    .improvements {
         padding: 5rem;
     }
 
-    .get-involved-container h2 {
+    .improvements-container h2 {
         font-size: 1.75em;
-    }
-
-    .get-involved .resources {
-        grid-template-columns: 19% 19% 19% 19% 19%;
-        column-gap: 1.25%;
-    }
-    .app-screenshots .container {
-        border: none;
-    }
-    .app-screenshots .description {
-        padding: 5em 2em 2em 5em;
     }
 }
 
-@media (min-width: 1325px) {
-    .hero-section {
-        padding: 0 5rem;
+@media (min-width: 768px) {
+    .improvement-list {
         display: grid;
-        grid-template-columns: 50% 50%;
+        grid-template-columns: 48.5% 48.5%;
+        column-gap: 3%;
+    }
+}
+
+@media (min-width: 1100px) {
+    h1 {
+        width: 45%;
+    }
+    .hero-section {
+        padding: 5rem;
     }
 
     .hero-copy {
-        padding: 5rem 0;
+        margin-bottom: 0;
     }
 
-    .hero-illustration {
-        display: block;
-        align-self: end;
+    .hero-copy-and-video {
+        display: grid;
+        grid-template-columns: repeat(2, calc(50% - 20px));
+        column-gap: 40px;
     }
 
-    .app-screenshots .description {
-        padding-left: 10em;
+    .hero-video iframe {
+        /* sorry for the magic number */
+        max-height: calc(calc(44vw - 2em) / 1.75);
     }
 }
+
+@media (min-width: 1250px) {
+    .improvement-list {
+        grid-template-columns: repeat(4, 1fr);
+        column-gap: 1.25%;
+    }
+}
+
 .signed-in-wrapper {
     display: flex;
     align-items: center;
