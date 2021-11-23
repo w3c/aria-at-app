@@ -71,7 +71,7 @@ const deepCustomMerge = (
             }
             return [...leftDifference, ...intersection, ...rightDifference];
         }
-        return rightPart ?? leftPart;
+        return rightPart;
     };
 
     return recurse(left, right);
