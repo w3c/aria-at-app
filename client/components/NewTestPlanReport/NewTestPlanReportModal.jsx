@@ -209,7 +209,7 @@ const NewTestPlanReportModal = ({
                         dropdowns: [
                             {
                                 id: 'select-test-plan',
-                                label: 'Select Test Plan',
+                                label: 'Test Plan',
                                 options: filteredTestPlanVersions,
                                 renderOption: item => (
                                     <option
@@ -247,7 +247,7 @@ const NewTestPlanReportModal = ({
                             },
                             {
                                 id: 'select-test-plan-version',
-                                label: 'Select Version',
+                                label: 'Test Plan Version',
                                 isDisabled: () => !selectedTestPlan,
                                 options: testPlanVersions,
                                 renderOption: item => (
