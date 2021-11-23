@@ -30,7 +30,11 @@ const populateTestDatabase = async () => {
             'completeAndFailingDueToIncorrectAssertions',
             'completeAndFailingDueToNoOutputAssertions'
         ],
-        ['completeAndPassing', 'completeAndFailingDueToUnexpectedBehaviors']
+        ['completeAndPassing', 'completeAndFailingDueToUnexpectedBehaviors'],
+        [
+            'completeAndFailingDueToNoOutputAssertions',
+            'completeAndFailingDueToMultiple'
+        ]
     ];
 
     await populateFakeTestResults(2, [
@@ -40,6 +44,7 @@ const populateTestDatabase = async () => {
         conflicts[0][0],
         conflicts[1][0],
         conflicts[2][0],
+        conflicts[3][0],
         'incompleteAndPassing'
     ]);
 
@@ -50,6 +55,7 @@ const populateTestDatabase = async () => {
         conflicts[0][1],
         conflicts[1][1],
         conflicts[2][1],
+        conflicts[3][1],
         'incompleteAndFailingDueToUnexpectedBehaviors',
         'completeAndPassing',
         'completeAndPassing',

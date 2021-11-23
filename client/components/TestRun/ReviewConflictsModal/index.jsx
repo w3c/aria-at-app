@@ -1,14 +1,20 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { Button, Modal } from 'react-bootstrap';
-import { CopyToClipboard } from 'react-copy-to-clipboard';
-import MarkdownRenderer from 'react-markdown-renderer';
+import styled from '@emotion/styled';
+import ReviewConflicts from '../../ReviewConflicts';
+
+const H2 = styled.h2`
+    margin-top: 0;
+`;
 
 const ReviewConflictsModal = ({
+    testPlanReport,
+    test,
+    issueLink,
+    conflictMarkdown,
     show = false,
-    conflictsFormatted = '',
-    handleClose = () => {},
-    issueLink
+    handleClose = () => {}
 }) => {
     return (
         <Modal
@@ -23,21 +29,26 @@ const ReviewConflictsModal = ({
             onHide={handleClose}
         >
             <Modal.Header closeButton>
-                <Modal.Title id="review-conflicts-modal-title">
-                    Reviewing Conflicts
+                <Modal.Title as={H2} id="review-conflicts-modal-title">
+                    Review Conflicts for &quot;{test.title}&quot;
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <Fragment>
-                    <MarkdownRenderer markdown={conflictsFormatted} />
-                </Fragment>
+                <ReviewConflicts
+                    hideHeadline
+                    testPlanReport={testPlanReport}
+                    test={test}
+                />
             </Modal.Body>
             <Modal.Footer>
-                <CopyToClipboard text={conflictsFormatted}>
-                    <Button variant="secondary">
-                        Copy Conflicts to Clipboard
-                    </Button>
-                </CopyToClipboard>
+                <Button
+                    variant="secondary"
+                    onClick={() =>
+                        navigator.clipboard.writeText(conflictMarkdown)
+                    }
+                >
+                    Copy Conflicts to Clipboard
+                </Button>
                 <Button variant="secondary" target="_blank" href={issueLink}>
                     Raise an Issue for Conflict
                 </Button>
@@ -48,9 +59,12 @@ const ReviewConflictsModal = ({
 
 ReviewConflictsModal.propTypes = {
     show: PropTypes.bool,
-    conflictsFormatted: PropTypes.string,
+    testPlanVersion: PropTypes.object.isRequired,
+    testPlanReport: PropTypes.object.isRequired,
+    test: PropTypes.object.isRequired,
     handleClose: PropTypes.func,
-    issueLink: PropTypes.string
+    conflictMarkdown: PropTypes.string,
+    issueLink: PropTypes.string.isRequired
 };
 
 export default ReviewConflictsModal;

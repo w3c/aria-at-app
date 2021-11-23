@@ -26,9 +26,10 @@ const conflictsResolver = async testPlanReport => {
         const conflictDetected = ({ i, j }) => {
             if (j != null) {
                 const oneScenarioResult = testResults[0].scenarioResults[i];
-                const { assertionId } = oneScenarioResult.assertionResults[j];
+                const { scenarioId, assertionResults } = oneScenarioResult;
+                const { assertionId } = assertionResults[j];
                 conflicts.push({
-                    source: { assertionId },
+                    source: { scenarioId, assertionId },
                     conflictingResults: testResults.map(testResult => ({
                         assertionResultId:
                             testResult.scenarioResults[i].assertionResults[j].id
@@ -55,7 +56,7 @@ const conflictsResolver = async testPlanReport => {
                 ]);
             });
             if (!allEqual(scenarioResultComparisons)) {
-                return conflictDetected({ i });
+                conflictDetected({ i });
             }
 
             for (
@@ -70,7 +71,7 @@ const conflictsResolver = async testPlanReport => {
                     ])
                 );
                 if (!allEqual(assertionResultComparisons)) {
-                    return conflictDetected({ i, j });
+                    conflictDetected({ i, j });
                 }
             }
         }

@@ -38,10 +38,40 @@ export const TEST_RUN_PAGE_QUERY = gql`
                     source {
                         test {
                             id
+                            title
+                            rowNumber
+                        }
+                        scenario {
+                            id
+                            commands {
+                                text
+                            }
+                        }
+                        assertion {
+                            id
+                            text
+                        }
+                    }
+                    conflictingResults {
+                        testPlanRun {
+                            id
+                            tester {
+                                username
+                            }
+                        }
+                        scenarioResult {
+                            output
+                            unexpectedBehaviors {
+                                text
+                                otherUnexpectedBehaviorText
+                            }
+                        }
+                        assertionResult {
+                            passed
+                            failedReason
                         }
                     }
                 }
-                conflictsFormatted(markdown: true)
                 testPlanTarget {
                     title
                     at {
@@ -113,10 +143,40 @@ export const TEST_RUN_PAGE_ANON_QUERY = gql`
                 source {
                     test {
                         id
+                        title
+                        rowNumber
+                    }
+                    scenario {
+                        id
+                        commands {
+                            text
+                        }
+                    }
+                    assertion {
+                        id
+                        text
+                    }
+                }
+                conflictingResults {
+                    testPlanRun {
+                        id
+                        tester {
+                            username
+                        }
+                    }
+                    scenarioResult {
+                        output
+                        unexpectedBehaviors {
+                            text
+                            otherUnexpectedBehaviorText
+                        }
+                    }
+                    assertionResult {
+                        passed
+                        failedReason
                     }
                 }
             }
-            conflictsFormatted(markdown: true)
             testPlanTarget {
                 title
                 at {

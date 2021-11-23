@@ -47,6 +47,14 @@ const populateFakeTestResults = async (testPlanRunId, fakeTestResultTypes) => {
                     submit: true
                 });
                 break;
+            case 'completeAndFailingDueToMultiple':
+                await getFake({
+                    testPlanRunId,
+                    index,
+                    fakeTestResultType: 'failingDueToMultiple',
+                    submit: true
+                });
+                break;
             case 'incompleteAndEmpty':
                 await getFake({
                     testPlanRunId,
@@ -87,6 +95,14 @@ const populateFakeTestResults = async (testPlanRunId, fakeTestResultTypes) => {
                     submit: false
                 });
                 break;
+            case 'incompleteAndFailingDueToMultiple':
+                await getFake({
+                    testPlanRunId,
+                    index,
+                    fakeTestResultType: 'failingDueToMultiple',
+                    submit: false
+                });
+                break;
             default:
                 throw new Error(
                     `Invalid fake test result type '${fakeTestResultType}'`
@@ -103,8 +119,6 @@ const getFake = async ({
     fakeTestResultType,
     submit
 }) => {
-    if (fakeTestResultType === null) return;
-
     const {
         populateData: { testPlanReport }
     } = await query(gql`
@@ -179,6 +193,18 @@ const getFake = async ({
                 'NO_OUTPUT';
             break;
         case 'failingDueToUnexpectedBehaviors':
+            testResult.scenarioResults[0].unexpectedBehaviors.push({
+                id: 'OTHER',
+                otherUnexpectedBehaviorText: 'Seeded other unexpected behavior'
+            });
+            break;
+        case 'failingDueToMultiple':
+            testResult.scenarioResults[0].assertionResults[0].passed = false;
+            testResult.scenarioResults[0].assertionResults[0].failedReason =
+                'INCORRECT_OUTPUT';
+            testResult.scenarioResults[0].unexpectedBehaviors.push({
+                id: 'EXCESSIVELY_VERBOSE'
+            });
             testResult.scenarioResults[0].unexpectedBehaviors.push({
                 id: 'OTHER',
                 otherUnexpectedBehaviorText: 'Seeded other unexpected behavior'
