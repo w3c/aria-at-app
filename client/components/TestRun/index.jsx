@@ -110,6 +110,7 @@ const TestRun = () => {
         pageReadyRef.current = false;
         testRunStateRef.current = null;
         testRunResultRef.current = null;
+        conflictMarkdownRef.current = null;
         setIsRendererReady(false);
         setIsTestSubmitClicked(false);
 
