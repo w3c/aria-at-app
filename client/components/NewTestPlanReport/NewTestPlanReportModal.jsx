@@ -6,6 +6,7 @@ import {
     ADD_TEST_QUEUE_MUTATION,
     POPULATE_ADD_TEST_PLAN_TO_QUEUE_MODAL_QUERY
 } from '../TestQueue/queries';
+import './NewTestPlanReportModal.css';
 
 const NewTestPlanReportModal = ({
     show = false,
