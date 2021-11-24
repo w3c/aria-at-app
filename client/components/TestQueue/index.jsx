@@ -16,6 +16,8 @@ import { TEST_QUEUE_PAGE_QUERY } from './queries';
 import { evaluateAuth } from '../../utils/evaluateAuth';
 import './TestQueue.css';
 
+const ADD_TEST_PLAN_DIALOG_TRIGGER_ID = 'add-test-plan-to-queue-dialog-trigger';
+
 const TestQueue = () => {
     const { loading, data, refetch } = useQuery(TEST_QUEUE_PAGE_QUERY);
 
@@ -41,6 +43,16 @@ const TestQueue = () => {
     const auth = evaluateAuth(data && data.me ? data.me : {});
     const { id, isAdmin } = auth;
     const isSignedIn = !!id;
+
+    useEffect(() => {
+        if (!isShowingAddToQueueModal) {
+            const trigger = document.querySelector(
+                `#${ADD_TEST_PLAN_DIALOG_TRIGGER_ID}`
+            );
+
+            trigger && trigger.focus();
+        }
+    }, [isShowingAddToQueueModal]);
 
     useEffect(() => {
         if (data) {
@@ -225,6 +237,7 @@ const TestQueue = () => {
                 {isAdmin && (
                     <NewTestPlanReportContainer
                         handleOpenDialog={() => setAddToQueueModal(true)}
+                        openDialogTriggerId={ADD_TEST_PLAN_DIALOG_TRIGGER_ID}
                     />
                 )}
 
