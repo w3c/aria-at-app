@@ -8,6 +8,12 @@ import {
 } from '../TestQueue/queries';
 import './NewTestPlanReportModal.css';
 
+const handleOpen = function() {
+    document
+        .querySelector('[role="dialog"].modal select:first-of-type')
+        .focus();
+};
+
 const NewTestPlanReportModal = ({
     show = false,
     handleClose = () => {},
@@ -161,6 +167,7 @@ const NewTestPlanReportModal = ({
         <Modal
             show={show}
             onHide={handleClose}
+            onShow={handleOpen}
             aria-labelledby="add-test-plan-to-queue-modal"
         >
             <Modal.Header closeButton>
