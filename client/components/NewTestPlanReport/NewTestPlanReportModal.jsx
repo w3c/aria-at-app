@@ -171,7 +171,7 @@ const NewTestPlanReportModal = ({
             aria-labelledby="add-test-plan-to-queue-modal"
         >
             <Modal.Header closeButton>
-                <Modal.Title as="h1">
+                <Modal.Title as="h1" id="add-test-plan-to-queue-modal">
                     Add a Test Plan to the Test Queue
                 </Modal.Title>
             </Modal.Header>
