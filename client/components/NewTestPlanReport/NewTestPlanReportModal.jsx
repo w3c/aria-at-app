@@ -140,7 +140,7 @@ const NewTestPlanReportModal = ({
 
     const dropdownsRow = ({ heading, dropdowns }) => {
         return (
-            <fieldset className="add-test-plan-queue-modal-row">
+            <fieldset>
                 <legend>
                     <h2>{heading}</h2>
                 </legend>
