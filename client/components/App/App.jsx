@@ -95,14 +95,6 @@ const App = () => {
                                         </Nav.Link>
                                     </li>
                                     <li className="signed-in-wrapper">
-                                        <Nav.Link
-                                            as={Link}
-                                            to="/"
-                                            onClick={signOut}
-                                            aria-describedby="signed-in"
-                                        >
-                                            Sign out
-                                        </Nav.Link>
                                         <div
                                             className="signed-in"
                                             id="signed-in"
@@ -112,6 +104,14 @@ const App = () => {
                                             />
                                             Signed in as <b>{username}</b>
                                         </div>
+                                        <Nav.Link
+                                            as={Link}
+                                            to="/"
+                                            onClick={signOut}
+                                            aria-describedby="signed-in"
+                                        >
+                                            Sign out
+                                        </Nav.Link>
                                     </li>
                                 </>
                             )}
