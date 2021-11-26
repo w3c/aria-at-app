@@ -36,10 +36,13 @@ const App = () => {
     return (
         <ScrollFixer>
             <Container fluid>
+                <h2 id="main-menu-heading" className="sr-only">
+                    Main Menu
+                </h2>
                 <Navbar
                     bg="light"
                     expand="lg"
-                    aria-label="Main Menu"
+                    aria-labelledby="main-menu-heading"
                     expanded={isNavbarExpanded}
                     onToggle={() => setIsNavbarExpanded(previous => !previous)}
                 >
