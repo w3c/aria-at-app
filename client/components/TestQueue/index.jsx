@@ -197,7 +197,7 @@ const TestQueue = () => {
         return (
             <Container id="main" as="main" tabIndex="-1">
                 <Helmet>
-                    <title>{noTestPlansMessage} | ARIA-AT</title>
+                    <title>Test Queue: No Test Plans Available | ARIA-AT</title>
                 </Helmet>
                 <h2 data-testid="test-queue-no-test-plans-h2">
                     {noTestPlansMessage}
@@ -242,7 +242,7 @@ const TestQueue = () => {
     return (
         <Container id="main" as="main" tabIndex="-1">
             <Helmet>
-                <title>{`Test Queue | ARIA-AT`}</title>
+                <title>Test Queue | ARIA-AT</title>
             </Helmet>
             <h1>Test Queue</h1>
             <p data-testid="test-queue-instructions">
