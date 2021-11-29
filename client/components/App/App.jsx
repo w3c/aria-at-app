@@ -36,9 +36,6 @@ const App = () => {
     return (
         <ScrollFixer>
             <Container fluid>
-                <h2 id="main-menu-heading" className="sr-only">
-                    Main Navigation
-                </h2>
                 <Navbar
                     bg="light"
                     expand="lg"
@@ -46,6 +43,9 @@ const App = () => {
                     expanded={isNavbarExpanded}
                     onToggle={() => setIsNavbarExpanded(previous => !previous)}
                 >
+                    <h2 id="main-menu-heading" className="sr-only">
+                        Main Navigation
+                    </h2>
                     <Navbar.Brand
                         className="logo"
                         as={Link}
