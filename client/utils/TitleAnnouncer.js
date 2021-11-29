@@ -10,18 +10,13 @@ const TitleAnnouncer = () => {
     }
 
     const [title, setTitle] = React.useState('');
-    const titleRef = React.createRef();
     const onHelmetChange = ({ title }) => setTitle(title);
-
-    React.useEffect(() => {
-        if (titleRef.current) titleRef.current.focus();
-    }, [location.pathname]);
 
     return (
         <>
-            <p tabIndex={-1} ref={titleRef} className="sr-only">
+            <span role="alert" className="sr-only">
                 {title}
-            </p>
+            </span>
 
             <Helmet onChangeClientState={onHelmetChange} />
         </>

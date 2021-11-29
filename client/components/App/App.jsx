@@ -36,7 +36,6 @@ const App = () => {
 
     return (
         <ScrollFixer>
-            <TitleAnnouncer />
             <Container fluid>
                 <Navbar
                     bg="light"
@@ -137,6 +136,7 @@ const App = () => {
             <Container fluid>
                 <div>{renderRoutes(routes)}</div>
             </Container>
+            <TitleAnnouncer />
         </ScrollFixer>
     );
 };
