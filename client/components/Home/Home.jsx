@@ -5,8 +5,8 @@ import { Container } from 'react-bootstrap';
 import iconJoinCommunity from '../../assets/join-community.jpg';
 import iconWriteTests from '../../assets/write-tests.jpg';
 import iconReviewTests from '../../assets/review-tests.jpg';
-// Icons which are no longer used
-// import iconReviewAssertions from '../../assets/review-assertion.jpg';
+import iconReviewAssertions from '../../assets/review-assertion.jpg';
+// Icon which is no longer used
 // import iconFixIssue from '../../assets/fix-issue.jpg';
 
 const Home = () => {
@@ -39,6 +39,16 @@ const Home = () => {
                             Assistive technology users deserve equal inclusion.
                             The ARIA-AT project aims to empower equal inclusion
                             by realizing interoperability for AT users.
+                        </p>
+                        <p>
+                            <a
+                                className="hero-link"
+                                href="https://github.com/w3c/aria-at/wiki/How-Gaps-in-Assistive-Technology-Interoperability-Hinder-Inclusion"
+                            >
+                                Read more about how the AT interoperability gap
+                                hinders inclusion on the web for people with
+                                disabilities.
+                            </a>
                         </p>
                     </div>
                     <div className="hero-video">
@@ -99,7 +109,7 @@ const Home = () => {
                             </p>
                         </li>
                         <li>
-                            <img src={iconJoinCommunity} alt="" />
+                            <img src={iconReviewAssertions} alt="" />
                             <h3>Enabling scalable automated testing</h3>
                             <p>
                                 In order to regularly collect test results at
@@ -110,8 +120,11 @@ const Home = () => {
                                 <a href="https://github.com/bocoup/aria-at-automation">
                                     explainer for a draft AT automation standard
                                 </a>{' '}
-                                and explore the code repository where
-                                experimental drivers are being developed.
+                                and{' '}
+                                <a href="https://github.com/bocoup/at-automation-experiment">
+                                    explore the code repository
+                                </a>{' '}
+                                where experimental drivers are being developed.
                             </p>
                         </li>
                     </ul>

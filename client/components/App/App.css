@@ -374,6 +374,16 @@ main.home-page.container h1 {
     max-height: calc(calc(100vw - 2em) / 1.75);
 }
 
+.hero-link {
+    color: #007bff;
+    text-decoration: underline;
+}
+.hero-link:hover,
+.hero-link:active,
+.hero-link:focus {
+    color: #0062cc
+}
+
 .right {
     float: right;
 }
