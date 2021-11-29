@@ -97,12 +97,13 @@ main.container-fluid .row {
 nav .logo.navbar-brand {
     font-weight: 700;
     font-size: 1.6em;
-    /* The logo is focused on every page navigation, making this particular
-    outline quite distracting. It looks like part of the logo design.
-    Furthermore, the top left of the page is where focus is implicitly
-    expected to be, so the outline is not really adding anything. And
-    Browsers are not consistently showing the outline anyway. */
-    outline: none;
+    outline: 0;
+    border-bottom: 2px solid transparent;
+}
+
+nav .logo.navbar-brand:focus,
+nav .logo.navbar-brand:hover {
+    border-bottom: 2px solid black;
 }
 
 a {
