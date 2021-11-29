@@ -375,13 +375,13 @@ main.home-page.container h1 {
 }
 
 .hero-link {
-    color: #007bff;
+    color: #0072ed;
     text-decoration: underline;
 }
 .hero-link:hover,
 .hero-link:active,
 .hero-link:focus {
-    color: #0062cc
+    color: #0058b6;
 }
 
 .right {
