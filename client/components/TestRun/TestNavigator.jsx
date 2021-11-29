@@ -39,10 +39,10 @@ const TestNavigator = ({
                         <FontAwesomeIcon icon={faAlignLeft} />
                     </button>
                 </div>
-                {show && <h2 id="test-navigator-heading">Test Navigation</h2>}
             </div>
             {show && (
                 <nav aria-label="Test">
+                    <h2 id="test-navigator-heading">Test Navigation</h2>
                     <ol
                         aria-labelledby="test-navigator-heading"
                         className="test-navigator-list"
