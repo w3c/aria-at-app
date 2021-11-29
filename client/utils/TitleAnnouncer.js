@@ -14,7 +14,7 @@ const TitleAnnouncer = () => {
 
     return (
         <>
-            <span role="alert" className="sr-only">
+            <span aria-live="assertive" aria-atomic="true" className="sr-only">
                 {title}
             </span>
 
