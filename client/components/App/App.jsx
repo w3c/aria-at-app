@@ -37,12 +37,12 @@ const App = () => {
         <ScrollFixer>
             <Container fluid>
                 <h2 id="main-menu-heading" className="sr-only">
-                    Main Menu
+                    Main Navigation
                 </h2>
                 <Navbar
                     bg="light"
                     expand="lg"
-                    aria-labelledby="main-menu-heading"
+                    aria-label="Main"
                     expanded={isNavbarExpanded}
                     onToggle={() => setIsNavbarExpanded(previous => !previous)}
                 >
@@ -60,7 +60,7 @@ const App = () => {
                         id="basic-navbar-nav"
                         className="justify-content-end"
                     >
-                        <ul>
+                        <ul aria-labelledby="main-menu-heading">
                             <li>
                                 <Nav.Link
                                     as={Link}
