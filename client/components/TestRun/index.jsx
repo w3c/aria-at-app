@@ -480,7 +480,7 @@ const TestRun = () => {
         const isFirstTest = index === 0;
         const isLastTest = currentTest.seq === tests.length;
 
-        let primaryButtons = []; // These are the list of buttons that will appear below the tests
+        let primaryButtons; // These are the list of buttons that will appear below the tests
         let forwardButtons = []; // These are buttons that navigate to next tests and continue
 
         const nextButton = (
@@ -805,8 +805,7 @@ const TestRun = () => {
             <Helmet>
                 <title>
                     {hasTestsToRun
-                        ? `${currentTest.title} for ${testPlanTarget.title} ` +
-                          `| ARIA-AT`
+                        ? `Testing task: ${currentTest.title} (${testPlanTarget.title}) | ARIA-AT`
                         : 'No tests for this AT and Browser | ARIA-AT'}
                 </title>
             </Helmet>
