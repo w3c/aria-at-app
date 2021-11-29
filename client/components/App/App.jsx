@@ -43,18 +43,18 @@ const App = () => {
                     expanded={isNavbarExpanded}
                     onToggle={() => setIsNavbarExpanded(previous => !previous)}
                 >
-                    <h2 id="main-menu-heading" className="sr-only">
-                        Main Navigation
-                    </h2>
+                    <SkipLink />
                     <Navbar.Brand
                         className="logo"
                         as={Link}
                         to="/"
                         aria-current={location.pathname === '/'}
                     >
-                        ARIA-AT
+                        Home
                     </Navbar.Brand>
-                    <SkipLink />
+                    <h2 id="main-menu-heading" className="sr-only">
+                        Main Navigation
+                    </h2>
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Navbar.Collapse
                         id="basic-navbar-nav"
