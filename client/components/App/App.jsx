@@ -12,6 +12,7 @@ import { ME_QUERY } from './queries';
 import useSigninUrl from './useSigninUrl';
 import SkipLink from '../SkipLink';
 import './App.css';
+import TitleAnnouncer from '@client/utils/TitleAnnouncer';
 
 const App = () => {
     const location = useLocation();
@@ -35,6 +36,7 @@ const App = () => {
 
     return (
         <ScrollFixer>
+            <TitleAnnouncer />
             <Container fluid>
                 <Navbar
                     bg="light"

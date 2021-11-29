@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import { useLayoutEffect } from 'react';
-import { useLocation } from 'react-router';
+import { useLocation } from 'react-router-dom';
 
 /**
  * Fixes scroll issues inherent in single page apps such as jumping the scroll
@@ -12,14 +12,14 @@ const ScrollFixer = ({ children }) => {
     const location = useLocation();
 
     useLayoutEffect(() => {
+        if (!location.hash) {
+            return;
+        }
+
         const scrollTop = () => {
             window.scroll(0, 0);
-            // When switching pages, the focus should jump to the top. Otherwise
-            // screen readers' focus might be lingering in a nonsensical
-            // location partly down the page.
-            document.querySelector('a').focus();
         };
-        if (!location.hash) return scrollTop();
+
         (async () => {
             // The point at which the window jumping down the page would become
             // disorienting. This must include time for the page's API requests
