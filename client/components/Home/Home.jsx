@@ -82,7 +82,7 @@ const Home = () => {
                                 and{' '}
                                 <a href="https://w3c.github.io/aria-at/build/">
                                     view the draft test plans
-                                </a>
+                                </a>{' '}
                                 preview.
                             </p>
                         </li>
