@@ -369,6 +369,11 @@ main.home-page.container h1 {
     margin-bottom: 2em;
 }
 
+.hero-video {
+    display: flex;
+    justify-content: center;
+}
+
 .hero-video iframe {
     max-width: 100%;
     max-height: calc(calc(100vw - 2em) / 1.75);

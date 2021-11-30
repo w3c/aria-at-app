@@ -53,7 +53,7 @@ const Home = () => {
                     </div>
                     <div className="hero-video">
                         <iframe
-                            src="https://player.vimeo.com/video/651279608?h=45aefd646f"
+                            src="https://player.vimeo.com/video/651279608?h=45aefd646f&byline=false&dnt=true&portrait=false"
                             width="640"
                             height="360"
                             frameBorder="0"
@@ -81,9 +81,9 @@ const Home = () => {
                                 </a>{' '}
                                 and{' '}
                                 <a href="https://w3c.github.io/aria-at/build/">
-                                    view draft test plans
+                                    view the draft test plans
                                 </a>
-                                .
+                                preview.
                             </p>
                         </li>
                         <li>
@@ -93,7 +93,7 @@ const Home = () => {
                                 This website enables us to manage test data, run
                                 tests with multiple testers, review results, and
                                 publish reports. View our progress on the{' '}
-                                <Link to="/test-queue">test queue page.</Link>
+                                <Link to="/test-queue">test queue</Link> page.
                             </p>
                         </li>
                         <li>
@@ -105,7 +105,7 @@ const Home = () => {
                                 and the process of building consensus around the
                                 plan begins. View reports generated from
                                 candidate test plans on the{' '}
-                                <Link to="/reports">reports page</Link>.
+                                <Link to="/reports">reports</Link> page.
                             </p>
                         </li>
                         <li>
