@@ -1,180 +1,170 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useQuery } from '@apollo/client';
 import { Helmet } from 'react-helmet';
-import { Button, Container } from 'react-bootstrap';
-import testConfigurationScreenshot from '../../assets/home-page/config-test.jpg';
-import testQueueScreenshot from '../../assets/home-page/test-queue.jpg';
-import testViewScreenshot from '../../assets/home-page/test-run.jpg';
-import testReviewScreenshot from '../../assets/home-page/test-report.jpg';
-import iconReviewAssertions from '../../assets/review-assertion.jpg';
+import { Container } from 'react-bootstrap';
 import iconJoinCommunity from '../../assets/join-community.jpg';
 import iconWriteTests from '../../assets/write-tests.jpg';
 import iconReviewTests from '../../assets/review-tests.jpg';
-import iconFixIssue from '../../assets/fix-issue.jpg';
-import heroImage from '../../assets/hero-illustration.png';
-import useSigninUrl from '../App/useSigninUrl';
-import { ME_QUERY } from '../App/queries';
+import iconReviewAssertions from '../../assets/review-assertion.jpg';
+// Icon which is no longer used
+// import iconFixIssue from '../../assets/fix-issue.jpg';
 
 const Home = () => {
-    const { loading, data } = useQuery(ME_QUERY);
-    const signinUrl = useSigninUrl();
-
-    if (loading) return null;
-
-    const isSignedIn = !!(data && data.me && data.me.username);
-
     return (
         <Container className="home-page" id="main" as="main" tabIndex="-1">
             <Helmet>
                 <title>Home | ARIA-AT</title>
             </Helmet>
-            <section className="hero-section about">
-                <div className="hero-copy">
-                    <h1>
-                        Assistive technologies should render the web
-                        consistently for all users
-                    </h1>
-                    <p>
-                        ARIA-AT is an interoperability testing project for
-                        assistive technologies like screen readers. The tests
-                        are based on design patterns from the W3C ARIA Authoring
-                        Practices Guide. By specifying the expected output given
-                        a specific user interaction, we can evaluate how
-                        consistently different ATs render user interface code.
-                    </p>
-                    <p>
-                        This app collects test data, hosts the latest test
-                        results reports, and provides an interface for manual
-                        testers to record results.
-                    </p>
-                    <div className="hero-buttons">
-                        {isSignedIn ? (
-                            <></>
-                        ) : (
-                            <Button
-                                variant="primary"
-                                onClick={() =>
-                                    (window.location.href = signinUrl)
-                                }
+            <section className="hero-section">
+                <h1>
+                    Enabling Interoperability for Assistive Technology Users
+                </h1>
+                <div className="hero-copy-and-video">
+                    <div className="hero-copy">
+                        <p>
+                            Today, different screen readers often yield
+                            conflicting experiences when presenting a web page,
+                            disadvantaging or even excluding some users. These
+                            differences also create accessibility design and
+                            test barriers for web developers.
+                        </p>
+                        <p>
+                            On the other hand, browsers are interoperable for
+                            people who do not use assistive technologies. That
+                            is, different browsers provide equivalent
+                            experiences. Browser interoperability facilitates an
+                            inclusive web.
+                        </p>
+                        <p>
+                            Assistive technology users deserve equal inclusion.
+                            The ARIA-AT project aims to empower equal inclusion
+                            by realizing interoperability for AT users.
+                        </p>
+                        <p>
+                            <a
+                                className="hero-link"
+                                href="https://github.com/w3c/aria-at/wiki/How-Gaps-in-Assistive-Technology-Interoperability-Hinder-Inclusion"
                             >
-                                Sign Up to Run Tests
-                            </Button>
-                        )}
-                        <Link className="btn-secondary btn" to="/reports">
-                            Browse Test Reports
-                        </Link>
+                                Read more about how the AT interoperability gap
+                                hinders inclusion on the web for people with
+                                disabilities.
+                            </a>
+                        </p>
+                    </div>
+                    <div className="hero-video">
+                        <iframe
+                            src="https://player.vimeo.com/video/651279608?h=45aefd646f&byline=false&dnt=true&portrait=false"
+                            width="640"
+                            height="360"
+                            frameBorder="0"
+                            allow="autoplay; fullscreen; picture-in-picture"
+                            allowFullScreen
+                            title="ARIA-AT Video"
+                        />
                     </div>
                 </div>
-                <div className="hero-illustration">
-                    <img
-                        src={heroImage}
-                        alt="An illustration of a computer where a test is being performed"
-                    />
-                </div>
             </section>
-            <section className="get-involved">
-                <div className="get-involved-container">
-                    <h2>Get Involved</h2>
-                    <ul className="resources">
-                        <li>
-                            <img src={iconJoinCommunity} alt="" />
-                            <a href="https://www.w3.org/community/aria-at/">
-                                Join the community group
-                            </a>
-                        </li>
+            <section className="improvements">
+                <div className="improvements-container">
+                    <h2>How are we improving interoperability?</h2>
+                    <ul className="improvement-list">
                         <li>
                             <img src={iconWriteTests} alt="" />
-                            <a href="https://github.com/w3c/aria-at/wiki/How-to-contribute-tests">
-                                Help write more tests
-                            </a>
-                        </li>
-                        <li>
-                            <img src={iconReviewAssertions} alt="" />
-                            <a href="https://w3c.github.io/aria-at/">
-                                Review existing test plans
-                            </a>
+                            <h3>Proposing expectations for ATs</h3>
+                            <p>
+                                We have written initial drafts for more than a
+                                thousand tests that articulate expected screen
+                                reader behaviors for 40 examples of common web
+                                design patterns. View the{' '}
+                                <a href="https://github.com/w3c/aria-at/blob/master/metrics/coverage.md">
+                                    Test Writing Progress Report
+                                </a>{' '}
+                                and{' '}
+                                <a href="https://w3c.github.io/aria-at/build/">
+                                    view the draft test plans
+                                </a>{' '}
+                                preview.
+                            </p>
                         </li>
                         <li>
                             <img src={iconReviewTests} alt="" />
-                            <Link to="/reports">Review test results</Link>
+                            <h3>Testing proposed expectations</h3>
+                            <p>
+                                This website enables us to manage test data, run
+                                tests with multiple testers, review results, and
+                                publish reports. View our progress on the{' '}
+                                <Link to="/test-queue">test queue</Link> page.
+                            </p>
                         </li>
                         <li>
-                            <img src={iconFixIssue} alt="" />
-                            <a href="https://github.com/w3c/aria-at/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22">
-                                Fix a good first issue
-                            </a>
+                            <img src={iconJoinCommunity} alt="" />
+                            <h3>Building industry consensus</h3>
+                            <p>
+                                Once a pattern has a reviewed test plan with
+                                results data, a candidate report is published
+                                and the process of building consensus around the
+                                plan begins. View reports generated from
+                                candidate test plans on the{' '}
+                                <Link to="/reports">reports</Link> page.
+                            </p>
+                        </li>
+                        <li>
+                            <img src={iconReviewAssertions} alt="" />
+                            <h3>Enabling scalable automated testing</h3>
+                            <p>
+                                In order to regularly collect test results at
+                                scale for multiple web design patterns,
+                                browsers, and ATs, we are developing an industry
+                                standard for automating assistive technology.
+                                Read the{' '}
+                                <a href="https://github.com/bocoup/aria-at-automation">
+                                    explainer for a draft AT automation standard
+                                </a>{' '}
+                                and{' '}
+                                <a href="https://github.com/bocoup/at-automation-experiment">
+                                    explore the code repository
+                                </a>{' '}
+                                where experimental drivers are being developed.
+                            </p>
                         </li>
                     </ul>
                 </div>
             </section>
-            <section className="app-screenshots">
+            <section className="get-involved">
                 <div className="container">
-                    <div className="description">
-                        <h2>Reviewing Test Reports</h2>
-                        <p>
-                            After multiple runs have been recorded for a
-                            particular Test Plan, users can view a summary of
-                            results, and project administrators can publish them
-                            to the public Reports page.
-                        </p>
-                    </div>
-                    <div className="screenshot">
-                        <img
-                            src={testReviewScreenshot}
-                            alt="Example of results for JAWS and Chrome menubar test plan."
-                        />
-                    </div>
-                </div>
-                <div className="container">
-                    <div className="description">
-                        <h2>Browsing the Test Queue</h2>
-                        <p>
-                            Testers can view in-progress Test Runs and assign
-                            themselves to run a specific test plan using a given
-                            assistive technology and browser.
-                        </p>
-                    </div>
-                    <div className="screenshot">
-                        <img
-                            src={testQueueScreenshot}
-                            alt="A Table displaying the Editor Menu bar example and the Checkbox two state example. Both under JAWS with Chrome."
-                        />
-                    </div>
-                </div>
-                <div className="container">
-                    <div className="description">
-                        <h2>Running Tests</h2>
-                        <p>
-                            When running a Test Plan, the app loads the ARIA AT
-                            tests and displays instructions for how to record
-                            various assertions about the behavior of the AT and
-                            browser for a given test.
-                        </p>
-                    </div>
-                    <div className="screenshot">
-                        <img
-                            src={testViewScreenshot}
-                            alt="A test plan being ran, where the test navigator with the list of tasks is highlighted."
-                        />
-                    </div>
-                </div>
-                <div className="container">
-                    <div className="description">
-                        <h2>Updating Test Configuration</h2>
-                        <p>
-                            This app allows project administrators to create
-                            Test Runs for managing execution of tests of a
-                            collection of ARIA patterns with a specified set of
-                            assistive technology and browser combinations.
-                        </p>
-                    </div>
-                    <div className="screenshot">
-                        <img
-                            src={testConfigurationScreenshot}
-                            alt="The current git commit for a Test run and the option to select a different one from a dropdown menu"
-                        />
-                    </div>
+                    <h2>Get Involved</h2>
+                    <p>
+                        Enabling AT interoperability is a large, ongoing
+                        endeavor that requires industry-wide collaboration and
+                        support. The W3C ARIA-AT Community Group is focusing on
+                        a stable and mature test suite for five screen readers
+                        by the end of 2023. In the future, we plan to test
+                        additional screen readers and other kinds of assistive
+                        technologies with a broader set of web design patterns
+                        and test material.
+                    </p>
+                    <p>Learn how you can help by:</p>
+                    <ol>
+                        <li>
+                            <a href="https://github.com/w3c/aria-at/wiki/Contributing-to-the-ARIA-and-Assistive-Technologies-Project">
+                                Reading more about the project and spreading
+                                awareness of its mission
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://github.com/w3c/aria-at/wiki/Frequently-Asked-Questions">
+                                Browsing the ARIA-AT Frequently Asked Questions
+                                (FAQ)
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://github.com/w3c/aria-at/wiki/How-to-Join-the-ARIA-AT-Community-Group">
+                                Joining the community group
+                            </a>{' '}
+                            to participate in our mailing list and conference
+                            calls
+                        </li>
+                    </ol>
                 </div>
             </section>
         </Container>
