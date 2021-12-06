@@ -348,11 +348,6 @@ const TestQueueRow = ({
                             <Button
                                 variant="secondary"
                                 onClick={() => toggleTesterAssign(username)}
-                                aria-label={
-                                    !currentUserAssigned
-                                        ? 'Assign Yourself'
-                                        : 'Unassign Yourself'
-                                }
                                 className="assign-self"
                             >
                                 {!currentUserAssigned
