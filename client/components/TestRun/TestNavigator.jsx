@@ -13,6 +13,7 @@ const TestNavigator = ({
     isSignedIn = false,
     tests = [],
     currentTestIndex = 0,
+    testPlanRunId = 0,
     toggleShowClick = () => {},
     handleTestClick = () => {}
 }) => {
@@ -75,7 +76,8 @@ const TestNavigator = ({
                                     key={`TestNavigatorItem_${test.id}`}
                                 >
                                     <a
-                                        href="#"
+                                        href={`/run/${testPlanRunId}/task/${test.index +
+                                            1}`}
                                         onClick={async () =>
                                             await handleTestClick(test.index)
                                         }
@@ -107,6 +109,7 @@ TestNavigator.propTypes = {
     testResult: PropTypes.object,
     conflicts: PropTypes.object,
     currentTestIndex: PropTypes.number,
+    testPlanRunId: PropTypes.number,
     toggleShowClick: PropTypes.func,
     handleTestClick: PropTypes.func
 };
