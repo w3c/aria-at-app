@@ -26,7 +26,16 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
                 </title>
             </Helmet>
             <h1>{getTestPlanVersionTitle(testPlanVersion)}</h1>
-            <Breadcrumb>
+
+            <h2 id="breadcrumb-navigation-heading" className="sr-only">
+                Breadcrumb Navigation
+            </h2>
+            <Breadcrumb
+                label="Breadcrumb"
+                listProps={{
+                    'aria-labelledby': 'breadcrumb-navigation-heading'
+                }}
+            >
                 <LinkContainer to="/reports">
                     <Breadcrumb.Item>
                         <FontAwesomeIcon icon={faHome} />
