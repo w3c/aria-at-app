@@ -341,6 +341,8 @@ const TestQueueRow = ({
         [
             'plan',
             testPlanReport.id,
+            'run',
+            currentUserTestPlanRun.id,
             'assignee',
             tester.username,
             'completed'
