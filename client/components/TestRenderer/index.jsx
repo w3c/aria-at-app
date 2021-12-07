@@ -697,6 +697,7 @@ const TestRenderer = ({
                                                 }
                                             />
                                         </Text>
+                                        <h4>Assertions {header}</h4>
                                         <Table>
                                             <tbody>
                                                 <tr>
