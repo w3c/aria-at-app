@@ -5,8 +5,8 @@ import {
     faArrowLeft,
     faArrowRight
 } from '@fortawesome/free-solid-svg-icons';
-import { Col } from 'react-bootstrap';
-import React from 'react';
+import { Col, Overlay, Tooltip } from 'react-bootstrap';
+import React, { useRef, useState } from 'react';
 
 const TestNavigator = ({
     show = true,
@@ -70,17 +70,25 @@ const TestNavigator = ({
                                 }
                             }
 
+                            const [show, setShow] = useState(false);
+                            const target = useRef(null);
+
                             return (
                                 <li
                                     className={`test-name-wrapper ${resultClassName}`}
                                     key={`TestNavigatorItem_${test.id}`}
                                 >
                                     <a
+                                        ref={target}
                                         href={`/run/${testPlanRunId}/task/${test.index +
                                             1}`}
                                         onClick={async () =>
                                             await handleTestClick(test.index)
                                         }
+                                        onBlur={() => setShow(false)}
+                                        onFocus={() => setShow(true)}
+                                        onMouseLeave={() => setShow(false)}
+                                        onMouseEnter={() => setShow(true)}
                                         className="test-name"
                                         aria-current={
                                             test.index === currentTestIndex
@@ -93,6 +101,17 @@ const TestNavigator = ({
                                         aria-hidden="true"
                                         className="progress-indicator"
                                     />
+                                    <Overlay
+                                        target={target.current}
+                                        show={show}
+                                        placement="top-end"
+                                    >
+                                        {props => (
+                                            <Tooltip {...props}>
+                                                {resultStatus}
+                                            </Tooltip>
+                                        )}
+                                    </Overlay>
                                 </li>
                             );
                         })}
