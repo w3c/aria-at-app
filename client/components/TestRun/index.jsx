@@ -545,8 +545,11 @@ const TestRun = () => {
 
         const menuRightOfContent = (
             <div role="complementary">
-                <h3>Test Options</h3>
-                <ul className="options-wrapper">
+                <h2 id="test-options-heading">Test Options</h2>
+                <ul
+                    aria-labelledby="test-options-heading"
+                    className="options-wrapper"
+                >
                     <li>
                         <OptionButton
                             text="Raise An Issue"
