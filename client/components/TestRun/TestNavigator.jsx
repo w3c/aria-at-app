@@ -85,12 +85,13 @@ const TestNavigator = ({
                                         aria-current={
                                             test.index === currentTestIndex
                                         }
+                                        aria-label={`${test.title} (${resultStatus})`}
                                     >
                                         {test.title}
                                     </a>
                                     <span
+                                        aria-hidden="true"
                                         className="progress-indicator"
-                                        title={`${resultStatus}`}
                                     />
                                 </li>
                             );
