@@ -835,7 +835,7 @@ const TestRun = () => {
                 <TestNavigator
                     show={showTestNavigator}
                     tests={tests}
-                    testPlanRunId={testPlanRunId}
+                    testPlanRunId={parseInt(testPlanRunId)}
                     currentTestIndex={currentTestIndex}
                     toggleShowClick={toggleTestNavigator}
                     handleTestClick={handleTestClick}
