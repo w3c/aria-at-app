@@ -447,16 +447,36 @@ const TestQueueRow = ({
             <td className="actions">
                 <div className="test-cta-wrapper">
                     {currentUserAssigned && (
+                        <>
+                            <Button
+                                variant="primary"
+                                href={`/run/${currentUserTestPlanRun.id}`}
+                                disabled={!currentUserAssigned}
+                            >
+                                {currentUserTestPlanRun.testResults.length >
+                                    0 &&
+                                currentUserTestPlanRun.testResults.length <
+                                    runnableTests.length
+                                    ? 'Continue testing'
+                                    : 'Start testing'}
+                            </Button>
+                            <Button
+                                variant="secondary"
+                                onClick={() => toggleTesterAssign(username)}
+                                className="assign-self"
+                            >
+                                Un-assign Yourself
+                            </Button>
+                        </>
+                    )}
+
+                    {!currentUserAssigned && (
                         <Button
-                            variant="primary"
-                            href={`/run/${currentUserTestPlanRun.id}`}
-                            disabled={!currentUserAssigned}
+                            variant="secondary"
+                            onClick={() => toggleTesterAssign(username)}
+                            className="assign-self"
                         >
-                            {currentUserTestPlanRun.testResults.length > 0 &&
-                            currentUserTestPlanRun.testResults.length <
-                                runnableTests.length
-                                ? 'Continue testing'
-                                : 'Start testing'}
+                            Assign Yourself
                         </Button>
                     )}
 
@@ -471,7 +491,7 @@ const TestQueueRow = ({
                                 );
                             }}
                         >
-                            Remove
+                            Remove Plan
                         </Button>
                     )}
 
