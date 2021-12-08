@@ -1,10 +1,10 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
 import { differenceBy } from 'lodash';
 import getMetrics from './getMetrics';
 import { getTestPlanTargetTitle, getTestPlanVersionTitle } from './getTitles';
-import { Breadcrumb, Button, Container, Table } from 'react-bootstrap';
+import { Breadcrumb, Button, Container, Table, Modal } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -18,6 +18,41 @@ const FullHeightContainer = styled(Container)`
 
 const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
     const { exampleUrl, designPatternUrl } = testPlanVersion.metadata;
+    function Example(props) {
+        const [show, setShow] = useState(false);
+      
+        const handleClose = () => setShow(false);
+        const handleShow = () => setShow(true);
+      
+        return (
+          <>
+            <Button variant="primary" onClick={handleShow}>
+              Embed
+            </Button>
+      
+            <Modal
+              show={show}
+              onHide={handleClose}
+              backdrop="static"
+              keyboard={false}
+              dialogClassName="modal-90w"
+            >
+              <Modal.Header closeButton>
+                <Modal.Title>Modal title</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <iframe width="560" height="315" src={props.url}></iframe>
+              </Modal.Body>
+              <Modal.Footer>
+                <Button variant="secondary" onClick={handleClose}>
+                  Close
+                </Button>
+                <Button variant="primary">Understood</Button>
+              </Modal.Footer>
+            </Modal>
+          </>
+        );
+      }
     return (
         <FullHeightContainer id="main" as="main" tabIndex="-1">
             <Helmet>
@@ -64,6 +99,7 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
                     </li>
                 ) : null}
             </ul>
+            <Example url={`/reports/${testPlanVersion.id}`} />
 
             {testPlanReports.map(testPlanReport => {
                 const skippedTests = differenceBy(
@@ -90,6 +126,7 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
                                 View Complete Results
                             </Button>
                         </LinkContainer>
+                        <Example url={`/reports/${testPlanVersion.id}/targets/${testPlanReport.id}`} />
                         {skippedTests.length ? (
                             <Link
                                 to={
