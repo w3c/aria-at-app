@@ -114,7 +114,8 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
 
                 return (
                     <Fragment key={testPlanReport.id}>
-                        <h2>{getTestPlanTargetTitle(testPlanTarget)}</h2>
+                        <h2 id={getTestPlanTargetTitle(testPlanTarget).replaceAll(' ','').replaceAll('.','')}>{getTestPlanTargetTitle(testPlanTarget)}</h2>
+                        <Example url={`/reports/${testPlanVersion.id}#${getTestPlanTargetTitle(testPlanTarget).replaceAll(' ','').replaceAll('.','')}`} />
                         <DisclaimerInfo />
                         <LinkContainer
                             to={
@@ -126,7 +127,6 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
                                 View Complete Results
                             </Button>
                         </LinkContainer>
-                        <Example url={`/reports/${testPlanVersion.id}/targets/${testPlanReport.id}`} />
                         {skippedTests.length ? (
                             <Link
                                 to={
