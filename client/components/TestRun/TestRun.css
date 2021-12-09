@@ -7,6 +7,11 @@
     margin-top: 0;
 }
 
+#test-navigator-heading {
+    font-size: 1em;
+    margin-top: 0.75em;
+}
+
 button.test-navigator-toggle.hide,
 button.test-navigator-toggle.show {
     border: 0;
