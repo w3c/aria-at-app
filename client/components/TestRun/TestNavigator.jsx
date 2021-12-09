@@ -41,7 +41,7 @@ const TestNavigator = ({
                     </button>
                 </h2>
             </div>
-            <nav id="test-navigator-nav" hidden={!show}>
+            <nav id="test-navigator-nav" hidden={!show} aria-label="Test">
                 <ol
                     aria-labelledby="test-navigator-heading"
                     className="test-navigator-list"
