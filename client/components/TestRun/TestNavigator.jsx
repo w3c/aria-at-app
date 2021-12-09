@@ -19,13 +19,14 @@ const TestNavigator = ({
     return (
         <Col className="test-navigator" md={show ? 3 : 12}>
             <div className="test-navigator-toggle-container">
-                <div className="test-navigator-toggle-inner-container">
+                <h2
+                    id="test-navigator-heading"
+                    className="test-navigator-toggle-inner-container"
+                >
                     <button
-                        aria-label={`${
-                            show
-                                ? 'Toggle button to close test navigator'
-                                : 'Toggle button to open test navigator'
-                        }`}
+                        aria-label="Test Navigator"
+                        aria-controls="test-navigator-nav"
+                        aria-expanded={show ? 'true' : 'false'}
                         onClick={toggleShowClick}
                         className={`test-navigator-toggle ${
                             show ? 'hide' : 'show'
@@ -38,11 +39,10 @@ const TestNavigator = ({
                         )}
                         <FontAwesomeIcon icon={faAlignLeft} />
                     </button>
-                </div>
+                </h2>
             </div>
             {show && (
-                <nav aria-label="Test">
-                    <h2 id="test-navigator-heading">Test Navigation</h2>
+                <nav id="test-navigator-nav">
                     <ol
                         aria-labelledby="test-navigator-heading"
                         className="test-navigator-list"
