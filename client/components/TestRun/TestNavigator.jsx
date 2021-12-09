@@ -41,64 +41,61 @@ const TestNavigator = ({
                     </button>
                 </h2>
             </div>
-            {show && (
-                <nav id="test-navigator-nav">
-                    <ol
-                        aria-labelledby="test-navigator-heading"
-                        className="test-navigator-list"
-                    >
-                        {tests.map(test => {
-                            let resultClassName = 'not-started';
-                            let resultStatus = 'Not Started';
+            <nav id="test-navigator-nav" hidden={!show}>
+                <ol
+                    aria-labelledby="test-navigator-heading"
+                    className="test-navigator-list"
+                >
+                    {tests.map(test => {
+                        let resultClassName = 'not-started';
+                        let resultStatus = 'Not Started';
 
-                            if (test) {
-                                if (test.hasConflicts) {
-                                    resultClassName = 'conflicts';
-                                    resultStatus = 'Has Conflicts';
-                                } else if (test.testResult) {
-                                    resultClassName = test.testResult
-                                        .completedAt
-                                        ? 'complete'
-                                        : 'in-progress';
-                                    resultStatus = test.testResult.completedAt
-                                        ? 'Complete Test'
-                                        : 'In Progress';
-                                } else if (
-                                    !isSignedIn &&
-                                    test.index === currentTestIndex
-                                ) {
-                                    resultClassName = 'in-progress';
-                                    resultStatus = 'In Progress:';
-                                }
+                        if (test) {
+                            if (test.hasConflicts) {
+                                resultClassName = 'conflicts';
+                                resultStatus = 'Has Conflicts';
+                            } else if (test.testResult) {
+                                resultClassName = test.testResult.completedAt
+                                    ? 'complete'
+                                    : 'in-progress';
+                                resultStatus = test.testResult.completedAt
+                                    ? 'Complete Test'
+                                    : 'In Progress';
+                            } else if (
+                                !isSignedIn &&
+                                test.index === currentTestIndex
+                            ) {
+                                resultClassName = 'in-progress';
+                                resultStatus = 'In Progress:';
                             }
+                        }
 
-                            return (
-                                <li
-                                    className={`test-name-wrapper ${resultClassName}`}
-                                    key={`TestNavigatorItem_${test.id}`}
+                        return (
+                            <li
+                                className={`test-name-wrapper ${resultClassName}`}
+                                key={`TestNavigatorItem_${test.id}`}
+                            >
+                                <a
+                                    href="#"
+                                    onClick={async () =>
+                                        await handleTestClick(test.index)
+                                    }
+                                    className="test-name"
+                                    aria-current={
+                                        test.index === currentTestIndex
+                                    }
                                 >
-                                    <a
-                                        href="#"
-                                        onClick={async () =>
-                                            await handleTestClick(test.index)
-                                        }
-                                        className="test-name"
-                                        aria-current={
-                                            test.index === currentTestIndex
-                                        }
-                                    >
-                                        {test.title}
-                                    </a>
-                                    <span
-                                        className="progress-indicator"
-                                        title={`${resultStatus}`}
-                                    />
-                                </li>
-                            );
-                        })}
-                    </ol>
-                </nav>
-            )}
+                                    {test.title}
+                                </a>
+                                <span
+                                    className="progress-indicator"
+                                    title={`${resultStatus}`}
+                                />
+                            </li>
+                        );
+                    })}
+                </ol>
+            </nav>
         </Col>
     );
 };
