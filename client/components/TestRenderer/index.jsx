@@ -204,7 +204,7 @@ const ResultsBulletList = styled.ul`
 `;
 
 const AssertionFieldsetList = styled.ul`
-    > li:not(:first-child) {
+    > li {
         margin-top: 1em;
     }
 
@@ -233,20 +233,16 @@ const AssertionFieldset = styled.fieldset`
         margin: 0;
     }
 
-    .assertion-input-group {
+    .assertion-input-list {
         margin-left: 0.5em;
         display: flex;
     }
 
-    .assertion-input-group ul + ul {
-        margin-top: 2em;
-    }
-
-    .assertion-input-group > li + li {
+    .assertion-input-list > .assertion-input-group + .assertion-input-group {
         margin-left: 1em;
     }
 
-    li input {
+    input {
         margin-right: 0.5em;
     }
 `;
@@ -669,23 +665,20 @@ const TestRenderer = ({
                         </h5>
                     </legend>
 
-                    <ul className="assertion-input-group">
-                        <li>
-                            <input
-                                key={`Pass__${commandIndex}__${assertionIndex}`}
-                                type="radio"
-                                id={`pass-${commandIndex}-${assertionIndex}`}
-                                name={`result-${commandIndex}-${assertionIndex}`}
-                                aria-labelledby={`pass-${commandIndex}-${assertionIndex}-label assertion-${commandIndex}-${assertionIndex}`}
-                                autoFocus={isSubmitted && passChoice.focus}
-                                defaultChecked={passChoice.checked}
-                                onClick={passChoice.click}
-                            />
-                            <label
-                                id={`pass-${commandIndex}-${assertionIndex}-label`}
-                                htmlFor={`pass-${commandIndex}-${assertionIndex}`}
-                            >
-                                {passChoice.label[0]}
+                    <div className="assertion-input-list">
+                        <div className="assertion-input-group">
+                            <label>
+                                <input
+                                    key={`Pass__${commandIndex}__${assertionIndex}`}
+                                    type="radio"
+                                    id={`pass-${commandIndex}-${assertionIndex}`}
+                                    name={`result-${commandIndex}-${assertionIndex}`}
+                                    autoFocus={isSubmitted && passChoice.focus}
+                                    defaultChecked={passChoice.checked}
+                                    onClick={passChoice.click}
+                                />
+                                {passChoice.label[0].trim()}
+                                <>&nbsp;</>
                                 <Feedback
                                     className={`${passChoice.label[1]
                                         .offScreen && 'off-screen'}`}
@@ -693,23 +686,23 @@ const TestRenderer = ({
                                     {passChoice.label[1].description}
                                 </Feedback>
                             </label>
-                        </li>
-                        <li>
-                            <input
-                                key={`Missing__${commandIndex}__${assertionIndex}`}
-                                type="radio"
-                                id={`missing-${commandIndex}-${assertionIndex}`}
-                                name={`result-${commandIndex}-${assertionIndex}`}
-                                aria-labelledby={`missing-${commandIndex}-${assertionIndex}-label assertion-${commandIndex}-${assertionIndex}`}
-                                autoFocus={isSubmitted && missingChoice.focus}
-                                defaultChecked={missingChoice.checked}
-                                onClick={missingChoice.click}
-                            />
-                            <label
-                                id={`missing-${commandIndex}-${assertionIndex}-label`}
-                                htmlFor={`missing-${commandIndex}-${assertionIndex}`}
-                            >
-                                {missingChoice.label[0]}
+                        </div>
+                        <div className="assertion-input-group">
+                            <label>
+                                <input
+                                    key={`Missing__${commandIndex}__${assertionIndex}`}
+                                    type="radio"
+                                    id={`missing-${commandIndex}-${assertionIndex}`}
+                                    name={`result-${commandIndex}-${assertionIndex}`}
+                                    autoFocus={
+                                        isSubmitted && missingChoice.focus
+                                    }
+                                    defaultChecked={missingChoice.checked}
+                                    onClick={missingChoice.click}
+                                />
+
+                                {missingChoice.label[0].trim()}
+                                <>&nbsp;</>
                                 <Feedback
                                     className={`${missingChoice.label[1]
                                         .offScreen && 'off-screen'}`}
@@ -717,23 +710,23 @@ const TestRenderer = ({
                                     {missingChoice.label[1].description}
                                 </Feedback>
                             </label>
-                        </li>
-                        <li>
-                            <input
-                                key={`Fail__${commandIndex}__${assertionIndex}`}
-                                type="radio"
-                                id={`fail-${commandIndex}-${assertionIndex}`}
-                                name={`result-${commandIndex}-${assertionIndex}`}
-                                aria-labelledby={`fail-${commandIndex}-${assertionIndex}-label assertion-${commandIndex}-${assertionIndex}`}
-                                autoFocus={isSubmitted && failureChoice.focus}
-                                defaultChecked={failureChoice.checked}
-                                onClick={failureChoice.click}
-                            />
-                            <label
-                                id={`fail-${commandIndex}-${assertionIndex}-label`}
-                                htmlFor={`fail-${commandIndex}-${assertionIndex}`}
-                            >
-                                {failureChoice.label[0]}
+                        </div>
+                        <div className="assertion-input-group">
+                            <label>
+                                <input
+                                    key={`Fail__${commandIndex}__${assertionIndex}`}
+                                    type="radio"
+                                    id={`fail-${commandIndex}-${assertionIndex}`}
+                                    name={`result-${commandIndex}-${assertionIndex}`}
+                                    autoFocus={
+                                        isSubmitted && failureChoice.focus
+                                    }
+                                    defaultChecked={failureChoice.checked}
+                                    onClick={failureChoice.click}
+                                />
+
+                                {failureChoice.label[0].trim()}
+                                <>&nbsp;</>
                                 <Feedback
                                     className={`${failureChoice.label[1]
                                         .offScreen && 'off-screen'}`}
@@ -741,8 +734,8 @@ const TestRenderer = ({
                                     {failureChoice.label[1].description}
                                 </Feedback>
                             </label>
-                        </li>
-                    </ul>
+                        </div>
+                    </div>
                 </AssertionFieldset>
             </li>
         );
