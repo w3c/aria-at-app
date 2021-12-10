@@ -24,13 +24,11 @@ const TestNavigator = ({
                     className="test-navigator-toggle-inner-container"
                 >
                     <button
-                        aria-label="Test Navigator"
+                        aria-label="Test Navigation"
                         aria-controls="test-navigator-nav"
                         aria-expanded={show ? 'true' : 'false'}
                         onClick={toggleShowClick}
-                        className={`test-navigator-toggle ${
-                            show ? 'hide' : 'show'
-                        }`}
+                        className="test-navigator-toggle"
                     >
                         {show ? (
                             <FontAwesomeIcon icon={faArrowLeft} />
