@@ -12,15 +12,14 @@
     margin-top: 0.75em;
 }
 
-button.test-navigator-toggle.hide,
-button.test-navigator-toggle.show {
+button.test-navigator-toggle {
     border: 0;
     background-color: transparent;
     color: #929292;
 }
 
-button.test-navigator-toggle.hide:hover,
-button.test-navigator-toggle.show:hover {
+button.test-navigator-toggle:hover,
+button.test-navigator-toggle:focus {
     color: #0b60ab;
 }
 
