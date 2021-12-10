@@ -229,6 +229,10 @@ const AssertionFieldset = styled.fieldset`
         padding: 0.2em;
     }
 
+    h5 {
+        margin: 0;
+    }
+
     .assertion-input-group {
         margin-left: 0.5em;
         display: flex;
@@ -646,29 +650,26 @@ const TestRenderer = ({
 
         const [missingChoice, failureChoice] = failChoices;
 
-        const legendId = `command-assertion-${assertionIndex}-${commandIndex}-legend`;
-
         return (
             <li>
                 <AssertionFieldset className="command-assertions">
-                    <legend id={legendId}>
-                        {description[0]}
-                        {isSubmitted && (
-                            <Feedback
-                                className={`${description[1].required &&
-                                    'required'} ${description[1]
-                                    .highlightRequired &&
-                                    'highlight-required'}`}
-                            >
-                                {description[1].description}
-                            </Feedback>
-                        )}
+                    <legend>
+                        <h5>
+                            {description[0]}
+                            {isSubmitted && (
+                                <Feedback
+                                    className={`${description[1].required &&
+                                        'required'} ${description[1]
+                                        .highlightRequired &&
+                                        'highlight-required'}`}
+                                >
+                                    {description[1].description}
+                                </Feedback>
+                            )}
+                        </h5>
                     </legend>
 
-                    <ul
-                        aria-labelledby={legendId}
-                        className="assertion-input-group"
-                    >
+                    <ul className="assertion-input-group">
                         <li>
                             <input
                                 key={`Pass__${commandIndex}__${assertionIndex}`}
@@ -974,6 +975,7 @@ const TestRenderer = ({
                                                             more,
                                                             change
                                                         } = option;
+
                                                         return (
                                                             <Fragment
                                                                 key={`AssertionOptionsKey_${optionIndex}`}
