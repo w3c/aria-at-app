@@ -112,7 +112,7 @@
     flex-shrink: 0;
 }
 
-.test-result-buttons button {
+.test-result-buttons a {
     margin-right: 0.5em;
 }
 
