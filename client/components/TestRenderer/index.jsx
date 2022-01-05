@@ -29,11 +29,13 @@ const ErrorSection = styled.section`
 
 const InstructionsSection = styled.section``;
 
-const HeadingText = styled.h1``;
+const HeadingText = styled.h2`
+    margin-top: 0;
+`;
 
-const SubHeadingText = styled.h2``;
+const SubHeadingText = styled.h3``;
 
-const InnerSectionHeadingText = styled.h3``;
+const InnerSectionHeadingText = styled.h4``;
 
 const Text = styled.p`
     > textarea {
