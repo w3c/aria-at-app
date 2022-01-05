@@ -547,8 +547,8 @@ const TestRun = () => {
             <div role="complementary">
                 <h2 id="test-options-heading">Test Options</h2>
                 <ul
-                    className="options-wrapper"
                     aria-labelledby="test-options-heading"
+                    className="options-wrapper"
                 >
                     <li>
                         <OptionButton
@@ -634,7 +634,16 @@ const TestRun = () => {
                                 </Row>
                                 {isRendererReady && (
                                     <Row>
-                                        <ul className="test-run-toolbar mt-1">
+                                        <h2
+                                            id="test-toolbar-heading"
+                                            className="sr-only"
+                                        >
+                                            Test Controls
+                                        </h2>
+                                        <ul
+                                            aria-labelledby="test-toolbar-heading"
+                                            className="test-run-toolbar mt-1"
+                                        >
                                             {primaryButtons.map(button => (
                                                 <li key={nextId()}>{button}</li>
                                             ))}
