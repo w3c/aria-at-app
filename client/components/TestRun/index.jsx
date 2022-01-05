@@ -480,7 +480,7 @@ const TestRun = () => {
         const isFirstTest = index === 0;
         const isLastTest = currentTest.seq === tests.length;
 
-        let primaryButtons = []; // These are the list of buttons that will appear below the tests
+        let primaryButtons; // These are the list of buttons that will appear below the tests
         let forwardButtons = []; // These are buttons that navigate to next tests and continue
 
         const nextButton = (
@@ -545,8 +545,11 @@ const TestRun = () => {
 
         const menuRightOfContent = (
             <div role="complementary">
-                <h3>Test Options</h3>
-                <ul className="options-wrapper">
+                <h2 id="test-options-heading">Test Options</h2>
+                <ul
+                    className="options-wrapper"
+                    aria-labelledby="test-options-heading"
+                >
                     <li>
                         <OptionButton
                             text="Raise An Issue"
