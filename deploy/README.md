@@ -49,13 +49,20 @@ can view logging from ansible with `sudo -i cat /var/log/messages`.
 
 To deploy this project to  server:
 
-1. Obtain an authorized key and add it to your keychain. 
-  - The shared key is called `aria-at-bocoup`.
-  - Add it to your keychain with the following command: `ssh-add <path>/<to>/<key>/aria-at-bocoup`
-2. Obtain a copy of the `ansible-vault-password.txt` file in LastPass and place it in the
-   directory which contains this document
-3. Install [Ansible](https://www.ansible.com/)
-4. Execute the following command:
+1. Obtain an authorized key and add it to your keychain. This is needed for deploys to Staging and Production. 
+  - The shared key is named `aria-at-bocoup`.
+  - Place it in the ~/.ssh directory.
+  - Add it to your keychain with the following command: `ssh-add ~/.ssh/aria-at-bocoup`.
+  - Run `ssh root@aria-at-staging.w3.org` and `ssh root@aria-at.w3.org` to verify that you can connect to the servers.
+2. Bocoup maintains its own instance of the app on its internal infrastructure for quick and easy testing. Note that you must be a Bocouper to deploy to this environment. Follow the steps below to verify you are able to connect.
+  - Run `ssh aria-at-app-sandbox.bocoup.com` and confirm you can connect.
+  - Confirm that `sudo su` successfully switches you to the root user. You will need to enter the sodoer password you chose during your Bocoup onboarding. This password will be required when deploying to the Sandbox.
+3. Obtain a copy of the `ansible-vault-password.txt` file in LastPass and place it in the directory which contains this document.
+4. Install [Ansible](https://www.ansible.com/) version 2.8. Instructions for macOS are as follows:
+  - Install Ansible at the specific 2.8 version: `brew install ansible@2.8`
+  - Add the `ansible` command to your shell: `brew link --overwrite ansible@2.8`
+  - Run `ansible --version` to verify your ansible is on version 2.8.
+5. Execute the following command from the deploy directory:
    - Sandbox:
     ```
     ansible-playbook provision.yml --inventory inventory/sandbox.yml
@@ -69,16 +76,9 @@ To deploy this project to  server:
     ansible-playbook provision.yml --inventory inventory/production.yml
     ```
 
-## Creating new environment configuration
+## Environment Configuration
 
 Configuration files are located in the `files/` folder. Each config file is in the format `config-<environment>.env`
-
-Change the following variables (at minimum) to create a new configuration:
-- PGPASSWORD
-- GITHUB_CLIENT_ID
-   - A new GitHub OAuth application must be created for a new environment. Instructions TBD.
-- GITHUB_CLIENT_SECRET
-- SESSION_SECRET
 
 Command to edit encrypted files (must be run in the deploy folder):
 
