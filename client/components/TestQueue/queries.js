@@ -44,6 +44,7 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
                 id
                 title
                 gitSha
+                gitMessage
                 testPlan {
                     directory
                 }
@@ -83,6 +84,7 @@ export const POPULATE_ADD_TEST_PLAN_TO_QUEUE_MODAL_QUERY = gql`
             id
             title
             gitSha
+            gitMessage
             testPlan {
                 directory
             }

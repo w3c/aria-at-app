@@ -20,7 +20,7 @@ import {
     REMOVE_TESTER_MUTATION,
     REMOVE_TESTER_RESULTS_MUTATION
 } from '../TestQueue/queries';
-import { calculateDateInterval } from '../../utils/dateInterval';
+import { gitUpdatedDateToString } from '../../utils/gitUtils';
 
 const TestQueueRow = ({
     user = {},
@@ -115,24 +115,23 @@ const TestQueueRow = ({
     };
 
     const renderAssignedUserToTestPlan = () => {
-        const gitShaDateDifference = (
-            <p>
-                {calculateDateInterval(
-                    new Date(testPlanVersion.updatedAt),
-                    new Date()
-                )}{' '}
-                ({testPlanVersion.gitSha.substring(0, 5)})
+        const gitUpdatedDateString = (
+            <p className="git-string">
+                Published {gitUpdatedDateToString(testPlanVersion.updatedAt)}
             </p>
         );
         // Determine if current user is assigned to testPlan
         if (currentUserAssigned)
             return (
                 <>
-                    <Link to={`/run/${currentUserTestPlanRun.id}`}>
+                    <Link
+                        className="test-plan"
+                        to={`/run/${currentUserTestPlanRun.id}`}
+                    >
                         {testPlanVersion.title ||
                             `"${testPlanVersion.testPlan.directory}"`}
                     </Link>
-                    {gitShaDateDifference}
+                    {gitUpdatedDateString}
                 </>
             );
 
@@ -143,7 +142,7 @@ const TestQueueRow = ({
                         {testPlanVersion.title ||
                             `"${testPlanVersion.testPlan.directory}"`}
                     </Link>
-                    {gitShaDateDifference}
+                    {gitUpdatedDateString}
                 </>
             );
 
@@ -151,7 +150,7 @@ const TestQueueRow = ({
             <div>
                 {testPlanVersion.title ||
                     `"${testPlanVersion.testPlan.directory}"`}
-                {gitShaDateDifference}
+                {gitUpdatedDateString}
             </div>
         );
     };

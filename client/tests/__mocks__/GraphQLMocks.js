@@ -136,6 +136,7 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK_ADMIN = [
                             id: '1',
                             title: 'Checkbox Example (Two State)',
                             gitSha: 'b7078039f789c125e269cb8f8632f57a03d4c50b',
+                            gitMessage: 'The message for this SHA',
                             testPlan: { directory: 'checkbox' },
                             updatedAt: '2021-11-30T14:51:28.000Z'
                         },
@@ -207,6 +208,7 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK_ADMIN = [
                             id: '1',
                             title: 'Checkbox Example (Two State)',
                             gitSha: 'b7078039f789c125e269cb8f8632f57a03d4c50b',
+                            gitMessage: 'The message for this SHA',
                             testPlan: { directory: 'checkbox' },
                             updatedAt: '2021-11-30T14:51:28.000Z'
                         },
@@ -344,6 +346,7 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK_ADMIN = [
                             id: '1',
                             title: 'Checkbox Example (Two State)',
                             gitSha: 'b7078039f789c125e269cb8f8632f57a03d4c50b',
+                            gitMessage: 'The message for this SHA',
                             testPlan: { directory: 'checkbox' },
                             updatedAt: '2021-11-30T14:51:28.000Z'
                         },
@@ -558,6 +561,7 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK_TESTER = [
                             id: '65',
                             title: 'Checkbox Example (Two State)',
                             gitSha: 'aea64f84b8fa8b21e94f5d9afd7035570bc1bed3',
+                            gitMessage: 'The message for this SHA',
                             testPlan: {
                                 directory: 'checkbox'
                             },
@@ -700,6 +704,7 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK_TESTER = [
                             id: '65',
                             title: 'Checkbox Example (Two State)',
                             gitSha: 'aea64f84b8fa8b21e94f5d9afd7035570bc1bed3',
+                            gitMessage: 'The message for this SHA',
                             testPlan: {
                                 directory: 'checkbox'
                             },
@@ -785,6 +790,7 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK_TESTER = [
                             id: '74',
                             title: 'Editor Menubar Example',
                             gitSha: 'aea64f84b8fa8b21e94f5d9afd7035570bc1bed3',
+                            gitMessage: 'The message for this SHA',
                             testPlan: {
                                 directory: 'menubar-editor'
                             },
