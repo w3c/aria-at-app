@@ -6,6 +6,7 @@ import {
     ADD_TEST_QUEUE_MUTATION,
     POPULATE_ADD_TEST_PLAN_TO_QUEUE_MODAL_QUERY
 } from '../TestQueue/queries';
+import { calculateDateInterval } from '../../utils/dateInterval';
 
 const NewTestPlanReportModal = ({
     show = false,
@@ -43,7 +44,6 @@ const NewTestPlanReportModal = ({
                     ...version
                 }))
                 .flat();
-
             setAllTestPlanVersions(allTestPlanVersions);
         }
     }, [data]);
@@ -176,7 +176,11 @@ const NewTestPlanReportModal = ({
                                 key={`${item.gitSha}-${item.id}`}
                                 value={item.id}
                             >
-                                {item.gitSha}
+                                {calculateDateInterval(
+                                    new Date(item.updatedAt),
+                                    new Date()
+                                )}{' '}
+                                ({item.gitSha.substring(0, 5)})
                             </option>
                         ))}
                     </Form.Control>

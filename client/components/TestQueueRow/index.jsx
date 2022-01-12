@@ -20,6 +20,7 @@ import {
     REMOVE_TESTER_MUTATION,
     REMOVE_TESTER_RESULTS_MUTATION
 } from '../TestQueue/queries';
+import { calculateDateInterval } from '../../utils/dateInterval';
 
 const TestQueueRow = ({
     user = {},
@@ -114,25 +115,44 @@ const TestQueueRow = ({
     };
 
     const renderAssignedUserToTestPlan = () => {
+        const gitShaDateDifference = (
+            <p>
+                {calculateDateInterval(
+                    new Date(testPlanVersion.updatedAt),
+                    new Date()
+                )}{' '}
+                ({testPlanVersion.gitSha.substring(0, 5)})
+            </p>
+        );
         // Determine if current user is assigned to testPlan
         if (currentUserAssigned)
             return (
-                <Link to={`/run/${currentUserTestPlanRun.id}`}>
-                    {testPlanVersion.title ||
-                        `"${testPlanVersion.testPlan.directory}"`}
-                </Link>
+                <>
+                    <Link to={`/run/${currentUserTestPlanRun.id}`}>
+                        {testPlanVersion.title ||
+                            `"${testPlanVersion.testPlan.directory}"`}
+                    </Link>
+                    {gitShaDateDifference}
+                </>
             );
 
         if (!isSignedIn)
             return (
-                <Link to={`/test-plan-report/${testPlanReport.id}`}>
-                    {testPlanVersion.title ||
-                        `"${testPlanVersion.testPlan.directory}"`}
-                </Link>
+                <>
+                    <Link to={`/test-plan-report/${testPlanReport.id}`}>
+                        {testPlanVersion.title ||
+                            `"${testPlanVersion.testPlan.directory}"`}
+                    </Link>
+                    {gitShaDateDifference}
+                </>
             );
 
         return (
-            testPlanVersion.title || `"${testPlanVersion.testPlan.directory}"`
+            <div>
+                {testPlanVersion.title ||
+                    `"${testPlanVersion.testPlan.directory}"`}
+                {gitShaDateDifference}
+            </div>
         );
     };
 

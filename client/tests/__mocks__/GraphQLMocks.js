@@ -136,7 +136,8 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK_ADMIN = [
                             id: '1',
                             title: 'Checkbox Example (Two State)',
                             gitSha: 'b7078039f789c125e269cb8f8632f57a03d4c50b',
-                            testPlan: { directory: 'checkbox' }
+                            testPlan: { directory: 'checkbox' },
+                            updatedAt: '2021-11-30T14:51:28.000Z'
                         },
                         draftTestPlanRuns: [
                             {
@@ -206,7 +207,8 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK_ADMIN = [
                             id: '1',
                             title: 'Checkbox Example (Two State)',
                             gitSha: 'b7078039f789c125e269cb8f8632f57a03d4c50b',
-                            testPlan: { directory: 'checkbox' }
+                            testPlan: { directory: 'checkbox' },
+                            updatedAt: '2021-11-30T14:51:28.000Z'
                         },
                         draftTestPlanRuns: [
                             {
@@ -342,7 +344,8 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK_ADMIN = [
                             id: '1',
                             title: 'Checkbox Example (Two State)',
                             gitSha: 'b7078039f789c125e269cb8f8632f57a03d4c50b',
-                            testPlan: { directory: 'checkbox' }
+                            testPlan: { directory: 'checkbox' },
+                            updatedAt: '2021-11-30T14:51:28.000Z'
                         },
                         draftTestPlanRuns: [
                             {
@@ -557,7 +560,8 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK_TESTER = [
                             gitSha: 'aea64f84b8fa8b21e94f5d9afd7035570bc1bed3',
                             testPlan: {
                                 directory: 'checkbox'
-                            }
+                            },
+                            updatedAt: '2021-11-30T14:51:28.000Z'
                         },
                         draftTestPlanRuns: [
                             {
@@ -698,7 +702,8 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK_TESTER = [
                             gitSha: 'aea64f84b8fa8b21e94f5d9afd7035570bc1bed3',
                             testPlan: {
                                 directory: 'checkbox'
-                            }
+                            },
+                            updatedAt: '2021-11-30T14:51:28.000Z'
                         },
                         draftTestPlanRuns: [
                             {
@@ -782,7 +787,8 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK_TESTER = [
                             gitSha: 'aea64f84b8fa8b21e94f5d9afd7035570bc1bed3',
                             testPlan: {
                                 directory: 'menubar-editor'
-                            }
+                            },
+                            updatedAt: '2021-11-30T14:51:28.000Z'
                         },
                         draftTestPlanRuns: []
                     }
