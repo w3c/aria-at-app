@@ -6,6 +6,7 @@ import {
     ADD_TEST_QUEUE_MUTATION,
     POPULATE_ADD_TEST_PLAN_TO_QUEUE_MODAL_QUERY
 } from '../TestQueue/queries';
+import { gitUpdatedDateToString } from '../../utils/gitUtils';
 
 const NewTestPlanReportModal = ({
     show = false,
@@ -43,7 +44,6 @@ const NewTestPlanReportModal = ({
                     ...version
                 }))
                 .flat();
-
             setAllTestPlanVersions(allTestPlanVersions);
         }
     }, [data]);
@@ -176,7 +176,9 @@ const NewTestPlanReportModal = ({
                                 key={`${item.gitSha}-${item.id}`}
                                 value={item.id}
                             >
-                                {item.gitSha}
+                                {gitUpdatedDateToString(item.updatedAt)}{' '}
+                                {item.gitMessage} ({item.gitSha.substring(0, 7)}
+                                )
                             </option>
                         ))}
                     </Form.Control>

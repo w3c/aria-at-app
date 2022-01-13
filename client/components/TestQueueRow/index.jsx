@@ -20,6 +20,7 @@ import {
     REMOVE_TESTER_MUTATION,
     REMOVE_TESTER_RESULTS_MUTATION
 } from '../TestQueue/queries';
+import { gitUpdatedDateToString } from '../../utils/gitUtils';
 
 const TestQueueRow = ({
     user = {},
@@ -114,25 +115,43 @@ const TestQueueRow = ({
     };
 
     const renderAssignedUserToTestPlan = () => {
+        const gitUpdatedDateString = (
+            <p className="git-string">
+                Published {gitUpdatedDateToString(testPlanVersion.updatedAt)}
+            </p>
+        );
         // Determine if current user is assigned to testPlan
         if (currentUserAssigned)
             return (
-                <Link to={`/run/${currentUserTestPlanRun.id}`}>
-                    {testPlanVersion.title ||
-                        `"${testPlanVersion.testPlan.directory}"`}
-                </Link>
+                <>
+                    <Link
+                        className="test-plan"
+                        to={`/run/${currentUserTestPlanRun.id}`}
+                    >
+                        {testPlanVersion.title ||
+                            `"${testPlanVersion.testPlan.directory}"`}
+                    </Link>
+                    {gitUpdatedDateString}
+                </>
             );
 
         if (!isSignedIn)
             return (
-                <Link to={`/test-plan-report/${testPlanReport.id}`}>
-                    {testPlanVersion.title ||
-                        `"${testPlanVersion.testPlan.directory}"`}
-                </Link>
+                <>
+                    <Link to={`/test-plan-report/${testPlanReport.id}`}>
+                        {testPlanVersion.title ||
+                            `"${testPlanVersion.testPlan.directory}"`}
+                    </Link>
+                    {gitUpdatedDateString}
+                </>
             );
 
         return (
-            testPlanVersion.title || `"${testPlanVersion.testPlan.directory}"`
+            <div>
+                {testPlanVersion.title ||
+                    `"${testPlanVersion.testPlan.directory}"`}
+                {gitUpdatedDateString}
+            </div>
         );
     };
 
