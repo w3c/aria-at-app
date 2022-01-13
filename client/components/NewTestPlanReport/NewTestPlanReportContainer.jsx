@@ -4,14 +4,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import PropTypes from 'prop-types';
 
-const NewTestPlanReportContainer = ({
-    handleOpenDialog = () => {},
-    openDialogTriggerId
-}) => {
+const NewTestPlanReportContainer = ({ handleOpenDialog = () => {} }) => {
     return (
         <div className="add-test-plan-queue-container">
             <Button
-                id={openDialogTriggerId}
                 className="add-test-plan-queue-button"
                 variant="primary"
                 onClick={handleOpenDialog}
@@ -25,8 +21,7 @@ const NewTestPlanReportContainer = ({
 };
 
 NewTestPlanReportContainer.propTypes = {
-    handleOpenDialog: PropTypes.func,
-    openDialogTriggerId: PropTypes.string
+    handleOpenDialog: PropTypes.func
 };
 
 export default NewTestPlanReportContainer;
