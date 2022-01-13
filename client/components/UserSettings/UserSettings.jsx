@@ -66,7 +66,7 @@ const UserSettings = () => {
                         </a>
                     </p>
                     <h2>Assistive Technology Settings</h2>
-                    <div tabIndex={0} aria-live="polite">
+                    <div aria-atomic="true" aria-live="polite">
                         {savedAts.length > 0 ? (
                             <div>
                                 <p>
