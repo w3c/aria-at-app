@@ -91,9 +91,9 @@ const NewTestPlanReportModal = ({
         await addTestPlanReport({
             variables: {
                 testPlanVersionId: selectedTestPlanVersion,
-                atId: selectedAt,
+                atId: selectedAt.id,
                 atVersion: atVersion,
-                browserId: selectedBrowser,
+                browserId: selectedBrowser.id,
                 browserVersion: browserVersion
             }
         });
