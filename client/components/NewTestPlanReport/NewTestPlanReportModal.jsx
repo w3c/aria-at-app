@@ -51,9 +51,9 @@ const NewTestPlanReportModal = ({
 
             setAllTestPlanVersions(allTestPlanVersions);
 
-            // set the defaults, since all dropdown fields are mandatory
-            setSelectedAt(ats[0]);
-            setSelectedBrowser(browsers[0]);
+            // set the default AT and Browser dropdown values, since all dropdown fields are mandatory
+            setSelectedAt(ats[0].id);
+            setSelectedBrowser(browsers[0].id);
         }
     }, [data]);
 
@@ -91,9 +91,9 @@ const NewTestPlanReportModal = ({
         await addTestPlanReport({
             variables: {
                 testPlanVersionId: selectedTestPlanVersion,
-                atId: selectedAt.id,
+                atId: selectedAt,
                 atVersion: atVersion,
-                browserId: selectedBrowser.id,
+                browserId: selectedBrowser,
                 browserVersion: browserVersion
             }
         });
