@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Helmet } from 'react-helmet';
-import { Link, useParams, useHistory } from 'react-router-dom';
+import { Link, useParams, useHistory, Redirect } from 'react-router-dom';
 import useRouterQuery from '../../hooks/useRouterQuery';
 import { useQuery, useMutation } from '@apollo/client';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -79,7 +79,11 @@ const TestRun = () => {
     const testRendererSubmitButtonRef = useRef();
     const conflictMarkdownRef = useRef();
 
-    const { runId: testPlanRunId, testPlanReportId } = params;
+    const {
+        runId: testPlanRunId,
+        taskId: testPlanTaskId,
+        testPlanReportId
+    } = params;
 
     const { loading, data, error, refetch } = useQuery(
         testPlanRunId ? TEST_RUN_PAGE_QUERY : TEST_RUN_PAGE_ANON_QUERY,
@@ -197,7 +201,24 @@ const TestRun = () => {
         testResult: testResults.find(t => t.test.id === test.id),
         hasConflicts: !!conflicts.find(c => c.source.test.id === test.id)
     }));
-    const currentTest = tests[currentTestIndex];
+
+    // Validate any /task/\d+ route parameter
+    if (
+        testPlanTaskId !== undefined &&
+        testPlanTaskId > 0 &&
+        tests.length < testPlanTaskId
+    ) {
+        return <Redirect to={{ pathname: '/404' }} />;
+    }
+
+    if (
+        testPlanTaskId !== undefined &&
+        testPlanTaskId - 1 !== currentTestIndex
+    ) {
+        setCurrentTestIndex(testPlanTaskId - 1);
+    }
+
+    const currentTest = tests[testPlanTaskId - 1 || currentTestIndex];
     const hasTestsToRun = tests.length;
 
     if (!currentTest.testResult && !pageReadyRef.current && isSignedIn)
@@ -814,6 +835,7 @@ const TestRun = () => {
                 <TestNavigator
                     show={showTestNavigator}
                     tests={tests}
+                    testPlanRunId={parseInt(testPlanRunId)}
                     currentTestIndex={currentTestIndex}
                     toggleShowClick={toggleTestNavigator}
                     handleTestClick={handleTestClick}

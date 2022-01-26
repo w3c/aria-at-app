@@ -5,14 +5,15 @@ import {
     faArrowLeft,
     faArrowRight
 } from '@fortawesome/free-solid-svg-icons';
-import { Col } from 'react-bootstrap';
-import React from 'react';
+import { Col, Overlay, Tooltip } from 'react-bootstrap';
+import React, { useRef, useState } from 'react';
 
 const TestNavigator = ({
     show = true,
     isSignedIn = false,
     tests = [],
     currentTestIndex = 0,
+    testPlanRunId = 0,
     toggleShowClick = () => {},
     handleTestClick = () => {}
 }) => {
@@ -69,27 +70,48 @@ const TestNavigator = ({
                                 }
                             }
 
+                            const [show, setShow] = useState(false);
+                            const target = useRef(null);
+
                             return (
                                 <li
                                     className={`test-name-wrapper ${resultClassName}`}
                                     key={`TestNavigatorItem_${test.id}`}
                                 >
                                     <a
-                                        href="#"
+                                        ref={target}
+                                        href={`/run/${testPlanRunId}/task/${test.index +
+                                            1}`}
                                         onClick={async () =>
                                             await handleTestClick(test.index)
                                         }
+                                        onBlur={() => setShow(false)}
+                                        onFocus={() => setShow(true)}
+                                        onMouseLeave={() => setShow(false)}
+                                        onMouseEnter={() => setShow(true)}
                                         className="test-name"
                                         aria-current={
                                             test.index === currentTestIndex
                                         }
+                                        aria-label={`${test.title} (${resultStatus})`}
                                     >
                                         {test.title}
                                     </a>
                                     <span
+                                        aria-hidden="true"
                                         className="progress-indicator"
-                                        title={`${resultStatus}`}
                                     />
+                                    <Overlay
+                                        target={target.current}
+                                        show={show}
+                                        placement="top-end"
+                                    >
+                                        {props => (
+                                            <Tooltip {...props}>
+                                                {resultStatus}
+                                            </Tooltip>
+                                        )}
+                                    </Overlay>
                                 </li>
                             );
                         })}
@@ -107,6 +129,7 @@ TestNavigator.propTypes = {
     testResult: PropTypes.object,
     conflicts: PropTypes.object,
     currentTestIndex: PropTypes.number,
+    testPlanRunId: PropTypes.number,
     toggleShowClick: PropTypes.func,
     handleTestClick: PropTypes.func
 };

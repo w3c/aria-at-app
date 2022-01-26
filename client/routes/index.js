@@ -42,6 +42,16 @@ export default [
         component: TestRun
     },
     {
+        path: '/run/:runId(\\d+)/task/:taskId(\\d+)',
+        component: () => {
+            return (
+                <ConfirmAuth requiredPermission="TESTER">
+                    <Route component={TestRun} />
+                </ConfirmAuth>
+            );
+        }
+    },
+    {
         path: '/run/:runId(\\d+)',
         component: () => {
             return (
