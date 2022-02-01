@@ -886,7 +886,12 @@ const TestRenderer = ({
                                         <Fieldset
                                             id={`cmd-${commandIndex}-problems`}
                                         >
-                                            {unexpectedBehaviors.description[0]}
+                                            <legend>
+                                                {
+                                                    unexpectedBehaviors
+                                                        .description[0]
+                                                }
+                                            </legend>
                                             {isSubmitted && (
                                                 <Feedback
                                                     className={`${unexpectedBehaviors
