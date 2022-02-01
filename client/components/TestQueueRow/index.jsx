@@ -20,6 +20,7 @@ import {
     REMOVE_TESTER_MUTATION,
     REMOVE_TESTER_RESULTS_MUTATION
 } from '../TestQueue/queries';
+import { gitUpdatedDateToString } from '../../utils/gitUtils';
 
 const TestQueueRow = ({
     user = {},
@@ -114,25 +115,43 @@ const TestQueueRow = ({
     };
 
     const renderAssignedUserToTestPlan = () => {
+        const gitUpdatedDateString = (
+            <p className="git-string">
+                Published {gitUpdatedDateToString(testPlanVersion.updatedAt)}
+            </p>
+        );
         // Determine if current user is assigned to testPlan
         if (currentUserAssigned)
             return (
-                <Link to={`/run/${currentUserTestPlanRun.id}`}>
-                    {testPlanVersion.title ||
-                        `"${testPlanVersion.testPlan.directory}"`}
-                </Link>
+                <>
+                    <Link
+                        className="test-plan"
+                        to={`/run/${currentUserTestPlanRun.id}`}
+                    >
+                        {testPlanVersion.title ||
+                            `"${testPlanVersion.testPlan.directory}"`}
+                    </Link>
+                    {gitUpdatedDateString}
+                </>
             );
 
         if (!isSignedIn)
             return (
-                <Link to={`/test-plan-report/${testPlanReport.id}`}>
-                    {testPlanVersion.title ||
-                        `"${testPlanVersion.testPlan.directory}"`}
-                </Link>
+                <>
+                    <Link to={`/test-plan-report/${testPlanReport.id}`}>
+                        {testPlanVersion.title ||
+                            `"${testPlanVersion.testPlan.directory}"`}
+                    </Link>
+                    {gitUpdatedDateString}
+                </>
             );
 
         return (
-            testPlanVersion.title || `"${testPlanVersion.testPlan.directory}"`
+            <div>
+                {testPlanVersion.title ||
+                    `"${testPlanVersion.testPlan.directory}"`}
+                {gitUpdatedDateString}
+            </div>
         );
     };
 
@@ -337,6 +356,17 @@ const TestQueueRow = ({
     const { status, results } = evaluateStatusAndResults();
     const nextReportStatus = evaluateNewReportStatus();
 
+    const getRowId = tester =>
+        [
+            'plan',
+            testPlanReport.id,
+            'run',
+            currentUserTestPlanRun.id,
+            'assignee',
+            tester.username,
+            'completed'
+        ].join('-');
+
     return (
         <tr className="test-queue-run-row">
             <th>{renderAssignedUserToTestPlan()}</th>
@@ -348,11 +378,6 @@ const TestQueueRow = ({
                             <Button
                                 variant="secondary"
                                 onClick={() => toggleTesterAssign(username)}
-                                aria-label={
-                                    !currentUserAssigned
-                                        ? 'Assign Yourself'
-                                        : 'Unassign Yourself'
-                                }
                                 className="assign-self"
                             >
                                 {!currentUserAssigned
@@ -378,19 +403,11 @@ const TestQueueRow = ({
                                             // Allows ATs to read the number of
                                             // completed tests when tabbing to this
                                             // link
-                                            aria-describedby={
-                                                `assignee-${tester.username}-` +
-                                                `completed`
-                                            }
+                                            aria-describedby={getRowId(tester)}
                                         >
                                             {tester.username}
                                         </a>
-                                        <div
-                                            id={
-                                                `assignee-${tester.username}-` +
-                                                `completed`
-                                            }
-                                        >
+                                        <div id={getRowId(tester)}>
                                             {`(${testResults.reduce(
                                                 (acc, { completedAt }) =>
                                                     acc + (completedAt ? 1 : 0),
