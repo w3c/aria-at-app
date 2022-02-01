@@ -697,7 +697,14 @@ const TestRenderer = ({
                                                 }
                                             />
                                         </Text>
-                                        <Table>
+                                        <h4
+                                            id={`command-${commandIndex}-assertions-heading`}
+                                        >
+                                            Assertions {header}
+                                        </h4>
+                                        <Table
+                                            aria-labelledby={`command-${commandIndex}-assertions-heading`}
+                                        >
                                             <tbody>
                                                 <tr>
                                                     <th>
