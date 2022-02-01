@@ -356,6 +356,17 @@ const TestQueueRow = ({
     const { status, results } = evaluateStatusAndResults();
     const nextReportStatus = evaluateNewReportStatus();
 
+    const getRowId = tester =>
+        [
+            'plan',
+            testPlanReport.id,
+            'run',
+            currentUserTestPlanRun.id,
+            'assignee',
+            tester.username,
+            'completed'
+        ].join('-');
+
     return (
         <tr className="test-queue-run-row">
             <th>{renderAssignedUserToTestPlan()}</th>
@@ -392,19 +403,11 @@ const TestQueueRow = ({
                                             // Allows ATs to read the number of
                                             // completed tests when tabbing to this
                                             // link
-                                            aria-describedby={
-                                                `assignee-${tester.username}-` +
-                                                `completed`
-                                            }
+                                            aria-describedby={getRowId(tester)}
                                         >
                                             {tester.username}
                                         </a>
-                                        <div
-                                            id={
-                                                `assignee-${tester.username}-` +
-                                                `completed`
-                                            }
-                                        >
+                                        <div id={getRowId(tester)}>
                                             {`(${testResults.reduce(
                                                 (acc, { completedAt }) =>
                                                     acc + (completedAt ? 1 : 0),
