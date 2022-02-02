@@ -6,7 +6,14 @@ import {
     ADD_TEST_QUEUE_MUTATION,
     POPULATE_ADD_TEST_PLAN_TO_QUEUE_MODAL_QUERY
 } from '../TestQueue/queries';
+import './NewTestPlanReportModal.css';
 import { gitUpdatedDateToString } from '../../utils/gitUtils';
+
+const handleOpen = function() {
+    document
+        .querySelector('[role="dialog"].modal select:first-of-type')
+        .focus();
+};
 
 const NewTestPlanReportModal = ({
     show = false,
@@ -28,9 +35,7 @@ const NewTestPlanReportModal = ({
     const [selectedTestPlanVersion, setSelectedTestPlanVersion] = useState('');
 
     // eslint-disable-next-line no-unused-vars
-    const { loading, error, data } = useQuery(
-        POPULATE_ADD_TEST_PLAN_TO_QUEUE_MODAL_QUERY
-    );
+    const { data } = useQuery(POPULATE_ADD_TEST_PLAN_TO_QUEUE_MODAL_QUERY);
     const [addTestPlanReport] = useMutation(ADD_TEST_QUEUE_MUTATION);
 
     useEffect(() => {
@@ -44,7 +49,12 @@ const NewTestPlanReportModal = ({
                     ...version
                 }))
                 .flat();
+
             setAllTestPlanVersions(allTestPlanVersions);
+
+            // set the default AT and Browser dropdown values, since all dropdown fields are mandatory
+            setSelectedAt(ats[0].id);
+            setSelectedBrowser(browsers[0].id);
         }
     }, [data]);
 
@@ -57,7 +67,25 @@ const NewTestPlanReportModal = ({
                         t.testPlan.directory === v.testPlan.directory
                 ) === i
         );
+
         setFilteredTestPlanVersions(filteredTestPlanVersions);
+
+        // mark the first testPlanVersion as selected
+        if (filteredTestPlanVersions.length) {
+            const plan = filteredTestPlanVersions[0];
+
+            setSelectedTestPlan(plan.id);
+
+            // find the versions that apply and pre-set these
+            const matchingTestPlanVersions = filteredTestPlanVersions.filter(
+                item =>
+                    item.title === plan.title &&
+                    item.testPlan.directory === plan.testPlan.directory
+            );
+
+            setSelectedTestPlanVersion(matchingTestPlanVersions[0].id);
+            setTestPlanVersions(matchingTestPlanVersions);
+        }
     }, [allTestPlanVersions]);
 
     const handleCreateTestPlanReport = async () => {
@@ -73,30 +101,20 @@ const NewTestPlanReportModal = ({
         await handleAddToTestQueue();
     };
 
-    const dropdownRowWithInputField = ({
-        controlId,
-        label,
-        dropdownOptions,
-        dropdownPlaceholder,
-        inputFieldPlaceholder,
-        dropdownValue,
-        inputFieldValue,
-        handleDropdownSelected,
-        handleInputFieldUpdated
-    }) => {
+    const dropdownRowWithInputField = ({ heading, dropdown, input }) => {
         return (
-            <div className="add-test-plan-queue-modal-row">
-                <Form.Group controlId={controlId}>
-                    <Form.Label>{label}</Form.Label>
+            <fieldset className="add-test-plan-queue-modal-row">
+                <legend>
+                    <h2>{heading}</h2>
+                </legend>
+                <Form.Group controlId={dropdown.id}>
+                    <Form.Label>{dropdown.label}</Form.Label>
                     <Form.Control
                         as="select"
-                        onChange={e => handleDropdownSelected(e.target.value)}
-                        value={dropdownValue}
+                        onChange={e => dropdown.onSelect(e.target.value)}
+                        value={dropdown.value}
                     >
-                        <option disabled value={''}>
-                            {dropdownPlaceholder}
-                        </option>
-                        {dropdownOptions.map(item => (
+                        {dropdown.options.map(item => (
                             <option
                                 key={`${item.name}-${item.id}`}
                                 value={item.id}
@@ -106,84 +124,43 @@ const NewTestPlanReportModal = ({
                         ))}
                     </Form.Control>
                 </Form.Group>
-                <Form.Group className="add-test-plan-queue-modal-normalize-row">
+                <Form.Group
+                    controlId={input.id}
+                    className="add-test-plan-queue-modal-normalize-row"
+                >
+                    <Form.Label>{input.label}</Form.Label>
                     <Form.Control
                         type="text"
-                        value={inputFieldValue}
-                        placeholder={inputFieldPlaceholder}
-                        disabled={!dropdownValue}
-                        onChange={e => handleInputFieldUpdated(e.target.value)}
+                        value={input.value}
+                        onChange={e => input.onChange(e.target.value)}
                     />
                 </Form.Group>
-            </div>
+            </fieldset>
         );
     };
 
-    const dropdownsRow = ({
-        label,
-        primaryControlId,
-        secondaryControlId,
-        primaryDropdownOptions,
-        secondaryDropdownOptions,
-        primaryDropdownPlaceholder,
-        secondaryDropdownPlaceholder,
-        primaryDropdownValue,
-        secondaryDropdownValue,
-        handlePrimaryDropdownSelected,
-        handleSecondaryDropdownSelected
-    }) => {
+    const dropdownsRow = ({ heading, dropdowns }) => {
         return (
-            <div className="add-test-plan-queue-modal-row">
-                <Form.Group controlId={primaryControlId}>
-                    <Form.Label>{label}</Form.Label>
-                    <Form.Control
-                        as="select"
-                        onChange={e =>
-                            handlePrimaryDropdownSelected(e.target.value)
-                        }
-                        value={primaryDropdownValue}
-                    >
-                        <option disabled value={''}>
-                            {primaryDropdownPlaceholder}
-                        </option>
-                        {primaryDropdownOptions.map(item => (
-                            <option
-                                key={`${item.title ||
-                                    item.testPlan.directory}-${item.id}`}
-                                value={item.id}
-                            >
-                                {item.title || `"${item.testPlan.directory}"`}
-                            </option>
-                        ))}
-                    </Form.Control>
-                </Form.Group>
-                <Form.Group
-                    controlId={secondaryControlId}
-                    className="add-test-plan-queue-modal-normalize-row"
-                >
-                    <Form.Control
-                        as="select"
-                        onChange={e =>
-                            handleSecondaryDropdownSelected(e.target.value)
-                        }
-                        value={secondaryDropdownValue}
-                    >
-                        <option disabled value={''}>
-                            {secondaryDropdownPlaceholder}
-                        </option>
-                        {secondaryDropdownOptions.map(item => (
-                            <option
-                                key={`${item.gitSha}-${item.id}`}
-                                value={item.id}
-                            >
-                                {gitUpdatedDateToString(item.updatedAt)}{' '}
-                                {item.gitMessage} ({item.gitSha.substring(0, 7)}
-                                )
-                            </option>
-                        ))}
-                    </Form.Control>
-                </Form.Group>
-            </div>
+            <fieldset>
+                <legend>
+                    <h2>{heading}</h2>
+                </legend>
+                {dropdowns.map(dropdown => (
+                    <Form.Group key={dropdown.id} controlId={dropdown.id}>
+                        <Form.Label>{dropdown.label}</Form.Label>
+                        <Form.Control
+                            as="select"
+                            onChange={e => dropdown.onSelect(e.target.value)}
+                            value={dropdown.value}
+                            disabled={
+                                dropdown.isDisabled && dropdown.isDisabled()
+                            }
+                        >
+                            {dropdown.options.map(dropdown.renderOption)}
+                        </Form.Control>
+                    </Form.Group>
+                ))}
+            </fieldset>
         );
     };
 
@@ -191,64 +168,110 @@ const NewTestPlanReportModal = ({
         <Modal
             show={show}
             onHide={handleClose}
+            onShow={handleOpen}
             aria-labelledby="add-test-plan-to-queue-modal"
         >
             <Modal.Header closeButton>
-                <Modal.Title>Add a Test Plan to the Test Queue</Modal.Title>
+                <Modal.Title as="h1" id="add-test-plan-to-queue-modal">
+                    Add a Test Plan to the Test Queue
+                </Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <div className="add-test-plan-queue-modal-container">
                     {dropdownRowWithInputField({
-                        label: 'Select an AT and Version',
-                        controlId: 'select-at',
-                        dropdownOptions: ats,
-                        dropdownPlaceholder: 'Assistive Technology',
-                        inputFieldPlaceholder: 'AT Version',
-                        dropdownValue: selectedAt,
-                        inputFieldValue: atVersion,
-                        handleDropdownSelected: setSelectedAt,
-                        handleInputFieldUpdated: setAtVersion
+                        heading: 'Select an AT and Version',
+                        dropdown: {
+                            id: 'select-at',
+                            label: 'Assistive Technology',
+                            options: ats,
+                            value: selectedAt,
+                            onSelect: setSelectedAt
+                        },
+                        input: {
+                            id: 'at-version',
+                            label: 'AT Version',
+                            value: atVersion,
+                            onChange: setAtVersion
+                        }
                     })}
 
                     {dropdownRowWithInputField({
-                        label: 'Select a Browser and Version',
-                        controlId: 'select-browser',
-                        dropdownOptions: browsers,
-                        dropdownPlaceholder: 'Browser',
-                        inputFieldPlaceholder: 'Browser Version',
-                        dropdownValue: selectedBrowser,
-                        inputFieldValue: browserVersion,
-                        handleDropdownSelected: setSelectedBrowser,
-                        handleInputFieldUpdated: setBrowserVersion
+                        heading: 'Select a Browser and Version',
+                        dropdown: {
+                            id: 'select-browser',
+                            label: 'Browser',
+                            options: browsers,
+                            value: selectedBrowser,
+                            onSelect: setSelectedBrowser
+                        },
+                        input: {
+                            id: 'browser-version',
+                            label: 'Browser Version',
+                            value: browserVersion,
+                            onChange: setBrowserVersion
+                        }
                     })}
 
                     {dropdownsRow({
-                        label: 'Select a Test Plan and Version',
-                        primaryControlId: 'select-test-plan',
-                        secondaryControlId: 'select-test-plan-version',
-                        primaryDropdownOptions: filteredTestPlanVersions,
-                        secondaryDropdownOptions: testPlanVersions,
-                        primaryDropdownPlaceholder: 'Select Test Plan',
-                        secondaryDropdownPlaceholder: 'Select Version',
-                        primaryDropdownValue: selectedTestPlan,
-                        secondaryDropdownValue: selectedTestPlanVersion,
-                        handlePrimaryDropdownSelected: value => {
-                            // update test plan versions based on selected test plan
-                            const retrievedTestPlan = allTestPlanVersions.find(
-                                testPlanVersion => testPlanVersion.id == value
-                            );
-                            const testPlanVersions = allTestPlanVersions.filter(
-                                testPlanVersion =>
-                                    testPlanVersion.title ==
-                                        retrievedTestPlan.title &&
-                                    testPlanVersion.testPlan.directory ==
-                                        retrievedTestPlan.testPlan.directory
-                            );
-                            setTestPlanVersions(testPlanVersions);
-                            setSelectedTestPlanVersion('');
-                            setSelectedTestPlan(value);
-                        },
-                        handleSecondaryDropdownSelected: setSelectedTestPlanVersion
+                        heading: 'Select a Test Plan and Version',
+                        dropdowns: [
+                            {
+                                id: 'select-test-plan',
+                                label: 'Test Plan',
+                                options: filteredTestPlanVersions,
+                                renderOption: item => (
+                                    <option
+                                        key={`${item.title ||
+                                            item.testPlan.directory}-${
+                                            item.id
+                                        }`}
+                                        value={item.id}
+                                    >
+                                        {item.title ||
+                                            `"${item.testPlan.directory}"`}
+                                    </option>
+                                ),
+                                onSelect: value => {
+                                    // update test plan versions based on selected test plan
+                                    const retrievedTestPlan = allTestPlanVersions.find(
+                                        testPlanVersion =>
+                                            testPlanVersion.id === value
+                                    );
+                                    const testPlanVersions = allTestPlanVersions.filter(
+                                        testPlanVersion =>
+                                            testPlanVersion.title ===
+                                                retrievedTestPlan.title &&
+                                            testPlanVersion.testPlan
+                                                .directory ===
+                                                retrievedTestPlan.testPlan
+                                                    .directory
+                                    );
+                                    setTestPlanVersions(testPlanVersions);
+                                    setSelectedTestPlanVersion(
+                                        testPlanVersions[0].id
+                                    );
+                                    setSelectedTestPlan(value);
+                                }
+                            },
+                            {
+                                id: 'select-test-plan-version',
+                                label: 'Test Plan Version',
+                                isDisabled: () => !selectedTestPlan,
+                                options: testPlanVersions,
+                                renderOption: item => (
+                                    <option
+                                        key={`${item.gitSha}-${item.id}`}
+                                        value={item.id}
+                                    >
+                                        {gitUpdatedDateToString(item.updatedAt)}{' '}
+                                        {item.gitMessage} (
+                                        {item.gitSha.substring(0, 7)})
+                                    </option>
+                                ),
+                                value: selectedTestPlanVersion,
+                                onSelect: setSelectedTestPlanVersion
+                            }
+                        ]
                     })}
                 </div>
             </Modal.Body>
