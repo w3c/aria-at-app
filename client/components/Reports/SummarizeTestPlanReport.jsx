@@ -47,7 +47,12 @@ const SummarizeTestPlanReport = ({ testPlanReport }) => {
                 {getTestPlanVersionTitle(testPlanVersion)}&nbsp;with&nbsp;
                 {getTestPlanTargetTitle(testPlanTarget)}
             </h1>
-            <Breadcrumb>
+            <Breadcrumb
+                label="Breadcrumb"
+                listProps={{
+                    'aria-label': 'Breadcrumb Navigation'
+                }}
+            >
                 <LinkContainer to="/reports">
                     <Breadcrumb.Item>
                         <FontAwesomeIcon icon={faHome} />
