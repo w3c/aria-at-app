@@ -7,6 +7,7 @@ import {
     POPULATE_ADD_TEST_PLAN_TO_QUEUE_MODAL_QUERY
 } from '../TestQueue/queries';
 import './NewTestPlanReportModal.css';
+import { gitUpdatedDateToString } from '../../utils/gitUtils';
 
 const handleOpen = function() {
     document
@@ -262,7 +263,9 @@ const NewTestPlanReportModal = ({
                                         key={`${item.gitSha}-${item.id}`}
                                         value={item.id}
                                     >
-                                        {item.gitSha}
+                                        {gitUpdatedDateToString(item.updatedAt)}{' '}
+                                        {item.gitMessage} (
+                                        {item.gitSha.substring(0, 7)})
                                     </option>
                                 ),
                                 value: selectedTestPlanVersion,
