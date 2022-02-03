@@ -460,7 +460,7 @@ const TestRenderer = ({
         });
     };
 
-    const InstructionsContent = () => {
+    const InstructionsContent = ({ labelIdRef }) => {
         const allInstructions = [
             ...pageContent.instructions.instructions.instructions,
             ...pageContent.instructions.instructions.strongInstructions,
@@ -473,16 +473,24 @@ const TestRenderer = ({
         const commandsContent = parseListContent(commands);
         const content = parseListContent(allInstructions, commandsContent);
 
-        return <NumberedList>{content}</NumberedList>;
+        return (
+            <NumberedList aria-labelledby={labelIdRef}>{content}</NumberedList>
+        );
     };
 
-    const AssertionsContent = () => {
+    InstructionsContent.propTypes = { labelIdRef: PropTypes.string };
+
+    const AssertionsContent = ({ labelIdRef }) => {
         const assertions = [...pageContent.instructions.assertions.assertions];
 
         const content = parseListContent(assertions);
 
-        return <NumberedList>{content}</NumberedList>;
+        return (
+            <NumberedList aria-labelledby={labelIdRef}>{content}</NumberedList>
+        );
     };
+
+    AssertionsContent.propTypes = { labelIdRef: PropTypes.string };
 
     const parseLinebreakOutput = (output = []) => {
         return output.map(item => {
@@ -615,17 +623,17 @@ const TestRenderer = ({
                             {pageContent.instructions.header.header}
                         </HeadingText>
                         <Text>{pageContent.instructions.description}</Text>
-                        <SubHeadingText>
+                        <SubHeadingText id="instruction-list-heading">
                             {pageContent.instructions.instructions.header}
                         </SubHeadingText>
-                        <InstructionsContent />
-                        <SubHeadingText>
+                        <InstructionsContent labelIdRef="instruction-list-heading" />
+                        <SubHeadingText id="success-criteria-list-heading">
                             {pageContent.instructions.assertions.header}
                         </SubHeadingText>
                         <Text>
                             {pageContent.instructions.assertions.description}
                         </Text>
-                        <AssertionsContent />
+                        <AssertionsContent labelIdRef="success-criteria-list-heading" />
                         <Button
                             disabled={
                                 !pageContent.instructions.openTestPage.enabled
