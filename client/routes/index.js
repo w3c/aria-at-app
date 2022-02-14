@@ -9,6 +9,7 @@ import SignupInstructions from '@components/SignupInstructions';
 import TestQueue from '@components/TestQueue';
 import TestRun from '@components/TestRun';
 import UserSettings from '@components/UserSettings';
+import TestPlanVersionUpdater from '../components/TestPlanVersionUpdater';
 
 export default [
     {
@@ -50,6 +51,10 @@ export default [
                 </ConfirmAuth>
             );
         }
+    },
+    {
+        path: '/test-plan-version-updater',
+        component: TestPlanVersionUpdater
     },
     {
         // Note that this component includes a nested router!
