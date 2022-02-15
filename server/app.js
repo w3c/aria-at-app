@@ -26,6 +26,7 @@ const server = new ApolloServer({
     typeDefs: graphqlSchema,
     context: getGraphQLContext,
     resolvers,
+    // The newer IDE does not work because of CORS issues
     plugins: [ApolloServerPluginLandingPageGraphQLPlayground()]
 });
 server.start().then(() => {
