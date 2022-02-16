@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client';
 
 export const UPDATER_QUERY = gql`
-    query TestInfo {
-        testPlanReport(id: 1) {
+    query Updater($testPlanReportId: ID!) {
+        testPlanReport(id: $testPlanReportId) {
             testPlanTarget {
                 at {
                     name

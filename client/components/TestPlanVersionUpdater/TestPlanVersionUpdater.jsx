@@ -6,7 +6,9 @@ import PageStatus from '../common/PageStatus';
 import { gitUpdatedDateToString } from '../../utils/gitUtils';
 
 const TestPlanVersionUpdater = () => {
-    const { loading, data: updaterData } = useQuery(UPDATER_QUERY);
+    const { loading, data: updaterData } = useQuery(UPDATER_QUERY, {
+        variables: { testPlanReportId: 1 }
+    });
 
     if (loading) {
         return (
