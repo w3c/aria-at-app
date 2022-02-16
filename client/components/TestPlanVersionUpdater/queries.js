@@ -46,12 +46,14 @@ export const UPDATER_QUERY = gql`
 
 export const VERSION_QUERY = gql`
     fragment TestFragment on Test {
+        __typename
+        id
         title
         ats {
             id
         }
         atMode
-        scenarios(atId: 1) {
+        scenarios(atId: 3) {
             commands {
                 text
             }
@@ -67,6 +69,7 @@ export const VERSION_QUERY = gql`
             draftTestPlanRuns {
                 tester {
                     id
+                    username
                 }
                 testResults {
                     test {
