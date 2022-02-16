@@ -1,8 +1,21 @@
 import { gql } from '@apollo/client';
 
-export const UPDATER_QUERY = gql`
-    query Updater($testPlanReportId: ID!) {
+export const TEST_PLAN_ID_QUERY = gql`
+    query TestPlanIdQuery($testPlanReportId: ID!) {
         testPlanReport(id: $testPlanReportId) {
+            testPlanVersion {
+                testPlan {
+                    id
+                }
+            }
+        }
+    }
+`;
+
+export const UPDATER_QUERY = gql`
+    query Updater($testPlanReportId: ID!, $testPlanId: ID!) {
+        testPlanReport(id: $testPlanReportId) {
+            id
             testPlanTarget {
                 at {
                     name
@@ -15,15 +28,17 @@ export const UPDATER_QUERY = gql`
                 browserVersion
             }
             testPlanVersion {
+                id
                 title
+                updatedAt
             }
         }
-        testPlan(id: "toggle-button") {
+        testPlan(id: $testPlanId) {
             testPlanVersions {
+                id
                 gitMessage
                 gitSha
                 updatedAt
-                id
             }
         }
     }
@@ -47,8 +62,8 @@ export const VERSION_QUERY = gql`
         }
     }
 
-    query Tests {
-        testPlanReport(id: 1) {
+    query VersionQuery($testPlanReportId: ID!, $testPlanVersionId: ID!) {
+        testPlanReport(id: $testPlanReportId) {
             draftTestPlanRuns {
                 tester {
                     id
@@ -68,7 +83,7 @@ export const VERSION_QUERY = gql`
                 }
             }
         }
-        testPlanVersion(id: 150) {
+        testPlanVersion(id: $testPlanVersionId) {
             tests {
                 ...TestFragment
             }
