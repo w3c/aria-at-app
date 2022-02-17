@@ -30,6 +30,10 @@ const SelectedReport = styled.p`
     padding: 10px;
 `;
 
+const DangerNote = styled.strong`
+    color: var(--pink);
+`;
+
 const toSentence = array => {
     // https://stackoverflow.com/a/24376930/3888572
     return array.join(', ').replace(/,\s([^,]+)$/, ' and $1');
@@ -345,44 +349,57 @@ const TestPlanVersionUpdater = () => {
             </Select>
             <h2>Create the New Report</h2>
             <div aria-live="polite">
-                <p>
-                    {(() => {
-                        if (!versionData) {
-                            return (
-                                'The number of test results to copy will be ' +
-                                'shown here after you choose a new version.'
-                            );
-                        }
-                        if (runsWithResults.length === 0) {
-                            return (
-                                'There are no test results associated with ' +
-                                'this report.'
-                            );
-                        }
-
-                        const testers = runsWithResults.map(
-                            testPlanRun => testPlanRun.tester.username
-                        );
-
-                        let deletionNote;
-                        if (!testsToDelete.length) {
-                            deletionNote =
-                                'All test results can be copied from the old ' +
-                                'report to the new report.';
-                        } else {
-                            deletionNote =
-                                `Note that ${testsToDelete.length} tests  ` +
-                                `differ between the old and new versions and ` +
-                                `cannot be automatically copied.`;
-                        }
-
+                {(() => {
+                    if (!versionData) {
                         return (
-                            `Found ${allTestResults.length} test results for ` +
-                            `${testers.length > 1 ? 'testers' : 'tester'} ` +
-                            `${toSentence(testers)}. ${deletionNote}`
+                            <p>
+                                The number of test results to copy will be shown
+                                here after you choose a new version.
+                            </p>
                         );
-                    })()}
-                </p>
+                    }
+                    if (runsWithResults.length === 0) {
+                        <p>
+                            There are no test results associated with this
+                            report.
+                        </p>;
+                    }
+
+                    const testers = runsWithResults.map(
+                        testPlanRun => testPlanRun.tester.username
+                    );
+
+                    let deletionNote;
+                    if (!testsToDelete.length) {
+                        deletionNote = (
+                            <p>
+                                All test results can be copied from the old
+                                report to the new report.
+                            </p>
+                        );
+                    } else {
+                        deletionNote = (
+                            <p>
+                                <DangerNote>
+                                    Note that {testsToDelete.length} tests
+                                    differ between the old and new versions and
+                                    cannot be automatically copied.
+                                </DangerNote>
+                            </p>
+                        );
+                    }
+
+                    return (
+                        <>
+                            <p>
+                                Found {allTestResults.length} test results for{' '}
+                                {testers.length > 1 ? 'testers' : 'tester'}{' '}
+                                {toSentence(testers)}.
+                            </p>
+                            {deletionNote}
+                        </>
+                    );
+                })()}
                 {eventLogMessages.map(eventLogMessage => (
                     <p key={nextId()}>{eventLogMessage}</p>
                 ))}
