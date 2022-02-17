@@ -31,6 +31,8 @@ export const UPDATER_QUERY = gql`
             testPlanVersion {
                 id
                 title
+                gitMessage
+                gitSha
                 updatedAt
             }
         }
@@ -180,6 +182,14 @@ export const SUBMIT_TEST_RESULT_MUTATION = gql`
             submitTestResult(input: $testResultInput) {
                 locationOfData
             }
+        }
+    }
+`;
+
+export const DELETE_TEST_PLAN_REPORT = gql`
+    mutation DeleteTestPlanReport($testPlanReportId: ID!) {
+        testPlanReport(id: $testPlanReportId) {
+            deleteTestPlanReport
         }
     }
 `;

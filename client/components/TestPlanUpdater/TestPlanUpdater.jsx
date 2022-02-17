@@ -5,6 +5,7 @@ import {
     CREATE_TEST_PLAN_REPORT_MUTATION,
     CREATE_TEST_PLAN_RUN_MUTATION,
     CREATE_TEST_RESULT_MUTATION,
+    DELETE_TEST_PLAN_REPORT,
     SAVE_TEST_RESULT_MUTATION,
     SUBMIT_TEST_RESULT_MUTATION,
     TEST_PLAN_ID_QUERY,
@@ -15,24 +16,10 @@ import nextId from 'react-id-generator';
 import PageStatus from '../common/PageStatus';
 import { gitUpdatedDateToString } from '../../utils/gitUtils';
 import { useLocation } from 'react-router-dom';
-import styled from '@emotion/styled';
+import { Alert, Button, Form } from 'react-bootstrap';
 import hash from 'object-hash';
 import { omit } from 'lodash';
 import { Helmet } from 'react-helmet';
-
-const Select = styled.select`
-    max-width: 100%;
-`;
-
-const SelectedReport = styled.p`
-    font-family: monospace;
-    border: 1px solid black;
-    padding: 10px;
-`;
-
-const DangerNote = styled.strong`
-    color: var(--pink);
-`;
 
 const toSentence = array => {
     // https://stackoverflow.com/a/24376930/3888572
@@ -92,6 +79,7 @@ const TestPlanVersionUpdater = () => {
     const [updaterData, setUpdaterData] = useState();
     const [versionData, setVersionData] = useState();
     const [eventLogMessages, setEventLogMessages] = useState([]);
+    const [safeToDeleteReportId, setSafeToDeleteReportId] = useState([]);
     const location = useLocation();
 
     useEffect(() => {
@@ -109,7 +97,7 @@ const TestPlanVersionUpdater = () => {
 
     const {
         testPlanReport: {
-            id: testPlanReportId,
+            id: currentReportId,
             testPlanTarget: {
                 at: { id: atId, name: atName },
                 atVersion,
@@ -130,7 +118,11 @@ const TestPlanVersionUpdater = () => {
 
         const { data: versionData } = await client.query({
             query: VERSION_QUERY,
-            variables: { testPlanReportId, testPlanVersionId, atId }
+            variables: {
+                testPlanReportId: currentReportId,
+                testPlanVersionId,
+                atId
+            }
         });
         setVersionData(versionData);
     };
@@ -138,6 +130,7 @@ const TestPlanVersionUpdater = () => {
     const newTestPlanVersionId = versionData?.testPlanVersion.id;
     let runsWithResults;
     let allTestResults;
+    let copyableTestResults;
     let testsToDelete;
     let currentTestIdsToNewTestIds;
     if (versionData) {
@@ -153,6 +146,10 @@ const TestPlanVersionUpdater = () => {
             allTestResults.map(testResult => testResult.test),
             testPlanVersion.tests
         ));
+
+        copyableTestResults = allTestResults.filter(
+            testResult => currentTestIdsToNewTestIds[testResult.test.id]
+        );
     }
 
     const canCreateNewReport = versionData && runsWithResults.length > 0;
@@ -210,7 +207,7 @@ const TestPlanVersionUpdater = () => {
         });
 
         const {
-            testPlanReport: { id: testPlanReportId }
+            testPlanReport: { id: newReportId }
         } = newReportData.findOrCreateTestPlanReport.populatedData;
 
         const created = newReportData.findOrCreateTestPlanReport.created;
@@ -230,7 +227,7 @@ const TestPlanVersionUpdater = () => {
             const { data: runData } = await client.mutate({
                 mutation: CREATE_TEST_PLAN_RUN_MUTATION,
                 variables: {
-                    testPlanReportId,
+                    testPlanReportId: newReportId,
                     testerUserId: testPlanRun.tester.id
                 }
             });
@@ -244,8 +241,6 @@ const TestPlanVersionUpdater = () => {
 
             const testPlanRunId =
                 runData.testPlanReport.assignTester.testPlanRun.id;
-
-            const totalResults = Object.keys(currentTestIdsToNewTestIds).length;
 
             for (const testResult of testPlanRun.testResults) {
                 const testId = currentTestIdsToNewTestIds[testResult.test.id];
@@ -282,18 +277,29 @@ const TestPlanVersionUpdater = () => {
                 numberOfCreatedResults += 1;
 
                 if (
-                    numberOfCreatedResults === totalResults ||
+                    numberOfCreatedResults === copyableTestResults.length ||
                     numberOfCreatedResults % 5 === 0
                 ) {
                     logEvent(
                         `Created ${numberOfCreatedResults} of ` +
-                            `${totalResults} results.`
+                            `${copyableTestResults.length} results.`
                     );
                 }
             }
         }
 
+        setSafeToDeleteReportId(currentReportId);
+
         logEvent('Completed without errors.');
+    };
+
+    const deleteOldTestPlanReport = async () => {
+        await client.mutate({
+            mutation: DELETE_TEST_PLAN_REPORT,
+            variables: {
+                testPlanReportId: safeToDeleteReportId
+            }
+        });
     };
 
     return (
@@ -320,16 +326,22 @@ const TestPlanVersionUpdater = () => {
                 differ between versions cannot be automatically copied.
             </p>
             <h2>Selected Report</h2>
-            <SelectedReport>
+            <Alert variant="secondary">
                 {atName} {atVersion} with {browserName} {browserVersion}{' '}
                 {currentVersion.title}
-            </SelectedReport>
+            </Alert>
             <h2>Pick a Version</h2>
-            <p>
-                Current version is from{' '}
-                {gitUpdatedDateToString(currentVersion.updatedAt)}.
-            </p>
-            <Select defaultValue="unselected" onChange={selectVersion}>
+            <Alert variant="secondary">
+                Current version is{' '}
+                {gitUpdatedDateToString(currentVersion.updatedAt)}{' '}
+                {currentVersion.gitMessage} (
+                {currentVersion.gitSha.substring(0, 7)})
+            </Alert>
+            <Form.Control
+                as="select"
+                onChange={selectVersion}
+                defaultValue="unselected"
+            >
                 <option value="unselected">Please choose a new version</option>
                 {(() =>
                     testPlanVersions.map(testPlanVersion => (
@@ -346,7 +358,7 @@ const TestPlanVersionUpdater = () => {
                             {testPlanVersion.gitSha.substring(0, 7)})
                         </option>
                     )))()}
-            </Select>
+            </Form.Control>
             <h2>Create the New Report</h2>
             <div aria-live="polite">
                 {(() => {
@@ -372,46 +384,50 @@ const TestPlanVersionUpdater = () => {
                     let deletionNote;
                     if (!testsToDelete.length) {
                         deletionNote = (
-                            <p>
+                            <>
                                 All test results can be copied from the old
                                 report to the new report.
-                            </p>
+                            </>
                         );
                     } else {
                         deletionNote = (
-                            <p>
-                                <DangerNote>
-                                    Note that {testsToDelete.length} tests
-                                    differ between the old and new versions and
-                                    cannot be automatically copied.
-                                </DangerNote>
-                            </p>
+                            <>
+                                Note that {testsToDelete.length} tests differ
+                                between the old and new versions and cannot be
+                                automatically copied.
+                            </>
                         );
                     }
 
                     return (
-                        <>
-                            <p>
-                                Found {allTestResults.length} test results for{' '}
-                                {testers.length > 1 ? 'testers' : 'tester'}{' '}
-                                {toSentence(testers)}.
-                            </p>
-                            {deletionNote}
-                        </>
+                        <Alert
+                            variant={testsToDelete.length ? 'danger' : 'info'}
+                        >
+                            Found {allTestResults.length} test results for{' '}
+                            {testers.length > 1 ? 'testers' : 'tester'}{' '}
+                            {toSentence(testers)}. {deletionNote}
+                        </Alert>
                     );
                 })()}
                 {eventLogMessages.map(eventLogMessage => (
                     <p key={nextId()}>{eventLogMessage}</p>
                 ))}
             </div>
-            <button
+            <Button
+                variant="primary"
                 disabled={!canCreateNewReport}
                 onClick={createNewReportWithData}
             >
                 Create updated report
-            </button>
+            </Button>
             <h2>Delete the Old Report</h2>
-            <button disabled>Delete old report</button>
+            <Button
+                variant="secondary"
+                disabled={!safeToDeleteReportId}
+                onClick={deleteOldTestPlanReport}
+            >
+                Delete old report
+            </Button>
         </Container>
     );
 };
