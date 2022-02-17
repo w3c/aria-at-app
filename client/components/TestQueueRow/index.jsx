@@ -44,6 +44,7 @@ const TestQueueRow = ({
 
     const { id, isAdmin, username } = user;
     const {
+        id: testReportId,
         testPlanTarget,
         testPlanVersion,
         draftTestPlanRuns,
@@ -120,6 +121,17 @@ const TestQueueRow = ({
                 Published {gitUpdatedDateToString(testPlanVersion.updatedAt)}
             </p>
         );
+        const updateTestPlanVersionButton = isAdmin ? (
+            <Button
+                href={`/test-plan-updater?id=${testReportId}`}
+                className="updater-button"
+            >
+                {' '}
+                Update Test Plan Version
+            </Button>
+        ) : (
+            ''
+        );
         // Determine if current user is assigned to testPlan
         if (currentUserAssigned)
             return (
@@ -132,6 +144,7 @@ const TestQueueRow = ({
                             `"${testPlanVersion.testPlan.directory}"`}
                     </Link>
                     {gitUpdatedDateString}
+                    {updateTestPlanVersionButton}
                 </>
             );
 
@@ -151,6 +164,7 @@ const TestQueueRow = ({
                 {testPlanVersion.title ||
                     `"${testPlanVersion.testPlan.directory}"`}
                 {gitUpdatedDateString}
+                {updateTestPlanVersionButton}
             </div>
         );
     };
