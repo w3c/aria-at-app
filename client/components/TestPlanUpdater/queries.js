@@ -87,6 +87,10 @@ export const VERSION_QUERY = gql`
                             passed
                             failedReason
                         }
+                        unexpectedBehaviors {
+                            id
+                            otherUnexpectedBehaviorText
+                        }
                     }
                 }
             }
@@ -154,104 +158,26 @@ export const CREATE_TEST_RESULT_MUTATION = gql`
     }
 `;
 
+export const SAVE_TEST_RESULT_MUTATION = gql`
+    mutation SaveTestResultMutation(
+        $testResultId: ID!
+        $testResultInput: TestResultInput!
+    ) {
+        testResult(id: $testResultId) {
+            saveTestResult(input: $testResultInput) {
+                locationOfData
+            }
+        }
+    }
+`;
+
 export const SUBMIT_TEST_RESULT_MUTATION = gql`
-    mutation {
-        testResult(id: "MzFlNeyIxMiI6MTAxfQWNiNW") {
-            submitTestResult(
-                input: {
-                    id: "MzFlNeyIxMiI6MTAxfQWNiNW"
-                    scenarioResults: [
-                        {
-                            id: "ZTJmMeyIxMyI6Ik16RmxOZXlJeE1pSTZNVEF4ZlFXTmlOVyJ9zBmMj"
-                            output: "automatically seeded sample output"
-                            assertionResults: [
-                                {
-                                    id: "NWFmNeyIxNCI6IlpUSm1NZXlJeE15STZJazE2Um14T1pYbEplRTFwU1RaTlZFRjRabEZYVG1sT1Z5Sjl6Qm1NaiJ9WVjNj"
-                                    passed: true
-                                    failedReason: null
-                                }
-                                {
-                                    id: "MGRmNeyIxNCI6IlpUSm1NZXlJeE15STZJazE2Um14T1pYbEplRTFwU1RaTlZFRjRabEZYVG1sT1Z5Sjl6Qm1NaiJ9jk3ZD"
-                                    passed: true
-                                    failedReason: null
-                                }
-                                {
-                                    id: "YzkyMeyIxNCI6IlpUSm1NZXlJeE15STZJazE2Um14T1pYbEplRTFwU1RaTlZFRjRabEZYVG1sT1Z5Sjl6Qm1NaiJ9zlmZG"
-                                    passed: true
-                                    failedReason: null
-                                }
-                            ]
-                            unexpectedBehaviors: []
-                        }
-                        {
-                            id: "NDFlOeyIxMyI6Ik16RmxOZXlJeE1pSTZNVEF4ZlFXTmlOVyJ9DRiMj"
-                            output: "automatically seeded sample output"
-                            assertionResults: [
-                                {
-                                    id: "ZDE5YeyIxNCI6Ik5ERmxPZXlJeE15STZJazE2Um14T1pYbEplRTFwU1RaTlZFRjRabEZYVG1sT1Z5SjlEUmlNaiJ9jMzNT"
-                                    passed: true
-                                    failedReason: null
-                                }
-                                {
-                                    id: "YjAxMeyIxNCI6Ik5ERmxPZXlJeE15STZJazE2Um14T1pYbEplRTFwU1RaTlZFRjRabEZYVG1sT1Z5SjlEUmlNaiJ9WY5Mz"
-                                    passed: true
-                                    failedReason: null
-                                }
-                                {
-                                    id: "MzczNeyIxNCI6Ik5ERmxPZXlJeE15STZJazE2Um14T1pYbEplRTFwU1RaTlZFRjRabEZYVG1sT1Z5SjlEUmlNaiJ9jIwY2"
-                                    passed: true
-                                    failedReason: null
-                                }
-                            ]
-                            unexpectedBehaviors: []
-                        }
-                        {
-                            id: "ZTc5NeyIxMyI6Ik16RmxOZXlJeE1pSTZNVEF4ZlFXTmlOVyJ92JjYj"
-                            output: "automatically seeded sample output"
-                            assertionResults: [
-                                {
-                                    id: "NDliYeyIxNCI6IlpUYzVOZXlJeE15STZJazE2Um14T1pYbEplRTFwU1RaTlZFRjRabEZYVG1sT1Z5SjkySmpZaiJ9zA4NT"
-                                    passed: true
-                                    failedReason: null
-                                }
-                                {
-                                    id: "NGQxNeyIxNCI6IlpUYzVOZXlJeE15STZJazE2Um14T1pYbEplRTFwU1RaTlZFRjRabEZYVG1sT1Z5SjkySmpZaiJ9mViZW"
-                                    passed: true
-                                    failedReason: null
-                                }
-                                {
-                                    id: "OThhNeyIxNCI6IlpUYzVOZXlJeE15STZJazE2Um14T1pYbEplRTFwU1RaTlZFRjRabEZYVG1sT1Z5SjkySmpZaiJ9zNmNG"
-                                    passed: true
-                                    failedReason: null
-                                }
-                            ]
-                            unexpectedBehaviors: []
-                        }
-                        {
-                            id: "OTJhZeyIxMyI6Ik16RmxOZXlJeE1pSTZNVEF4ZlFXTmlOVyJ9Dg3Nj"
-                            output: "automatically seeded sample output"
-                            assertionResults: [
-                                {
-                                    id: "ODJmNeyIxNCI6Ik9USmhaZXlJeE15STZJazE2Um14T1pYbEplRTFwU1RaTlZFRjRabEZYVG1sT1Z5SjlEZzNOaiJ9GFjYT"
-                                    passed: true
-                                    failedReason: null
-                                }
-                                {
-                                    id: "YmZhOeyIxNCI6Ik9USmhaZXlJeE15STZJazE2Um14T1pYbEplRTFwU1RaTlZFRjRabEZYVG1sT1Z5SjlEZzNOaiJ9TQyNT"
-                                    passed: true
-                                    failedReason: null
-                                }
-                                {
-                                    id: "NDFjYeyIxNCI6Ik9USmhaZXlJeE15STZJazE2Um14T1pYbEplRTFwU1RaTlZFRjRabEZYVG1sT1Z5SjlEZzNOaiJ9WZiNz"
-                                    passed: true
-                                    failedReason: null
-                                }
-                            ]
-                            unexpectedBehaviors: []
-                        }
-                    ]
-                }
-            ) {
+    mutation SubmitTestResultMutation(
+        $testResultId: ID!
+        $testResultInput: TestResultInput!
+    ) {
+        testResult(id: $testResultId) {
+            submitTestResult(input: $testResultInput) {
                 locationOfData
             }
         }

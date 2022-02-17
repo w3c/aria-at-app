@@ -5,10 +5,13 @@ import {
     CREATE_TEST_PLAN_REPORT_MUTATION,
     CREATE_TEST_PLAN_RUN_MUTATION,
     CREATE_TEST_RESULT_MUTATION,
+    SAVE_TEST_RESULT_MUTATION,
+    SUBMIT_TEST_RESULT_MUTATION,
     TEST_PLAN_ID_QUERY,
     UPDATER_QUERY,
     VERSION_QUERY
 } from './queries';
+import nextId from 'react-id-generator';
 import PageStatus from '../common/PageStatus';
 import { gitUpdatedDateToString } from '../../utils/gitUtils';
 import { useLocation } from 'react-router-dom';
@@ -157,6 +160,35 @@ const TestPlanVersionUpdater = () => {
         ]);
     };
 
+    const copyTestResult = (testResultSkeleton, testResult) => {
+        return {
+            id: testResultSkeleton.id,
+            scenarioResults: testResultSkeleton.scenarioResults.map(
+                (scenarioResultSkeleton, index) => {
+                    const scenarioResult = testResult.scenarioResults[index];
+                    return {
+                        id: scenarioResultSkeleton.id,
+                        output: scenarioResult.output,
+                        assertionResults: scenarioResultSkeleton.assertionResults.map(
+                            (assertionResultSkeleton, assertionResultIndex) => {
+                                const assertionResult =
+                                    scenarioResult.assertionResults[
+                                        assertionResultIndex
+                                    ];
+                                return {
+                                    id: assertionResultSkeleton.id,
+                                    passed: assertionResult.passed,
+                                    failedReason: assertionResult.failedReason
+                                };
+                            }
+                        ),
+                        unexpectedBehaviors: scenarioResult.unexpectedBehaviors
+                    };
+                }
+            )
+        };
+    };
+
     const createNewReportWithData = async () => {
         const { data: newReportData } = await client.mutate({
             mutation: CREATE_TEST_PLAN_REPORT_MUTATION,
@@ -189,6 +221,7 @@ const TestPlanVersionUpdater = () => {
         logEvent('Created new report.');
 
         let numberOfCreatedRuns = 0;
+        let numberOfCreatedResults = 0;
         for (const testPlanRun of runsWithResults) {
             const { data: runData } = await client.mutate({
                 mutation: CREATE_TEST_PLAN_RUN_MUTATION,
@@ -201,16 +234,14 @@ const TestPlanVersionUpdater = () => {
             numberOfCreatedRuns += 1;
 
             logEvent(
-                `Created run for ${testPlanRun.tester.username} ` +
-                    `(${numberOfCreatedRuns} of ${runsWithResults.length}).`
+                `Created ${numberOfCreatedRuns} of ${runsWithResults.length} ` +
+                    `runs for ${testPlanRun.tester.username}.`
             );
 
             const testPlanRunId =
                 runData.testPlanReport.assignTester.testPlanRun.id;
 
             const totalResults = Object.keys(currentTestIdsToNewTestIds).length;
-
-            let numberOfCreatedResults = 0;
 
             for (const testResult of testPlanRun.testResults) {
                 const testId = currentTestIdsToNewTestIds[testResult.test.id];
@@ -221,6 +252,29 @@ const TestPlanVersionUpdater = () => {
                     variables: { testPlanRunId, testId }
                 });
 
+                const testResultSkeleton =
+                    testResultData.testPlanRun.findOrCreateTestResult
+                        .testResult;
+
+                const copiedTestResultInput = copyTestResult(
+                    testResultSkeleton,
+                    testResult
+                );
+
+                const saveMutation = testResult.completedAt
+                    ? SUBMIT_TEST_RESULT_MUTATION
+                    : SAVE_TEST_RESULT_MUTATION;
+
+                const { data: savedData } = await client.mutate({
+                    mutation: saveMutation,
+                    variables: {
+                        testResultId: copiedTestResultInput.id,
+                        testResultInput: copiedTestResultInput
+                    }
+                });
+
+                if (savedData.errors) throw savedData.errors;
+
                 numberOfCreatedResults += 1;
 
                 if (
@@ -229,11 +283,13 @@ const TestPlanVersionUpdater = () => {
                 ) {
                     logEvent(
                         `Created ${numberOfCreatedResults} of ` +
-                            `${totalResults} results`
+                            `${totalResults} results.`
                     );
                 }
             }
         }
+
+        logEvent('Completed without errors.');
     };
 
     return (
@@ -328,7 +384,7 @@ const TestPlanVersionUpdater = () => {
                     })()}
                 </p>
                 {eventLogMessages.map(eventLogMessage => (
-                    <p key={eventLogMessage}>{eventLogMessage}</p>
+                    <p key={nextId()}>{eventLogMessage}</p>
                 ))}
             </div>
             <button
