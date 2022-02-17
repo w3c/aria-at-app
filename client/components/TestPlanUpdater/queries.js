@@ -23,6 +23,7 @@ export const UPDATER_QUERY = gql`
                 }
                 atVersion
                 browser {
+                    id
                     name
                 }
                 browserVersion
@@ -53,7 +54,7 @@ export const VERSION_QUERY = gql`
             id
         }
         atMode
-        scenarios(atId: 3) {
+        scenarios(atId: $atId) {
             commands {
                 text
             }
@@ -64,7 +65,11 @@ export const VERSION_QUERY = gql`
         }
     }
 
-    query VersionQuery($testPlanReportId: ID!, $testPlanVersionId: ID!) {
+    query VersionQuery(
+        $testPlanReportId: ID!
+        $testPlanVersionId: ID!
+        $atId: ID!
+    ) {
         testPlanReport(id: $testPlanReportId) {
             draftTestPlanRuns {
                 tester {
@@ -87,6 +92,7 @@ export const VERSION_QUERY = gql`
             }
         }
         testPlanVersion(id: $testPlanVersionId) {
+            id
             tests {
                 ...TestFragment
             }
@@ -94,20 +100,16 @@ export const VERSION_QUERY = gql`
     }
 `;
 
-export const createTestPlanReportMutation = gql`
-    mutation {
-        findOrCreateTestPlanReport(
-            input: {
-                testPlanVersionId: 129
-                testPlanTarget: {
-                    atId: 1
-                    atVersion: "2021.2103.174"
-                    browserId: 2
-                    browserVersion: "91.0.4472"
+export const CREATE_TEST_PLAN_REPORT_MUTATION = gql`
+    mutation CreateTestPlanReportMutation($input: TestPlanReportInput!) {
+        findOrCreateTestPlanReport(input: $input) {
+            populatedData {
+                testPlanReport {
+                    id
                 }
             }
-        ) {
-            populatedData {
+            created {
+                locationOfData
                 testPlanReport {
                     id
                 }
@@ -116,10 +118,13 @@ export const createTestPlanReportMutation = gql`
     }
 `;
 
-export const createTestPlanRunMutation = gql`
-    mutation {
-        testPlanReport(id: 102) {
-            assignTester(userId: 1) {
+export const CREATE_TEST_PLAN_RUN_MUTATION = gql`
+    mutation CreateTestPlanRunMutation(
+        $testPlanReportId: ID!
+        $testerUserId: ID!
+    ) {
+        testPlanReport(id: $testPlanReportId) {
+            assignTester(userId: $testerUserId) {
                 testPlanRun {
                     id
                 }
@@ -128,10 +133,10 @@ export const createTestPlanRunMutation = gql`
     }
 `;
 
-export const createTestResultMutation = gql`
-    mutation {
-        testPlanRun(id: 101) {
-            findOrCreateTestResult(testId: "MTAzOeyIyIjoiMTI5In0GIzOD") {
+export const CREATE_TEST_RESULT_MUTATION = gql`
+    mutation CreateTestResultMutation($testPlanRunId: ID!, $testId: ID!) {
+        testPlanRun(id: $testPlanRunId) {
+            findOrCreateTestResult(testId: $testId) {
                 testResult {
                     id
                     scenarioResults {
@@ -149,7 +154,7 @@ export const createTestResultMutation = gql`
     }
 `;
 
-export const submitTestResultMutation = gql`
+export const SUBMIT_TEST_RESULT_MUTATION = gql`
     mutation {
         testResult(id: "MzFlNeyIxMiI6MTAxfQWNiNW") {
             submitTestResult(

@@ -9,7 +9,7 @@ import SignupInstructions from '@components/SignupInstructions';
 import TestQueue from '@components/TestQueue';
 import TestRun from '@components/TestRun';
 import UserSettings from '@components/UserSettings';
-import TestPlanVersionUpdater from '../components/TestPlanVersionUpdater';
+import TestPlanUpdater from '../components/TestPlanUpdater';
 
 export default [
     {
@@ -53,8 +53,8 @@ export default [
         }
     },
     {
-        path: '/test-plan-version-updater',
-        component: TestPlanVersionUpdater
+        path: '/test-plan-updater',
+        component: TestPlanUpdater
     },
     {
         // Note that this component includes a nested router!
