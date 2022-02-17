@@ -79,7 +79,8 @@ const TestPlanVersionUpdater = () => {
     const [updaterData, setUpdaterData] = useState();
     const [versionData, setVersionData] = useState();
     const [eventLogMessages, setEventLogMessages] = useState([]);
-    const [safeToDeleteReportId, setSafeToDeleteReportId] = useState([]);
+    const [safeToDeleteReportId, setSafeToDeleteReportId] = useState();
+    const [isOldReportDeleted, setIsOldReportDeleted] = useState(false);
     const location = useLocation();
 
     useEffect(() => {
@@ -300,6 +301,8 @@ const TestPlanVersionUpdater = () => {
                 testPlanReportId: safeToDeleteReportId
             }
         });
+        setSafeToDeleteReportId(null);
+        setIsOldReportDeleted(true);
     };
 
     return (
@@ -360,74 +363,76 @@ const TestPlanVersionUpdater = () => {
                     )))()}
             </Form.Control>
             <h2>Create the New Report</h2>
-            <div aria-live="polite">
-                {(() => {
-                    if (!versionData) {
-                        return (
-                            <p>
-                                The number of test results to copy will be shown
-                                here after you choose a new version.
-                            </p>
-                        );
-                    }
-                    if (runsWithResults.length === 0) {
-                        <p>
-                            There are no test results associated with this
-                            report.
-                        </p>;
-                    }
-
-                    const testers = runsWithResults.map(
-                        testPlanRun => testPlanRun.tester.username
-                    );
-
-                    let deletionNote;
-                    if (!testsToDelete.length) {
-                        deletionNote = (
-                            <>
-                                All test results can be copied from the old
-                                report to the new report.
-                            </>
-                        );
-                    } else {
-                        deletionNote = (
-                            <>
-                                Note that {testsToDelete.length} tests differ
-                                between the old and new versions and cannot be
-                                automatically copied.
-                            </>
-                        );
-                    }
-
+            {(() => {
+                if (!versionData) {
                     return (
-                        <Alert
-                            variant={testsToDelete.length ? 'danger' : 'info'}
-                        >
-                            Found {allTestResults.length} test results for{' '}
-                            {testers.length > 1 ? 'testers' : 'tester'}{' '}
-                            {toSentence(testers)}. {deletionNote}
-                        </Alert>
+                        <p>
+                            The number of test results to copy will be shown
+                            here after you choose a new version.
+                        </p>
                     );
-                })()}
-                {eventLogMessages.map(eventLogMessage => (
-                    <p key={nextId()}>{eventLogMessage}</p>
-                ))}
-            </div>
+                }
+                if (runsWithResults.length === 0) {
+                    <p>
+                        There are no test results associated with this report.
+                    </p>;
+                }
+
+                const testers = runsWithResults.map(
+                    testPlanRun => testPlanRun.tester.username
+                );
+
+                let deletionNote;
+                if (!testsToDelete.length) {
+                    deletionNote = (
+                        <>
+                            All test results can be copied from the old report
+                            to the new report.
+                        </>
+                    );
+                } else {
+                    deletionNote = (
+                        <>
+                            Note that {testsToDelete.length} tests differ
+                            between the old and new versions and cannot be
+                            automatically copied.
+                        </>
+                    );
+                }
+
+                return (
+                    <Alert variant={testsToDelete.length ? 'danger' : 'info'}>
+                        Found {allTestResults.length} test results for{' '}
+                        {testers.length > 1 ? 'testers' : 'tester'}{' '}
+                        {toSentence(testers)}. {deletionNote}
+                    </Alert>
+                );
+            })()}
             <Button
                 variant="primary"
                 disabled={!canCreateNewReport}
                 onClick={createNewReportWithData}
+                className="mb-3"
             >
                 Create updated report
             </Button>
+            <div aria-live="polite">
+                {eventLogMessages.map(eventLogMessage => (
+                    <p key={nextId()}>{eventLogMessage}</p>
+                ))}
+            </div>
             <h2>Delete the Old Report</h2>
             <Button
                 variant="secondary"
                 disabled={!safeToDeleteReportId}
                 onClick={deleteOldTestPlanReport}
+                className="mb-3"
             >
                 Delete old report
             </Button>
+            <div aria-live="polite">
+                {isOldReportDeleted ? 'The old report has been deleted.' : ''}
+            </div>
         </Container>
     );
 };
