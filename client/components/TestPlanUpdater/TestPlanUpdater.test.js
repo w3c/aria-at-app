@@ -1,28 +1,25 @@
 import React from 'react';
-// import { mount } from 'enzyme';
 import { render, screen } from '@testing-library/react';
 import TestPlanUpdater from './TestPlanUpdater';
-import { MemoryRouter } from 'react-router-dom';
-import { waitForGraphQL } from '../GraphQLProvider/IsGraphQLLoadingProvider';
-import GraphQLProvider from '../GraphQLProvider';
+import TestProviders from '../TestProviders/TestProviders';
+import { waitForGraphQL } from '../GraphQLProvider';
 
 describe('TestPlanUpdater', () => {
-    // eslint-disable-next-line
-    it('tbd', async () => {
+    it('completes initial queries and renders the loaded UI', async () => {
         render(
-            <GraphQLProvider isTestMode={true}>
-                <MemoryRouter initialEntries={['/?id=1']}>
-                    <TestPlanUpdater />
-                </MemoryRouter>
-            </GraphQLProvider>
+            <TestProviders setInitialUrl="/?id=1">
+                <TestPlanUpdater />
+            </TestProviders>
         );
 
         await waitForGraphQL();
 
-        console.log(screen.getByText('Pick a Version', { selector: 'h2' }));
+        expect(
+            screen.getByText('Pick a Version', { selector: 'h2' })
+        ).toBeTruthy();
 
-        screen.debug();
-        // await new Promise(resolve => setTimeout(resolve, 1000));
-        // console.log(wrapper.exists('h1'));
+        expect(screen.getByText(/Current version is .+ (\w{7})/)).toBeTruthy();
     });
+
+    it('allows the user to pick a version', () => {});
 });
