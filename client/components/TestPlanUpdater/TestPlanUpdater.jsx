@@ -20,13 +20,14 @@ import { Alert, Button, Form } from 'react-bootstrap';
 import hash from 'object-hash';
 import { omit } from 'lodash';
 import { Helmet } from 'react-helmet';
+import { useIsGraphQLLoading } from '../GraphQLProvider/IsGraphQLLoadingProvider';
 
 const toSentence = array => {
     // https://stackoverflow.com/a/24376930/3888572
     return array.join(', ').replace(/,\s([^,]+)$/, ' and $1');
 };
 
-const TestPlanVersionUpdater = () => {
+const TestPlanUpdater = () => {
     const loadInitialData = async ({ client, setUpdaterData, location }) => {
         const testPlanReportId = location.search.match(/\?id=(\d+)/)?.[1];
         if (!testPlanReportId) throw new Error('No id found in URL');
@@ -437,4 +438,4 @@ const TestPlanVersionUpdater = () => {
     );
 };
 
-export default TestPlanVersionUpdater;
+export default TestPlanUpdater;
