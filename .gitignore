@@ -112,9 +112,6 @@ storybook-static
 # Lighthouse
 .lighthouseci
 
-#VSCode
-.vscode
-
 # Ansible
 deploy/ansible-vault-password.txt
 

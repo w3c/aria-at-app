@@ -1,0 +1,34 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Import Script",
+      "type": "pwa-node",
+      "request": "launch",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "envFile": "${workspaceFolder}/config/dev.env",
+      "program": "${workspaceFolder}/server/scripts/import-tests/index.js",
+      "args": [
+        // "-c",
+        // "dac99782b04ebe92cf535d8e1ba6476fc44401c2"
+      ]
+    },
+    {
+      "name": "Jest Server Open Test File",
+      "type": "node",
+      "request": "launch",
+      "envFile": "${workspaceFolder}/config/test.env",
+      "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/jest",
+      "args": ["${fileBasenameNoExtension}","--runInBand"],
+      "cwd": "${workspaceRoot}/server",
+      "protocol": "inspector",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    }
+  ]
+}
