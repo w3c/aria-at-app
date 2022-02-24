@@ -29,6 +29,22 @@
       "protocol": "inspector",
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen"
-    }
+    },
+    // Not currently working!
+    /* {
+      "name": "Run Currently Open Tab in Server Jest",
+      "type": "node",
+      "request": "launch",
+      "envFile": "${workspaceFolder}/config/test.env",
+      "runtimeArgs": [
+        "--inspect-brk",
+        "${workspaceRoot}/node_modules/.bin/jest",
+        "${fileBasenameNoExtension}",
+        "--runInBand"
+      ],
+      "cwd": "${workspaceRoot}/server",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    } */
   ]
 }

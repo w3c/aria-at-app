@@ -20,7 +20,6 @@ import { Alert, Button, Form } from 'react-bootstrap';
 import hash from 'object-hash';
 import { omit } from 'lodash';
 import { Helmet } from 'react-helmet';
-import { useIsGraphQLLoading } from '../GraphQLProvider/IsGraphQLLoadingProvider';
 
 const toSentence = array => {
     // https://stackoverflow.com/a/24376930/3888572
@@ -415,7 +414,7 @@ const TestPlanUpdater = () => {
                 onClick={createNewReportWithData}
                 className="mb-3"
             >
-                Create updated report
+                Create Updated Report
             </Button>
             <div aria-live="polite">
                 {eventLogMessages.map(eventLogMessage => (
@@ -429,7 +428,7 @@ const TestPlanUpdater = () => {
                 onClick={deleteOldTestPlanReport}
                 className="mb-3"
             >
-                Delete old report
+                Delete Old Report
             </Button>
             <div aria-live="polite">
                 {isOldReportDeleted ? 'The old report has been deleted.' : ''}
