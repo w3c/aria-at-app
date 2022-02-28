@@ -19,8 +19,11 @@
       "name": "Jest Client Debug Current Tab",
       "type": "node",
       "request": "launch",
-      "envFile": "${workspaceRoot}/config/test.env",
       "runtimeArgs": [
+        "${workspaceRoot}/node_modules/.bin/dotenv",
+        "-e",
+        "${workspaceRoot}/config/test.env",
+        "--",
         "${workspaceRoot}/node_modules/.bin/jest",
         "${fileBasenameNoExtension}",
         "--runInBand"
@@ -34,8 +37,11 @@
       "name": "Jest Server Debug Current Tab",
       "type": "node",
       "request": "launch",
-      "envFile": "${workspaceRoot}/config/test.env",
       "runtimeArgs": [
+        "${workspaceRoot}/node_modules/.bin/dotenv",
+        "-e",
+        "${workspaceRoot}/config/test.env",
+        "--",
         "${workspaceRoot}/node_modules/.bin/jest",
         "${fileBasenameNoExtension}",
         "--runInBand"
