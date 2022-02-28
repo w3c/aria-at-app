@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "webpack-dev-server --mode development",
     "build": "webpack --config webpack.prod.js",
-    "jest": "jest",
+    "jest": "dotenv -e ../config/test.env -- jest",
     "prettier": "prettier --write \"**/*.{js,jsx,css}\"",
     "lint": "eslint --ext js,jsx .",
     "storybook": "start-storybook -p 6006",
@@ -50,17 +50,13 @@
     "react-router-bootstrap": "^0.25.0",
     "react-router-config": "^5.1.1",
     "react-router-dom": "^5.1.2",
-    "sass-loader": "^8.0.2",
     "showdown": "^1.9.1",
     "turndown": "^7.1.1"
   },
   "devDependencies": {
-    "@babel/code-frame": "^7.8.3",
-    "@babel/core": "^7.8.7",
-    "@babel/plugin-proposal-class-properties": "^7.10.1",
-    "@babel/plugin-transform-runtime": "^7.9.0",
-    "@babel/preset-env": "^7.8.7",
-    "@babel/preset-react": "^7.8.3",
+    "@babel/core": "^7.17.5",
+    "@babel/preset-env": "^7.16.11",
+    "@babel/preset-react": "^7.16.7",
     "@lhci/cli": "^0.3.12",
     "@storybook/addon-actions": "^5.3.17",
     "@storybook/addon-links": "^5.3.17",
@@ -70,14 +66,13 @@
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^12.0.0",
     "@testing-library/user-event": "^13.1.9",
-    "babel-jest": "^25.1.0",
-    "babel-loader": "^8.0.6",
+    "babel-jest": "^27.5.1",
+    "babel-loader": "^8.2.3",
     "babel-plugin-lodash": "^3.3.4",
-    "babel-polyfill": "^6.26.0",
     "copy-webpack-plugin": "^5.1.1",
     "dotenv-webpack": "^1.8.0",
     "enzyme": "^3.11.0",
-    "enzyme-adapter-react-16": "^1.15.2",
+    "enzyme-adapter-react-16": "^1.15.6",
     "eslint": "^7.26.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-jest": "^24.3.6",
@@ -85,28 +80,25 @@
     "eslint-plugin-prettier": "^3.4.0",
     "eslint-plugin-react": "^7.23.2",
     "file-loader": "^6.0.0",
-    "jest": "^25.1.0",
-    "jest-environment-jsdom": "^27.0.6",
+    "jest": "^27.5.1",
+    "jest-environment-jsdom": "^27.5.1",
     "jest-enzyme": "^7.1.2",
-    "moxios": "^0.4.0",
     "prettier": "^1.19.1",
-    "webpack": "^4.42.0",
-    "webpack-cli": "^3.3.11",
-    "webpack-dev-server": "^3.10.3"
+    "webpack": "^5.69.1",
+    "webpack-cli": "^4.9.2",
+    "webpack-dev-server": "^4.7.4"
   },
   "jest": {
+    "testEnvironment": "jsdom",
     "moduleNameMapper": {
-      "^@client(.*)": "<rootDir>/$1",
-      "^@components(.*)": "<rootDir>/components/$1",
       "\\.(css|less)$": "<rootDir>/tests/__mocks__/styleMock.js",
       "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/tests/__mocks__/fileMock.js"
     },
-    "setupFiles": [
-      "core-js"
-    ],
     "setupFilesAfterEnv": [
       "./jest.setup.js"
     ],
+    "globalSetup": "<rootDir>/jest.server.js",
+    "globalTeardown": "<rootDir>/jest.teardown.js",
     "transform": {
       "^.+\\.(js|jsx|mjs)$": "babel-jest"
     },
@@ -117,8 +109,5 @@
     "coveragePathIgnorePatterns": [
       "<rootDir>/resources/"
     ]
-  },
-  "resolutions": {
-    "jest-environment-jsdom": "^26.0.1"
   }
 }

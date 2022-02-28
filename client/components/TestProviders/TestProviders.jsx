@@ -5,7 +5,7 @@ import GraphQLProvider from '../GraphQLProvider';
 
 const TestProviders = ({ setInitialUrl = null, children }) => {
     return (
-        <GraphQLProvider isTestMode={true}>
+        <GraphQLProvider>
             <MemoryRouter
                 initialEntries={setInitialUrl ? [setInitialUrl] : undefined}
             >

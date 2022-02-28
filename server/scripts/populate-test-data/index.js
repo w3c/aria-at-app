@@ -103,7 +103,10 @@ const populateTestDatabase = async () => {
         'completeAndPassing'
     ]);
 
-    console.info('Successfully Populated');
+    console.info(
+        'Population complete. Please wait for the process to close, ' +
+            'which will take a few seconds.'
+    );
 };
 
 if (require.main === module)

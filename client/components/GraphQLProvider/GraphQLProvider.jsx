@@ -8,13 +8,9 @@ import {
     HttpLink,
     concat
 } from '@apollo/client';
-import {
-    IsGraphQLLoadingProvider,
-    getNumberOfActiveQueries
-} from './IsGraphQLLoadingProvider';
+import { getNumberOfActiveQueries } from './waitForGraphQL';
 
-const httpLink = new HttpLink({ uri: '/api/graphql' });
-const testHttpLink = new HttpLink({ uri: 'http://localhost:5000/api/graphql' });
+const httpLink = new HttpLink({ uri: `${process.env.API_SERVER}/api/graphql` });
 
 let numberOfActiveQueries = 0;
 const isLoadingMiddleware = new ApolloLink((operation, forward) => {
@@ -31,21 +27,12 @@ const client = new ApolloClient({
     cache: new InMemoryCache({ addTypename: false }),
     link: concat(isLoadingMiddleware, httpLink)
 });
-const testClient = new ApolloClient({
-    cache: new InMemoryCache({ addTypename: false }),
-    link: concat(isLoadingMiddleware, testHttpLink)
-});
 
-const GraphQLProvider = ({ isTestMode = false, children }) => {
-    return (
-        <ApolloProvider client={isTestMode ? testClient : client}>
-            <IsGraphQLLoadingProvider>{children}</IsGraphQLLoadingProvider>
-        </ApolloProvider>
-    );
+const GraphQLProvider = ({ children }) => {
+    return <ApolloProvider client={client}>{children}</ApolloProvider>;
 };
 
 GraphQLProvider.propTypes = {
-    isTestMode: PropTypes.bool,
     children: PropTypes.node.isRequired
 };
 

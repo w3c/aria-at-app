@@ -1,14 +1,14 @@
 import React from 'react';
 import { Route, Redirect } from 'react-router-dom';
-import ConfirmAuth from '@components/ConfirmAuth';
-import Home from '@components/Home';
-import InvalidRequest from '@components/InvalidRequest';
-import NotFound from '@components/NotFound';
-import Reports from '@components/Reports';
-import SignupInstructions from '@components/SignupInstructions';
-import TestQueue from '@components/TestQueue';
-import TestRun from '@components/TestRun';
-import UserSettings from '@components/UserSettings';
+import ConfirmAuth from '../components/ConfirmAuth';
+import Home from '../components/Home';
+import InvalidRequest from '../components/InvalidRequest';
+import NotFound from '../components/NotFound';
+import Reports from '../components/Reports';
+import SignupInstructions from '../components/SignupInstructions';
+import TestQueue from '../components/TestQueue';
+import TestRun from '../components/TestRun';
+import UserSettings from '../components/UserSettings';
 import TestPlanUpdater from '../components/TestPlanUpdater';
 
 export default [
@@ -25,13 +25,11 @@ export default [
     {
         path: '/account/settings',
         exact: true,
-        component: () => {
-            return (
-                <ConfirmAuth requiredPermission="TESTER">
-                    <Route component={UserSettings} />
-                </ConfirmAuth>
-            );
-        }
+        render: () => (
+            <ConfirmAuth requiredPermission="TESTER">
+                <Route component={UserSettings} />
+            </ConfirmAuth>
+        )
     },
     {
         path: '/test-queue',
@@ -44,17 +42,19 @@ export default [
     },
     {
         path: '/run/:runId(\\d+)',
-        component: () => {
-            return (
-                <ConfirmAuth requiredPermission="TESTER">
-                    <Route component={TestRun} />
-                </ConfirmAuth>
-            );
-        }
+        render: () => (
+            <ConfirmAuth requiredPermission="TESTER">
+                <Route component={TestRun} />
+            </ConfirmAuth>
+        )
     },
     {
         path: '/test-plan-updater',
-        component: TestPlanUpdater
+        render: () => (
+            <ConfirmAuth requiredPermission="ADMIN">
+                {TestPlanUpdater}
+            </ConfirmAuth>
+        )
     },
     {
         // Note that this component includes a nested router!
@@ -72,7 +72,7 @@ export default [
         component: NotFound
     },
     {
-        component: () => {
+        render: () => {
             return <Redirect to={{ pathname: '/404' }} />;
         }
     }

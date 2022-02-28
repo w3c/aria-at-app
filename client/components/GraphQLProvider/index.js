@@ -1,8 +1,5 @@
 import GraphQLProvider from './GraphQLProvider';
-import {
-    waitForGraphQL,
-    useIsGraphQLLoading
-} from './IsGraphQLLoadingProvider';
+import waitForGraphQL from './waitForGraphQL';
 
 export default GraphQLProvider;
-export { waitForGraphQL, useIsGraphQLLoading };
+export { waitForGraphQL };
