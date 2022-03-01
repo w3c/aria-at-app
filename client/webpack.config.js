@@ -31,7 +31,7 @@ module.exports = {
         extensions: ['*', '.js', '.jsx']
     },
     devServer: {
-        port: process.env.CLIENT_PORT || 3000,
+        port: '3000',
         // Allows access to the dev server over your local network. Note that
         // you will need to use your computer's address, e.g. 192.168.0.20:3000,
         // and that logging in will require you to manually change the URL from

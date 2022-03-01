@@ -26,12 +26,15 @@
         "--",
         "${workspaceRoot}/node_modules/.bin/jest",
         "${fileBasenameNoExtension}",
-        "--runInBand"
+        "--runInBand",
+        // The server was getting killed automatically after 5 seconds,
+        // which made debugging the server code impossible
+        "--testTimeout=3600000" // 1 hour
       ],
       "cwd": "${workspaceRoot}/client",
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
-      "autoAttachChildProcesses": true
+      "autoAttachChildProcesses": true // Allows the server code to be debugged
     },
     {
       "name": "Jest Server Debug Current Tab",
