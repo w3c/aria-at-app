@@ -20,6 +20,7 @@ import { Alert, Button, Form } from 'react-bootstrap';
 import hash from 'object-hash';
 import { omit } from 'lodash';
 import { Helmet } from 'react-helmet';
+import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
 
 const toSentence = array => {
     // https://stackoverflow.com/a/24376930/3888572
@@ -81,6 +82,11 @@ const TestPlanUpdater = () => {
     const [eventLogMessages, setEventLogMessages] = useState([]);
     const [safeToDeleteReportId, setSafeToDeleteReportId] = useState();
     const [isOldReportDeleted, setIsOldReportDeleted] = useState(false);
+    const [loadingSpinnerProgress, setLoadingSpinnerProgress] = useState({
+        visible: false,
+        numerator: null,
+        denominator: null
+    });
     const location = useLocation();
 
     useEffect(() => {
@@ -220,10 +226,6 @@ const TestPlanUpdater = () => {
             );
             return;
         }
-        logEvent('Created new report.');
-
-        let numberOfCreatedRuns = 0;
-        let numberOfCreatedResults = 0;
         for (const testPlanRun of runsWithResults) {
             const { data: runData } = await client.mutate({
                 mutation: CREATE_TEST_PLAN_RUN_MUTATION,
@@ -233,12 +235,12 @@ const TestPlanUpdater = () => {
                 }
             });
 
-            numberOfCreatedRuns += 1;
-
-            logEvent(
-                `Created ${numberOfCreatedRuns} of ${runsWithResults.length} ` +
-                    `runs for ${testPlanRun.tester.username}.`
-            );
+            // Set the number of created runs
+            setLoadingSpinnerProgress(prevState => ({
+                visible: true,
+                numerator: prevState.numerator + 1,
+                denominator: runsWithResults.length + copyableTestResults.length
+            }));
 
             const testPlanRunId =
                 runData.testPlanReport.assignTester.testPlanRun.id;
@@ -275,23 +277,20 @@ const TestPlanUpdater = () => {
 
                 if (savedData.errors) throw savedData.errors;
 
-                numberOfCreatedResults += 1;
-
-                if (
-                    numberOfCreatedResults === copyableTestResults.length ||
-                    numberOfCreatedResults % 5 === 0
-                ) {
-                    logEvent(
-                        `Created ${numberOfCreatedResults} of ` +
-                            `${copyableTestResults.length} results.`
-                    );
-                }
+                // Set the number of created results
+                setLoadingSpinnerProgress(prevState => ({
+                    ...prevState,
+                    numerator: prevState.numerator + 1
+                }));
             }
         }
 
         setSafeToDeleteReportId(currentReportId);
 
-        logEvent('Completed without errors.');
+        setLoadingSpinnerProgress(prevState => ({
+            ...prevState,
+            visible: false
+        }));
     };
 
     const deleteOldTestPlanReport = async () => {
@@ -416,6 +415,15 @@ const TestPlanUpdater = () => {
             >
                 Create Updated Report
             </Button>
+            {loadingSpinnerProgress.visible && (
+                <LoadingSpinner
+                    percentage={Math.floor(
+                        (loadingSpinnerProgress.numerator /
+                            loadingSpinnerProgress.denominator) *
+                            100
+                    )}
+                />
+            )}
             <div aria-live="polite">
                 {eventLogMessages.map(eventLogMessage => (
                     <p key={nextId()}>{eventLogMessage}</p>

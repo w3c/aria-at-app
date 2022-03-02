@@ -52,7 +52,7 @@ export default [
         path: '/test-plan-updater',
         render: () => (
             <ConfirmAuth requiredPermission="ADMIN">
-                {TestPlanUpdater}
+                <Route component={TestPlanUpdater} />
             </ConfirmAuth>
         )
     },
