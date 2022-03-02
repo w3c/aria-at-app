@@ -2,12 +2,15 @@ import React from 'react';
 import './LoadingSpinner.css';
 import PropTypes from 'prop-types';
 
-const LoadingSpinner = ({ percentage }) => {
+const LoadingSpinner = ({ percentage = null }) => {
     return (
         <div className="spinner-container">
-            <div tabIndex={0} className="percentage">
-                {percentage}%
-            </div>
+            {percentage === null ? null : (
+                <div tabIndex={0} className="percentage">
+                    {percentage}%
+                </div>
+            )}
+
             <svg className="spinner" viewBox="0 0 50 50">
                 <circle
                     className="path"
@@ -23,7 +26,7 @@ const LoadingSpinner = ({ percentage }) => {
 };
 
 LoadingSpinner.propTypes = {
-    percentage: PropTypes.number.isRequired
+    percentage: PropTypes.number
 };
 
 export default LoadingSpinner;
