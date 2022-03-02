@@ -5,8 +5,8 @@ import PropTypes from 'prop-types';
 const LoadingSpinner = ({ percentage }) => {
     return (
         <div className="spinner-container">
-            <div aria-live="polite" className="percentage">
-                {percentage}
+            <div tabIndex={0} className="percentage">
+                {percentage}%
             </div>
             <svg className="spinner" viewBox="0 0 50 50">
                 <circle

@@ -226,6 +226,8 @@ const TestPlanUpdater = () => {
             );
             return;
         }
+        logEvent('Created new report.');
+
         for (const testPlanRun of runsWithResults) {
             const { data: runData } = await client.mutate({
                 mutation: CREATE_TEST_PLAN_RUN_MUTATION,
@@ -287,6 +289,7 @@ const TestPlanUpdater = () => {
 
         setSafeToDeleteReportId(currentReportId);
 
+        logEvent('Completed without errors.');
         setLoadingSpinnerProgress(prevState => ({
             ...prevState,
             visible: false
