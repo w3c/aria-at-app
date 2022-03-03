@@ -132,6 +132,7 @@
     height: 1.2rem;
     border-radius: 1rem;
     margin-top: 0.2em;
+    border: 1px solid gray;
 }
 
 .progress .progress-bar.bg-info {

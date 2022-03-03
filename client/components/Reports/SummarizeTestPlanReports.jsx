@@ -81,9 +81,7 @@ const SummarizeTestPlanReports = ({ testPlanReports }) => {
                         <th>Test Plan</th>
                         {Object.values(testPlanTargetsById).map(
                             testPlanTarget => (
-                                <th key={testPlanTarget.id}>
-                                    {getTestPlanTargetTitle(testPlanTarget)}
-                                </th>
+                                <th key={testPlanTarget.id}>Target Progress</th>
                             )
                         )}
                     </tr>
@@ -128,18 +126,19 @@ const SummarizeTestPlanReports = ({ testPlanReports }) => {
                                                             `/targets/${testPlanReport.id}`
                                                         }
                                                     >
+                                                        {getTestPlanTargetTitle(
+                                                            testPlanTarget
+                                                        )}
+                                                        {` `}(
+                                                        {metrics.supportPercent}
+                                                        % completed)
                                                         <div className="progress">
                                                             <div
                                                                 className="progress-bar bg-info"
                                                                 style={{
                                                                     width: `${metrics.supportPercent}%`
                                                                 }}
-                                                            >
-                                                                {
-                                                                    metrics.supportPercent
-                                                                }
-                                                                %
-                                                            </div>
+                                                            />
                                                         </div>
                                                     </Link>
                                                 </td>
