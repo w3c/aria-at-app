@@ -3,6 +3,9 @@ const bodyParser = require('body-parser');
 const cacheMiddleware = require('apicache').middleware;
 const proxyMiddleware = require('rawgit/lib/middleware');
 const { ApolloServer } = require('apollo-server-express');
+const {
+    ApolloServerPluginLandingPageGraphQLPlayground
+} = require('apollo-server-core');
 const { session } = require('./middleware/session');
 const authRoutes = require('./routes/auth');
 const testRoutes = require('./routes/tests');
@@ -22,7 +25,9 @@ app.use('/test', testRoutes);
 const server = new ApolloServer({
     typeDefs: graphqlSchema,
     context: getGraphQLContext,
-    resolvers
+    resolvers,
+    // The newer IDE does not work because of CORS issues
+    plugins: [ApolloServerPluginLandingPageGraphQLPlayground()]
 });
 server.start().then(() => {
     server.applyMiddleware({ app });
