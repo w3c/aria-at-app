@@ -6,12 +6,19 @@ const LoadingSpinner = ({ percentage = null }) => {
     return (
         <div className="spinner-container">
             {percentage === null ? null : (
-                <div tabIndex={0} className="percentage">
+                <div
+                    className="percentage"
+                    role="progressbar"
+                    aria-valuenow={percentage}
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                >
                     {percentage}%
                 </div>
             )}
 
             <svg className="spinner" viewBox="0 0 50 50">
+                <title>Spinner</title>
                 <circle
                     className="path"
                     cx="25"

@@ -12,7 +12,6 @@ import {
     UPDATER_QUERY,
     VERSION_QUERY
 } from './queries';
-import nextId from 'react-id-generator';
 import PageStatus from '../common/PageStatus';
 import { gitUpdatedDateToString } from '../../utils/gitUtils';
 import { useLocation } from 'react-router-dom';
@@ -79,7 +78,6 @@ const TestPlanUpdater = () => {
     const client = useApolloClient();
     const [updaterData, setUpdaterData] = useState();
     const [versionData, setVersionData] = useState();
-    const [eventLogMessages, setEventLogMessages] = useState([]);
     const [safeToDeleteReportId, setSafeToDeleteReportId] = useState();
     const [isOldReportDeleted, setIsOldReportDeleted] = useState(false);
     const [loadingSpinnerProgress, setLoadingSpinnerProgress] = useState({
@@ -161,13 +159,6 @@ const TestPlanUpdater = () => {
 
     const canCreateNewReport = versionData && runsWithResults.length > 0;
 
-    const logEvent = eventLogMessage => {
-        setEventLogMessages(previousEventLogMessages => [
-            ...previousEventLogMessages,
-            eventLogMessage
-        ]);
-    };
-
     const copyTestResult = (testResultSkeleton, testResult) => {
         return {
             id: testResultSkeleton.id,
@@ -220,13 +211,12 @@ const TestPlanUpdater = () => {
         const created = newReportData.findOrCreateTestPlanReport.created;
         const reportIsNew = !!created.find(item => item.testPlanReport.id);
         if (!reportIsNew) {
-            logEvent(
+            alert(
                 'Aborting because a report already exists and continuing would ' +
                     'overwrite its data.'
             );
             return;
         }
-        logEvent('Created new report.');
 
         for (const testPlanRun of runsWithResults) {
             const { data: runData } = await client.mutate({
@@ -289,7 +279,7 @@ const TestPlanUpdater = () => {
 
         setSafeToDeleteReportId(currentReportId);
 
-        logEvent('Completed without errors.');
+        alert('Completed without errors.');
         setLoadingSpinnerProgress(prevState => ({
             ...prevState,
             visible: false
@@ -427,11 +417,6 @@ const TestPlanUpdater = () => {
                     )}
                 />
             )}
-            <div aria-live="polite">
-                {eventLogMessages.map(eventLogMessage => (
-                    <p key={nextId()}>{eventLogMessage}</p>
-                ))}
-            </div>
             <h2>Delete the Old Report</h2>
             <Button
                 variant="secondary"
