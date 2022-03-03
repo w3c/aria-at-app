@@ -9,6 +9,7 @@ import SignupInstructions from '@components/SignupInstructions';
 import TestQueue from '@components/TestQueue';
 import TestRun from '@components/TestRun';
 import UserSettings from '@components/UserSettings';
+import TestPlanUpdater from '../components/TestPlanUpdater';
 
 export default [
     {
@@ -55,6 +56,14 @@ export default [
         // Note that this component includes a nested router!
         path: '/reports',
         component: Reports
+    },
+    {
+        path: '/test-plan-updater',
+        render: () => (
+            <ConfirmAuth requiredPermission="ADMIN">
+                <Route component={TestPlanUpdater} />
+            </ConfirmAuth>
+        )
     },
     {
         path: '/invalid-request',
