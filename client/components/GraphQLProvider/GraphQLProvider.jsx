@@ -10,7 +10,12 @@ import {
 } from '@apollo/client';
 import { getNumberOfActiveQueries } from './waitForGraphQL';
 
-const httpLink = new HttpLink({ uri: `${process.env.APP_SERVER}/api/graphql` });
+// Only required for Jest's Node-based environment
+const origin = typeof jest !== 'undefined' ? process.env.API_SERVER : '';
+
+const httpLink = new HttpLink({
+    uri: `${origin}/api/graphql`
+});
 
 let numberOfActiveQueries = 0;
 const isLoadingMiddleware = new ApolloLink((operation, forward) => {
@@ -24,7 +29,13 @@ const isLoadingMiddleware = new ApolloLink((operation, forward) => {
 });
 
 const client = new ApolloClient({
-    cache: new InMemoryCache({ addTypename: false }),
+    cache: new InMemoryCache({
+        typePolicies: {
+            TestPlanReportOperations: { merge: false },
+            TestPlanRunOperations: { merge: false },
+            User: { fields: { ats: { merge: false } } }
+        }
+    }),
     link: concat(isLoadingMiddleware, httpLink)
 });
 

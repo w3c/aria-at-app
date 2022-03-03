@@ -3,7 +3,9 @@ import { gql } from '@apollo/client';
 export const TEST_PLAN_ID_QUERY = gql`
     query TestPlanIdQuery($testPlanReportId: ID!) {
         testPlanReport(id: $testPlanReportId) {
+            id
             testPlanVersion {
+                id
                 testPlan {
                     id
                 }
@@ -73,6 +75,7 @@ export const VERSION_QUERY = gql`
         $atId: ID!
     ) {
         testPlanReport(id: $testPlanReportId) {
+            id
             draftTestPlanRuns {
                 tester {
                     id
