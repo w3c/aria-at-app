@@ -49,7 +49,7 @@ const TestQueueRow = ({
 
     const { id, isAdmin, username } = user;
     const {
-        id: testReportId,
+        id: testPlanReportId,
         testPlanTarget,
         testPlanVersion,
         draftTestPlanRuns,
@@ -567,6 +567,7 @@ const TestQueueRow = ({
             <TestPlanUpdaterModal
                 show={showTestPlanUpdaterModal}
                 handleClose={() => setShowTestPlanUpdaterModal(false)}
+                testPlanReportId={testPlanReportId}
             />
         </>
     );

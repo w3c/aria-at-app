@@ -1,10 +1,64 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
+import { useApolloClient } from '@apollo/client';
 import { Modal, Button, Form } from 'react-bootstrap';
+import { gitUpdatedDateToString } from '../../utils/gitUtils';
+import { TEST_PLAN_ID_QUERY, UPDATER_QUERY } from './queries';
 import './TestPlanUpdaterModal.css';
 import '../TestRun/TestRun.css';
 
-const TestPlanUpdaterModal = ({ show, handleClose }) => {
+const TestPlanUpdaterModal = ({ show, handleClose, testPlanReportId }) => {
+    const loadInitialData = async ({
+        client,
+        setUpdaterData,
+        testPlanReportId
+    }) => {
+        if (!testPlanReportId) throw new Error('No id found in URL');
+
+        const { data: testPlanIdData } = await client.query({
+            query: TEST_PLAN_ID_QUERY,
+            variables: { testPlanReportId }
+        });
+        const testPlanId =
+            testPlanIdData?.testPlanReport?.testPlanVersion?.testPlan?.id;
+
+        if (!testPlanId)
+            throw new Error(
+                `Could not find test plan report with id "${testPlanReportId}"`
+            );
+
+        const { data: updaterData } = await client.query({
+            query: UPDATER_QUERY,
+            variables: { testPlanReportId, testPlanId }
+        });
+        setUpdaterData(updaterData);
+    };
+
+    const client = useApolloClient();
+    const [updaterData, setUpdaterData] = useState();
+
+    useEffect(() => {
+        loadInitialData({ client, setUpdaterData, testPlanReportId });
+    }, []);
+
+    if (!updaterData) {
+        return <Modal show={false}></Modal>;
+    }
+
+    const {
+        testPlanReport: {
+            id: currentReportId,
+            testPlanTarget: {
+                at: { id: atId, name: atName },
+                atVersion,
+                browser: { id: browserId, name: browserName },
+                browserVersion
+            },
+            testPlanVersion: currentVersion
+        },
+        testPlan: { testPlanVersions }
+    } = updaterData;
+
     return (
         <Modal show={show} onHide={handleClose} dialogClassName="modal-90w">
             <Modal.Header closeButton className="test-plan-updater-header">
@@ -13,15 +67,17 @@ const TestPlanUpdaterModal = ({ show, handleClose }) => {
             <Modal.Body>
                 <div className="version-info-wrapper">
                     <div className="version-info-label">
-                        Test Plan: Banner Landmark
+                        <b>Test Plan:</b> {currentVersion.title}
                     </div>
                     <div className="version-info-label">
-                        AT and Browser: Jaws 2 with Chrome 2
+                        <b>AT and Browser:</b> {atName} {atVersion} with{' '}
+                        {browserName} {browserVersion}
                     </div>
                     <div className="current-version version-info-label">
-                        Current version: Jan 6, 2022 at 8:50:28 pm UTC Create
-                        tests for APG design pattern example: Main Landmark
-                        (#553) (4ed847a)
+                        <b>Current version:</b>{' '}
+                        {gitUpdatedDateToString(currentVersion.updatedAt)}{' '}
+                        {currentVersion.gitMessage} (
+                        {currentVersion.gitSha.substring(0, 7)})
                     </div>
                 </div>
                 <div>
@@ -66,7 +122,8 @@ TestPlanUpdaterModal.propTypes = {
     isAdmin: PropTypes.bool,
     details: PropTypes.object,
     handleClose: PropTypes.func,
-    handleAction: PropTypes.func
+    handleAction: PropTypes.func,
+    testPlanReportId: PropTypes.string
 };
 
 export default TestPlanUpdaterModal;
