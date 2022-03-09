@@ -3,8 +3,12 @@
     justify-self: end;
 }
 
-.default-checkbox {
+.delete-checkbox {
     grid-column: 1/3;
+}
+
+.delete-label {
+    color: #d52a49;
 }
 
 .modal-90w {
@@ -20,6 +24,10 @@
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr;
     width: 100%;
+}
+
+.trash-icon {
+    margin-right: 0 !important;
 }
 
 .version-info-wrapper {
@@ -52,4 +60,8 @@
     padding: 0.5em 0.75em;
     border-radius: 3px;
     font-size: 0.9em;
+}
+
+.version-select {
+    margin-bottom: 1em;
 }
