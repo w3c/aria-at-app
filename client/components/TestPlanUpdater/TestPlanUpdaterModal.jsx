@@ -5,11 +5,21 @@ import { Alert, Modal, Button, Form } from 'react-bootstrap';
 import { gitUpdatedDateToString } from '../../utils/gitUtils';
 import hash from 'object-hash';
 import { omit } from 'lodash';
-import { TEST_PLAN_ID_QUERY, UPDATER_QUERY, VERSION_QUERY } from './queries';
+import {
+    CREATE_TEST_PLAN_REPORT_MUTATION,
+    CREATE_TEST_PLAN_RUN_MUTATION,
+    CREATE_TEST_RESULT_MUTATION,
+    SAVE_TEST_RESULT_MUTATION,
+    SUBMIT_TEST_RESULT_MUTATION,
+    TEST_PLAN_ID_QUERY,
+    UPDATER_QUERY,
+    VERSION_QUERY
+} from './queries';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import './TestPlanUpdaterModal.css';
 import '../TestRun/TestRun.css';
+import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
 
 const toSentence = array => {
     // https://stackoverflow.com/a/24376930/3888572
@@ -71,6 +81,12 @@ const TestPlanUpdaterModal = ({ show, handleClose, testPlanReportId }) => {
     const client = useApolloClient();
     const [updaterData, setUpdaterData] = useState();
     const [versionData, setVersionData] = useState();
+    const [safeToDeleteReportId, setSafeToDeleteReportId] = useState();
+    const [loadingSpinnerProgress, setLoadingSpinnerProgress] = useState({
+        visible: false,
+        numerator: null,
+        denominator: null
+    });
 
     useEffect(() => {
         loadInitialData({ client, setUpdaterData, testPlanReportId });
@@ -138,6 +154,134 @@ const TestPlanUpdaterModal = ({ show, handleClose, testPlanReportId }) => {
     }
 
     const canCreateNewReport = versionData && runsWithResults.length > 0;
+
+    const copyTestResult = (testResultSkeleton, testResult) => {
+        return {
+            id: testResultSkeleton.id,
+            scenarioResults: testResultSkeleton.scenarioResults.map(
+                (scenarioResultSkeleton, index) => {
+                    const scenarioResult = testResult.scenarioResults[index];
+                    return {
+                        id: scenarioResultSkeleton.id,
+                        output: scenarioResult.output,
+                        assertionResults: scenarioResultSkeleton.assertionResults.map(
+                            (assertionResultSkeleton, assertionResultIndex) => {
+                                const assertionResult =
+                                    scenarioResult.assertionResults[
+                                        assertionResultIndex
+                                    ];
+                                return {
+                                    id: assertionResultSkeleton.id,
+                                    passed: assertionResult.passed,
+                                    failedReason: assertionResult.failedReason
+                                };
+                            }
+                        ),
+                        unexpectedBehaviors: scenarioResult.unexpectedBehaviors
+                    };
+                }
+            )
+        };
+    };
+
+    const createNewReportWithData = async () => {
+        const { data: newReportData } = await client.mutate({
+            mutation: CREATE_TEST_PLAN_REPORT_MUTATION,
+            variables: {
+                input: {
+                    testPlanVersionId: newTestPlanVersionId,
+                    testPlanTarget: {
+                        atId: atId,
+                        atVersion: atVersion,
+                        browserId: browserId,
+                        browserVersion: browserVersion
+                    }
+                }
+            }
+        });
+
+        const {
+            testPlanReport: { id: newReportId }
+        } = newReportData.findOrCreateTestPlanReport.populatedData;
+
+        const created = newReportData.findOrCreateTestPlanReport.created;
+        const reportIsNew = !!created.find(item => item.testPlanReport.id);
+        if (!reportIsNew) {
+            alert(
+                'Aborting because a report already exists and continuing would ' +
+                    'overwrite its data.'
+            );
+            return;
+        }
+
+        for (const testPlanRun of runsWithResults) {
+            const { data: runData } = await client.mutate({
+                mutation: CREATE_TEST_PLAN_RUN_MUTATION,
+                variables: {
+                    testPlanReportId: newReportId,
+                    testerUserId: testPlanRun.tester.id
+                }
+            });
+
+            // Set the number of created runs
+            setLoadingSpinnerProgress(prevState => ({
+                visible: true,
+                numerator: prevState.numerator + 1,
+                denominator: runsWithResults.length + copyableTestResults.length
+            }));
+
+            const testPlanRunId =
+                runData.testPlanReport.assignTester.testPlanRun.id;
+
+            for (const testResult of testPlanRun.testResults) {
+                const testId = currentTestIdsToNewTestIds[testResult.test.id];
+                if (!testId) continue;
+
+                const { data: testResultData } = await client.mutate({
+                    mutation: CREATE_TEST_RESULT_MUTATION,
+                    variables: { testPlanRunId, testId }
+                });
+
+                const testResultSkeleton =
+                    testResultData.testPlanRun.findOrCreateTestResult
+                        .testResult;
+
+                const copiedTestResultInput = copyTestResult(
+                    testResultSkeleton,
+                    testResult
+                );
+
+                const saveMutation = testResult.completedAt
+                    ? SUBMIT_TEST_RESULT_MUTATION
+                    : SAVE_TEST_RESULT_MUTATION;
+
+                const { data: savedData } = await client.mutate({
+                    mutation: saveMutation,
+                    variables: {
+                        testResultId: copiedTestResultInput.id,
+                        testResultInput: copiedTestResultInput
+                    }
+                });
+
+                if (savedData.errors) throw savedData.errors;
+
+                // Set the number of created results
+                setLoadingSpinnerProgress(prevState => ({
+                    ...prevState,
+                    numerator: prevState.numerator + 1
+                }));
+            }
+        }
+
+        setSafeToDeleteReportId(currentReportId);
+
+        alert('Completed without errors.');
+        setLoadingSpinnerProgress(prevState => ({
+            ...prevState,
+            visible: false
+        }));
+        window.location.reload(true);
+    };
 
     return (
         <Modal show={show} onHide={handleClose} dialogClassName="modal-90w">
@@ -266,13 +410,21 @@ const TestPlanUpdaterModal = ({ show, handleClose, testPlanReportId }) => {
                     </Button>
                     <Button
                         variant="primary"
-                        onClick={handleClose}
                         className="submit-button"
                         disabled={!canCreateNewReport}
-                        //onClick={createNewReportWithData}
+                        onClick={createNewReportWithData}
                     >
                         Update Test Plan
                     </Button>
+                    {loadingSpinnerProgress.visible && (
+                        <LoadingSpinner
+                            percentage={Math.floor(
+                                (loadingSpinnerProgress.numerator /
+                                    loadingSpinnerProgress.denominator) *
+                                    100
+                            )}
+                        />
+                    )}
                 </div>
             </Modal.Footer>
         </Modal>

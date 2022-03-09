@@ -564,11 +564,13 @@ const TestQueueRow = ({
                     )}
                 </td>
             </tr>
-            <TestPlanUpdaterModal
-                show={showTestPlanUpdaterModal}
-                handleClose={() => setShowTestPlanUpdaterModal(false)}
-                testPlanReportId={testPlanReportId}
-            />
+            {showTestPlanUpdaterModal && (
+                <TestPlanUpdaterModal
+                    show={showTestPlanUpdaterModal}
+                    handleClose={() => setShowTestPlanUpdaterModal(false)}
+                    testPlanReportId={testPlanReportId}
+                />
+            )}
         </>
     );
 };
