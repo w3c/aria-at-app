@@ -2,9 +2,15 @@ import React from 'react';
 import './LoadingSpinner.css';
 import PropTypes from 'prop-types';
 
-const LoadingSpinner = ({ percentage = null }) => {
+const LoadingSpinner = ({ percentage = null, className = null }) => {
     return (
-        <div className="spinner-container">
+        <div
+            className={
+                className
+                    ? `spinner-container ${className}`
+                    : 'spinner-container'
+            }
+        >
             {percentage === null ? null : (
                 <div
                     className="percentage"
@@ -33,6 +39,7 @@ const LoadingSpinner = ({ percentage = null }) => {
 };
 
 LoadingSpinner.propTypes = {
+    className: PropTypes.string,
     percentage: PropTypes.number
 };
 
