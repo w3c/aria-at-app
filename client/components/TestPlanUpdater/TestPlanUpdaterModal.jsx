@@ -9,6 +9,7 @@ import {
     CREATE_TEST_PLAN_REPORT_MUTATION,
     CREATE_TEST_PLAN_RUN_MUTATION,
     CREATE_TEST_RESULT_MUTATION,
+    DELETE_TEST_PLAN_REPORT,
     SAVE_TEST_RESULT_MUTATION,
     SUBMIT_TEST_RESULT_MUTATION,
     TEST_PLAN_ID_QUERY,
@@ -98,6 +99,8 @@ const TestPlanUpdaterModal = ({
         success: false,
         visible: false
     });
+    const [deleteChecked, setDeleteChecked] = useState(false);
+    const [isOldReportDeleted, setIsOldReportDeleted] = useState(false);
 
     useEffect(() => {
         loadInitialData({ client, setUpdaterData, testPlanReportId });
@@ -301,15 +304,38 @@ const TestPlanUpdaterModal = ({
             success: true,
             visible: true
         });
+
         setLoadingSpinnerProgress(prevState => ({
             ...prevState,
             visible: false
         }));
+    };
+
+    const closeAndDeleteOldTestPlan = async () => {
+        if (deleteChecked) {
+            await deleteOldTestPlanReport();
+        }
         await triggerTestPlanReportUpdate();
+        handleClose();
+    };
+
+    const deleteOldTestPlanReport = async () => {
+        await client.mutate({
+            mutation: DELETE_TEST_PLAN_REPORT,
+            variables: {
+                testPlanReportId: safeToDeleteReportId
+            }
+        });
+        setSafeToDeleteReportId(null);
+        setIsOldReportDeleted(true);
     };
 
     return (
-        <Modal show={show} onHide={handleClose} dialogClassName="modal-90w">
+        <Modal
+            show={show}
+            onHide={deleteChecked ? closeAndDeleteOldTestPlan : handleClose}
+            dialogClassName="modal-50w"
+        >
             <Modal.Header closeButton className="test-plan-updater-header">
                 <Modal.Title>Test Plan Updater</Modal.Title>
             </Modal.Header>
@@ -437,7 +463,12 @@ const TestPlanUpdaterModal = ({
                                 type="checkbox"
                                 className="delete-checkbox"
                             >
-                                <Form.Check.Input type="checkbox" />
+                                <Form.Check.Input
+                                    type="checkbox"
+                                    onChange={() => {
+                                        setDeleteChecked(!deleteChecked);
+                                    }}
+                                />
                                 <Form.Check.Label className="delete-label">
                                     <FontAwesomeIcon
                                         icon={faTrashAlt}
@@ -484,7 +515,10 @@ const TestPlanUpdaterModal = ({
                     </Alert>
                     <Modal.Footer className="test-plan-updater-footer">
                         <div className="submit-buttons-row">
-                            <Button variant="secondary" onClick={handleClose}>
+                            <Button
+                                variant="secondary"
+                                onClick={closeAndDeleteOldTestPlan}
+                            >
                                 Close
                             </Button>
                         </div>
