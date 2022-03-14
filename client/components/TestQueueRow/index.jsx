@@ -569,6 +569,7 @@ const TestQueueRow = ({
                     show={showTestPlanUpdaterModal}
                     handleClose={() => setShowTestPlanUpdaterModal(false)}
                     testPlanReportId={testPlanReportId}
+                    triggerTestPlanReportUpdate={triggerTestPlanReportUpdate}
                 />
             )}
         </>

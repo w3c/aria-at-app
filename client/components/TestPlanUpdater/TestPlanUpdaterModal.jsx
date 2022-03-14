@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useApolloClient } from '@apollo/client';
-import { Alert, Modal, Button, Form, ModalBody } from 'react-bootstrap';
+import { Alert, Modal, Button, Form } from 'react-bootstrap';
 import { gitUpdatedDateToString } from '../../utils/gitUtils';
 import hash from 'object-hash';
 import { omit } from 'lodash';
@@ -26,7 +26,12 @@ const toSentence = array => {
     return array.join(', ').replace(/,\s([^,]+)$/, ' and $1');
 };
 
-const TestPlanUpdaterModal = ({ show, handleClose, testPlanReportId }) => {
+const TestPlanUpdaterModal = ({
+    show,
+    handleClose,
+    testPlanReportId,
+    triggerTestPlanReportUpdate
+}) => {
     const loadInitialData = async ({
         client,
         setUpdaterData,
@@ -83,11 +88,15 @@ const TestPlanUpdaterModal = ({ show, handleClose, testPlanReportId }) => {
     const [versionData, setVersionData] = useState();
     const [safeToDeleteReportId, setSafeToDeleteReportId] = useState();
     const [showModalData, setShowModalData] = useState(true);
-    const [loadingModal, setLoadingModal] = useState(true);
     const [loadingSpinnerProgress, setLoadingSpinnerProgress] = useState({
         visible: false,
         numerator: null,
         denominator: null
+    });
+    const [alertCompletion, setAlertCompletion] = useState({
+        message: null,
+        success: false,
+        visible: false
     });
 
     useEffect(() => {
@@ -217,10 +226,12 @@ const TestPlanUpdaterModal = ({ show, handleClose, testPlanReportId }) => {
         const created = newReportData.findOrCreateTestPlanReport.created;
         const reportIsNew = !!created.find(item => item.testPlanReport.id);
         if (!reportIsNew) {
-            alert(
-                'Aborting because a report already exists and continuing would ' +
-                    'overwrite its data.'
-            );
+            setAlertCompletion({
+                message:
+                    'Aborting because a report already exists and continuing would overwrite its data.',
+                success: false,
+                visible: true
+            });
             return;
         }
 
@@ -285,11 +296,16 @@ const TestPlanUpdaterModal = ({ show, handleClose, testPlanReportId }) => {
 
         setSafeToDeleteReportId(currentReportId);
 
-        alert('Completed without errors.');
+        setAlertCompletion({
+            message: 'Completed without errors.',
+            success: true,
+            visible: true
+        });
         setLoadingSpinnerProgress(prevState => ({
             ...prevState,
             visible: false
         }));
+        await triggerTestPlanReportUpdate();
     };
 
     return (
@@ -459,6 +475,22 @@ const TestPlanUpdaterModal = ({ show, handleClose, testPlanReportId }) => {
                     className="loading-spinner"
                 />
             )}
+            {alertCompletion.visible && (
+                <>
+                    <Alert
+                        variant={alertCompletion.success ? 'success' : 'danger'}
+                    >
+                        {alertCompletion.message}
+                    </Alert>
+                    <Modal.Footer className="test-plan-updater-footer">
+                        <div className="submit-buttons-row">
+                            <Button variant="secondary" onClick={handleClose}>
+                                Close
+                            </Button>
+                        </div>
+                    </Modal.Footer>
+                </>
+            )}
         </Modal>
     );
 };
@@ -469,7 +501,8 @@ TestPlanUpdaterModal.propTypes = {
     details: PropTypes.object,
     handleClose: PropTypes.func,
     handleAction: PropTypes.func,
-    testPlanReportId: PropTypes.string
+    testPlanReportId: PropTypes.string,
+    triggerTestPlanReportUpdate: PropTypes.func
 };
 
 export default TestPlanUpdaterModal;

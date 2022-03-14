@@ -11,17 +11,12 @@
     color: #d52a49;
 }
 
-.loading-modal {
-    top: 50%;
-}
-
-.loading-modal .modal-content {
-    background: none;
-    border: none;
-}
-
 .loading-spinner {
     align-self: center;
+}
+
+.loading-spinner-modal {
+    height: 250px;
 }
 
 .modal-90w {
