@@ -1,10 +1,14 @@
 .cancel-button {
-    width: 70%;
+    width: 100%;
     justify-self: end;
 }
 
+.completion-alert {
+    margin-bottom: 0em;
+}
+
 .delete-checkbox {
-    grid-column: 1/3;
+    grid-column: 1/2;
 }
 
 .delete-label {
@@ -24,13 +28,20 @@
     width: 50%;
 }
 
+.side-button-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 0.5em;
+}
+
 .submit-button {
+    width: 100%;
     justify-self: end;
 }
 
 .submit-buttons-row {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr;
     width: 100%;
 }
 

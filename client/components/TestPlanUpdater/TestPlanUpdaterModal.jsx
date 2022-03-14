@@ -100,7 +100,7 @@ const TestPlanUpdaterModal = ({
         visible: false
     });
     const [deleteChecked, setDeleteChecked] = useState(false);
-    const [isOldReportDeleted, setIsOldReportDeleted] = useState(false);
+    const [newReport, setNewReport] = useState(false);
 
     useEffect(() => {
         loadInitialData({ client, setUpdaterData, testPlanReportId });
@@ -238,6 +238,8 @@ const TestPlanUpdaterModal = ({
             return;
         }
 
+        setNewReport(true);
+
         for (const testPlanRun of runsWithResults) {
             const { data: runData } = await client.mutate({
                 mutation: CREATE_TEST_PLAN_RUN_MUTATION,
@@ -312,10 +314,13 @@ const TestPlanUpdaterModal = ({
     };
 
     const closeAndDeleteOldTestPlan = async () => {
-        if (deleteChecked) {
-            await deleteOldTestPlanReport();
+        if (newReport) {
+            if (deleteChecked) {
+                await deleteOldTestPlanReport();
+            }
+            await triggerTestPlanReportUpdate();
         }
-        await triggerTestPlanReportUpdate();
+
         handleClose();
     };
 
@@ -327,7 +332,6 @@ const TestPlanUpdaterModal = ({
             }
         });
         setSafeToDeleteReportId(null);
-        setIsOldReportDeleted(true);
     };
 
     return (
@@ -477,21 +481,23 @@ const TestPlanUpdaterModal = ({
                                     Delete old Test Plan
                                 </Form.Check.Label>
                             </Form.Check>
-                            <Button
-                                variant="secondary"
-                                onClick={handleClose}
-                                className="cancel-button"
-                            >
-                                Cancel
-                            </Button>
-                            <Button
-                                variant="primary"
-                                className="submit-button"
-                                disabled={!canCreateNewReport}
-                                onClick={createNewReportWithData}
-                            >
-                                Update Test Plan
-                            </Button>
+                            <div className="side-button-container">
+                                <Button
+                                    variant="secondary"
+                                    onClick={handleClose}
+                                    className="cancel-button"
+                                >
+                                    Cancel
+                                </Button>
+                                <Button
+                                    variant="primary"
+                                    className="submit-button"
+                                    disabled={!canCreateNewReport}
+                                    onClick={createNewReportWithData}
+                                >
+                                    Update Test Plan
+                                </Button>
+                            </div>
                         </div>
                     </Modal.Footer>
                 </>
@@ -508,20 +514,23 @@ const TestPlanUpdaterModal = ({
             )}
             {alertCompletion.visible && (
                 <>
-                    <Alert
-                        variant={alertCompletion.success ? 'success' : 'danger'}
-                    >
-                        {alertCompletion.message}
-                    </Alert>
+                    <Modal.Body>
+                        <Alert
+                            className="completion-alert"
+                            variant={
+                                alertCompletion.success ? 'success' : 'danger'
+                            }
+                        >
+                            {alertCompletion.message}
+                        </Alert>
+                    </Modal.Body>
                     <Modal.Footer className="test-plan-updater-footer">
-                        <div className="submit-buttons-row">
-                            <Button
-                                variant="secondary"
-                                onClick={closeAndDeleteOldTestPlan}
-                            >
-                                Close
-                            </Button>
-                        </div>
+                        <Button
+                            variant="secondary"
+                            onClick={closeAndDeleteOldTestPlan}
+                        >
+                            Close
+                        </Button>
                     </Modal.Footer>
                 </>
             )}
