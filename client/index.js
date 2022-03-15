@@ -8,7 +8,37 @@ import App from './components/App';
 
 const client = new ApolloClient({
     uri: '/api/graphql',
-    cache: new InMemoryCache({ addTypename: false })
+    cache: new InMemoryCache({
+        addTypename: false,
+        typePolicies: {
+            Query: {
+                fields: {
+                    testPlanReport: {
+                        merge: true
+                    },
+                    testPlanReports: {
+                        merge(existing, incoming) {
+                            return incoming;
+                        }
+                    }
+                }
+            },
+            Mutation: {
+                fields: {
+                    testPlanReport: {
+                        merge(existing, incoming) {
+                            return incoming;
+                        }
+                    },
+                    testPlanRun: {
+                        merge(existing, incoming) {
+                            return incoming;
+                        }
+                    }
+                }
+            }
+        }
+    })
 });
 
 ReactDOM.render(
