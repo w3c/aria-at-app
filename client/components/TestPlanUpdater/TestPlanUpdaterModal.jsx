@@ -99,7 +99,7 @@ const TestPlanUpdaterModal = ({
         success: false,
         visible: false
     });
-    const [deleteChecked, setDeleteChecked] = useState(false);
+    const [deleteChecked, setDeleteChecked] = useState(true);
     const [newReport, setNewReport] = useState(false);
 
     useEffect(() => {
@@ -130,6 +130,10 @@ const TestPlanUpdaterModal = ({
         },
         testPlan: { testPlanVersions }
     } = updaterData;
+
+    const latestVersions = testPlanVersions.filter(
+        version => version.updatedAt >= currentVersion.updatedAt
+    );
 
     const selectVersion = async event => {
         const testPlanVersionId = event.target.value;
@@ -365,100 +369,111 @@ const TestPlanUpdaterModal = ({
                         </div>
                         <div>
                             <h3>Select a Different Test Plan Version</h3>
-                            <Form.Control
-                                as="select"
-                                onChange={selectVersion}
-                                defaultValue="unselected"
-                                className="version-select"
-                            >
-                                <option value="unselected">
-                                    Please choose a new version
-                                </option>
-                                {(() =>
-                                    testPlanVersions.map(testPlanVersion => (
-                                        <option
-                                            key={testPlanVersion.id}
-                                            disabled={
-                                                currentVersion.id ===
+                            {latestVersions.length > 1 && (
+                                <Form.Control
+                                    as="select"
+                                    onChange={selectVersion}
+                                    defaultValue="unselected"
+                                    className="version-select"
+                                >
+                                    <option value="unselected">
+                                        Please choose a new version
+                                    </option>
+                                    {(() =>
+                                        latestVersions.map(testPlanVersion => (
+                                            <option
+                                                key={testPlanVersion.id}
+                                                disabled={
+                                                    currentVersion.id ===
+                                                    testPlanVersion.id
+                                                }
+                                                value={testPlanVersion.id}
+                                            >
+                                                {currentVersion.id ===
                                                 testPlanVersion.id
+                                                    ? '[Current Version] '
+                                                    : ''}
+                                                {gitUpdatedDateToString(
+                                                    testPlanVersion.updatedAt
+                                                )}{' '}
+                                                {testPlanVersion.gitMessage} (
+                                                {testPlanVersion.gitSha.substring(
+                                                    0,
+                                                    7
+                                                )}
+                                                )
+                                            </option>
+                                        )))()}
+                                </Form.Control>
+                            )}
+                            {(latestVersions.length === 1 && (
+                                <p>
+                                    This report is already on the latest
+                                    version.
+                                </p>
+                            )) ||
+                                (() => {
+                                    if (!versionData) {
+                                        return (
+                                            <p>
+                                                The number of test results to
+                                                copy will be shown here after
+                                                you choose a new version.
+                                            </p>
+                                        );
+                                    }
+                                    if (runsWithResults.length === 0) {
+                                        return (
+                                            <p>
+                                                There are no test results
+                                                associated with this report.
+                                            </p>
+                                        );
+                                    }
+
+                                    const testers = runsWithResults.map(
+                                        testPlanRun =>
+                                            testPlanRun.tester.username
+                                    );
+
+                                    let deletionNote;
+                                    if (!testsToDelete.length) {
+                                        deletionNote = (
+                                            <>
+                                                All test results can be copied
+                                                from the old report to the new
+                                                report.
+                                            </>
+                                        );
+                                    } else {
+                                        deletionNote = (
+                                            <>
+                                                Note that {testsToDelete.length}{' '}
+                                                tests differ between the old and
+                                                new versions and cannot be
+                                                automatically copied.
+                                            </>
+                                        );
+                                    }
+
+                                    return (
+                                        <Alert
+                                            variant={
+                                                testsToDelete.length
+                                                    ? 'danger'
+                                                    : 'info'
                                             }
-                                            value={testPlanVersion.id}
                                         >
-                                            {currentVersion.id ===
-                                            testPlanVersion.id
-                                                ? '[Current Version] '
-                                                : ''}
-                                            {gitUpdatedDateToString(
-                                                testPlanVersion.updatedAt
-                                            )}{' '}
-                                            {testPlanVersion.gitMessage} (
-                                            {testPlanVersion.gitSha.substring(
-                                                0,
-                                                7
-                                            )}
-                                            )
-                                        </option>
-                                    )))()}
-                            </Form.Control>
-                            {(() => {
-                                if (!versionData) {
-                                    return (
-                                        <p>
-                                            The number of test results to copy
-                                            will be shown here after you choose
-                                            a new version.
-                                        </p>
+                                            Found {allTestResults.length} test
+                                            results for{' '}
+                                            {testers.length > 1
+                                                ? 'testers'
+                                                : 'tester'}{' '}
+                                            {toSentence(testers)}.{' '}
+                                            {deletionNote}
+                                        </Alert>
                                     );
-                                }
-                                if (runsWithResults.length === 0) {
-                                    return (
-                                        <p>
-                                            There are no test results associated
-                                            with this report.
-                                        </p>
-                                    );
-                                }
-
-                                const testers = runsWithResults.map(
-                                    testPlanRun => testPlanRun.tester.username
-                                );
-
-                                let deletionNote;
-                                if (!testsToDelete.length) {
-                                    deletionNote = (
-                                        <>
-                                            All test results can be copied from
-                                            the old report to the new report.
-                                        </>
-                                    );
-                                } else {
-                                    deletionNote = (
-                                        <>
-                                            Note that {testsToDelete.length}{' '}
-                                            tests differ between the old and new
-                                            versions and cannot be automatically
-                                            copied.
-                                        </>
-                                    );
-                                }
-
-                                return (
-                                    <Alert
-                                        variant={
-                                            testsToDelete.length
-                                                ? 'danger'
-                                                : 'info'
-                                        }
-                                    >
-                                        Found {allTestResults.length} test
-                                        results for{' '}
-                                        {testers.length > 1
-                                            ? 'testers'
-                                            : 'tester'}{' '}
-                                        {toSentence(testers)}. {deletionNote}
-                                    </Alert>
-                                );
-                            })()}
+                                })()}
                         </div>
                     </Modal.Body>
                     <Modal.Footer className="test-plan-updater-footer">
@@ -472,6 +487,7 @@ const TestPlanUpdaterModal = ({
                                     onChange={() => {
                                         setDeleteChecked(!deleteChecked);
                                     }}
+                                    checked={deleteChecked}
                                 />
                                 <Form.Check.Label className="delete-label">
                                     <FontAwesomeIcon
