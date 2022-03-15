@@ -17,23 +17,17 @@ const client = new ApolloClient({
                         merge: true
                     },
                     testPlanReports: {
-                        merge(existing, incoming) {
-                            return incoming;
-                        }
+                        merge: false
                     }
                 }
             },
             Mutation: {
                 fields: {
                     testPlanReport: {
-                        merge(existing, incoming) {
-                            return incoming;
-                        }
+                        merge: false
                     },
                     testPlanRun: {
-                        merge(existing, incoming) {
-                            return incoming;
-                        }
+                        merge: false
                     }
                 }
             }
