@@ -221,6 +221,7 @@ const TestRenderer = ({
     at,
     testResult = {},
     testPageUrl,
+    testUpdatedAt,
     testRunStateRef,
     testRunResultRef,
     submitButtonRef,
@@ -245,14 +246,26 @@ const TestRenderer = ({
         await testRunIO.setInputsFromCollectedTestAsync(renderableContent);
         testRunIO.setConfigInputFromQueryParamsAndSupport(configQueryParams);
 
+        // https://github.com/w3c/aria-at/commit/9d73d6bb274b3fe75b9a8825e020c0546a33a162
+        // This is the date of the last commit before the build folder removal.
+        // Meant to support backward compatability until the existing tests can
+        // be updated to the current structure
+        const buildRemovalDate = new Date('2022-03-10 18:08:36.000000 +00:00');
+        const testUpdatedAtDate = new Date(testUpdatedAt);
+
+        const finalTestPageUrl =
+            testUpdatedAtDate.getTime() <= buildRemovalDate.getTime()
+                ? testPageUrl
+                : testPageUrl.replace('build/', '');
+
         if (renderableContent.target?.referencePage) {
-            const replaceIndex = testPageUrl.indexOf('reference/');
+            const replaceIndex = finalTestPageUrl.indexOf('reference/');
             // sync with proxy url expected for aria-at-app to work properly
             const constructedTestPageUrl =
-                testPageUrl.substring(0, replaceIndex) +
+                finalTestPageUrl.substring(0, replaceIndex) +
                 renderableContent.target?.referencePage;
             testRunIO.setPageUriInputFromPageUri(constructedTestPageUrl);
-        } else testRunIO.setPageUriInputFromPageUri(testPageUrl);
+        } else testRunIO.setPageUriInputFromPageUri(finalTestPageUrl);
 
         const _state = remapState(testRunIO.testRunState(), scenarioResults);
 
@@ -1139,6 +1152,7 @@ TestRenderer.propTypes = {
     testResult: PropTypes.object,
     support: PropTypes.object,
     testPageUrl: PropTypes.string,
+    testUpdatedAt: PropTypes.string,
     testRunStateRef: PropTypes.any,
     testRunResultRef: PropTypes.any,
     submitButtonRef: PropTypes.any,

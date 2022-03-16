@@ -623,6 +623,9 @@ const TestRun = () => {
                                         testPageUrl={
                                             testPlanVersion.testPageUrl
                                         }
+                                        testUpdatedAt={
+                                            testPlanVersion.updatedAt
+                                        }
                                         testRunStateRef={testRunStateRef}
                                         testRunResultRef={testRunResultRef}
                                         submitButtonRef={

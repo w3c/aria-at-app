@@ -4,6 +4,7 @@ const path = require('path');
 const nodegit = require('nodegit');
 const { Client } = require('pg');
 const fse = require('fs-extra');
+const spawn = require('cross-spawn');
 const { At } = require('../../models');
 const {
     createTestPlanVersion,
@@ -50,6 +51,18 @@ const importTestPlanVersions = async () => {
     await client.connect();
 
     const { gitCommitDate, gitMessage, gitSha } = await readRepo();
+
+    console.log('Running `npm install` ...\n');
+    const installOutput = spawn.sync('npm', ['install'], {
+        cwd: gitCloneDirectory
+    });
+    console.log('`npm install` output', installOutput.stdout.toString());
+
+    console.log('Running `npm run build` ...\n');
+    const buildOutput = spawn.sync('npm', ['run', 'build'], {
+        cwd: gitCloneDirectory
+    });
+    console.log('`npm run build` output', buildOutput.stdout.toString());
 
     const ats = await At.findAll();
     await updateAtsJson(ats);
