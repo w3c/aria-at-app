@@ -4,7 +4,7 @@ import { useApolloClient } from '@apollo/client';
 import { Alert, Modal, Button, Form } from 'react-bootstrap';
 import { gitUpdatedDateToString } from '../../utils/gitUtils';
 import hash from 'object-hash';
-import { omit } from 'lodash';
+import { omit, set } from 'lodash';
 import {
     CREATE_TEST_PLAN_REPORT_MUTATION,
     CREATE_TEST_PLAN_RUN_MUTATION,
@@ -100,6 +100,7 @@ const TestPlanUpdaterModal = ({
     const [versionData, setVersionData] = useState();
     const [safeToDeleteReportId, setSafeToDeleteReportId] = useState();
     const [showModalData, setShowModalData] = useState(true);
+    const [showDeleteTestPlan, setShowDeleteTestPlan] = useState(true);
     const [loadingSpinnerProgress, setLoadingSpinnerProgress] = useState({
         visible: false,
         numerator: null,
@@ -228,6 +229,7 @@ const TestPlanUpdaterModal = ({
                 success: false,
                 visible: true
             });
+            setShowDeleteTestPlan(false);
             return;
         }
 
@@ -511,7 +513,7 @@ const TestPlanUpdaterModal = ({
             )}
             {!showModalData && (
                 <Modal.Footer className="test-plan-updater-footer">
-                    {deleteComponent}
+                    {showDeleteTestPlan && deleteComponent}
                     <Button
                         variant="secondary"
                         onClick={closeAndDeleteOldTestPlan}
