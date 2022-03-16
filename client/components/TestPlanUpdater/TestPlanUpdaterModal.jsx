@@ -4,7 +4,7 @@ import { useApolloClient } from '@apollo/client';
 import { Alert, Modal, Button, Form } from 'react-bootstrap';
 import { gitUpdatedDateToString } from '../../utils/gitUtils';
 import hash from 'object-hash';
-import { omit, set } from 'lodash';
+import { omit } from 'lodash';
 import {
     CREATE_TEST_PLAN_REPORT_MUTATION,
     CREATE_TEST_PLAN_RUN_MUTATION,
@@ -201,6 +201,7 @@ const TestPlanUpdaterModal = ({
 
     const createNewReportWithData = async () => {
         setShowModalData(false);
+        setShowDeleteTestPlan(false);
         const { data: newReportData } = await client.mutate({
             mutation: CREATE_TEST_PLAN_REPORT_MUTATION,
             variables: {
@@ -229,7 +230,6 @@ const TestPlanUpdaterModal = ({
                 success: false,
                 visible: true
             });
-            setShowDeleteTestPlan(false);
             return;
         }
 
@@ -297,6 +297,7 @@ const TestPlanUpdaterModal = ({
         setSafeToDeleteReportId(currentReportId);
 
         if (deleteChecked) {
+            setShowDeleteTestPlan(true);
             setAlertCompletion({
                 message:
                     'New report created without errors. Are you sure you want to delete the old report?',
@@ -304,6 +305,7 @@ const TestPlanUpdaterModal = ({
                 visible: true
             });
         } else {
+            setShowDeleteTestPlan(false);
             setAlertCompletion({
                 message: 'Completed without errors.',
                 success: true,
