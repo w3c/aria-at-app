@@ -27,6 +27,7 @@ const TestQueueRow = ({
     user = {},
     testers = [],
     testPlanReport = {},
+    latestTestPlanVersions = [],
     triggerDeleteTestPlanReportModal = () => {},
     triggerDeleteResultsModal = () => {},
     triggerTestPlanReportUpdate = () => {}
@@ -126,17 +127,24 @@ const TestQueueRow = ({
                 Published {gitUpdatedDateToString(testPlanVersion.updatedAt)}
             </p>
         );
-        const updateTestPlanVersionButton = isAdmin ? (
-            <Button
-                className="updater-button"
-                onClick={() => setShowTestPlanUpdaterModal(true)}
-            >
-                {' '}
-                Update Test Plan Version
-            </Button>
-        ) : (
-            ''
+
+        const latestTestPlanVersion = latestTestPlanVersions.filter(
+            version => version.latestTestPlanVersion.id === testPlanVersion.id
         );
+        const updateTestPlanVersionButton =
+            isAdmin && latestTestPlanVersion.length === 0 ? (
+                <Button
+                    className="updater-button"
+                    onClick={() => setShowTestPlanUpdaterModal(true)}
+                    size="sm"
+                    variant="outline-secondary"
+                >
+                    {' '}
+                    Update Test Plan Version
+                </Button>
+            ) : (
+                ''
+            );
         // Determine if current user is assigned to testPlan
         if (currentUserAssigned)
             return (

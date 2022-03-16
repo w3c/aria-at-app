@@ -38,8 +38,6 @@ const TestPlanUpdaterModal = ({
         setUpdaterData,
         testPlanReportId
     }) => {
-        if (!testPlanReportId) throw new Error('No id found in URL');
-
         const { data: testPlanIdData } = await client.query({
             query: TEST_PLAN_ID_QUERY,
             variables: { testPlanReportId }
@@ -57,6 +55,19 @@ const TestPlanUpdaterModal = ({
             variables: { testPlanReportId, testPlanId }
         });
         setUpdaterData(updaterData);
+
+        const testPlanVersionId = updaterData.testPlan.latestTestPlanVersion.id;
+        const atId = updaterData.testPlanReport.testPlanTarget.at.id;
+
+        const { data: versionData } = await client.query({
+            query: VERSION_QUERY,
+            variables: {
+                testPlanReportId,
+                testPlanVersionId,
+                atId
+            }
+        });
+        setVersionData(versionData);
     };
 
     const compareTestContent = (currentTests, newTests) => {
@@ -128,30 +139,8 @@ const TestPlanUpdaterModal = ({
             },
             testPlanVersion: currentVersion
         },
-        testPlan: { testPlanVersions }
+        testPlan: { latestTestPlanVersion }
     } = updaterData;
-
-    const latestVersions = testPlanVersions.filter(
-        version => version.updatedAt >= currentVersion.updatedAt
-    );
-
-    const selectVersion = async event => {
-        const testPlanVersionId = event.target.value;
-        if (testPlanVersionId === 'unselected') {
-            setVersionData(null);
-            return;
-        }
-
-        const { data: versionData } = await client.query({
-            query: VERSION_QUERY,
-            variables: {
-                testPlanReportId: currentReportId,
-                testPlanVersionId,
-                atId
-            }
-        });
-        setVersionData(versionData);
-    };
 
     const newTestPlanVersionId = versionData?.testPlanVersion.id;
     let runsWithResults;
@@ -305,11 +294,20 @@ const TestPlanUpdaterModal = ({
 
         setSafeToDeleteReportId(currentReportId);
 
-        setAlertCompletion({
-            message: 'Completed without errors.',
-            success: true,
-            visible: true
-        });
+        if (deleteChecked) {
+            setAlertCompletion({
+                message:
+                    'New report created without errors. Are you sure you want to delete the old report?',
+                success: false,
+                visible: true
+            });
+        } else {
+            setAlertCompletion({
+                message: 'Completed without errors.',
+                success: true,
+                visible: true
+            });
+        }
 
         setLoadingSpinnerProgress(prevState => ({
             ...prevState,
@@ -329,6 +327,11 @@ const TestPlanUpdaterModal = ({
     };
 
     const deleteOldTestPlanReport = async () => {
+        setAlertCompletion({
+            visible: true,
+            success: false,
+            message: 'Deleting old report...'
+        });
         await client.mutate({
             mutation: DELETE_TEST_PLAN_REPORT,
             variables: {
@@ -336,7 +339,28 @@ const TestPlanUpdaterModal = ({
             }
         });
         setSafeToDeleteReportId(null);
+        setAlertCompletion({
+            visible: true,
+            success: true,
+            message: 'Old report deleted.'
+        });
     };
+
+    const deleteComponent = (
+        <Form.Check type="checkbox" className="delete-checkbox">
+            <Form.Check.Input
+                type="checkbox"
+                onChange={() => {
+                    setDeleteChecked(!deleteChecked);
+                }}
+                checked={deleteChecked}
+            />
+            <Form.Check.Label className="delete-label">
+                <FontAwesomeIcon icon={faTrashAlt} className="trash-icon" />{' '}
+                Delete old Test Plan
+            </Form.Check.Label>
+        </Form.Check>
+    );
 
     return (
         <Modal
@@ -366,137 +390,80 @@ const TestPlanUpdaterModal = ({
                                 {currentVersion.gitMessage} (
                                 {currentVersion.gitSha.substring(0, 7)})
                             </div>
+                            <div className="new-version version-info-label">
+                                <b>Latest version: </b>
+                                {gitUpdatedDateToString(
+                                    latestTestPlanVersion.updatedAt
+                                )}{' '}
+                                {latestTestPlanVersion.gitMessage} (
+                                {latestTestPlanVersion.gitSha.substring(0, 7)})
+                            </div>
                         </div>
                         <div>
-                            <h3>Select a Different Test Plan Version</h3>
-                            {latestVersions.length > 1 && (
-                                <Form.Control
-                                    as="select"
-                                    onChange={selectVersion}
-                                    defaultValue="unselected"
-                                    className="version-select"
-                                >
-                                    <option value="unselected">
-                                        Please choose a new version
-                                    </option>
-                                    {(() =>
-                                        latestVersions.map(testPlanVersion => (
-                                            <option
-                                                key={testPlanVersion.id}
-                                                disabled={
-                                                    currentVersion.id ===
-                                                    testPlanVersion.id
-                                                }
-                                                value={testPlanVersion.id}
-                                            >
-                                                {currentVersion.id ===
-                                                testPlanVersion.id
-                                                    ? '[Current Version] '
-                                                    : ''}
-                                                {gitUpdatedDateToString(
-                                                    testPlanVersion.updatedAt
-                                                )}{' '}
-                                                {testPlanVersion.gitMessage} (
-                                                {testPlanVersion.gitSha.substring(
-                                                    0,
-                                                    7
-                                                )}
-                                                )
-                                            </option>
-                                        )))()}
-                                </Form.Control>
-                            )}
-                            {(latestVersions.length === 1 && (
-                                <p>
-                                    This report is already on the latest
-                                    version.
-                                </p>
-                            )) ||
-                                (() => {
-                                    if (!versionData) {
-                                        return (
-                                            <p>
-                                                The number of test results to
-                                                copy will be shown here after
-                                                you choose a new version.
-                                            </p>
-                                        );
-                                    }
-                                    if (runsWithResults.length === 0) {
-                                        return (
-                                            <p>
-                                                There are no test results
-                                                associated with this report.
-                                            </p>
-                                        );
-                                    }
-
-                                    const testers = runsWithResults.map(
-                                        testPlanRun =>
-                                            testPlanRun.tester.username
-                                    );
-
-                                    let deletionNote;
-                                    if (!testsToDelete.length) {
-                                        deletionNote = (
-                                            <>
-                                                All test results can be copied
-                                                from the old report to the new
-                                                report.
-                                            </>
-                                        );
-                                    } else {
-                                        deletionNote = (
-                                            <>
-                                                Note that {testsToDelete.length}{' '}
-                                                tests differ between the old and
-                                                new versions and cannot be
-                                                automatically copied.
-                                            </>
-                                        );
-                                    }
-
+                            {(() => {
+                                if (!versionData) {
                                     return (
-                                        <Alert
-                                            variant={
-                                                testsToDelete.length
-                                                    ? 'danger'
-                                                    : 'info'
-                                            }
-                                        >
-                                            Found {allTestResults.length} test
-                                            results for{' '}
-                                            {testers.length > 1
-                                                ? 'testers'
-                                                : 'tester'}{' '}
-                                            {toSentence(testers)}.{' '}
-                                            {deletionNote}
-                                        </Alert>
+                                        <p>
+                                            The number of test results to copy
+                                            will be shown here after you choose
+                                            a new version.
+                                        </p>
                                     );
-                                })()}
+                                }
+                                if (runsWithResults.length === 0) {
+                                    return (
+                                        <p>
+                                            There are no test results associated
+                                            with this report.
+                                        </p>
+                                    );
+                                }
+
+                                const testers = runsWithResults.map(
+                                    testPlanRun => testPlanRun.tester.username
+                                );
+
+                                let deletionNote;
+                                if (!testsToDelete.length) {
+                                    deletionNote = (
+                                        <>
+                                            All test results can be copied from
+                                            the old report to the new report.
+                                        </>
+                                    );
+                                } else {
+                                    deletionNote = (
+                                        <>
+                                            Note that {testsToDelete.length}{' '}
+                                            tests differ between the old and new
+                                            versions and cannot be automatically
+                                            copied.
+                                        </>
+                                    );
+                                }
+
+                                return (
+                                    <Alert
+                                        variant={
+                                            testsToDelete.length
+                                                ? 'danger'
+                                                : 'info'
+                                        }
+                                    >
+                                        Found {allTestResults.length} test
+                                        results for{' '}
+                                        {testers.length > 1
+                                            ? 'testers'
+                                            : 'tester'}{' '}
+                                        {toSentence(testers)}. {deletionNote}
+                                    </Alert>
+                                );
+                            })()}
                         </div>
                     </Modal.Body>
                     <Modal.Footer className="test-plan-updater-footer">
                         <div className="submit-buttons-row">
-                            <Form.Check
-                                type="checkbox"
-                                className="delete-checkbox"
-                            >
-                                <Form.Check.Input
-                                    type="checkbox"
-                                    onChange={() => {
-                                        setDeleteChecked(!deleteChecked);
-                                    }}
-                                    checked={deleteChecked}
-                                />
-                                <Form.Check.Label className="delete-label">
-                                    <FontAwesomeIcon
-                                        icon={faTrashAlt}
-                                        className="trash-icon"
-                                    />{' '}
-                                    Delete old Test Plan
-                                </Form.Check.Label>
-                            </Form.Check>
+                            {deleteComponent}
                             <div className="side-button-container">
                                 <Button
                                     variant="secondary"
@@ -540,15 +507,18 @@ const TestPlanUpdaterModal = ({
                             {alertCompletion.message}
                         </Alert>
                     </Modal.Body>
-                    <Modal.Footer className="test-plan-updater-footer">
-                        <Button
-                            variant="secondary"
-                            onClick={closeAndDeleteOldTestPlan}
-                        >
-                            Close
-                        </Button>
-                    </Modal.Footer>
                 </>
+            )}
+            {!showModalData && (
+                <Modal.Footer className="test-plan-updater-footer">
+                    {deleteComponent}
+                    <Button
+                        variant="secondary"
+                        onClick={closeAndDeleteOldTestPlan}
+                    >
+                        Done
+                    </Button>
+                </Modal.Footer>
             )}
         </Modal>
     );

@@ -23,6 +23,7 @@ const TestQueue = () => {
 
     const [testers, setTesters] = useState([]);
     const [testPlanReports, setTestPlanReports] = useState([]);
+    const [latestTestPlanVersions, setLatestTestPlanVersions] = useState([]);
     const [structuredTestPlanTargets, setStructuredTestPlanTargets] = useState(
         {}
     );
@@ -56,7 +57,7 @@ const TestQueue = () => {
 
     useEffect(() => {
         if (data) {
-            const { users = [], testPlanReports = [] } = data;
+            const { users = [], testPlanReports = [], testPlans = [] } = data;
             setTesters(
                 users.filter(
                     tester =>
@@ -65,6 +66,7 @@ const TestQueue = () => {
                 )
             );
             setTestPlanReports(testPlanReports);
+            setLatestTestPlanVersions(testPlans);
         }
     }, [data]);
 
@@ -127,6 +129,9 @@ const TestQueue = () => {
                                     user={auth}
                                     testers={testers}
                                     testPlanReport={testPlanReport}
+                                    latestTestPlanVersions={
+                                        latestTestPlanVersions
+                                    }
                                     triggerDeleteTestPlanReportModal={
                                         triggerDeleteTestPlanReportModal
                                     }
