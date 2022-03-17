@@ -92,7 +92,6 @@ export const TEST_RUN_PAGE_QUERY = gql`
                     testPlan {
                         directory
                     }
-                    updatedAt
                 }
                 runnableTests {
                     id
@@ -198,7 +197,6 @@ export const TEST_RUN_PAGE_ANON_QUERY = gql`
                 testPlan {
                     directory
                 }
-                updatedAt
             }
             runnableTests {
                 id
