@@ -110,6 +110,7 @@ const TestPlanUpdaterModal = ({
     });
     const [backupChecked, setBackupChecked] = useState(false);
     const [newReport, setNewReport] = useState(false);
+    const [closeButton, setCloseButton] = useState(false);
 
     useEffect(() => {
         loadInitialData({ client, setUpdaterData, testPlanReportId });
@@ -226,6 +227,7 @@ const TestPlanUpdaterModal = ({
                 success: false,
                 visible: true
             });
+            setCloseButton(true);
             return;
         }
 
@@ -292,11 +294,21 @@ const TestPlanUpdaterModal = ({
 
         setSafeToDeleteReportId(currentReportId);
 
-        setAlertCompletion({
-            message: 'Completed without errors.',
-            success: true,
-            visible: true
-        });
+        if (backupChecked) {
+            setAlertCompletion({
+                message: 'Completed without errors.',
+                success: true,
+                visible: true
+            });
+            setCloseButton(true);
+        } else {
+            setAlertCompletion({
+                message: 'Old test plan will be deleted.',
+                success: false,
+                visible: true
+            });
+            setCloseButton(false);
+        }
 
         setLoadingSpinnerProgress(prevState => ({
             ...prevState,
@@ -304,15 +316,10 @@ const TestPlanUpdaterModal = ({
         }));
     };
 
-    const closeAndDeleteOldTestPlan = async () => {
-        if (newReport) {
-            if (!backupChecked) {
-                await deleteOldTestPlanReport();
-            }
-            await triggerTestPlanReportUpdate();
+    const deleteOldTestPlan = async () => {
+        if (!backupChecked) {
+            await deleteOldTestPlanReport();
         }
-
-        handleClose();
     };
 
     const deleteOldTestPlanReport = async () => {
@@ -333,14 +340,18 @@ const TestPlanUpdaterModal = ({
             success: true,
             message: 'Old report deleted.'
         });
+        setCloseButton(true);
+    };
+
+    const closeAndReload = async () => {
+        if (newReport) {
+            await triggerTestPlanReportUpdate();
+        }
+        handleClose();
     };
 
     return (
-        <Modal
-            show={show}
-            onHide={backupChecked ? closeAndDeleteOldTestPlan : handleClose}
-            dialogClassName="modal-50w"
-        >
+        <Modal show={show} onHide={handleClose} dialogClassName="modal-50w">
             <Modal.Header closeButton className="test-plan-updater-header">
                 <Modal.Title>Test Plan Updater</Modal.Title>
             </Modal.Header>
@@ -503,12 +514,15 @@ const TestPlanUpdaterModal = ({
             )}
             {!showModalData && (
                 <Modal.Footer className="test-plan-updater-footer">
-                    <Button
-                        variant="secondary"
-                        onClick={closeAndDeleteOldTestPlan}
-                    >
-                        Done
-                    </Button>
+                    {(!closeButton && (
+                        <Button variant="secondary" onClick={deleteOldTestPlan}>
+                            Next
+                        </Button>
+                    )) || (
+                        <Button variant="secondary" onClick={closeAndReload}>
+                            Done
+                        </Button>
+                    )}
                 </Modal.Footer>
             )}
         </Modal>
