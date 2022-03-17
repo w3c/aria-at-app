@@ -103,8 +103,8 @@ button.more-actions:active {
     font-size: 1.1rem;
 }
 
-.updater-button {
-    max-width: 30%;
+.btn.updater-button {
+    width: initial;
 }
 
 /* tr.test-queue-run-row td:first-child {

@@ -139,8 +139,7 @@ const TestQueueRow = ({
                     size="sm"
                     variant="outline-secondary"
                 >
-                    {' '}
-                    Update Test Plan Version
+                    Update Test Plan
                 </Button>
             ) : (
                 ''

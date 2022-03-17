@@ -7,16 +7,13 @@
     margin-bottom: 0em;
 }
 
-.delete-checkbox {
+.backup-checkbox {
     grid-column: 1/2;
-}
-
-.delete-label {
-    color: #d52a49;
 }
 
 .loading-spinner {
     align-self: center;
+    margin: 40px 0;
 }
 
 .loading-spinner-modal {

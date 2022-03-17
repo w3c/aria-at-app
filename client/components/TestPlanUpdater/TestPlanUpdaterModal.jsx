@@ -16,8 +16,6 @@ import {
     UPDATER_QUERY,
     VERSION_QUERY
 } from './queries';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import './TestPlanUpdaterModal.css';
 import '../TestRun/TestRun.css';
 import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
@@ -100,7 +98,6 @@ const TestPlanUpdaterModal = ({
     const [versionData, setVersionData] = useState();
     const [safeToDeleteReportId, setSafeToDeleteReportId] = useState();
     const [showModalData, setShowModalData] = useState(true);
-    const [showDeleteTestPlan, setShowDeleteTestPlan] = useState(true);
     const [loadingSpinnerProgress, setLoadingSpinnerProgress] = useState({
         visible: false,
         numerator: null,
@@ -111,7 +108,7 @@ const TestPlanUpdaterModal = ({
         success: false,
         visible: false
     });
-    const [deleteChecked, setDeleteChecked] = useState(true);
+    const [backupChecked, setBackupChecked] = useState(false);
     const [newReport, setNewReport] = useState(false);
 
     useEffect(() => {
@@ -201,7 +198,6 @@ const TestPlanUpdaterModal = ({
 
     const createNewReportWithData = async () => {
         setShowModalData(false);
-        setShowDeleteTestPlan(false);
         const { data: newReportData } = await client.mutate({
             mutation: CREATE_TEST_PLAN_REPORT_MUTATION,
             variables: {
@@ -296,22 +292,11 @@ const TestPlanUpdaterModal = ({
 
         setSafeToDeleteReportId(currentReportId);
 
-        if (deleteChecked) {
-            setShowDeleteTestPlan(true);
-            setAlertCompletion({
-                message:
-                    'New report created without errors. Are you sure you want to delete the old report?',
-                success: false,
-                visible: true
-            });
-        } else {
-            setShowDeleteTestPlan(false);
-            setAlertCompletion({
-                message: 'Completed without errors.',
-                success: true,
-                visible: true
-            });
-        }
+        setAlertCompletion({
+            message: 'Completed without errors.',
+            success: true,
+            visible: true
+        });
 
         setLoadingSpinnerProgress(prevState => ({
             ...prevState,
@@ -321,7 +306,7 @@ const TestPlanUpdaterModal = ({
 
     const closeAndDeleteOldTestPlan = async () => {
         if (newReport) {
-            if (deleteChecked) {
+            if (!backupChecked) {
                 await deleteOldTestPlanReport();
             }
             await triggerTestPlanReportUpdate();
@@ -350,26 +335,10 @@ const TestPlanUpdaterModal = ({
         });
     };
 
-    const deleteComponent = (
-        <Form.Check type="checkbox" className="delete-checkbox">
-            <Form.Check.Input
-                type="checkbox"
-                onChange={() => {
-                    setDeleteChecked(!deleteChecked);
-                }}
-                checked={deleteChecked}
-            />
-            <Form.Check.Label className="delete-label">
-                <FontAwesomeIcon icon={faTrashAlt} className="trash-icon" />{' '}
-                Delete old Test Plan
-            </Form.Check.Label>
-        </Form.Check>
-    );
-
     return (
         <Modal
             show={show}
-            onHide={deleteChecked ? closeAndDeleteOldTestPlan : handleClose}
+            onHide={backupChecked ? closeAndDeleteOldTestPlan : handleClose}
             dialogClassName="modal-50w"
         >
             <Modal.Header closeButton className="test-plan-updater-header">
@@ -439,7 +408,10 @@ const TestPlanUpdaterModal = ({
                                     deletionNote = (
                                         <>
                                             Note that {testsToDelete.length}{' '}
-                                            tests differ between the old and new
+                                            {testsToDelete.length === 1
+                                                ? 'test'
+                                                : test}{' '}
+                                            differ between the old and new
                                             versions and cannot be automatically
                                             copied.
                                         </>
@@ -467,7 +439,21 @@ const TestPlanUpdaterModal = ({
                     </Modal.Body>
                     <Modal.Footer className="test-plan-updater-footer">
                         <div className="submit-buttons-row">
-                            {deleteComponent}
+                            <Form.Check
+                                type="checkbox"
+                                className="backup-checkbox"
+                            >
+                                <Form.Check.Label>
+                                    <Form.Check.Input
+                                        type="checkbox"
+                                        onChange={() => {
+                                            setBackupChecked(!backupChecked);
+                                        }}
+                                        checked={backupChecked}
+                                    />
+                                    Backup Test Plan before Update
+                                </Form.Check.Label>
+                            </Form.Check>
                             <div className="side-button-container">
                                 <Button
                                     variant="secondary"
@@ -477,7 +463,9 @@ const TestPlanUpdaterModal = ({
                                     Cancel
                                 </Button>
                                 <Button
-                                    variant="primary"
+                                    variant={
+                                        !backupChecked ? 'danger' : 'primary'
+                                    }
                                     className="submit-button"
                                     disabled={!canCreateNewReport}
                                     onClick={createNewReportWithData}
@@ -515,7 +503,6 @@ const TestPlanUpdaterModal = ({
             )}
             {!showModalData && (
                 <Modal.Footer className="test-plan-updater-footer">
-                    {showDeleteTestPlan && deleteComponent}
                     <Button
                         variant="secondary"
                         onClick={closeAndDeleteOldTestPlan}

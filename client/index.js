@@ -13,22 +13,14 @@ const client = new ApolloClient({
         typePolicies: {
             Query: {
                 fields: {
-                    testPlanReport: {
-                        merge: true
-                    },
-                    testPlanReports: {
-                        merge: false
-                    }
+                    testPlanReport: { merge: true },
+                    testPlanReports: { merge: false }
                 }
             },
             Mutation: {
                 fields: {
-                    testPlanReport: {
-                        merge: false
-                    },
-                    testPlanRun: {
-                        merge: false
-                    }
+                    testPlanReport: { merge: false },
+                    testPlanRun: { merge: false }
                 }
             }
         }
