@@ -474,7 +474,6 @@ describe('test queue', () => {
                     conflicts {
                         source {
                             test {
-                                id
                                 title
                                 rowNumber
                             }
@@ -561,7 +560,6 @@ describe('test queue', () => {
                       ],
                     },
                     "test": Object {
-                      "id": "MmY0YeyIyIjoiNyJ9jRkZD",
                       "rowNumber": 4,
                       "title": "Navigate backwards to a collapsed select-only combobox in interaction mode",
                     },
@@ -614,7 +612,6 @@ describe('test queue', () => {
                       ],
                     },
                     "test": Object {
-                      "id": "ZjUwNeyIyIjoiNyJ9mE2ZT",
                       "rowNumber": 7,
                       "title": "Read information about a collapsed select-only combobox in reading mode",
                     },
@@ -664,7 +661,6 @@ describe('test queue', () => {
                       ],
                     },
                     "test": Object {
-                      "id": "MDNiMeyIyIjoiNyJ9Dk1MT",
                       "rowNumber": 8,
                       "title": "Read information about a collapsed select-only combobox in interaction mode",
                     },
@@ -718,7 +714,6 @@ describe('test queue', () => {
                       ],
                     },
                     "test": Object {
-                      "id": "MjRmNeyIyIjoiNyJ92MyMT",
                       "rowNumber": 10,
                       "title": "Open a collapsed select-only combobox in reading mode",
                     },
@@ -780,7 +775,6 @@ describe('test queue', () => {
                       ],
                     },
                     "test": Object {
-                      "id": "MjRmNeyIyIjoiNyJ92MyMT",
                       "rowNumber": 10,
                       "title": "Open a collapsed select-only combobox in reading mode",
                     },
