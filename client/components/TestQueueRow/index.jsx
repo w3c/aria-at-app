@@ -582,6 +582,7 @@ const TestQueueRow = ({
 };
 
 TestQueueRow.propTypes = {
+    latestTestPlanVersions: PropTypes.array,
     user: PropTypes.object,
     testers: PropTypes.array,
     testPlanReport: PropTypes.object,
