@@ -131,18 +131,16 @@ const TestQueueRow = ({
         const latestTestPlanVersion = latestTestPlanVersions.filter(
             version => version.latestTestPlanVersion.id === testPlanVersion.id
         );
-        const updateTestPlanVersionButton =
-            isAdmin && latestTestPlanVersion.length === 0 ? (
+        const updateTestPlanVersionButton = isAdmin &&
+            latestTestPlanVersion.length === 0 && (
                 <Button
                     className="updater-button"
                     onClick={() => setShowTestPlanUpdaterModal(true)}
                     size="sm"
-                    variant="outline-secondary"
+                    variant="secondary"
                 >
                     Update Test Plan
                 </Button>
-            ) : (
-                ''
             );
         // Determine if current user is assigned to testPlan
         if (currentUserAssigned)
