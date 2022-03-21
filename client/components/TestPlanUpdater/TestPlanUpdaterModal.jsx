@@ -420,11 +420,10 @@ const TestPlanUpdaterModal = ({
                                         <>
                                             Note that {testsToDelete.length}{' '}
                                             {testsToDelete.length === 1
-                                                ? 'test'
-                                                : test}{' '}
-                                            differ between the old and new
-                                            versions and cannot be automatically
-                                            copied.
+                                                ? 'test differs'
+                                                : 'tests differ'}{' '}
+                                            between the old and new versions and
+                                            cannot be automatically copied.
                                         </>
                                     );
                                 }
@@ -437,8 +436,12 @@ const TestPlanUpdaterModal = ({
                                                 : 'info'
                                         }
                                     >
-                                        Found {allTestResults.length} test
-                                        results for{' '}
+                                        Found {allTestResults.length} partial or
+                                        completed test{' '}
+                                        {allTestResults.length === 1
+                                            ? 'result'
+                                            : 'results'}{' '}
+                                        for{' '}
                                         {testers.length > 1
                                             ? 'testers'
                                             : 'tester'}{' '}
@@ -450,22 +453,32 @@ const TestPlanUpdaterModal = ({
                     </Modal.Body>
                     <Modal.Footer className="test-plan-updater-footer">
                         <div className="submit-buttons-row">
-                            <Form.Check
-                                type="checkbox"
-                                className="backup-checkbox"
+                            {testsToDelete?.length > 0 && (
+                                <Form.Check
+                                    type="checkbox"
+                                    className="backup-checkbox"
+                                >
+                                    <Form.Check.Label>
+                                        <Form.Check.Input
+                                            type="checkbox"
+                                            onChange={() => {
+                                                setBackupChecked(
+                                                    !backupChecked
+                                                );
+                                            }}
+                                            checked={backupChecked}
+                                        />
+                                        Backup Test Plan before Update
+                                    </Form.Check.Label>
+                                </Form.Check>
+                            )}
+                            <div
+                                className={
+                                    testsToDelete?.length > 0
+                                        ? 'side-button-container'
+                                        : 'side-button-container no-backup'
+                                }
                             >
-                                <Form.Check.Label>
-                                    <Form.Check.Input
-                                        type="checkbox"
-                                        onChange={() => {
-                                            setBackupChecked(!backupChecked);
-                                        }}
-                                        checked={backupChecked}
-                                    />
-                                    Backup Test Plan before Update
-                                </Form.Check.Label>
-                            </Form.Check>
-                            <div className="side-button-container">
                                 <Button
                                     variant="secondary"
                                     onClick={handleClose}

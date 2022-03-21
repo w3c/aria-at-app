@@ -36,6 +36,10 @@
     grid-gap: 0.5em;
 }
 
+.side-button-container.no-backup {
+    grid-column: 2/3;
+}
+
 .submit-button {
     width: 100%;
     justify-self: end;
