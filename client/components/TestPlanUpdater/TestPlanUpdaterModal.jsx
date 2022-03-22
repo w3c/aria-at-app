@@ -303,7 +303,7 @@ const TestPlanUpdaterModal = ({
             setCloseButton(true);
         } else {
             setAlertCompletion({
-                message: 'Old test plan will be deleted.',
+                message: 'The old test plan will be deleted.',
                 success: false,
                 visible: true
             });
@@ -468,7 +468,7 @@ const TestPlanUpdaterModal = ({
                                             }}
                                             checked={backupChecked}
                                         />
-                                        Backup Test Plan before Update
+                                        Backup test plan before update
                                     </Form.Check.Label>
                                 </Form.Check>
                             )}
@@ -528,8 +528,8 @@ const TestPlanUpdaterModal = ({
             {!showModalData && (
                 <Modal.Footer className="test-plan-updater-footer">
                     {(!closeButton && (
-                        <Button variant="secondary" onClick={deleteOldTestPlan}>
-                            Next
+                        <Button variant="danger" onClick={deleteOldTestPlan}>
+                            Delete
                         </Button>
                     )) || (
                         <Button variant="secondary" onClick={closeAndReload}>
