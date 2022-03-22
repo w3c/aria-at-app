@@ -118,7 +118,7 @@ const TestPlanUpdaterModal = ({
 
     if (!updaterData) {
         return (
-            <Modal show={show} onHide={handleClose} dialogClassName="modal-90w">
+            <Modal show={show} onHide={handleClose} dialogClassName="modal-50w">
                 <Modal.Header closeButton className="test-plan-updater-header">
                     <Modal.Title>Test Plan Updater</Modal.Title>
                 </Modal.Header>
@@ -468,7 +468,7 @@ const TestPlanUpdaterModal = ({
                                             }}
                                             checked={backupChecked}
                                         />
-                                        Backup test plan before update
+                                        Back up test plan before update
                                     </Form.Check.Label>
                                 </Form.Check>
                             )}

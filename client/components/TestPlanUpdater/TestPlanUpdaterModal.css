@@ -20,9 +20,10 @@
     height: 250px;
 }
 
-.modal-50w {
-    max-width: 100%;
-    width: 50%;
+@media (min-width: 768px) {
+    .modal-50w {
+        min-width: 50%;
+    }
 }
 
 .new-version {
@@ -42,6 +43,7 @@
 
 .submit-button {
     width: 100%;
+    white-space: pre;
     justify-self: end;
 }
 
