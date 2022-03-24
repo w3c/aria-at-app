@@ -20,22 +20,77 @@ import {
     TEST_QUEUE_PAGE_POPULATED_MOCK_ADMIN,
     TEST_QUEUE_PAGE_POPULATED_MOCK_TESTER
 } from './__mocks__/GraphQLMocks';
+import TestProviders from '../components/TestProviders/TestProviders';
+import { TEST_QUEUE_PAGE_QUERY } from '../components/TestQueue/queries';
+import { waitForGraphQL } from '../components/GraphQLProvider';
 
 const setup = (mocks = []) => {
     return render(
-        <BrowserRouter>
-            <MockedProvider
-                mocks={mocks}
-                cache={new InMemoryCache({ addTypename: false })}
-            >
-                <TestQueue />
-            </MockedProvider>
-        </BrowserRouter>
+        // <BrowserRouter>
+        //     <MockedProvider
+        //         mocks={mocks}
+        //         cache={new InMemoryCache({ addTypename: false })}
+        //     >
+        //         <TestQueue />
+        //     </MockedProvider>
+        // </BrowserRouter>
+        <TestProviders>
+            <TestQueue />
+        </TestProviders>
     );
 };
 
 describe('Render TestQueue/index.jsx', () => {
     let wrapper;
+
+    beforeEach(() => {
+        wrapper = setup(TEST_QUEUE_PAGE_QUERY);
+    });
+
+    describe('[PUBLIC] when no test plan reports exist', () => {
+        it('renders loading state on initialization', async () => {
+            const { getByTestId } = wrapper;
+            const element = getByTestId('page-status');
+
+            expect(element).toBeTruthy();
+            expect(element).toHaveTextContent('Loading');
+        });
+
+        it.only('renders Test Queue page with no test plans', async () => {
+            // allow page time to load
+            await act(async () => {
+                await waitForGraphQL();
+
+                const { queryByTestId, getByTestId } = wrapper;
+                const loadingElement = queryByTestId('page-status');
+                const element = getByTestId('test-queue-no-test-plans-h2');
+
+                expect(loadingElement).not.toBeInTheDocument();
+                expect(element).toBeTruthy();
+                expect(element).toHaveTextContent(
+                    /There are no test plans available/gi
+                );
+            });
+        });
+
+        it.only('renders Test Queue page with test plans', async () => {
+            // allow page time to load
+            await act(async () => {
+                await waitFor(
+                    () => {
+                        const { getByTestId } = wrapper;
+                        const element = getByTestId('test-queue-instructions');
+
+                        expect(element).toBeTruthy();
+                        expect(element).toHaveTextContent(
+                            /Select a test plan to view. Your results will not be saved/gi
+                        );
+                    },
+                    { timeout: 5000 }
+                );
+            });
+        });
+    });
 
     describe('[NOT ADMIN] when no test plan reports exist', () => {
         beforeEach(() => {
