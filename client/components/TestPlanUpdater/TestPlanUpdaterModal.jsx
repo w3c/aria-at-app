@@ -291,6 +291,11 @@ const TestPlanUpdaterModal = ({
             }
         }
 
+        setLoadingSpinnerProgress(prevState => ({
+            ...prevState,
+            visible: false
+        }));
+
         if (backupChecked) {
             setAlertCompletion({
                 message: 'Completed without errors.',
@@ -300,11 +305,6 @@ const TestPlanUpdaterModal = ({
             setCloseButton(true);
             return;
         }
-
-        setLoadingSpinnerProgress(prevState => ({
-            ...prevState,
-            visible: false
-        }));
 
         await deleteOldTestPlanReport(currentReportId);
     };
