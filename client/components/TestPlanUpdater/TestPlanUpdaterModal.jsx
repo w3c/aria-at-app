@@ -310,7 +310,7 @@ const TestPlanUpdaterModal = ({
 
     const deleteOldTestPlanReport = async safeToDeleteReportId => {
         setLoadingSpinnerProgress({
-            visible: false
+            visible: true
         });
 
         await client.mutate({
@@ -319,6 +319,11 @@ const TestPlanUpdaterModal = ({
                 testPlanReportId: safeToDeleteReportId
             }
         });
+
+        setLoadingSpinnerProgress({
+            visible: false
+        });
+
         setAlertCompletion({
             visible: true,
             success: true,
