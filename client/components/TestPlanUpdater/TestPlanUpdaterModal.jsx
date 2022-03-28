@@ -291,11 +291,12 @@ const TestPlanUpdaterModal = ({
             }
         }
 
-        if (backupChecked) {
-            setLoadingSpinnerProgress({
-                visible: false
-            });
+        setLoadingSpinnerProgress(prevState => ({
+            ...prevState,
+            visible: false
+        }));
 
+        if (backupChecked) {
             setAlertCompletion({
                 message: 'Completed without errors.',
                 success: true,
@@ -309,21 +310,12 @@ const TestPlanUpdaterModal = ({
     };
 
     const deleteOldTestPlanReport = async safeToDeleteReportId => {
-        setLoadingSpinnerProgress({
-            visible: true
-        });
-
         await client.mutate({
             mutation: DELETE_TEST_PLAN_REPORT,
             variables: {
                 testPlanReportId: safeToDeleteReportId
             }
         });
-
-        setLoadingSpinnerProgress({
-            visible: false
-        });
-
         setAlertCompletion({
             visible: true,
             success: true,
