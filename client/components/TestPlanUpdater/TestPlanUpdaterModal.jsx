@@ -468,7 +468,8 @@ const TestPlanUpdaterModal = ({
                                             }}
                                             checked={backupChecked}
                                         />
-                                        Back up test plan before update
+                                        Keep older versions of test plan and
+                                        results
                                     </Form.Check.Label>
                                 </Form.Check>
                             )}
