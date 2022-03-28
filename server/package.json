@@ -4,7 +4,7 @@
   "description": "Server for ARIA-AT report",
   "main": "index.js",
   "scripts": {
-    "dev": "DOTENV_CONFIG_PATH=../config/dev.env nodemon --ignore './scripts/' --ignore './resources/' -r dotenv/config server.js --watch",
+    "dev": "DOTENV_CONFIG_PATH=../config/test.env nodemon --ignore './scripts/' --ignore './resources/' -r dotenv/config server.js --watch",
     "dev-debug": "DEBUG=express:* DOTENV_CONFIG_PATH=../config/dev.env nodemon --ignore './scripts/' --ignore './resources/' --inspect -r dotenv/config server.js --watch",
     "jest": "SEQUELIZE_TEST_HELPERS_JEST_RUNNER=true dotenv -e ../config/test.env -- jest",
     "prettier": "prettier --write \"**/*.{js,jsx,css}\"",

@@ -2,7 +2,6 @@ import React from 'react';
 import { mount } from 'enzyme';
 import TestPlanUpdater from './TestPlanUpdater';
 import TestProviders from '../TestProviders/TestProviders';
-import { waitForGraphQL } from '../GraphQLProvider';
 import { Alert, Button } from 'react-bootstrap';
 
 describe('TestPlanUpdater', () => {

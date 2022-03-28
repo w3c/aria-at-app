@@ -21,8 +21,6 @@ import {
     TEST_QUEUE_PAGE_POPULATED_MOCK_TESTER
 } from './__mocks__/GraphQLMocks';
 import TestProviders from '../components/TestProviders/TestProviders';
-import { TEST_QUEUE_PAGE_QUERY } from '../components/TestQueue/queries';
-import { waitForGraphQL } from '../components/GraphQLProvider';
 
 const setup = (mocks = []) => {
     return render(
@@ -44,7 +42,7 @@ describe('Render TestQueue/index.jsx', () => {
     let wrapper;
 
     beforeEach(() => {
-        wrapper = setup(TEST_QUEUE_PAGE_QUERY);
+        wrapper = setup();
     });
 
     describe('[PUBLIC] when no test plan reports exist', () => {
@@ -59,16 +57,21 @@ describe('Render TestQueue/index.jsx', () => {
         it.only('renders Test Queue page with no test plans', async () => {
             // allow page time to load
             await act(async () => {
-                await waitForGraphQL();
+                await waitFor(
+                    () => {
+                        const { queryByTestId, getByTestId } = wrapper;
+                        const loadingElement = queryByTestId('page-status');
+                        const element = getByTestId(
+                            'test-queue-no-test-plans-h2'
+                        );
 
-                const { queryByTestId, getByTestId } = wrapper;
-                const loadingElement = queryByTestId('page-status');
-                const element = getByTestId('test-queue-no-test-plans-h2');
-
-                expect(loadingElement).not.toBeInTheDocument();
-                expect(element).toBeTruthy();
-                expect(element).toHaveTextContent(
-                    /There are no test plans available/gi
+                        expect(loadingElement).not.toBeInTheDocument();
+                        expect(element).toBeTruthy();
+                        expect(element).toHaveTextContent(
+                            /There are no test plans available/gi
+                        );
+                    },
+                    { timeout: 1000 }
                 );
             });
         });
