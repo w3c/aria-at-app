@@ -96,7 +96,6 @@ const TestPlanUpdaterModal = ({
     const client = useApolloClient();
     const [updaterData, setUpdaterData] = useState();
     const [versionData, setVersionData] = useState();
-    const [safeToDeleteReportId, setSafeToDeleteReportId] = useState();
     const [showModalData, setShowModalData] = useState(true);
     const [loadingSpinnerProgress, setLoadingSpinnerProgress] = useState({
         visible: false,
@@ -292,8 +291,6 @@ const TestPlanUpdaterModal = ({
             }
         }
 
-        setSafeToDeleteReportId(currentReportId);
-
         if (backupChecked) {
             setAlertCompletion({
                 message: 'Completed without errors.',
@@ -301,44 +298,28 @@ const TestPlanUpdaterModal = ({
                 visible: true
             });
             setCloseButton(true);
-        } else {
-            setAlertCompletion({
-                message: 'The old test plan will be deleted.',
-                success: false,
-                visible: true
-            });
-            setCloseButton(false);
+            return;
         }
 
         setLoadingSpinnerProgress(prevState => ({
             ...prevState,
             visible: false
         }));
+
+        await deleteOldTestPlanReport(currentReportId);
     };
 
-    const deleteOldTestPlan = async () => {
-        if (!backupChecked) {
-            await deleteOldTestPlanReport();
-        }
-    };
-
-    const deleteOldTestPlanReport = async () => {
-        setAlertCompletion({
-            visible: true,
-            success: false,
-            message: 'Deleting old report...'
-        });
+    const deleteOldTestPlanReport = async safeToDeleteReportId => {
         await client.mutate({
             mutation: DELETE_TEST_PLAN_REPORT,
             variables: {
                 testPlanReportId: safeToDeleteReportId
             }
         });
-        setSafeToDeleteReportId(null);
         setAlertCompletion({
             visible: true,
             success: true,
-            message: 'Old report deleted.'
+            message: 'Completed without errors.'
         });
         setCloseButton(true);
     };
@@ -528,11 +509,7 @@ const TestPlanUpdaterModal = ({
             )}
             {!showModalData && (
                 <Modal.Footer className="test-plan-updater-footer">
-                    {(!closeButton && (
-                        <Button variant="danger" onClick={deleteOldTestPlan}>
-                            Delete
-                        </Button>
-                    )) || (
+                    {closeButton && (
                         <Button variant="secondary" onClick={closeAndReload}>
                             Done
                         </Button>
