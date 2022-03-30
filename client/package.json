@@ -38,7 +38,7 @@
     "moment": "^2.25.3",
     "node-fetch": "^2.6.1",
     "node-sass": "^4.13.1",
-    "object-hash": "^2.2.0",
+    "object-hash": "^3.0.0",
     "octicons-react": "^1.0.4",
     "prop-types": "^15.7.2",
     "query-string": "^6.12.1",

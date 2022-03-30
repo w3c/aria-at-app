@@ -39,6 +39,12 @@ export const UPDATER_QUERY = gql`
             }
         }
         testPlan(id: $testPlanId) {
+            latestTestPlanVersion {
+                id
+                gitMessage
+                gitSha
+                updatedAt
+            }
             testPlanVersions {
                 id
                 gitMessage

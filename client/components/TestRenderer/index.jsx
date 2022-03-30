@@ -985,7 +985,13 @@ const TestRenderer = ({
                                                 </label>
                                             </div>
 
-                                            <Fieldset className="problem-select">
+                                            <Fieldset
+                                                className="problem-select"
+                                                hidden={
+                                                    !unexpectedBehaviors
+                                                        .failChoice.checked
+                                                }
+                                            >
                                                 <legend>
                                                     {
                                                         unexpectedBehaviors
@@ -1033,11 +1039,6 @@ const TestRenderer = ({
                                                                                 .target
                                                                                 .checked
                                                                         )
-                                                                    }
-                                                                    disabled={
-                                                                        !unexpectedBehaviors
-                                                                            .failChoice
-                                                                            .checked
                                                                     }
                                                                 />
                                                                 <label

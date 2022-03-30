@@ -30,7 +30,8 @@ export const TEST_QUEUE_PAGE_NOT_POPULATED_MOCK_ADMIN = [
                         roles: ['TESTER']
                     }
                 ],
-                testPlanReports: []
+                testPlanReports: [],
+                testPlans: []
             }
         }
     }
@@ -69,7 +70,8 @@ export const TEST_QUEUE_PAGE_NOT_POPULATED_MOCK_TESTER = [
                         __typename: 'User'
                     }
                 ],
-                testPlanReports: []
+                testPlanReports: [],
+                testPlans: []
             }
         }
     }
@@ -449,7 +451,8 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK_ADMIN = [
                             }
                         ]
                     }
-                ]
+                ],
+                testPlans: []
             }
         }
     }
@@ -798,7 +801,8 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK_TESTER = [
                         },
                         draftTestPlanRuns: []
                     }
-                ]
+                ],
+                testPlans: []
             }
         }
     }

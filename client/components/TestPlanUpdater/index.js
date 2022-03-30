@@ -1,3 +1,3 @@
-import TestPlanUpdater from './TestPlanUpdater';
+import TestPlanUpdaterModal from './TestPlanUpdaterModal';
 
-export default TestPlanUpdater;
+export default TestPlanUpdaterModal;

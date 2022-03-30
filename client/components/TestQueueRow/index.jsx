@@ -27,6 +27,7 @@ const TestQueueRow = ({
     user = {},
     testers = [],
     testPlanReport = {},
+    latestTestPlanVersions = [],
     triggerDeleteTestPlanReportModal = () => {},
     triggerDeleteResultsModal = () => {},
     triggerTestPlanReportUpdate = () => {}
@@ -49,7 +50,7 @@ const TestQueueRow = ({
 
     const { id, isAdmin, username } = user;
     const {
-        id: testReportId,
+        id: testPlanReportId,
         testPlanTarget,
         testPlanVersion,
         draftTestPlanRuns,
@@ -126,17 +127,21 @@ const TestQueueRow = ({
                 Published {gitUpdatedDateToString(testPlanVersion.updatedAt)}
             </p>
         );
-        const updateTestPlanVersionButton = isAdmin ? (
-            <Button
-                className="updater-button"
-                onClick={() => setShowTestPlanUpdaterModal(true)}
-            >
-                {' '}
-                Update Test Plan Version
-            </Button>
-        ) : (
-            ''
+
+        const latestTestPlanVersion = latestTestPlanVersions.filter(
+            version => version.latestTestPlanVersion.id === testPlanVersion.id
         );
+        const updateTestPlanVersionButton = isAdmin &&
+            latestTestPlanVersion.length === 0 && (
+                <Button
+                    className="updater-button"
+                    onClick={() => setShowTestPlanUpdaterModal(true)}
+                    size="sm"
+                    variant="secondary"
+                >
+                    Update Test Plan
+                </Button>
+            );
         // Determine if current user is assigned to testPlan
         if (currentUserAssigned)
             return (
@@ -564,15 +569,20 @@ const TestQueueRow = ({
                     )}
                 </td>
             </tr>
-            <TestPlanUpdaterModal
-                show={showTestPlanUpdaterModal}
-                handleClose={() => setShowTestPlanUpdaterModal(false)}
-            />
+            {showTestPlanUpdaterModal && (
+                <TestPlanUpdaterModal
+                    show={showTestPlanUpdaterModal}
+                    handleClose={() => setShowTestPlanUpdaterModal(false)}
+                    testPlanReportId={testPlanReportId}
+                    triggerTestPlanReportUpdate={triggerTestPlanReportUpdate}
+                />
+            )}
         </>
     );
 };
 
 TestQueueRow.propTypes = {
+    latestTestPlanVersions: PropTypes.array,
     user: PropTypes.object,
     testers: PropTypes.array,
     testPlanReport: PropTypes.object,

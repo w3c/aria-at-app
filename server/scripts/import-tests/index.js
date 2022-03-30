@@ -4,6 +4,7 @@ const path = require('path');
 const nodegit = require('nodegit');
 const { Client } = require('pg');
 const fse = require('fs-extra');
+const spawn = require('cross-spawn');
 const { At } = require('../../models');
 const {
     createTestPlanVersion,
@@ -51,6 +52,18 @@ const importTestPlanVersions = async () => {
 
     const { gitCommitDate, gitMessage, gitSha } = await readRepo();
 
+    console.log('Running `npm install` ...\n');
+    const installOutput = spawn.sync('npm', ['install'], {
+        cwd: gitCloneDirectory
+    });
+    console.log('`npm install` output', installOutput.stdout.toString());
+
+    console.log('Running `npm run build` ...\n');
+    const buildOutput = spawn.sync('npm', ['run', 'build'], {
+        cwd: gitCloneDirectory
+    });
+    console.log('`npm run build` output', buildOutput.stdout.toString());
+
     const ats = await At.findAll();
     await updateAtsJson(ats);
 
@@ -61,6 +74,14 @@ const importTestPlanVersions = async () => {
 
         const builtDirectoryPath = path.join(builtTestsDirectory, directory);
         const sourceDirectoryPath = path.join(testsDirectory, directory);
+
+        // https://github.com/w3c/aria-at/commit/9d73d6bb274b3fe75b9a8825e020c0546a33a162
+        // This is the date of the last commit before the build folder removal.
+        // Meant to support backward compatability until the existing tests can
+        // be updated to the current structure
+        const buildRemovalDate = new Date('2022-03-10 18:08:36.000000 +00:00');
+        const useBuildInAppAppUrlPath =
+            gitCommitDate.getTime() <= buildRemovalDate.getTime();
 
         if (
             !(
@@ -103,7 +124,12 @@ const importTestPlanVersions = async () => {
             id: testPlanVersionId,
             title,
             directory,
-            testPageUrl: getAppUrl(testPageUrl, { gitSha, builtDirectoryPath }),
+            testPageUrl: getAppUrl(testPageUrl, {
+                gitSha,
+                directoryPath: useBuildInAppAppUrlPath
+                    ? builtDirectoryPath
+                    : sourceDirectoryPath
+            }),
             gitSha,
             gitMessage,
             updatedAt: gitCommitDate,
@@ -157,14 +183,14 @@ const readRepo = async () => {
     };
 };
 
-const getAppUrl = (directoryRelativePath, { gitSha, builtDirectoryPath }) => {
+const getAppUrl = (directoryRelativePath, { gitSha, directoryPath }) => {
     return path.join(
         '/',
         'aria-at', // The app's proxy to the ARIA-AT repo
         gitSha,
         path.relative(
             gitCloneDirectory,
-            path.join(builtDirectoryPath, directoryRelativePath)
+            path.join(directoryPath, directoryRelativePath)
         )
     );
 };
@@ -280,7 +306,7 @@ const getTests = ({ builtDirectoryPath, testPlanVersionId, ats, gitSha }) => {
                         atId,
                         getAppUrl(renderedUrls[index], {
                             gitSha,
-                            builtDirectoryPath
+                            directoryPath: builtDirectoryPath
                         })
                     ];
                 })
