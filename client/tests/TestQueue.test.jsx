@@ -32,7 +32,7 @@ const setup = (mocks = []) => {
         //         <TestQueue />
         //     </MockedProvider>
         // </BrowserRouter>
-        <TestProviders>
+        <TestProviders role="admin">
             <TestQueue />
         </TestProviders>
     );

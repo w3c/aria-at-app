@@ -1,5 +1,8 @@
 const { User } = require('../models');
-const { getOrCreateUser } = require('../models/services/UserService');
+const {
+    getOrCreateUser,
+    getUserByUsername
+} = require('../models/services/UserService');
 const { GithubService } = require('../services');
 const getTesters = require('../util/get-testers');
 
@@ -90,7 +93,49 @@ const oauthRedirectFromGithubController = async (req, res) => {
     return loginSucceeded();
 };
 
-const signoutController = (req, res) => {
+const integrationTestSignInController = async (req, res) => {
+    if (!ALLOW_FAKE_ROLE) {
+        res.status(403).send('Integration test sign-in is not enabled');
+        return;
+    }
+
+    if (!(req.query.role === 'admin' || req.query.role === 'tester')) {
+        res.status(400).send(
+            "Please provide a role query parameter of 'admin' or 'tester'"
+        );
+        return;
+    }
+
+    let user;
+    if (req.query.role === 'admin') {
+        user = await getUserByUsername(
+            'esmeralda-baggins',
+            undefined,
+            undefined,
+            [],
+            []
+        );
+    } else {
+        user = await getUserByUsername(
+            'tom-proudfeet',
+            undefined,
+            undefined,
+            [],
+            []
+        );
+    }
+
+    if (!user) {
+        res.status(500).send('The test database is missing the expected user');
+        return;
+    }
+
+    req.session.user = user.get({ plain: true });
+
+    res.status(200).send('Integration test session started');
+};
+
+const signOutController = (req, res) => {
     req.session.destroy(err => {
         if (err) {
             res.status(500);
@@ -104,5 +149,6 @@ const signoutController = (req, res) => {
 module.exports = {
     oauthRedirectToGithubController,
     oauthRedirectFromGithubController,
-    signoutController
+    integrationTestSignInController,
+    signOutController
 };
