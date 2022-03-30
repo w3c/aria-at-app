@@ -65,6 +65,15 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
                 }
             }
         }
+        testPlans {
+            latestTestPlanVersion {
+                id
+                gitSha
+                testPlan {
+                    id
+                }
+            }
+        }
     }
 `;
 

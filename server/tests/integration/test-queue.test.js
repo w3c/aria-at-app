@@ -474,18 +474,15 @@ describe('test queue', () => {
                     conflicts {
                         source {
                             test {
-                                id
                                 title
                                 rowNumber
                             }
                             scenario {
-                                id
                                 commands {
                                     text
                                 }
                             }
                             assertion {
-                                id
                                 text
                             }
                         }
@@ -553,7 +550,6 @@ describe('test queue', () => {
                   ],
                   "source": Object {
                     "assertion": Object {
-                      "id": "MmEzMeyIzIjoiTmpBeU9leUl5SWpvaU5pSjlHTmhORCJ9jlhMW",
                       "text": "Role 'combobox' is conveyed",
                     },
                     "scenario": Object {
@@ -562,10 +558,8 @@ describe('test queue', () => {
                           "text": "Shift+Tab",
                         },
                       ],
-                      "id": "NWFkZeyIzIjoiTmpBeU9leUl5SWpvaU5pSjlHTmhORCJ9DBiOG",
                     },
                     "test": Object {
-                      "id": "NjAyOeyIyIjoiNiJ9GNhND",
                       "rowNumber": 4,
                       "title": "Navigate backwards to a collapsed select-only combobox in interaction mode",
                     },
@@ -608,7 +602,6 @@ describe('test queue', () => {
                   ],
                   "source": Object {
                     "assertion": Object {
-                      "id": "ODVlNeyIzIjoiTlRnd1pleUl5SWpvaU5pSjlXWTJPVCJ9zgzMj",
                       "text": "Role 'combobox' is conveyed",
                     },
                     "scenario": Object {
@@ -617,10 +610,8 @@ describe('test queue', () => {
                           "text": "Insert+Tab",
                         },
                       ],
-                      "id": "NzY5NeyIzIjoiTlRnd1pleUl5SWpvaU5pSjlXWTJPVCJ9GRiND",
                     },
                     "test": Object {
-                      "id": "NTgwZeyIyIjoiNiJ9WY2OT",
                       "rowNumber": 7,
                       "title": "Read information about a collapsed select-only combobox in reading mode",
                     },
@@ -668,10 +659,8 @@ describe('test queue', () => {
                           "text": "Insert+Tab",
                         },
                       ],
-                      "id": "OTFhZeyIzIjoiTVRVNE1leUl5SWpvaU5pSjlUTXpabSJ9DM2Ym",
                     },
                     "test": Object {
-                      "id": "MTU4MeyIyIjoiNiJ9TMzZm",
                       "rowNumber": 8,
                       "title": "Read information about a collapsed select-only combobox in interaction mode",
                     },
@@ -723,10 +712,8 @@ describe('test queue', () => {
                           "text": "Alt+Down",
                         },
                       ],
-                      "id": "MmI1ZeyIzIjoiWVRKbE9leUl5SWpvaU5pSjlUTXdZVCJ9TJlZT",
                     },
                     "test": Object {
-                      "id": "YTJlOeyIyIjoiNiJ9TMwYT",
                       "rowNumber": 10,
                       "title": "Open a collapsed select-only combobox in reading mode",
                     },
@@ -778,7 +765,6 @@ describe('test queue', () => {
                   ],
                   "source": Object {
                     "assertion": Object {
-                      "id": "OTI0MeyIzIjoiWVRKbE9leUl5SWpvaU5pSjlUTXdZVCJ9mQ5N2",
                       "text": "State of the combobox (expanded) is conveyed",
                     },
                     "scenario": Object {
@@ -787,10 +773,8 @@ describe('test queue', () => {
                           "text": "Alt+Down",
                         },
                       ],
-                      "id": "MmI1ZeyIzIjoiWVRKbE9leUl5SWpvaU5pSjlUTXdZVCJ9TJlZT",
                     },
                     "test": Object {
-                      "id": "YTJlOeyIyIjoiNiJ9TMwYT",
                       "rowNumber": 10,
                       "title": "Open a collapsed select-only combobox in reading mode",
                     },
