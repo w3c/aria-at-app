@@ -7,10 +7,24 @@ const origin = typeof jest !== 'undefined' ? process.env.API_SERVER : '';
 
 const client = new ApolloClient({
     cache: new InMemoryCache({
+        addTypename: false,
         typePolicies: {
             TestPlanReportOperations: { merge: false },
             TestPlanRunOperations: { merge: false },
-            User: { fields: { ats: { merge: false } } }
+            TestPlanVersion: { fields: { testPlan: { merge: false } } },
+            User: { fields: { ats: { merge: false } } },
+            Query: {
+                fields: {
+                    testPlanReport: { merge: true },
+                    testPlanReports: { merge: false }
+                }
+            },
+            Mutation: {
+                fields: {
+                    testPlanReport: { merge: false },
+                    testPlanRun: { merge: false }
+                }
+            }
         }
     }),
     uri: `${origin}/api/graphql`
