@@ -1,8 +1,16 @@
 import Enzyme from 'enzyme';
 import EnzymeAdapter from 'enzyme-adapter-react-16';
+import nodeFetch from 'node-fetch';
+import fetchCookie from 'fetch-cookie';
+import jsdom from 'jsdom';
+import createGlobalJSDOM from 'jsdom-global';
 
 Enzyme.configure({ adapter: new EnzymeAdapter() });
 
-const fetch = require('node-fetch');
+const cookieJar = new jsdom.CookieJar();
+
+createGlobalJSDOM(``, { cookieJar });
+
+const fetch = fetchCookie(nodeFetch);
 
 global.fetch = fetch;

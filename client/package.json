@@ -80,10 +80,12 @@
     "eslint-plugin-json": "^3.0.0",
     "eslint-plugin-prettier": "^3.4.0",
     "eslint-plugin-react": "^7.23.2",
+    "fetch-cookie": "^2.0.3",
     "file-loader": "^6.0.0",
     "jest": "^25.1.0",
-    "jest-environment-jsdom": "^27.0.6",
     "jest-enzyme": "^7.1.2",
+    "jsdom": "^19.0.0",
+    "jsdom-global": "^3.0.2",
     "prettier": "^1.19.1",
     "webpack": "^5.69.1",
     "webpack-cli": "^4.9.2",
@@ -107,7 +109,7 @@
     ]
   },
   "jest": {
-    "testEnvironment": "jsdom",
+    "testEnvironment": "node",
     "moduleNameMapper": {
       "\\.(css|less)$": "<rootDir>/tests/__mocks__/styleMock.js",
       "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/tests/__mocks__/fileMock.js"

@@ -22,27 +22,17 @@ import {
 } from './__mocks__/GraphQLMocks';
 import TestProviders from '../components/TestProviders/TestProviders';
 
-const setup = (mocks = []) => {
-    return render(
-        // <BrowserRouter>
-        //     <MockedProvider
-        //         mocks={mocks}
-        //         cache={new InMemoryCache({ addTypename: false })}
-        //     >
-        //         <TestQueue />
-        //     </MockedProvider>
-        // </BrowserRouter>
-        <TestProviders role="admin">
-            <TestQueue />
-        </TestProviders>
-    );
-};
+const setup = () => {};
 
 describe('Render TestQueue/index.jsx', () => {
     let wrapper;
 
     beforeEach(() => {
-        wrapper = setup();
+        wrapper = render(
+            <TestProviders>
+                <TestQueue />
+            </TestProviders>
+        );
     });
 
     describe('[PUBLIC] when no test plan reports exist', () => {
