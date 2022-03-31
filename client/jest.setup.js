@@ -11,6 +11,6 @@ const cookieJar = new jsdom.CookieJar();
 
 createGlobalJSDOM(``, { cookieJar });
 
-const fetch = fetchCookie(nodeFetch);
+const fetch = fetchCookie(nodeFetch, cookieJar);
 
 global.fetch = fetch;

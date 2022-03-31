@@ -6,9 +6,6 @@ import {
     fireEvent,
     act
 } from '@testing-library/react';
-import { InMemoryCache } from '@apollo/client';
-import { MockedProvider } from '@apollo/client/testing';
-import { BrowserRouter } from 'react-router-dom';
 import '@testing-library/jest-dom/extend-expect';
 
 import TestQueue from '../components/TestQueue';
@@ -16,13 +13,10 @@ import TestQueue from '../components/TestQueue';
 // eslint-disable-next-line jest/no-mocks-import
 import {
     TEST_QUEUE_PAGE_NOT_POPULATED_MOCK_ADMIN,
-    TEST_QUEUE_PAGE_NOT_POPULATED_MOCK_TESTER,
     TEST_QUEUE_PAGE_POPULATED_MOCK_ADMIN,
     TEST_QUEUE_PAGE_POPULATED_MOCK_TESTER
 } from './__mocks__/GraphQLMocks';
 import TestProviders from '../components/TestProviders/TestProviders';
-
-const setup = () => {};
 
 describe('Render TestQueue/index.jsx', () => {
     let wrapper;
@@ -44,7 +38,7 @@ describe('Render TestQueue/index.jsx', () => {
             expect(element).toHaveTextContent('Loading');
         });
 
-        it.only('renders Test Queue page with no test plans', async () => {
+        it('renders Test Queue page with no test plans', async () => {
             // allow page time to load
             await act(async () => {
                 await waitFor(
@@ -66,7 +60,7 @@ describe('Render TestQueue/index.jsx', () => {
             });
         });
 
-        it.only('renders Test Queue page with test plans', async () => {
+        it('renders Test Queue page with test plans', async () => {
             // allow page time to load
             await act(async () => {
                 await waitFor(
@@ -86,8 +80,14 @@ describe('Render TestQueue/index.jsx', () => {
     });
 
     describe('[NOT ADMIN] when no test plan reports exist', () => {
+        let wrapper;
+
         beforeEach(() => {
-            wrapper = setup(TEST_QUEUE_PAGE_NOT_POPULATED_MOCK_TESTER);
+            wrapper = render(
+                <TestProviders role="tester">
+                    <TestQueue />
+                </TestProviders>
+            );
         });
 
         it('renders loading state on initialization', async () => {
@@ -98,19 +98,24 @@ describe('Render TestQueue/index.jsx', () => {
             expect(element).toHaveTextContent('Loading');
         });
 
-        it('renders Test Queue page instructions', async () => {
+        it.only('renders Test Queue page instructions', async () => {
             // allow page time to load
             await act(async () => {
-                await waitFor(() => new Promise(res => setTimeout(res, 0)));
+                await waitFor(
+                    () => {
+                        const { queryByTestId, getByTestId } = wrapper;
+                        const loadingElement = queryByTestId('page-status');
+                        const element = getByTestId(
+                            'test-queue-no-test-plans-p'
+                        );
 
-                const { queryByTestId, getByTestId } = wrapper;
-                const loadingElement = queryByTestId('page-status');
-                const element = getByTestId('test-queue-no-test-plans-p');
-
-                expect(loadingElement).not.toBeInTheDocument();
-                expect(element).toBeTruthy();
-                expect(element).toHaveTextContent(
-                    /Please configure your preferred Assistive Technologies in/gi
+                        expect(loadingElement).not.toBeInTheDocument();
+                        expect(element).toBeTruthy();
+                        expect(element).toHaveTextContent(
+                            /Please configure your preferred Assistive Technologies in/gi
+                        );
+                    },
+                    { timeout: 5000 }
                 );
             });
         });
