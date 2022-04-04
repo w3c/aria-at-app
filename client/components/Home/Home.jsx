@@ -80,7 +80,7 @@ const Home = () => {
                                     Test Writing Progress Report
                                 </a>{' '}
                                 and{' '}
-                                <a href="https://w3c.github.io/aria-at/build/">
+                                <a href="https://aria-at.netlify.app">
                                     view the draft test plans
                                 </a>{' '}
                                 preview.
