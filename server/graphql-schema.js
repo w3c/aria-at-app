@@ -114,31 +114,6 @@ const graphqlSchema = gql`
         atVersions: [String]!
     }
 
-    # TODO: remove or rework this type in order to support recording exact
-    # versions
-    """
-    Specifies an AT and browser combination to test, divided into buckets by
-    major version.
-    """
-    type TestPlanTarget {
-        """
-        Postgres-provided numeric ID.
-        """
-        id: ID!
-        title: String!
-        at: At!
-        atVersion: String!
-        browser: Browser!
-        browserVersion: String!
-    }
-
-    input TestPlanTargetInput {
-        atId: ID!
-        atVersion: String!
-        browserId: ID!
-        browserVersion: String!
-    }
-
     # TODO: Determine if needed following 2021 Working Mode changes
     # https://github.com/w3c/aria-at/wiki/Working-Mode
     # """
@@ -429,6 +404,8 @@ const graphqlSchema = gql`
         The original test to which the results correspond.
         """
         test: Test!
+        atVersion: String!
+        browserVersion: String!
         """
         Automatically set by the server when a new test result is created.
         """
@@ -693,13 +670,11 @@ const graphqlSchema = gql`
         """
         status: TestPlanReportStatus!
         """
-        See TestPlanTarget type for more information.
-        """
-        testPlanTarget: TestPlanTarget!
-        """
         The snapshot of a TestPlan to use.
         """
         testPlanVersion: TestPlanVersion!
+        at: At!
+        browser: Browser!
         """
         The subset of tests which are relevant to this report, i.e. the tests
         where the AT matches the TestPlanTarget's AT.
@@ -736,7 +711,8 @@ const graphqlSchema = gql`
     """
     input TestPlanReportInput {
         testPlanVersionId: ID!
-        testPlanTarget: TestPlanTargetInput!
+        atId: ID!
+        browserId: ID!
     }
 
     """
@@ -857,6 +833,18 @@ const graphqlSchema = gql`
 
     # Mutation-specific types below
 
+    type AtOperations {
+        createAtVersion(atVersion: String!): NoResponse
+        editAtVersion(previous: String!, updated: String!): NoResponse
+        deleteAtVersion(atVersion: String!): NoResponse
+    }
+
+    type BrowserOperations {
+        createBrowserVersion(browserVersion: String!): NoResponse
+        editBrowserVersion(previous: String!, updated: String!): NoResponse
+        deleteBrowserVersion(browserVersion: String!): NoResponse
+    }
+
     """
     Mutations scoped to a previously-created TestPlanReport.
     """
@@ -942,6 +930,8 @@ const graphqlSchema = gql`
     }
 
     type Mutation {
+        at(id: ID!): AtOperations!
+        browser(id: ID!): BrowserOperations!
         """
         Adds a report with the given TestPlanVersion and TestPlanTarget and a
         state of "DRAFT", resulting in the report appearing in the Test Queue.
