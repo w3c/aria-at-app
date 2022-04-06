@@ -817,8 +817,7 @@ const TestRun = () => {
             <Helmet>
                 <title>
                     {hasTestsToRun
-                        ? `${currentTest.title} for ${testPlanTarget.title} ` +
-                          `| ARIA-AT`
+                        ? `Testing task: ${currentTest.title} (${testPlanTarget.title}) | ARIA-AT`
                         : 'No tests for this AT and Browser | ARIA-AT'}
                 </title>
             </Helmet>
