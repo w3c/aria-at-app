@@ -27,27 +27,25 @@ const UpdateVersionModal = ({
             title={title}
             content={
                 <ModalInnerSectionContainer>
-                    <fieldset>
-                        <Form.Group>
-                            <Form.Label>Version Number</Form.Label>
-                            <Form.Control
-                                type="text"
-                                value={versionValue}
-                                onChange={onVersionChange}
-                            />
-                        </Form.Group>
+                    <Form.Group>
+                        <Form.Label>Version Number</Form.Label>
+                        <Form.Control
+                            type="text"
+                            value={versionValue}
+                            onChange={onVersionChange}
+                        />
+                    </Form.Group>
 
-                        <Form.Group>
-                            <Form.Label>
-                                Approximate date of availability
-                            </Form.Label>
-                            <Form.Control
-                                type="date"
-                                value={dateAvailabilityValue}
-                                onChange={onDateAvailabilityChange}
-                            />
-                        </Form.Group>
-                    </fieldset>
+                    <Form.Group>
+                        <Form.Label>
+                            Approximate date of availability
+                        </Form.Label>
+                        <Form.Control
+                            type="date"
+                            value={dateAvailabilityValue}
+                            onChange={onDateAvailabilityChange}
+                        />
+                    </Form.Group>
                 </ModalInnerSectionContainer>
             }
             actionLabel={updateType === 'add' ? 'Add Version' : 'Save'}
