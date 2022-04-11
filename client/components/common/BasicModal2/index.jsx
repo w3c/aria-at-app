@@ -1,13 +1,14 @@
 import React, { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { Button, Modal } from 'react-bootstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import styled from '@emotion/styled';
-import WarningIcon from '../../../assets/fix-issue.svg'; // to be replaced with theme enum pointing to warning icon
-import DangerIcon from '../../../assets/join-community.svg'; // to be replaced with theme enum pointing to danger icon
 
 const ModalTitleStyle = styled.h1`
     border: 0;
-    font-size: 1.5em;
+    padding: 0;
+    font-size: 1.5rem;
 `;
 
 const ModalInnerSectionContainer = styled.div`
@@ -23,7 +24,7 @@ const ColorStrip = styled.div`
     height: 10px;
     ${props => props.hideHeadline && `display: none;`}
     background-color: ${({ theme }) =>
-        theme === 'danger' ? '#bd324e' : '#ffad2c'};
+        theme === 'danger' ? '#ce1b4c' : '#fab700'};
 
     border-top-left-radius: calc(0.3rem - 1px);
     border-top-right-radius: calc(0.3rem - 1px);
@@ -34,6 +35,7 @@ const BasicModal2 = ({
     centered = false,
     animation = true,
     theme = 'warning', // warning, danger
+    dialogClassName = '',
     title = '',
     content = null,
     actionButtons = [],
@@ -57,6 +59,7 @@ const BasicModal2 = ({
                 /* Disabled due to buggy implementation which jumps the page */
                 autoFocus={false}
                 aria-labelledby="basic-modal"
+                dialogClassName={dialogClassName}
             >
                 <ColorStrip theme={theme} />
                 <Modal.Header className="border-bottom-0">
@@ -66,14 +69,13 @@ const BasicModal2 = ({
                         ref={headerRef}
                     >
                         <ModalInnerSectionContainer>
-                            <img
-                                src={
-                                    theme === 'danger'
-                                        ? DangerIcon
-                                        : WarningIcon
+                            <FontAwesomeIcon
+                                icon={faExclamationTriangle}
+                                size="lg"
+                                color={
+                                    theme === 'danger' ? '#ce1b4c' : '#fab700'
                                 }
-                                alt="Icon Description"
-                            />{' '}
+                            />
                             {title}
                         </ModalInnerSectionContainer>
                     </Modal.Title>
@@ -115,6 +117,7 @@ BasicModal2.propTypes = {
     centered: PropTypes.bool,
     animation: PropTypes.bool,
     theme: PropTypes.string,
+    dialogClassName: PropTypes.string,
     title: PropTypes.string,
     content: PropTypes.node,
     actionButtons: PropTypes.arrayOf(
