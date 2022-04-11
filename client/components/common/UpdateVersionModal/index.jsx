@@ -13,6 +13,8 @@ const UpdateVersionModal = ({
     show = false,
     title = '',
     updateType = 'add', // or edit
+    versionValue = '',
+    dateAvailabilityValue = '',
     onVersionChange = null,
     onDateAvailabilityChange = null,
     handleAction = null,
@@ -30,6 +32,7 @@ const UpdateVersionModal = ({
                             <Form.Label>Version Number</Form.Label>
                             <Form.Control
                                 type="text"
+                                value={versionValue}
                                 onChange={onVersionChange}
                             />
                         </Form.Group>
@@ -38,9 +41,9 @@ const UpdateVersionModal = ({
                             <Form.Label>
                                 Approximate date of availability
                             </Form.Label>
-                            {/*todo: this should be datepicker*/}
                             <Form.Control
-                                type="text"
+                                type="date"
+                                value={dateAvailabilityValue}
                                 onChange={onDateAvailabilityChange}
                             />
                         </Form.Group>
@@ -58,6 +61,8 @@ UpdateVersionModal.propTypes = {
     show: PropTypes.bool,
     title: PropTypes.node.isRequired,
     updateType: PropTypes.string,
+    versionValue: PropTypes.string,
+    dateAvailabilityValue: PropTypes.string,
     onVersionChange: PropTypes.func,
     onDateAvailabilityChange: PropTypes.func,
     handleAction: PropTypes.func,
