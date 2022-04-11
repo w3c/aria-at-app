@@ -26,6 +26,7 @@ const TestResultOperations = require('./TestResultOperations');
 const TestPlanRun = require('./TestPlanRun');
 const Test = require('./Test');
 const ScenarioResult = require('./ScenarioResult');
+const { createAtVersionResolver } = require('./atResolver');
 
 const resolvers = {
     Query: {
@@ -47,7 +48,8 @@ const resolvers = {
         testPlanRun: mutateTestPlanRun,
         testResult: mutateTestResult,
         findOrCreateTestPlanReport,
-        updateMe
+        updateMe,
+        createAtVersion: createAtVersionResolver
     },
     At,
     Browser,
