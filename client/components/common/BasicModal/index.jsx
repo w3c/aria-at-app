@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Button, Modal } from 'react-bootstrap';
 import styled from '@emotion/styled';
 
-const StyledH2 = styled.h2`
+const ModalTitleStyle = styled.h2`
     margin: 0;
 `;
 
@@ -11,7 +11,9 @@ const BasicModal = ({
     show = false,
     centered = false,
     animation = true,
-    details: { title, description },
+    closeButton = true,
+    title = '',
+    content = null,
     closeLabel = 'Cancel',
     actionLabel = 'Continue',
     handleClose = null,
@@ -35,12 +37,16 @@ const BasicModal = ({
                 autoFocus={false}
                 aria-labelledby="basic-modal"
             >
-                <Modal.Header closeButton>
-                    <Modal.Title as={StyledH2} tabIndex="-1" ref={headerRef}>
+                <Modal.Header closeButton={closeButton}>
+                    <Modal.Title
+                        as={ModalTitleStyle}
+                        tabIndex="-1"
+                        ref={headerRef}
+                    >
                         {title}
                     </Modal.Title>
                 </Modal.Header>
-                <Modal.Body>{description}</Modal.Body>
+                <Modal.Body>{content}</Modal.Body>
                 <Modal.Footer>
                     {handleClose && (
                         <Button variant="secondary" onClick={handleClose}>
@@ -62,10 +68,9 @@ BasicModal.propTypes = {
     show: PropTypes.bool,
     centered: PropTypes.bool,
     animation: PropTypes.bool,
-    details: PropTypes.shape({
-        title: PropTypes.node.isRequired,
-        description: PropTypes.node.isRequired
-    }).isRequired,
+    closeButton: PropTypes.bool,
+    title: PropTypes.node.isRequired,
+    content: PropTypes.node.isRequired,
     closeLabel: PropTypes.string,
     actionLabel: PropTypes.string,
     handleClose: PropTypes.func,

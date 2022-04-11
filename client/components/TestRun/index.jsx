@@ -671,10 +671,8 @@ const TestRun = () => {
                         show={showStartOverModal}
                         centered={true}
                         animation={false}
-                        details={{
-                            title: 'Start Over',
-                            description: `Are you sure you want to start over Test #${currentTest.seq}? Your progress (if any), will be lost.`
-                        }}
+                        title="Start Over"
+                        content={`Are you sure you want to start over Test #${currentTest.seq}? Your progress (if any), will be lost.`}
                         handleAction={handleStartOverAction}
                         handleClose={() => setShowStartOverModal(false)}
                     />
@@ -685,18 +683,16 @@ const TestRun = () => {
                         show={showGetInvolvedModal}
                         centered={true}
                         animation={false}
-                        details={{
-                            title: 'Ready to Get Involved?',
-                            description: (
-                                <>
-                                    Only members of the ARIA-AT test team can
-                                    submit data. If you fill in this form, your
-                                    data will not be saved! Check out the{' '}
-                                    <a href="/">home page</a> to learn more
-                                    about how to get involved.
-                                </>
-                            )
-                        }}
+                        title="Ready to Get Involved?"
+                        content={
+                            <>
+                                Only members of the ARIA-AT test team can submit
+                                data. If you fill in this form, your data will
+                                not be saved! Check out the{' '}
+                                <a href="/">home page</a> to learn more about
+                                how to get involved.
+                            </>
+                        }
                         closeLabel="Close"
                         handleClose={() => setShowGetInvolvedModal(false)}
                     />
