@@ -3,8 +3,9 @@ import PropTypes from 'prop-types';
 import { Button, Modal } from 'react-bootstrap';
 import styled from '@emotion/styled';
 
-const ModalTitleStyle = styled.h2`
-    margin: 0;
+const ModalTitleStyle = styled.h1`
+    border: 0;
+    font-size: 1.5em;
 `;
 
 const BasicModal = ({

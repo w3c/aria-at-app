@@ -5,8 +5,9 @@ import styled from '@emotion/styled';
 import WarningIcon from '../../../assets/fix-issue.svg'; // to be replaced with theme enum pointing to warning icon
 import DangerIcon from '../../../assets/join-community.svg'; // to be replaced with theme enum pointing to danger icon
 
-const ModalTitleStyle = styled.h2`
-    margin: 0;
+const ModalTitleStyle = styled.h1`
+    border: 0;
+    font-size: 1.5em;
 `;
 
 const ModalInnerSectionContainer = styled.div`
