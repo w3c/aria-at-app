@@ -2,9 +2,8 @@ import React, { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { Button, Modal } from 'react-bootstrap';
 import styled from '@emotion/styled';
-import RandomImg from '../../../assets/fix-issue.svg'; // to be replaced with theme enum pointing to warning or danger icon
-
-import './BasicModal2.css';
+import WarningIcon from '../../../assets/fix-issue.svg'; // to be replaced with theme enum pointing to warning icon
+import DangerIcon from '../../../assets/join-community.svg'; // to be replaced with theme enum pointing to danger icon
 
 const ModalTitleStyle = styled.h2`
     margin: 0;
@@ -23,11 +22,7 @@ const ColorStrip = styled.div`
     height: 10px;
     ${props => props.hideHeadline && `display: none;`}
     background-color: ${({ theme }) =>
-        theme === 'warning'
-            ? '#ffad2c'
-            : theme === 'danger'
-            ? '#bd324e'
-            : 'transparent'};
+        theme === 'danger' ? '#bd324e' : '#ffad2c'};
 
     border-top-left-radius: calc(0.3rem - 1px);
     border-top-right-radius: calc(0.3rem - 1px);
@@ -37,7 +32,7 @@ const BasicModal2 = ({
     show = false,
     centered = false,
     animation = true,
-    theme = 'basic', // basic, warning, danger
+    theme = 'warning', // warning, danger
     title = '',
     content = null,
     actionButtons = [],
@@ -63,14 +58,21 @@ const BasicModal2 = ({
                 aria-labelledby="basic-modal"
             >
                 <ColorStrip theme={theme} />
-                <Modal.Header>
+                <Modal.Header className="border-bottom-0">
                     <Modal.Title
                         as={ModalTitleStyle}
                         tabIndex="-1"
                         ref={headerRef}
                     >
                         <ModalInnerSectionContainer>
-                            <img src={RandomImg} alt="Icon Description" />{' '}
+                            <img
+                                src={
+                                    theme === 'danger'
+                                        ? DangerIcon
+                                        : WarningIcon
+                                }
+                                alt="Icon Description"
+                            />{' '}
                             {title}
                         </ModalInnerSectionContainer>
                     </Modal.Title>
