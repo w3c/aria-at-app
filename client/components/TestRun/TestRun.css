@@ -315,3 +315,35 @@ main.container-fluid .test-iframe-container > .row {
     display: flex;
     align-items: center;
 }
+
+.at-browser-details-modal-alert {
+    display: flex;
+
+    margin-bottom: 0;
+    grid-column: 1 / -1;
+}
+
+.at-browser-details-modal-alert span {
+    font-size: 0.875rem;
+    line-height: 1.125rem;
+}
+
+.at-browser-details-full-column {
+    grid-column: 1 / -1;
+}
+
+.modal-header,
+.modal-body,
+.modal-footer {
+    padding: 1.5rem 2.5rem;
+}
+
+@media (min-width: 768px) {
+    .modal-50w {
+        min-width: 50%;
+    }
+
+    .modal-60w {
+        min-width: 60%;
+    }
+}

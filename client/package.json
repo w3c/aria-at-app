@@ -52,7 +52,8 @@
     "react-router-dom": "^5.1.2",
     "sass-loader": "^8.0.2",
     "showdown": "^1.9.1",
-    "turndown": "^7.1.1"
+    "turndown": "^7.1.1",
+    "ua-parser-js": "^1.0.2"
   },
   "devDependencies": {
     "@babel/code-frame": "^7.8.3",

@@ -5,7 +5,8 @@ import styled from '@emotion/styled';
 
 const ModalTitleStyle = styled.h1`
     border: 0;
-    font-size: 1.5em;
+    padding: 0;
+    font-size: 1.5rem;
 `;
 
 const BasicModal = ({
@@ -13,6 +14,8 @@ const BasicModal = ({
     centered = false,
     animation = true,
     closeButton = true,
+    headerSep = true,
+    dialogClassName = '',
     title = '',
     content = null,
     closeLabel = 'Cancel',
@@ -37,8 +40,12 @@ const BasicModal = ({
                 /* Disabled due to buggy implementation which jumps the page */
                 autoFocus={false}
                 aria-labelledby="basic-modal"
+                dialogClassName={dialogClassName}
             >
-                <Modal.Header closeButton={closeButton}>
+                <Modal.Header
+                    closeButton={closeButton}
+                    className={headerSep ? '' : 'border-bottom-0'}
+                >
                     <Modal.Title
                         as={ModalTitleStyle}
                         tabIndex="-1"
@@ -70,6 +77,8 @@ BasicModal.propTypes = {
     centered: PropTypes.bool,
     animation: PropTypes.bool,
     closeButton: PropTypes.bool,
+    headerSep: PropTypes.bool,
+    dialogClassName: PropTypes.string,
     title: PropTypes.node.isRequired,
     content: PropTypes.node.isRequired,
     closeLabel: PropTypes.string,
