@@ -44,11 +44,21 @@ const AtAndBrowserDetailsModal = ({
     handleAction = null,
     handleClose = null
 }) => {
+    const [updatedAtVersion, setUpdatedAtVersion] = useState(atVersion);
+    const [updatedBrowserVersion, setUpdatedBrowserVersion] = useState(
+        browserVersion
+    );
+
     const [uaBrowser, setUaBrowser] = useState();
     const [uaMajor, setUaMajor] = useState();
     const [uaMinor, setUaMinor] = useState();
     const [uaPatch, setUaPatch] = useState();
+
     const [firstDetection, setFirstDetection] = useState(false);
+    const [forceBrowserVersionUpdate, setForceBrowserVersionUpdate] = useState(
+        false
+    );
+    const [browserVersionMismatch, setBrowserVersionMismatch] = useState(false);
 
     useEffect(() => {
         // Detect UA information
@@ -63,12 +73,48 @@ const AtAndBrowserDetailsModal = ({
         setUaMinor(uaMinor);
         setUaPatch(uaPatch);
 
-        if (!browserName && !browserVersion) {
+        if (browserName === uaBrowser && !browserVersion) {
             setFirstDetection(true);
             onBrowserVersionChange(`${uaMajor}.${uaMinor}.${uaPatch}`);
         }
+
+        if (
+            uaBrowser === browserName &&
+            browserVersion &&
+            `${uaMajor}.${uaMinor}.${uaPatch}` !== browserVersion &&
+            // needs to check if browser version exists in browserVersions
+            browserVersions.includes(`${uaMajor}.${uaMinor}.${uaPatch}`)
+        ) {
+            setForceBrowserVersionUpdate(true);
+            setUpdatedBrowserVersion(`${uaMajor}.${uaMinor}.${uaPatch}`);
+        }
     }, []);
 
+    useEffect(() => {
+        // check to support Tester Scenario 5
+        if (updatedBrowserVersion !== `${uaMajor}.${uaMinor}.${uaPatch}`)
+            setBrowserVersionMismatch(true);
+        else setBrowserVersionMismatch(false);
+    }, [updatedBrowserVersion]);
+
+    const handleAtVersionChange = e => {
+        const value = e.target.value;
+        setUpdatedAtVersion(value);
+    };
+
+    const handleBrowserVersionChange = e => {
+        const value = e.target.value;
+        setUpdatedBrowserVersion(value);
+    };
+
+    const onSubmit = () => {
+        // todo: Evaluate the use of these methods
+        onAtVersionChange();
+        onBrowserVersionChange();
+        handleAction();
+    };
+
+    // All scenarios here are based on https://github.com/w3c/aria-at-app/issues/406
     return (
         <BasicModal
             show={show}
@@ -78,6 +124,7 @@ const AtAndBrowserDetailsModal = ({
             dialogClassName="modal-60w"
             content={
                 <ModalInnerSectionContainer>
+                    {/* Admin Scenario 1 */}
                     {isAdmin && (
                         <Alert
                             variant="warning"
@@ -103,6 +150,7 @@ const AtAndBrowserDetailsModal = ({
                                 Assistive Technology Details
                             </ModalSubtitleStyle>
                         </legend>
+                        {/* Scenario Tester 6 */}
                         {selectedAtVersion !== atVersion && (
                             <Alert
                                 variant="warning"
@@ -134,8 +182,8 @@ const AtAndBrowserDetailsModal = ({
                             </Form.Label>
                             <Form.Control
                                 as="select"
-                                value={atVersion}
-                                onChange={onAtVersionChange}
+                                value={updatedAtVersion}
+                                onChange={handleAtVersionChange}
                             >
                                 {atVersions.map(item => (
                                     <option
@@ -154,6 +202,7 @@ const AtAndBrowserDetailsModal = ({
                                 Browser Details
                             </ModalSubtitleStyle>
                         </legend>
+                        {/* Tester Scenario 1 */}
                         {firstDetection && (
                             <Alert
                                 variant="primary"
@@ -166,34 +215,30 @@ const AtAndBrowserDetailsModal = ({
                                 </span>
                             </Alert>
                         )}
-                        {/* todo: this needs to automatically change the value as well */}
-                        {uaBrowser === browserName &&
-                            `${uaMajor}.${uaMinor}.${uaPatch}` !==
-                                browserVersion && (
-                                <Alert
-                                    variant="warning"
-                                    className="at-browser-details-modal-alert"
-                                >
-                                    <FontAwesomeIcon
-                                        icon={faExclamationTriangle}
-                                    />
-                                    <span>
-                                        We have automatically detected you are
-                                        using a different version of{' '}
-                                        <b>{uaBrowser}</b> and we have updated
-                                        it below. The previous version you were
-                                        using was <b>{browserVersion}</b>.
-                                        <br />
-                                        <br />
-                                        This change doesn&apos;t affect results
-                                        that have already been submitted for
-                                        this plan. However, results you submit
-                                        during this session will be recorded
-                                        with the versions specified in this
-                                        form.
-                                    </span>
-                                </Alert>
-                            )}
+                        {/* Tester Scenario 3 */}
+                        {forceBrowserVersionUpdate && (
+                            <Alert
+                                variant="warning"
+                                className="at-browser-details-modal-alert"
+                            >
+                                <FontAwesomeIcon icon={faExclamationTriangle} />
+                                <span>
+                                    We have automatically detected you are using
+                                    a different version of <b>{uaBrowser}</b>{' '}
+                                    and we have updated it below. The previous
+                                    version you were using was{' '}
+                                    <b>{browserVersion}</b>.
+                                    <br />
+                                    <br />
+                                    This change doesn&apos;t affect results that
+                                    have already been submitted for this plan.
+                                    However, results you submit during this
+                                    session will be recorded with the versions
+                                    specified in this form.
+                                </span>
+                            </Alert>
+                        )}
+                        {/* Tester Scenario 4 */}
                         {uaBrowser !== browserName && (
                             <Alert
                                 variant="warning"
@@ -229,8 +274,8 @@ const AtAndBrowserDetailsModal = ({
                                 </span>
                             </Alert>
                         )}
-                        {/* todo: complete logic */}
-                        {false && (
+                        {/* Tester Scenario 5 */}
+                        {browserVersionMismatch && (
                             <Alert
                                 variant="warning"
                                 className="at-browser-details-modal-alert"
@@ -254,6 +299,7 @@ const AtAndBrowserDetailsModal = ({
                                 </span>
                             </Alert>
                         )}
+                        {/* Tester Scenario 7 */}
                         {uaMajor === 0 && (
                             <Alert
                                 variant="warning"
@@ -268,6 +314,7 @@ const AtAndBrowserDetailsModal = ({
                                 </span>
                             </Alert>
                         )}
+                        {/* Admin Scenario 1 */}
                         {isAdmin &&
                             (uaBrowser !== browserName ||
                                 `${uaMajor}.${uaMinor}.${uaPatch}` !==
@@ -313,10 +360,14 @@ const AtAndBrowserDetailsModal = ({
                             <Form.Label>Browser Version</Form.Label>
                             <Form.Control
                                 as="select"
-                                value={browserVersion}
-                                onChange={onBrowserVersionChange}
+                                disabled={uaMajor === '0'}
+                                value={updatedBrowserVersion}
+                                onChange={handleBrowserVersionChange}
                             >
-                                {browserVersions.map(item => (
+                                {(uaMajor === '0'
+                                    ? ['Not detected', ...browserVersions]
+                                    : browserVersions
+                                ).map(item => (
                                     <option
                                         key={`browserVersionKey-${item}`}
                                         value={item}
@@ -327,12 +378,13 @@ const AtAndBrowserDetailsModal = ({
                             </Form.Control>
                         </Form.Group>
 
-                        {uaMajor === 0 && (
+                        {/* Tester Scenario 7 */}
+                        {uaMajor === '0' && (
                             <Form.Group className="at-browser-details-full-column">
                                 <Form.Label>Enter Browser Version</Form.Label>
                                 <Form.Control
                                     type="text"
-                                    onChange={onBrowserVersionChange}
+                                    onChange={handleBrowserVersionChange}
                                 />
                             </Form.Group>
                         )}
@@ -340,7 +392,7 @@ const AtAndBrowserDetailsModal = ({
                 </ModalInnerSectionContainer>
             }
             actionLabel={'Save and Continue'}
-            handleAction={handleAction}
+            handleAction={onSubmit}
             handleClose={handleClose}
         />
     );
