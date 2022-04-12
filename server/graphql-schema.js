@@ -114,6 +114,29 @@ const graphqlSchema = gql`
         atVersions: [String]!
     }
 
+    """
+    A version of an Assistive Technology
+    """
+    type AtVersion {
+        """
+        The Postgres given ID for an AT
+        """
+        atId: ID!
+        """
+        The string version of an AT
+        """
+        atVersion: String!
+        """
+        The approximate date of availability for the AT Version
+        """
+        availability: String
+    }
+
+    input AtVersionInput {
+        atVersion: String
+        availability: String
+    }
+
     # TODO: remove or rework this type in order to support recording exact
     # versions
     """
@@ -856,6 +879,26 @@ const graphqlSchema = gql`
     }
 
     # Mutation-specific types below
+    """
+    Mutations scoped to a given Assistive Technology
+    """
+    type AtVersionOperations {
+        """
+        Create a new AT Version if one doesn't exist
+        """
+        findOrCreateAtVersion(
+            atVersion: String!
+            availability: String
+        ): AtVersion!
+        """
+        Edits the AT Version
+        """
+        editAtVersion(
+            atVersion: String!
+            availability: String
+            updateParams: AtVersionInput!
+        ): AtVersion!
+    }
 
     """
     Mutations scoped to a previously-created TestPlanReport.
@@ -942,6 +985,11 @@ const graphqlSchema = gql`
     }
 
     type Mutation {
+        """
+        Get available mutations for a Assistive Technology Versions,
+        given an Assistive Technology
+        """
+        atVersion(id: ID!): AtVersionOperations!
         """
         Adds a report with the given TestPlanVersion and TestPlanTarget and a
         state of "DRAFT", resulting in the report appearing in the Test Queue.
