@@ -973,8 +973,6 @@ const graphqlSchema = gql`
         Update the currently-logged-in User.
         """
         updateMe(input: UserInput): User!
-        createAtVersion(version: String!): At!
-        updateAtVersion(id: ID!): At!
     }
 `;
 

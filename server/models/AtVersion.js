@@ -17,6 +17,10 @@ module.exports = function(sequelize, DataTypes) {
                 type: DataTypes.TEXT,
                 allowNull: false,
                 primaryKey: true
+            },
+            availability: {
+                type: DataTypes.DATE,
+                allowNull: true
             }
         },
         {
