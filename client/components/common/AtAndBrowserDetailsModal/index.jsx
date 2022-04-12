@@ -32,7 +32,6 @@ const AtAndBrowserDetailsModal = ({
     isAdmin = false,
     atName = '',
     atVersion = '',
-    selectedAtVersion = '',
     atVersions = [],
     onAtVersionChange = () => {},
     browserName = '',
@@ -83,8 +82,9 @@ const AtAndBrowserDetailsModal = ({
         }
 
         if (
+            !isAdmin && // don't force browserVersion update with admin
+            browserVersion && // check that browserVersion exists
             uaBrowser === browserName &&
-            browserVersion &&
             `${uaMajor}.${uaMinor}.${uaPatch}` !== browserVersion &&
             // needs to check if browser version exists in browserVersions
             browserVersions.includes(`${uaMajor}.${uaMinor}.${uaPatch}`)
@@ -98,7 +98,7 @@ const AtAndBrowserDetailsModal = ({
         // check to support Tester Scenario 5
         if (updatedBrowserVersion !== `${uaMajor}.${uaMinor}.${uaPatch}`)
             setBrowserVersionMismatchMessage(true);
-        else setBrowserVersionMismatchMessage(false);
+        else setBrowserVersionMismatchMessage(!isAdmin && false);
     }, [updatedBrowserVersion, uaMajor, uaMinor, uaPatch]);
 
     const handleAtVersionChange = e => {
@@ -111,7 +111,7 @@ const AtAndBrowserDetailsModal = ({
         setUpdatedBrowserVersion(value);
 
         // remove message once browser has been changed
-        setForceBrowserVersionUpdateMessage(false);
+        !isAdmin && setForceBrowserVersionUpdateMessage(false);
     };
 
     const onSubmit = () => {
@@ -157,8 +157,8 @@ const AtAndBrowserDetailsModal = ({
                                 Assistive Technology Details
                             </ModalSubtitleStyle>
                         </legend>
-                        {/* Scenario Tester 6 */}
-                        {selectedAtVersion !== atVersion && (
+                        {/* Tester Scenario 6 */}
+                        {updatedAtVersion !== atVersion && (
                             <Alert
                                 variant="warning"
                                 className="at-browser-details-modal-alert"
@@ -223,7 +223,7 @@ const AtAndBrowserDetailsModal = ({
                             </Alert>
                         )}
                         {/* Tester Scenario 3 */}
-                        {forceBrowserVersionUpdateMessage && (
+                        {!isAdmin && forceBrowserVersionUpdateMessage && (
                             <Alert
                                 variant="warning"
                                 className="at-browser-details-modal-alert"
@@ -282,30 +282,35 @@ const AtAndBrowserDetailsModal = ({
                             </Alert>
                         )}
                         {/* Tester Scenario 5 */}
-                        {browserVersionMismatchMessage && (
-                            <Alert
-                                variant="warning"
-                                className="at-browser-details-modal-alert"
-                            >
-                                <FontAwesomeIcon icon={faExclamationTriangle} />
-                                <span>
-                                    The version of {browserName} you have
-                                    selected is different from the one we have
-                                    automatically detected, which is{' '}
-                                    <b>
-                                        {uaMajor}.{uaMinor}.{uaPatch}
-                                    </b>
-                                    .
-                                    <br />
-                                    <br />
-                                    This change doesn&apos;t affect results that
-                                    have already been submitted for this plan.
-                                    However, results you submit during this
-                                    session will be recorded with the versions
-                                    specified in this form.
-                                </span>
-                            </Alert>
-                        )}
+                        {!isAdmin &&
+                            uaBrowser === browserName &&
+                            browserVersionMismatchMessage && (
+                                <Alert
+                                    variant="warning"
+                                    className="at-browser-details-modal-alert"
+                                >
+                                    <FontAwesomeIcon
+                                        icon={faExclamationTriangle}
+                                    />
+                                    <span>
+                                        The version of {browserName} you have
+                                        selected is different from the one we
+                                        have automatically detected, which is{' '}
+                                        <b>
+                                            {uaMajor}.{uaMinor}.{uaPatch}
+                                        </b>
+                                        .
+                                        <br />
+                                        <br />
+                                        This change doesn&apos;t affect results
+                                        that have already been submitted for
+                                        this plan. However, results you submit
+                                        during this session will be recorded
+                                        with the versions specified in this
+                                        form.
+                                    </span>
+                                </Alert>
+                            )}
                         {/* Tester Scenario 7 */}
                         {uaMajor === 0 && (
                             <Alert
@@ -324,8 +329,7 @@ const AtAndBrowserDetailsModal = ({
                         {/* Admin Scenario 1 */}
                         {isAdmin &&
                             (uaBrowser !== browserName ||
-                                `${uaMajor}.${uaMinor}.${uaPatch}` !==
-                                    browserVersion) && (
+                                browserVersionMismatchMessage) && (
                                 <Alert
                                     variant="warning"
                                     className="at-browser-details-modal-alert"
@@ -410,7 +414,6 @@ AtAndBrowserDetailsModal.propTypes = {
     isAdmin: PropTypes.bool,
     atName: PropTypes.string,
     atVersion: PropTypes.string,
-    selectedAtVersion: PropTypes.string,
     atVersions: PropTypes.arrayOf(PropTypes.string),
     onAtVersionChange: PropTypes.func,
     browserName: PropTypes.string,
