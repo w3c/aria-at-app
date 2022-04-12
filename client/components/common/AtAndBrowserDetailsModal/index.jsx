@@ -55,10 +55,14 @@ const AtAndBrowserDetailsModal = ({
     const [uaPatch, setUaPatch] = useState();
 
     const [firstDetection, setFirstDetection] = useState(false);
-    const [forceBrowserVersionUpdate, setForceBrowserVersionUpdate] = useState(
-        false
-    );
-    const [browserVersionMismatch, setBrowserVersionMismatch] = useState(false);
+    const [
+        forceBrowserVersionUpdateMessage,
+        setForceBrowserVersionUpdateMessage
+    ] = useState(false);
+    const [
+        browserVersionMismatchMessage,
+        setBrowserVersionMismatchMessage
+    ] = useState(false);
 
     useEffect(() => {
         // Detect UA information
@@ -85,7 +89,7 @@ const AtAndBrowserDetailsModal = ({
             // needs to check if browser version exists in browserVersions
             browserVersions.includes(`${uaMajor}.${uaMinor}.${uaPatch}`)
         ) {
-            setForceBrowserVersionUpdate(true);
+            setForceBrowserVersionUpdateMessage(true);
             setUpdatedBrowserVersion(`${uaMajor}.${uaMinor}.${uaPatch}`);
         }
     }, []);
@@ -93,8 +97,8 @@ const AtAndBrowserDetailsModal = ({
     useEffect(() => {
         // check to support Tester Scenario 5
         if (updatedBrowserVersion !== `${uaMajor}.${uaMinor}.${uaPatch}`)
-            setBrowserVersionMismatch(true);
-        else setBrowserVersionMismatch(false);
+            setBrowserVersionMismatchMessage(true);
+        else setBrowserVersionMismatchMessage(false);
     }, [updatedBrowserVersion, uaMajor, uaMinor, uaPatch]);
 
     const handleAtVersionChange = e => {
@@ -107,7 +111,7 @@ const AtAndBrowserDetailsModal = ({
         setUpdatedBrowserVersion(value);
 
         // remove message once browser has been changed
-        setForceBrowserVersionUpdate(false);
+        setForceBrowserVersionUpdateMessage(false);
     };
 
     const onSubmit = () => {
@@ -219,7 +223,7 @@ const AtAndBrowserDetailsModal = ({
                             </Alert>
                         )}
                         {/* Tester Scenario 3 */}
-                        {forceBrowserVersionUpdate && (
+                        {forceBrowserVersionUpdateMessage && (
                             <Alert
                                 variant="warning"
                                 className="at-browser-details-modal-alert"
@@ -278,7 +282,7 @@ const AtAndBrowserDetailsModal = ({
                             </Alert>
                         )}
                         {/* Tester Scenario 5 */}
-                        {browserVersionMismatch && (
+                        {browserVersionMismatchMessage && (
                             <Alert
                                 variant="warning"
                                 className="at-browser-details-modal-alert"
