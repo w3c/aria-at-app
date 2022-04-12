@@ -11,7 +11,7 @@ const ModalInnerSectionContainer = styled.div`
 
 const UpdateVersionModal = ({
     show = false,
-    title = '',
+    title = null,
     updateType = 'add', // or edit
     versionValue = '',
     dateAvailabilityValue = '',

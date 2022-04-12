@@ -95,7 +95,7 @@ const AtAndBrowserDetailsModal = ({
         if (updatedBrowserVersion !== `${uaMajor}.${uaMinor}.${uaPatch}`)
             setBrowserVersionMismatch(true);
         else setBrowserVersionMismatch(false);
-    }, [updatedBrowserVersion]);
+    }, [updatedBrowserVersion, uaMajor, uaMinor, uaPatch]);
 
     const handleAtVersionChange = e => {
         const value = e.target.value;
@@ -105,6 +105,9 @@ const AtAndBrowserDetailsModal = ({
     const handleBrowserVersionChange = e => {
         const value = e.target.value;
         setUpdatedBrowserVersion(value);
+
+        // remove message once browser has been changed
+        setForceBrowserVersionUpdate(false);
     };
 
     const onSubmit = () => {
