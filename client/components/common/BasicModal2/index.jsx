@@ -36,7 +36,7 @@ const BasicModal2 = ({
     animation = true,
     theme = 'warning', // warning, danger
     dialogClassName = '',
-    title = '',
+    title = null,
     content = null,
     actionButtons = [],
     closeLabel = 'Cancel',
@@ -118,8 +118,8 @@ BasicModal2.propTypes = {
     animation: PropTypes.bool,
     theme: PropTypes.string,
     dialogClassName: PropTypes.string,
-    title: PropTypes.string,
-    content: PropTypes.node,
+    title: PropTypes.node.isRequired,
+    content: PropTypes.node.isRequired,
     actionButtons: PropTypes.arrayOf(
         PropTypes.shape({
             text: PropTypes.string,
