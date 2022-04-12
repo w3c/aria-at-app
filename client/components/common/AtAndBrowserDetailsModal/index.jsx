@@ -116,8 +116,8 @@ const AtAndBrowserDetailsModal = ({
                                     <br />
                                     <br />
                                     This change doesn&apos;t affect results that
-                                    have already submitted for this plan.
-                                    However results you submit during this
+                                    have already been submitted for this plan.
+                                    However, results you submit during this
                                     session will be recorded with the versions
                                     specified in this form.
                                 </span>
@@ -226,6 +226,31 @@ const AtAndBrowserDetailsModal = ({
                                     <b>
                                         {browserName} {browserVersion}
                                     </b>
+                                </span>
+                            </Alert>
+                        )}
+                        {/* todo: complete logic */}
+                        {false && (
+                            <Alert
+                                variant="warning"
+                                className="at-browser-details-modal-alert"
+                            >
+                                <FontAwesomeIcon icon={faExclamationTriangle} />
+                                <span>
+                                    The version of {browserName} you have
+                                    selected is different from the one we have
+                                    automatically detected, which is{' '}
+                                    <b>
+                                        {uaMajor}.{uaMinor}.{uaPatch}
+                                    </b>
+                                    .
+                                    <br />
+                                    <br />
+                                    This change doesn&apos;t affect results that
+                                    have already been submitted for this plan.
+                                    However, results you submit during this
+                                    session will be recorded with the versions
+                                    specified in this form.
                                 </span>
                             </Alert>
                         )}
