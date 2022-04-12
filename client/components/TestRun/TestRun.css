@@ -319,8 +319,11 @@ main.container-fluid .test-iframe-container > .row {
 .at-browser-details-modal-alert {
     display: flex;
 
-    margin-bottom: 0;
     grid-column: 1 / -1;
+}
+
+fieldset .at-browser-details-modal-alert {
+    margin-bottom: 0;
 }
 
 .at-browser-details-modal-alert span {
