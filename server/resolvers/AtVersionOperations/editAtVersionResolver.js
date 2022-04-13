@@ -1,24 +1,24 @@
 const { updateAtVersionByQuery } = require('../../models/services/AtService');
+const { AuthenticationError } = require('apollo-server');
 
 const editAtVersionResolver = async (
     { parentContext: { id: atId } },
-    { atVersion, availability, updateParams }
+    { atVersion, updateParams },
+    { user }
 ) => {
+    if (!user?.roles.find(role => role.name === 'ADMIN')) {
+        throw new AuthenticationError();
+    }
+
     const version = await updateAtVersionByQuery(
-        { atId, atVersion, availability },
+        { atId, atVersion },
         updateParams
     );
 
-    const {
-        atId: versionAtId,
-        atVersion: versionAtVersion,
-        availability: versionAvailability
-    } = version;
-
     return {
-        atId: versionAtId,
-        atVersion: versionAtVersion,
-        availability: versionAvailability
+        atId: version.atId,
+        atVersion: version.atVersion,
+        availability: version.availability
     };
 };
 

@@ -1,3 +1,4 @@
+const { AuthenticationError } = require('apollo-server');
 const {
     createAtVersion,
     getAtVersionByQuery
@@ -5,8 +6,13 @@ const {
 
 const findOrCreateAtVersionResolver = async (
     { parentContext: { id: atId } },
-    { atVersion, availability }
+    { atVersion, availability },
+    { user }
 ) => {
+    if (!user?.roles.find(role => role.name === 'ADMIN')) {
+        throw new AuthenticationError();
+    }
+
     let version = await getAtVersionByQuery({
         atId,
         atVersion,
@@ -17,16 +23,10 @@ const findOrCreateAtVersionResolver = async (
         version = await createAtVersion({ atId, atVersion, availability });
     }
 
-    const {
-        atId: versionAtId,
-        atVersion: versionAtVersion,
-        availability: versionAvailability
-    } = version;
-
     return {
-        atId: versionAtId,
-        atVersion: versionAtVersion,
-        availability: versionAvailability
+        atId: version.atId,
+        atVersion: version.atVersion,
+        availability: version.availability
     };
 };
 

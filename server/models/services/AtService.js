@@ -201,7 +201,7 @@ const getAtVersionByQuery = async (
 ) => {
     return ModelService.getByQuery(
         AtVersion,
-        { atId, atVersion, availability },
+        { atId, atVersion, ...(availability && { availability }) },
         atVersionAttributes,
         [atAssociation(atAttributes)],
         options
@@ -286,24 +286,19 @@ const createAtVersion = async (
  * @returns {Promise<*>}
  */
 const updateAtVersionByQuery = async (
-    { atId, atVersion, availability = null },
+    { atId, atVersion },
     updateParams = {},
     atVersionAttributes = AT_VERSION_ATTRIBUTES,
     atAttributes = AT_ATTRIBUTES,
     options = {}
 ) => {
-    await ModelService.update(
-        AtVersion,
-        { atId, atVersion, availability },
-        updateParams
-    );
+    await ModelService.update(AtVersion, { atId, atVersion }, updateParams);
 
     return await ModelService.getByQuery(
         AtVersion,
         {
             atId,
-            atVersion: updateParams.atVersion || atVersion,
-            availability: updateParams.availability || availability
+            atVersion: updateParams.atVersion || atVersion
         },
         atVersionAttributes,
         [atAssociation(atAttributes)],

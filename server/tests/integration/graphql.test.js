@@ -133,10 +133,13 @@ describe('graphql', () => {
         const excludedTypeNames = [
             // Items formatted like this:
             // 'TestResult'
+            'AtVersion',
+            'AtVersionOperations'
         ];
         const excludedTypeNameAndField = [
             // Items formatted like this:
             // ['TestResult', 'startedAt'],
+            ['Mutation', 'atVersion']
         ];
         ({
             typeAwareQuery,
