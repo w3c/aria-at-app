@@ -33,15 +33,13 @@ const AtAndBrowserDetailsModal = ({
     atName = '',
     atVersion = '',
     atVersions = [],
-    onAtVersionChange = () => {},
     browserName = '',
     browserVersion = '',
     browserVersions = [],
-    onBrowserVersionChange = () => {},
-    patternName = '',
-    testerName = '',
-    handleAction = null,
-    handleClose = null
+    patternName = '', // admin related prop
+    testerName = '', // admin related prop
+    handleAction = () => {},
+    handleClose = () => {}
 }) => {
     const [updatedAtVersion, setUpdatedAtVersion] = useState(atVersion);
     const [updatedBrowserVersion, setUpdatedBrowserVersion] = useState(
@@ -76,10 +74,8 @@ const AtAndBrowserDetailsModal = ({
         setUaMinor(uaMinor);
         setUaPatch(uaPatch);
 
-        if (browserName === uaBrowser && !browserVersion) {
+        if (browserName === uaBrowser && !browserVersion)
             setFirstDetection(true);
-            onBrowserVersionChange(`${uaMajor}.${uaMinor}.${uaPatch}`);
-        }
 
         if (
             !isAdmin && // don't force browserVersion update with admin
@@ -115,10 +111,8 @@ const AtAndBrowserDetailsModal = ({
     };
 
     const onSubmit = () => {
-        // todo: Evaluate the use of these methods
-        onAtVersionChange();
-        onBrowserVersionChange();
-        handleAction();
+        // Passed action prop should account for AtVersion & browserVersion
+        handleAction(updatedAtVersion, updatedBrowserVersion);
     };
 
     // All scenarios here are based on https://github.com/w3c/aria-at-app/issues/406
@@ -278,6 +272,7 @@ const AtAndBrowserDetailsModal = ({
                                     <b>
                                         {browserName} {browserVersion}
                                     </b>
+                                    .
                                 </span>
                             </Alert>
                         )}
@@ -412,14 +407,12 @@ const AtAndBrowserDetailsModal = ({
 AtAndBrowserDetailsModal.propTypes = {
     show: PropTypes.bool,
     isAdmin: PropTypes.bool,
-    atName: PropTypes.string,
-    atVersion: PropTypes.string,
-    atVersions: PropTypes.arrayOf(PropTypes.string),
-    onAtVersionChange: PropTypes.func,
-    browserName: PropTypes.string,
+    atName: PropTypes.string.isRequired,
+    atVersion: PropTypes.string.isRequired,
+    atVersions: PropTypes.arrayOf(PropTypes.string).isRequired,
+    browserName: PropTypes.string.isRequired,
     browserVersion: PropTypes.string,
-    browserVersions: PropTypes.arrayOf(PropTypes.string),
-    onBrowserVersionChange: PropTypes.func,
+    browserVersions: PropTypes.arrayOf(PropTypes.string).isRequired,
     patternName: PropTypes.string,
     testerName: PropTypes.string,
     handleClose: PropTypes.func,

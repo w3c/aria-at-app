@@ -30,7 +30,7 @@ const ColorStrip = styled.div`
     border-top-right-radius: calc(0.3rem - 1px);
 `;
 
-const BasicModal2 = ({
+const BasicThemedModal = ({
     show = false,
     centered = false,
     animation = true,
@@ -112,7 +112,7 @@ const BasicModal2 = ({
     );
 };
 
-BasicModal2.propTypes = {
+BasicThemedModal.propTypes = {
     show: PropTypes.bool,
     centered: PropTypes.bool,
     animation: PropTypes.bool,
@@ -130,4 +130,4 @@ BasicModal2.propTypes = {
     handleClose: PropTypes.func
 };
 
-export default BasicModal2;
+export default BasicThemedModal;

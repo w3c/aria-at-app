@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Form } from 'react-bootstrap';
 import styled from '@emotion/styled';
@@ -12,14 +12,36 @@ const ModalInnerSectionContainer = styled.div`
 const UpdateVersionModal = ({
     show = false,
     title = null,
-    updateType = 'add', // or edit
-    versionValue = '',
-    dateAvailabilityValue = '',
-    onVersionChange = null,
-    onDateAvailabilityChange = null,
-    handleAction = null,
-    handleClose = null
+    actionType = 'add', // or edit
+    versionText = '',
+    dateAvailabilityText = '',
+    handleAction = () => {},
+    handleClose = () => {}
 }) => {
+    const [updatedVersionText, setUpdatedVersionText] = useState(versionText);
+    const [
+        updatedDateAvailabilityText,
+        setUpdatedDateAvailabilityText
+    ] = useState(dateAvailabilityText);
+
+    const handleVersionTextChange = e => {
+        const value = e.target.value;
+        setUpdatedVersionText(value);
+    };
+
+    const handleDateAvailabilityTextChange = e => {
+        const value = e.target.value;
+        setUpdatedDateAvailabilityText(value);
+    };
+
+    const onSubmit = () => {
+        // Passed action prop should account for actionType, versionText and dateAvailabilityText
+        handleAction(actionType, {
+            updatedVersionText,
+            updatedDateAvailabilityText
+        });
+    };
+
     return (
         <BasicModal
             show={show}
@@ -31,8 +53,8 @@ const UpdateVersionModal = ({
                         <Form.Label>Version Number</Form.Label>
                         <Form.Control
                             type="text"
-                            value={versionValue}
-                            onChange={onVersionChange}
+                            value={versionText}
+                            onChange={handleVersionTextChange}
                         />
                     </Form.Group>
 
@@ -41,15 +63,15 @@ const UpdateVersionModal = ({
                             Approximate date of availability
                         </Form.Label>
                         <Form.Control
-                            type="date"
-                            value={dateAvailabilityValue}
-                            onChange={onDateAvailabilityChange}
+                            type="text"
+                            value={dateAvailabilityText}
+                            onChange={handleDateAvailabilityTextChange}
                         />
                     </Form.Group>
                 </ModalInnerSectionContainer>
             }
-            actionLabel={updateType === 'add' ? 'Add Version' : 'Save'}
-            handleAction={handleAction}
+            actionLabel={actionType === 'add' ? 'Add Version' : 'Save'}
+            handleAction={onSubmit}
             handleClose={handleClose}
         />
     );
@@ -58,9 +80,9 @@ const UpdateVersionModal = ({
 UpdateVersionModal.propTypes = {
     show: PropTypes.bool,
     title: PropTypes.node.isRequired,
-    updateType: PropTypes.string,
-    versionValue: PropTypes.string,
-    dateAvailabilityValue: PropTypes.string,
+    actionType: PropTypes.string,
+    versionText: PropTypes.string,
+    dateAvailabilityText: PropTypes.string,
     onVersionChange: PropTypes.func,
     onDateAvailabilityChange: PropTypes.func,
     handleAction: PropTypes.func,
