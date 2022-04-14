@@ -898,6 +898,10 @@ const graphqlSchema = gql`
             availability: String
             updateParams: AtVersionInput!
         ): AtVersion!
+        """
+        Permanently deletes an AT Version
+        """
+        deleteAtVersion(atVersion: String!): NoResponse
     }
 
     """
