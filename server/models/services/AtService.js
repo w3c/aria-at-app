@@ -201,7 +201,7 @@ const getAtVersionByQuery = async (
 ) => {
     return ModelService.getByQuery(
         AtVersion,
-        { atId, atVersion, availability },
+        { atId, atVersion, ...(availability && { availability }) },
         atVersionAttributes,
         [atAssociation(atAttributes)],
         options
