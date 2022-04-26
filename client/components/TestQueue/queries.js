@@ -12,6 +12,11 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
             username
             roles
         }
+        ats {
+            id
+            name
+            atVersions
+        }
         testPlanReports(statuses: [DRAFT, IN_REVIEW]) {
             id
             status

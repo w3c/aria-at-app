@@ -5,10 +5,10 @@ import { Container, Table, Alert } from 'react-bootstrap';
 import { Helmet } from 'react-helmet';
 import nextId from 'react-id-generator';
 import TestQueueRow from '../TestQueueRow';
-// import {
-//     NewTestPlanReportContainer,
-//     NewTestPlanReportModal
-// } from '../NewTestPlanReport';
+import {
+    NewTestPlanReportContainer,
+    NewTestPlanReportModal
+} from '../NewTestPlanReport';
 import ManageTestQueue from '../ManageTestQueue';
 import DeleteTestPlanReportModal from '../DeleteTestPlanReportModal';
 import DeleteResultsModal from '../DeleteResultsModal';
@@ -17,12 +17,13 @@ import { TEST_QUEUE_PAGE_QUERY } from './queries';
 import { evaluateAuth } from '../../utils/evaluateAuth';
 import './TestQueue.css';
 
-// const ADD_TEST_PLAN_DIALOG_TRIGGER_ID = 'add-test-plan-to-queue-dialog-trigger';
+const ADD_TEST_PLAN_DIALOG_TRIGGER_ID = 'add-test-plan-to-queue-dialog-trigger';
 
 const TestQueue = () => {
     const { loading, data, refetch } = useQuery(TEST_QUEUE_PAGE_QUERY);
 
     const [testers, setTesters] = useState([]);
+    const [ats, setAts] = useState([]);
     const [testPlanReports, setTestPlanReports] = useState([]);
     const [latestTestPlanVersions, setLatestTestPlanVersions] = useState([]);
     const [structuredTestPlanTargets, setStructuredTestPlanTargets] = useState(
@@ -40,25 +41,30 @@ const TestQueue = () => {
     const [isShowingDeleteResultsModal, setDeleteResultsModal] = useState(
         false
     );
-    // const [isShowingAddToQueueModal, setAddToQueueModal] = useState(false);
+    const [isShowingAddToQueueModal, setAddToQueueModal] = useState(false);
 
     const auth = evaluateAuth(data && data.me ? data.me : {});
     const { id, isAdmin } = auth;
     const isSignedIn = !!id;
 
-    // useEffect(() => {
-    //     if (!isShowingAddToQueueModal) {
-    //         const trigger = document.querySelector(
-    //             `#${ADD_TEST_PLAN_DIALOG_TRIGGER_ID}`
-    //         );
-    //
-    //         trigger && trigger.focus();
-    //     }
-    // }, [isShowingAddToQueueModal]);
+    useEffect(() => {
+        if (!isShowingAddToQueueModal) {
+            const trigger = document.querySelector(
+                `#${ADD_TEST_PLAN_DIALOG_TRIGGER_ID}`
+            );
+
+            trigger && trigger.focus();
+        }
+    }, [isShowingAddToQueueModal]);
 
     useEffect(() => {
         if (data) {
-            const { users = [], testPlanReports = [], testPlans = [] } = data;
+            const {
+                users = [],
+                ats = [],
+                testPlanReports = [],
+                testPlans = []
+            } = data;
             setTesters(
                 users.filter(
                     tester =>
@@ -66,6 +72,7 @@ const TestQueue = () => {
                         tester.roles.includes('ADMIN')
                 )
             );
+            setAts(ats);
             setTestPlanReports(testPlanReports);
             setLatestTestPlanVersions(testPlans);
         }
@@ -197,7 +204,7 @@ const TestQueue = () => {
         setDeleteResultsDetails({});
     };
 
-    // const handleCloseAddTestPlanToQueueModal = () => setAddToQueueModal(false);
+    const handleCloseAddTestPlanToQueueModal = () => setAddToQueueModal(false);
 
     if (loading) {
         return (
@@ -254,14 +261,14 @@ const TestQueue = () => {
                 </p>
             )}
 
-            {/*{isAdmin && (*/}
-            {/*    <NewTestPlanReportContainer*/}
-            {/*        handleOpenDialog={() => setAddToQueueModal(true)}*/}
-            {/*        openDialogTriggerId={ADD_TEST_PLAN_DIALOG_TRIGGER_ID}*/}
-            {/*    />*/}
-            {/*)}*/}
+            {isAdmin && (
+                <NewTestPlanReportContainer
+                    handleOpenDialog={() => setAddToQueueModal(true)}
+                    openDialogTriggerId={ADD_TEST_PLAN_DIALOG_TRIGGER_ID}
+                />
+            )}
 
-            {isAdmin && <ManageTestQueue />}
+            {isAdmin && <ManageTestQueue ats={ats} />}
 
             {!emptyTestPlans &&
                 Object.keys(structuredTestPlanTargets).map(key =>
@@ -287,13 +294,13 @@ const TestQueue = () => {
                 />
             )}
 
-            {/*{isAdmin && isShowingAddToQueueModal && (*/}
-            {/*    <NewTestPlanReportModal*/}
-            {/*        show={isShowingAddToQueueModal}*/}
-            {/*        handleClose={handleCloseAddTestPlanToQueueModal}*/}
-            {/*        handleAddToTestQueue={refetch}*/}
-            {/*    />*/}
-            {/*)}*/}
+            {isAdmin && isShowingAddToQueueModal && (
+                <NewTestPlanReportModal
+                    show={isShowingAddToQueueModal}
+                    handleClose={handleCloseAddTestPlanToQueueModal}
+                    handleAddToTestQueue={refetch}
+                />
+            )}
         </Container>
     );
 };

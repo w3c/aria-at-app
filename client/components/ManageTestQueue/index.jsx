@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Form } from 'react-bootstrap';
 import styled from '@emotion/styled';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import PropTypes from 'prop-types';
 
 const Container = styled.div`
     border: 1px solid #d3d5da;
@@ -131,12 +132,40 @@ const DisclosureContainer = styled.div`
     }
 `;
 
-const ManageTestQueue = () => {
+const ManageTestQueue = ({ ats = [] }) => {
     const [showManageATs, setShowManageATs] = useState(false);
     const [showAddTestPlans, setShowAddTestPlans] = useState(false);
+    const [selectedManageAtId, setSelectedManageAtId] = useState('');
+    const [selectedManageAtVersions, setSelectedManageAtVersions] = useState(
+        []
+    );
+    const [selectedManageAtVersion, setSelectedManageAtVersion] = useState('');
 
-    const onManageATsClick = () => setShowManageATs(!showManageATs);
+    const onManageAtsClick = () => setShowManageATs(!showManageATs);
     const onAddTestPlansClick = () => setShowAddTestPlans(!showAddTestPlans);
+
+    useEffect(() => {
+        if (ats.length) {
+            setSelectedManageAtId(ats[0].id);
+            setSelectedManageAtVersions(ats[0].atVersions);
+            setSelectedManageAtVersion(ats[0].atVersions[0]);
+        }
+    }, [ats]);
+
+    const onManageAtChange = e => {
+        const { value } = e.target;
+        if (selectedManageAtId !== value) {
+            setSelectedManageAtId(value);
+            const at = ats.find(item => item.id === value);
+            setSelectedManageAtVersions(at.atVersions);
+            setSelectedManageAtVersion(at.atVersions[0]);
+        }
+    };
+
+    const onManageAtVersionChange = e => {
+        const { value } = e.target;
+        setSelectedManageAtVersion(value);
+    };
 
     return (
         <Container>
@@ -144,7 +173,7 @@ const ManageTestQueue = () => {
                 type="button"
                 aria-expanded={showManageATs}
                 aria-controls="id_manage_ats"
-                onClick={onManageATsClick}
+                onClick={onManageAtsClick}
             >
                 Manage Assistive Technology Versions
             </DisclosureButton>
@@ -158,14 +187,40 @@ const ManageTestQueue = () => {
                         <Form.Label className="disclosure-form-label">
                             Assistive Technology
                         </Form.Label>
-                        <Form.Control as="select"></Form.Control>
+                        <Form.Control
+                            as="select"
+                            value={selectedManageAtId}
+                            onChange={onManageAtChange}
+                        >
+                            {ats.map(item => (
+                                <option
+                                    key={`${item.name}-${item.id}`}
+                                    value={item.id}
+                                >
+                                    {item.name}
+                                </option>
+                            ))}
+                        </Form.Control>
                     </Form.Group>
                     <div className="at-versions-container">
                         <Form.Group>
                             <Form.Label className="disclosure-form-label">
                                 Available Versions
                             </Form.Label>
-                            <Form.Control as="select"></Form.Control>
+                            <Form.Control
+                                as="select"
+                                value={selectedManageAtVersion}
+                                onChange={onManageAtVersionChange}
+                            >
+                                {selectedManageAtVersions.map(item => (
+                                    <option
+                                        key={`${selectedManageAtId}-${item}`}
+                                        value={item}
+                                    >
+                                        {item}
+                                    </option>
+                                ))}
+                            </Form.Control>
                         </Form.Group>
                         <div className="disclosure-buttons-row">
                             <button>Add a New Version</button>
@@ -226,6 +281,8 @@ const ManageTestQueue = () => {
     );
 };
 
-ManageTestQueue.propTypes = {};
+ManageTestQueue.propTypes = {
+    ats: PropTypes.array
+};
 
 export default ManageTestQueue;
