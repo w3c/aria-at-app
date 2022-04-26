@@ -133,13 +133,11 @@ describe('graphql', () => {
         const excludedTypeNames = [
             // Items formatted like this:
             // 'TestResult'
-            'AtVersion',
-            'AtVersionOperations'
         ];
         const excludedTypeNameAndField = [
             // Items formatted like this:
             // ['TestResult', 'startedAt'],
-            ['Mutation', 'atVersion']
+            ['AtVersion', 'availability'] // excluding because some entries will be null
         ];
         ({
             typeAwareQuery,
@@ -176,6 +174,12 @@ describe('graphql', () => {
                         id
                         name
                         atVersions
+                    }
+                    atVersion(atId: 1, atVersion: "2021.2103.174"){
+                        __typename
+                        atId
+                        atVersion
+                        availability
                     }
                     users {
                         __typename
@@ -496,6 +500,22 @@ describe('graphql', () => {
                         updateMe(input: { atIds: [1, 2, 3] }) {
                             ats {
                                 id
+                            }
+                        }
+                        atVersion(id: 2) {
+                            __typename
+                            findOrCreateAtVersion(atVersion: "2021.2103.174") {
+                                atId
+                                atVersion
+                                availability
+                            }
+                            editAtVersion(
+                                atVersion: "2021.2103.174"
+                                updateParams: { availability: "1/1/2023" }
+                            ) {
+                                atId
+                                atVersion
+                                availability
                             }
                         }
                     }

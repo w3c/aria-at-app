@@ -833,6 +833,10 @@ const graphqlSchema = gql`
         """
         ats: [At]!
         """
+        Get AT Version information, given an AT ID and version string
+        """
+        atVersion(atId: ID!, atVersion: String!): AtVersion!
+        """
         Get all browsers known to the app.
         """
         browsers: [Browser]!
