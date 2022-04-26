@@ -5,10 +5,11 @@ import { Container, Table, Alert } from 'react-bootstrap';
 import { Helmet } from 'react-helmet';
 import nextId from 'react-id-generator';
 import TestQueueRow from '../TestQueueRow';
-import {
-    NewTestPlanReportContainer,
-    NewTestPlanReportModal
-} from '../NewTestPlanReport';
+// import {
+//     NewTestPlanReportContainer,
+//     NewTestPlanReportModal
+// } from '../NewTestPlanReport';
+import ManageTestQueue from '../ManageTestQueue';
 import DeleteTestPlanReportModal from '../DeleteTestPlanReportModal';
 import DeleteResultsModal from '../DeleteResultsModal';
 import PageStatus from '../common/PageStatus';
@@ -16,7 +17,7 @@ import { TEST_QUEUE_PAGE_QUERY } from './queries';
 import { evaluateAuth } from '../../utils/evaluateAuth';
 import './TestQueue.css';
 
-const ADD_TEST_PLAN_DIALOG_TRIGGER_ID = 'add-test-plan-to-queue-dialog-trigger';
+// const ADD_TEST_PLAN_DIALOG_TRIGGER_ID = 'add-test-plan-to-queue-dialog-trigger';
 
 const TestQueue = () => {
     const { loading, data, refetch } = useQuery(TEST_QUEUE_PAGE_QUERY);
@@ -39,21 +40,21 @@ const TestQueue = () => {
     const [isShowingDeleteResultsModal, setDeleteResultsModal] = useState(
         false
     );
-    const [isShowingAddToQueueModal, setAddToQueueModal] = useState(false);
+    // const [isShowingAddToQueueModal, setAddToQueueModal] = useState(false);
 
     const auth = evaluateAuth(data && data.me ? data.me : {});
     const { id, isAdmin } = auth;
     const isSignedIn = !!id;
 
-    useEffect(() => {
-        if (!isShowingAddToQueueModal) {
-            const trigger = document.querySelector(
-                `#${ADD_TEST_PLAN_DIALOG_TRIGGER_ID}`
-            );
-
-            trigger && trigger.focus();
-        }
-    }, [isShowingAddToQueueModal]);
+    // useEffect(() => {
+    //     if (!isShowingAddToQueueModal) {
+    //         const trigger = document.querySelector(
+    //             `#${ADD_TEST_PLAN_DIALOG_TRIGGER_ID}`
+    //         );
+    //
+    //         trigger && trigger.focus();
+    //     }
+    // }, [isShowingAddToQueueModal]);
 
     useEffect(() => {
         if (data) {
@@ -196,7 +197,7 @@ const TestQueue = () => {
         setDeleteResultsDetails({});
     };
 
-    const handleCloseAddTestPlanToQueueModal = () => setAddToQueueModal(false);
+    // const handleCloseAddTestPlanToQueueModal = () => setAddToQueueModal(false);
 
     if (loading) {
         return (
@@ -207,77 +208,65 @@ const TestQueue = () => {
         );
     }
 
-    if (!testPlanReports.length) {
-        const noTestPlansMessage = 'There are no test plans available';
-        const settingsLink = <Link to="/account/settings">Settings</Link>;
-
-        return (
-            <Container id="main" as="main" tabIndex="-1">
-                <Helmet>
-                    <title>{noTestPlansMessage} | ARIA-AT</title>
-                </Helmet>
-                <h2 data-testid="test-queue-no-test-plans-h2">
-                    {noTestPlansMessage}
-                </h2>
-                {!isAdmin && isSignedIn && (
-                    <Alert
-                        key="alert-configure"
-                        variant="danger"
-                        data-testid="test-queue-no-test-plans-p"
-                    >
-                        Please configure your preferred Assistive Technologies
-                        in the {settingsLink} page.
-                    </Alert>
-                )}
-                {isAdmin && (
-                    <Alert
-                        key="alert-configure"
-                        variant="danger"
-                        data-testid="test-queue-no-test-plans-p"
-                    >
-                        Add a Test Plan to the Queue
-                    </Alert>
-                )}
-
-                {isAdmin && (
-                    <NewTestPlanReportContainer
-                        handleOpenDialog={() => setAddToQueueModal(true)}
-                        openDialogTriggerId={ADD_TEST_PLAN_DIALOG_TRIGGER_ID}
-                    />
-                )}
-
-                {isAdmin && isShowingAddToQueueModal && (
-                    <NewTestPlanReportModal
-                        show={isShowingAddToQueueModal}
-                        handleClose={handleCloseAddTestPlanToQueueModal}
-                        handleAddToTestQueue={refetch}
-                    />
-                )}
-            </Container>
-        );
-    }
+    const emptyTestPlans = !testPlanReports.length;
+    const noTestPlansMessage = 'There are no test plans available';
+    const settingsLink = <Link to="/account/settings">Settings</Link>;
 
     return (
         <Container id="main" as="main" tabIndex="-1">
             <Helmet>
-                <title>{`Test Queue | ARIA-AT`}</title>
+                <title>{`${
+                    emptyTestPlans ? noTestPlansMessage : 'Test Queue'
+                } | ARIA-AT`}</title>
             </Helmet>
             <h1>Test Queue</h1>
-            <p data-testid="test-queue-instructions">
-                {isSignedIn
-                    ? 'Assign yourself a test plan or start executing one that is already assigned to you.'
-                    : 'Select a test plan to view. Your results will not be saved.'}
-            </p>
-
-            {isAdmin && (
-                <NewTestPlanReportContainer
-                    handleOpenDialog={() => setAddToQueueModal(true)}
-                />
+            {emptyTestPlans && (
+                <h2 data-testid="test-queue-no-test-plans-h2">
+                    {noTestPlansMessage}
+                </h2>
+            )}
+            {emptyTestPlans && !isAdmin && isSignedIn && (
+                <Alert
+                    key="alert-configure"
+                    variant="danger"
+                    data-testid="test-queue-no-test-plans-p"
+                >
+                    Please configure your preferred Assistive Technologies in
+                    the {settingsLink} page.
+                </Alert>
             )}
 
-            {Object.keys(structuredTestPlanTargets).map(key =>
-                renderAtBrowserList(key, structuredTestPlanTargets[key])
+            {emptyTestPlans && isAdmin && (
+                <Alert
+                    key="alert-configure"
+                    variant="danger"
+                    data-testid="test-queue-no-test-plans-p"
+                >
+                    Add a Test Plan to the Queue
+                </Alert>
             )}
+
+            {!emptyTestPlans && (
+                <p data-testid="test-queue-instructions">
+                    {isSignedIn
+                        ? 'Assign yourself a test plan or start executing one that is already assigned to you.'
+                        : 'Select a test plan to view. Your results will not be saved.'}
+                </p>
+            )}
+
+            {/*{isAdmin && (*/}
+            {/*    <NewTestPlanReportContainer*/}
+            {/*        handleOpenDialog={() => setAddToQueueModal(true)}*/}
+            {/*        openDialogTriggerId={ADD_TEST_PLAN_DIALOG_TRIGGER_ID}*/}
+            {/*    />*/}
+            {/*)}*/}
+
+            {isAdmin && <ManageTestQueue />}
+
+            {!emptyTestPlans &&
+                Object.keys(structuredTestPlanTargets).map(key =>
+                    renderAtBrowserList(key, structuredTestPlanTargets[key])
+                )}
 
             {isSignedIn && (
                 <DeleteResultsModal
@@ -298,13 +287,13 @@ const TestQueue = () => {
                 />
             )}
 
-            {isAdmin && isShowingAddToQueueModal && (
-                <NewTestPlanReportModal
-                    show={isShowingAddToQueueModal}
-                    handleClose={handleCloseAddTestPlanToQueueModal}
-                    handleAddToTestQueue={refetch}
-                />
-            )}
+            {/*{isAdmin && isShowingAddToQueueModal && (*/}
+            {/*    <NewTestPlanReportModal*/}
+            {/*        show={isShowingAddToQueueModal}*/}
+            {/*        handleClose={handleCloseAddTestPlanToQueueModal}*/}
+            {/*        handleAddToTestQueue={refetch}*/}
+            {/*    />*/}
+            {/*)}*/}
         </Container>
     );
 };
