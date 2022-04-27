@@ -17,6 +17,20 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
             name
             atVersions
         }
+        browsers {
+            id
+            name
+        }
+        testPlanVersions {
+            id
+            title
+            gitSha
+            gitMessage
+            testPlan {
+                directory
+            }
+            updatedAt
+        }
         testPlanReports(statuses: [DRAFT, IN_REVIEW]) {
             id
             status

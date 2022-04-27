@@ -4,6 +4,9 @@ import styled from '@emotion/styled';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import PropTypes from 'prop-types';
+import UpdateVersionModal from '../common/UpdateVersionModal';
+import BasicThemedModal from '../common/BasicThemedModal';
+import { gitUpdatedDateToString } from '../../utils/gitUtils';
 
 const Container = styled.div`
     border: 1px solid #d3d5da;
@@ -132,7 +135,11 @@ const DisclosureContainer = styled.div`
     }
 `;
 
-const ManageTestQueue = ({ ats = [] }) => {
+const ManageTestQueue = ({
+    ats = [],
+    browsers = [],
+    testPlanVersions = []
+}) => {
     const [showManageATs, setShowManageATs] = useState(false);
     const [showAddTestPlans, setShowAddTestPlans] = useState(false);
     const [selectedManageAtId, setSelectedManageAtId] = useState('');
@@ -141,8 +148,60 @@ const ManageTestQueue = ({ ats = [] }) => {
     );
     const [selectedManageAtVersion, setSelectedManageAtVersion] = useState('');
 
+    const [showAtVersionModal, setShowAtVersionModal] = useState(false);
+    const [atVersionModalTitle, setAtVersionModalTitle] = useState('');
+    const [atVersionModalType, setAtVersionModalType] = useState('add');
+    const [atVersionModalVersionText, setAtVersionModalVersionText] = useState(
+        ''
+    );
+    const [atVersionModalDateText, setAtVersionModalDateText] = useState('');
+
+    const [showThemedModal, setShowThemedModal] = useState(false);
+    const [themedModalType, setThemedModalType] = useState('warning');
+    const [themedModalTitle, setThemedModalTitle] = useState('');
+    const [themedModalContent, setThemedModalContent] = useState(<></>);
+
+    const [allTestPlanVersions, setAllTestPlanVersions] = useState([]);
+    const [filteredTestPlanVersions, setFilteredTestPlanVersions] = useState(
+        []
+    );
+    const [selectedTestPlanVersionId, setSelectedTestPlanVersionId] = useState(
+        ''
+    );
+    const [matchingTestPlanVersions, setMatchingTestPlanVersions] = useState(
+        []
+    );
+
+    const [selectedAtId, setSelectedAtId] = useState('');
+    const [selectedBrowserId, setSelectedBrowserId] = useState('');
+
     const onManageAtsClick = () => setShowManageATs(!showManageATs);
     const onAddTestPlansClick = () => setShowAddTestPlans(!showAddTestPlans);
+
+    useEffect(() => {
+        const allTestPlanVersions = testPlanVersions
+            .map(version => ({ ...version }))
+            .flat();
+
+        // to remove duplicate entries from different test plan versions of the same test plan being imported multiple times
+        const filteredTestPlanVersions = allTestPlanVersions.filter(
+            (v, i, a) =>
+                a.findIndex(
+                    t =>
+                        t.title === v.title &&
+                        t.testPlan.directory === v.testPlan.directory
+                ) === i
+        );
+
+        // mark the first testPlanVersion as selected
+        if (filteredTestPlanVersions.length) {
+            const plan = filteredTestPlanVersions[0];
+            updateMatchingTestPlanVersions(plan.id, allTestPlanVersions);
+        }
+
+        setAllTestPlanVersions(allTestPlanVersions);
+        setFilteredTestPlanVersions(filteredTestPlanVersions);
+    }, [testPlanVersions]);
 
     useEffect(() => {
         if (ats.length) {
@@ -151,6 +210,22 @@ const ManageTestQueue = ({ ats = [] }) => {
             setSelectedManageAtVersion(ats[0].atVersions[0]);
         }
     }, [ats]);
+
+    const updateMatchingTestPlanVersions = (value, allTestPlanVersions) => {
+        // update test plan versions based on selected test plan
+        const retrievedTestPlan = allTestPlanVersions.find(
+            item => item.id === value
+        );
+
+        // find the versions that apply and pre-set these
+        const matchingTestPlanVersions = allTestPlanVersions.filter(
+            item =>
+                item.title === retrievedTestPlan.title &&
+                item.testPlan.directory === retrievedTestPlan.testPlan.directory
+        );
+        setMatchingTestPlanVersions(matchingTestPlanVersions);
+        setSelectedTestPlanVersionId(matchingTestPlanVersions[0].id);
+    };
 
     const onManageAtChange = e => {
         const { value } = e.target;
@@ -165,6 +240,86 @@ const ManageTestQueue = ({ ats = [] }) => {
     const onManageAtVersionChange = e => {
         const { value } = e.target;
         setSelectedManageAtVersion(value);
+    };
+
+    const onOpenAtVersionModalClick = (type = 'add') => {
+        if (type === 'add') {
+            const selectedAt = ats.find(item => item.id === selectedManageAtId);
+            setAtVersionModalTitle(`Add a New Version for ${selectedAt.name}`);
+            setAtVersionModalType('add');
+            setShowAtVersionModal(true);
+            setAtVersionModalVersionText('');
+            setAtVersionModalDateText('');
+        }
+
+        if (type === 'edit') {
+            const selectedAt = ats.find(item => item.id === selectedManageAtId);
+            setAtVersionModalTitle(
+                `Edit ${selectedAt.name} Version ${selectedManageAtVersion}`
+            );
+            setAtVersionModalType('edit');
+            setAtVersionModalVersionText(selectedManageAtVersion);
+            setAtVersionModalDateText('');
+            setShowAtVersionModal(true);
+        }
+    };
+
+    const onRemoveClick = () => {
+        const theme = 'danger'; // todo: process on whether 'danger' or 'warning' message
+        const patternName = 'Disclosure Navigation Menu Example'; // todo: process blocking pattern in warning scenario when attempting to delete atVersion
+        const selectedAt = ats.find(item => item.id === selectedManageAtId);
+
+        // Removing an AT Version already in use
+        if (theme === 'warning') {
+            setThemedModalTitle(
+                'Assistive Technology Version already being used'
+            );
+            setThemedModalContent(
+                <>
+                    <b>
+                        {selectedAt.name} Version {selectedManageAtVersion}
+                    </b>{' '}
+                    can&apos;t be removed because it is already being used to
+                    test the <b>{patternName}</b> Test Plan.
+                </>
+            );
+        }
+
+        // Removing an Existing AT Version
+        if (theme === 'danger') {
+            setThemedModalTitle(
+                `Remove ${selectedAt.name} Version ${selectedManageAtVersion}`
+            );
+            setThemedModalContent(
+                <>
+                    You are about to remove{' '}
+                    <b>
+                        {selectedAt.name} Version {selectedManageAtVersion}
+                    </b>{' '}
+                    from the ARIA-AT App.
+                </>
+            );
+        }
+
+        setThemedModalType(theme);
+        setShowThemedModal(true);
+    };
+
+    const onThemedModalClose = () => setShowThemedModal(false);
+
+    const onAtChange = e => {
+        const { value } = e.target;
+        setSelectedAtId(value);
+    };
+
+    const onBrowserChange = e => {
+        const { value } = e.target;
+        setSelectedBrowserId(value);
+    };
+
+    const onTestPlanVersionChange = e => {
+        const { value } = e.target;
+        setSelectedTestPlanVersionId(value);
     };
 
     return (
@@ -194,7 +349,7 @@ const ManageTestQueue = ({ ats = [] }) => {
                         >
                             {ats.map(item => (
                                 <option
-                                    key={`${item.name}-${item.id}`}
+                                    key={`manage-${item.name}-${item.id}`}
                                     value={item.id}
                                 >
                                     {item.name}
@@ -223,12 +378,20 @@ const ManageTestQueue = ({ ats = [] }) => {
                             </Form.Control>
                         </Form.Group>
                         <div className="disclosure-buttons-row">
-                            <button>Add a New Version</button>
-                            <button>
+                            <button
+                                onClick={() => onOpenAtVersionModalClick('add')}
+                            >
+                                Add a New Version
+                            </button>
+                            <button
+                                onClick={() =>
+                                    onOpenAtVersionModalClick('edit')
+                                }
+                            >
                                 <FontAwesomeIcon icon={faEdit} />
                                 Edit
                             </button>
-                            <button>
+                            <button onClick={onRemoveClick}>
                                 <FontAwesomeIcon icon={faTrashAlt} />
                                 Remove
                             </button>
@@ -254,35 +417,127 @@ const ManageTestQueue = ({ ats = [] }) => {
                         <Form.Label className="disclosure-form-label">
                             Test Plan
                         </Form.Label>
-                        <Form.Control as="select"></Form.Control>
+                        <Form.Control
+                            as="select"
+                            onChange={e => {
+                                const { value } = e.target;
+                                updateMatchingTestPlanVersions(
+                                    value,
+                                    allTestPlanVersions
+                                );
+                            }}
+                        >
+                            {filteredTestPlanVersions.map(item => (
+                                <option
+                                    key={`${item.title ||
+                                        item.testPlan.directory}-${item.id}`}
+                                    value={item.id}
+                                >
+                                    {item.title ||
+                                        `"${item.testPlan.directory}"`}
+                                </option>
+                            ))}
+                        </Form.Control>
                     </Form.Group>
                     <Form.Group>
                         <Form.Label className="disclosure-form-label">
                             Test Plan Version
                         </Form.Label>
-                        <Form.Control as="select"></Form.Control>
+                        <Form.Control
+                            as="select"
+                            value={selectedTestPlanVersionId}
+                            onChange={onTestPlanVersionChange}
+                        >
+                            {matchingTestPlanVersions.map(item => (
+                                <option
+                                    key={`${item.gitSha}-${item.id}`}
+                                    value={item.id}
+                                >
+                                    {gitUpdatedDateToString(item.updatedAt)}{' '}
+                                    {item.gitMessage} (
+                                    {item.gitSha.substring(0, 7)})
+                                </option>
+                            ))}
+                        </Form.Control>
                     </Form.Group>
                     <Form.Group>
                         <Form.Label className="disclosure-form-label">
                             Assistive Technology
                         </Form.Label>
-                        <Form.Control as="select"></Form.Control>
+                        <Form.Control
+                            as="select"
+                            value={selectedAtId}
+                            onChange={onAtChange}
+                        >
+                            {ats.map(item => (
+                                <option
+                                    key={`${item.name}-${item.id}`}
+                                    value={item.id}
+                                >
+                                    {item.name}
+                                </option>
+                            ))}
+                        </Form.Control>
                     </Form.Group>
                     <Form.Group>
                         <Form.Label className="disclosure-form-label">
                             Browser
                         </Form.Label>
-                        <Form.Control as="select"></Form.Control>
+                        <Form.Control
+                            as="select"
+                            value={selectedBrowserId}
+                            onChange={onBrowserChange}
+                        >
+                            {browsers.map(item => (
+                                <option
+                                    key={`${item.name}-${item.id}`}
+                                    value={item.id}
+                                >
+                                    {item.name}
+                                </option>
+                            ))}
+                        </Form.Control>
                     </Form.Group>
                 </div>
                 <Button variant="primary">Add Test Plan to Test Queue</Button>
             </DisclosureContainer>
+
+            <UpdateVersionModal
+                show={showAtVersionModal}
+                title={atVersionModalTitle}
+                actionType={atVersionModalType}
+                versionText={atVersionModalVersionText}
+                dateAvailabilityText={atVersionModalDateText}
+                handleAction={() => {}} // todo: expects func(actionType, { updatedVersionText, updatedDateAvailabilityText }) and call to atVersuib create/edit graphql mutation
+                handleClose={() => setShowAtVersionModal(false)}
+            />
+
+            <BasicThemedModal
+                show={showThemedModal}
+                theme={themedModalType}
+                title={themedModalTitle}
+                dialogClassName="modal-50w"
+                content={themedModalContent}
+                actionButtons={[
+                    {
+                        text: themedModalType === 'danger' ? 'Remove' : 'Ok',
+                        action:
+                            themedModalType === 'danger'
+                                ? () => {} // todo: call atVersion graphql mutation
+                                : onThemedModalClose
+                    }
+                ]}
+                handleClose={onThemedModalClose}
+                showCloseAction={themedModalType === 'danger'}
+            />
         </Container>
     );
 };
 
 ManageTestQueue.propTypes = {
-    ats: PropTypes.array
+    ats: PropTypes.array,
+    browsers: PropTypes.array,
+    testPlanVersions: PropTypes.array
 };
 
 export default ManageTestQueue;

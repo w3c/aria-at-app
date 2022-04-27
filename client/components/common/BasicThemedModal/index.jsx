@@ -40,7 +40,8 @@ const BasicThemedModal = ({
     content = null,
     actionButtons = [],
     closeLabel = 'Cancel',
-    handleClose = null
+    handleClose = null,
+    showCloseAction = true
 }) => {
     const headerRef = useRef();
 
@@ -89,7 +90,7 @@ const BasicThemedModal = ({
                     </ModalInnerSectionContainer>
                 </Modal.Body>
                 <Modal.Footer>
-                    {handleClose && (
+                    {showCloseAction && (
                         <Button variant="secondary" onClick={handleClose}>
                             {closeLabel}
                         </Button>
@@ -127,7 +128,8 @@ BasicThemedModal.propTypes = {
         })
     ),
     closeLabel: PropTypes.string,
-    handleClose: PropTypes.func
+    handleClose: PropTypes.func,
+    showCloseAction: PropTypes.bool
 };
 
 export default BasicThemedModal;
