@@ -43,7 +43,7 @@ module.exports = function(sequelize, DataTypes) {
 
         Model.belongsTo(models.AtVersion, {
             ...Model.AT_VERSION_ASSOCIATION,
-            targetKey: 'atVersion',
+            targetKey: 'name',
             constraints: false
         });
 

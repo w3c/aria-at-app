@@ -110,7 +110,7 @@ describe('ModelService', () => {
                     create: AtService.createAtVersion,
                     values: {
                         atId: _atId,
-                        atVersion: _atVersion
+                        name: _atVersion
                     },
                     returnAttributes: [null, []]
                 },
@@ -131,7 +131,7 @@ describe('ModelService', () => {
                 [
                     expect.objectContaining({
                         atId: _atId,
-                        atVersion: _atVersion
+                        name: _atVersion
                     }),
                     true
                 ],
