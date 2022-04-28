@@ -13,6 +13,8 @@ export const TEST_QUEUE_PAGE_NOT_POPULATED_MOCK_ADMIN = [
                     roles: ['ADMIN', 'TESTER'],
                     __typename: 'User'
                 },
+                ats: [],
+                browsers: [],
                 users: [
                     {
                         id: '1',
@@ -30,6 +32,7 @@ export const TEST_QUEUE_PAGE_NOT_POPULATED_MOCK_ADMIN = [
                         roles: ['TESTER']
                     }
                 ],
+                testPlanVersions: [],
                 testPlanReports: [],
                 testPlans: []
             }
@@ -50,6 +53,8 @@ export const TEST_QUEUE_PAGE_NOT_POPULATED_MOCK_TESTER = [
                     roles: ['TESTER'],
                     __typename: 'User'
                 },
+                ats: [],
+                browsers: [],
                 users: [
                     {
                         id: '1',
@@ -70,6 +75,7 @@ export const TEST_QUEUE_PAGE_NOT_POPULATED_MOCK_TESTER = [
                         __typename: 'User'
                     }
                 ],
+                testPlanVersions: [],
                 testPlanReports: [],
                 testPlans: []
             }
@@ -89,6 +95,43 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK_ADMIN = [
                     username: 'alflennik',
                     roles: ['ADMIN', 'TESTER']
                 },
+                ats: [
+                    {
+                        id: '1',
+                        name: 'JAWS',
+                        atVersions: ['2021.2103.174']
+                    },
+                    {
+                        id: '2',
+                        name: 'NVDA',
+                        atVersions: [
+                            '2020.4',
+                            '2020.3',
+                            '2020.2',
+                            '2020.1',
+                            '2019.3'
+                        ]
+                    },
+                    {
+                        id: '3',
+                        name: 'VoiceOver for macOS',
+                        atVersions: ['11.5.2']
+                    }
+                ],
+                browsers: [
+                    {
+                        id: '2',
+                        name: 'Chrome'
+                    },
+                    {
+                        id: '1',
+                        name: 'Firefox'
+                    },
+                    {
+                        id: '3',
+                        name: 'Safari'
+                    }
+                ],
                 users: [
                     {
                         id: '1',
@@ -100,6 +143,41 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK_ADMIN = [
                         id: '101',
                         username: 'alflennik',
                         roles: ['TESTER', 'ADMIN']
+                    }
+                ],
+                testPlanVersions: [
+                    {
+                        id: '1',
+                        title: 'Alert Example',
+                        gitSha: '97d4bd6c2078849ad4ee01eeeb3667767ca6f992',
+                        gitMessage:
+                            'Create tests for APG design pattern example: Navigation Menu Button (#524)',
+                        testPlan: {
+                            directory: 'alert'
+                        },
+                        updatedAt: '2022-04-15T19:09:53.000Z'
+                    },
+                    {
+                        id: '2',
+                        title: 'Banner Landmark',
+                        gitSha: '97d4bd6c2078849ad4ee01eeeb3667767ca6f992',
+                        gitMessage:
+                            'Create tests for APG design pattern example: Navigation Menu Button (#524)',
+                        testPlan: {
+                            directory: 'banner'
+                        },
+                        updatedAt: '2022-04-15T19:09:53.000Z'
+                    },
+                    {
+                        id: '3',
+                        title: 'Breadcrumb Example',
+                        gitSha: '97d4bd6c2078849ad4ee01eeeb3667767ca6f992',
+                        gitMessage:
+                            'Create tests for APG design pattern example: Navigation Menu Button (#524)',
+                        testPlan: {
+                            directory: 'breadcrumb'
+                        },
+                        updatedAt: '2022-04-15T19:09:53.000Z'
                     }
                 ],
                 testPlanReports: [
@@ -471,6 +549,43 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK_TESTER = [
                     roles: ['TESTER'],
                     __typename: 'User'
                 },
+                ats: [
+                    {
+                        id: '1',
+                        name: 'JAWS',
+                        atVersions: ['2021.2103.174']
+                    },
+                    {
+                        id: '2',
+                        name: 'NVDA',
+                        atVersions: [
+                            '2020.4',
+                            '2020.3',
+                            '2020.2',
+                            '2020.1',
+                            '2019.3'
+                        ]
+                    },
+                    {
+                        id: '3',
+                        name: 'VoiceOver for macOS',
+                        atVersions: ['11.5.2']
+                    }
+                ],
+                browsers: [
+                    {
+                        id: '2',
+                        name: 'Chrome'
+                    },
+                    {
+                        id: '1',
+                        name: 'Firefox'
+                    },
+                    {
+                        id: '3',
+                        name: 'Safari'
+                    }
+                ],
                 users: [
                     {
                         id: '1',
@@ -486,6 +601,41 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK_TESTER = [
                         id: '5',
                         username: 'boo-far',
                         roles: ['TESTER']
+                    }
+                ],
+                testPlanVersions: [
+                    {
+                        id: '1',
+                        title: 'Alert Example',
+                        gitSha: '97d4bd6c2078849ad4ee01eeeb3667767ca6f992',
+                        gitMessage:
+                            'Create tests for APG design pattern example: Navigation Menu Button (#524)',
+                        testPlan: {
+                            directory: 'alert'
+                        },
+                        updatedAt: '2022-04-15T19:09:53.000Z'
+                    },
+                    {
+                        id: '2',
+                        title: 'Banner Landmark',
+                        gitSha: '97d4bd6c2078849ad4ee01eeeb3667767ca6f992',
+                        gitMessage:
+                            'Create tests for APG design pattern example: Navigation Menu Button (#524)',
+                        testPlan: {
+                            directory: 'banner'
+                        },
+                        updatedAt: '2022-04-15T19:09:53.000Z'
+                    },
+                    {
+                        id: '3',
+                        title: 'Breadcrumb Example',
+                        gitSha: '97d4bd6c2078849ad4ee01eeeb3667767ca6f992',
+                        gitMessage:
+                            'Create tests for APG design pattern example: Navigation Menu Button (#524)',
+                        testPlan: {
+                            directory: 'breadcrumb'
+                        },
+                        updatedAt: '2022-04-15T19:09:53.000Z'
                     }
                 ],
                 testPlanReports: [

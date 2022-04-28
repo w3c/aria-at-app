@@ -223,32 +223,32 @@ describe('Render TestQueue/index.jsx', () => {
             expect(voiceOverElements.length).toEqual(0);
         });
 
-        it('renders add test plan modal on button click', async () => {
-            // allow page time to load
-            await act(async () => {
-                await waitFor(() => new Promise(res => setTimeout(res, 0)));
-
-                const { queryByTestId } = wrapper;
-                const button = queryByTestId(
-                    'test-queue-add-test-plan-to-queue-button'
-                );
-
-                expect(button).toBeTruthy();
-
-                // opens modal
-                fireEvent.click(button);
-
-                expect(
-                    screen.getByText('Select an AT and Version')
-                ).toBeInTheDocument();
-                expect(
-                    screen.getByText('Select a Browser and Version')
-                ).toBeInTheDocument();
-                expect(
-                    screen.getByText('Select a Test Plan and Version')
-                ).toBeInTheDocument();
-            });
-        });
+        // it('renders add test plan modal on button click', async () => {
+        //     // allow page time to load
+        //     await act(async () => {
+        //         await waitFor(() => new Promise(res => setTimeout(res, 0)));
+        //
+        //         const { queryByTestId } = wrapper;
+        //         const button = queryByTestId(
+        //             'test-queue-add-test-plan-to-queue-button'
+        //         );
+        //
+        //         expect(button).toBeTruthy();
+        //
+        //         // opens modal
+        //         fireEvent.click(button);
+        //
+        //         expect(
+        //             screen.getByText('Select an AT and Version')
+        //         ).toBeInTheDocument();
+        //         expect(
+        //             screen.getByText('Select a Browser and Version')
+        //         ).toBeInTheDocument();
+        //         expect(
+        //             screen.getByText('Select a Test Plan and Version')
+        //         ).toBeInTheDocument();
+        //     });
+        // });
     });
 
     describe('[IS ADMIN] when test plan reports exist', () => {
@@ -315,31 +315,31 @@ describe('Render TestQueue/index.jsx', () => {
             expect(assignedTestsElements.length).toBeGreaterThanOrEqual(1);
         });
 
-        it('renders add test plan modal on button click', async () => {
-            // allow page time to load
-            await act(async () => {
-                await waitFor(() => new Promise(res => setTimeout(res, 0)));
-
-                const { queryByTestId } = wrapper;
-                const button = queryByTestId(
-                    'test-queue-add-test-plan-to-queue-button'
-                );
-
-                expect(button).toBeTruthy();
-
-                // opens modal
-                fireEvent.click(button);
-
-                expect(
-                    screen.getByText('Select an AT and Version')
-                ).toBeInTheDocument();
-                expect(
-                    screen.getByText('Select a Browser and Version')
-                ).toBeInTheDocument();
-                expect(
-                    screen.getByText('Select a Test Plan and Version')
-                ).toBeInTheDocument();
-            });
-        });
+        // it('renders add test plan modal on button click', async () => {
+        //     // allow page time to load
+        //     await act(async () => {
+        //         await waitFor(() => new Promise(res => setTimeout(res, 0)));
+        //
+        //         const { queryByTestId } = wrapper;
+        //         const button = queryByTestId(
+        //             'test-queue-add-test-plan-to-queue-button'
+        //         );
+        //
+        //         expect(button).toBeTruthy();
+        //
+        //         // opens modal
+        //         fireEvent.click(button);
+        //
+        //         expect(
+        //             screen.getByText('Select an AT and Version')
+        //         ).toBeInTheDocument();
+        //         expect(
+        //             screen.getByText('Select a Browser and Version')
+        //         ).toBeInTheDocument();
+        //         expect(
+        //             screen.getByText('Select a Test Plan and Version')
+        //         ).toBeInTheDocument();
+        //     });
+        // });
     });
 });
