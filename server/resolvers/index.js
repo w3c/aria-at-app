@@ -16,7 +16,6 @@ const mutateTestResult = require('./mutateTestResultResolver');
 const updateMe = require('./updateMe');
 const populateData = require('./populateDataResolver');
 const User = require('./User');
-const At = require('./At');
 const Browser = require('./Browser');
 const TestPlanVersion = require('./TestPlanVersion');
 const TestPlanReport = require('./TestPlanReport');
@@ -49,7 +48,6 @@ const resolvers = {
         findOrCreateTestPlanReport,
         updateMe
     },
-    At,
     Browser,
     User,
     TestPlanVersion,
