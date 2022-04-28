@@ -1,8 +1,8 @@
 'use strict';
 
 module.exports = {
-    up: async queryInterface => {
-        queryInterface.sequelize.transaction(async transaction => {
+    up: queryInterface => {
+        return queryInterface.sequelize.transaction(async transaction => {
             await queryInterface.removeConstraint(
                 'AtVersion',
                 'AtVersion_pkey',
@@ -11,8 +11,8 @@ module.exports = {
         });
     },
 
-    down: async queryInterface => {
-        queryInterface.sequelize.transaction(async transaction => {
+    down: queryInterface => {
+        return queryInterface.sequelize.transaction(async transaction => {
             await queryInterface.addConstraint(
                 'AtVersion',
                 {

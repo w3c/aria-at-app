@@ -1,19 +1,23 @@
 'use strict';
 
 module.exports = {
-    up: async queryInterface => {
-        queryInterface.sequelize.transaction(async transaction => {
-            await queryInterface.sequelize.query(
-                'ALTER TABLE public."AtVersion" RENAME COLUMN "atVersion" TO "name";',
+    up: queryInterface => {
+        return queryInterface.sequelize.transaction(async transaction => {
+            await queryInterface.renameColumn(
+                'AtVersion',
+                'atVersion',
+                'name',
                 { transaction }
             );
         });
     },
 
-    down: async queryInterface => {
-        queryInterface.sequelize.transaction(async transaction => {
-            await queryInterface.sequelize.query(
-                'ALTER TABLE public."AtVersion" RENAME COLUMN "name" TO "atVersion";',
+    down: queryInterface => {
+        return queryInterface.sequelize.transaction(async transaction => {
+            await queryInterface.renameColumn(
+                'AtVersion',
+                'name',
+                'atVersion',
                 { transaction }
             );
         });

@@ -1,27 +1,15 @@
 'use strict';
 
 module.exports = {
-    up: async queryInterface => {
-        queryInterface.sequelize.transaction(async transaction => {
-            await queryInterface.addConstraint(
-                'AtVersion',
-                {
-                    type: 'primary key',
-                    name: 'AtVersion_pkey',
-                    fields: ['id']
-                },
-                { transaction }
-            );
+    up: queryInterface => {
+        return queryInterface.addConstraint('AtVersion', {
+            type: 'primary key',
+            name: 'AtVersion_pkey',
+            fields: ['id']
         });
     },
 
-    down: async queryInterface => {
-        queryInterface.sequelize.transaction(async transaction => {
-            await queryInterface.removeConstraint(
-                'AtVersion',
-                'AtVersion_pkey',
-                { transaction }
-            );
-        });
+    down: queryInterface => {
+        return queryInterface.removeConstraint('AtVersion', 'AtVersion_pkey');
     }
 };

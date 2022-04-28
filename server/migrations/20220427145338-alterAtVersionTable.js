@@ -1,8 +1,8 @@
 'use strict';
 
 module.exports = {
-    up: async (queryInterface, Sequelize) => {
-        queryInterface.sequelize.transaction(async transaction => {
+    up: (queryInterface, Sequelize) => {
+        return queryInterface.sequelize.transaction(async transaction => {
             await queryInterface.addColumn(
                 'AtVersion',
                 'id',
@@ -25,8 +25,8 @@ module.exports = {
         });
     },
 
-    down: async queryInterface => {
-        queryInterface.sequelize.transaction(async transaction => {
+    down: queryInterface => {
+        return queryInterface.sequelize.transaction(async transaction => {
             await queryInterface.removeColumn('AtVersion', 'id', {
                 transaction
             });
