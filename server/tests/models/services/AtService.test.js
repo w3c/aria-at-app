@@ -214,6 +214,26 @@ describe('AtModel Data Checks', () => {
 });
 
 describe('AtVersionModel Data Checks', () => {
+    it('should return valid atVersion for id query with all associations', async () => {
+        // A1
+        const _id = 1;
+
+        // A2
+        const atVersion = await AtService.getAtVersionById(_id);
+        const { id, name, at, releasedAt } = atVersion;
+
+        // A3
+        expect(id).toEqual(_id);
+        expect(name).toBeTruthy();
+        expect(releasedAt).toBeFalsy();
+        expect(at).toEqual(
+            expect.objectContaining({
+                name: expect.any(String),
+                id: expect.any(Number)
+            })
+        );
+        expect(atVersion).toHaveProperty('at');
+    });
     it('should return valid atVersion with at for query with all associations', async () => {
         // A1
         const _atId = 1;
@@ -329,11 +349,11 @@ describe('AtVersionModel Data Checks', () => {
                 atId: _atId,
                 name: _atVersion
             });
-            const { atId, name, at } = atVersionInstance;
+            const { id, atId, name, at } = atVersionInstance;
 
             // A2
-            const updatedAtVersionInstance = await AtService.updateAtVersionByQuery(
-                { atId, name },
+            const updatedAtVersionInstance = await AtService.updateAtVersionById(
+                id,
                 { name: _updatedAtVersion }
             );
             const { name: updatedAtVersion } = updatedAtVersionInstance;
