@@ -39,13 +39,13 @@ INSERT INTO "AtMode" ("atId", name) VALUES (3, 'INTERACTION');
 -- Data for Name: AtVersion; Type: TABLE DATA; Schema: public; Owner: atr
 --
 
-INSERT INTO "AtVersion" ("atId", "atVersion") VALUES (2, '2019.3');
-INSERT INTO "AtVersion" ("atId", "atVersion") VALUES (2, '2020.1');
-INSERT INTO "AtVersion" ("atId", "atVersion") VALUES (2, '2020.2');
-INSERT INTO "AtVersion" ("atId", "atVersion") VALUES (2, '2020.3');
-INSERT INTO "AtVersion" ("atId", "atVersion") VALUES (2, '2020.4');
-INSERT INTO "AtVersion" ("atId", "atVersion") VALUES (1, '2021.2103.174');
-INSERT INTO "AtVersion" ("atId", "atVersion") VALUES (3, '11.5.2');
+INSERT INTO "AtVersion" ("atId", "name") VALUES (2, '2019.3');
+INSERT INTO "AtVersion" ("atId", "name") VALUES (2, '2020.1');
+INSERT INTO "AtVersion" ("atId", "name") VALUES (2, '2020.2');
+INSERT INTO "AtVersion" ("atId", "name") VALUES (2, '2020.3');
+INSERT INTO "AtVersion" ("atId", "name") VALUES (2, '2020.4');
+INSERT INTO "AtVersion" ("atId", "name") VALUES (1, '2021.2103.174');
+INSERT INTO "AtVersion" ("atId", "name") VALUES (3, '11.5.2');
 
 
 --
