@@ -172,7 +172,7 @@ const graphqlSchema = gql`
         """
         See AtVersion type for more information.
         """
-        releasedAt: Timestamp!
+        releasedAt: Timestamp
     }
 
     # TODO: Determine if needed following 2021 Working Mode changes
