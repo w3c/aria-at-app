@@ -500,6 +500,28 @@ describe('graphql', () => {
                                 id
                             }
                         }
+                        at(id: 1) {
+                            __typename
+                            createAtVersion(
+                                name: "2022.5.2"
+                                releasedAt: "2022/05/02"
+                            ) {
+                                id
+                                name
+                                releasedAt
+                            }
+                        }
+                        atVersion(id: 1) {
+                            __typename
+                            editAtVersion(updatedName: "2022") {
+                                id
+                                name
+                            }
+                        }
+                        deleteVersion: atVersion(id: 2) {
+                            __typename
+                            deleteAtVersion
+                        }
                     }
                 `,
                 {

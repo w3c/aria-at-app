@@ -19,7 +19,7 @@ const createAtVersionResolver = async (
         version = await createAtVersion({ atId, name, releasedAt });
     }
 
-    return;
+    return version;
 };
 
 module.exports = createAtVersionResolver;

@@ -879,10 +879,10 @@ const graphqlSchema = gql`
     Mutations scoped to an Assistive Technology version
     """
     type AtOperations {
-        createAtVersion(name: String!, releasedAt: Timestamp!): NoResponse
+        createAtVersion(name: String!, releasedAt: Timestamp!): AtVersion!
     }
     type AtVersionOperations {
-        editAtVersion(updatedName: String!): NoResponse
+        editAtVersion(updatedName: String!): AtVersion!
         deleteAtVersion: NoResponse
     }
     """
