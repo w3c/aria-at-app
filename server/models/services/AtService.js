@@ -187,6 +187,7 @@ const removeAt = async (id, deleteOptions = { truncate: false }) => {
 /**
  * You can pass any of the attribute arrays as '[]' to exclude that related association
  * @param {number} id - unique id of the AtVersion model being queried
+ * @param {string[]} atVersionAttributes  - AtVersion attributes to be returned in the result
  * @param {string[]} atAttributes  - At attributes to be returned in the result
  * @param {object} options - Generic options for Sequelize
  * @param {*} options.transaction - Sequelize transaction
@@ -194,13 +195,14 @@ const removeAt = async (id, deleteOptions = { truncate: false }) => {
  */
 const getAtVersionById = async (
     id,
+    atVersionAttributes = AT_VERSION_ATTRIBUTES,
     atAttributes = AT_ATTRIBUTES,
     options = {}
 ) => {
     return ModelService.getById(
         AtVersion,
         id,
-        atAttributes,
+        atVersionAttributes,
         [atAssociation(atAttributes)],
         options
     );

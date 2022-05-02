@@ -129,7 +129,7 @@ const graphqlSchema = gql`
         """
         Date for approximate availability of the version
         """
-        releasedAt: Timestamp!
+        releasedAt: Timestamp
     }
 
     # TODO: remove or rework this type in order to support recording exact
