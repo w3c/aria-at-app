@@ -22,7 +22,7 @@ export const capitalizeEachWord = (
     return words.join(joinChar);
 };
 
-export const getCurrentDateAsString = (date, format = 'DD/MM/YYYY') => {
+export const getCurrentDateAsString = (date, format = 'DD-MM-YYYY') => {
     if (!date) return '';
     return moment(date)
         .format(format)

@@ -44,19 +44,17 @@ const UpdateVersionModal = ({
 
     const handleDateAvailabilityTextKeyPress = e => {
         let input = e.target;
-        if (e.charCode < 47 || e.charCode > 57) {
-            // accept only '/1234567890'
+        if ((e.charCode < 48 && e.charCode !== 45) || e.charCode > 57) {
+            // accept only '-1234567890'
             e.preventDefault();
         }
 
         let inputLength = input.value.length;
         if (inputLength !== 1 || inputLength !== 3) {
-            if (e.charCode === 47) {
-                e.preventDefault();
-            }
+            if (e.charCode === 45) e.preventDefault();
         }
-        if (inputLength === 2) input.value += '/';
-        if (inputLength === 5) input.value += '/';
+        if (inputLength === 2) input.value += '-';
+        if (inputLength === 5) input.value += '-';
     };
 
     const onSubmit = () => {
@@ -89,7 +87,7 @@ const UpdateVersionModal = ({
                         </Form.Label>
                         <Form.Control
                             type="text"
-                            placeholder="DD/MM/YYYY"
+                            placeholder="DD-MM-YYYY"
                             value={updatedDateAvailabilityText}
                             onChange={handleDateAvailabilityTextChange}
                             onKeyPress={handleDateAvailabilityTextKeyPress}
