@@ -99,23 +99,55 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK_ADMIN = [
                     {
                         id: '1',
                         name: 'JAWS',
-                        atVersions: ['2021.2103.174']
+                        atVersions: [
+                            {
+                                id: '6',
+                                name: '2021.2103.174',
+                                releasedAt: '2022-08-02T14:36:02.659Z'
+                            }
+                        ]
                     },
                     {
                         id: '2',
                         name: 'NVDA',
                         atVersions: [
-                            '2020.4',
-                            '2020.3',
-                            '2020.2',
-                            '2020.1',
-                            '2019.3'
+                            {
+                                id: '5',
+                                name: '2020.4',
+                                releasedAt: null
+                            },
+                            {
+                                id: '4',
+                                name: '2020.3',
+                                releasedAt: null
+                            },
+                            {
+                                id: '3',
+                                name: '2020.2',
+                                releasedAt: null
+                            },
+                            {
+                                id: '2',
+                                name: '2020.1',
+                                releasedAt: null
+                            },
+                            {
+                                id: '1',
+                                name: '2019.3',
+                                releasedAt: null
+                            }
                         ]
                     },
                     {
                         id: '3',
                         name: 'VoiceOver for macOS',
-                        atVersions: ['11.5.2']
+                        atVersions: [
+                            {
+                                id: '7',
+                                name: '11.5.2',
+                                releasedAt: null
+                            }
+                        ]
                     }
                 ],
                 browsers: [
@@ -553,23 +585,55 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK_TESTER = [
                     {
                         id: '1',
                         name: 'JAWS',
-                        atVersions: ['2021.2103.174']
+                        atVersions: [
+                            {
+                                id: '6',
+                                name: '2021.2103.174',
+                                releasedAt: '2022-08-02T14:36:02.659Z'
+                            }
+                        ]
                     },
                     {
                         id: '2',
                         name: 'NVDA',
                         atVersions: [
-                            '2020.4',
-                            '2020.3',
-                            '2020.2',
-                            '2020.1',
-                            '2019.3'
+                            {
+                                id: '5',
+                                name: '2020.4',
+                                releasedAt: null
+                            },
+                            {
+                                id: '4',
+                                name: '2020.3',
+                                releasedAt: null
+                            },
+                            {
+                                id: '3',
+                                name: '2020.2',
+                                releasedAt: null
+                            },
+                            {
+                                id: '2',
+                                name: '2020.1',
+                                releasedAt: null
+                            },
+                            {
+                                id: '1',
+                                name: '2019.3',
+                                releasedAt: null
+                            }
                         ]
                     },
                     {
                         id: '3',
                         name: 'VoiceOver for macOS',
-                        atVersions: ['11.5.2']
+                        atVersions: [
+                            {
+                                id: '7',
+                                name: '11.5.2',
+                                releasedAt: null
+                            }
+                        ]
                     }
                 ],
                 browsers: [
