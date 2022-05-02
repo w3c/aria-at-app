@@ -367,6 +367,15 @@ const removeAtVersionByQuery = async (
     );
 };
 
+/**
+ * @param {number} id - id of the AtVersion record to be removed
+ * @param {object} deleteOptions - Sequelize specific deletion options that could be passed
+ * @returns {Promise<boolean>}
+ */
+const removeAtVersionById = async (id, deleteOptions = { truncate: false }) => {
+    return await ModelService.removeById(AtVersion, id, deleteOptions);
+};
+
 // AtMode
 
 /**
@@ -515,6 +524,7 @@ module.exports = {
     updateAtVersionById,
     updateAtVersionByQuery,
     removeAtVersionByQuery,
+    removeAtVersionById,
 
     // Basic CRUD [AtMode]
     getAtModeByQuery,
