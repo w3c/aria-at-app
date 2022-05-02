@@ -305,7 +305,7 @@ const createAtVersion = async (
  * @returns {Promise<*>}
  */
 const updateAtVersionByQuery = async (
-    { atId, name, releasedAt = null },
+    { atId, name, releasedAt },
     updateParams = {},
     atVersionAttributes = AT_VERSION_ATTRIBUTES,
     atAttributes = AT_ATTRIBUTES,
