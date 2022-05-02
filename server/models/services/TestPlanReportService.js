@@ -332,7 +332,7 @@ const getOrCreateTestPlanReport = async (
                 {
                     get: getAtVersions,
                     create: createAtVersion,
-                    values: { atId, atVersion: providedAtVersion },
+                    values: { atId, name: providedAtVersion },
                     returnAttributes: [null, []]
                 },
                 {

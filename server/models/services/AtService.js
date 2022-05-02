@@ -194,14 +194,14 @@ const removeAt = async (id, deleteOptions = { truncate: false }) => {
  * @returns {Promise<*>}
  */
 const getAtVersionByQuery = async (
-    { atId, atVersion },
+    { atId, name },
     atVersionAttributes = AT_VERSION_ATTRIBUTES,
     atAttributes = AT_ATTRIBUTES,
     options = {}
 ) => {
     return ModelService.getByQuery(
         AtVersion,
-        { atId, atVersion },
+        { atId, name },
         atVersionAttributes,
         [atAssociation(atAttributes)],
         options
@@ -233,8 +233,7 @@ const getAtVersions = async (
     // search and filtering options
     let where = { ...filter };
     const searchQuery = search ? `%${search}%` : '';
-    if (searchQuery)
-        where = { ...where, atVersion: { [Op.iLike]: searchQuery } };
+    if (searchQuery) where = { ...where, name: { [Op.iLike]: searchQuery } };
 
     return await ModelService.get(
         AtVersion,
@@ -255,17 +254,17 @@ const getAtVersions = async (
  * @returns {Promise<*>}
  */
 const createAtVersion = async (
-    { atId, atVersion },
+    { atId, name, releasedAt = null },
     atVersionAttributes = AT_VERSION_ATTRIBUTES,
     atAttributes = AT_ATTRIBUTES,
     options = {}
 ) => {
-    await ModelService.create(AtVersion, { atId, atVersion }, options);
+    await ModelService.create(AtVersion, { atId, name, releasedAt }, options);
 
     // to ensure the structure being returned matches what we expect for simple queries and can be controlled
     return await ModelService.getByQuery(
         AtVersion,
-        { atId, atVersion },
+        { atId, name },
         atVersionAttributes,
         [atAssociation(atAttributes)],
         options
@@ -282,17 +281,21 @@ const createAtVersion = async (
  * @returns {Promise<*>}
  */
 const updateAtVersionByQuery = async (
-    { atId, atVersion },
+    { atId, name, releasedAt = null },
     updateParams = {},
     atVersionAttributes = AT_VERSION_ATTRIBUTES,
     atAttributes = AT_ATTRIBUTES,
     options = {}
 ) => {
-    await ModelService.update(AtVersion, { atId, atVersion }, updateParams);
+    await ModelService.update(
+        AtVersion,
+        { atId, name, releasedAt },
+        updateParams
+    );
 
     return await ModelService.getByQuery(
         AtVersion,
-        { atId, atVersion: updateParams.atVersion || atVersion },
+        { atId, name: updateParams.name || name },
         atVersionAttributes,
         [atAssociation(atAttributes)],
         options
@@ -305,12 +308,12 @@ const updateAtVersionByQuery = async (
  * @returns {Promise<boolean>}
  */
 const removeAtVersionByQuery = async (
-    { atId, atVersion },
+    { atId, name },
     deleteOptions = { truncate: false }
 ) => {
     return await ModelService.removeByQuery(
         AtVersion,
-        { atId, atVersion },
+        { atId, name },
         deleteOptions
     );
 };

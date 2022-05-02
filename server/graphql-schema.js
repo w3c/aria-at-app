@@ -111,7 +111,25 @@ const graphqlSchema = gql`
         # The categories of generalized AT modes the AT supports.
         # """
         # modes: [AtMode]!
-        atVersions: [String]!
+        atVersions: [AtVersion]!
+    }
+
+    """
+    Version information for a given assistive technology
+    """
+    type AtVersion {
+        """
+        Postgres provided numeric ID
+        """
+        id: ID!
+        """
+        Human-readable name for the version, such as "2020.1".
+        """
+        name: String!
+        """
+        Date for approximate availability of the version
+        """
+        releasedAt: Timestamp
     }
 
     # TODO: remove or rework this type in order to support recording exact
