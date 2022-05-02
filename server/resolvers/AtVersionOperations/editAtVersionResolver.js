@@ -1,4 +1,5 @@
 const { AuthenticationError } = require('apollo-server');
+const { updateAtVersionById } = require('../../models/services/AtService');
 const editAtVersionResolver = async (
     { parentContext: { id } },
     { updatedName },
@@ -7,6 +8,8 @@ const editAtVersionResolver = async (
     if (!user?.roles.find(role => role.name === 'ADMIN')) {
         throw new AuthenticationError();
     }
+
+    return await updateAtVersionById(id, { name: updatedName });
 };
 
 module.exports = editAtVersionResolver;

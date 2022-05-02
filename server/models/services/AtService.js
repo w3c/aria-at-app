@@ -325,7 +325,7 @@ const updateAtVersionByQuery = async (
 };
 
 /**
- * @param int queryParams - id of the AtVersion record to be updated
+ * @param {number} id - id of the AtVersion record to be updated
  * @param {object} updateParams - values to be used to update columns for the record being referenced for {@param queryParams}
  * @param {string[]} atVersionAttributes  - AtVersion attributes to be returned in the result
  * @param {string[]} atAttributes  - At attributes to be returned in the result
