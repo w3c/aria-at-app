@@ -15,7 +15,11 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
         ats {
             id
             name
-            atVersions
+            atVersions {
+                id
+                name
+                releasedAt
+            }
         }
         browsers {
             id

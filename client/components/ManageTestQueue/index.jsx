@@ -146,7 +146,9 @@ const ManageTestQueue = ({
     const [selectedManageAtVersions, setSelectedManageAtVersions] = useState(
         []
     );
-    const [selectedManageAtVersion, setSelectedManageAtVersion] = useState('');
+    const [selectedManageAtVersionId, setSelectedManageAtVersionId] = useState(
+        ''
+    );
 
     const [showAtVersionModal, setShowAtVersionModal] = useState(false);
     const [atVersionModalTitle, setAtVersionModalTitle] = useState('');
@@ -207,7 +209,7 @@ const ManageTestQueue = ({
         if (ats.length) {
             setSelectedManageAtId(ats[0].id);
             setSelectedManageAtVersions(ats[0].atVersions);
-            setSelectedManageAtVersion(ats[0].atVersions[0]);
+            setSelectedManageAtVersionId(ats[0].atVersions[0].id);
         }
     }, [ats]);
 
@@ -233,13 +235,13 @@ const ManageTestQueue = ({
             setSelectedManageAtId(value);
             const at = ats.find(item => item.id === value);
             setSelectedManageAtVersions(at.atVersions);
-            setSelectedManageAtVersion(at.atVersions[0]);
+            setSelectedManageAtVersionId(at.atVersions[0].id);
         }
     };
 
     const onManageAtVersionChange = e => {
         const { value } = e.target;
-        setSelectedManageAtVersion(value);
+        setSelectedManageAtVersionId(value);
     };
 
     const onOpenAtVersionModalClick = (type = 'add') => {
@@ -255,10 +257,14 @@ const ManageTestQueue = ({
         if (type === 'edit') {
             const selectedAt = ats.find(item => item.id === selectedManageAtId);
             setAtVersionModalTitle(
-                `Edit ${selectedAt.name} Version ${selectedManageAtVersion}`
+                `Edit ${selectedAt.name} Version ${getAtVersionNameFromId(
+                    selectedManageAtVersionId
+                )}`
             );
             setAtVersionModalType('edit');
-            setAtVersionModalVersionText(selectedManageAtVersion);
+            setAtVersionModalVersionText(
+                getAtVersionNameFromId(selectedManageAtVersionId)
+            );
             setAtVersionModalDateText('');
             setShowAtVersionModal(true);
         }
@@ -277,7 +283,8 @@ const ManageTestQueue = ({
             setThemedModalContent(
                 <>
                     <b>
-                        {selectedAt.name} Version {selectedManageAtVersion}
+                        {selectedAt.name} Version{' '}
+                        {getAtVersionNameFromId(selectedManageAtVersionId)}
                     </b>{' '}
                     can&apos;t be removed because it is already being used to
                     test the <b>{patternName}</b> Test Plan.
@@ -288,13 +295,16 @@ const ManageTestQueue = ({
         // Removing an Existing AT Version
         if (theme === 'danger') {
             setThemedModalTitle(
-                `Remove ${selectedAt.name} Version ${selectedManageAtVersion}`
+                `Remove ${selectedAt.name} Version ${getAtVersionNameFromId(
+                    selectedManageAtVersionId
+                )}`
             );
             setThemedModalContent(
                 <>
                     You are about to remove{' '}
                     <b>
-                        {selectedAt.name} Version {selectedManageAtVersion}
+                        {selectedAt.name} Version{' '}
+                        {getAtVersionNameFromId(selectedManageAtVersionId)}
                     </b>{' '}
                     from the ARIA-AT App.
                 </>
@@ -306,6 +316,10 @@ const ManageTestQueue = ({
     };
 
     const onThemedModalClose = () => setShowThemedModal(false);
+
+    const getAtVersionNameFromId = id => {
+        return selectedManageAtVersions.find(item => id === item.id).name;
+    };
 
     const onAtChange = e => {
         const { value } = e.target;
@@ -364,15 +378,15 @@ const ManageTestQueue = ({
                             </Form.Label>
                             <Form.Control
                                 as="select"
-                                value={selectedManageAtVersion}
+                                value={selectedManageAtVersionId}
                                 onChange={onManageAtVersionChange}
                             >
                                 {selectedManageAtVersions.map(item => (
                                     <option
-                                        key={`${selectedManageAtId}-${item}`}
-                                        value={item}
+                                        key={`${selectedManageAtId}-${item.id}-${item.name}`}
+                                        value={item.id}
                                     >
-                                        {item}
+                                        {item.name}
                                     </option>
                                 ))}
                             </Form.Control>
