@@ -218,14 +218,14 @@ const getAtVersionById = async (
  * @returns {Promise<*>}
  */
 const getAtVersionByQuery = async (
-    { atId, name },
+    { atId, name, releasedAt },
     atVersionAttributes = AT_VERSION_ATTRIBUTES,
     atAttributes = AT_ATTRIBUTES,
     options = {}
 ) => {
     return ModelService.getByQuery(
         AtVersion,
-        { atId, name },
+        { atId, name, releasedAt },
         atVersionAttributes,
         [atAssociation(atAttributes)],
         options
@@ -319,7 +319,7 @@ const updateAtVersionByQuery = async (
 
     return await ModelService.getByQuery(
         AtVersion,
-        { atId, name: updateParams.name || name },
+        { atId, name: updateParams.name || name, releasedAt },
         atVersionAttributes,
         [atAssociation(atAttributes)],
         options
@@ -359,12 +359,12 @@ const updateAtVersionById = async (
  * @returns {Promise<boolean>}
  */
 const removeAtVersionByQuery = async (
-    { atId, name },
+    { atId, name, releasedAt },
     deleteOptions = { truncate: false }
 ) => {
     return await ModelService.removeByQuery(
         AtVersion,
-        { atId, name },
+        { atId, name, releasedAt },
         deleteOptions
     );
 };
