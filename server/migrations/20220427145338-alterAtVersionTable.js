@@ -18,7 +18,9 @@ module.exports = {
                 'AtVersion',
                 'releasedAt',
                 {
-                    type: Sequelize.DataTypes.DATE
+                    type: Sequelize.DataTypes.DATE,
+                    allowNull: false,
+                    defaultValue: new Date()
                 },
                 { transaction }
             );

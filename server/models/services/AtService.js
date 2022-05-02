@@ -278,7 +278,7 @@ const getAtVersions = async (
  * @returns {Promise<*>}
  */
 const createAtVersion = async (
-    { atId, name, releasedAt = null },
+    { atId, name, releasedAt },
     atVersionAttributes = AT_VERSION_ATTRIBUTES,
     atAttributes = AT_ATTRIBUTES,
     options = {}

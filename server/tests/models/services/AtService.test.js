@@ -225,7 +225,7 @@ describe('AtVersionModel Data Checks', () => {
         // A3
         expect(id).toEqual(_id);
         expect(name).toBeTruthy();
-        expect(releasedAt).toBeFalsy();
+        expect(releasedAt).toBeTruthy();
         expect(at).toEqual(
             expect.objectContaining({
                 name: expect.any(String),
@@ -408,7 +408,7 @@ describe('AtVersionModel Data Checks', () => {
                         id: expect.any(Number),
                         name: expect.any(String)
                     }),
-                    releasedAt: null
+                    releasedAt: expect.anything()
                 })
             ])
         );
@@ -434,7 +434,7 @@ describe('AtVersionModel Data Checks', () => {
                         id: expect.any(Number),
                         name: expect.any(String)
                     }),
-                    releasedAt: null
+                    releasedAt: expect.anything()
                 })
             ])
         );
