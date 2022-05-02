@@ -249,23 +249,25 @@ const ManageTestQueue = ({
             const selectedAt = ats.find(item => item.id === selectedManageAtId);
             setAtVersionModalTitle(`Add a New Version for ${selectedAt.name}`);
             setAtVersionModalType('add');
-            setShowAtVersionModal(true);
             setAtVersionModalVersionText('');
             setAtVersionModalDateText('');
+            setShowAtVersionModal(true);
         }
 
         if (type === 'edit') {
             const selectedAt = ats.find(item => item.id === selectedManageAtId);
             setAtVersionModalTitle(
-                `Edit ${selectedAt.name} Version ${getAtVersionNameFromId(
-                    selectedManageAtVersionId
-                )}`
+                `Edit ${selectedAt.name} Version ${
+                    getAtVersionFromId(selectedManageAtVersionId)?.name
+                }`
             );
             setAtVersionModalType('edit');
             setAtVersionModalVersionText(
-                getAtVersionNameFromId(selectedManageAtVersionId)
+                getAtVersionFromId(selectedManageAtVersionId)?.name
             );
-            setAtVersionModalDateText('');
+            setAtVersionModalDateText(
+                getAtVersionFromId(selectedManageAtVersionId)?.releasedAt
+            );
             setShowAtVersionModal(true);
         }
     };
@@ -284,7 +286,7 @@ const ManageTestQueue = ({
                 <>
                     <b>
                         {selectedAt.name} Version{' '}
-                        {getAtVersionNameFromId(selectedManageAtVersionId)}
+                        {getAtVersionFromId(selectedManageAtVersionId)?.name}
                     </b>{' '}
                     can&apos;t be removed because it is already being used to
                     test the <b>{patternName}</b> Test Plan.
@@ -295,16 +297,16 @@ const ManageTestQueue = ({
         // Removing an Existing AT Version
         if (theme === 'danger') {
             setThemedModalTitle(
-                `Remove ${selectedAt.name} Version ${getAtVersionNameFromId(
-                    selectedManageAtVersionId
-                )}`
+                `Remove ${selectedAt.name} Version ${
+                    getAtVersionFromId(selectedManageAtVersionId)?.name
+                }`
             );
             setThemedModalContent(
                 <>
                     You are about to remove{' '}
                     <b>
                         {selectedAt.name} Version{' '}
-                        {getAtVersionNameFromId(selectedManageAtVersionId)}
+                        {getAtVersionFromId(selectedManageAtVersionId)?.name}
                     </b>{' '}
                     from the ARIA-AT App.
                 </>
@@ -317,8 +319,8 @@ const ManageTestQueue = ({
 
     const onThemedModalClose = () => setShowThemedModal(false);
 
-    const getAtVersionNameFromId = id => {
-        return selectedManageAtVersions.find(item => id === item.id).name;
+    const getAtVersionFromId = id => {
+        return selectedManageAtVersions.find(item => id === item.id);
     };
 
     const onAtChange = e => {

@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 /**
  * Transforms the provided string by capitalizing the first letter of each word.
  *
@@ -18,4 +20,11 @@ export const capitalizeEachWord = (
         words[i] = `${words[i][0].toUpperCase() + words[i].substr(1)}`;
 
     return words.join(joinChar);
+};
+
+export const getCurrentDateAsString = (date, format = 'DD/MM/YYYY') => {
+    if (!date) return '';
+    return moment(date)
+        .format(format)
+        .toString();
 };

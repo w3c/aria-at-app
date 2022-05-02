@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Form } from 'react-bootstrap';
 import styled from '@emotion/styled';
 import BasicModal from '../BasicModal';
+import { getCurrentDateAsString } from '../../../utils/formatter';
 
 const ModalInnerSectionContainer = styled.div`
     display: flex;
@@ -22,7 +23,14 @@ const UpdateVersionModal = ({
     const [
         updatedDateAvailabilityText,
         setUpdatedDateAvailabilityText
-    ] = useState(dateAvailabilityText);
+    ] = useState(getCurrentDateAsString(dateAvailabilityText));
+
+    useEffect(() => {
+        setUpdatedVersionText(versionText);
+        setUpdatedDateAvailabilityText(
+            getCurrentDateAsString(dateAvailabilityText)
+        );
+    }, [versionText, dateAvailabilityText]);
 
     const handleVersionTextChange = e => {
         const value = e.target.value;
@@ -32,6 +40,23 @@ const UpdateVersionModal = ({
     const handleDateAvailabilityTextChange = e => {
         const value = e.target.value;
         setUpdatedDateAvailabilityText(value);
+    };
+
+    const handleDateAvailabilityTextKeyPress = e => {
+        let input = e.target;
+        if (e.charCode < 47 || e.charCode > 57) {
+            // accept only '/1234567890'
+            e.preventDefault();
+        }
+
+        let inputLength = input.value.length;
+        if (inputLength !== 1 || inputLength !== 3) {
+            if (e.charCode === 47) {
+                e.preventDefault();
+            }
+        }
+        if (inputLength === 2) input.value += '/';
+        if (inputLength === 5) input.value += '/';
     };
 
     const onSubmit = () => {
@@ -53,7 +78,7 @@ const UpdateVersionModal = ({
                         <Form.Label>Version Number</Form.Label>
                         <Form.Control
                             type="text"
-                            value={versionText}
+                            value={updatedVersionText}
                             onChange={handleVersionTextChange}
                         />
                     </Form.Group>
@@ -64,8 +89,11 @@ const UpdateVersionModal = ({
                         </Form.Label>
                         <Form.Control
                             type="text"
-                            value={dateAvailabilityText}
+                            placeholder="DD/MM/YYYY"
+                            value={updatedDateAvailabilityText}
                             onChange={handleDateAvailabilityTextChange}
+                            onKeyPress={handleDateAvailabilityTextKeyPress}
+                            maxLength={10}
                         />
                     </Form.Group>
                 </ModalInnerSectionContainer>
