@@ -5,10 +5,6 @@ import { Container, Table, Alert } from 'react-bootstrap';
 import { Helmet } from 'react-helmet';
 import nextId from 'react-id-generator';
 import TestQueueRow from '../TestQueueRow';
-// import {
-//     NewTestPlanReportContainer,
-//     NewTestPlanReportModal
-// } from '../NewTestPlanReport';
 import ManageTestQueue from '../ManageTestQueue';
 import DeleteTestPlanReportModal from '../DeleteTestPlanReportModal';
 import DeleteResultsModal from '../DeleteResultsModal';
@@ -16,8 +12,6 @@ import PageStatus from '../common/PageStatus';
 import { TEST_QUEUE_PAGE_QUERY } from './queries';
 import { evaluateAuth } from '../../utils/evaluateAuth';
 import './TestQueue.css';
-
-// const ADD_TEST_PLAN_DIALOG_TRIGGER_ID = 'add-test-plan-to-queue-dialog-trigger';
 
 const TestQueue = () => {
     const { loading, data, refetch } = useQuery(TEST_QUEUE_PAGE_QUERY);
@@ -43,21 +37,10 @@ const TestQueue = () => {
     const [isShowingDeleteResultsModal, setDeleteResultsModal] = useState(
         false
     );
-    // const [isShowingAddToQueueModal, setAddToQueueModal] = useState(false);
 
     const auth = evaluateAuth(data && data.me ? data.me : {});
     const { id, isAdmin } = auth;
     const isSignedIn = !!id;
-
-    // useEffect(() => {
-    //     if (!isShowingAddToQueueModal) {
-    //         const trigger = document.querySelector(
-    //             `#${ADD_TEST_PLAN_DIALOG_TRIGGER_ID}`
-    //         );
-    //
-    //         trigger && trigger.focus();
-    //     }
-    // }, [isShowingAddToQueueModal]);
 
     useEffect(() => {
         if (data) {
@@ -210,8 +193,6 @@ const TestQueue = () => {
         setDeleteResultsDetails({});
     };
 
-    // const handleCloseAddTestPlanToQueueModal = () => setAddToQueueModal(false);
-
     if (loading) {
         return (
             <PageStatus
@@ -267,13 +248,6 @@ const TestQueue = () => {
                 </p>
             )}
 
-            {/*{isAdmin && (*/}
-            {/*    <NewTestPlanReportContainer*/}
-            {/*        handleOpenDialog={() => setAddToQueueModal(true)}*/}
-            {/*        openDialogTriggerId={ADD_TEST_PLAN_DIALOG_TRIGGER_ID}*/}
-            {/*    />*/}
-            {/*)}*/}
-
             {isAdmin && (
                 <ManageTestQueue
                     ats={ats}
@@ -305,14 +279,6 @@ const TestQueue = () => {
                     handleAction={handleDeleteTestPlanReport}
                 />
             )}
-
-            {/*{isAdmin && isShowingAddToQueueModal && (*/}
-            {/*    <NewTestPlanReportModal*/}
-            {/*        show={isShowingAddToQueueModal}*/}
-            {/*        handleClose={handleCloseAddTestPlanToQueueModal}*/}
-            {/*        handleAddToTestQueue={refetch}*/}
-            {/*    />*/}
-            {/*)}*/}
         </Container>
     );
 };
