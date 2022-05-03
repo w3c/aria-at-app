@@ -882,7 +882,10 @@ const graphqlSchema = gql`
         createAtVersion(name: String!, releasedAt: Timestamp!): AtVersion!
     }
     type AtVersionOperations {
-        editAtVersion(updatedName: String!): AtVersion!
+        editAtVersion(
+            updatedName: String!
+            updatedReleasedAt: Timestamp!
+        ): AtVersion!
         deleteAtVersion: NoResponse
     }
     """

@@ -513,9 +513,13 @@ describe('graphql', () => {
                         }
                         atVersion(id: 1) {
                             __typename
-                            editAtVersion(updatedName: "2022") {
+                            editAtVersion(
+                                updatedName: "2022"
+                                updatedReleasedAt: "2022/05/03"
+                            ) {
                                 id
                                 name
+                                releasedAt
                             }
                         }
                         deleteVersion: atVersion(id: 2) {
