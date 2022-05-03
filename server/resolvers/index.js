@@ -20,7 +20,6 @@ const populateData = require('./populateDataResolver');
 const User = require('./User');
 const AtOperations = require('./AtOperations');
 const AtVersionOperations = require('./AtVersionOperations');
-const Browser = require('./Browser');
 const TestPlanVersion = require('./TestPlanVersion');
 const TestPlanReport = require('./TestPlanReport');
 const TestPlanReportOperations = require('./TestPlanReportOperations');
@@ -56,7 +55,6 @@ const resolvers = {
     },
     AtOperations,
     AtVersionOperations,
-    Browser,
     User,
     TestPlanVersion,
     TestPlanReport,

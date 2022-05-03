@@ -74,7 +74,18 @@ const graphqlSchema = gql`
         Browser name like "Chrome".
         """
         name: String!
-        browserVersions: [String]!
+        browserVersions: [BrowserVersion]!
+    }
+
+    type BrowserVersion {
+        """
+        Postgres-provided numeric ID
+        """
+        id: ID!
+        """
+        Version string
+        """
+        name: String!
     }
 
     """
