@@ -186,6 +186,30 @@ const removeAt = async (id, deleteOptions = { truncate: false }) => {
 
 /**
  * You can pass any of the attribute arrays as '[]' to exclude that related association
+ * @param {number} id - unique id of the AtVersion model being queried
+ * @param {string[]} atVersionAttributes  - AtVersion attributes to be returned in the result
+ * @param {string[]} atAttributes  - At attributes to be returned in the result
+ * @param {object} options - Generic options for Sequelize
+ * @param {*} options.transaction - Sequelize transaction
+ * @returns {Promise<*>}
+ */
+const getAtVersionById = async (
+    id,
+    atVersionAttributes = AT_VERSION_ATTRIBUTES,
+    atAttributes = AT_ATTRIBUTES,
+    options = {}
+) => {
+    return ModelService.getById(
+        AtVersion,
+        id,
+        atVersionAttributes,
+        [atAssociation(atAttributes)],
+        options
+    );
+};
+
+/**
+ * You can pass any of the attribute arrays as '[]' to exclude that related association
  * @param {object} queryParams - unique values of the AtVersion model being queried
  * @param {string[]} atVersionAttributes  - AtVersion attributes to be returned in the result
  * @param {string[]} atAttributes  - At attributes to be returned in the result
@@ -194,14 +218,14 @@ const removeAt = async (id, deleteOptions = { truncate: false }) => {
  * @returns {Promise<*>}
  */
 const getAtVersionByQuery = async (
-    { atId, name },
+    { atId, name, releasedAt },
     atVersionAttributes = AT_VERSION_ATTRIBUTES,
     atAttributes = AT_ATTRIBUTES,
     options = {}
 ) => {
     return ModelService.getByQuery(
         AtVersion,
-        { atId, name },
+        { atId, name, releasedAt },
         atVersionAttributes,
         [atAssociation(atAttributes)],
         options
@@ -254,7 +278,7 @@ const getAtVersions = async (
  * @returns {Promise<*>}
  */
 const createAtVersion = async (
-    { atId, name, releasedAt = null },
+    { atId, name, releasedAt },
     atVersionAttributes = AT_VERSION_ATTRIBUTES,
     atAttributes = AT_ATTRIBUTES,
     options = {}
@@ -281,7 +305,7 @@ const createAtVersion = async (
  * @returns {Promise<*>}
  */
 const updateAtVersionByQuery = async (
-    { atId, name, releasedAt = null },
+    { atId, name, releasedAt },
     updateParams = {},
     atVersionAttributes = AT_VERSION_ATTRIBUTES,
     atAttributes = AT_ATTRIBUTES,
@@ -295,7 +319,34 @@ const updateAtVersionByQuery = async (
 
     return await ModelService.getByQuery(
         AtVersion,
-        { atId, name: updateParams.name || name },
+        { atId, name: updateParams.name || name, releasedAt },
+        atVersionAttributes,
+        [atAssociation(atAttributes)],
+        options
+    );
+};
+
+/**
+ * @param {number} id - id of the AtVersion record to be updated
+ * @param {object} updateParams - values to be used to update columns for the record being referenced for {@param queryParams}
+ * @param {string[]} atVersionAttributes  - AtVersion attributes to be returned in the result
+ * @param {string[]} atAttributes  - At attributes to be returned in the result
+ * @param {object} options - Generic options for Sequelize
+ * @param {*} options.transaction - Sequelize transaction
+ * @returns {Promise<*>}
+ */
+const updateAtVersionById = async (
+    id,
+    updateParams = {},
+    atVersionAttributes = AT_VERSION_ATTRIBUTES,
+    atAttributes = AT_ATTRIBUTES,
+    options = {}
+) => {
+    await ModelService.update(AtVersion, { id }, updateParams);
+
+    return await ModelService.getById(
+        AtVersion,
+        id,
         atVersionAttributes,
         [atAssociation(atAttributes)],
         options
@@ -308,14 +359,23 @@ const updateAtVersionByQuery = async (
  * @returns {Promise<boolean>}
  */
 const removeAtVersionByQuery = async (
-    { atId, name },
+    { atId, name, releasedAt },
     deleteOptions = { truncate: false }
 ) => {
     return await ModelService.removeByQuery(
         AtVersion,
-        { atId, name },
+        { atId, name, releasedAt },
         deleteOptions
     );
+};
+
+/**
+ * @param {number} id - id of the AtVersion record to be removed
+ * @param {object} deleteOptions - Sequelize specific deletion options that could be passed
+ * @returns {Promise<boolean>}
+ */
+const removeAtVersionById = async (id, deleteOptions = { truncate: false }) => {
+    return await ModelService.removeById(AtVersion, id, deleteOptions);
 };
 
 // AtMode
@@ -459,11 +519,14 @@ module.exports = {
     removeAt,
 
     // Basic CRUD [AtVersion]
+    getAtVersionById,
     getAtVersionByQuery,
     getAtVersions,
     createAtVersion,
+    updateAtVersionById,
     updateAtVersionByQuery,
     removeAtVersionByQuery,
+    removeAtVersionById,
 
     // Basic CRUD [AtMode]
     getAtModeByQuery,

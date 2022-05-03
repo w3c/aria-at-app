@@ -137,7 +137,6 @@ describe('graphql', () => {
         const excludedTypeNameAndField = [
             // Items formatted like this:
             // ['TestResult', 'startedAt'],
-            ['AtVersion', 'releasedAt']
         ];
         ({
             typeAwareQuery,
@@ -177,6 +176,7 @@ describe('graphql', () => {
                             __typename
                             id
                             name
+                            releasedAt
                         }
                     }
                     users {
@@ -499,6 +499,32 @@ describe('graphql', () => {
                             ats {
                                 id
                             }
+                        }
+                        at(id: 1) {
+                            __typename
+                            createAtVersion(
+                                name: "2022.5.2"
+                                releasedAt: "2022/05/02"
+                            ) {
+                                id
+                                name
+                                releasedAt
+                            }
+                        }
+                        atVersion(id: 1) {
+                            __typename
+                            editAtVersion(
+                                updatedName: "2022"
+                                updatedReleasedAt: "2022/05/03"
+                            ) {
+                                id
+                                name
+                                releasedAt
+                            }
+                        }
+                        deleteVersion: atVersion(id: 2) {
+                            __typename
+                            deleteAtVersion
                         }
                     }
                 `,

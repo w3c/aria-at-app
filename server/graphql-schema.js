@@ -876,6 +876,19 @@ const graphqlSchema = gql`
     # Mutation-specific types below
 
     """
+    Mutations scoped to an Assistive Technology version
+    """
+    type AtOperations {
+        createAtVersion(name: String!, releasedAt: Timestamp!): AtVersion!
+    }
+    type AtVersionOperations {
+        editAtVersion(
+            updatedName: String!
+            updatedReleasedAt: Timestamp!
+        ): AtVersion!
+        deleteAtVersion: NoResponse
+    }
+    """
     Mutations scoped to a previously-created TestPlanReport.
     """
     type TestPlanReportOperations {
@@ -960,6 +973,8 @@ const graphqlSchema = gql`
     }
 
     type Mutation {
+        at(id: ID!): AtOperations!
+        atVersion(id: ID!): AtVersionOperations!
         """
         Adds a report with the given TestPlanVersion and TestPlanTarget and a
         state of "DRAFT", resulting in the report appearing in the Test Queue.
