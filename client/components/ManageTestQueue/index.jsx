@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useMutation } from '@apollo/client';
 import { Button, Form } from 'react-bootstrap';
 import styled from '@emotion/styled';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -6,7 +7,13 @@ import { faEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import PropTypes from 'prop-types';
 import UpdateVersionModal from '../common/UpdateVersionModal';
 import BasicThemedModal from '../common/BasicThemedModal';
+import {
+    ADD_AT_VERSION_MUTATION,
+    EDIT_AT_VERSION_MUTATION,
+    DELETE_AT_VERSION_MUTATION
+} from '../TestQueue/queries';
 import { gitUpdatedDateToString } from '../../utils/gitUtils';
+import { convertStringToDate } from '../../utils/formatter';
 
 const Container = styled.div`
     border: 1px solid #d3d5da;
@@ -138,7 +145,8 @@ const DisclosureContainer = styled.div`
 const ManageTestQueue = ({
     ats = [],
     browsers = [],
-    testPlanVersions = []
+    testPlanVersions = [],
+    triggerParentUpdate = () => {}
 }) => {
     const [showManageATs, setShowManageATs] = useState(false);
     const [showAddTestPlans, setShowAddTestPlans] = useState(false);
@@ -176,6 +184,10 @@ const ManageTestQueue = ({
 
     const [selectedAtId, setSelectedAtId] = useState('');
     const [selectedBrowserId, setSelectedBrowserId] = useState('');
+
+    const [addAtVersion] = useMutation(ADD_AT_VERSION_MUTATION);
+    const [editAtVersion] = useMutation(EDIT_AT_VERSION_MUTATION);
+    const [deleteAtVersion] = useMutation(DELETE_AT_VERSION_MUTATION);
 
     const onManageAtsClick = () => setShowManageATs(!showManageATs);
     const onAddTestPlansClick = () => setShowAddTestPlans(!showAddTestPlans);
@@ -274,7 +286,8 @@ const ManageTestQueue = ({
 
     const onRemoveClick = () => {
         // todo: evaluate if there is a blocking pattern when attempting to delete atVersion (displays warning)
-        const patternName = 'Disclosure Navigation Menu Example';
+        // const patternName = 'Disclosure Navigation Menu Example';
+        const patternName = '';
         const theme = patternName ? 'warning' : 'danger';
         const selectedAt = ats.find(item => item.id === selectedManageAtId);
 
@@ -320,6 +333,12 @@ const ManageTestQueue = ({
 
     const onThemedModalClose = () => setShowThemedModal(false);
 
+    const onUpdateModalClose = () => {
+        setAtVersionModalVersionText('');
+        setAtVersionModalDateText('');
+        setShowAtVersionModal(false);
+    };
+
     const getAtVersionFromId = id => {
         return selectedManageAtVersions.find(item => id === item.id);
     };
@@ -337,6 +356,45 @@ const ManageTestQueue = ({
     const onTestPlanVersionChange = e => {
         const { value } = e.target;
         setSelectedTestPlanVersionId(value);
+    };
+
+    const onUpdateAtVersionAction = async (
+        actionType,
+        { updatedVersionText, updatedDateAvailabilityText }
+    ) => {
+        if (actionType === 'add') {
+            await addAtVersion({
+                variables: {
+                    atId: selectedManageAtId,
+                    name: updatedVersionText,
+                    releasedAt: convertStringToDate(updatedDateAvailabilityText)
+                }
+            });
+            await triggerParentUpdate();
+            onUpdateModalClose();
+        }
+
+        if (actionType === 'edit') {
+            await editAtVersion({
+                variables: {
+                    atVersionId: selectedManageAtVersionId,
+                    name: updatedVersionText,
+                    releasedAt: convertStringToDate(updatedDateAvailabilityText)
+                }
+            });
+            await triggerParentUpdate();
+            onUpdateModalClose();
+        }
+
+        if (actionType === 'delete') {
+            await deleteAtVersion({
+                variables: {
+                    atVersionId: selectedManageAtVersionId
+                }
+            });
+            await triggerParentUpdate();
+            onThemedModalClose();
+        }
     };
 
     return (
@@ -519,34 +577,40 @@ const ManageTestQueue = ({
                 <Button variant="primary">Add Test Plan to Test Queue</Button>
             </DisclosureContainer>
 
-            <UpdateVersionModal
-                show={showAtVersionModal}
-                title={atVersionModalTitle}
-                actionType={atVersionModalType}
-                versionText={atVersionModalVersionText}
-                dateAvailabilityText={atVersionModalDateText}
-                handleAction={() => {}} // todo: expects func(actionType, { updatedVersionText, updatedDateAvailabilityText }) and call to atVersion create/edit graphql mutation
-                handleClose={() => setShowAtVersionModal(false)}
-            />
+            {showAtVersionModal && (
+                <UpdateVersionModal
+                    show={showAtVersionModal}
+                    title={atVersionModalTitle}
+                    actionType={atVersionModalType}
+                    versionText={atVersionModalVersionText}
+                    dateAvailabilityText={atVersionModalDateText}
+                    handleAction={onUpdateAtVersionAction}
+                    handleClose={onUpdateModalClose}
+                />
+            )}
 
-            <BasicThemedModal
-                show={showThemedModal}
-                theme={themedModalType}
-                title={themedModalTitle}
-                dialogClassName="modal-50w"
-                content={themedModalContent}
-                actionButtons={[
-                    {
-                        text: themedModalType === 'danger' ? 'Remove' : 'Ok',
-                        action:
-                            themedModalType === 'danger'
-                                ? () => {} // todo: call atVersion graphql mutation
-                                : onThemedModalClose
-                    }
-                ]}
-                handleClose={onThemedModalClose}
-                showCloseAction={themedModalType === 'danger'}
-            />
+            {showThemedModal && (
+                <BasicThemedModal
+                    show={showThemedModal}
+                    theme={themedModalType}
+                    title={themedModalTitle}
+                    dialogClassName="modal-50w"
+                    content={themedModalContent}
+                    actionButtons={[
+                        {
+                            text:
+                                themedModalType === 'danger' ? 'Remove' : 'Ok',
+                            action:
+                                themedModalType === 'danger'
+                                    ? () =>
+                                          onUpdateAtVersionAction('delete', {})
+                                    : onThemedModalClose
+                        }
+                    ]}
+                    handleClose={onThemedModalClose}
+                    showCloseAction={themedModalType === 'danger'}
+                />
+            )}
         </Container>
     );
 };
@@ -554,7 +618,8 @@ const ManageTestQueue = ({
 ManageTestQueue.propTypes = {
     ats: PropTypes.array,
     browsers: PropTypes.array,
-    testPlanVersions: PropTypes.array
+    testPlanVersions: PropTypes.array,
+    triggerParentUpdate: PropTypes.func
 };
 
 export default ManageTestQueue;

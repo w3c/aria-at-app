@@ -132,6 +132,42 @@ export const POPULATE_ADD_TEST_PLAN_TO_QUEUE_MODAL_QUERY = gql`
     }
 `;
 
+export const ADD_AT_VERSION_MUTATION = gql`
+    mutation AddAtVersion($atId: ID!, $name: String!, $releasedAt: Timestamp!) {
+        at(id: $atId) {
+            createAtVersion(name: $name, releasedAt: $releasedAt) {
+                id
+                name
+                releasedAt
+            }
+        }
+    }
+`;
+
+export const EDIT_AT_VERSION_MUTATION = gql`
+    mutation EditAtVersion(
+        $atVersionId: ID!
+        $name: String!
+        $releasedAt: Timestamp!
+    ) {
+        atVersion(id: $atVersionId) {
+            editAtVersion(updatedName: $name, updatedReleasedAt: $releasedAt) {
+                id
+                name
+                releasedAt
+            }
+        }
+    }
+`;
+
+export const DELETE_AT_VERSION_MUTATION = gql`
+    mutation DeleteAtVersion($atVersionId: ID!) {
+        atVersion(id: $atVersionId) {
+            deleteAtVersion
+        }
+    }
+`;
+
 export const ADD_TEST_QUEUE_MUTATION = gql`
     mutation AddTestPlanReport(
         $testPlanVersionId: ID!

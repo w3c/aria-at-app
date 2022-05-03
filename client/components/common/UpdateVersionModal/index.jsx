@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Form } from 'react-bootstrap';
 import styled from '@emotion/styled';
 import BasicModal from '../BasicModal';
-import { getCurrentDateAsString } from '../../../utils/formatter';
+import { convertDateToString } from '../../../utils/formatter';
 
 const ModalInnerSectionContainer = styled.div`
     display: flex;
@@ -23,12 +23,12 @@ const UpdateVersionModal = ({
     const [
         updatedDateAvailabilityText,
         setUpdatedDateAvailabilityText
-    ] = useState(getCurrentDateAsString(dateAvailabilityText));
+    ] = useState(convertDateToString(dateAvailabilityText));
 
     useEffect(() => {
         setUpdatedVersionText(versionText);
         setUpdatedDateAvailabilityText(
-            getCurrentDateAsString(dateAvailabilityText)
+            convertDateToString(dateAvailabilityText)
         );
     }, [versionText, dateAvailabilityText]);
 

@@ -15,7 +15,7 @@ const ModalInnerSectionContainer = styled.div`
     display: grid;
     grid-auto-flow: column;
 
-    grid-template-columns: 10% auto;
+    grid-template-columns: 50px auto;
     grid-gap: 10px;
 `;
 
