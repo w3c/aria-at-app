@@ -3,15 +3,21 @@ import PropTypes from 'prop-types';
 import { Button, Modal } from 'react-bootstrap';
 import styled from '@emotion/styled';
 
-const StyledH2 = styled.h2`
-    margin: 0;
+const ModalTitleStyle = styled.h1`
+    border: 0;
+    padding: 0;
+    font-size: 1.5rem;
 `;
 
 const BasicModal = ({
     show = false,
     centered = false,
     animation = true,
-    details: { title, description },
+    closeButton = true,
+    headerSep = true,
+    dialogClassName = '',
+    title = null,
+    content = null,
     closeLabel = 'Cancel',
     actionLabel = 'Continue',
     handleClose = null,
@@ -34,13 +40,21 @@ const BasicModal = ({
                 /* Disabled due to buggy implementation which jumps the page */
                 autoFocus={false}
                 aria-labelledby="basic-modal"
+                dialogClassName={dialogClassName}
             >
-                <Modal.Header closeButton>
-                    <Modal.Title as={StyledH2} tabIndex="-1" ref={headerRef}>
+                <Modal.Header
+                    closeButton={closeButton}
+                    className={headerSep ? '' : 'border-bottom-0'}
+                >
+                    <Modal.Title
+                        as={ModalTitleStyle}
+                        tabIndex="-1"
+                        ref={headerRef}
+                    >
                         {title}
                     </Modal.Title>
                 </Modal.Header>
-                <Modal.Body>{description}</Modal.Body>
+                <Modal.Body>{content}</Modal.Body>
                 <Modal.Footer>
                     {handleClose && (
                         <Button variant="secondary" onClick={handleClose}>
@@ -62,10 +76,11 @@ BasicModal.propTypes = {
     show: PropTypes.bool,
     centered: PropTypes.bool,
     animation: PropTypes.bool,
-    details: PropTypes.shape({
-        title: PropTypes.node.isRequired,
-        description: PropTypes.node.isRequired
-    }).isRequired,
+    closeButton: PropTypes.bool,
+    headerSep: PropTypes.bool,
+    dialogClassName: PropTypes.string,
+    title: PropTypes.node.isRequired,
+    content: PropTypes.node.isRequired,
     closeLabel: PropTypes.string,
     actionLabel: PropTypes.string,
     handleClose: PropTypes.func,
