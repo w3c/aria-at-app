@@ -273,8 +273,9 @@ const ManageTestQueue = ({
     };
 
     const onRemoveClick = () => {
-        const theme = 'danger'; // todo: process on whether 'danger' or 'warning' message
-        const patternName = 'Disclosure Navigation Menu Example'; // todo: process blocking pattern in warning scenario when attempting to delete atVersion
+        // todo: evaluate if there is a blocking pattern when attempting to delete atVersion (displays warning)
+        const patternName = 'Disclosure Navigation Menu Example';
+        const theme = patternName ? 'warning' : 'danger';
         const selectedAt = ats.find(item => item.id === selectedManageAtId);
 
         // Removing an AT Version already in use
@@ -524,7 +525,7 @@ const ManageTestQueue = ({
                 actionType={atVersionModalType}
                 versionText={atVersionModalVersionText}
                 dateAvailabilityText={atVersionModalDateText}
-                handleAction={() => {}} // todo: expects func(actionType, { updatedVersionText, updatedDateAvailabilityText }) and call to atVersuib create/edit graphql mutation
+                handleAction={() => {}} // todo: expects func(actionType, { updatedVersionText, updatedDateAvailabilityText }) and call to atVersion create/edit graphql mutation
                 handleClose={() => setShowAtVersionModal(false)}
             />
 
