@@ -537,6 +537,13 @@ describe('graphql', () => {
                                 name
                             }
                         }
+                        browserVersion(id: 1) {
+                            __typename
+                            editBrowserVersion(updatedName: "2022.5.4") {
+                                id
+                                name
+                            }
+                        }
                     }
                 `,
                 {

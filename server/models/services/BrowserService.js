@@ -274,6 +274,33 @@ const updateBrowserVersionByQuery = async (
 };
 
 /**
+ * @param {number} id - Postgres ID of BrowserVersion record to be updated
+ * @param {object} updateParams - values to be used to update columns for the record being referenced for {@param queryParams}
+ * @param {string[]} browserVersionAttributes  - BrowserVersion attributes to be returned in the result
+ * @param {string[]} browserAttributes  - Browser attributes to be returned in the result
+ * @param {object} options - Generic options for Sequelize
+ * @param {*} options.transaction - Sequelize transaction
+ * @returns {Promise<*>}
+ */
+const updateBrowserVersionById = async (
+    id,
+    updateParams = {},
+    browserVersionAttributes = BROWSER_VERSION_ATTRIBUTES,
+    browserAttributes = BROWSER_ATTRIBUTES,
+    options = {}
+) => {
+    await ModelService.update(BrowserVersion, { id }, updateParams, options);
+
+    return await ModelService.getById(
+        BrowserVersion,
+        id,
+        browserVersionAttributes,
+        [browserAssociation(browserAttributes)],
+        options
+    );
+};
+
+/**
  * @param {object} queryParams - values of the BrowserVersion record to be removed
  * @param {object} deleteOptions - Sequelize specific deletion options that could be passed
  * @returns {Promise<boolean>}
@@ -302,5 +329,6 @@ module.exports = {
     getBrowserVersions,
     createBrowserVersion,
     updateBrowserVersionByQuery,
+    updateBrowserVersionById,
     removeBrowserVersionByQuery
 };
