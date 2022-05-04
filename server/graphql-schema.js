@@ -900,6 +900,19 @@ const graphqlSchema = gql`
         deleteAtVersion: NoResponse
     }
     """
+    Mutations scoped to an Browser version
+    """
+    type BrowserOperations {
+        createBrowserVersion(name: String!): BrowserVersion!
+    }
+    type AtVersionOperations {
+        editAtVersion(
+            updatedName: String!
+            updatedReleasedAt: Timestamp!
+        ): AtVersion!
+        deleteAtVersion: NoResponse
+    }
+    """
     Mutations scoped to a previously-created TestPlanReport.
     """
     type TestPlanReportOperations {
@@ -986,6 +999,7 @@ const graphqlSchema = gql`
     type Mutation {
         at(id: ID!): AtOperations!
         atVersion(id: ID!): AtVersionOperations!
+        browser(id: ID!): BrowserOperations!
         """
         Adds a report with the given TestPlanVersion and TestPlanTarget and a
         state of "DRAFT", resulting in the report appearing in the Test Queue.

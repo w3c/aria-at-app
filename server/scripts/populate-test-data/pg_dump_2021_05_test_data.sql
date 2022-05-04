@@ -52,17 +52,17 @@ INSERT INTO "AtVersion" ("atId", "name", "releasedAt") VALUES (3, '11.5.2', '202
 -- Data for Name: BrowserVersion; Type: TABLE DATA; Schema: public; Owner: atr
 --
 
-INSERT INTO "BrowserVersion" ("browserId", "browserVersion") VALUES (1, '86.0');
-INSERT INTO "BrowserVersion" ("browserId", "browserVersion") VALUES (1, '86.0.1');
-INSERT INTO "BrowserVersion" ("browserId", "browserVersion") VALUES (1, '87.0');
-INSERT INTO "BrowserVersion" ("browserId", "browserVersion") VALUES (1, '88.0');
-INSERT INTO "BrowserVersion" ("browserId", "browserVersion") VALUES (1, '88.0.1');
-INSERT INTO "BrowserVersion" ("browserId", "browserVersion") VALUES (2, '90.0.4430');
-INSERT INTO "BrowserVersion" ("browserId", "browserVersion") VALUES (2, '91.0.4472');
-INSERT INTO "BrowserVersion" ("browserId", "browserVersion") VALUES (3, '13.0');
-INSERT INTO "BrowserVersion" ("browserId", "browserVersion") VALUES (3, '13.1');
-INSERT INTO "BrowserVersion" ("browserId", "browserVersion") VALUES (3, '14.0');
-INSERT INTO "BrowserVersion" ("browserId", "browserVersion") VALUES (3, '14.1');
+INSERT INTO "BrowserVersion" ("browserId", "name") VALUES (1, '86.0');
+INSERT INTO "BrowserVersion" ("browserId", "name") VALUES (1, '86.0.1');
+INSERT INTO "BrowserVersion" ("browserId", "name") VALUES (1, '87.0');
+INSERT INTO "BrowserVersion" ("browserId", "name") VALUES (1, '88.0');
+INSERT INTO "BrowserVersion" ("browserId", "name") VALUES (1, '88.0.1');
+INSERT INTO "BrowserVersion" ("browserId", "name") VALUES (2, '90.0.4430');
+INSERT INTO "BrowserVersion" ("browserId", "name") VALUES (2, '91.0.4472');
+INSERT INTO "BrowserVersion" ("browserId", "name") VALUES (3, '13.0');
+INSERT INTO "BrowserVersion" ("browserId", "name") VALUES (3, '13.1');
+INSERT INTO "BrowserVersion" ("browserId", "name") VALUES (3, '14.0');
+INSERT INTO "BrowserVersion" ("browserId", "name") VALUES (3, '14.1');
 
 
 --

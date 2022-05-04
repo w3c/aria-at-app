@@ -166,7 +166,11 @@ describe('graphql', () => {
                         __typename
                         id
                         name
-                        browserVersions
+                        browserVersions {
+                            __typename
+                            id
+                            name
+                        }
                     }
                     ats {
                         __typename
@@ -522,9 +526,16 @@ describe('graphql', () => {
                                 releasedAt
                             }
                         }
-                        deleteVersion: atVersion(id: 2) {
+                        deleteAtVersion: atVersion(id: 2) {
                             __typename
                             deleteAtVersion
+                        }
+                        browser(id: 1) {
+                            __typename
+                            createBrowserVersion(name: "2022.5.4") {
+                                id
+                                name
+                            }
                         }
                     }
                 `,

@@ -12,6 +12,7 @@ const testPlanRun = require('./testPlanRunResolver');
 const findOrCreateTestPlanReport = require('./findOrCreateTestPlanReportResolver');
 const mutateAt = require('./mutateAtResolver');
 const mutationAtVersion = require('./mutateAtVersionResolver');
+const mutateBrowserResolver = require('./mutateBrowserResolver');
 const mutateTestPlanReport = require('./mutateTestPlanReportResolver');
 const mutateTestPlanRun = require('./mutateTestPlanRunResolver');
 const mutateTestResult = require('./mutateTestResultResolver');
@@ -20,6 +21,7 @@ const populateData = require('./populateDataResolver');
 const User = require('./User');
 const AtOperations = require('./AtOperations');
 const AtVersionOperations = require('./AtVersionOperations');
+const BrowserOperations = require('./BrowserOperations');
 const TestPlanVersion = require('./TestPlanVersion');
 const TestPlanReport = require('./TestPlanReport');
 const TestPlanReportOperations = require('./TestPlanReportOperations');
@@ -47,6 +49,7 @@ const resolvers = {
     Mutation: {
         at: mutateAt,
         atVersion: mutationAtVersion,
+        browser: mutateBrowserResolver,
         testPlanReport: mutateTestPlanReport,
         testPlanRun: mutateTestPlanRun,
         testResult: mutateTestResult,
@@ -55,6 +58,7 @@ const resolvers = {
     },
     AtOperations,
     AtVersionOperations,
+    BrowserOperations,
     User,
     TestPlanVersion,
     TestPlanReport,
