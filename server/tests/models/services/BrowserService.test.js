@@ -244,11 +244,12 @@ describe('BrowserVersionModel Data Checks', () => {
             null,
             []
         );
-        const { browserId, name } = browserVersionInstance;
+        const { id, browserId, name } = browserVersionInstance;
 
         // A3
         expect(browserId).toBeTruthy();
         expect(name).toBeTruthy();
+        expect(id).toBeTruthy();
         expect(browserVersionInstance).toEqual(
             expect.objectContaining({
                 id: expect.anything(),
@@ -289,13 +290,10 @@ describe('BrowserVersionModel Data Checks', () => {
                     name: _name
                 }
             );
-            const { browserId, name, browser } = browserVersionInstance;
+            const { id, browserId, name, browser } = browserVersionInstance;
 
             // A2
-            await BrowserService.removeBrowserVersionByQuery({
-                browserId,
-                name
-            });
+            await BrowserService.removeBrowserVersionById(id);
 
             const deletedBrowserVersion = await BrowserService.getBrowserVersionByQuery(
                 {
@@ -305,6 +303,7 @@ describe('BrowserVersionModel Data Checks', () => {
             );
 
             // after BrowserVersion created
+            expect(id).toBeTruthy();
             expect(browserId).toEqual(_browserId);
             expect(name).toEqual(_name);
             expect(browser).toHaveProperty('id');
@@ -329,16 +328,17 @@ describe('BrowserVersionModel Data Checks', () => {
                     name: _name
                 }
             );
-            const { browserId, name, browser } = browserVersionInstance;
+            const { id, browserId, name, browser } = browserVersionInstance;
 
             // A2
-            const updatedBrowserVersion = await BrowserService.updateBrowserVersionByQuery(
-                { browserId, name },
+            const updatedBrowserVersion = await BrowserService.updateBrowserVersionById(
+                id,
                 { name: _updatedName }
             );
             const { name: updatedName } = updatedBrowserVersion;
 
             // after BrowserVersion created
+            expect(id).toBeTruthy();
             expect(browserId).toEqual(_browserId);
             expect(name).toEqual(_name);
             expect(browser).toHaveProperty('id');
