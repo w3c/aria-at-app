@@ -146,7 +146,7 @@ const ManageTestQueue = ({
     ats = [],
     browsers = [],
     testPlanVersions = [],
-    triggerParentUpdate = () => {}
+    triggerUpdate = () => {}
 }) => {
     const [showManageATs, setShowManageATs] = useState(false);
     const [showAddTestPlans, setShowAddTestPlans] = useState(false);
@@ -370,7 +370,7 @@ const ManageTestQueue = ({
                     releasedAt: convertStringToDate(updatedDateAvailabilityText)
                 }
             });
-            await triggerParentUpdate();
+            await triggerUpdate();
             onUpdateModalClose();
         }
 
@@ -382,7 +382,7 @@ const ManageTestQueue = ({
                     releasedAt: convertStringToDate(updatedDateAvailabilityText)
                 }
             });
-            await triggerParentUpdate();
+            await triggerUpdate();
             onUpdateModalClose();
         }
 
@@ -392,7 +392,7 @@ const ManageTestQueue = ({
                     atVersionId: selectedManageAtVersionId
                 }
             });
-            await triggerParentUpdate();
+            await triggerUpdate();
             onThemedModalClose();
         }
     };
@@ -619,7 +619,7 @@ ManageTestQueue.propTypes = {
     ats: PropTypes.array,
     browsers: PropTypes.array,
     testPlanVersions: PropTypes.array,
-    triggerParentUpdate: PropTypes.func
+    triggerUpdate: PropTypes.func
 };
 
 export default ManageTestQueue;

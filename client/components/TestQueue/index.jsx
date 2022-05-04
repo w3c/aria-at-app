@@ -253,7 +253,7 @@ const TestQueue = () => {
                     ats={ats}
                     browsers={browsers}
                     testPlanVersions={testPlanVersions}
-                    triggerParentUpdate={refetch}
+                    triggerUpdate={refetch}
                 />
             )}
 
