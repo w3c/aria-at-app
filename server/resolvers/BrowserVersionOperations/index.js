@@ -1,3 +1,4 @@
 const editBrowserVersion = require('./editBrowserVersionResolver');
+const deleteBrowserVersion = require('./deleteBrowserVersionResolver');
 
-module.exports = { editBrowserVersion };
+module.exports = { editBrowserVersion, deleteBrowserVersion };

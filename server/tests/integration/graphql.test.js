@@ -544,6 +544,10 @@ describe('graphql', () => {
                                 name
                             }
                         }
+                        deleteBrowserVersion: browserVersion(id: 2) {
+                            __typename
+                            deleteBrowserVersion
+                        }
                     }
                 `,
                 {

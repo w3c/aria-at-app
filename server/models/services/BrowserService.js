@@ -316,6 +316,18 @@ const removeBrowserVersionByQuery = async (
     );
 };
 
+/**
+ * @param {object} id - id of the BrowserVersion record to be removed
+ * @param {object} deleteOptions - Sequelize specific deletion options that could be passed
+ * @returns {Promise<boolean>}
+ */
+const removeBrowserVersionById = async (
+    id,
+    deleteOptions = { truncate: false }
+) => {
+    return await ModelService.removeById(BrowserVersion, id, deleteOptions);
+};
+
 module.exports = {
     // Basic CRUD [Browser]
     getBrowserById,
@@ -330,5 +342,6 @@ module.exports = {
     createBrowserVersion,
     updateBrowserVersionByQuery,
     updateBrowserVersionById,
-    removeBrowserVersionByQuery
+    removeBrowserVersionByQuery,
+    removeBrowserVersionById
 };
