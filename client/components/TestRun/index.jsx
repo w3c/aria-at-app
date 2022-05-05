@@ -8,7 +8,8 @@ import {
     faRedo,
     faExclamationCircle,
     faCheck,
-    faPen
+    faPen,
+    faEdit
 } from '@fortawesome/free-solid-svg-icons';
 import nextId from 'react-id-generator';
 import { Alert, Button, Col, Container, Row } from 'react-bootstrap';
@@ -157,6 +158,8 @@ const TestRun = () => {
         runnableTests = [],
         conflicts = []
     } = testPlanReport || {};
+
+    const { at, atVersion, browser, browserVersion } = testPlanTarget;
 
     // check to ensure an admin that manually went to a test run url doesn't
     // run the test as themselves
@@ -748,8 +751,16 @@ const TestRun = () => {
                     className="test-info-entity at-browser"
                     data-test="at-browser"
                 >
-                    <div className="info-label">
-                        <b>AT and Browser:</b> {`${testPlanTarget.title}`}
+                    <div className="info-label at-browser-info-container">
+                        <div className="at-browser-info">
+                            <b>AT: </b> {`${at.name} ${atVersion}`}
+                            <br></br>
+                            <b>Browser: </b>
+                            {`${browser.name} ${browserVersion}`}
+                        </div>
+                        <div className="at-browser-edit-button">
+                            <FontAwesomeIcon icon={faEdit} />
+                        </div>
                     </div>
                 </div>
                 <div className="test-info-entity tests-completed">

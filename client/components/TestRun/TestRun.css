@@ -252,6 +252,15 @@ main.container-fluid .test-iframe-container > .row {
     text-align: center;
 }
 
+.at-browser {
+    text-align: left;
+}
+
+.at-browser-info-container {
+    display: flex;
+    justify-content: space-between;
+}
+
 .tests-completed {
     width: 23.5%;
 }
