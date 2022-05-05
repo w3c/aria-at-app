@@ -8,14 +8,7 @@ const editBrowserVersionResolver = async (
     { updatedName },
     { user }
 ) => {
-    if (
-        !(
-            (
-                user?.roles.find(role => role.name === 'ADMIN') ||
-                user?.roles.find(role => role.name === 'TESTER')
-            ) // Tester is allowed to change Browser Version when it cannot be automatically detected
-        )
-    ) {
+    if (user === null) {
         throw new AuthenticationError();
     }
 

@@ -999,15 +999,15 @@ const graphqlSchema = gql`
         """
         at(id: ID!): AtOperations!
         """
-        Get the available mutations for the given AT Version.
+        Get the available mutations for the given AT version.
         """
         atVersion(id: ID!): AtVersionOperations!
         """
-        Get the available mutations for the given Browser.
+        Get the available mutations for the given browser.
         """
         browser(id: ID!): BrowserOperations!
         """
-        Get the available mutations for the given Browser Version.
+        Get the available mutations for the given browser version.
         """
         browserVersion(id: ID!): BrowserVersionOperations!
         """
