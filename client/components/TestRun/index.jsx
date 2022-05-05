@@ -19,6 +19,7 @@ import TestRenderer from '../TestRenderer';
 import OptionButton from './OptionButton';
 import PageStatus from '../common/PageStatus';
 import BasicModal from '../common/BasicModal';
+import AtAndBrowserDetailsModal from '../common/AtAndBrowserDetailsModal';
 import DisplayNone from '../../utils/DisplayNone';
 import {
     TEST_RUN_PAGE_QUERY,
@@ -94,6 +95,7 @@ const TestRun = () => {
     const [submitTestResult] = useMutation(SUBMIT_TEST_RESULT_MUTATION);
     const [deleteTestResult] = useMutation(DELETE_TEST_RESULT_MUTATION);
 
+    const [firstPageLoad, setFirstPageLoad] = useState(0);
     const [isRendererReady, setIsRendererReady] = useState(false);
     const [isTestSubmitClicked, setIsTestSubmitClicked] = useState(false);
     const [showTestNavigator, setShowTestNavigator] = useState(true);
@@ -105,6 +107,11 @@ const TestRun = () => {
     const [showGetInvolvedModal, setShowGetInvolvedModal] = useState(false);
 
     useEffect(() => setup(), [currentTestIndex]);
+    useEffect(() => {
+        if (document.readyState == 'complete' && !firstPageLoad) {
+            setFirstPageLoad(1);
+        }
+    }, []);
 
     const setup = () => {
         pageReadyRef.current = false;
@@ -708,6 +715,27 @@ const TestRun = () => {
                         userId={testerId}
                         issueLink={gitHubIssueLinkWithTitleAndBody}
                         handleClose={() => setShowReviewConflictsModal(false)}
+                    />
+                )}
+                {firstPageLoad && (
+                    <AtAndBrowserDetailsModal
+                        show={true}
+                        isAdmin={false}
+                        atName="NVDA" // passed from Test Queue
+                        atVersion="2022.3.5" // passed from Test Queue
+                        atVersions={['2022.3.5', '2022.3.7', '2023.23.5']}
+                        browserName="Chrome" // passed from Test Queue
+                        browserVersion="97.0.4758"
+                        browserVersions={[
+                            '96.0.4758',
+                            '97.0.4758',
+                            '98.0.4758',
+                            '100.0.4896'
+                        ]}
+                        patternName="Checkbox" // required if isAdmin=true
+                        testerName="alflennik" // required if isAdmin=true
+                        handleAction={() => {}} // expects func(updatedAtVersion, updatedBrowserVersion) but to be discussed
+                        handleClose={() => setFirstPageLoad(false)}
                     />
                 )}
             </>
