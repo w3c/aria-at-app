@@ -7,7 +7,8 @@ const {
 
 const TestPlanReportModel = require('../../models/TestPlanReport');
 const TestPlanVersionModel = require('../../models/TestPlanVersion');
-const TestPlanTargetModel = require('../../models/TestPlanTarget');
+const AtModel = require('../../models/At');
+const BrowserModel = require('../../models/Browser');
 const TestPlanRunModel = require('../../models/TestPlanRun');
 
 describe('TestPlanReportModel', () => {
@@ -33,7 +34,8 @@ describe('TestPlanReportModel', () => {
         const TEST_PLAN_VERSION_ASSOCIATION = {
             foreignKey: 'testPlanVersionId'
         };
-        const TEST_PLAN_TARGET_ASSOCIATION = { foreignKey: 'testPlanTargetId' };
+        const AT_ASSOCIATION = { foreignKey: 'atId' };
+        const BROWSER_ASSOCIATION = { foreignKey: 'browserId' };
         const TEST_PLAN_RUN_ASSOCIATION = { as: 'testPlanRuns' };
 
         // A2
@@ -42,7 +44,8 @@ describe('TestPlanReportModel', () => {
                 TestPlanVersionModel,
                 TEST_PLAN_VERSION_ASSOCIATION
             );
-            Model.belongsTo(TestPlanTargetModel, TEST_PLAN_TARGET_ASSOCIATION);
+            Model.belongsTo(AtModel, AT_ASSOCIATION);
+            Model.belongsTo(BrowserModel, BROWSER_ASSOCIATION);
             Model.hasMany(TestPlanRunModel, TEST_PLAN_RUN_ASSOCIATION);
         });
 
@@ -53,10 +56,17 @@ describe('TestPlanReportModel', () => {
             );
         });
 
-        it('defined a belongsTo association to TestPlanTarget', () => {
+        it('defined a belongsTo association to AT', () => {
             expect(Model.belongsTo).toHaveBeenCalledWith(
-                TestPlanTargetModel,
-                expect.objectContaining(Model.TEST_PLAN_TARGET_ASSOCIATION)
+                AtModel,
+                expect.objectContaining(Model.AT_ASSOCIATION)
+            );
+        });
+
+        it('defined a belongsTo association to Browser', () => {
+            expect(Model.belongsTo).toHaveBeenCalledWith(
+                BrowserModel,
+                expect.objectContaining(Model.BROWSER_ASSOCIATION)
             );
         });
 

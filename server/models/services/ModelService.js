@@ -242,6 +242,9 @@ const update = async (model, queryParams, updateParams, options = {}) => {
  * Returns an array of results, where each item is an array containing the model
  * instance and a boolean for whether it was newly created.
  *
+ * The following example is slightly out of date but hopefully still illustrates
+ * how the function works:
+ *
  * @example
  * const results = await ModelService.nestedGetOrCreate([
  *     {

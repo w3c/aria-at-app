@@ -3,7 +3,7 @@ const {
 } = require('../models/services/TestPlanVersionService');
 
 const testPlanVersionsResolver = async () => {
-    return getTestPlanVersions(null, {}, null, null, null, null, null, {
+    return getTestPlanVersions(null, {}, null, null, null, null, null, null, {
         order: [
             ['updatedAt', 'desc'],
             ['title', 'asc'],

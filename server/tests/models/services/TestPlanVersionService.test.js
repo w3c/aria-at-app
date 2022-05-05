@@ -47,6 +47,7 @@ describe('TestPlanReportModel Data Checks', () => {
             [],
             [],
             [],
+            [],
             []
         );
         const {

@@ -23,10 +23,6 @@ describe('test queue', () => {
                                 }
                             }
                         }
-                        testPlanTarget {
-                            id
-                            title
-                        }
                         testPlanVersion {
                             title
                             gitSha
@@ -55,10 +51,6 @@ describe('test queue', () => {
                     id: expect.anything(),
                     status: expect.stringMatching(/^(DRAFT|IN_REVIEW)$/),
                     conflicts: expect.any(Array),
-                    testPlanTarget: {
-                        id: expect.anything(),
-                        title: expect.any(String)
-                    },
                     testPlanVersion: {
                         title: expect.any(String),
                         gitSha: expect.any(String),
@@ -287,36 +279,25 @@ describe('test queue', () => {
             // A1
             const testPlanVersionId = '1';
             const atId = '1';
-            const unknownAtVersion = '2221.1';
             const browserId = '1';
-            const unknownBrowserVersion = '9999.0';
             const mutationToTest = async () => {
                 const result = await mutate(gql`
                         mutation {
                             findOrCreateTestPlanReport(input: {
                                 testPlanVersionId: ${testPlanVersionId}
-                                testPlanTarget: {
-                                    atId: ${atId}
-                                    atVersion: "${unknownAtVersion}"
-                                    browserId: ${browserId}
-                                    browserVersion: "${unknownBrowserVersion}"
-                                }
+                                atId: ${atId}
+                                browserId: ${browserId}
                             }) {
                                 populatedData {
                                     testPlanReport {
                                         id
                                         status
-                                    }
-                                    testPlanTarget {
-                                        id
                                         at {
                                             id
                                         }
-                                        atVersion
                                         browser {
                                             id
                                         }
-                                        browserVersion
                                     }
                                     testPlanVersion {
                                         id
@@ -329,41 +310,14 @@ describe('test queue', () => {
                         }
                     `);
                 const {
-                    populatedData: {
-                        testPlanReport,
-                        testPlanTarget,
-                        testPlanVersion
-                    },
+                    populatedData: { testPlanReport, testPlanVersion },
                     created
                 } = result.findOrCreateTestPlanReport;
-                const createdBrowserVersions = created.filter(
-                    ({ locationOfData }) => locationOfData.browserVersion
-                );
-                const createdAtVersions = created.filter(
-                    ({ locationOfData }) => locationOfData.atVersion
-                );
-                const createdTestPlanTargets = created.filter(
-                    ({ locationOfData }) =>
-                        locationOfData.testPlanTargetId &&
-                        !(
-                            locationOfData.browserVersion ||
-                            locationOfData.atVersion
-                        )
-                );
-                const createdTestPlanReports = created.filter(
-                    ({ locationOfData }) =>
-                        locationOfData.testPlanReportId &&
-                        !locationOfData.testPlanTargetId
-                );
+
                 return {
                     testPlanReport,
-                    testPlanTarget,
                     testPlanVersion,
-                    created,
-                    createdBrowserVersions,
-                    createdAtVersions,
-                    createdTestPlanTargets,
-                    createdTestPlanReports
+                    created
                 };
             };
 
@@ -380,41 +334,20 @@ describe('test queue', () => {
             );
             expect(first.testPlanVersion).toEqual(
                 expect.objectContaining({
-                    id: testPlanVersionId
-                })
-            );
-            expect(first.testPlanTarget).toEqual(
-                expect.objectContaining({
+                    id: testPlanVersionId,
                     at: expect.objectContaining({
                         id: atId
                     }),
-                    atVersion: unknownAtVersion,
                     browser: expect.objectContaining({
                         id: browserId
-                    }),
-                    browserVersion: unknownBrowserVersion
+                    })
                 })
             );
-            expect(first.created.length).toBe(4);
-            expect(first.createdBrowserVersions.length).toBe(1);
-            expect(
-                first.createdBrowserVersions[0].locationOfData.browserVersion
-            ).toBe(unknownBrowserVersion);
-            expect(first.createdAtVersions.length).toBe(1);
-            expect(first.createdAtVersions[0].locationOfData.atVersion).toBe(
-                unknownAtVersion
-            );
-            expect(first.createdTestPlanTargets.length).toBe(1);
-            expect(first.createdTestPlanReports.length).toBe(1);
+            expect(first.created.length).toBe(1);
 
             expect(second.testPlanReport).toEqual(
                 expect.objectContaining({
                     id: first.testPlanReport.id
-                })
-            );
-            expect(second.testPlanTarget).toEqual(
-                expect.objectContaining({
-                    id: first.testPlanTarget.id
                 })
             );
             expect(second.testPlanVersion).toEqual(

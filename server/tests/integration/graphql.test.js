@@ -258,24 +258,17 @@ describe('graphql', () => {
                         testPlanVersion {
                             id
                         }
+                        at {
+                            id
+                        }
+                        browser {
+                            id
+                        }
                         runnableTests {
                             __typename
                             id
                             renderableContent
                             renderedUrl
-                        }
-                        testPlanTarget {
-                            __typename
-                            id
-                            title
-                            at {
-                                id
-                            }
-                            atVersion
-                            browser {
-                                id
-                            }
-                            browserVersion
                         }
                         draftTestPlanRuns {
                             __typename
@@ -287,6 +280,12 @@ describe('graphql', () => {
                                 __typename
                                 id
                                 test {
+                                    id
+                                }
+                                atVersion {
+                                    id
+                                }
+                                browserVersion {
                                     id
                                 }
                                 scenarioResults {
@@ -360,17 +359,18 @@ describe('graphql', () => {
                         testPlanRun {
                             id
                         }
-                        testPlanTarget {
-                            id
-                        }
                         at {
                             id
                         }
                         browser {
                             id
                         }
-                        atVersion
-                        browserVersion
+                        atVersion {
+                            id
+                        }
+                        browserVersion {
+                            id
+                        }
                         test {
                             id
                         }
@@ -418,12 +418,8 @@ describe('graphql', () => {
                         findOrCreateTestPlanReport(
                             input: {
                                 testPlanVersionId: 2
-                                testPlanTarget: {
-                                    atId: 2
-                                    browserId: 2
-                                    atVersion: "123"
-                                    browserVersion: "123"
-                                }
+                                atId: 2
+                                browserId: 2
                             }
                         ) {
                             __typename

@@ -74,7 +74,7 @@ const graphqlSchema = gql`
         Browser name like "Chrome".
         """
         name: String!
-        browserVersions: [String]!
+        browserVersions: [BrowserVersion]!
     }
 
     """
@@ -111,7 +111,7 @@ const graphqlSchema = gql`
         # The categories of generalized AT modes the AT supports.
         # """
         # modes: [AtMode]!
-        atVersions: [String]!
+        atVersions: [AtVersion]!
     }
 
     # TODO: Determine if needed following 2021 Working Mode changes
@@ -404,8 +404,15 @@ const graphqlSchema = gql`
         The original test to which the results correspond.
         """
         test: Test!
-        atVersion: String!
-        browserVersion: String!
+        """
+        The exact AT version being used during a testing session.
+        """
+        atVersion: AtVersion!
+        """
+        The exact Browser version which was either manually specified or
+        automatically detected during a testing session.
+        """
+        browserVersion: BrowserVersion!
         """
         Automatically set by the server when a new test result is created.
         """
@@ -432,6 +439,14 @@ const graphqlSchema = gql`
         See TestResult type for more information.
         """
         id: ID!
+        """
+        See AtVersion type for more information.
+        """
+        atVersionId: ID!
+        """
+        See BrowserVersion type for more information.
+        """
+        browserVersionId: ID!
         """
         See TestResult type for more information.
         """
@@ -655,10 +670,8 @@ const graphqlSchema = gql`
     }
 
     """
-    A container for test results as captured by multiple testers. Different
-    TestPlanReports can share a single TestPlanTarget, allowing them to be
-    organized and displayed in tables. The tests to be run for a TestPlanReport
-    originate in the TestPlanVersion.
+    A container for test results as captured by multiple testers. The tests to
+    be run for a TestPlanReport originate in the TestPlanVersion.
     """
     type TestPlanReport {
         """
@@ -673,11 +686,17 @@ const graphqlSchema = gql`
         The snapshot of a TestPlan to use.
         """
         testPlanVersion: TestPlanVersion!
+        """
+        The AT used when collecting results.
+        """
         at: At!
+        """
+        The browser used when collecting results.
+        """
         browser: Browser!
         """
         The subset of tests which are relevant to this report, i.e. the tests
-        where the AT matches the TestPlanTarget's AT.
+        where the AT matches the report's AT.
         """
         runnableTests: [Test]!
         """
@@ -719,7 +738,7 @@ const graphqlSchema = gql`
     Allows you to provide an ID, any ID, and load all the data which
     can be found through relationships to that ID. For example, if you have a
     scenarioResultId, it is possible to find a ScenarioResult, Scenario,
-    TestResult, Test, TestPlanVersion, TestPlanTarget, At, AtVersion, Browser,
+    TestResult, Test, TestPlanVersion, At, AtVersion, Browser,
     BrowserVersion, and TestPlan. This can save a lot of effort wrangling data!
     """
     input LocationOfDataInput {
@@ -729,11 +748,10 @@ const graphqlSchema = gql`
         scenarioId: ID
         assertionId: ID
         testPlanReportId: ID
-        testPlanTargetId: ID
         browserId: ID
-        browserVersion: String
+        browserVersionId: ID
         atId: ID
-        atVersion: String
+        atVersionId: ID
         testPlanRunId: ID
         testResultId: ID
         scenarioResultId: ID
@@ -750,18 +768,17 @@ const graphqlSchema = gql`
     """
     The fully-populated data which is associated with a given LocationOfData.
     For example, a LocationOfData which includes an ID for a TestPlanReport
-    would allow you to populate the TestPlanTarget, TestPlanVersion and
-    TestPlan, which are knowable through relationships to that TestPlanReport.
+    would allow you to populate the TestPlanVersion, AT, Browser and TestPlan,
+    which are knowable through relationships to that TestPlanReport.
     """
     type PopulatedData {
         locationOfData: LocationOfData!
         testPlan: TestPlan
         testPlanVersion: TestPlanVersion
-        testPlanTarget: TestPlanTarget
         at: At
+        atVersion: AtVersion
         browser: Browser
-        atVersion: String
-        browserVersion: String
+        browserVersion: BrowserVersion
         test: Test
         scenario: Scenario
         assertion: Assertion
@@ -814,11 +831,6 @@ const graphqlSchema = gql`
         Get a TestPlanReport by ID.
         """
         testPlanReport(id: ID!): TestPlanReport
-        # TODO: determine if needed
-        # """
-        # Get all TestPlanTargets.
-        # """
-        # testPlanTargets: [TestPlanTarget]!
         """
         Get a TestPlanRun by ID.
         """
@@ -832,18 +844,6 @@ const graphqlSchema = gql`
     }
 
     # Mutation-specific types below
-
-    type AtOperations {
-        createAtVersion(atVersion: String!): NoResponse
-        editAtVersion(previous: String!, updated: String!): NoResponse
-        deleteAtVersion(atVersion: String!): NoResponse
-    }
-
-    type BrowserOperations {
-        createBrowserVersion(browserVersion: String!): NoResponse
-        editBrowserVersion(previous: String!, updated: String!): NoResponse
-        deleteBrowserVersion(browserVersion: String!): NoResponse
-    }
 
     """
     Mutations scoped to a previously-created TestPlanReport.
@@ -933,7 +933,7 @@ const graphqlSchema = gql`
         at(id: ID!): AtOperations!
         browser(id: ID!): BrowserOperations!
         """
-        Adds a report with the given TestPlanVersion and TestPlanTarget and a
+        Adds a report with the given TestPlanVersion, AT and Browser, and a
         state of "DRAFT", resulting in the report appearing in the Test Queue.
         In the case an identical report already exists, it will be returned
         without changes and without affecting existing results. In the case an

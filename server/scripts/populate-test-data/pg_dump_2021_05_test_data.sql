@@ -77,7 +77,7 @@ INSERT INTO "TestPlanTarget" (id, title, "atId", "browserId", "atVersion", "brow
 --
 -- Data for Name: TestPlanReport; Type: TABLE DATA; Schema: public; Owner: atr
 --
-
+-- TODO: remove testPlanTarget
 INSERT INTO "TestPlanReport" (id, "status", "testPlanTargetId", "testPlanVersionId", "createdAt") VALUES (1, 'DRAFT', 1, get_test_plan_version_id(text 'Toggle Button'), '2021-05-14 14:18:23.602-05');
 INSERT INTO "TestPlanReport" (id, "status", "testPlanTargetId", "testPlanVersionId", "createdAt") VALUES (2, 'DRAFT', 2, get_test_plan_version_id(text 'Select Only Combobox Example'), '2021-05-14 14:18:23.602-05');
 INSERT INTO "TestPlanReport" (id, "status", "testPlanTargetId", "testPlanVersionId", "createdAt") VALUES (3, 'FINALIZED', 1, get_test_plan_version_id(text 'Modal Dialog Example'), '2021-05-14 14:18:23.602-05');

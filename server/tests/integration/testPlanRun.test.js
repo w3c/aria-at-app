@@ -34,12 +34,8 @@ const prepopulateTestPlanReport = async () => {
             findOrCreateTestPlanReport(
                 input: {
                     testPlanVersionId: ${testPlanVersionId}
-                    testPlanTarget: {
-                        atId: 1
-                        browserId: 1
-                        atVersion: "v1"
-                        browserVersion: "v1"
-                    }
+                    atId: 1
+                    browserId: 1
                 }
             ) {
                 populatedData {
