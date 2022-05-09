@@ -253,7 +253,10 @@ describe('test queue', () => {
                 browsers {
                     id
                     name
-                    browserVersions
+                    browserVersions {
+                        id
+                        name
+                    }
                 }
                 testPlans {
                     latestTestPlanVersion {
@@ -279,7 +282,9 @@ describe('test queue', () => {
                     expect.objectContaining({
                         id: expect.anything(),
                         name: 'Firefox',
-                        browserVersions: expect.arrayContaining(['88.0'])
+                        browserVersions: expect.arrayContaining([
+                            expect.objectContaining({ name: '88.0' })
+                        ])
                     })
                 ])
             })

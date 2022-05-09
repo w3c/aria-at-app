@@ -338,10 +338,7 @@ const getOrCreateTestPlanReport = async (
                 {
                     get: getBrowserVersions,
                     create: createBrowserVersion,
-                    values: {
-                        browserId,
-                        browserVersion: providedBrowserVersion
-                    },
+                    values: { browserId, name: providedBrowserVersion },
                     returnAttributes: [null, []]
                 },
                 {

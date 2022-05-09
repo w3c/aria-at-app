@@ -74,7 +74,18 @@ const graphqlSchema = gql`
         Browser name like "Chrome".
         """
         name: String!
-        browserVersions: [String]!
+        browserVersions: [BrowserVersion]!
+    }
+
+    type BrowserVersion {
+        """
+        Postgres-provided numeric ID
+        """
+        id: ID!
+        """
+        Version string
+        """
+        name: String!
     }
 
     """
@@ -889,6 +900,16 @@ const graphqlSchema = gql`
         deleteAtVersion: NoResponse
     }
     """
+    Mutations scoped to an Browser version
+    """
+    type BrowserOperations {
+        createBrowserVersion(name: String!): BrowserVersion!
+    }
+    type BrowserVersionOperations {
+        editBrowserVersion(updatedName: String!): BrowserVersion!
+        deleteBrowserVersion: NoResponse
+    }
+    """
     Mutations scoped to a previously-created TestPlanReport.
     """
     type TestPlanReportOperations {
@@ -973,8 +994,22 @@ const graphqlSchema = gql`
     }
 
     type Mutation {
+        """
+        Get the available mutations for the given AT.
+        """
         at(id: ID!): AtOperations!
+        """
+        Get the available mutations for the given AT version.
+        """
         atVersion(id: ID!): AtVersionOperations!
+        """
+        Get the available mutations for the given browser.
+        """
+        browser(id: ID!): BrowserOperations!
+        """
+        Get the available mutations for the given browser version.
+        """
+        browserVersion(id: ID!): BrowserVersionOperations!
         """
         Adds a report with the given TestPlanVersion and TestPlanTarget and a
         state of "DRAFT", resulting in the report appearing in the Test Queue.
