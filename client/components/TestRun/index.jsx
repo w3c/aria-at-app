@@ -75,6 +75,10 @@ const TestRun = () => {
     const titleRef = useRef();
     const pageReadyRef = useRef(false);
     const testRunStateRef = useRef();
+    // HACK: Temporary fix to allow for consistency of TestRenderer after
+    // testRunStateRef is nullified during unmount.
+    // See 'unmount' of 'pageContent' hook in the TestRenderer component
+    const recentTestRunStateRef = useRef();
     const testRunResultRef = useRef();
     const testRendererSubmitButtonRef = useRef();
     const conflictMarkdownRef = useRef();
@@ -109,6 +113,7 @@ const TestRun = () => {
     const setup = () => {
         pageReadyRef.current = false;
         testRunStateRef.current = null;
+        recentTestRunStateRef.current = null;
         testRunResultRef.current = null;
         conflictMarkdownRef.current = null;
         setIsRendererReady(false);
@@ -233,12 +238,19 @@ const TestRun = () => {
         captureHighlightRequired = false
     ) => {
         let newScenarioResults = [];
-        if (!rendererState || !scenarioResults)
-            throw new Error('Unable to merge invalid results');
+        if (!rendererState || !scenarioResults) {
+            throw new Error(
+                `Unable to merge invalid results:rendererState:${rendererState} | scenarioResults:${scenarioResults}`
+            );
+        }
 
         const { commands } = rendererState;
-        if (!commands || commands.length !== scenarioResults.length)
-            throw new Error('Unable to merge invalid results');
+        if (!commands || commands.length !== scenarioResults.length) {
+            throw new Error(
+                `Unable to merge invalid results:commands:${commands} | commands.length !== scenarioResults.length:${commands.length !==
+                    scenarioResults.length}`
+            );
+        }
 
         for (let i = 0; i < commands.length; i++) {
             let scenarioResult = { ...scenarioResults[i] };
@@ -361,7 +373,7 @@ const TestRun = () => {
             if (!forceEdit && currentTest.testResult.completedAt) return true;
 
             const scenarioResults = remapScenarioResults(
-                testRunStateRef.current,
+                testRunStateRef.current || recentTestRunStateRef.current,
                 currentTest.testResult.scenarioResults,
                 false
             );
@@ -624,6 +636,9 @@ const TestRun = () => {
                                             testPlanVersion.testPageUrl
                                         }
                                         testRunStateRef={testRunStateRef}
+                                        recentTestRunStateRef={
+                                            recentTestRunStateRef
+                                        }
                                         testRunResultRef={testRunResultRef}
                                         submitButtonRef={
                                             testRendererSubmitButtonRef

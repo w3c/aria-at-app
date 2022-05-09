@@ -1,4 +1,10 @@
-import React, { Fragment, useEffect, useLayoutEffect, useState } from 'react';
+import React, {
+    Fragment,
+    useEffect,
+    useLayoutEffect,
+    useState,
+    useRef
+} from 'react';
 import styled from '@emotion/styled';
 import PropTypes from 'prop-types';
 import nextId from 'react-id-generator';
@@ -222,14 +228,16 @@ const TestRenderer = ({
     testResult = {},
     testPageUrl,
     testRunStateRef,
+    recentTestRunStateRef,
     testRunResultRef,
     submitButtonRef,
     isSubmitted = false,
-    setIsRendererReady = () => {}
+    setIsRendererReady = false
 }) => {
     const { scenarioResults, test = {}, completedAt } = testResult;
     const { renderableContent } = test;
 
+    const mounted = useRef(false);
     const [testRunExport, setTestRunExport] = useState();
     const [pageContent, setPageContent] = useState(null);
     const [testRendererState, setTestRendererState] = useState(null);
@@ -280,8 +288,8 @@ const TestRenderer = ({
             resultsJSON: state => testRunIO.submitResultsJSON(state),
             state: _state
         });
-        setTestRendererState(_state);
-        setTestRunExport(testRunExport);
+        mounted.current && setTestRendererState(_state);
+        mounted.current && setTestRunExport(testRunExport);
     };
 
     const remapState = (state, scenarioResults = []) => {
@@ -368,7 +376,13 @@ const TestRenderer = ({
     };
 
     useEffect(() => {
-        (async () => await setup())();
+        (async () => {
+            mounted.current = true;
+            await setup();
+        })();
+        return () => {
+            mounted.current = false;
+        };
     }, []);
 
     useLayoutEffect(() => {
@@ -382,6 +396,7 @@ const TestRenderer = ({
                 setSubmitResult(submitResult);
 
                 testRunStateRef.current = newState;
+                recentTestRunStateRef.current = newState;
                 testRunResultRef.current =
                     submitResult &&
                     submitResult.resultsJSON &&
@@ -394,16 +409,21 @@ const TestRenderer = ({
         }
 
         testRunStateRef.current = testRendererState;
-
+        recentTestRunStateRef.current = testRendererState;
         setIsRendererReady(true);
     }, [testRunExport]);
 
     useEffect(() => {
         if (!submitCalled && completedAt && pageContent) {
             testRunStateRef.current = testRendererState;
+            recentTestRunStateRef.current = testRendererState;
             pageContent.submit.click();
             setSubmitCalled(true);
         }
+        return () => {
+            setSubmitCalled(false);
+            testRunStateRef.current = null;
+        };
     }, [pageContent]);
 
     const parseRichContent = (instruction = []) => {
@@ -1119,6 +1139,7 @@ const TestRenderer = ({
                         hidden
                         onClick={() => {
                             testRunStateRef.current = testRendererState;
+                            recentTestRunStateRef.current = testRendererState;
                             pageContent.submit.click();
                         }}
                     >
@@ -1140,6 +1161,7 @@ TestRenderer.propTypes = {
     support: PropTypes.object,
     testPageUrl: PropTypes.string,
     testRunStateRef: PropTypes.any,
+    recentTestRunStateRef: PropTypes.any,
     testRunResultRef: PropTypes.any,
     submitButtonRef: PropTypes.any,
     isSubmitted: PropTypes.bool,
