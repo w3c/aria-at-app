@@ -114,27 +114,27 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK_ADMIN = [
                             {
                                 id: '5',
                                 name: '2020.4',
-                                releasedAt: null
+                                releasedAt: '2022-01-01T12:00:00.000Z'
                             },
                             {
                                 id: '4',
                                 name: '2020.3',
-                                releasedAt: null
+                                releasedAt: '2022-01-01T12:00:00.000Z'
                             },
                             {
                                 id: '3',
                                 name: '2020.2',
-                                releasedAt: null
+                                releasedAt: '2022-01-01T12:00:00.000Z'
                             },
                             {
                                 id: '2',
                                 name: '2020.1',
-                                releasedAt: null
+                                releasedAt: '2022-01-01T12:00:00.000Z'
                             },
                             {
                                 id: '1',
                                 name: '2019.3',
-                                releasedAt: null
+                                releasedAt: '2022-01-01T12:00:00.000Z'
                             }
                         ]
                     },
@@ -145,7 +145,7 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK_ADMIN = [
                             {
                                 id: '7',
                                 name: '11.5.2',
-                                releasedAt: null
+                                releasedAt: '2022-01-01T12:00:00.000Z'
                             }
                         ]
                     }
@@ -600,27 +600,27 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK_TESTER = [
                             {
                                 id: '5',
                                 name: '2020.4',
-                                releasedAt: null
+                                releasedAt: '2022-01-01T12:00:00.000Z'
                             },
                             {
                                 id: '4',
                                 name: '2020.3',
-                                releasedAt: null
+                                releasedAt: '2022-01-01T12:00:00.000Z'
                             },
                             {
                                 id: '3',
                                 name: '2020.2',
-                                releasedAt: null
+                                releasedAt: '2022-01-01T12:00:00.000Z'
                             },
                             {
                                 id: '2',
                                 name: '2020.1',
-                                releasedAt: null
+                                releasedAt: '2022-01-01T12:00:00.000Z'
                             },
                             {
                                 id: '1',
                                 name: '2019.3',
-                                releasedAt: null
+                                releasedAt: '2022-01-01T12:00:00.000Z'
                             }
                         ]
                     },
@@ -631,7 +631,7 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK_TESTER = [
                             {
                                 id: '7',
                                 name: '11.5.2',
-                                releasedAt: null
+                                releasedAt: '2022-01-01T12:00:00.000Z'
                             }
                         ]
                     }

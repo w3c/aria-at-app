@@ -24,9 +24,7 @@ export const capitalizeEachWord = (
 
 export const convertDateToString = (date, format = 'DD-MM-YYYY') => {
     if (!date) return '';
-    return moment(date)
-        .format(format)
-        .toString();
+    return moment(date).format(format);
 };
 
 export const convertStringToDate = (date, format = 'DD-MM-YYYY') => {

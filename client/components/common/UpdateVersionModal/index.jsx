@@ -43,15 +43,34 @@ const UpdateVersionModal = ({
     };
 
     const handleDateAvailabilityTextKeyPress = e => {
-        let input = e.target;
-        if ((e.charCode < 48 && e.charCode !== 45) || e.charCode > 57) {
-            // accept only '-1234567890'
+        /**
+         * Only accept the following ASCII characters:
+         * 45: -
+         * 48: 0
+         * 49: 1
+         * 50: 2
+         * 51: 3
+         * 52: 4
+         * 53: 5
+         * 54: 6
+         * 55: 7
+         * 56: 8
+         * 57: 9
+         */
+        const HYPHEN = 45;
+        const DIGIT_ZERO = 48;
+        const DIGIT_NINE = 57;
+        if (
+            (e.charCode < DIGIT_ZERO && e.charCode !== HYPHEN) ||
+            e.charCode > DIGIT_NINE
+        ) {
             e.preventDefault();
         }
 
+        let input = e.target;
         let inputLength = input.value.length;
         if (inputLength !== 1 || inputLength !== 3) {
-            if (e.charCode === 45) e.preventDefault();
+            if (e.charCode === HYPHEN) e.preventDefault();
         }
         if (inputLength === 2) input.value += '-';
         if (inputLength === 5) input.value += '-';
