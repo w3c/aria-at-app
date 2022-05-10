@@ -53,7 +53,7 @@ module.exports = {
 
             try {
                 await exec(
-                    `pg_dump -t '"TestPlanTarget"' -t '"AtVersion"' -t '"BrowserVersion"' ${process.env.PGDATABASE} > ${__dirname}/pg_dump_testplantarget_at_browser_version.sql`
+                    `pg_dump -t '"TestPlanTarget"' ${process.env.PGDATABASE} > ${__dirname}/pg_dump_test_plan_target.sql`
                 );
             } catch (err) {
                 console.error(err);
@@ -63,56 +63,11 @@ module.exports = {
                 cascade: true,
                 transaction
             });
-
-            await AtVersion.destroy({ truncate: true, transaction });
-            await BrowserVersion.destroy({ truncate: true, transaction });
-
-            await AtVersion.bulkCreate(
-                [
-                    {
-                        atId: 1,
-                        name: '2021.2111.13',
-                        releasedAt: new Date('2021/11/01')
-                    },
-                    {
-                        atId: 2,
-                        name: '2020.4',
-                        releasedAt: new Date('2021/02/19')
-                    },
-                    {
-                        atId: 3,
-                        name: '11.6 (20G165)',
-                        releasedAt: new Date('2019/09/01')
-                    }
-                ],
-                { transaction }
-            );
-
-            await BrowserVersion.bulkCreate(
-                [
-                    {
-                        browserId: 1,
-                        name: '99.0.1'
-                    },
-                    {
-                        browserId: 2,
-                        name: '99.0.4844.84'
-                    },
-                    {
-                        browserId: 3,
-                        name: '14.1.2'
-                    }
-                ],
-                { transaction }
-            );
         });
     },
 
     down: queryInterface => {
         return queryInterface.sequelize.transaction(async transaction => {
-            await AtVersion.destroy({ truncate: true, transaction });
-            await BrowserVersion.destroy({ truncate: true, transaction });
-
             await queryInterface.removeColumn('TestPlanReport', 'atId', {
                 transaction
             });
@@ -122,7 +77,7 @@ module.exports = {
 
             try {
                 await exec(
-                    `psql ${process.env.PGDATABASE} < ${__dirname}/pg_dump_testplantarget_at_browser_version.sql`
+                    `psql ${process.env.PGDATABASE} < ${__dirname}/pg_dump_test_plan_target.sql`
                 );
             } catch (err) {
                 console.error(err);
