@@ -74,7 +74,18 @@ const graphqlSchema = gql`
         Browser name like "Chrome".
         """
         name: String!
-        browserVersions: [String]!
+        browserVersions: [BrowserVersion]!
+    }
+
+    type BrowserVersion {
+        """
+        Postgres-provided numeric ID
+        """
+        id: ID!
+        """
+        Version string
+        """
+        name: String!
     }
 
     """
@@ -111,7 +122,25 @@ const graphqlSchema = gql`
         # The categories of generalized AT modes the AT supports.
         # """
         # modes: [AtMode]!
-        atVersions: [String]!
+        atVersions: [AtVersion]!
+    }
+
+    """
+    Version information for a given assistive technology
+    """
+    type AtVersion {
+        """
+        Postgres provided numeric ID
+        """
+        id: ID!
+        """
+        Human-readable name for the version, such as "2020.1".
+        """
+        name: String!
+        """
+        Date for approximate availability of the version
+        """
+        releasedAt: Timestamp
     }
 
     # TODO: remove or rework this type in order to support recording exact
@@ -858,6 +887,29 @@ const graphqlSchema = gql`
     # Mutation-specific types below
 
     """
+    Mutations scoped to an Assistive Technology version
+    """
+    type AtOperations {
+        createAtVersion(name: String!, releasedAt: Timestamp!): AtVersion!
+    }
+    type AtVersionOperations {
+        editAtVersion(
+            updatedName: String!
+            updatedReleasedAt: Timestamp!
+        ): AtVersion!
+        deleteAtVersion: NoResponse
+    }
+    """
+    Mutations scoped to an Browser version
+    """
+    type BrowserOperations {
+        createBrowserVersion(name: String!): BrowserVersion!
+    }
+    type BrowserVersionOperations {
+        editBrowserVersion(updatedName: String!): BrowserVersion!
+        deleteBrowserVersion: NoResponse
+    }
+    """
     Mutations scoped to a previously-created TestPlanReport.
     """
     type TestPlanReportOperations {
@@ -942,6 +994,22 @@ const graphqlSchema = gql`
     }
 
     type Mutation {
+        """
+        Get the available mutations for the given AT.
+        """
+        at(id: ID!): AtOperations!
+        """
+        Get the available mutations for the given AT version.
+        """
+        atVersion(id: ID!): AtVersionOperations!
+        """
+        Get the available mutations for the given browser.
+        """
+        browser(id: ID!): BrowserOperations!
+        """
+        Get the available mutations for the given browser version.
+        """
+        browserVersion(id: ID!): BrowserVersionOperations!
         """
         Adds a report with the given TestPlanVersion and TestPlanTarget and a
         state of "DRAFT", resulting in the report appearing in the Test Queue.

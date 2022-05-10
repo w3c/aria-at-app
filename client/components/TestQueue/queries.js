@@ -82,7 +82,11 @@ export const POPULATE_ADD_TEST_PLAN_TO_QUEUE_MODAL_QUERY = gql`
         ats {
             id
             name
-            atVersions
+            atVersions {
+                id
+                name
+                releasedAt
+            }
         }
         browsers {
             id

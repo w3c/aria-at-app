@@ -166,13 +166,22 @@ describe('graphql', () => {
                         __typename
                         id
                         name
-                        browserVersions
+                        browserVersions {
+                            __typename
+                            id
+                            name
+                        }
                     }
                     ats {
                         __typename
                         id
                         name
-                        atVersions
+                        atVersions {
+                            __typename
+                            id
+                            name
+                            releasedAt
+                        }
                     }
                     users {
                         __typename
@@ -494,6 +503,50 @@ describe('graphql', () => {
                             ats {
                                 id
                             }
+                        }
+                        at(id: 1) {
+                            __typename
+                            createAtVersion(
+                                name: "2022.5.2"
+                                releasedAt: "2022/05/02"
+                            ) {
+                                id
+                                name
+                                releasedAt
+                            }
+                        }
+                        atVersion(id: 1) {
+                            __typename
+                            editAtVersion(
+                                updatedName: "2022"
+                                updatedReleasedAt: "2022/05/03"
+                            ) {
+                                id
+                                name
+                                releasedAt
+                            }
+                        }
+                        deleteAtVersion: atVersion(id: 2) {
+                            __typename
+                            deleteAtVersion
+                        }
+                        browser(id: 1) {
+                            __typename
+                            createBrowserVersion(name: "2022.5.4") {
+                                id
+                                name
+                            }
+                        }
+                        browserVersion(id: 1) {
+                            __typename
+                            editBrowserVersion(updatedName: "2022.5.4") {
+                                id
+                                name
+                            }
+                        }
+                        deleteBrowserVersion: browserVersion(id: 2) {
+                            __typename
+                            deleteBrowserVersion
                         }
                     }
                 `,
