@@ -1,6 +1,5 @@
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
-const { AtVersion, BrowserVersion } = require('../models');
 // Add the columns for atId and browserId to TestPlanReport table, and
 // populate them with the atId and browserId which used to be in the
 // TestPlanTarget table. This may require raw SQL due to the fact that
