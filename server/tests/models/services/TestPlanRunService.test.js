@@ -214,6 +214,7 @@ describe('TestPlanRunModel Data Checks', () => {
             [],
             [],
             [],
+            [],
             { enablePagination: true }
         );
 

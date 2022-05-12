@@ -34,12 +34,8 @@ const prepopulateTestPlanReport = async () => {
             findOrCreateTestPlanReport(
                 input: {
                     testPlanVersionId: ${testPlanVersionId}
-                    testPlanTarget: {
-                        atId: 1
-                        browserId: 1
-                        atVersion: "v1"
-                        browserVersion: "v1"
-                    }
+                    atId: 1
+                    browserId: 1
                 }
             ) {
                 populatedData {
@@ -79,7 +75,7 @@ const prepopulateTestResult = async () => {
     const mutationResult = await mutate(gql`
         mutation {
             testPlanRun(id: "${testPlanRunId}") {
-                findOrCreateTestResult(testId: "${testId}") {
+                findOrCreateTestResult(testId: "${testId}", atVersionId: 1, browserVersionId: 1) {
                     testResult {
                         id
                         scenarioResults {
@@ -143,7 +139,7 @@ describe('testPlanRun', () => {
             const mutationResult = await mutate(gql`
                 mutation {
                     testPlanRun(id: "${testPlanRunId}") {
-                        findOrCreateTestResult(testId: "${testId}") {
+                        findOrCreateTestResult(testId: "${testId}", atVersionId: 1, browserVersionId: 1) {
                             testResult {
                                 id
                                 test {

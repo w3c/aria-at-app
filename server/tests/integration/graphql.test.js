@@ -167,7 +167,6 @@ describe('graphql', () => {
                         id
                         name
                         browserVersions {
-                            __typename
                             id
                             name
                         }
@@ -177,10 +176,8 @@ describe('graphql', () => {
                         id
                         name
                         atVersions {
-                            __typename
                             id
                             name
-                            releasedAt
                         }
                     }
                     users {
@@ -267,24 +264,17 @@ describe('graphql', () => {
                         testPlanVersion {
                             id
                         }
+                        at {
+                            id
+                        }
+                        browser {
+                            id
+                        }
                         runnableTests {
                             __typename
                             id
                             renderableContent
                             renderedUrl
-                        }
-                        testPlanTarget {
-                            __typename
-                            id
-                            title
-                            at {
-                                id
-                            }
-                            atVersion
-                            browser {
-                                id
-                            }
-                            browserVersion
                         }
                         draftTestPlanRuns {
                             __typename
@@ -298,6 +288,13 @@ describe('graphql', () => {
                                 test {
                                     id
                                 }
+                                # TODO: uncomment when implemented
+                                # atVersion {
+                                #     id
+                                # }
+                                # browserVersion {
+                                #     id
+                                # }
                                 scenarioResults {
                                     __typename
                                     id
@@ -369,17 +366,18 @@ describe('graphql', () => {
                         testPlanRun {
                             id
                         }
-                        testPlanTarget {
-                            id
-                        }
                         at {
                             id
                         }
                         browser {
                             id
                         }
-                        atVersion
-                        browserVersion
+                        atVersion {
+                            id
+                        }
+                        browserVersion {
+                            id
+                        }
                         test {
                             id
                         }
@@ -427,12 +425,8 @@ describe('graphql', () => {
                         findOrCreateTestPlanReport(
                             input: {
                                 testPlanVersionId: 2
-                                testPlanTarget: {
-                                    atId: 2
-                                    browserId: 2
-                                    atVersion: "123"
-                                    browserVersion: "123"
-                                }
+                                atId: 2
+                                browserId: 2
                             }
                         ) {
                             __typename
@@ -503,50 +497,6 @@ describe('graphql', () => {
                             ats {
                                 id
                             }
-                        }
-                        at(id: 1) {
-                            __typename
-                            createAtVersion(
-                                name: "2022.5.2"
-                                releasedAt: "2022/05/02"
-                            ) {
-                                id
-                                name
-                                releasedAt
-                            }
-                        }
-                        atVersion(id: 1) {
-                            __typename
-                            editAtVersion(
-                                updatedName: "2022"
-                                updatedReleasedAt: "2022/05/03"
-                            ) {
-                                id
-                                name
-                                releasedAt
-                            }
-                        }
-                        deleteAtVersion: atVersion(id: 2) {
-                            __typename
-                            deleteAtVersion
-                        }
-                        browser(id: 1) {
-                            __typename
-                            createBrowserVersion(name: "2022.5.4") {
-                                id
-                                name
-                            }
-                        }
-                        browserVersion(id: 1) {
-                            __typename
-                            editBrowserVersion(updatedName: "2022.5.4") {
-                                id
-                                name
-                            }
-                        }
-                        deleteBrowserVersion: browserVersion(id: 2) {
-                            __typename
-                            deleteBrowserVersion
                         }
                     }
                 `,
