@@ -730,6 +730,14 @@ const graphqlSchema = gql`
         """
         testPlanVersion: TestPlanVersion!
         """
+        The AT used when collecting results.
+        """
+        at: At!
+        """
+        The browser used when collecting results.
+        """
+        browser: Browser!
+        """
         The subset of tests which are relevant to this report, i.e. the tests
         where the AT matches the TestPlanTarget's AT.
         """
@@ -944,7 +952,11 @@ const graphqlSchema = gql`
         and AssertionResults to be filled out for the AT associated with the
         TestPlanRun, or returns the already existing TestResult.
         """
-        findOrCreateTestResult(testId: ID!): PopulatedData!
+        findOrCreateTestResult(
+            testId: ID!
+            atVersionId: ID!
+            browserVersionId: ID!
+        ): PopulatedData!
         """
         Permanently deletes all test results without removing the TestPlanRun.
         """

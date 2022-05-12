@@ -64,26 +64,16 @@ INSERT INTO "BrowserVersion" ("browserId", "name") VALUES (3, '13.1');
 INSERT INTO "BrowserVersion" ("browserId", "name") VALUES (3, '14.0');
 INSERT INTO "BrowserVersion" ("browserId", "name") VALUES (3, '14.1');
 
-
---
--- Data for Name: TestPlanTarget; Type: TABLE DATA; Schema: public; Owner: atr
---
-
-INSERT INTO "TestPlanTarget" (id, title, "atId", "browserId", "atVersion", "browserVersion") VALUES (1, 'JAWS 2021.2103.174 with Chrome 91.0.4472', 1, 2, '2021.2103.174', '91.0.4472');
-INSERT INTO "TestPlanTarget" (id, title, "atId", "browserId", "atVersion", "browserVersion") VALUES (2, 'NVDA 2020.4 with Firefox 88.0.1', 2, 1, '2020.4', '88.0.1');
-INSERT INTO "TestPlanTarget" (id, title, "atId", "browserId", "atVersion", "browserVersion") VALUES (3, 'VoiceOver for macOS 11.5.2 with Safari 14.1', 3, 3, '11.5.2', '14.1');
-
-
 --
 -- Data for Name: TestPlanReport; Type: TABLE DATA; Schema: public; Owner: atr
 --
 
-INSERT INTO "TestPlanReport" (id, "status", "testPlanTargetId", "testPlanVersionId", "createdAt") VALUES (1, 'DRAFT', 1, get_test_plan_version_id(text 'Toggle Button'), '2021-05-14 14:18:23.602-05');
-INSERT INTO "TestPlanReport" (id, "status", "testPlanTargetId", "testPlanVersionId", "createdAt") VALUES (2, 'DRAFT', 2, get_test_plan_version_id(text 'Select Only Combobox Example'), '2021-05-14 14:18:23.602-05');
-INSERT INTO "TestPlanReport" (id, "status", "testPlanTargetId", "testPlanVersionId", "createdAt") VALUES (3, 'FINALIZED', 1, get_test_plan_version_id(text 'Modal Dialog Example'), '2021-05-14 14:18:23.602-05');
-INSERT INTO "TestPlanReport" (id, "status", "testPlanTargetId", "testPlanVersionId", "createdAt") VALUES (4, 'FINALIZED', 2, get_test_plan_version_id(text 'Modal Dialog Example'), '2021-05-14 14:18:23.602-05');
-INSERT INTO "TestPlanReport" (id, "status", "testPlanTargetId", "testPlanVersionId", "createdAt") VALUES (5, 'FINALIZED', 3, get_test_plan_version_id(text 'Modal Dialog Example'), '2021-05-14 14:18:23.602-05');
-INSERT INTO "TestPlanReport" (id, "status", "testPlanTargetId", "testPlanVersionId", "createdAt") VALUES (6, 'FINALIZED', 3, get_test_plan_version_id(text 'Checkbox Example (Tri State)'), '2021-05-14 14:18:23.602-05');
+INSERT INTO "TestPlanReport" (id, "status", "testPlanVersionId", "createdAt", "atId", "browserId") VALUES (1, 'DRAFT', get_test_plan_version_id(text 'Toggle Button'), '2021-05-14 14:18:23.602-05', 1, 2);
+INSERT INTO "TestPlanReport" (id, "status", "testPlanVersionId", "createdAt", "atId", "browserId") VALUES (2, 'DRAFT', get_test_plan_version_id(text 'Select Only Combobox Example'), '2021-05-14 14:18:23.602-05', 2, 1);
+INSERT INTO "TestPlanReport" (id, "status", "testPlanVersionId", "createdAt", "atId", "browserId") VALUES (3, 'FINALIZED', get_test_plan_version_id(text 'Modal Dialog Example'), '2021-05-14 14:18:23.602-05', 1, 2);
+INSERT INTO "TestPlanReport" (id, "status", "testPlanVersionId", "createdAt", "atId", "browserId") VALUES (4, 'FINALIZED', get_test_plan_version_id(text 'Modal Dialog Example'), '2021-05-14 14:18:23.602-05', 2, 1);
+INSERT INTO "TestPlanReport" (id, "status", "testPlanVersionId", "createdAt", "atId", "browserId") VALUES (5, 'FINALIZED', get_test_plan_version_id(text 'Modal Dialog Example'), '2021-05-14 14:18:23.602-05', 3, 3);
+INSERT INTO "TestPlanReport" (id, "status", "testPlanVersionId", "createdAt", "atId", "browserId") VALUES (6, 'FINALIZED', get_test_plan_version_id(text 'Checkbox Example (Tri State)'), '2021-05-14 14:18:23.602-05', 3, 3);
 
 
 --
@@ -152,14 +142,6 @@ SELECT pg_catalog.setval('"TestPlanReport_id_seq"', 100, true);
 --
 
 SELECT pg_catalog.setval('"TestPlanRun_id_seq"', 100, true);
-
-
---
--- Name: TestPlanTarget_id_seq; Type: SEQUENCE SET; Schema: public; Owner: atr
---
-
-SELECT pg_catalog.setval('"TestPlanTarget_id_seq"', 100, true);
-
 
 --
 -- Name: TestPlan_id_seq; Type: SEQUENCE SET; Schema: public; Owner: atr

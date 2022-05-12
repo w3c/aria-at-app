@@ -1,4 +1,8 @@
 const { gql } = require('apollo-server-core');
+const { getAtVersionByQuery } = require('../../models/services/AtService');
+const {
+    getBrowserVersionByQuery
+} = require('../../models/services/BrowserService');
 const { query, mutate } = require('../../tests/util/graphql-test-utilities');
 
 const populateFakeTestResults = async (testPlanRunId, fakeTestResultTypes) => {
@@ -125,6 +129,12 @@ const getFake = async ({
         query {
             populateData(locationOfData: { testPlanRunId: ${testPlanRunId} }) {
                 testPlanReport {
+                    at {
+                        id
+                    }
+                    browser {
+                        id
+                    }
                     runnableTests {
                         id
                     }
@@ -135,6 +145,21 @@ const getFake = async ({
 
     const testId = testPlanReport.runnableTests[index].id;
 
+    const atVersion = await getAtVersionByQuery(
+        {
+            atId: testPlanReport.at.id
+        },
+        undefined,
+        undefined,
+        {
+            order: [['releasedAt', 'DESC']]
+        }
+    );
+
+    const browserVersion = await getBrowserVersionByQuery({
+        browserId: testPlanReport.browser.id
+    });
+
     const {
         testPlanRun: {
             findOrCreateTestResult: { testResult: baseTestResult }
@@ -142,7 +167,7 @@ const getFake = async ({
     } = await mutate(gql`
         mutation {
             testPlanRun(id: ${testPlanRunId}) {
-                findOrCreateTestResult(testId: "${testId}") {
+                findOrCreateTestResult(testId: "${testId}", atVersionId: "${atVersion.id}", browserVersionId: "${browserVersion.id}") {
                     testResult {
                         id
                         scenarioResults {

@@ -168,7 +168,7 @@ const getBrowserVersionByQuery = async (
 ) => {
     return ModelService.getByQuery(
         BrowserVersion,
-        { browserId, name },
+        { browserId, ...(name && { name }) },
         browserVersionAttributes,
         [browserAssociation(browserAttributes)],
         options
