@@ -70,6 +70,9 @@ ALTER TABLE ONLY public."TestPlanTarget" ALTER COLUMN id SET DEFAULT nextval('pu
 --
 
 COPY public."TestPlanTarget" (id, title, "atId", "browserId", "atVersion", "browserVersion") FROM stdin;
+1	JAWS 2021.2103.174 with Chrome 91.0.4472	1	2	2021.2103.174	91.0.4472
+2	NVDA 2020.4 with Firefox 88.0.1	2	1	2020.4	88.0.1
+3	VoiceOver for macOS 11.5.2 with Safari 14.1	3	3	11.5.2	14.1
 \.
 
 
@@ -77,7 +80,7 @@ COPY public."TestPlanTarget" (id, title, "atId", "browserId", "atVersion", "brow
 -- Name: TestPlanTarget_id_seq; Type: SEQUENCE SET; Schema: public; Owner: atr
 --
 
-SELECT pg_catalog.setval('public."TestPlanTarget_id_seq"', 1, false);
+SELECT pg_catalog.setval('public."TestPlanTarget_id_seq"', 100, true);
 
 
 --

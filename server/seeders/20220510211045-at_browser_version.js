@@ -60,8 +60,16 @@ module.exports = {
 
     down: queryInterface => {
         return queryInterface.sequelize.transaction(async transaction => {
-            await AtVersion.destroy({ truncate: true, transaction });
-            await BrowserVersion.destroy({ truncate: true, transaction });
+            await AtVersion.destroy({
+                truncate: true,
+                restartIdentity: true,
+                transaction
+            });
+            await BrowserVersion.destroy({
+                truncate: true,
+                restartIdentity: true,
+                transaction
+            });
         });
     }
 };
