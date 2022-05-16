@@ -232,6 +232,7 @@ const TestRenderer = ({
     testRunResultRef,
     submitButtonRef,
     isSubmitted = false,
+    isEdit = false,
     setIsRendererReady = false
 }) => {
     const { scenarioResults, test = {}, completedAt } = testResult;
@@ -627,7 +628,8 @@ const TestRenderer = ({
 
     return (
         <Container>
-            {submitResult &&
+            {!isEdit &&
+            submitResult &&
             submitResult.resultsJSON &&
             submitResult.results ? (
                 <SubmitResultsContent />
@@ -1165,6 +1167,7 @@ TestRenderer.propTypes = {
     testRunResultRef: PropTypes.any,
     submitButtonRef: PropTypes.any,
     isSubmitted: PropTypes.bool,
+    isEdit: PropTypes.bool,
     setIsRendererReady: PropTypes.func
 };
 

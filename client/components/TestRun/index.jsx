@@ -100,6 +100,7 @@ const TestRun = () => {
 
     const [isRendererReady, setIsRendererReady] = useState(false);
     const [isTestSubmitClicked, setIsTestSubmitClicked] = useState(false);
+    const [isTestEditClicked, setIsTestEditClicked] = useState(false);
     const [showTestNavigator, setShowTestNavigator] = useState(true);
     const [currentTestIndex, setCurrentTestIndex] = useState(0);
     const [showStartOverModal, setShowStartOverModal] = useState(false);
@@ -369,6 +370,9 @@ const TestRun = () => {
             forceSave = false,
             forceEdit = false
         ) => {
+            if (forceEdit) setIsTestEditClicked(true);
+            else setIsTestEditClicked(false);
+
             if (!isSignedIn) return true;
             if (!forceEdit && currentTest.testResult.completedAt) return true;
 
@@ -644,6 +648,7 @@ const TestRun = () => {
                                             testRendererSubmitButtonRef
                                         }
                                         isSubmitted={isTestSubmitClicked}
+                                        isEdit={isTestEditClicked}
                                         setIsRendererReady={setIsRendererReady}
                                     />
                                 </Row>
