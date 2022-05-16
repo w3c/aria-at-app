@@ -238,7 +238,7 @@ describe('AtVersionModel Data Checks', () => {
         // A1
         const _atId = 1;
         const _atVersion = '2021.2111.13';
-        const _releasedAt = new Date('2021-11-01 00:00:00-04').toISOString();
+        const _releasedAt = new Date('2021-11-01 04:00:00.000Z');
 
         // A2
         const atVersionInstance = await AtService.getAtVersionByQuery({
@@ -270,7 +270,7 @@ describe('AtVersionModel Data Checks', () => {
         // A1
         const _atId = 1;
         const _atVersion = '2021.2111.13';
-        const _releasedAt = new Date('2021-11-01 00:00:00-04').toISOString();
+        const _releasedAt = new Date('2021-11-01 04:00:00.000Z');
 
         // A2
         const atVersionInstance = await AtService.getAtVersionByQuery(
@@ -318,9 +318,7 @@ describe('AtVersionModel Data Checks', () => {
             // A1
             const _atId = 1;
             const _atVersion = randomStringGenerator();
-            const _releasedAt = new Date(
-                '2022-05-01 20:00:00-04'
-            ).toISOString();
+            const _releasedAt = new Date('2022-05-01 20:00:00-04');
 
             // A2
             const atVersionInstance = await AtService.createAtVersion({
@@ -388,9 +386,7 @@ describe('AtVersionModel Data Checks', () => {
             // A1
             const _atId = 1;
             const _atVersion = '2021.2111.13';
-            const _releasedAt = new Date(
-                '2021-11-01 00:00:00-04'
-            ).toISOString();
+            const _releasedAt = new Date('2021-11-01 04:00:00.000Z');
 
             // A2
             const originalAtVersion = await AtService.getAtVersionByQuery({

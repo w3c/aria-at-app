@@ -12,18 +12,18 @@ module.exports = {
                     {
                         atId: ats.find(at => at.name === 'JAWS').id,
                         name: '2021.2111.13',
-                        releasedAt: new Date('2021/11/01')
+                        releasedAt: new Date('2021-11-01 04:00:00.000Z')
                     },
                     {
                         atId: ats.find(at => at.name === 'NVDA').id,
                         name: '2020.4',
-                        releasedAt: new Date('2021/02/19')
+                        releasedAt: new Date('2021-02-19 00:00:00-05')
                     },
                     {
                         atId: ats.find(at => at.name === 'VoiceOver for macOS')
                             .id,
                         name: '11.6 (20G165)',
-                        releasedAt: new Date('2019/09/01')
+                        releasedAt: new Date('2019-09-01 00:00:00-04')
                     }
                 ],
                 { transaction }
