@@ -200,7 +200,7 @@ describe('BrowserVersionModel Data Checks', () => {
     it('should return valid browserVersion with browser for query with all associations', async () => {
         // A1
         const _browserId = 1;
-        const _name = '86.0';
+        const _name = '99.0.1';
 
         // A2
         const browserVersionInstance = await BrowserService.getBrowserVersionByQuery(
@@ -233,7 +233,7 @@ describe('BrowserVersionModel Data Checks', () => {
     it('should return valid browserVersionInstance for query with no associations', async () => {
         // A1
         const _browserId = 1;
-        const _name = '86.0';
+        const _name = '99.0.1';
 
         // A2
         const browserVersionInstance = await BrowserService.getBrowserVersionByQuery(
@@ -355,7 +355,7 @@ describe('BrowserVersionModel Data Checks', () => {
         await dbCleaner(async () => {
             // A1
             const _browserId = 1;
-            const _name = '86.0';
+            const _name = '99.0.1';
 
             // A2
             const originalBrowserVersion = await BrowserService.getBrowserVersionByQuery(
@@ -399,7 +399,7 @@ describe('BrowserVersionModel Data Checks', () => {
 
     it('should return collection of browserVersions for browserVersion query', async () => {
         // A1
-        const search = '87';
+        const search = '99';
 
         // A2
         const result = await BrowserService.getBrowserVersions(search, {});
@@ -411,7 +411,7 @@ describe('BrowserVersionModel Data Checks', () => {
             expect.arrayContaining([
                 expect.objectContaining({
                     browserId: expect.any(Number),
-                    name: expect.stringMatching(/87/gi),
+                    name: expect.stringMatching(/99/gi),
                     browser: expect.objectContaining({
                         id: expect.any(Number),
                         name: expect.any(String)

@@ -39,30 +39,30 @@ INSERT INTO "AtMode" ("atId", name) VALUES (3, 'INTERACTION');
 -- Data for Name: AtVersion; Type: TABLE DATA; Schema: public; Owner: atr
 --
 
-INSERT INTO "AtVersion" ("atId", "name", "releasedAt") VALUES (2, '2019.3', '2022-05-02');
-INSERT INTO "AtVersion" ("atId", "name", "releasedAt") VALUES (2, '2020.1', '2022-05-02');
-INSERT INTO "AtVersion" ("atId", "name", "releasedAt") VALUES (2, '2020.2', '2022-05-02');
-INSERT INTO "AtVersion" ("atId", "name", "releasedAt") VALUES (2, '2020.3', '2022-05-02');
-INSERT INTO "AtVersion" ("atId", "name", "releasedAt") VALUES (2, '2020.4', '2022-05-02');
-INSERT INTO "AtVersion" ("atId", "name", "releasedAt") VALUES (1, '2021.2103.174', '2022-05-02');
-INSERT INTO "AtVersion" ("atId", "name", "releasedAt") VALUES (3, '11.5.2', '2022-05-02');
+-- INSERT INTO "AtVersion" ("atId", "name", "releasedAt") VALUES (2, '2019.3', '2022-05-02');
+-- INSERT INTO "AtVersion" ("atId", "name", "releasedAt") VALUES (2, '2020.1', '2022-05-02');
+-- INSERT INTO "AtVersion" ("atId", "name", "releasedAt") VALUES (2, '2020.2', '2022-05-02');
+-- INSERT INTO "AtVersion" ("atId", "name", "releasedAt") VALUES (2, '2020.3', '2022-05-02');
+-- INSERT INTO "AtVersion" ("atId", "name", "releasedAt") VALUES (2, '2020.4', '2022-05-02');
+-- INSERT INTO "AtVersion" ("atId", "name", "releasedAt") VALUES (1, '2021.2103.174', '2022-05-02');
+-- INSERT INTO "AtVersion" ("atId", "name", "releasedAt") VALUES (3, '11.5.2', '2022-05-02');
 
 
 --
 -- Data for Name: BrowserVersion; Type: TABLE DATA; Schema: public; Owner: atr
 --
 
-INSERT INTO "BrowserVersion" ("browserId", "name") VALUES (1, '86.0');
-INSERT INTO "BrowserVersion" ("browserId", "name") VALUES (1, '86.0.1');
-INSERT INTO "BrowserVersion" ("browserId", "name") VALUES (1, '87.0');
-INSERT INTO "BrowserVersion" ("browserId", "name") VALUES (1, '88.0');
-INSERT INTO "BrowserVersion" ("browserId", "name") VALUES (1, '88.0.1');
-INSERT INTO "BrowserVersion" ("browserId", "name") VALUES (2, '90.0.4430');
-INSERT INTO "BrowserVersion" ("browserId", "name") VALUES (2, '91.0.4472');
-INSERT INTO "BrowserVersion" ("browserId", "name") VALUES (3, '13.0');
-INSERT INTO "BrowserVersion" ("browserId", "name") VALUES (3, '13.1');
-INSERT INTO "BrowserVersion" ("browserId", "name") VALUES (3, '14.0');
-INSERT INTO "BrowserVersion" ("browserId", "name") VALUES (3, '14.1');
+-- INSERT INTO "BrowserVersion" ("browserId", "name") VALUES (1, '86.0');
+-- INSERT INTO "BrowserVersion" ("browserId", "name") VALUES (1, '86.0.1');
+-- INSERT INTO "BrowserVersion" ("browserId", "name") VALUES (1, '87.0');
+-- INSERT INTO "BrowserVersion" ("browserId", "name") VALUES (1, '88.0');
+-- INSERT INTO "BrowserVersion" ("browserId", "name") VALUES (1, '88.0.1');
+-- INSERT INTO "BrowserVersion" ("browserId", "name") VALUES (2, '90.0.4430');
+-- INSERT INTO "BrowserVersion" ("browserId", "name") VALUES (2, '91.0.4472');
+-- INSERT INTO "BrowserVersion" ("browserId", "name") VALUES (3, '13.0');
+-- INSERT INTO "BrowserVersion" ("browserId", "name") VALUES (3, '13.1');
+-- INSERT INTO "BrowserVersion" ("browserId", "name") VALUES (3, '14.0');
+-- INSERT INTO "BrowserVersion" ("browserId", "name") VALUES (3, '14.1');
 
 --
 -- Data for Name: TestPlanReport; Type: TABLE DATA; Schema: public; Owner: atr

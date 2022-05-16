@@ -143,31 +143,6 @@ const graphqlSchema = gql`
         releasedAt: Timestamp
     }
 
-    # TODO: remove or rework this type in order to support recording exact
-    # versions
-    """
-    Specifies an AT and browser combination to test, divided into buckets by
-    major version.
-    """
-    type TestPlanTarget {
-        """
-        Postgres-provided numeric ID.
-        """
-        id: ID!
-        title: String!
-        at: At!
-        atVersion: String!
-        browser: Browser!
-        browserVersion: String!
-    }
-
-    input TestPlanTargetInput {
-        atId: ID!
-        atVersion: String!
-        browserId: ID!
-        browserVersion: String!
-    }
-
     # TODO: Determine if needed following 2021 Working Mode changes
     # https://github.com/w3c/aria-at/wiki/Working-Mode
     # """
@@ -707,10 +682,8 @@ const graphqlSchema = gql`
     }
 
     """
-    A container for test results as captured by multiple testers. Different
-    TestPlanReports can share a single TestPlanTarget, allowing them to be
-    organized and displayed in tables. The tests to be run for a TestPlanReport
-    originate in the TestPlanVersion.
+    A container for test results as captured by multiple testers. The tests to
+    be run for a TestPlanReport originate in the TestPlanVersion.
     """
     type TestPlanReport {
         """
@@ -721,10 +694,6 @@ const graphqlSchema = gql`
         See TestPlanReportStatus type for more information.
         """
         status: TestPlanReportStatus!
-        """
-        See TestPlanTarget type for more information.
-        """
-        testPlanTarget: TestPlanTarget!
         """
         The snapshot of a TestPlan to use.
         """
@@ -739,7 +708,7 @@ const graphqlSchema = gql`
         browser: Browser!
         """
         The subset of tests which are relevant to this report, i.e. the tests
-        where the AT matches the TestPlanTarget's AT.
+        where the AT matches the report's AT.
         """
         runnableTests: [Test]!
         """
@@ -773,7 +742,8 @@ const graphqlSchema = gql`
     """
     input TestPlanReportInput {
         testPlanVersionId: ID!
-        testPlanTarget: TestPlanTargetInput!
+        atId: ID!
+        browserId: ID!
     }
 
     """
@@ -790,11 +760,10 @@ const graphqlSchema = gql`
         scenarioId: ID
         assertionId: ID
         testPlanReportId: ID
-        testPlanTargetId: ID
         browserId: ID
-        browserVersion: String
+        browserVersionId: ID
         atId: ID
-        atVersion: String
+        atVersionId: ID
         testPlanRunId: ID
         testResultId: ID
         scenarioResultId: ID
@@ -811,18 +780,17 @@ const graphqlSchema = gql`
     """
     The fully-populated data which is associated with a given LocationOfData.
     For example, a LocationOfData which includes an ID for a TestPlanReport
-    would allow you to populate the TestPlanTarget, TestPlanVersion and
-    TestPlan, which are knowable through relationships to that TestPlanReport.
+    would allow you to populate the TestPlanVersion, AT, Browser and TestPlan,
+    which are knowable through relationships to that TestPlanReport.
     """
     type PopulatedData {
         locationOfData: LocationOfData!
         testPlan: TestPlan
         testPlanVersion: TestPlanVersion
-        testPlanTarget: TestPlanTarget
         at: At
+        atVersion: AtVersion
         browser: Browser
-        atVersion: String
-        browserVersion: String
+        browserVersion: BrowserVersion
         test: Test
         scenario: Scenario
         assertion: Assertion
@@ -875,11 +843,6 @@ const graphqlSchema = gql`
         Get a TestPlanReport by ID.
         """
         testPlanReport(id: ID!): TestPlanReport
-        # TODO: determine if needed
-        # """
-        # Get all TestPlanTargets.
-        # """
-        # testPlanTargets: [TestPlanTarget]!
         """
         Get a TestPlanRun by ID.
         """
@@ -1023,7 +986,7 @@ const graphqlSchema = gql`
         """
         browserVersion(id: ID!): BrowserVersionOperations!
         """
-        Adds a report with the given TestPlanVersion and TestPlanTarget and a
+        Adds a report with the given TestPlanVersion, AT and Browser, and a
         state of "DRAFT", resulting in the report appearing in the Test Queue.
         In the case an identical report already exists, it will be returned
         without changes and without affecting existing results. In the case an

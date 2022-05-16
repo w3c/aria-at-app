@@ -269,7 +269,7 @@ describe('test queue', () => {
                         atVersions: expect.arrayContaining([
                             expect.objectContaining({
                                 id: expect.anything(),
-                                name: '2020.1'
+                                name: '2020.4'
                             })
                         ])
                     })
@@ -281,9 +281,17 @@ describe('test queue', () => {
                         browserVersions: expect.arrayContaining([
                             expect.objectContaining({
                                 id: expect.anything(),
-                                name: '88.0'
+                                name: '99.0.1'
                             })
                         ])
+                    })
+                ]),
+                testPlans: expect.arrayContaining([
+                    expect.objectContaining({
+                        latestTestPlanVersion: expect.objectContaining({
+                            id: expect.anything(),
+                            title: 'Alert Example'
+                        })
                     })
                 ])
             })
