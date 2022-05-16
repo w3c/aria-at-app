@@ -19,6 +19,7 @@ import TestRenderer from '../TestRenderer';
 import OptionButton from './OptionButton';
 import PageStatus from '../common/PageStatus';
 import BasicModal from '../common/BasicModal';
+// import AtAndBrowserDetailsModal from '../common/AtAndBrowserDetailsModal';
 import DisplayNone from '../../utils/DisplayNone';
 import {
     TEST_RUN_PAGE_QUERY,
@@ -148,7 +149,7 @@ const TestRun = () => {
     const { id: userId } = auth;
     let { isSignedIn } = auth;
 
-    const { testPlanRun, users } = data;
+    const { testPlanRun, users /*, ats = [], browsers = []*/ } = data;
     const { tester, testResults = [] } = testPlanRun || {};
     let { testPlanReport } = testPlanRun || {};
 
@@ -828,6 +829,18 @@ const TestRun = () => {
         );
     }
 
+    /*const getVersionForResource = (
+        sourceData, // ats or browsers
+        resourceName, // eg. NVDA, Chrome, etc
+        versionsIdentifier // atVersions or browserVersions
+    ) => {
+        return (
+            sourceData
+                .find(item => item.name === resourceName)
+                [versionsIdentifier].map(item => item.name) || []
+        );
+    };*/
+
     return (
         <Container className="test-run-container">
             <Helmet>
@@ -857,6 +870,30 @@ const TestRun = () => {
                     </Row>
                 </Col>
             </Row>
+            {/*{isSignedIn && (
+                <AtAndBrowserDetailsModal
+                    show={true}
+                    isAdmin={false}
+                    atName="NVDA" // passed from testPlanReport
+                    atVersion="2022.3.5" // passed from testPlanRun
+                    atVersions={getVersionForResource(
+                        ats,
+                        'NVDA',
+                        'atVersions'
+                    )}
+                    browserName="Chrome" // passed from testPlanReport
+                    browserVersion="97.0.4758" // passed from testPlanRun
+                    browserVersions={getVersionForResource(
+                        browsers,
+                        'Chrome',
+                        'browserVersions'
+                    )}
+                    patternName="Checkbox" // required if isAdmin=true
+                    testerName="alflennik" // required if isAdmin=true
+                    handleAction={() => {}} // expects func(updatedAtVersion, updatedBrowserVersion) but to be discussed
+                    handleClose={() => {}}
+                />
+            )}*/}
         </Container>
     );
 };

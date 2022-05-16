@@ -131,6 +131,22 @@ export const TEST_RUN_PAGE_QUERY = gql`
             id
             username
         }
+        # ats {
+        #     id
+        #     name
+        #     atVersions {
+        #         id
+        #         name
+        #     }
+        # }
+        # browsers {
+        #     id
+        #     name
+        #     browserVersions {
+        #         id
+        #         name
+        #     }
+        # }
     }
 `;
 
