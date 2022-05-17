@@ -166,36 +166,25 @@ export const ADD_TEST_QUEUE_MUTATION = gql`
     mutation AddTestPlanReport(
         $testPlanVersionId: ID!
         $atId: ID!
-        $atVersion: String!
         $browserId: ID!
-        $browserVersion: String!
     ) {
         findOrCreateTestPlanReport(
             input: {
                 testPlanVersionId: $testPlanVersionId
-                testPlanTarget: {
-                    atId: $atId
-                    atVersion: $atVersion
-                    browserId: $browserId
-                    browserVersion: $browserVersion
-                }
+                atId: $atId
+                browserId: $browserId
             }
         ) {
             populatedData {
                 testPlanReport {
                     id
                     status
-                }
-                testPlanTarget {
-                    id
                     at {
                         id
                     }
-                    atVersion
                     browser {
                         id
                     }
-                    browserVersion
                 }
                 testPlanVersion {
                     id

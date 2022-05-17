@@ -10,7 +10,8 @@ import BasicThemedModal from '../common/BasicThemedModal';
 import {
     ADD_AT_VERSION_MUTATION,
     EDIT_AT_VERSION_MUTATION,
-    DELETE_AT_VERSION_MUTATION
+    DELETE_AT_VERSION_MUTATION,
+    ADD_TEST_QUEUE_MUTATION
 } from '../TestQueue/queries';
 import { gitUpdatedDateToString } from '../../utils/gitUtils';
 import { convertStringToDate } from '../../utils/formatter';
@@ -188,6 +189,7 @@ const ManageTestQueue = ({
     const [addAtVersion] = useMutation(ADD_AT_VERSION_MUTATION);
     const [editAtVersion] = useMutation(EDIT_AT_VERSION_MUTATION);
     const [deleteAtVersion] = useMutation(DELETE_AT_VERSION_MUTATION);
+    const [addTestPlanReport] = useMutation(ADD_TEST_QUEUE_MUTATION);
 
     const onManageAtsClick = () => setShowManageATs(!showManageATs);
     const onAddTestPlansClick = () => setShowAddTestPlans(!showAddTestPlans);
@@ -397,6 +399,17 @@ const ManageTestQueue = ({
         }
     };
 
+    const handleAddTestPlanToTestQueue = async () => {
+        await addTestPlanReport({
+            variables: {
+                testPlanVersionId: selectedTestPlanVersionId,
+                atId: selectedAtId,
+                browserId: selectedBrowserId
+            }
+        });
+        await triggerUpdate();
+    };
+
     return (
         <Container>
             <DisclosureButton
@@ -544,6 +557,9 @@ const ManageTestQueue = ({
                             value={selectedAtId}
                             onChange={onAtChange}
                         >
+                            <option value={''} disabled>
+                                --
+                            </option>
                             {ats.map(item => (
                                 <option
                                     key={`${item.name}-${item.id}`}
@@ -563,6 +579,9 @@ const ManageTestQueue = ({
                             value={selectedBrowserId}
                             onChange={onBrowserChange}
                         >
+                            <option value={''} disabled>
+                                --
+                            </option>
                             {browsers.map(item => (
                                 <option
                                     key={`${item.name}-${item.id}`}
@@ -574,7 +593,17 @@ const ManageTestQueue = ({
                         </Form.Control>
                     </Form.Group>
                 </div>
-                <Button variant="primary">Add Test Plan to Test Queue</Button>
+                <Button
+                    variant="primary"
+                    onClick={handleAddTestPlanToTestQueue}
+                    disabled={
+                        !selectedTestPlanVersionId ||
+                        !selectedAtId ||
+                        !selectedBrowserId
+                    }
+                >
+                    Add Test Plan to Test Queue
+                </Button>
             </DisclosureContainer>
 
             {showAtVersionModal && (
