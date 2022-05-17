@@ -79,14 +79,11 @@ const TestQueue = () => {
 
         // get all testPlanTargets grouped to make it easier to drop into TestQueue table
         testPlanReports.forEach(testPlanReport => {
-            if (!structuredData[testPlanReport.testPlanTarget.title]) {
-                structuredData[testPlanReport.testPlanTarget.title] = [
-                    testPlanReport
-                ];
+            const title = `${testPlanReport.at?.name} and ${testPlanReport.browser?.name}`;
+            if (!structuredData[title]) {
+                structuredData[title] = [testPlanReport];
             } else {
-                structuredData[testPlanReport.testPlanTarget.title].push(
-                    testPlanReport
-                );
+                structuredData[title].push(testPlanReport);
             }
         });
 

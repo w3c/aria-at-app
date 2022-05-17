@@ -49,19 +49,13 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
             runnableTests {
                 id
             }
-            testPlanTarget {
+            at {
                 id
-                title
-                at {
-                    id
-                    name
-                }
-                browser {
-                    id
-                    name
-                }
-                atVersion
-                browserVersion
+                name
+            }
+            browser {
+                id
+                name
             }
             testPlanVersion {
                 id
