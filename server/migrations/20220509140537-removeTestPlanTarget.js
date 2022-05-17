@@ -1,24 +1,9 @@
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
-// Add the columns for atId and browserId to TestPlanReport table, and
-// populate them with the atId and browserId which used to be in the
-// TestPlanTarget table. This may require raw SQL due to the fact that
-// the TestPlanTarget association was already removed from the code.
-//
-// Remove the TestPlanTarget table.
-//
-// Remove all existing AtVersions and BrowserVersions and replace with
-// the most recent versions minus one (e.g. Chrome is at version 100
-// right now so it would be Chrome 99.01.03. Replace 01 and 03 with real
-// values).
-//
-// Loop over all the TestPlanRuns. Then loop over all the TestResults
-// in each TestPlanRun. Then add pted atVersionId and
-// browserVersionId fields.
+const fs = require('fs');
 
 module.exports = {
     up: (queryInterface, Sequelize) => {
-        //Add the columns for atId and browserId to TestPlanReport table
         return queryInterface.sequelize.transaction(async transaction => {
             await queryInterface.addColumn(
                 'TestPlanReport',
@@ -36,7 +21,8 @@ module.exports = {
                 },
                 { transaction }
             );
-            // populate them with the atId and browserId which used to be in the
+
+            // Populate reports with the atId and browserId which used to be in the
             // TestPlanTarget table.
             await queryInterface.sequelize.query(
                 `
@@ -62,10 +48,41 @@ module.exports = {
                 cascade: true,
                 transaction
             });
+
+            const testPlanTargetIds = await queryInterface.sequelize.query(
+                `SELECT id, "testPlanTargetId" FROM "TestPlanReport"`,
+                {
+                    transaction
+                }
+            );
+
+            const testPlanTargetIdData = testPlanTargetIds[0];
+            testPlanTargetIdData.unshift('id,testPlanTargetId\n');
+            const csvString = testPlanTargetIdData.reduce(
+                (prev, current) =>
+                    `${prev}${current.id},${current.testPlanTargetId}\n`
+            );
+            fs.writeFile(
+                `${__dirname}/test_plan_target_id.csv`,
+                csvString,
+                err => {
+                    if (err) {
+                        console.error(err);
+                    }
+                }
+            );
+
+            await queryInterface.removeColumn(
+                'TestPlanReport',
+                'testPlanTargetId',
+                {
+                    transaction
+                }
+            );
         });
     },
 
-    down: queryInterface => {
+    down: (queryInterface, Sequelize) => {
         return queryInterface.sequelize.transaction(async transaction => {
             await queryInterface.removeColumn('TestPlanReport', 'atId', {
                 transaction
@@ -73,6 +90,38 @@ module.exports = {
             await queryInterface.removeColumn('TestPlanReport', 'browserId', {
                 transaction
             });
+
+            await queryInterface.addColumn(
+                'TestPlanReport',
+                'testPlanTargetId',
+                {
+                    type: Sequelize.DataTypes.INTEGER
+                },
+                { transaction }
+            );
+
+            try {
+                const data = fs.readFileSync(
+                    `${__dirname}/test_plan_target_id.csv`,
+                    'utf-8'
+                );
+                data.split('\n').forEach(async (value, i) => {
+                    if (i === 0 || value === '') {
+                        return;
+                    }
+                    const [id, testPlanTargetId] = value.split(',');
+                    await queryInterface.sequelize.query(
+                        `UPDATE "TestPlanReport"
+                        SET "testPlanTargetId" = ${testPlanTargetId}
+                        where id = ${id};`,
+                        {
+                            transaction
+                        }
+                    );
+                });
+            } catch (err) {
+                console.error(err);
+            }
 
             try {
                 await exec(
