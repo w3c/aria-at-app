@@ -238,9 +238,9 @@ const TestQueueRow = ({
 
     const evaluateTestPlanRunTitle = () => {
         const { title: apgExampleName, directory } = testPlanVersion;
-        const testPlanTargetName = `${testPlanReport.at?.name} and ${testPlanReport.browser?.name}`;
+        const testPlanTargetTitle = `${testPlanReport.at?.name} and ${testPlanReport.browser?.name}`;
 
-        return `${apgExampleName || directory} for ${testPlanTargetName}`;
+        return `${apgExampleName || directory} for ${testPlanTargetTitle}`;
     };
 
     const renderOpenAsDropdown = () => {

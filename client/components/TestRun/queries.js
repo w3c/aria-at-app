@@ -8,6 +8,8 @@ export const TEST_RUN_PAGE_QUERY = gql`
                 id
                 username
             }
+            # atVersionId
+            # browserVersionId
             testResults {
                 id
                 test {
@@ -72,17 +74,13 @@ export const TEST_RUN_PAGE_QUERY = gql`
                         }
                     }
                 }
-                testPlanTarget {
-                    title
-                    at {
-                        id
-                        name
-                    }
-                    atVersion
-                    browser {
-                        name
-                    }
-                    browserVersion
+                at {
+                    id
+                    name
+                }
+                browser {
+                    id
+                    name
                 }
                 testPlanVersion {
                     id
@@ -131,22 +129,22 @@ export const TEST_RUN_PAGE_QUERY = gql`
             id
             username
         }
-        # ats {
-        #     id
-        #     name
-        #     atVersions {
-        #         id
-        #         name
-        #     }
-        # }
-        # browsers {
-        #     id
-        #     name
-        #     browserVersions {
-        #         id
-        #         name
-        #     }
-        # }
+        ats {
+            id
+            name
+            atVersions {
+                id
+                name
+            }
+        }
+        browsers {
+            id
+            name
+            browserVersions {
+                id
+                name
+            }
+        }
     }
 `;
 
@@ -193,17 +191,13 @@ export const TEST_RUN_PAGE_ANON_QUERY = gql`
                     }
                 }
             }
-            testPlanTarget {
-                title
-                at {
-                    id
-                    name
-                }
-                atVersion
-                browser {
-                    name
-                }
-                browserVersion
+            at {
+                id
+                name
+            }
+            browser {
+                id
+                name
             }
             testPlanVersion {
                 id
@@ -247,9 +241,18 @@ export const TEST_RUN_PAGE_ANON_QUERY = gql`
 `;
 
 export const FIND_OR_CREATE_TEST_RESULT_MUTATION = gql`
-    mutation FindOrCreateTestResult($testPlanRunId: ID!, $testId: ID!) {
+    mutation FindOrCreateTestResult(
+        $testPlanRunId: ID!
+        $testId: ID!
+        $atVersionId: ID!
+        $browserVersionId: ID!
+    ) {
         testPlanRun(id: $testPlanRunId) {
-            findOrCreateTestResult(testId: $testId) {
+            findOrCreateTestResult(
+                testId: $testId
+                atVersionId: $atVersionId
+                browserVersionId: $browserVersionId
+            ) {
                 locationOfData
             }
         }

@@ -19,7 +19,7 @@ import TestRenderer from '../TestRenderer';
 import OptionButton from './OptionButton';
 import PageStatus from '../common/PageStatus';
 import BasicModal from '../common/BasicModal';
-// import AtAndBrowserDetailsModal from '../common/AtAndBrowserDetailsModal';
+import AtAndBrowserDetailsModal from '../common/AtAndBrowserDetailsModal';
 import DisplayNone from '../../utils/DisplayNone';
 import {
     TEST_RUN_PAGE_QUERY,
@@ -38,8 +38,8 @@ const createGitHubIssueWithTitleAndBody = ({
     testPlanReport,
     conflictMarkdown = null
 }) => {
-    const { testPlanVersion, testPlanTarget } = testPlanReport;
-    const { at, browser } = testPlanTarget;
+    const { testPlanVersion, at, browser } = testPlanReport;
+    const testPlanTarget = { atVersion: 'FIXME', browserVersion: 'FIXME' }; // FIXME: Should be attached to testPlanRun object (assumption)
 
     const title =
         `Feedback: "${test.title}" (${testPlanVersion.title}, ` +
@@ -99,11 +99,14 @@ const TestRun = () => {
     const [submitTestResult] = useMutation(SUBMIT_TEST_RESULT_MUTATION);
     const [deleteTestResult] = useMutation(DELETE_TEST_RESULT_MUTATION);
 
+    const [isFirstPageLoad, setIsFirstPageLoad] = useState(true);
     const [isRendererReady, setIsRendererReady] = useState(false);
     const [isTestSubmitClicked, setIsTestSubmitClicked] = useState(false);
     const [isTestEditClicked, setIsTestEditClicked] = useState(false);
     const [showTestNavigator, setShowTestNavigator] = useState(true);
     const [currentTestIndex, setCurrentTestIndex] = useState(0);
+    const [atVersionId, setAtVersionId] = useState();
+    const [browserVersionId, setBrowserVersionId] = useState();
     const [showStartOverModal, setShowStartOverModal] = useState(false);
     const [showReviewConflictsModal, setShowReviewConflictsModal] = useState(
         false
@@ -146,10 +149,9 @@ const TestRun = () => {
     }
 
     const auth = evaluateAuth(data && data.me ? data.me : {});
-    const { id: userId } = auth;
-    let { isSignedIn } = auth;
+    let { id: userId, isSignedIn, isAdmin } = auth;
 
-    const { testPlanRun, users /*, ats = [], browsers = []*/ } = data;
+    const { testPlanRun, users, ats = [], browsers = [] } = data;
     const { tester, testResults = [] } = testPlanRun || {};
     let { testPlanReport } = testPlanRun || {};
 
@@ -158,12 +160,8 @@ const TestRun = () => {
     if (testPlanReportId) isSignedIn = false;
     if (!isSignedIn) testPlanReport = data.testPlanReport;
 
-    const {
-        testPlanTarget,
-        testPlanVersion,
-        runnableTests = [],
-        conflicts = []
-    } = testPlanReport || {};
+    const { testPlanVersion, runnableTests = [], conflicts = [] } =
+        testPlanReport || {};
 
     // check to ensure an admin that manually went to a test run url doesn't
     // run the test as themselves
@@ -173,7 +171,7 @@ const TestRun = () => {
             : null;
     const testerId = openAsUserId || userId;
 
-    if (isSignedIn ? !testPlanRun || !testPlanTarget : !testPlanTarget) {
+    if (isSignedIn && !testPlanRun) {
         return (
             <PageStatus
                 title="Error - Test Results | ARIA-AT"
@@ -186,15 +184,23 @@ const TestRun = () => {
 
     const toggleTestNavigator = () => setShowTestNavigator(!showTestNavigator);
 
-    const createTestResultForRenderer = async testId => {
-        await createTestResult({
-            variables: {
-                testPlanRunId,
-                testId
-            }
-        });
-        pageReadyRef.current = true;
-        await refetch();
+    const createTestResultForRenderer = async (
+        testId,
+        atVersionId,
+        browserVersionId
+    ) => {
+        if (atVersionId && browserVersionId) {
+            await createTestResult({
+                variables: {
+                    testPlanRunId,
+                    testId,
+                    atVersionId,
+                    browserVersionId
+                }
+            });
+            pageReadyRef.current = true;
+            await refetch();
+        } else pageReadyRef.current = true;
     };
 
     const tests = runnableTests.map((test, index) => ({
@@ -208,7 +214,13 @@ const TestRun = () => {
     const hasTestsToRun = tests.length;
 
     if (!currentTest.testResult && !pageReadyRef.current && isSignedIn)
-        (async () => await createTestResultForRenderer(currentTest.id))();
+        // TODO: Remove default '2' when atVersion and browserVersion is being saved on testPlanRun (assumption)
+        (async () =>
+            await createTestResultForRenderer(
+                currentTest.id,
+                testPlanRun.atVersion?.id || atVersionId /* || 2*/,
+                testPlanRun.browserVersion?.name || browserVersionId /* || 2*/
+            ))();
     else pageReadyRef.current = true;
 
     const gitHubIssueLinkWithTitleAndBody = createGitHubIssueWithTitleAndBody({
@@ -465,7 +477,12 @@ const TestRun = () => {
         await deleteTestResult({ variables });
 
         setup();
-        await createTestResultForRenderer(currentTest.id);
+        // TODO: Assumption for atVersion and browserVersion location
+        await createTestResultForRenderer(
+            currentTest.id,
+            testPlanRun.atVersion?.id || atVersionId /* || 2*/,
+            testPlanRun.browserVersion?.id || browserVersionId /* || 2*/
+        );
 
         // close modal after action
         setShowStartOverModal(false);
@@ -621,7 +638,7 @@ const TestRun = () => {
                                 <Row>
                                     <TestRenderer
                                         key={nextId()}
-                                        at={testPlanTarget.at}
+                                        at={testPlanReport.at}
                                         testResult={
                                             !isSignedIn
                                                 ? {
@@ -738,6 +755,7 @@ const TestRun = () => {
     let heading;
     let content;
     let openAsUserHeading = null;
+    const testPlanTargetTitle = `${testPlanReport.at?.name} and ${testPlanReport.browser?.name}`;
 
     if (openAsUserId) {
         const openAsUser = users.find(user => user.id === openAsUserId);
@@ -770,7 +788,7 @@ const TestRun = () => {
                     data-test="at-browser"
                 >
                     <div className="info-label">
-                        <b>AT and Browser:</b> {`${testPlanTarget.title}`}
+                        <b>AT and Browser:</b> {`${testPlanTargetTitle}`}
                     </div>
                 </div>
                 <div className="test-info-entity tests-completed">
@@ -829,7 +847,7 @@ const TestRun = () => {
         );
     }
 
-    /*const getVersionForResource = (
+    const getVersionsForResource = (
         sourceData, // ats or browsers
         resourceName, // eg. NVDA, Chrome, etc
         versionsIdentifier // atVersions or browserVersions
@@ -839,14 +857,43 @@ const TestRun = () => {
                 .find(item => item.name === resourceName)
                 [versionsIdentifier].map(item => item.name) || []
         );
-    };*/
+    };
+
+    const handleAtAndBrowserDetailsModalAction = async (
+        updatedAtVersion,
+        updatedBrowserVersion
+    ) => {
+        // Get version id for selected atVersion and browserVersion from name
+        const atVersions = ats.find(item => item.id === testPlanReport.at.id)
+            .atVersions;
+        const atVersionId = atVersions.find(
+            item => item.name === updatedAtVersion
+        ).id;
+
+        const browserVersions = browsers.find(
+            item => item.id === testPlanReport.browser.id
+        ).browserVersions;
+        const browserVersionId = browserVersions.find(
+            item => item.name === updatedBrowserVersion
+        ).id;
+
+        setAtVersionId(atVersionId);
+        setBrowserVersionId(browserVersionId);
+
+        await createTestResultForRenderer(
+            currentTest.id,
+            atVersionId,
+            browserVersionId
+        );
+        setIsFirstPageLoad(false);
+    };
 
     return (
         <Container className="test-run-container">
             <Helmet>
                 <title>
                     {hasTestsToRun
-                        ? `${currentTest.title} for ${testPlanTarget.title} ` +
+                        ? `${currentTest.title} for ${testPlanTargetTitle} ` +
                           `| ARIA-AT`
                         : 'No tests for this AT and Browser | ARIA-AT'}
                 </title>
@@ -870,30 +917,45 @@ const TestRun = () => {
                     </Row>
                 </Col>
             </Row>
-            {/*{isSignedIn && (
+            {isSignedIn && (
+                // && just loaded TestRun
                 <AtAndBrowserDetailsModal
-                    show={true}
-                    isAdmin={false}
-                    atName="NVDA" // passed from testPlanReport
-                    atVersion="2022.3.5" // passed from testPlanRun
-                    atVersions={getVersionForResource(
+                    show={isFirstPageLoad}
+                    isAdmin={isAdmin && openAsUserId}
+                    atName={testPlanReport.at.name}
+                    atVersion={
+                        testPlanRun.atVersion?.name ||
+                        getVersionsForResource(
+                            ats,
+                            testPlanReport.at.name,
+                            'atVersions'
+                        )[0]
+                    }
+                    atVersions={getVersionsForResource(
                         ats,
-                        'NVDA',
+                        testPlanReport.at.name,
                         'atVersions'
                     )}
-                    browserName="Chrome" // passed from testPlanReport
-                    browserVersion="97.0.4758" // passed from testPlanRun
-                    browserVersions={getVersionForResource(
+                    browserName={testPlanReport.browser.name}
+                    browserVersion={
+                        testPlanRun.browserVersion?.name ||
+                        getVersionsForResource(
+                            browsers,
+                            testPlanReport.browser.name,
+                            'browserVersions'
+                        )[0]
+                    }
+                    browserVersions={getVersionsForResource(
                         browsers,
-                        'Chrome',
+                        testPlanReport.browser.name,
                         'browserVersions'
                     )}
-                    patternName="Checkbox" // required if isAdmin=true
-                    testerName="alflennik" // required if isAdmin=true
-                    handleAction={() => {}} // expects func(updatedAtVersion, updatedBrowserVersion) but to be discussed
-                    handleClose={() => {}}
+                    patternName={testPlanVersion.title}
+                    testerName={tester.username}
+                    handleAction={handleAtAndBrowserDetailsModalAction}
+                    handleClose={() => setIsFirstPageLoad(false)}
                 />
-            )}*/}
+            )}
         </Container>
     );
 };

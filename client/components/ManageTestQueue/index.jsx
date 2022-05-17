@@ -595,12 +595,12 @@ const ManageTestQueue = ({
                 </div>
                 <Button
                     variant="primary"
-                    onClick={handleAddTestPlanToTestQueue}
                     disabled={
                         !selectedTestPlanVersionId ||
                         !selectedAtId ||
                         !selectedBrowserId
                     }
+                    onClick={handleAddTestPlanToTestQueue}
                 >
                     Add Test Plan to Test Queue
                 </Button>
