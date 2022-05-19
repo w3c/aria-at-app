@@ -213,13 +213,70 @@ const TestRun = () => {
     const currentTest = tests[currentTestIndex];
     const hasTestsToRun = tests.length;
 
+    const getResourceVersionFromId = (
+        sourceData, // ats or browsers
+        resourceId, // id of AT or Browser
+        versionId, // id of AT version or Browser version
+        versionsIdentifier // atVersions or browserVersions
+    ) => {
+        return sourceData
+            .find(item => item.id == resourceId)
+            [versionsIdentifier].find(item => item.id == versionId);
+    };
+
+    const getVersionsForResource = (
+        sourceData, // ats or browsers
+        resourceName, // eg. NVDA, Chrome, etc
+        versionsIdentifier // atVersions or browserVersions
+    ) => {
+        return (
+            sourceData
+                .find(item => item.name === resourceName)
+                [versionsIdentifier].map(item => item) || []
+        );
+    };
+
+    const defaultAtVersionId = getVersionsForResource(
+        ats,
+        testPlanReport.at.name,
+        'atVersions'
+    )[0].id;
+
+    const defaultBrowserVersionId = getVersionsForResource(
+        browsers,
+        testPlanReport.browser.name,
+        'browserVersions'
+    )[0].id;
+
+    const currentTestAtVersionId =
+        currentTest.testResult?.atVersionId ||
+        atVersionId ||
+        defaultAtVersionId;
+
+    const currentTestBrowserVersionId =
+        currentTest.testResult?.browserVersionId ||
+        browserVersionId ||
+        defaultBrowserVersionId;
+
+    const currentAtVersion = getResourceVersionFromId(
+        ats,
+        testPlanReport.at.id,
+        currentTestAtVersionId,
+        'atVersions'
+    );
+    const currentBrowserVersion = getResourceVersionFromId(
+        browsers,
+        testPlanReport.browser.id,
+        currentTestBrowserVersionId,
+        'browserVersions'
+    );
+
     if (!currentTest.testResult && !pageReadyRef.current && isSignedIn)
-        // TODO: Remove default '2' when atVersion and browserVersion is being saved on testPlanRun (assumption)
         (async () =>
             await createTestResultForRenderer(
                 currentTest.id,
-                testPlanRun.atVersion?.id || atVersionId /* || 2*/,
-                testPlanRun.browserVersion?.name || browserVersionId /* || 2*/
+                currentTestAtVersionId,
+                currentTestBrowserVersionId
             ))();
     else pageReadyRef.current = true;
 
@@ -477,11 +534,10 @@ const TestRun = () => {
         await deleteTestResult({ variables });
 
         setup();
-        // TODO: Assumption for atVersion and browserVersion location
         await createTestResultForRenderer(
             currentTest.id,
-            testPlanRun.atVersion?.id || atVersionId /* || 2*/,
-            testPlanRun.browserVersion?.id || browserVersionId /* || 2*/
+            currentTestAtVersionId,
+            currentTestBrowserVersionId
         );
 
         // close modal after action
@@ -755,7 +811,6 @@ const TestRun = () => {
     let heading;
     let content;
     let openAsUserHeading = null;
-    const testPlanTargetTitle = `${testPlanReport.at?.name} and ${testPlanReport.browser?.name}`;
 
     if (openAsUserId) {
         const openAsUser = users.find(user => user.id === openAsUserId);
@@ -788,7 +843,12 @@ const TestRun = () => {
                     data-test="at-browser"
                 >
                     <div className="info-label">
-                        <b>AT and Browser:</b> {`${testPlanTargetTitle}`}
+                        <b>AT:</b>{' '}
+                        {`${testPlanReport.at?.name} ${currentAtVersion.name}`}
+                    </div>
+                    <div className="info-label">
+                        <b>Browser:</b>{' '}
+                        {`${testPlanReport.browser?.name} ${currentBrowserVersion.name}`}
                     </div>
                 </div>
                 <div className="test-info-entity tests-completed">
@@ -847,34 +907,22 @@ const TestRun = () => {
         );
     }
 
-    const getVersionsForResource = (
-        sourceData, // ats or browsers
-        resourceName, // eg. NVDA, Chrome, etc
-        versionsIdentifier // atVersions or browserVersions
-    ) => {
-        return (
-            sourceData
-                .find(item => item.name === resourceName)
-                [versionsIdentifier].map(item => item.name) || []
-        );
-    };
-
     const handleAtAndBrowserDetailsModalAction = async (
-        updatedAtVersion,
-        updatedBrowserVersion
+        updatedAtVersionName,
+        updatedBrowserVersionName
     ) => {
         // Get version id for selected atVersion and browserVersion from name
         const atVersions = ats.find(item => item.id === testPlanReport.at.id)
             .atVersions;
         const atVersionId = atVersions.find(
-            item => item.name === updatedAtVersion
+            item => item.name === updatedAtVersionName
         ).id;
 
         const browserVersions = browsers.find(
             item => item.id === testPlanReport.browser.id
         ).browserVersions;
         const browserVersionId = browserVersions.find(
-            item => item.name === updatedBrowserVersion
+            item => item.name === updatedBrowserVersionName
         ).id;
 
         setAtVersionId(atVersionId);
@@ -888,12 +936,23 @@ const TestRun = () => {
         setIsFirstPageLoad(false);
     };
 
+    const atVersions = getVersionsForResource(
+        ats,
+        testPlanReport.at.name,
+        'atVersions'
+    );
+    const browserVersions = getVersionsForResource(
+        browsers,
+        testPlanReport.browser.name,
+        'browserVersions'
+    );
+
     return (
         <Container className="test-run-container">
             <Helmet>
                 <title>
                     {hasTestsToRun
-                        ? `${currentTest.title} for ${testPlanTargetTitle} ` +
+                        ? `${currentTest.title} for ${testPlanReport.at?.name} ${currentAtVersion.name} and ${testPlanReport.browser?.name} ${currentBrowserVersion.name} ` +
                           `| ARIA-AT`
                         : 'No tests for this AT and Browser | ARIA-AT'}
                 </title>
@@ -924,32 +983,15 @@ const TestRun = () => {
                     isAdmin={isAdmin && openAsUserId}
                     atName={testPlanReport.at.name}
                     atVersion={
-                        testPlanRun.atVersion?.name ||
-                        getVersionsForResource(
-                            ats,
-                            testPlanReport.at.name,
-                            'atVersions'
-                        )[0]
+                        testPlanRun.atVersion?.name || atVersions[0]?.name
                     }
-                    atVersions={getVersionsForResource(
-                        ats,
-                        testPlanReport.at.name,
-                        'atVersions'
-                    )}
+                    atVersions={atVersions.map(item => item.name)}
                     browserName={testPlanReport.browser.name}
                     browserVersion={
                         testPlanRun.browserVersion?.name ||
-                        getVersionsForResource(
-                            browsers,
-                            testPlanReport.browser.name,
-                            'browserVersions'
-                        )[0]
+                        browserVersions[0]?.name
                     }
-                    browserVersions={getVersionsForResource(
-                        browsers,
-                        testPlanReport.browser.name,
-                        'browserVersions'
-                    )}
+                    browserVersions={browserVersions.map(item => item.name)}
                     patternName={testPlanVersion.title}
                     testerName={tester.username}
                     handleAction={handleAtAndBrowserDetailsModalAction}

@@ -8,14 +8,14 @@ export const TEST_RUN_PAGE_QUERY = gql`
                 id
                 username
             }
-            # atVersionId
-            # browserVersionId
             testResults {
                 id
                 test {
                     id
                     renderableContent
                 }
+                atVersionId
+                browserVersionId
                 startedAt
                 completedAt
                 scenarioResults {
