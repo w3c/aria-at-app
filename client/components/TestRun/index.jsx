@@ -37,10 +37,11 @@ import ReviewConflicts from '../ReviewConflicts';
 const createGitHubIssueWithTitleAndBody = ({
     test,
     testPlanReport,
+    atVersion,
+    browserVersion,
     conflictMarkdown = null
 }) => {
     const { testPlanVersion, at, browser } = testPlanReport;
-    const testPlanTarget = { atVersion: 'FIXME', browserVersion: 'FIXME' }; // FIXME: Should be attached to testPlanRun object (assumption)
 
     const title =
         `Feedback: "${test.title}" (${testPlanVersion.title}, ` +
@@ -55,9 +56,9 @@ const createGitHubIssueWithTitleAndBody = ({
         `- Test File at Exact Commit: ` +
         `[${shortenedUrl}](https://aria-at.w3.org${test.renderedUrl})\n` +
         `- AT: ` +
-        `${at.name} (version ${testPlanTarget.atVersion})\n` +
+        `${at.name} (version ${atVersion})\n` +
         `- Browser: ` +
-        `${browser.name} (version ${testPlanTarget.browserVersion})\n`;
+        `${browser.name} (version ${browserVersion})\n`;
 
     if (conflictMarkdown) {
         body += `\n${conflictMarkdown}`;
@@ -286,6 +287,8 @@ const TestRun = () => {
     const gitHubIssueLinkWithTitleAndBody = createGitHubIssueWithTitleAndBody({
         test: currentTest,
         testPlanReport,
+        atVersion: currentAtVersion.name,
+        browserVersion: currentBrowserVersion.name,
         conflictMarkdown: conflictMarkdownRef.current
     });
 
@@ -994,14 +997,11 @@ const TestRun = () => {
                     show={isShowingAtBrowserModal}
                     isAdmin={isAdmin && openAsUserId}
                     atName={testPlanReport.at.name}
-                    atVersion={
-                        testPlanRun.atVersion?.name || atVersions[0]?.name
-                    }
+                    atVersion={currentAtVersion?.name || atVersions[0]?.name}
                     atVersions={atVersions.map(item => item.name)}
                     browserName={testPlanReport.browser.name}
                     browserVersion={
-                        testPlanRun.browserVersion?.name ||
-                        browserVersions[0]?.name
+                        currentBrowserVersion?.name || browserVersions[0]?.name
                     }
                     browserVersions={browserVersions.map(item => item.name)}
                     patternName={testPlanVersion.title}
