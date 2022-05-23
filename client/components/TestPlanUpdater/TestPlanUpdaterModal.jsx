@@ -165,12 +165,6 @@ const TestPlanUpdaterModal = ({
         browserVersionId = copyableTestResults[0]?.browserVersionId;
     }
 
-    const canCreateNewReport =
-        versionData &&
-        runsWithResults.length > 0 &&
-        atVersionId &&
-        browserVersionId;
-
     const copyTestResult = (testResultSkeleton, testResult) => {
         return {
             id: testResultSkeleton.id,
@@ -478,7 +472,6 @@ const TestPlanUpdaterModal = ({
                                         !backupChecked ? 'danger' : 'primary'
                                     }
                                     className="submit-button"
-                                    disabled={!canCreateNewReport}
                                     onClick={createNewReportWithData}
                                 >
                                     Update Test Plan
