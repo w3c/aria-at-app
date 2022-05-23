@@ -262,6 +262,27 @@ main.container-fluid .test-iframe-container > .row {
     /*text-align: center;*/
 }
 
+.at-browser-row {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#edit-fa-button {
+    padding: 0;
+    margin: 0;
+    background: none;
+    color: #919191;
+    border: none;
+}
+
+#edit-fa-button svg {
+    padding: 0;
+    margin: 0;
+}
+
 .tests-completed {
     width: 23.5%;
 }

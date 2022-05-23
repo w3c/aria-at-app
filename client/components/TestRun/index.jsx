@@ -8,7 +8,8 @@ import {
     faRedo,
     faExclamationCircle,
     faCheck,
-    faPen
+    faPen,
+    faEdit
 } from '@fortawesome/free-solid-svg-icons';
 import nextId from 'react-id-generator';
 import { Alert, Button, Col, Container, Row } from 'react-bootstrap';
@@ -99,7 +100,9 @@ const TestRun = () => {
     const [submitTestResult] = useMutation(SUBMIT_TEST_RESULT_MUTATION);
     const [deleteTestResult] = useMutation(DELETE_TEST_RESULT_MUTATION);
 
-    const [isFirstPageLoad, setIsFirstPageLoad] = useState(true);
+    const [isShowingAtBrowserModal, setIsShowingAtBrowserModal] = useState(
+        true
+    );
     const [isRendererReady, setIsRendererReady] = useState(false);
     const [isTestSubmitClicked, setIsTestSubmitClicked] = useState(false);
     const [isTestEditClicked, setIsTestEditClicked] = useState(false);
@@ -249,13 +252,13 @@ const TestRun = () => {
     )[0].id;
 
     const currentTestAtVersionId =
-        currentTest.testResult?.atVersionId ||
         atVersionId ||
+        currentTest.testResult?.atVersionId ||
         defaultAtVersionId;
 
     const currentTestBrowserVersionId =
-        currentTest.testResult?.browserVersionId ||
         browserVersionId ||
+        currentTest.testResult?.browserVersionId ||
         defaultBrowserVersionId;
 
     const currentAtVersion = getResourceVersionFromId(
@@ -562,6 +565,46 @@ const TestRun = () => {
     const handleReviewConflictsButtonClick = async () =>
         setShowReviewConflictsModal(true);
 
+    const handleAtAndBrowserDetailsModalAction = async (
+        updatedAtVersionName,
+        updatedBrowserVersionName
+    ) => {
+        // Get version id for selected atVersion and browserVersion from name
+        const atVersions = ats.find(item => item.id === testPlanReport.at.id)
+            .atVersions;
+        const atVersionId = atVersions.find(
+            item => item.name === updatedAtVersionName
+        ).id;
+
+        const browserVersions = browsers.find(
+            item => item.id === testPlanReport.browser.id
+        ).browserVersions;
+        const browserVersionId = browserVersions.find(
+            item => item.name === updatedBrowserVersionName
+        ).id;
+
+        setAtVersionId(atVersionId);
+        setBrowserVersionId(browserVersionId);
+
+        await createTestResultForRenderer(
+            currentTest.id,
+            atVersionId,
+            browserVersionId
+        );
+        setIsShowingAtBrowserModal(false);
+    };
+
+    const atVersions = getVersionsForResource(
+        ats,
+        testPlanReport.at.name,
+        'atVersions'
+    );
+    const browserVersions = getVersionsForResource(
+        browsers,
+        testPlanReport.browser.name,
+        'browserVersions'
+    );
+
     const renderTestContent = (testPlanReport, currentTest, heading) => {
         const { index } = currentTest;
         const isComplete = currentTest.testResult
@@ -842,9 +885,18 @@ const TestRun = () => {
                     className="test-info-entity at-browser"
                     data-test="at-browser"
                 >
-                    <div className="info-label">
-                        <b>AT:</b>{' '}
-                        {`${testPlanReport.at?.name} ${currentAtVersion.name}`}
+                    <div className="at-browser-row">
+                        <div className="info-label">
+                            <b>AT:</b>{' '}
+                            {`${testPlanReport.at?.name} ${currentAtVersion.name}`}
+                        </div>
+                        <Button
+                            id="edit-fa-button"
+                            aria-label="Edit version details for AT and Browser"
+                            onClick={() => setIsShowingAtBrowserModal(true)}
+                        >
+                            <FontAwesomeIcon icon={faEdit} />
+                        </Button>
                     </div>
                     <div className="info-label">
                         <b>Browser:</b>{' '}
@@ -907,46 +959,6 @@ const TestRun = () => {
         );
     }
 
-    const handleAtAndBrowserDetailsModalAction = async (
-        updatedAtVersionName,
-        updatedBrowserVersionName
-    ) => {
-        // Get version id for selected atVersion and browserVersion from name
-        const atVersions = ats.find(item => item.id === testPlanReport.at.id)
-            .atVersions;
-        const atVersionId = atVersions.find(
-            item => item.name === updatedAtVersionName
-        ).id;
-
-        const browserVersions = browsers.find(
-            item => item.id === testPlanReport.browser.id
-        ).browserVersions;
-        const browserVersionId = browserVersions.find(
-            item => item.name === updatedBrowserVersionName
-        ).id;
-
-        setAtVersionId(atVersionId);
-        setBrowserVersionId(browserVersionId);
-
-        await createTestResultForRenderer(
-            currentTest.id,
-            atVersionId,
-            browserVersionId
-        );
-        setIsFirstPageLoad(false);
-    };
-
-    const atVersions = getVersionsForResource(
-        ats,
-        testPlanReport.at.name,
-        'atVersions'
-    );
-    const browserVersions = getVersionsForResource(
-        browsers,
-        testPlanReport.browser.name,
-        'browserVersions'
-    );
-
     return (
         <Container className="test-run-container">
             <Helmet>
@@ -979,7 +991,7 @@ const TestRun = () => {
             {isSignedIn && (
                 // && just loaded TestRun
                 <AtAndBrowserDetailsModal
-                    show={isFirstPageLoad}
+                    show={isShowingAtBrowserModal}
                     isAdmin={isAdmin && openAsUserId}
                     atName={testPlanReport.at.name}
                     atVersion={
@@ -995,7 +1007,7 @@ const TestRun = () => {
                     patternName={testPlanVersion.title}
                     testerName={tester.username}
                     handleAction={handleAtAndBrowserDetailsModalAction}
-                    handleClose={() => setIsFirstPageLoad(false)}
+                    handleClose={() => setIsShowingAtBrowserModal(false)}
                 />
             )}
         </Container>
