@@ -80,7 +80,14 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
                 );
                 const overallMetrics = getMetrics({ testPlanReport });
 
-                const { testPlanTarget } = testPlanReport;
+                const { at, browser } = testPlanReport;
+
+                // Construct testPlanTarget
+                const testPlanTarget = {
+                    id: `${at.id}${browser.id}`,
+                    at,
+                    browser
+                };
 
                 return (
                     <Fragment key={testPlanReport.id}>

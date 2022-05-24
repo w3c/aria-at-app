@@ -1,5 +1,6 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useState } from 'react';
 import PropTypes from 'prop-types';
+import styled from '@emotion/styled';
 import { Helmet } from 'react-helmet';
 import { createGitHubIssueWithTitleAndBody } from '../TestRun';
 import getMetrics from './getMetrics';
@@ -13,7 +14,56 @@ import {
     faHome
 } from '@fortawesome/free-solid-svg-icons';
 import { differenceBy } from 'lodash';
+import { convertDateToString } from '../../utils/formatter';
 import DisclaimerInfo from '../DisclaimerInfo';
+
+const DisclosureParent = styled.div`
+    border: 1px solid #d3d5da;
+    border-radius: 3px;
+`;
+
+const DisclosureButton = styled.button`
+    position: relative;
+    width: 100%;
+    margin: 0;
+    padding: 1.25rem;
+    text-align: left;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 3px;
+    background-color: transparent;
+
+    &:hover,
+    &:focus {
+        padding: 1.25rem;
+        border: 0 solid #005a9c;
+        background-color: #def;
+        cursor: pointer;
+    }
+
+    &[aria-expanded='true']::after {
+        content: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='16' height='9.148' viewBox='0 0 16 9.148'%3e%3cpath d='M14.19,17.637l6.05-6.055a1.139,1.139,0,0,1,1.615,0,1.153,1.153,0,0,1,0,1.62L15,20.062a1.141,1.141,0,0,1-1.577.033l-6.9-6.888a1.144,1.144,0,0,1,1.615-1.62Z' transform='translate(22.188 20.395) rotate(180)' fill='%23969696'/%3e%3c/svg%3e");
+        position: absolute;
+        right: 1.25rem;
+    }
+
+    &[aria-expanded='false']::after {
+        content: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='16' height='9.148' viewBox='0 0 16 9.148'%3e%3cpath d='M14.19,17.637l6.05-6.055a1.139,1.139,0,0,1,1.615,0,1.153,1.153,0,0,1,0,1.62L15,20.062a1.141,1.141,0,0,1-1.577.033l-6.9-6.888a1.144,1.144,0,0,1,1.615-1.62Z' transform='translate(-6.188 -11.246)' fill='%23969696'/%3e%3c/svg%3e");
+        position: absolute;
+        right: 1.25rem;
+    }
+`;
+
+const DisclosureContainer = styled.div`
+    display: ${({ show }) => (show ? 'flex' : 'none')};
+    flex-direction: column;
+    gap: 1.25rem;
+
+    background-color: #f8f9fa;
+    padding: 1.25rem;
+    border-top: 1px solid #d3d5da;
+`;
 
 const getAssertionResultString = assertionResult => {
     let output = 'Good output';
@@ -26,14 +76,115 @@ const getAssertionResultString = assertionResult => {
     return `${output}: ${assertionResult.assertion.text}`;
 };
 
-const SummarizeTestPlanReport = ({ testPlanReport }) => {
-    const { testPlanVersion, testPlanTarget } = testPlanReport;
+const getTestersRunHistory = (
+    testPlanReportId,
+    testId,
+    draftTestPlanRuns = [],
+    atVersions = [],
+    browserVersions = []
+) => {
+    let lines = [];
+
+    draftTestPlanRuns.forEach(draftTestPlanRun => {
+        const { testPlanReport, testResults, tester } = draftTestPlanRun;
+
+        const testResult = testResults.find(item => item.test.id === testId);
+        if (
+            testPlanReportId === testPlanReport.id &&
+            testPlanReport.status === 'FINALIZED' &&
+            testResult
+        ) {
+            // Need to determine name of AT Version and Browser Version
+            const { atVersionId, browserVersionId } = testResult;
+            const atVersion = atVersions.find(item => item.id === atVersionId);
+            const browserVersion = browserVersions.find(
+                item => item.id === browserVersionId
+            );
+
+            lines.push(
+                <span
+                    key={`${atVersionId}-${browserVersion}-${testResult.test.id}-${tester.username}`}
+                >
+                    Tested with{' '}
+                    <b>
+                        {atVersion.atName} {atVersion.name}
+                    </b>{' '}
+                    and{' '}
+                    <b>
+                        {browserVersion.browserName} {browserVersion.name}
+                    </b>{' '}
+                    by{' '}
+                    <b>
+                        <a href={`https://github.com/${tester.username}`}>
+                            {tester.username}
+                        </a>
+                    </b>{' '}
+                    on{' '}
+                    {convertDateToString(
+                        testResult.completedAt,
+                        'MMMM DD, YYYY'
+                    )}
+                    .
+                </span>
+            );
+        }
+    });
+
+    return <>{lines}</>;
+};
+
+const SummarizeTestPlanReport = ({ testPlanReport, ats, browsers }) => {
+    const { testPlanVersion, at, browser } = testPlanReport;
+
+    const [runHistoryItems, setRunHistoryItems] = useState({});
+
+    const flattenedAts = ats
+        .map(atItem => {
+            return atItem.atVersions.map(atVersionItem => {
+                return {
+                    ...atVersionItem,
+                    atId: atItem.id,
+                    atName: atItem.name
+                };
+            });
+        })
+        .flat();
+
+    const flattenedBrowsers = browsers
+        .map(browserItem => {
+            return browserItem.browserVersions.map(browserVersionItem => {
+                return {
+                    ...browserVersionItem,
+                    browserId: browserItem.id,
+                    browserName: browserItem.name
+                };
+            });
+        })
+        .flat();
+
+    // Construct testPlanTarget
+    const testPlanTarget = {
+        id: `${at.id}${browser.id}`,
+        at,
+        browser
+    };
 
     const skippedTests = differenceBy(
         testPlanReport.runnableTests,
         testPlanReport.finalizedTestResults,
         testOrTestResult => testOrTestResult.test?.id ?? testOrTestResult.id
     );
+
+    const onClickRunHistory = testResultId => {
+        // { testResultId: boolean } ]
+        if (!runHistoryItems[testResultId])
+            setRunHistoryItems({ ...runHistoryItems, [testResultId]: true });
+        else
+            setRunHistoryItems({
+                ...runHistoryItems,
+                [testResultId]: !runHistoryItems[testResultId]
+            });
+    };
 
     return (
         <Container id="main" as="main" tabIndex="-1">
@@ -241,6 +392,29 @@ const SummarizeTestPlanReport = ({ testPlanReport }) => {
                                 )}
                             </tbody>
                         </Table>
+
+                        <DisclosureParent>
+                            <DisclosureButton
+                                type="button"
+                                aria-expanded={!!runHistoryItems[testResult.id]}
+                                aria-controls={`run-history-${testResult.id}`}
+                                onClick={() => onClickRunHistory(testResult.id)}
+                            >
+                                Run History
+                            </DisclosureButton>
+                            <DisclosureContainer
+                                id={`run-history-${testResult.id}`}
+                                show={!!runHistoryItems[testResult.id]}
+                            >
+                                {getTestersRunHistory(
+                                    testPlanReport.id,
+                                    testResult.test.id,
+                                    testPlanReport.draftTestPlanRuns,
+                                    flattenedAts,
+                                    flattenedBrowsers
+                                )}
+                            </DisclosureContainer>
+                        </DisclosureParent>
                     </Fragment>
                 );
             })}
@@ -270,10 +444,18 @@ const SummarizeTestPlanReport = ({ testPlanReport }) => {
 
 SummarizeTestPlanReport.propTypes = {
     testPlanReport: PropTypes.shape({
+        id: PropTypes.string.isRequired,
         testPlanVersion: PropTypes.object.isRequired,
-        testPlanTarget: PropTypes.object.isRequired,
         runnableTests: PropTypes.arrayOf(PropTypes.object.isRequired)
             .isRequired,
+        at: PropTypes.shape({
+            id: PropTypes.string.isRequired,
+            name: PropTypes.string.isRequired
+        }).isRequired,
+        browser: PropTypes.shape({
+            id: PropTypes.string.isRequired,
+            name: PropTypes.string.isRequired
+        }).isRequired,
         finalizedTestResults: PropTypes.arrayOf(
             PropTypes.shape({
                 id: PropTypes.string.isRequired,
@@ -305,8 +487,27 @@ SummarizeTestPlanReport.propTypes = {
                     }).isRequired
                 ).isRequired
             }).isRequired
-        ).isRequired
-    }).isRequired
+        ).isRequired,
+        draftTestPlanRuns: PropTypes.arrayOf(
+            PropTypes.shape({
+                tester: PropTypes.shape({
+                    username: PropTypes.string.isRequired
+                })
+            })
+        )
+    }).isRequired,
+    ats: PropTypes.arrayOf(
+        PropTypes.shape({
+            id: PropTypes.string.isRequired,
+            name: PropTypes.string.isRequired
+        }).isRequired
+    ).isRequired,
+    browsers: PropTypes.arrayOf(
+        PropTypes.shape({
+            id: PropTypes.string.isRequired,
+            name: PropTypes.string.isRequired
+        }).isRequired
+    ).isRequired
 };
 
 export default SummarizeTestPlanReport;
