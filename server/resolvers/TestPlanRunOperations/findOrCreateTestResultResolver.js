@@ -8,7 +8,7 @@ const createTestResultSkeleton = require('./createTestResultSkeleton');
 
 const findOrCreateTestResultResolver = async (
     { parentContext: { id: testPlanRunId } },
-    { testId, atVersionId, browserVersionId }, // TODO: finish
+    { testId, atVersionId, browserVersionId },
     { user }
 ) => {
     const {

@@ -32,6 +32,8 @@ describe('TestPlanRunModel Data Checks', () => {
             [],
             [],
             [],
+            [],
+            [],
             []
         );
         const { id, testerUserId, testPlanReportId, testResults } = testPlanRun;
@@ -209,6 +211,8 @@ describe('TestPlanRunModel Data Checks', () => {
             '',
             {},
             ['id'],
+            [],
+            [],
             [],
             [],
             [],

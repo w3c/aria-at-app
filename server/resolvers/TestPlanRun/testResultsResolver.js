@@ -2,14 +2,22 @@ const testsResolver = require('../TestPlanVersion/testsResolver');
 const unexpectedBehaviorsJson = require('../../resources/unexpectedBehaviors.json');
 
 const testResultsResolver = testPlanRun => {
-    const tests = testsResolver(testPlanRun.testPlanReport);
+    const { testPlanReport } = testPlanRun;
+    const tests = testsResolver(testPlanReport);
 
-    // Populate nested test, scenario, assertion and unexpectedBehavior fields
+    // Populate nested test, atVersion, browserVersion, scenario, assertion and
+    // unexpectedBehavior fields
     return testPlanRun.testResults.map(testResult => {
         const test = tests.find(each => each.id === testResult.testId);
         return {
             ...testResult,
             test,
+            atVersion: testPlanReport.at.atVersions.find(
+                each => each.id == testResult.atVersionId
+            ),
+            browserVersion: testPlanReport.browser.browserVersions.find(
+                each => each.id == testResult.browserVersionId
+            ),
             scenarioResults: testResult.scenarioResults.map(scenarioResult => ({
                 ...scenarioResult,
                 scenario: test.scenarios.find(

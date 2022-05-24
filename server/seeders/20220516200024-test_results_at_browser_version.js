@@ -8,6 +8,7 @@ const { getAtVersionByQuery } = require('../models/services/AtService');
 const {
     getBrowserVersionByQuery
 } = require('../models/services/BrowserService');
+const convertTestResultToInput = require('../resolvers/TestPlanRunOperations/convertTestResultToInput');
 
 module.exports = {
     up: queryInterface => {
@@ -43,9 +44,17 @@ module.exports = {
                     result.browserVersionId = browserVersions[browserId].id;
                 }
 
+                // A bug resulted in TestResults with populated associations
+                // getting saved to the database
+                const testResultInputs = testResults.map(
+                    convertTestResultToInput
+                );
+
                 await updateTestPlanRun(
                     runId,
-                    { testResults },
+                    { testResults: testResultInputs },
+                    undefined,
+                    undefined,
                     undefined,
                     undefined,
                     undefined,

@@ -3,6 +3,8 @@ const { query, mutate } = require('../util/graphql-test-utilities');
 const db = require('../../models');
 const { gql } = require('apollo-server-core');
 
+const atVersionId = 1;
+const browserVersionId = 1;
 let testPlanVersionId;
 let testPlanReportId;
 let testPlanRunId;
@@ -75,7 +77,11 @@ const prepopulateTestResult = async () => {
     const mutationResult = await mutate(gql`
         mutation {
             testPlanRun(id: "${testPlanRunId}") {
-                findOrCreateTestResult(testId: "${testId}", atVersionId: 1, browserVersionId: 1) {
+                findOrCreateTestResult(
+                    testId: "${testId}",
+                    atVersionId: "${atVersionId}",
+                    browserVersionId: "${browserVersionId}"
+                ) {
                     testResult {
                         id
                         scenarioResults {
@@ -139,7 +145,11 @@ describe('testPlanRun', () => {
             const mutationResult = await mutate(gql`
                 mutation {
                     testPlanRun(id: "${testPlanRunId}") {
-                        findOrCreateTestResult(testId: "${testId}", atVersionId: 1, browserVersionId: 1) {
+                        findOrCreateTestResult(
+                            testId: "${testId}",
+                            atVersionId: "${atVersionId}",
+                            browserVersionId: "${browserVersionId}"
+                        ) {
                             testResult {
                                 id
                                 test {
@@ -171,6 +181,8 @@ describe('testPlanRun', () => {
                         saveTestResult(
                             input: {
                                 id: "${testResultId}"
+                                atVersionId: "${atVersionId}"
+                                browserVersionId: "${browserVersionId}"
                                 scenarioResults: [
                                     {
                                         id: "${scenarioResultId}"
@@ -228,6 +240,8 @@ describe('testPlanRun', () => {
                         saveTestResult(
                             input: {
                                 id: "${testResultId}"
+                                atVersionId: "${atVersionId}"
+                                browserVersionId: "${browserVersionId}"
                                 scenarioResults: [
                                     {
                                         id: "${scenarioResultId}"
@@ -279,6 +293,8 @@ describe('testPlanRun', () => {
                             submitTestResult(
                                 input: {
                                     id: "${testResultId}"
+                                    atVersionId: "${atVersionId}"
+                                    browserVersionId: "${browserVersionId}"
                                     scenarioResults: [
                                         {
                                             id: "${scenarioResultId}"
@@ -331,6 +347,8 @@ describe('testPlanRun', () => {
                         submitTestResult(
                             input: {
                                 id: "${testResultId}"
+                                atVersionId: "${atVersionId}"
+                                browserVersionId: "${browserVersionId}"
                                 scenarioResults: [
                                     {
                                         id: "${scenarioResultId}"

@@ -4,9 +4,9 @@ const {
     createBrowserVersion
 } = require('../../models/services/BrowserService');
 
-const createBrowserVersionResolver = async (
+const findOrCreateBrowserVersionResolver = async (
     { parentContext: { id: browserId } },
-    { name },
+    { input: { name } },
     { user }
 ) => {
     if (!user?.roles.find(role => role.name === 'ADMIN')) {
@@ -22,4 +22,4 @@ const createBrowserVersionResolver = async (
     return version;
 };
 
-module.exports = createBrowserVersionResolver;
+module.exports = findOrCreateBrowserVersionResolver;

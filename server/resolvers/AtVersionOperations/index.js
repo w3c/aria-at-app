@@ -1,4 +1,4 @@
-const editAtVersion = require('./editAtVersionResolver');
+const updateAtVersion = require('./updateAtVersionResolver');
 const deleteAtVersion = require('./deleteAtVersionResolver');
 
-module.exports = { editAtVersion, deleteAtVersion };
+module.exports = { updateAtVersion, deleteAtVersion };

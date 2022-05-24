@@ -56,10 +56,10 @@
 
 @media (max-width: 767px) {
     .submit-buttons-row {
-      grid-template-columns: 1fr;
-      gap: 0.5em;
+        grid-template-columns: 1fr;
+        gap: 0.5em;
     }
-  }
+}
 
 .trash-icon {
     margin-right: 0 !important;
