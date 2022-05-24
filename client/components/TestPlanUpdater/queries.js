@@ -161,6 +161,8 @@ export const CREATE_TEST_RESULT_MUTATION = gql`
             ) {
                 testResult {
                     id
+                    atVersionId
+                    browserVersionId
                     scenarioResults {
                         id
                         assertionResults {

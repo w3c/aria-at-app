@@ -142,8 +142,6 @@ const TestPlanUpdaterModal = ({
     let copyableTestResults;
     let testsToDelete;
     let currentTestIdsToNewTestIds;
-    let atVersionId;
-    let browserVersionId;
     if (versionData) {
         const { testPlanReport, testPlanVersion } = versionData;
         runsWithResults = testPlanReport.draftTestPlanRuns.filter(
@@ -161,8 +159,6 @@ const TestPlanUpdaterModal = ({
         copyableTestResults = allTestResults.filter(
             testResult => currentTestIdsToNewTestIds[testResult.test.id]
         );
-        atVersionId = copyableTestResults[0]?.atVersionId;
-        browserVersionId = copyableTestResults[0]?.browserVersionId;
     }
 
     const copyTestResult = (testResultSkeleton, testResult) => {
@@ -247,6 +243,8 @@ const TestPlanUpdaterModal = ({
 
             for (const testResult of testPlanRun.testResults) {
                 const testId = currentTestIdsToNewTestIds[testResult.test.id];
+                const atVersionId = testResult.atVersionId;
+                const browserVersionId = testResult.browserVersionId;
                 if (!testId) continue;
 
                 const { data: testResultData } = await client.mutate({
