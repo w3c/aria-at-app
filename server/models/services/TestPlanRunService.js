@@ -9,7 +9,7 @@ const {
     AT_VERSION_ATTRIBUTES,
     BROWSER_VERSION_ATTRIBUTES
 } = require('./helpers');
-const { TestPlanRun } = require('../');
+const { TestPlanRun, sequelize } = require('../');
 
 // association helpers to be included with Models' results
 
@@ -414,6 +414,32 @@ const removeTestPlanRunResultsByQuery = async ({
     );
 };
 
+/**
+ * Allows you to check if a given AtVersion is in use by any test results.
+ * @param {number} atVersionId - An AT version ID
+ * @returns
+ */
+const getTestResultsUsingAtVersion = async atVersionId => {
+    const [results] = await sequelize.query(
+        `
+            WITH "testPlanRunTestResult" AS (
+                SELECT
+                    id,
+                    unnest("testResults") AS "testResult"
+                FROM "TestPlanRun"
+            )
+            SELECT
+                id AS "testPlanRunId",
+                "testResult" ->> 'id' AS "testResultId"
+            FROM "testPlanRunTestResult"
+            WHERE "testResult" ->> 'atVersionId' = ?
+        `,
+        { replacements: [atVersionId] }
+    );
+
+    return results;
+};
+
 module.exports = {
     // TestPlanRun
     getTestPlanRunById,
@@ -422,5 +448,8 @@ module.exports = {
     updateTestPlanRun,
     removeTestPlanRun,
     removeTestPlanRunByQuery,
-    removeTestPlanRunResultsByQuery
+    removeTestPlanRunResultsByQuery,
+
+    // Custom functions
+    getTestResultsUsingAtVersion
 };

@@ -939,7 +939,9 @@ const graphqlSchema = gql`
         isDeleted: Boolean!
         """
         An array of TestResults which are using the AtVersion and have therefore
-        prevented its deletion.
+        prevented its deletion. There is a check in place to limit the number of
+        queries this endpoint will make, so in an extreme case the list may not
+        be exhaustive.
         """
         failedDueToTestResults: [PopulatedData]
     }
