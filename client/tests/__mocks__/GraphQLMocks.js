@@ -236,14 +236,8 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK_ADMIN = [
                             { id: 'MjU2ZeyIyIjoiMSJ9jQ2YW' },
                             { id: 'NzhkZeyIyIjoiMSJ9jg4Ym' }
                         ],
-                        testPlanTarget: {
-                            id: '1',
-                            title: 'JAWS 2021.2103.174 with Chrome 91.0.4472',
-                            at: { id: '1', name: 'JAWS' },
-                            browser: { id: '2', name: 'Chrome' },
-                            atVersion: '2021.2103.174',
-                            browserVersion: '91.0.4472'
-                        },
+                        at: { id: '1', name: 'JAWS' },
+                        browser: { id: '2', name: 'Chrome' },
                         testPlanVersion: {
                             id: '1',
                             title: 'Checkbox Example (Two State)',
@@ -307,15 +301,8 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK_ADMIN = [
                             { id: 'MjU2ZeyIyIjoiMSJ9jQ2YW' },
                             { id: 'NzhkZeyIyIjoiMSJ9jg4Ym' }
                         ],
-                        testPlanTarget: {
-                            id: '1',
-                            title:
-                                'VoiceOver for macOS 11.5.2 with Safari 14.1.2',
-                            at: { id: '3', name: 'VoiceOver for macOS' },
-                            browser: { id: '3', name: 'Safari' },
-                            atVersion: '11.5.2',
-                            browserVersion: '14.1.2'
-                        },
+                        at: { id: '3', name: 'VoiceOver for macOS' },
+                        browser: { id: '3', name: 'Safari' },
                         testPlanVersion: {
                             id: '1',
                             title: 'Checkbox Example (Two State)',
@@ -446,14 +433,8 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK_ADMIN = [
                             { id: 'MjU2ZeyIyIjoiMSJ9jQ2YW' },
                             { id: 'NzhkZeyIyIjoiMSJ9jg4Ym' }
                         ],
-                        testPlanTarget: {
-                            id: '2',
-                            title: 'NVDA 2020.4 with Firefox 88.0.1',
-                            at: { id: '2', name: 'NVDA' },
-                            browser: { id: '1', name: 'Firefox' },
-                            atVersion: '2020.4',
-                            browserVersion: '88.0.1'
-                        },
+                        at: { id: '2', name: 'NVDA' },
+                        browser: { id: '1', name: 'Firefox' },
                         testPlanVersion: {
                             id: '1',
                             title: 'Checkbox Example (Two State)',
@@ -760,19 +741,13 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK_TESTER = [
                                 id: 'YjNkMeyIyIjoiNjUifQGQwMG'
                             }
                         ],
-                        testPlanTarget: {
+                        at: {
                             id: '2',
-                            title: 'NVDA 1 with Firefox 1',
-                            at: {
-                                id: '2',
-                                name: 'NVDA'
-                            },
-                            browser: {
-                                id: '1',
-                                name: 'Firefox'
-                            },
-                            atVersion: '1',
-                            browserVersion: '1'
+                            name: 'NVDA'
+                        },
+                        browser: {
+                            id: '1',
+                            name: 'Firefox'
                         },
                         testPlanVersion: {
                             id: '65',
@@ -903,19 +878,13 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK_TESTER = [
                                 id: 'YjNkMeyIyIjoiNjUifQGQwMG'
                             }
                         ],
-                        testPlanTarget: {
+                        at: {
                             id: '2',
-                            title: 'JAWS 1 with Firefox 1',
-                            at: {
-                                id: '2',
-                                name: 'JAWS'
-                            },
-                            browser: {
-                                id: '1',
-                                name: 'Firefox'
-                            },
-                            atVersion: '1',
-                            browserVersion: '1'
+                            name: 'JAWS'
+                        },
+                        browser: {
+                            id: '1',
+                            name: 'Firefox'
                         },
                         testPlanVersion: {
                             id: '65',
@@ -989,19 +958,13 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK_TESTER = [
                                 id: 'NjM1MeyIyIjoiNzQifQ2U3YT'
                             }
                         ],
-                        testPlanTarget: {
-                            id: '4',
-                            title: 'VoiceOver for macOS 1 with Firefox 3',
-                            at: {
-                                id: '3',
-                                name: 'VoiceOver for macOS'
-                            },
-                            browser: {
-                                id: '1',
-                                name: 'Firefox'
-                            },
-                            atVersion: '1',
-                            browserVersion: '3'
+                        at: {
+                            id: '3',
+                            name: 'VoiceOver for macOS'
+                        },
+                        browser: {
+                            id: '1',
+                            name: 'Firefox'
                         },
                         testPlanVersion: {
                             id: '74',
