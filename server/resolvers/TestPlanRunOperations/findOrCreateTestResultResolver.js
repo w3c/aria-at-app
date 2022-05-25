@@ -8,12 +8,12 @@ const createTestResultSkeleton = require('./createTestResultSkeleton');
 
 const findOrCreateTestResultResolver = async (
     { parentContext: { id: testPlanRunId } },
-    { testId },
+    { testId, atVersionId, browserVersionId }, // TODO: finish
     { user }
 ) => {
     const {
         testPlanRun,
-        testPlanTarget,
+        testPlanReport,
         testPlanVersion: testPlanRunTestPlanVersion
     } = await populateData({
         testPlanRunId
@@ -31,7 +31,7 @@ const findOrCreateTestResultResolver = async (
     }
 
     if (
-        !test.atIds.find(atId => atId === testPlanTarget.at.id) ||
+        !test.atIds.find(atId => atId === testPlanReport.at.id) ||
         testPlanRunTestPlanVersion.id !== testPlanVersion.id
     ) {
         throw new UserInputError(
@@ -42,7 +42,9 @@ const findOrCreateTestResultResolver = async (
     const newTestResult = createTestResultSkeleton({
         test,
         testPlanRun,
-        testPlanTarget
+        testPlanReport,
+        atVersionId,
+        browserVersionId
     });
 
     const alreadyExists = !!testPlanRun.testResults.find(

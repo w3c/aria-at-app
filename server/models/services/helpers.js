@@ -8,7 +8,6 @@ const {
     TestPlanVersion,
     TestPlanReport,
     TestPlanRun,
-    TestPlanTarget,
     User,
     UserRoles,
     UserAts
@@ -36,7 +35,6 @@ module.exports = {
     TEST_PLAN_VERSION_ATTRIBUTES: getSequelizeModelAttributes(TestPlanVersion),
     TEST_PLAN_REPORT_ATTRIBUTES: getSequelizeModelAttributes(TestPlanReport),
     TEST_PLAN_RUN_ATTRIBUTES: getSequelizeModelAttributes(TestPlanRun),
-    TEST_PLAN_TARGET_ATTRIBUTES: getSequelizeModelAttributes(TestPlanTarget),
     USER_ATTRIBUTES: getSequelizeModelAttributes(User),
     USER_ROLES_ATTRIBUTES: getSequelizeModelAttributes(UserRoles),
     USER_ATS_ATTRIBUTES: getSequelizeModelAttributes(UserAts)

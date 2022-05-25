@@ -91,7 +91,10 @@ export const POPULATE_ADD_TEST_PLAN_TO_QUEUE_MODAL_QUERY = gql`
         browsers {
             id
             name
-            browserVersions
+            browserVersions {
+                id
+                name
+            }
         }
         testPlanVersions {
             id

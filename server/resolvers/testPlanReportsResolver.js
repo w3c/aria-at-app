@@ -2,20 +2,20 @@ const {
     getTestPlanReports
 } = require('../models/services/TestPlanReportService');
 
-const testPlanReportsResolver = (_, { statuses }) => {
+const testPlanReportsResolver = async (_, { statuses }) => {
     const where = {};
     if (statuses) where.status = statuses;
 
     return getTestPlanReports(
-        null,
+        undefined,
         where,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
         { order: [['createdAt', 'desc']] }
     );
 };

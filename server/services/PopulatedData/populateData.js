@@ -31,8 +31,8 @@ const populateData = async (locationOfData, { preloaded } = {}) => {
         // testPlanTargetId,
         // atId,
         // browserId,
-        atVersion: providedAtVersion,
-        browserVersion: providedBrowserVersion,
+        // atVersionId,
+        // browserVersionId,
         testId,
         scenarioId,
         assertionId,
@@ -110,11 +110,8 @@ const populateData = async (locationOfData, { preloaded } = {}) => {
         });
     }
 
-    const testPlanTarget = testPlanReport?.testPlanTarget;
-    const at = testPlanTarget?.at;
-    const browser = testPlanTarget?.browser;
-    const atVersion = testPlanTarget?.atVersion;
-    const browserVersion = testPlanTarget?.browserVersion;
+    const at = testPlanReport?.at;
+    const browser = testPlanReport?.browser;
 
     testPlan =
         testPlanVersion && !testPlan
@@ -129,6 +126,8 @@ const populateData = async (locationOfData, { preloaded } = {}) => {
     let testResult;
     let scenarioResult;
     let assertionResult;
+    let atVersion;
+    let browserVersion;
 
     if (testResultId) {
         const testResults = testsResultsResolver(testPlanRun);
@@ -139,7 +138,7 @@ const populateData = async (locationOfData, { preloaded } = {}) => {
                     `does not exist on the TestPlanRun with ID ${testPlanRunId}`
             );
         }
-        testId = testResult.testId;
+        ({ testId, atVersion, browserVersion } = testResult);
     }
     if (scenarioResultId) {
         scenarioResult = testResult.scenarioResults.find(
@@ -180,17 +179,16 @@ const populateData = async (locationOfData, { preloaded } = {}) => {
         idsContradict(locationOfData.testPlanVersionId, testPlanVersion) ||
         idsContradict(locationOfData.testPlanReportId, testPlanReport) ||
         idsContradict(locationOfData.testPlanRunId, testPlanRun) ||
-        idsContradict(locationOfData.testPlanTargetId, testPlanTarget) ||
         idsContradict(locationOfData.atId, at) ||
+        idsContradict(locationOfData.atVersionId, atVersion) ||
         idsContradict(locationOfData.browserId, browser) ||
+        idsContradict(locationOfData.browserVersionId, browserVersion) ||
         idsContradict(locationOfData.testId, test) ||
         idsContradict(locationOfData.scenarioId, scenario) ||
         idsContradict(locationOfData.assertionId, assertion) ||
         idsContradict(locationOfData.testResultId, testResult) ||
         idsContradict(locationOfData.scenarioResultId, scenarioResult) ||
-        idsContradict(locationOfData.assertionResultId, assertionResult) ||
-        (providedAtVersion && providedAtVersion !== atVersion) ||
-        (providedBrowserVersion && providedBrowserVersion !== browserVersion)
+        idsContradict(locationOfData.assertionResultId, assertionResult)
     ) {
         throw new Error(
             'You provided IDs for both a parent and child model, implying a ' +
@@ -204,7 +202,6 @@ const populateData = async (locationOfData, { preloaded } = {}) => {
         testPlanVersion,
         testPlanReport,
         testPlanRun,
-        testPlanTarget,
         at,
         browser,
         atVersion,

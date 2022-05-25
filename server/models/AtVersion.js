@@ -36,6 +36,8 @@ module.exports = function(sequelize, DataTypes) {
 
     Model.AT_ASSOCIATION = { foreignKey: 'atId' };
 
+    Model.TEST_PLAN_REPORT_ASSOCIATION = { foreignKey: 'atId' };
+
     Model.associate = function(models) {
         Model.belongsTo(models.At, {
             ...Model.AT_ASSOCIATION,

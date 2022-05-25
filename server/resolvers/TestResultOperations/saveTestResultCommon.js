@@ -15,7 +15,7 @@ const saveTestResultCommon = async ({
 }) => {
     const {
         testPlanRun,
-        testPlanTarget,
+        testPlanReport,
         test,
         testResult: oldTestResult
     } = await populateData({ testResultId });
@@ -39,7 +39,7 @@ const saveTestResultCommon = async ({
 
     const isCorrupted = !deepPickEqual(
         [
-            createTestResultSkeleton({ test, testPlanRun, testPlanTarget }),
+            createTestResultSkeleton({ test, testPlanRun, testPlanReport }),
             newTestResult
         ],
         {

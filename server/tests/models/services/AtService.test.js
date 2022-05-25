@@ -237,8 +237,8 @@ describe('AtVersionModel Data Checks', () => {
     it('should return valid atVersion with at for query with all associations', async () => {
         // A1
         const _atId = 1;
-        const _atVersion = '2021.2103.174';
-        const _releasedAt = new Date('2022-05-01 20:00:00-04').toISOString();
+        const _atVersion = '2021.2111.13';
+        const _releasedAt = new Date('2021-11-01 04:00:00.000Z');
 
         // A2
         const atVersionInstance = await AtService.getAtVersionByQuery({
@@ -269,8 +269,8 @@ describe('AtVersionModel Data Checks', () => {
     it('should return valid atVersion for query with no associations', async () => {
         // A1
         const _atId = 1;
-        const _atVersion = '2021.2103.174';
-        const _releasedAt = new Date('2022-05-01 20:00:00-04').toISOString();
+        const _atVersion = '2021.2111.13';
+        const _releasedAt = new Date('2021-11-01 04:00:00.000Z');
 
         // A2
         const atVersionInstance = await AtService.getAtVersionByQuery(
@@ -318,9 +318,7 @@ describe('AtVersionModel Data Checks', () => {
             // A1
             const _atId = 1;
             const _atVersion = randomStringGenerator();
-            const _releasedAt = new Date(
-                '2022-05-01 20:00:00-04'
-            ).toISOString();
+            const _releasedAt = new Date('2022-05-01 20:00:00-04');
 
             // A2
             const atVersionInstance = await AtService.createAtVersion({
@@ -387,10 +385,8 @@ describe('AtVersionModel Data Checks', () => {
         await dbCleaner(async () => {
             // A1
             const _atId = 1;
-            const _atVersion = '2021.2103.174';
-            const _releasedAt = new Date(
-                '2022-05-01 20:00:00-04'
-            ).toISOString();
+            const _atVersion = '2021.2111.13';
+            const _releasedAt = new Date('2021-11-01 04:00:00.000Z');
 
             // A2
             const originalAtVersion = await AtService.getAtVersionByQuery({
@@ -433,7 +429,7 @@ describe('AtVersionModel Data Checks', () => {
 
     it('should return collection of atVersions for atVersion query', async () => {
         // A1
-        const search = '2019';
+        const search = '202';
 
         // A2
         const result = await AtService.getAtVersions(search, {});
@@ -446,7 +442,7 @@ describe('AtVersionModel Data Checks', () => {
                 expect.objectContaining({
                     id: expect.any(Number),
                     atId: expect.any(Number),
-                    name: expect.stringMatching(/2019/gi),
+                    name: expect.stringMatching(/202/gi),
                     at: expect.objectContaining({
                         id: expect.any(Number),
                         name: expect.any(String)
