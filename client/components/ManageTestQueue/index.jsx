@@ -223,7 +223,7 @@ const ManageTestQueue = ({
         if (ats.length) {
             setSelectedManageAtId(ats[0].id);
             setSelectedManageAtVersions(ats[0].atVersions);
-            setSelectedManageAtVersionId(ats[0].atVersions[0].id);
+            setSelectedManageAtVersionId(ats[0]?.atVersions[0]?.id);
         }
     }, [ats]);
 

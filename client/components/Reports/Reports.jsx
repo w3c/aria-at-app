@@ -59,8 +59,6 @@ const Reports = () => {
                     return (
                         <SummarizeTestPlanReport
                             testPlanReport={testPlanReport}
-                            ats={data.ats}
-                            browsers={data.browsers}
                         />
                     );
                 }}

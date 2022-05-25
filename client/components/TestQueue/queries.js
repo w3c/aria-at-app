@@ -129,7 +129,9 @@ export const POPULATE_ADD_TEST_PLAN_TO_QUEUE_MODAL_QUERY = gql`
 export const ADD_AT_VERSION_MUTATION = gql`
     mutation AddAtVersion($atId: ID!, $name: String!, $releasedAt: Timestamp!) {
         at(id: $atId) {
-            createAtVersion(name: $name, releasedAt: $releasedAt) {
+            findOrCreateAtVersion(
+                input: { name: $name, releasedAt: $releasedAt }
+            ) {
                 id
                 name
                 releasedAt
@@ -145,7 +147,7 @@ export const EDIT_AT_VERSION_MUTATION = gql`
         $releasedAt: Timestamp!
     ) {
         atVersion(id: $atVersionId) {
-            editAtVersion(updatedName: $name, updatedReleasedAt: $releasedAt) {
+            updateAtVersion(input: { name: $name, releasedAt: $releasedAt }) {
                 id
                 name
                 releasedAt
@@ -157,7 +159,14 @@ export const EDIT_AT_VERSION_MUTATION = gql`
 export const DELETE_AT_VERSION_MUTATION = gql`
     mutation DeleteAtVersion($atVersionId: ID!) {
         atVersion(id: $atVersionId) {
-            deleteAtVersion
+            deleteAtVersion {
+                isDeleted
+                failedDueToTestResults {
+                    testResult {
+                        id
+                    }
+                }
+            }
         }
     }
 `;

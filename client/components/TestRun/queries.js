@@ -14,8 +14,14 @@ export const TEST_RUN_PAGE_QUERY = gql`
                     id
                     renderableContent
                 }
-                atVersionId
-                browserVersionId
+                atVersion {
+                    id
+                    name
+                }
+                browserVersion {
+                    id
+                    name
+                }
                 startedAt
                 completedAt
                 scenarioResults {
@@ -77,10 +83,18 @@ export const TEST_RUN_PAGE_QUERY = gql`
                 at {
                     id
                     name
+                    atVersions {
+                        id
+                        name
+                    }
                 }
                 browser {
                     id
                     name
+                    browserVersions {
+                        id
+                        name
+                    }
                 }
                 testPlanVersion {
                     id
@@ -128,22 +142,6 @@ export const TEST_RUN_PAGE_QUERY = gql`
         users {
             id
             username
-        }
-        ats {
-            id
-            name
-            atVersions {
-                id
-                name
-            }
-        }
-        browsers {
-            id
-            name
-            browserVersions {
-                id
-                name
-            }
         }
     }
 `;
@@ -262,11 +260,18 @@ export const FIND_OR_CREATE_TEST_RESULT_MUTATION = gql`
 export const SAVE_TEST_RESULT_MUTATION = gql`
     mutation SaveTestResult(
         $id: ID!
+        $atVersionId: ID!
+        $browserVersionId: ID!
         $scenarioResults: [ScenarioResultInput]!
     ) {
         testResult(id: $id) {
             saveTestResult(
-                input: { id: $id, scenarioResults: $scenarioResults }
+                input: {
+                    id: $id
+                    atVersionId: $atVersionId
+                    browserVersionId: $browserVersionId
+                    scenarioResults: $scenarioResults
+                }
             ) {
                 locationOfData
             }
@@ -277,11 +282,18 @@ export const SAVE_TEST_RESULT_MUTATION = gql`
 export const SUBMIT_TEST_RESULT_MUTATION = gql`
     mutation SubmitTestResult(
         $id: ID!
+        $atVersionId: ID!
+        $browserVersionId: ID!
         $scenarioResults: [ScenarioResultInput]!
     ) {
         testResult(id: $id) {
             submitTestResult(
-                input: { id: $id, scenarioResults: $scenarioResults }
+                input: {
+                    id: $id
+                    atVersionId: $atVersionId
+                    browserVersionId: $browserVersionId
+                    scenarioResults: $scenarioResults
+                }
             ) {
                 locationOfData
             }

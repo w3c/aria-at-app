@@ -77,12 +77,11 @@ const getAssertionResultString = assertionResult => {
 };
 
 const getTestersRunHistory = (
-    testPlanReportId,
+    testPlanReport,
     testId,
-    draftTestPlanRuns = [],
-    atVersions = [],
-    browserVersions = []
+    draftTestPlanRuns = []
 ) => {
+    const { id: testPlanReportId, at, browser } = testPlanReport;
     let lines = [];
 
     draftTestPlanRuns.forEach(draftTestPlanRun => {
@@ -94,24 +93,17 @@ const getTestersRunHistory = (
             testPlanReport.status === 'FINALIZED' &&
             testResult
         ) {
-            // Need to determine name of AT Version and Browser Version
-            const { atVersionId, browserVersionId } = testResult;
-            const atVersion = atVersions.find(item => item.id === atVersionId);
-            const browserVersion = browserVersions.find(
-                item => item.id === browserVersionId
-            );
-
             lines.push(
                 <span
-                    key={`${atVersionId}-${browserVersion}-${testResult.test.id}-${tester.username}`}
+                    key={`${testResult.atVersion.id}-${testResult.browserVersion.id}-${testResult.test.id}-${tester.username}`}
                 >
                     Tested with{' '}
                     <b>
-                        {atVersion.atName} {atVersion.name}
+                        {at.name} {testResult.atVersion.name}
                     </b>{' '}
                     and{' '}
                     <b>
-                        {browserVersion.browserName} {browserVersion.name}
+                        {browser.name} {testResult.browserVersion.name}
                     </b>{' '}
                     by{' '}
                     <b>
@@ -133,34 +125,10 @@ const getTestersRunHistory = (
     return <>{lines}</>;
 };
 
-const SummarizeTestPlanReport = ({ testPlanReport, ats, browsers }) => {
+const SummarizeTestPlanReport = ({ testPlanReport }) => {
     const { testPlanVersion, at, browser } = testPlanReport;
 
     const [runHistoryItems, setRunHistoryItems] = useState({});
-
-    const flattenedAts = ats
-        .map(atItem => {
-            return atItem.atVersions.map(atVersionItem => {
-                return {
-                    ...atVersionItem,
-                    atId: atItem.id,
-                    atName: atItem.name
-                };
-            });
-        })
-        .flat();
-
-    const flattenedBrowsers = browsers
-        .map(browserItem => {
-            return browserItem.browserVersions.map(browserVersionItem => {
-                return {
-                    ...browserVersionItem,
-                    browserId: browserItem.id,
-                    browserName: browserItem.name
-                };
-            });
-        })
-        .flat();
 
     // Construct testPlanTarget
     const testPlanTarget = {
@@ -407,11 +375,9 @@ const SummarizeTestPlanReport = ({ testPlanReport, ats, browsers }) => {
                                 show={!!runHistoryItems[testResult.id]}
                             >
                                 {getTestersRunHistory(
-                                    testPlanReport.id,
+                                    testPlanReport,
                                     testResult.test.id,
-                                    testPlanReport.draftTestPlanRuns,
-                                    flattenedAts,
-                                    flattenedBrowsers
+                                    testPlanReport.draftTestPlanRuns
                                 )}
                             </DisclosureContainer>
                         </DisclosureParent>
@@ -495,19 +461,7 @@ SummarizeTestPlanReport.propTypes = {
                 })
             })
         )
-    }).isRequired,
-    ats: PropTypes.arrayOf(
-        PropTypes.shape({
-            id: PropTypes.string.isRequired,
-            name: PropTypes.string.isRequired
-        }).isRequired
-    ).isRequired,
-    browsers: PropTypes.arrayOf(
-        PropTypes.shape({
-            id: PropTypes.string.isRequired,
-            name: PropTypes.string.isRequired
-        }).isRequired
-    ).isRequired
+    }).isRequired
 };
 
 export default SummarizeTestPlanReport;

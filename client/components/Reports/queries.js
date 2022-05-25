@@ -88,26 +88,16 @@ export const REPORTS_PAGE_QUERY = gql`
                     test {
                         id
                     }
-                    atVersionId
-                    browserVersionId
+                    atVersion {
+                        id
+                        name
+                    }
+                    browserVersion {
+                        id
+                        name
+                    }
                     completedAt
                 }
-            }
-        }
-        ats {
-            id
-            name
-            atVersions {
-                id
-                name
-            }
-        }
-        browsers {
-            id
-            name
-            browserVersions {
-                id
-                name
             }
         }
     }

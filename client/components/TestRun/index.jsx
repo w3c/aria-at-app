@@ -155,7 +155,7 @@ const TestRun = () => {
     const auth = evaluateAuth(data && data.me ? data.me : {});
     let { id: userId, isSignedIn, isAdmin } = auth;
 
-    const { testPlanRun, users, ats = [], browsers = [] } = data;
+    const { testPlanRun, users } = data;
     const { tester, testResults = [] } = testPlanRun || {};
     let { testPlanReport } = testPlanRun || {};
 
@@ -217,63 +217,31 @@ const TestRun = () => {
     const currentTest = tests[currentTestIndex];
     const hasTestsToRun = tests.length;
 
-    const getResourceVersionFromId = (
-        sourceData, // ats or browsers
-        resourceId, // id of AT or Browser
-        versionId, // id of AT version or Browser version
-        versionsIdentifier // atVersions or browserVersions
-    ) => {
-        return sourceData
-            .find(item => item.id == resourceId)
-            [versionsIdentifier].find(item => item.id == versionId);
-    };
-
-    const getVersionsForResource = (
-        sourceData, // ats or browsers
-        resourceName, // eg. NVDA, Chrome, etc
-        versionsIdentifier // atVersions or browserVersions
-    ) => {
-        return (
-            sourceData
-                .find(item => item.name === resourceName)
-                [versionsIdentifier].map(item => item) || []
-        );
-    };
-
-    const defaultAtVersionId = getVersionsForResource(
-        ats,
-        testPlanReport.at.name,
-        'atVersions'
-    )[0].id;
-
-    const defaultBrowserVersionId = getVersionsForResource(
-        browsers,
-        testPlanReport.browser.name,
-        'browserVersions'
-    )[0].id;
+    const defaultAtVersionId = testPlanReport.at.atVersions[0].id;
+    const defaultBrowserVersionId =
+        testPlanReport.browser.browserVersions[0].id;
 
     const currentTestAtVersionId =
+        currentTest.testResult?.atVersion?.id ||
         atVersionId ||
-        currentTest.testResult?.atVersionId ||
         defaultAtVersionId;
 
     const currentTestBrowserVersionId =
+        currentTest.testResult?.browserVersion?.id ||
         browserVersionId ||
-        currentTest.testResult?.browserVersionId ||
         defaultBrowserVersionId;
 
-    const currentAtVersion = getResourceVersionFromId(
-        ats,
-        testPlanReport.at.id,
-        currentTestAtVersionId,
-        'atVersions'
-    );
-    const currentBrowserVersion = getResourceVersionFromId(
-        browsers,
-        testPlanReport.browser.id,
-        currentTestBrowserVersionId,
-        'browserVersions'
-    );
+    const currentAtVersion =
+        currentTest.testResult?.atVersion ||
+        testPlanReport.at.atVersions.find(
+            item => item.id === currentTestAtVersionId
+        );
+
+    const currentBrowserVersion =
+        currentTest.testResult?.browserVersion ||
+        testPlanReport.browser.browserVersions.find(
+            item => item.id === currentTestBrowserVersionId
+        );
 
     if (!currentTest.testResult && !pageReadyRef.current && isSignedIn)
         (async () =>
@@ -459,7 +427,11 @@ const TestRun = () => {
             );
 
             await handleSaveOrSubmitTestResultAction(
-                { scenarioResults },
+                {
+                    atVersionId: currentTestAtVersionId,
+                    browserVersionId: currentTestBrowserVersionId,
+                    scenarioResults
+                },
                 forceSave ? false : !!testRunResultRef.current
             );
             if (withResult && !forceSave) return !!testRunResultRef.current;
@@ -551,12 +523,14 @@ const TestRun = () => {
     };
 
     const handleSaveOrSubmitTestResultAction = async (
-        { scenarioResults = [] },
+        { atVersionId, browserVersionId, scenarioResults = [] },
         isSubmit = false
     ) => {
         const { id } = currentTest.testResult;
         let variables = {
             id,
+            atVersionId,
+            browserVersionId,
             scenarioResults
         };
 
@@ -573,16 +547,11 @@ const TestRun = () => {
         updatedBrowserVersionName
     ) => {
         // Get version id for selected atVersion and browserVersion from name
-        const atVersions = ats.find(item => item.id === testPlanReport.at.id)
-            .atVersions;
-        const atVersionId = atVersions.find(
+        const atVersionId = testPlanReport.at.atVersions.find(
             item => item.name === updatedAtVersionName
         ).id;
 
-        const browserVersions = browsers.find(
-            item => item.id === testPlanReport.browser.id
-        ).browserVersions;
-        const browserVersionId = browserVersions.find(
+        const browserVersionId = testPlanReport.browser.browserVersions.find(
             item => item.name === updatedBrowserVersionName
         ).id;
 
@@ -596,17 +565,6 @@ const TestRun = () => {
         );
         setIsShowingAtBrowserModal(false);
     };
-
-    const atVersions = getVersionsForResource(
-        ats,
-        testPlanReport.at.name,
-        'atVersions'
-    );
-    const browserVersions = getVersionsForResource(
-        browsers,
-        testPlanReport.browser.name,
-        'browserVersions'
-    );
 
     const renderTestContent = (testPlanReport, currentTest, heading) => {
         const { index } = currentTest;
@@ -997,13 +955,21 @@ const TestRun = () => {
                     show={isShowingAtBrowserModal}
                     isAdmin={isAdmin && openAsUserId}
                     atName={testPlanReport.at.name}
-                    atVersion={currentAtVersion?.name || atVersions[0]?.name}
-                    atVersions={atVersions.map(item => item.name)}
+                    atVersion={
+                        currentAtVersion?.name ||
+                        testPlanReport.at.atVersions[0]?.name
+                    }
+                    atVersions={testPlanReport.at.atVersions.map(
+                        item => item.name
+                    )}
                     browserName={testPlanReport.browser.name}
                     browserVersion={
-                        currentBrowserVersion?.name || browserVersions[0]?.name
+                        currentBrowserVersion?.name ||
+                        testPlanReport.browser.browserVersions[0]?.name
                     }
-                    browserVersions={browserVersions.map(item => item.name)}
+                    browserVersions={testPlanReport.browser.browserVersions.map(
+                        item => item.name
+                    )}
                     patternName={testPlanVersion.title}
                     testerName={tester.username}
                     handleAction={handleAtAndBrowserDetailsModalAction}
