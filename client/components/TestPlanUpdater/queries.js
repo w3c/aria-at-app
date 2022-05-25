@@ -87,8 +87,12 @@ export const VERSION_QUERY = gql`
                     test {
                         ...TestFragment
                     }
-                    atVersionId
-                    browserVersionId
+                    atVersion {
+                        id
+                    }
+                    browserVersion {
+                        id
+                    }
                     completedAt
                     scenarioResults {
                         output
@@ -161,8 +165,12 @@ export const CREATE_TEST_RESULT_MUTATION = gql`
             ) {
                 testResult {
                     id
-                    atVersionId
-                    browserVersionId
+                    atVersion {
+                        id
+                    }
+                    browserVersion {
+                        id
+                    }
                     scenarioResults {
                         id
                         assertionResults {

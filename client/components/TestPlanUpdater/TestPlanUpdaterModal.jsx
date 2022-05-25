@@ -164,6 +164,8 @@ const TestPlanUpdaterModal = ({
     const copyTestResult = (testResultSkeleton, testResult) => {
         return {
             id: testResultSkeleton.id,
+            atVersionId: testResultSkeleton.atVersion.id,
+            browserVersionId: testResultSkeleton.browserVersion.id,
             scenarioResults: testResultSkeleton.scenarioResults.map(
                 (scenarioResultSkeleton, index) => {
                     const scenarioResult = testResult.scenarioResults[index];
@@ -243,8 +245,8 @@ const TestPlanUpdaterModal = ({
 
             for (const testResult of testPlanRun.testResults) {
                 const testId = currentTestIdsToNewTestIds[testResult.test.id];
-                const atVersionId = testResult.atVersionId;
-                const browserVersionId = testResult.browserVersionId;
+                const atVersionId = testResult.atVersion.id;
+                const browserVersionId = testResult.browserVersion.id;
                 if (!testId) continue;
 
                 const { data: testResultData } = await client.mutate({
@@ -372,7 +374,10 @@ const TestPlanUpdaterModal = ({
                                         </p>
                                     );
                                 }
-                                if (runsWithResults.length === 0) {
+                                if (
+                                    !runsWithResults ||
+                                    runsWithResults.length === 0
+                                ) {
                                     return (
                                         <p>
                                             There are no test results associated
