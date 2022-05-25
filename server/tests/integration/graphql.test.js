@@ -545,7 +545,7 @@ describe('graphql', () => {
                                 releasedAt
                             }
                         }
-                        deleteAtVersion: atVersion(id: 2) {
+                        deleteAtVersion: atVersion(id: 3) {
                             __typename
                             deleteAtVersion {
                                 __typename
