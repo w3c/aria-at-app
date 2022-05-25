@@ -188,7 +188,9 @@ const ManageTestQueue = ({
 
     const [addAtVersion] = useMutation(ADD_AT_VERSION_MUTATION);
     const [editAtVersion] = useMutation(EDIT_AT_VERSION_MUTATION);
-    const [deleteAtVersion] = useMutation(DELETE_AT_VERSION_MUTATION);
+    const [deleteAtVersion, { data: deleteAtVersionData }] = useMutation(
+        DELETE_AT_VERSION_MUTATION
+    );
     const [addTestPlanReport] = useMutation(ADD_TEST_QUEUE_MUTATION);
 
     const onManageAtsClick = () => setShowManageATs(!showManageATs);
@@ -226,6 +228,48 @@ const ManageTestQueue = ({
             setSelectedManageAtVersionId(ats[0]?.atVersions[0]?.id);
         }
     }, [ats]);
+
+    useEffect(() => {
+        if (deleteAtVersionData) {
+            console.log(deleteAtVersionData?.atVersion?.deleteAtVersion);
+            console.log(
+                deleteAtVersionData?.atVersion?.deleteAtVersion?.isDeleted
+            );
+
+            if (!deleteAtVersionData?.atVersion?.deleteAtVersion?.isDeleted) {
+                const patternName =
+                    deleteAtVersionData?.atVersion?.deleteAtVersion
+                        ?.failedDueToTestResults[0]?.testPlanVersion?.title;
+                const theme = 'warning';
+                const selectedAt = ats.find(
+                    item => item.id === selectedManageAtId
+                );
+
+                // Removing an AT Version already in use
+                setThemedModalTitle(
+                    'Assistive Technology Version already being used'
+                );
+                setThemedModalContent(
+                    <>
+                        <b>
+                            {selectedAt.name} Version{' '}
+                            {
+                                getAtVersionFromId(selectedManageAtVersionId)
+                                    ?.name
+                            }
+                        </b>{' '}
+                        can&apos;t be removed because it is already being used
+                        to test the <b>{patternName}</b> Test Plan.
+                    </>
+                );
+
+                setThemedModalType(theme);
+                setShowThemedModal(true);
+            } else {
+                // Show confirmation that AT has been deleted
+            }
+        }
+    }, [deleteAtVersionData]);
 
     const updateMatchingTestPlanVersions = (value, allTestPlanVersions) => {
         // update test plan versions based on selected test plan
@@ -287,47 +331,24 @@ const ManageTestQueue = ({
     };
 
     const onRemoveClick = () => {
-        // todo: evaluate if there is a blocking pattern when attempting to delete atVersion (displays warning)
-        // const patternName = 'Disclosure Navigation Menu Example';
-        const patternName = '';
-        const theme = patternName ? 'warning' : 'danger';
+        const theme = 'danger';
         const selectedAt = ats.find(item => item.id === selectedManageAtId);
 
-        // Removing an AT Version already in use
-        if (theme === 'warning') {
-            setThemedModalTitle(
-                'Assistive Technology Version already being used'
-            );
-            setThemedModalContent(
-                <>
-                    <b>
-                        {selectedAt.name} Version{' '}
-                        {getAtVersionFromId(selectedManageAtVersionId)?.name}
-                    </b>{' '}
-                    can&apos;t be removed because it is already being used to
-                    test the <b>{patternName}</b> Test Plan.
-                </>
-            );
-        }
-
-        // Removing an Existing AT Version
-        if (theme === 'danger') {
-            setThemedModalTitle(
-                `Remove ${selectedAt.name} Version ${
-                    getAtVersionFromId(selectedManageAtVersionId)?.name
-                }`
-            );
-            setThemedModalContent(
-                <>
-                    You are about to remove{' '}
-                    <b>
-                        {selectedAt.name} Version{' '}
-                        {getAtVersionFromId(selectedManageAtVersionId)?.name}
-                    </b>{' '}
-                    from the ARIA-AT App.
-                </>
-            );
-        }
+        setThemedModalTitle(
+            `Remove ${selectedAt.name} Version ${
+                getAtVersionFromId(selectedManageAtVersionId)?.name
+            }`
+        );
+        setThemedModalContent(
+            <>
+                You are about to remove{' '}
+                <b>
+                    {selectedAt.name} Version{' '}
+                    {getAtVersionFromId(selectedManageAtVersionId)?.name}
+                </b>{' '}
+                from the ARIA-AT App.
+            </>
+        );
 
         setThemedModalType(theme);
         setShowThemedModal(true);
@@ -394,7 +415,6 @@ const ManageTestQueue = ({
                     atVersionId: selectedManageAtVersionId
                 }
             });
-            await triggerUpdate();
             onThemedModalClose();
         }
     };

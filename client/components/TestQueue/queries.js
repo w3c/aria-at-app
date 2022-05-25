@@ -162,8 +162,22 @@ export const DELETE_AT_VERSION_MUTATION = gql`
             deleteAtVersion {
                 isDeleted
                 failedDueToTestResults {
+                    testPlanVersion {
+                        id
+                        title
+                    }
+                    # To be used when listing the conflicting results
                     testResult {
                         id
+                    }
+                    # To be used when providing more details on the conflicting results
+                    testPlanReport {
+                        at {
+                            name
+                        }
+                        browser {
+                            name
+                        }
                     }
                 }
             }
