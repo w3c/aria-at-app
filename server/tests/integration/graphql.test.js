@@ -141,6 +141,8 @@ describe('graphql', () => {
         const excludedTypeNameAndField = [
             // Items formatted like this:
             // ['TestResult', 'startedAt'],
+            ['PopulatedData', 'atVersion'],
+            ['PopulatedData', 'browserVersion']
         ];
         ({
             typeAwareQuery,
