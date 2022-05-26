@@ -414,24 +414,32 @@ const AtAndBrowserDetailsModal = ({
 
                         <Form.Group>
                             <Form.Label>Browser Version</Form.Label>
-                            <Form.Control
-                                as="select"
-                                disabled={uaMajor === '0'}
-                                value={updatedBrowserVersion}
-                                onChange={handleBrowserVersionChange}
-                            >
-                                {(uaMajor === '0'
-                                    ? ['Not detected', ...browserVersions]
-                                    : browserVersions
-                                ).map(item => (
-                                    <option
-                                        key={`browserVersionKey-${item}`}
-                                        value={item}
-                                    >
-                                        {item}
-                                    </option>
-                                ))}
-                            </Form.Control>
+                            {isAdmin ? (
+                                <Form.Control
+                                    type="text"
+                                    value={updatedBrowserVersion}
+                                    onChange={handleBrowserVersionChange}
+                                />
+                            ) : (
+                                <Form.Control
+                                    as="select"
+                                    disabled={uaMajor === '0'}
+                                    value={updatedBrowserVersion}
+                                    onChange={handleBrowserVersionChange}
+                                >
+                                    {(uaMajor === '0'
+                                        ? ['Not detected', ...browserVersions]
+                                        : browserVersions
+                                    ).map(item => (
+                                        <option
+                                            key={`browserVersionKey-${item}`}
+                                            value={item}
+                                        >
+                                            {item}
+                                        </option>
+                                    ))}
+                                </Form.Control>
+                            )}
                         </Form.Group>
 
                         {/* Tester Scenario 7 */}
