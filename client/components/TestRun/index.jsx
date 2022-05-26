@@ -28,7 +28,8 @@ import {
     FIND_OR_CREATE_TEST_RESULT_MUTATION,
     SAVE_TEST_RESULT_MUTATION,
     SUBMIT_TEST_RESULT_MUTATION,
-    DELETE_TEST_RESULT_MUTATION
+    DELETE_TEST_RESULT_MUTATION,
+    FIND_OR_CREATE_BROWSER_VERSION_MUTATION
 } from './queries';
 import { evaluateAuth } from '../../utils/evaluateAuth';
 import './TestRun.css';
@@ -94,12 +95,16 @@ const TestRun = () => {
             variables: { testPlanRunId, testPlanReportId }
         }
     );
-    const [createTestResult, { loading: createTestLoading }] = useMutation(
-        FIND_OR_CREATE_TEST_RESULT_MUTATION
-    );
+    const [
+        createTestResult,
+        { loading: createTestResultLoading }
+    ] = useMutation(FIND_OR_CREATE_TEST_RESULT_MUTATION);
     const [saveTestResult] = useMutation(SAVE_TEST_RESULT_MUTATION);
     const [submitTestResult] = useMutation(SUBMIT_TEST_RESULT_MUTATION);
     const [deleteTestResult] = useMutation(DELETE_TEST_RESULT_MUTATION);
+    const [createBrowserVersion] = useMutation(
+        FIND_OR_CREATE_BROWSER_VERSION_MUTATION
+    );
 
     const [isShowingAtBrowserModal, setIsShowingAtBrowserModal] = useState(
         true
@@ -143,7 +148,7 @@ const TestRun = () => {
         );
     }
 
-    if (!data || loading || createTestLoading) {
+    if (!data || loading || createTestResultLoading) {
         return (
             <PageStatus
                 title="Loading - Test Results | ARIA-AT"
@@ -551,9 +556,23 @@ const TestRun = () => {
             item => item.name === updatedAtVersionName
         ).id;
 
-        const browserVersionId = testPlanReport.browser.browserVersions.find(
+        let browserVersionId = testPlanReport.browser.browserVersions.find(
             item => item.name === updatedBrowserVersionName
-        ).id;
+        )?.id;
+
+        // create version if not exists (accounting for admin providing new versions)
+        if (!browserVersionId) {
+            const createBrowserVersionResult = await createBrowserVersion({
+                variables: {
+                    browserId: testPlanReport.browser.id,
+                    browserVersionName: updatedBrowserVersionName
+                }
+            });
+
+            browserVersionId =
+                createBrowserVersionResult.data?.browser
+                    ?.findOrCreateBrowserVersion?.id;
+        }
 
         setAtVersionId(atVersionId);
         setBrowserVersionId(browserVersionId);
@@ -951,23 +970,19 @@ const TestRun = () => {
                     </Row>
                 </Col>
             </Row>
-            {isSignedIn && (
-                // && just loaded TestRun
+            {isSignedIn && isShowingAtBrowserModal && (
                 <AtAndBrowserDetailsModal
                     show={isShowingAtBrowserModal}
+                    firstLoad={!currentTest.testResult}
                     isAdmin={isAdmin && openAsUserId}
                     atName={testPlanReport.at.name}
-                    atVersion={
-                        currentAtVersion?.name ||
-                        testPlanReport.at.atVersions[0]?.name
-                    }
+                    atVersion={currentTest.testResult?.atVersion?.name}
                     atVersions={testPlanReport.at.atVersions.map(
                         item => item.name
                     )}
                     browserName={testPlanReport.browser.name}
                     browserVersion={
-                        currentBrowserVersion?.name ||
-                        testPlanReport.browser.browserVersions[0]?.name
+                        currentTest.testResult?.browserVersion?.name
                     }
                     browserVersions={testPlanReport.browser.browserVersions.map(
                         item => item.name

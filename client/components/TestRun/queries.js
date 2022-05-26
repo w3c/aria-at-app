@@ -318,3 +318,17 @@ export const DELETE_TEST_RESULT_MUTATION = gql`
         }
     }
 `;
+
+export const FIND_OR_CREATE_BROWSER_VERSION_MUTATION = gql`
+    mutation FindOrCreateBrowserVersion(
+        $browserId: ID!
+        $browserVersionName: String!
+    ) {
+        browser(id: $browserId) {
+            findOrCreateBrowserVersion(input: { name: $browserVersionName }) {
+                id
+                name
+            }
+        }
+    }
+`;
