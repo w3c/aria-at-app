@@ -192,10 +192,18 @@ export const TEST_RUN_PAGE_ANON_QUERY = gql`
             at {
                 id
                 name
+                atVersions {
+                    id
+                    name
+                }
             }
             browser {
                 id
                 name
+                browserVersions {
+                    id
+                    name
+                }
             }
             testPlanVersion {
                 id

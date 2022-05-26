@@ -851,13 +851,15 @@ const TestRun = () => {
                             <b>AT:</b>{' '}
                             {`${testPlanReport.at?.name} ${currentAtVersion.name}`}
                         </div>
-                        <Button
-                            id="edit-fa-button"
-                            aria-label="Edit version details for AT and Browser"
-                            onClick={() => setIsShowingAtBrowserModal(true)}
-                        >
-                            <FontAwesomeIcon icon={faEdit} />
-                        </Button>
+                        {isSignedIn && (
+                            <Button
+                                id="edit-fa-button"
+                                aria-label="Edit version details for AT and Browser"
+                                onClick={() => setIsShowingAtBrowserModal(true)}
+                            >
+                                <FontAwesomeIcon icon={faEdit} />
+                            </Button>
+                        )}
                     </div>
                     <div className="info-label">
                         <b>Browser:</b>{' '}
