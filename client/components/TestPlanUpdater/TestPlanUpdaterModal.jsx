@@ -365,25 +365,8 @@ const TestPlanUpdaterModal = ({
                         </div>
                         <div>
                             {(() => {
-                                if (!versionData) {
-                                    return (
-                                        <p>
-                                            The number of test results to copy
-                                            will be shown here after you choose
-                                            a new version.
-                                        </p>
-                                    );
-                                }
-                                if (
-                                    !runsWithResults ||
-                                    runsWithResults.length === 0
-                                ) {
-                                    return (
-                                        <p>
-                                            There are no test results associated
-                                            with this report.
-                                        </p>
-                                    );
+                                if (!runsWithResults?.length) {
+                                    return '';
                                 }
 
                                 const testers = runsWithResults.map(
