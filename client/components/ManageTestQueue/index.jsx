@@ -193,13 +193,9 @@ const ManageTestQueue = ({
     const [selectedAtId, setSelectedAtId] = useState('');
     const [selectedBrowserId, setSelectedBrowserId] = useState('');
 
-    const [addAtVersion, { data: addAtVersionData }] = useMutation(
-        ADD_AT_VERSION_MUTATION
-    );
+    const [addAtVersion] = useMutation(ADD_AT_VERSION_MUTATION);
     const [editAtVersion] = useMutation(EDIT_AT_VERSION_MUTATION);
-    const [deleteAtVersion, { data: deleteAtVersionData }] = useMutation(
-        DELETE_AT_VERSION_MUTATION
-    );
+    const [deleteAtVersion] = useMutation(DELETE_AT_VERSION_MUTATION);
     const [addTestPlanReport] = useMutation(ADD_TEST_QUEUE_MUTATION);
 
     const onManageAtsClick = () => setShowManageATs(!showManageATs);
@@ -247,70 +243,6 @@ const ManageTestQueue = ({
             loadedAts.current = true;
         }
     }, [ats]);
-
-    useEffect(() => {
-        if (addAtVersionData) {
-            setSelectedManageAtVersionId(
-                addAtVersionData.at.findOrCreateAtVersion.id
-            );
-        }
-    }, [addAtVersionData]);
-
-    useEffect(() => {
-        (async () => {
-            if (deleteAtVersionData) {
-                const selectedAt = ats.find(
-                    item => item.id === selectedManageAtId
-                );
-
-                if (
-                    !deleteAtVersionData?.atVersion?.deleteAtVersion?.isDeleted
-                ) {
-                    const patternName =
-                        deleteAtVersionData?.atVersion?.deleteAtVersion
-                            ?.failedDueToTestResults[0]?.testPlanVersion?.title;
-                    const theme = 'warning';
-
-                    // Removing an AT Version already in use
-                    setThemedModalTitle(
-                        'Assistive Technology Version already being used'
-                    );
-                    setThemedModalContent(
-                        <>
-                            <b>
-                                {selectedAt.name} Version{' '}
-                                {
-                                    getAtVersionFromId(
-                                        selectedManageAtVersionId
-                                    )?.name
-                                }
-                            </b>{' '}
-                            can&apos;t be removed because it is already being
-                            used to test the <b>{patternName}</b> Test Plan.
-                        </>
-                    );
-
-                    setThemedModalType(theme);
-                    setShowThemedModal(true);
-                } else {
-                    await triggerUpdate();
-
-                    // Show confirmation that AT has been deleted
-                    setFeedbackModalTitle('Successfully Removed AT Version');
-                    setFeedbackModalContent(
-                        <>
-                            Successfully removed version for{' '}
-                            <b>{selectedAt.name}</b>.
-                        </>
-                    );
-                    setShowFeedbackModal(true);
-
-                    // Reset atVersion to valid existing item
-                    setSelectedManageAtVersionId(selectedAt.atVersions[0]?.id);
-                }
-            }
-        })();
-    }, [deleteAtVersionData]);
 
     const updateMatchingTestPlanVersions = (value, allTestPlanVersions) => {
         // update test plan versions based on selected test plan
@@ -429,13 +361,17 @@ const ManageTestQueue = ({
         const selectedAt = ats.find(item => item.id === selectedManageAtId);
 
         if (actionType === 'add') {
-            await addAtVersion({
+            const addAtVersionData = await addAtVersion({
                 variables: {
                     atId: selectedManageAtId,
                     name: updatedVersionText,
                     releasedAt: convertStringToDate(updatedDateAvailabilityText)
                 }
             });
+            setSelectedManageAtVersionId(
+                addAtVersionData.data?.at?.findOrCreateAtVersion?.id
+            );
+
             await triggerUpdate();
             onUpdateModalClose();
 
@@ -471,12 +407,56 @@ const ManageTestQueue = ({
         }
 
         if (actionType === 'delete') {
-            await deleteAtVersion({
+            const deleteAtVersionData = await deleteAtVersion({
                 variables: {
                     atVersionId: selectedManageAtVersionId
                 }
             });
-            onThemedModalClose();
+            if (
+                !deleteAtVersionData.data?.atVersion?.deleteAtVersion?.isDeleted
+            ) {
+                const patternName =
+                    deleteAtVersionData.data?.atVersion?.deleteAtVersion
+                        ?.failedDueToTestResults[0]?.testPlanVersion?.title;
+                const theme = 'warning';
+
+                // Removing an AT Version already in use
+                setThemedModalTitle(
+                    'Assistive Technology Version already being used'
+                );
+                setThemedModalContent(
+                    <>
+                        <b>
+                            {selectedAt.name} Version{' '}
+                            {
+                                getAtVersionFromId(selectedManageAtVersionId)
+                                    ?.name
+                            }
+                        </b>{' '}
+                        can&apos;t be removed because it is already being used
+                        to test the <b>{patternName}</b> Test Plan.
+                    </>
+                );
+
+                setThemedModalType(theme);
+                setShowThemedModal(true);
+            } else {
+                onThemedModalClose();
+                await triggerUpdate();
+
+                // Show confirmation that AT has been deleted
+                setFeedbackModalTitle('Successfully Removed AT Version');
+                setFeedbackModalContent(
+                    <>
+                        Successfully removed version for{' '}
+                        <b>{selectedAt.name}</b>.
+                    </>
+                );
+                setShowFeedbackModal(true);
+
+                // Reset atVersion to valid existing item
+                setSelectedManageAtVersionId(selectedAt.atVersions[0]?.id);
+            }
         }
     };
 
