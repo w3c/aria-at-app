@@ -481,6 +481,14 @@ const ManageTestQueue = ({
     };
 
     const handleAddTestPlanToTestQueue = async () => {
+        const selectedTestPlanVersion = filteredTestPlanVersions.find(
+            item => item.id === selectedTestPlanVersionId
+        );
+        const selectedAt = ats.find(item => item.id === selectedAtId);
+        const selectedBrowser = browsers.find(
+            item => item.id === selectedBrowserId
+        );
+
         await addTestPlanReport({
             variables: {
                 testPlanVersionId: selectedTestPlanVersionId,
@@ -493,11 +501,11 @@ const ManageTestQueue = ({
         setFeedbackModalTitle('Successfully Added Test Plan');
         setFeedbackModalContent(
             <>
-                Successfully added <b>{selectedTestPlanVersionId}</b> for{' '}
+                Successfully added <b>{selectedTestPlanVersion.title}</b> for{' '}
                 <b>
-                    {selectedAtId} and {selectedBrowserId}
-                </b>
-                .
+                    {selectedAt.name} and {selectedBrowser.name}
+                </b>{' '}
+                to the Test Queue.
             </>
         );
         setShowFeedbackModal(true);
