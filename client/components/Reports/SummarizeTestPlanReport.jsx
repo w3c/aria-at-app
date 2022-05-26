@@ -63,6 +63,10 @@ const DisclosureContainer = styled.div`
     background-color: #f8f9fa;
     padding: 1.25rem;
     border-top: 1px solid #d3d5da;
+
+    ul {
+        margin-bottom: 0;
+    }
 `;
 
 const getAssertionResultString = assertionResult => {
@@ -94,7 +98,7 @@ const getTestersRunHistory = (
             testResult
         ) {
             lines.push(
-                <span
+                <li
                     key={`${testResult.atVersion.id}-${testResult.browserVersion.id}-${testResult.test.id}-${tester.username}`}
                 >
                     Tested with{' '}
@@ -117,12 +121,12 @@ const getTestersRunHistory = (
                         'MMMM DD, YYYY'
                     )}
                     .
-                </span>
+                </li>
             );
         }
     });
 
-    return <>{lines}</>;
+    return <ul>{lines}</ul>;
 };
 
 const SummarizeTestPlanReport = ({ testPlanReport }) => {

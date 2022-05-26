@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useMutation } from '@apollo/client';
 import { Button, Form } from 'react-bootstrap';
 import styled from '@emotion/styled';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import PropTypes from 'prop-types';
+import BasicModal from '../common/BasicModal';
 import UpdateVersionModal from '../common/UpdateVersionModal';
 import BasicThemedModal from '../common/BasicThemedModal';
 import {
@@ -149,6 +150,8 @@ const ManageTestQueue = ({
     testPlanVersions = [],
     triggerUpdate = () => {}
 }) => {
+    const loadedAts = useRef(false);
+
     const [showManageATs, setShowManageATs] = useState(false);
     const [showAddTestPlans, setShowAddTestPlans] = useState(false);
     const [selectedManageAtId, setSelectedManageAtId] = useState('');
@@ -172,6 +175,10 @@ const ManageTestQueue = ({
     const [themedModalTitle, setThemedModalTitle] = useState('');
     const [themedModalContent, setThemedModalContent] = useState(<></>);
 
+    const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+    const [feedbackModalTitle, setFeedbackModalTitle] = useState('');
+    const [feedbackModalContent, setFeedbackModalContent] = useState(<></>);
+
     const [allTestPlanVersions, setAllTestPlanVersions] = useState([]);
     const [filteredTestPlanVersions, setFilteredTestPlanVersions] = useState(
         []
@@ -186,7 +193,9 @@ const ManageTestQueue = ({
     const [selectedAtId, setSelectedAtId] = useState('');
     const [selectedBrowserId, setSelectedBrowserId] = useState('');
 
-    const [addAtVersion] = useMutation(ADD_AT_VERSION_MUTATION);
+    const [addAtVersion, { data: addAtVersionData }] = useMutation(
+        ADD_AT_VERSION_MUTATION
+    );
     const [editAtVersion] = useMutation(EDIT_AT_VERSION_MUTATION);
     const [deleteAtVersion, { data: deleteAtVersionData }] = useMutation(
         DELETE_AT_VERSION_MUTATION
@@ -223,52 +232,84 @@ const ManageTestQueue = ({
 
     useEffect(() => {
         if (ats.length) {
-            setSelectedManageAtId(ats[0].id);
-            setSelectedManageAtVersions(ats[0].atVersions);
-            setSelectedManageAtVersionId(ats[0]?.atVersions[0]?.id);
+            if (!loadedAts.current) setSelectedManageAtId(ats[0].id);
+
+            // Required during refetch logic around managing AT Versions
+            if (!loadedAts.current)
+                setSelectedManageAtVersions(ats[0].atVersions);
+            else
+                setSelectedManageAtVersions(
+                    ats.find(item => item.id === selectedManageAtId).atVersions
+                );
+
+            if (!loadedAts.current)
+                setSelectedManageAtVersionId(ats[0]?.atVersions[0]?.id);
+            loadedAts.current = true;
         }
     }, [ats]);
 
     useEffect(() => {
-        if (deleteAtVersionData) {
-            console.log(deleteAtVersionData?.atVersion?.deleteAtVersion);
-            console.log(
-                deleteAtVersionData?.atVersion?.deleteAtVersion?.isDeleted
+        if (addAtVersionData) {
+            setSelectedManageAtVersionId(
+                addAtVersionData.at.findOrCreateAtVersion.id
             );
+        }
+    }, [addAtVersionData]);
 
-            if (!deleteAtVersionData?.atVersion?.deleteAtVersion?.isDeleted) {
-                const patternName =
-                    deleteAtVersionData?.atVersion?.deleteAtVersion
-                        ?.failedDueToTestResults[0]?.testPlanVersion?.title;
-                const theme = 'warning';
+    useEffect(() => {
+        (async () => {
+            if (deleteAtVersionData) {
                 const selectedAt = ats.find(
                     item => item.id === selectedManageAtId
                 );
 
-                // Removing an AT Version already in use
-                setThemedModalTitle(
-                    'Assistive Technology Version already being used'
-                );
-                setThemedModalContent(
-                    <>
-                        <b>
-                            {selectedAt.name} Version{' '}
-                            {
-                                getAtVersionFromId(selectedManageAtVersionId)
-                                    ?.name
-                            }
-                        </b>{' '}
-                        can&apos;t be removed because it is already being used
-                        to test the <b>{patternName}</b> Test Plan.
-                    </>
-                );
+                if (
+                    !deleteAtVersionData?.atVersion?.deleteAtVersion?.isDeleted
+                ) {
+                    const patternName =
+                        deleteAtVersionData?.atVersion?.deleteAtVersion
+                            ?.failedDueToTestResults[0]?.testPlanVersion?.title;
+                    const theme = 'warning';
 
-                setThemedModalType(theme);
-                setShowThemedModal(true);
-            } else {
-                // Show confirmation that AT has been deleted
+                    // Removing an AT Version already in use
+                    setThemedModalTitle(
+                        'Assistive Technology Version already being used'
+                    );
+                    setThemedModalContent(
+                        <>
+                            <b>
+                                {selectedAt.name} Version{' '}
+                                {
+                                    getAtVersionFromId(
+                                        selectedManageAtVersionId
+                                    )?.name
+                                }
+                            </b>{' '}
+                            can&apos;t be removed because it is already being
+                            used to test the <b>{patternName}</b> Test Plan.
+                        </>
+                    );
+
+                    setThemedModalType(theme);
+                    setShowThemedModal(true);
+                } else {
+                    await triggerUpdate();
+
+                    // Show confirmation that AT has been deleted
+                    setFeedbackModalTitle('Successfully Removed AT Version');
+                    setFeedbackModalContent(
+                        <>
+                            Successfully removed version for{' '}
+                            <b>{selectedAt.name}</b>.
+                        </>
+                    );
+                    setShowFeedbackModal(true);
+
+                    // Reset atVersion to valid existing item
+                    setSelectedManageAtVersionId(selectedAt.atVersions[0]?.id);
+                }
             }
-        }
+        })();
     }, [deleteAtVersionData]);
 
     const updateMatchingTestPlanVersions = (value, allTestPlanVersions) => {
@@ -385,6 +426,8 @@ const ManageTestQueue = ({
         actionType,
         { updatedVersionText, updatedDateAvailabilityText }
     ) => {
+        const selectedAt = ats.find(item => item.id === selectedManageAtId);
+
         if (actionType === 'add') {
             await addAtVersion({
                 variables: {
@@ -395,6 +438,15 @@ const ManageTestQueue = ({
             });
             await triggerUpdate();
             onUpdateModalClose();
+
+            setFeedbackModalTitle('Successfully Added AT Version');
+            setFeedbackModalContent(
+                <>
+                    Successfully added version <b>{updatedVersionText}</b> for{' '}
+                    <b>{selectedAt.name}</b>.
+                </>
+            );
+            setShowFeedbackModal(true);
         }
 
         if (actionType === 'edit') {
@@ -407,6 +459,15 @@ const ManageTestQueue = ({
             });
             await triggerUpdate();
             onUpdateModalClose();
+
+            setFeedbackModalTitle('Successfully Updated AT Version');
+            setFeedbackModalContent(
+                <>
+                    Successfully updated version <b>{updatedVersionText}</b> for{' '}
+                    <b>{selectedAt.name}</b>.
+                </>
+            );
+            setShowFeedbackModal(true);
         }
 
         if (actionType === 'delete') {
@@ -428,6 +489,18 @@ const ManageTestQueue = ({
             }
         });
         await triggerUpdate();
+
+        setFeedbackModalTitle('Successfully Added Test Plan');
+        setFeedbackModalContent(
+            <>
+                Successfully added <b>{selectedTestPlanVersionId}</b> for{' '}
+                <b>
+                    {selectedAtId} and {selectedBrowserId}
+                </b>
+                .
+            </>
+        );
+        setShowFeedbackModal(true);
     };
 
     return (
@@ -658,6 +731,16 @@ const ManageTestQueue = ({
                     ]}
                     handleClose={onThemedModalClose}
                     showCloseAction={themedModalType === 'danger'}
+                />
+            )}
+
+            {showFeedbackModal && (
+                <BasicModal
+                    show={showFeedbackModal}
+                    title={feedbackModalTitle}
+                    content={feedbackModalContent}
+                    closeLabel="Ok"
+                    handleClose={() => setShowFeedbackModal(false)}
                 />
             )}
         </Container>

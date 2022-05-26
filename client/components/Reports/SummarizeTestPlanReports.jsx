@@ -134,7 +134,14 @@ const SummarizeTestPlanReports = ({ testPlanReports }) => {
                                                             `/targets/${testPlanReport.id}`
                                                         }
                                                     >
-                                                        <div className="progress">
+                                                        <div
+                                                            className="progress"
+                                                            aria-label={`${getTestPlanTargetTitle(
+                                                                testPlanTarget
+                                                            )}, ${
+                                                                metrics.supportPercent
+                                                            }% completed`}
+                                                        >
                                                             <div
                                                                 className="progress-bar bg-info"
                                                                 style={{
