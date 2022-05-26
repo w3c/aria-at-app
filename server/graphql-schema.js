@@ -74,9 +74,15 @@ const graphqlSchema = gql`
         Browser name like "Chrome".
         """
         name: String!
+        """
+        A fully-qualified version like "99.0.4844.84"
+        """
         browserVersions: [BrowserVersion]!
     }
 
+    """
+    A version which has been used to collect test results.
+    """
     type BrowserVersion {
         """
         Postgres-provided numeric ID
@@ -84,6 +90,17 @@ const graphqlSchema = gql`
         id: ID!
         """
         Version string
+        """
+        name: String!
+    }
+
+    """
+    The fields on the BrowserVersion type which must be provided to create new
+    BrowserVersions.
+    """
+    input BrowserVersionInput {
+        """
+        See BrowserVersion type for more information.
         """
         name: String!
     }
@@ -126,11 +143,11 @@ const graphqlSchema = gql`
     }
 
     """
-    Version information for a given assistive technology
+    The version for a given assistive technology.
     """
     type AtVersion {
         """
-        Postgres provided numeric ID
+        Postgres-provided numeric ID.
         """
         id: ID!
         """
@@ -138,9 +155,24 @@ const graphqlSchema = gql`
         """
         name: String!
         """
-        Date for approximate availability of the version
+        Date for approximate availability of the version.
         """
-        releasedAt: Timestamp
+        releasedAt: Timestamp!
+    }
+
+    """
+    The fields on the AtVersion type which can be used to create or update the
+    AtVersion.
+    """
+    input AtVersionInput {
+        """
+        See AtVersion type for more information.
+        """
+        name: String!
+        """
+        See AtVersion type for more information.
+        """
+        releasedAt: Timestamp!
     }
 
     # TODO: Determine if needed following 2021 Working Mode changes
@@ -434,6 +466,14 @@ const graphqlSchema = gql`
         """
         test: Test!
         """
+        The AtVersion used during this testing session.
+        """
+        atVersion: AtVersion!
+        """
+        The BrowserVersion used during this testing session.
+        """
+        browserVersion: BrowserVersion!
+        """
         Automatically set by the server when a new test result is created.
         """
         startedAt: Timestamp!
@@ -459,6 +499,14 @@ const graphqlSchema = gql`
         See TestResult type for more information.
         """
         id: ID!
+        """
+        See TestResult type for more information.
+        """
+        atVersionId: ID!
+        """
+        See TestResult type for more information.
+        """
+        browserVersionId: ID!
         """
         See TestResult type for more information.
         """
@@ -858,28 +906,56 @@ const graphqlSchema = gql`
     # Mutation-specific types below
 
     """
-    Mutations scoped to an Assistive Technology version
+    Mutations scoped to an Assistive Technology.
     """
     type AtOperations {
-        createAtVersion(name: String!, releasedAt: Timestamp!): AtVersion!
+        """
+        Get an AtVersion or create it if it does not exist. In the case the
+        AtVersion already exists, the releasedAt field will be ignored.
+        """
+        findOrCreateAtVersion(input: AtVersionInput!): AtVersion!
     }
-    type AtVersionOperations {
-        editAtVersion(
-            updatedName: String!
-            updatedReleasedAt: Timestamp!
-        ): AtVersion!
-        deleteAtVersion: NoResponse
-    }
+
     """
-    Mutations scoped to an Browser version
+    Mutations scoped to an existing AtVersion.
+    """
+    type AtVersionOperations {
+        """
+        Edit the version.
+        """
+        updateAtVersion(input: AtVersionInput!): AtVersion!
+        """
+        Delete an unused AtVersion. If it is in use by any TestResults, the
+        AtVersion will not be deleted and the array of offending TestResults
+        will be returned in the response.
+        """
+        deleteAtVersion: DeleteAtVersionResult!
+    }
+
+    type DeleteAtVersionResult {
+        """
+        A boolean which will be true if the AtVersion was deleted.
+        """
+        isDeleted: Boolean!
+        """
+        An array of TestResults which are using the AtVersion and have therefore
+        prevented its deletion. There is a check in place to limit the number of
+        queries this endpoint will make, so in an extreme case the list may not
+        be exhaustive.
+        """
+        failedDueToTestResults: [PopulatedData]
+    }
+
+    """
+    Mutations scoped to a browser.
     """
     type BrowserOperations {
-        createBrowserVersion(name: String!): BrowserVersion!
+        """
+        Get a BrowserVersion or create it if it does not exist.
+        """
+        findOrCreateBrowserVersion(input: BrowserVersionInput!): BrowserVersion!
     }
-    type BrowserVersionOperations {
-        editBrowserVersion(updatedName: String!): BrowserVersion!
-        deleteBrowserVersion: NoResponse
-    }
+
     """
     Mutations scoped to a previously-created TestPlanReport.
     """
@@ -913,7 +989,9 @@ const graphqlSchema = gql`
         """
         Creates a TestResult which is populated with all the ScenarioResults
         and AssertionResults to be filled out for the AT associated with the
-        TestPlanRun, or returns the already existing TestResult.
+        TestPlanRun, or returns the already existing TestResult. In the case
+        that the TestResult already exists, the atVersionId and browserVersionId
+        will be ignored.
         """
         findOrCreateTestResult(
             testId: ID!
@@ -981,10 +1059,6 @@ const graphqlSchema = gql`
         Get the available mutations for the given browser.
         """
         browser(id: ID!): BrowserOperations!
-        """
-        Get the available mutations for the given browser version.
-        """
-        browserVersion(id: ID!): BrowserVersionOperations!
         """
         Adds a report with the given TestPlanVersion, AT and Browser, and a
         state of "DRAFT", resulting in the report appearing in the Test Queue.

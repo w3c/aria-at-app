@@ -146,14 +146,10 @@ const getFake = async ({
     const testId = testPlanReport.runnableTests[index].id;
 
     const atVersion = await getAtVersionByQuery(
-        {
-            atId: testPlanReport.at.id
-        },
+        { atId: testPlanReport.at.id },
         undefined,
         undefined,
-        {
-            order: [['releasedAt', 'DESC']]
-        }
+        { order: [['releasedAt', 'DESC']] }
     );
 
     const browserVersion = await getBrowserVersionByQuery({
@@ -167,7 +163,11 @@ const getFake = async ({
     } = await mutate(gql`
         mutation {
             testPlanRun(id: ${testPlanRunId}) {
-                findOrCreateTestResult(testId: "${testId}", atVersionId: "${atVersion.id}", browserVersionId: "${browserVersion.id}") {
+                findOrCreateTestResult(
+                    testId: "${testId}",
+                    atVersionId: "${atVersion.id}",
+                    browserVersionId: "${browserVersion.id}"
+                ) {
                     testResult {
                         id
                         scenarioResults {
@@ -187,6 +187,8 @@ const getFake = async ({
 
     const getPassing = () => ({
         ...baseTestResult,
+        atVersionId: atVersion.id,
+        browserVersionId: browserVersion.id,
         scenarioResults: baseTestResult.scenarioResults.map(scenarioResult => ({
             ...scenarioResult,
             output: 'automatically seeded sample output',

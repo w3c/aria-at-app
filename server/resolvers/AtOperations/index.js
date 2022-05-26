@@ -1,3 +1,3 @@
-const createAtVersion = require('./createAtVersionResolver');
+const findOrCreateAtVersion = require('./findOrCreateAtVersionResolver');
 
-module.exports = { createAtVersion };
+module.exports = { findOrCreateAtVersion };

@@ -1,3 +1,3 @@
-const createBrowserVersion = require('./createBrowserVersionResolver');
+const findOrCreateBrowserVersion = require('./findOrCreateBrowserVersionResolver');
 
-module.exports = { createBrowserVersion };
+module.exports = { findOrCreateBrowserVersion };

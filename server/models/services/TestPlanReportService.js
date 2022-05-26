@@ -5,7 +5,9 @@ const {
     TEST_PLAN_RUN_ATTRIBUTES,
     AT_ATTRIBUTES,
     BROWSER_ATTRIBUTES,
-    USER_ATTRIBUTES
+    USER_ATTRIBUTES,
+    AT_VERSION_ATTRIBUTES,
+    BROWSER_VERSION_ATTRIBUTES
 } = require('./helpers');
 const { TestPlanReport } = require('../');
 
@@ -36,20 +38,48 @@ const testPlanVersionAssociation = testPlanVersionAttributes => ({
 
 /**
  * @param {string[]} atAttributes - AT attributes
+ * @param {string[]} atVersionAttributes - AT version attributes
  * @returns {{association: string, attributes: string[]}}
  */
-const atAssociation = atAttributes => ({
+const atAssociation = (atAttributes, atVersionAttributes) => ({
     association: 'at',
-    attributes: atAttributes
+    attributes: atAttributes,
+    include: [
+        // eslint-disable-next-line no-use-before-define
+        atVersionAssociation(atVersionAttributes)
+    ]
+});
+
+/**
+ * @param {string[]} atVersionAttributes - AT version attributes
+ * @returns {{association: string, attributes: string[]}}
+ */
+const atVersionAssociation = atVersionAttributes => ({
+    association: 'atVersions',
+    attributes: atVersionAttributes
 });
 
 /**
  * @param {string[]} browserAttributes - Browser attributes
+ * @param {string[]} browserVersionAttributes - Browser version attributes
  * @returns {{association: string, attributes: string[]}}
  */
-const browserAssociation = browserAttributes => ({
+const browserAssociation = (browserAttributes, browserVersionAttributes) => ({
     association: 'browser',
-    attributes: browserAttributes
+    attributes: browserAttributes,
+    include: [
+        // eslint-disable-next-line no-use-before-define
+        browserVersionAssociation(browserVersionAttributes)
+    ]
+});
+
+/**
+ * @param {string[]} browserVersionAttributes - Browser version attributes
+ * @returns {{association: string, attributes: string[]}}
+ */
+const browserVersionAssociation = browserVersionAttributes => ({
+    association: 'browserVersions',
+    attributes: browserVersionAttributes
 });
 
 /**
@@ -68,7 +98,9 @@ const userAssociation = userAttributes => ({
  * @param {string[]} testPlanRunAttributes - TestPlanRun attributes to be returned in the result
  * @param {string[]} testPlanVersionAttributes - TestPlanVersion attributes to be returned in the result
  * @param {string[]} atAttributes - At attributes to be returned in the result
+ * @param {string[]} atVersionAttributes - At version attributes to be returned in the result
  * @param {string[]} browserAttributes - Browser attributes to be returned in the result
+ * @param {string[]} browserVersionAttributes - Browser version attributes to be returned in the result
  * @param {string[]} userAttributes - User attributes to be returned in the result
  * @param {object} options - Generic options for Sequelize
  * @param {*} options.transaction - Sequelize transaction
@@ -80,7 +112,9 @@ const getTestPlanReportById = async (
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
     atAttributes = AT_ATTRIBUTES,
+    atVersionAttributes = AT_VERSION_ATTRIBUTES,
     browserAttributes = BROWSER_ATTRIBUTES,
+    browserVersionAttributes = BROWSER_VERSION_ATTRIBUTES,
     userAttributes = USER_ATTRIBUTES,
     options = {}
 ) => {
@@ -91,8 +125,8 @@ const getTestPlanReportById = async (
         [
             testPlanRunAssociation(testPlanRunAttributes, userAttributes),
             testPlanVersionAssociation(testPlanVersionAttributes),
-            atAssociation(atAttributes),
-            browserAssociation(browserAttributes)
+            atAssociation(atAttributes, atVersionAttributes),
+            browserAssociation(browserAttributes, browserVersionAttributes)
         ],
         options
     );
@@ -105,7 +139,9 @@ const getTestPlanReportById = async (
  * @param {string[]} testPlanRunAttributes - TestPlanRun attributes to be returned in the result
  * @param {string[]} testPlanVersionAttributes - TestPlanVersion attributes to be returned in the result
  * @param {string[]} atAttributes - At attributes to be returned in the result
+ * @param {string[]} atVersionAttributes - At version attributes to be returned in the result
  * @param {string[]} browserAttributes - Browser attributes to be returned in the result
+ * @param {string[]} browserVersionAttributes - Browser version attributes to be returned in the result
  * @param {string[]} userAttributes - User attributes to be returned in the result
  * @param {object} pagination - pagination options for query
  * @param {number} [pagination.page=0] - page to be queried in the pagination result (affected by {@param pagination.enablePagination})
@@ -123,7 +159,9 @@ const getTestPlanReports = async (
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
     atAttributes = AT_ATTRIBUTES,
+    atVersionAttributes = AT_VERSION_ATTRIBUTES,
     browserAttributes = BROWSER_ATTRIBUTES,
+    browserVersionAttributes = BROWSER_VERSION_ATTRIBUTES,
     userAttributes = USER_ATTRIBUTES,
     pagination = {},
     options = {}
@@ -138,8 +176,8 @@ const getTestPlanReports = async (
         [
             testPlanRunAssociation(testPlanRunAttributes, userAttributes),
             testPlanVersionAssociation(testPlanVersionAttributes),
-            atAssociation(atAttributes),
-            browserAssociation(browserAttributes)
+            atAssociation(atAttributes, atVersionAttributes),
+            browserAssociation(browserAttributes, browserVersionAttributes)
         ],
         pagination,
         options
@@ -152,7 +190,9 @@ const getTestPlanReports = async (
  * @param {string[]} testPlanRunAttributes - TestPlanRun attributes to be returned in the result
  * @param {string[]} testPlanVersionAttributes - TestPlanVersion attributes to be returned in the result
  * @param {string[]} atAttributes - At attributes to be returned in the result
+ * @param {string[]} atVersionAttributes - At version attributes to be returned in the result
  * @param {string[]} browserAttributes - Browser attributes to be returned in the result
+ * @param {string[]} browserVersionAttributes - Browser version attributes to be returned in the result
  * @param {string[]} userAttributes - User attributes to be returned in the result
  * @param {object} options - Generic options for Sequelize
  * @param {*} options.transaction - Sequelize transaction
@@ -164,7 +204,9 @@ const createTestPlanReport = async (
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
     atAttributes = AT_ATTRIBUTES,
+    atVersionAttributes = AT_VERSION_ATTRIBUTES,
     browserAttributes = BROWSER_ATTRIBUTES,
+    browserVersionAttributes = BROWSER_VERSION_ATTRIBUTES,
     userAttributes = USER_ATTRIBUTES,
     options
 ) => {
@@ -182,8 +224,8 @@ const createTestPlanReport = async (
         [
             testPlanRunAssociation(testPlanRunAttributes, userAttributes),
             testPlanVersionAssociation(testPlanVersionAttributes),
-            atAssociation(atAttributes),
-            browserAssociation(browserAttributes)
+            atAssociation(atAttributes, atVersionAttributes),
+            browserAssociation(browserAttributes, browserVersionAttributes)
         ],
         options
     );
@@ -209,7 +251,9 @@ const updateTestPlanReport = async (
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
     atAttributes = AT_ATTRIBUTES,
+    atVersionAttributes = AT_VERSION_ATTRIBUTES,
     browserAttributes = BROWSER_ATTRIBUTES,
+    browserVersionAttributes = BROWSER_VERSION_ATTRIBUTES,
     userAttributes = USER_ATTRIBUTES,
     options = {}
 ) => {
@@ -227,7 +271,9 @@ const updateTestPlanReport = async (
         testPlanRunAttributes,
         testPlanVersionAttributes,
         atAttributes,
+        atVersionAttributes,
         browserAttributes,
+        browserVersionAttributes,
         userAttributes
     );
 };
@@ -265,7 +311,9 @@ const getOrCreateTestPlanReport = async (
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
     atAttributes = AT_ATTRIBUTES,
+    atVersionAttributes = AT_VERSION_ATTRIBUTES,
     browserAttributes = BROWSER_ATTRIBUTES,
+    browserVersionAttributes = BROWSER_VERSION_ATTRIBUTES,
     userAttributes = USER_ATTRIBUTES,
     options = {}
 ) => {
@@ -277,7 +325,7 @@ const getOrCreateTestPlanReport = async (
                 update: updateTestPlanReport,
                 values: { testPlanVersionId, atId, browserId },
                 updateValues: { status },
-                returnAttributes: [null, [], [], [], [], []]
+                returnAttributes: [null, [], [], [], [], [], [], []]
             }
         ],
         { transaction: options.transaction }
@@ -293,7 +341,9 @@ const getOrCreateTestPlanReport = async (
         testPlanRunAttributes,
         testPlanVersionAttributes,
         atAttributes,
+        atVersionAttributes,
         browserAttributes,
+        browserVersionAttributes,
         userAttributes,
         { transaction: options.transaction }
     );

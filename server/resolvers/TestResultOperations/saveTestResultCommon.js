@@ -5,6 +5,7 @@ const {
 const populateData = require('../../services/PopulatedData/populateData');
 const deepCustomMerge = require('../../util/deepCustomMerge');
 const deepPickEqual = require('../../util/deepPickEqual');
+const convertTestResultToInput = require('../TestPlanRunOperations/convertTestResultToInput');
 const createTestResultSkeleton = require('../TestPlanRunOperations/createTestResultSkeleton');
 
 const saveTestResultCommon = async ({
@@ -17,7 +18,7 @@ const saveTestResultCommon = async ({
         testPlanRun,
         testPlanReport,
         test,
-        testResult: oldTestResult
+        testResult: testResultPopulated
     } = await populateData({ testResultId });
 
     if (
@@ -30,7 +31,12 @@ const saveTestResultCommon = async ({
         throw new AuthenticationError();
     }
 
+    // The populateData function will populate associations of JSON-based
+    // models, but not Sequelize-based models. This is why the
+    // convertTestResultToInput function is needed to make testResultPopulated
+    // equivalent to testPlanRun.testResults.
     const oldTestResults = testPlanRun.testResults;
+    const oldTestResult = convertTestResultToInput(testResultPopulated);
 
     const newTestResult = deepCustomMerge(oldTestResult, input, {
         identifyArrayItem: item => item.id,

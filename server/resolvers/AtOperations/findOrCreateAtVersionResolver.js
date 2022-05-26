@@ -4,16 +4,16 @@ const {
     getAtVersionByQuery
 } = require('../../models/services/AtService');
 
-const createAtVersionResolver = async (
+const findOrCreateAtVersionResolver = async (
     { parentContext: { id: atId } },
-    { name, releasedAt },
+    { input: { name, releasedAt } },
     { user }
 ) => {
     if (!user?.roles.find(role => role.name === 'ADMIN')) {
         throw new AuthenticationError();
     }
 
-    let version = await getAtVersionByQuery({ atId, name, releasedAt });
+    let version = await getAtVersionByQuery({ atId, name });
 
     if (!version) {
         version = await createAtVersion({ atId, name, releasedAt });
@@ -22,4 +22,4 @@ const createAtVersionResolver = async (
     return version;
 };
 
-module.exports = createAtVersionResolver;
+module.exports = findOrCreateAtVersionResolver;
