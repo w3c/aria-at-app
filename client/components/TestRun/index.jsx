@@ -974,7 +974,7 @@ const TestRun = () => {
                 <AtAndBrowserDetailsModal
                     show={isShowingAtBrowserModal}
                     firstLoad={!currentTest.testResult}
-                    isAdmin={isAdmin && openAsUserId}
+                    isAdmin={!!(isAdmin && openAsUserId)}
                     atName={testPlanReport.at.name}
                     atVersion={currentTest.testResult?.atVersion?.name}
                     atVersions={testPlanReport.at.atVersions.map(

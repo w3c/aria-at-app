@@ -381,3 +381,7 @@ fieldset .at-browser-details-modal-alert {
         min-width: 60%;
     }
 }
+
+.form-control.is-invalid {
+    background-image: none;
+}

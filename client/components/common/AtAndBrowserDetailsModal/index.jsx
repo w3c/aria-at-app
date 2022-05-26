@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import uaParser from 'ua-parser-js';
 import { Form, Alert } from 'react-bootstrap';
@@ -42,6 +42,8 @@ const AtAndBrowserDetailsModal = ({
     handleAction = () => {},
     handleClose = () => {}
 }) => {
+    const updatedAtVersionDropdownRef = useRef();
+
     const [isFirstLoad, setIsFirstLoad] = useState(true);
     const [updatedAtVersion, setUpdatedAtVersion] = useState(
         'Select a Version'
@@ -53,6 +55,8 @@ const AtAndBrowserDetailsModal = ({
     const [uaMajor, setUaMajor] = useState();
     const [uaMinor, setUaMinor] = useState();
     const [uaPatch, setUaPatch] = useState();
+
+    const [isAtVersionError, setIsAtVersionError] = useState(false);
 
     const [
         forceBrowserVersionUpdateMessage,
@@ -90,8 +94,8 @@ const AtAndBrowserDetailsModal = ({
         );
 
         if (
-            // don't force browserVersion update with admin
-            !isAdmin &&
+            // don't force browserVersion update with admin (unless first run)
+            (!isAdmin || (isAdmin && firstLoad)) &&
             // check that saved browserVersion is the same as detected
             !browserVersion.includes(`${uaMajor}.${uaMinor}.${uaPatch}`) &&
             uaBrowser === browserName &&
@@ -112,6 +116,7 @@ const AtAndBrowserDetailsModal = ({
     const handleAtVersionChange = e => {
         const value = e.target.value;
         setUpdatedAtVersion(value);
+        setIsAtVersionError(false);
     };
 
     const handleBrowserVersionChange = (e, setFreeTextBrowserVersion) => {
@@ -125,7 +130,14 @@ const AtAndBrowserDetailsModal = ({
     };
 
     const onSubmit = () => {
-        // Passed action prop should account for AtVersion & browserVersion
+        // Passed action prop should account for AtVersion & BrowserVersion
+        if (updatedAtVersion === 'Select a Version') {
+            // Show error for AtVersion field
+            setIsAtVersionError(true);
+            updatedAtVersionDropdownRef.current.focus();
+            return;
+        }
+
         handleAction(
             updatedAtVersion,
             uaMajor === '0' ? freeTextBrowserVersion : updatedBrowserVersion
@@ -199,9 +211,11 @@ const AtAndBrowserDetailsModal = ({
                                 Assistive Technology Version
                             </Form.Label>
                             <Form.Control
+                                ref={updatedAtVersionDropdownRef}
                                 as="select"
                                 value={updatedAtVersion}
                                 onChange={handleAtVersionChange}
+                                isInvalid={isAtVersionError}
                             >
                                 {['Select a Version', ...atVersions].map(
                                     item => (
@@ -217,6 +231,15 @@ const AtAndBrowserDetailsModal = ({
                                     )
                                 )}
                             </Form.Control>
+                            {isAtVersionError && (
+                                <Form.Control.Feedback
+                                    style={{ display: 'block' }}
+                                    type="invalid"
+                                >
+                                    Please select an Assistive Technology
+                                    Version.
+                                </Form.Control.Feedback>
+                            )}
                         </Form.Group>
                     </FieldsetRow>
                     <FieldsetRow>
@@ -267,7 +290,7 @@ const AtAndBrowserDetailsModal = ({
                                 </Alert>
                             )}
                         {/* Tester Scenario 4 */}
-                        {uaBrowser !== browserName && (
+                        {!isAdmin && uaBrowser !== browserName && (
                             <Alert
                                 variant="warning"
                                 className="at-browser-details-modal-alert"
