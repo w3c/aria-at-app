@@ -20,7 +20,9 @@ import TestRenderer from '../TestRenderer';
 import OptionButton from './OptionButton';
 import PageStatus from '../common/PageStatus';
 import BasicModal from '../common/BasicModal';
+import BasicThemedModal from '../common/BasicThemedModal';
 import AtAndBrowserDetailsModal from '../common/AtAndBrowserDetailsModal';
+import { useDetectUa } from '../../hooks/useDetectUa';
 import DisplayNone from '../../utils/DisplayNone';
 import {
     TEST_RUN_PAGE_QUERY,
@@ -76,6 +78,9 @@ const TestRun = () => {
     const history = useHistory();
     const routerQuery = useRouterQuery();
 
+    // Detect UA information
+    const { uaBrowser, uaMajor, uaMinor, uaPatch } = useDetectUa();
+
     const titleRef = useRef();
     const pageReadyRef = useRef(false);
     const testRunStateRef = useRef();
@@ -86,6 +91,8 @@ const TestRun = () => {
     const testRunResultRef = useRef();
     const testRendererSubmitButtonRef = useRef();
     const conflictMarkdownRef = useRef();
+    const adminReviewerCheckedRef = useRef(false);
+    const adminReviewerOriginalTestRef = useRef();
 
     const { runId: testPlanRunId, testPlanReportId } = params;
 
@@ -121,6 +128,11 @@ const TestRun = () => {
         false
     );
     const [showGetInvolvedModal, setShowGetInvolvedModal] = useState(false);
+
+    const [showThemedModal, setShowThemedModal] = useState(false);
+    const [themedModalTitle, setThemedModalTitle] = useState('');
+    const [themedModalContent, setThemedModalContent] = useState(<></>);
+    const [themedModalOtherButton, setThemedModalOtherButton] = useState(null);
 
     useEffect(() => setup(), [currentTestIndex]);
 
@@ -179,6 +191,7 @@ const TestRun = () => {
             ? tester.id
             : null;
     const testerId = openAsUserId || userId;
+    const isAdminReviewer = !!(isAdmin && openAsUserId);
 
     if (isSignedIn && !testPlanRun) {
         return (
@@ -221,6 +234,23 @@ const TestRun = () => {
     }));
     const currentTest = tests[currentTestIndex];
     const hasTestsToRun = tests.length;
+
+    if (
+        adminReviewerOriginalTestRef.current &&
+        adminReviewerOriginalTestRef.current !== currentTest.id
+    ) {
+        adminReviewerCheckedRef.current = false;
+    }
+
+    if (
+        isAdminReviewer &&
+        currentTest.testResult &&
+        !adminReviewerCheckedRef.current
+    ) {
+        adminReviewerOriginalTestRef.current = currentTest;
+    }
+
+    adminReviewerCheckedRef.current = true;
 
     const defaultAtVersionId = testPlanReport.at.atVersions[0].id;
     const defaultBrowserVersionId =
@@ -505,7 +535,7 @@ const TestRun = () => {
 
     const handleCloseRunClick = async () => performButtonAction('closeTest');
 
-    const handleEditClick = async () => performButtonAction('editTest');
+    const handleEditResultsClick = async () => performButtonAction('editTest');
 
     const handleStartOverButtonClick = async () => setShowStartOverModal(true);
 
@@ -546,6 +576,120 @@ const TestRun = () => {
 
     const handleReviewConflictsButtonClick = async () =>
         setShowReviewConflictsModal(true);
+
+    const handleEditAtBrowserDetailsClick = async () => {
+        if (isAdminReviewer && adminReviewerOriginalTestRef.current) {
+            if (testPlanReport.browser.name !== uaBrowser) {
+                setThemedModalTitle(
+                    'Your Browser is different than the one used to record this result'
+                );
+                setThemedModalContent(
+                    <>
+                        You are currently using{' '}
+                        <b>
+                            {uaBrowser} {uaMajor}.{uaMinor}.{uaPatch}
+                        </b>
+                        , but are trying to edit a test result that was
+                        submitted with{' '}
+                        <b>
+                            {testPlanReport.browser.name}{' '}
+                            {
+                                adminReviewerOriginalTestRef.current.testResult
+                                    .browserVersion.name
+                            }
+                        </b>
+                        .<br />
+                        <br />
+                        You can&apos;t change the Browser type but can make
+                        other changes. Please proceed with caution.
+                    </>
+                );
+                setThemedModalOtherButton(null);
+                setShowThemedModal(true);
+                return;
+            }
+
+            if (
+                currentTest.testResult?.atVersion?.name !==
+                adminReviewerOriginalTestRef.current.testResult?.atVersion?.name
+            ) {
+                setThemedModalTitle(
+                    'Your AT Version is different than the one used to record this result'
+                );
+                setThemedModalContent(
+                    <>
+                        You are currently running{' '}
+                        <b>
+                            {testPlanReport.at.name}{' '}
+                            {currentTest.testResult?.atVersion?.name}
+                        </b>
+                        , but are editing a test result that was submitted with{' '}
+                        <b>
+                            {testPlanReport.at.name}{' '}
+                            {
+                                adminReviewerOriginalTestRef.current.testResult
+                                    ?.atVersion?.name
+                            }
+                        </b>
+                        .<br />
+                        <br />
+                        Do you want to update the AT version used to record this
+                        test result?
+                    </>
+                );
+                setThemedModalOtherButton({
+                    text: 'Update AT Version',
+                    action: () => {
+                        setShowThemedModal(false);
+                        setIsShowingAtBrowserModal(true);
+                    }
+                });
+                setShowThemedModal(true);
+                return;
+            }
+
+            if (
+                !adminReviewerOriginalTestRef.current.testResult?.browserVersion?.name.includes(
+                    `${uaMajor}.${uaMinor}.${uaPatch}`
+                )
+            ) {
+                setThemedModalTitle(
+                    'Your Browser Version is different than the one used to record this result'
+                );
+                setThemedModalContent(
+                    <>
+                        You are currently using{' '}
+                        <b>
+                            {uaBrowser} {uaMajor}.{uaMinor}.{uaPatch}
+                        </b>
+                        , but are trying to edit a test result that was
+                        submitted with{' '}
+                        <b>
+                            {testPlanReport.browser.name}{' '}
+                            {
+                                adminReviewerOriginalTestRef.current.testResult
+                                    ?.browserVersion?.name
+                            }
+                        </b>
+                        .<br />
+                        <br />
+                        Do you want to update the Browser version used to record
+                        this test result?
+                    </>
+                );
+                setThemedModalOtherButton({
+                    text: 'Update Browser Version',
+                    action: () => {
+                        setShowThemedModal(false);
+                        setIsShowingAtBrowserModal(true);
+                    }
+                });
+                setShowThemedModal(true);
+                return;
+            }
+        }
+        setIsShowingAtBrowserModal(true);
+    };
 
     const handleAtAndBrowserDetailsModalAction = async (
         updatedAtVersionName,
@@ -617,7 +761,7 @@ const TestRun = () => {
                 <Button
                     className="edit-results"
                     variant="secondary"
-                    onClick={handleEditClick}
+                    onClick={handleEditResultsClick}
                 >
                     <FontAwesomeIcon icon={faPen} />
                     Edit Results
@@ -874,7 +1018,7 @@ const TestRun = () => {
                             <Button
                                 id="edit-fa-button"
                                 aria-label="Edit version details for AT and Browser"
-                                onClick={() => setIsShowingAtBrowserModal(true)}
+                                onClick={handleEditAtBrowserDetailsClick}
                             >
                                 <FontAwesomeIcon icon={faEdit} />
                             </Button>
@@ -970,11 +1114,38 @@ const TestRun = () => {
                     </Row>
                 </Col>
             </Row>
+            {showThemedModal && (
+                <BasicThemedModal
+                    show={showThemedModal}
+                    theme={'warning'}
+                    title={themedModalTitle}
+                    dialogClassName="modal-50w"
+                    content={themedModalContent}
+                    actionButtons={
+                        themedModalOtherButton
+                            ? [
+                                  themedModalOtherButton,
+                                  {
+                                      text: 'Continue without changes',
+                                      action: () => setShowThemedModal(false)
+                                  }
+                              ]
+                            : [
+                                  // only applies to Admin, Scenario 4
+                                  {
+                                      text: 'Continue',
+                                      action: () => setShowThemedModal(false)
+                                  }
+                              ]
+                    }
+                    handleClose={() => setShowThemedModal(false)}
+                />
+            )}
             {isSignedIn && isShowingAtBrowserModal && (
                 <AtAndBrowserDetailsModal
                     show={isShowingAtBrowserModal}
                     firstLoad={!currentTest.testResult}
-                    isAdmin={!!(isAdmin && openAsUserId)}
+                    isAdmin={isAdminReviewer}
                     atName={testPlanReport.at.name}
                     atVersion={currentTest.testResult?.atVersion?.name}
                     atVersions={testPlanReport.at.atVersions.map(

@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
-import uaParser from 'ua-parser-js';
 import { Form, Alert } from 'react-bootstrap';
 import styled from '@emotion/styled';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -8,6 +7,7 @@ import {
     faInfoCircle,
     faExclamationTriangle
 } from '@fortawesome/free-solid-svg-icons';
+import { useDetectUa } from '../../../hooks/useDetectUa';
 import BasicModal from '../BasicModal';
 
 const ModalInnerSectionContainer = styled.div`
@@ -42,6 +42,8 @@ const AtAndBrowserDetailsModal = ({
     handleAction = () => {},
     handleClose = () => {}
 }) => {
+    // Detect UA information
+    const { uaBrowser, uaMajor, uaMinor, uaPatch } = useDetectUa();
     const updatedAtVersionDropdownRef = useRef();
 
     const [isFirstLoad, setIsFirstLoad] = useState(true);
@@ -50,11 +52,6 @@ const AtAndBrowserDetailsModal = ({
     );
     const [updatedBrowserVersion, setUpdatedBrowserVersion] = useState('');
     const [freeTextBrowserVersion, setFreeTextBrowserVersion] = useState('');
-
-    const [uaBrowser, setUaBrowser] = useState();
-    const [uaMajor, setUaMajor] = useState();
-    const [uaMinor, setUaMinor] = useState();
-    const [uaPatch, setUaPatch] = useState();
 
     const [isAtVersionError, setIsAtVersionError] = useState(false);
 
@@ -73,18 +70,6 @@ const AtAndBrowserDetailsModal = ({
             setUpdatedAtVersion(atVersion);
             setUpdatedBrowserVersion(browserVersion);
         }
-
-        // Detect UA information
-        const ua = uaParser();
-        const uaBrowser = ua?.browser?.name || 'Unknown';
-        const uaMajor = ua?.browser?.major || '0';
-        const uaMinor = ua?.browser?.version?.split('.')?.[1] || '0';
-        const uaPatch = ua?.browser?.version?.split('.')?.[2] || '0';
-
-        setUaBrowser(uaBrowser);
-        setUaMajor(uaMajor);
-        setUaMinor(uaMinor);
-        setUaPatch(uaPatch);
 
         if (uaMajor === '0') setUpdatedBrowserVersion('Not detected');
 
