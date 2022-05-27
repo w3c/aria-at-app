@@ -153,6 +153,10 @@ const ManageTestQueue = ({
     triggerUpdate = () => {}
 }) => {
     const loadedAts = useRef(false);
+    const focusButtonRef = useRef();
+    const addAtVersionButtonRef = useRef();
+    const editAtVersionButtonRef = useRef();
+    const deleteAtVersionButtonRef = useRef();
 
     const [showManageATs, setShowManageATs] = useState(false);
     const [showAddTestPlans, setShowAddTestPlans] = useState(false);
@@ -279,6 +283,8 @@ const ManageTestQueue = ({
 
     const onOpenAtVersionModalClick = (type = 'add') => {
         if (type === 'add') {
+            focusButtonRef.current = addAtVersionButtonRef.current;
+
             const selectedAt = ats.find(item => item.id === selectedManageAtId);
             setAtVersionModalTitle(`Add a New Version for ${selectedAt.name}`);
             setAtVersionModalType('add');
@@ -288,6 +294,8 @@ const ManageTestQueue = ({
         }
 
         if (type === 'edit') {
+            focusButtonRef.current = editAtVersionButtonRef.current;
+
             const selectedAt = ats.find(item => item.id === selectedManageAtId);
             setAtVersionModalTitle(
                 `Edit ${selectedAt.name} Version ${
@@ -306,6 +314,8 @@ const ManageTestQueue = ({
     };
 
     const onRemoveClick = () => {
+        focusButtonRef.current = deleteAtVersionButtonRef.current;
+
         const theme = 'danger';
         const selectedAt = ats.find(item => item.id === selectedManageAtId);
 
@@ -329,12 +339,16 @@ const ManageTestQueue = ({
         setShowThemedModal(true);
     };
 
-    const onThemedModalClose = () => setShowThemedModal(false);
-
     const onUpdateModalClose = () => {
         setAtVersionModalVersionText('');
         setAtVersionModalDateText('');
         setShowAtVersionModal(false);
+        focusButtonRef.current.focus();
+    };
+
+    const onThemedModalClose = () => {
+        setShowThemedModal(false);
+        focusButtonRef.current.focus();
     };
 
     const getAtVersionFromId = id => {
@@ -363,6 +377,28 @@ const ManageTestQueue = ({
         const selectedAt = ats.find(item => item.id === selectedManageAtId);
 
         if (actionType === 'add') {
+            const existingAtVersion = selectedManageAtVersions.find(
+                item => item.name === updatedVersionText
+            );
+            if (existingAtVersion) {
+                setSelectedManageAtVersionId(existingAtVersion.id);
+
+                onUpdateModalClose();
+
+                setFeedbackModalTitle('Existing Assistive Technology Version');
+                setFeedbackModalContent(
+                    <>
+                        <b>
+                            {selectedAt.name} {updatedVersionText}
+                        </b>{' '}
+                        already exists in the system. Please try adding a
+                        different one.
+                    </>
+                );
+                setShowFeedbackModal(true);
+                return;
+            }
+
             const addAtVersionData = await addAtVersion({
                 variables: {
                     atId: selectedManageAtId,
@@ -380,8 +416,11 @@ const ManageTestQueue = ({
             setFeedbackModalTitle('Successfully Added AT Version');
             setFeedbackModalContent(
                 <>
-                    Successfully added version <b>{updatedVersionText}</b> for{' '}
-                    <b>{selectedAt.name}</b>.
+                    Successfully added version{' '}
+                    <b>
+                        {selectedAt.name} {updatedVersionText}
+                    </b>
+                    .
                 </>
             );
             setShowFeedbackModal(true);
@@ -401,8 +440,11 @@ const ManageTestQueue = ({
             setFeedbackModalTitle('Successfully Updated AT Version');
             setFeedbackModalContent(
                 <>
-                    Successfully updated version <b>{updatedVersionText}</b> for{' '}
-                    <b>{selectedAt.name}</b>.
+                    Successfully updated version{' '}
+                    <b>
+                        {selectedAt.name} {updatedVersionText}
+                    </b>
+                    .
                 </>
             );
             setShowFeedbackModal(true);
@@ -550,11 +592,13 @@ const ManageTestQueue = ({
                         </Form.Group>
                         <div className="disclosure-buttons-row">
                             <button
+                                ref={addAtVersionButtonRef}
                                 onClick={() => onOpenAtVersionModalClick('add')}
                             >
                                 Add a New Version
                             </button>
                             <button
+                                ref={editAtVersionButtonRef}
                                 onClick={() =>
                                     onOpenAtVersionModalClick('edit')
                                 }
@@ -562,7 +606,10 @@ const ManageTestQueue = ({
                                 <FontAwesomeIcon icon={faEdit} />
                                 Edit
                             </button>
-                            <button onClick={onRemoveClick}>
+                            <button
+                                ref={deleteAtVersionButtonRef}
+                                onClick={onRemoveClick}
+                            >
                                 <FontAwesomeIcon icon={faTrashAlt} />
                                 Remove
                             </button>
@@ -727,10 +774,14 @@ const ManageTestQueue = ({
             {showFeedbackModal && (
                 <BasicModal
                     show={showFeedbackModal}
+                    closeButton={false}
                     title={feedbackModalTitle}
                     content={feedbackModalContent}
                     closeLabel="Ok"
-                    handleClose={() => setShowFeedbackModal(false)}
+                    handleClose={() => {
+                        setShowFeedbackModal(false);
+                        focusButtonRef.current.focus();
+                    }}
                 />
             )}
         </Container>

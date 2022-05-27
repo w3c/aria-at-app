@@ -9,7 +9,7 @@ const findOrCreateBrowserVersionResolver = async (
     { input: { name } },
     { user }
 ) => {
-    if (!user?.roles.find(role => role.name === 'ADMIN')) {
+    if (!user?.roles.find(role => (role.name === 'ADMIN' || role.name === 'TESTER'))) {
         throw new AuthenticationError();
     }
 

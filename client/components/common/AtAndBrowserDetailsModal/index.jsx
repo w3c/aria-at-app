@@ -45,6 +45,7 @@ const AtAndBrowserDetailsModal = ({
     // Detect UA information
     const { uaBrowser, uaMajor, uaMinor, uaPatch } = useDetectUa();
     const updatedAtVersionDropdownRef = useRef();
+    const adminFreeTextBrowserVersionRef = useRef();
 
     const [isFirstLoad, setIsFirstLoad] = useState(true);
     const [updatedAtVersion, setUpdatedAtVersion] = useState(
@@ -54,6 +55,10 @@ const AtAndBrowserDetailsModal = ({
     const [freeTextBrowserVersion, setFreeTextBrowserVersion] = useState('');
 
     const [isAtVersionError, setIsAtVersionError] = useState(false);
+    const [
+        isAdminFreeTextBrowserVersionError,
+        setIsAdminFreeTextBrowserVersionError
+    ] = useState(false);
 
     const [
         forceBrowserVersionUpdateMessage,
@@ -112,20 +117,29 @@ const AtAndBrowserDetailsModal = ({
 
         // remove message once browser has been changed
         !isAdmin && setForceBrowserVersionUpdateMessage(false);
+        setIsAdminFreeTextBrowserVersionError(false);
     };
 
     const onSubmit = () => {
         // Passed action prop should account for AtVersion & BrowserVersion
-        if (updatedAtVersion === 'Select a Version') {
-            // Show error for AtVersion field
-            setIsAtVersionError(true);
+        const updatedAtVersionError = updatedAtVersion === 'Select a Version';
+        const adminBrowserVersionTextError = !updatedBrowserVersion;
+
+        if (updatedAtVersionError || adminBrowserVersionTextError) {
+            setIsAtVersionError(updatedAtVersionError);
             updatedAtVersionDropdownRef.current.focus();
+
+            setIsAdminFreeTextBrowserVersionError(adminBrowserVersionTextError);
+            if (!updatedAtVersionError)
+                adminFreeTextBrowserVersionRef.current.focus();
             return;
         }
 
         handleAction(
             updatedAtVersion,
-            uaMajor === '0' ? freeTextBrowserVersion : updatedBrowserVersion
+            uaMajor === '0' && !isAdmin
+                ? freeTextBrowserVersion
+                : updatedBrowserVersion
         );
     };
 
@@ -400,11 +414,26 @@ const AtAndBrowserDetailsModal = ({
                         <Form.Group>
                             <Form.Label>Browser Version</Form.Label>
                             {isAdmin ? (
-                                <Form.Control
-                                    type="text"
-                                    value={updatedBrowserVersion}
-                                    onChange={handleBrowserVersionChange}
-                                />
+                                <>
+                                    <Form.Control
+                                        ref={adminFreeTextBrowserVersionRef}
+                                        type="text"
+                                        value={updatedBrowserVersion}
+                                        onChange={handleBrowserVersionChange}
+                                        isInvalid={
+                                            isAdminFreeTextBrowserVersionError
+                                        }
+                                    />
+                                    {isAdminFreeTextBrowserVersionError && (
+                                        <Form.Control.Feedback
+                                            style={{ display: 'block' }}
+                                            type="invalid"
+                                        >
+                                            Please enter a valid Browser
+                                            Version.
+                                        </Form.Control.Feedback>
+                                    )}
+                                </>
                             ) : (
                                 <Form.Control
                                     as="select"

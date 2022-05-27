@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { Form } from 'react-bootstrap';
 import styled from '@emotion/styled';
 import BasicModal from '../BasicModal';
-import { convertDateToString } from '../../../utils/formatter';
+import { convertDateToString, isValidDate } from '../../../utils/formatter';
 
 const ModalInnerSectionContainer = styled.div`
     display: flex;
@@ -19,11 +19,16 @@ const UpdateVersionModal = ({
     handleAction = () => {},
     handleClose = () => {}
 }) => {
+    const versionTextRef = useRef();
+    const dateAvailabilityTextRef = useRef();
+
     const [updatedVersionText, setUpdatedVersionText] = useState(versionText);
     const [
         updatedDateAvailabilityText,
         setUpdatedDateAvailabilityText
     ] = useState(convertDateToString(dateAvailabilityText));
+    const [isVersionError, setIsVersionError] = useState(false);
+    const [isDateError, setIsDateError] = useState(false);
 
     useEffect(() => {
         setUpdatedVersionText(versionText);
@@ -34,11 +39,13 @@ const UpdateVersionModal = ({
 
     const handleVersionTextChange = e => {
         const value = e.target.value;
+        setIsVersionError(false);
         setUpdatedVersionText(value);
     };
 
     const handleDateAvailabilityTextChange = e => {
         const value = e.target.value;
+        setIsDateError(false);
         setUpdatedDateAvailabilityText(value);
     };
 
@@ -78,6 +85,20 @@ const UpdateVersionModal = ({
 
     const onSubmit = () => {
         // Passed action prop should account for actionType, versionText and dateAvailabilityText
+        const versionTextError = !updatedVersionText;
+        const dateTextError =
+            !updatedDateAvailabilityText ||
+            !isValidDate(updatedDateAvailabilityText);
+
+        if (versionTextError || dateTextError) {
+            setIsVersionError(versionTextError);
+            versionTextRef.current.focus();
+
+            setIsDateError(dateTextError);
+            if (!versionTextError) dateAvailabilityTextRef.current.focus();
+            return;
+        }
+
         handleAction(actionType, {
             updatedVersionText,
             updatedDateAvailabilityText
@@ -94,10 +115,21 @@ const UpdateVersionModal = ({
                     <Form.Group>
                         <Form.Label>Version Number</Form.Label>
                         <Form.Control
+                            ref={versionTextRef}
                             type="text"
                             value={updatedVersionText}
                             onChange={handleVersionTextChange}
+                            isInvalid={isVersionError}
+                            aria-invalid={isVersionError}
                         />
+                        {isVersionError && (
+                            <Form.Control.Feedback
+                                style={{ display: 'block' }}
+                                type="invalid"
+                            >
+                                Please enter a valid version number.
+                            </Form.Control.Feedback>
+                        )}
                     </Form.Group>
 
                     <Form.Group>
@@ -105,13 +137,24 @@ const UpdateVersionModal = ({
                             Approximate date of availability
                         </Form.Label>
                         <Form.Control
+                            ref={dateAvailabilityTextRef}
                             type="text"
                             placeholder="DD-MM-YYYY"
                             value={updatedDateAvailabilityText}
                             onChange={handleDateAvailabilityTextChange}
                             onKeyPress={handleDateAvailabilityTextKeyPress}
                             maxLength={10}
+                            isInvalid={isDateError}
+                            aria-invalid={isDateError}
                         />
+                        {isDateError && (
+                            <Form.Control.Feedback
+                                style={{ display: 'block' }}
+                                type="invalid"
+                            >
+                                Please enter a valid date.
+                            </Form.Control.Feedback>
+                        )}
                     </Form.Group>
                 </ModalInnerSectionContainer>
             }

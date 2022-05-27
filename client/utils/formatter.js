@@ -30,3 +30,7 @@ export const convertDateToString = (date, format = 'DD-MM-YYYY') => {
 export const convertStringToDate = (date, format = 'DD-MM-YYYY') => {
     return moment(date, format).toDate();
 };
+
+export const isValidDate = (date, format = 'DD-MM-YYYY') => {
+    return moment(date, format).isValid();
+};

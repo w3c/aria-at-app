@@ -93,6 +93,7 @@ const TestRun = () => {
     const conflictMarkdownRef = useRef();
     const adminReviewerCheckedRef = useRef(false);
     const adminReviewerOriginalTestRef = useRef();
+    const editAtBrowserDetailsButtonRef = useRef();
 
     const { runId: testPlanRunId, testPlanReportId } = params;
 
@@ -133,6 +134,10 @@ const TestRun = () => {
     const [themedModalTitle, setThemedModalTitle] = useState('');
     const [themedModalContent, setThemedModalContent] = useState(<></>);
     const [themedModalOtherButton, setThemedModalOtherButton] = useState(null);
+    const [
+        isEditAtBrowserDetailsModalClick,
+        setIsEditAtBrowserDetailsClicked
+    ] = useState(false);
 
     useEffect(() => setup(), [currentTestIndex]);
 
@@ -578,6 +583,8 @@ const TestRun = () => {
         setShowReviewConflictsModal(true);
 
     const handleEditAtBrowserDetailsClick = async () => {
+        setIsEditAtBrowserDetailsClicked(true);
+
         if (isAdminReviewer && adminReviewerOriginalTestRef.current) {
             if (testPlanReport.browser.name !== uaBrowser) {
                 setThemedModalTitle(
@@ -727,6 +734,14 @@ const TestRun = () => {
             browserVersionId
         );
         setIsShowingAtBrowserModal(false);
+
+        if (isEditAtBrowserDetailsModalClick)
+            editAtBrowserDetailsButtonRef.current.focus();
+    };
+
+    const onThemedModalClose = () => {
+        setShowThemedModal(false);
+        editAtBrowserDetailsButtonRef.current.focus();
     };
 
     const renderTestContent = (testPlanReport, currentTest, heading) => {
@@ -1016,6 +1031,7 @@ const TestRun = () => {
                         </div>
                         {isSignedIn && (
                             <Button
+                                ref={editAtBrowserDetailsButtonRef}
                                 id="edit-fa-button"
                                 aria-label="Edit version details for AT and Browser"
                                 onClick={handleEditAtBrowserDetailsClick}
@@ -1127,18 +1143,18 @@ const TestRun = () => {
                                   themedModalOtherButton,
                                   {
                                       text: 'Continue without changes',
-                                      action: () => setShowThemedModal(false)
+                                      action: onThemedModalClose
                                   }
                               ]
                             : [
                                   // only applies to Admin, Scenario 4
                                   {
                                       text: 'Continue',
-                                      action: () => setShowThemedModal(false)
+                                      action: onThemedModalClose
                                   }
                               ]
                     }
-                    handleClose={() => setShowThemedModal(false)}
+                    handleClose={onThemedModalClose}
                 />
             )}
             {isSignedIn && isShowingAtBrowserModal && (
@@ -1161,7 +1177,11 @@ const TestRun = () => {
                     patternName={testPlanVersion.title}
                     testerName={tester.username}
                     handleAction={handleAtAndBrowserDetailsModalAction}
-                    handleClose={() => setIsShowingAtBrowserModal(false)}
+                    handleClose={() => {
+                        setIsShowingAtBrowserModal(false);
+                        if (isEditAtBrowserDetailsModalClick)
+                            editAtBrowserDetailsButtonRef.current.focus();
+                    }}
                 />
             )}
         </Container>
