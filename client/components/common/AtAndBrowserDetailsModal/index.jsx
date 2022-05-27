@@ -123,7 +123,7 @@ const AtAndBrowserDetailsModal = ({
     const onSubmit = () => {
         // Passed action prop should account for AtVersion & BrowserVersion
         const updatedAtVersionError = updatedAtVersion === 'Select a Version';
-        const adminBrowserVersionTextError = !updatedBrowserVersion;
+        const adminBrowserVersionTextError = isAdmin && !updatedBrowserVersion;
 
         if (updatedAtVersionError || adminBrowserVersionTextError) {
             setIsAtVersionError(updatedAtVersionError);
