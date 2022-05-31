@@ -289,42 +289,48 @@ const AtAndBrowserDetailsModal = ({
                                 </Alert>
                             )}
                         {/* Tester Scenario 4 */}
-                        {!isAdmin && uaBrowser !== browserName && (
-                            <Alert
-                                variant="warning"
-                                className="at-browser-details-modal-alert"
-                            >
-                                <FontAwesomeIcon icon={faExclamationTriangle} />
-                                <span>
-                                    We have automatically detected you are now
-                                    using{' '}
-                                    <b>
-                                        {uaBrowser} {uaMajor}.{uaMinor}.
-                                        {uaPatch}
-                                    </b>{' '}
-                                    which is a different browser from the last
-                                    one you were testing with, which was{' '}
-                                    <b>
-                                        {browserName} {browserVersion}
-                                    </b>
-                                    .
-                                    <br />
-                                    <br />
-                                    You can&apos;t edit your Browser type, but
-                                    you can continue with{' '}
-                                    <b>
-                                        {uaBrowser} {uaMajor}.{uaMinor}.
-                                        {uaPatch}
-                                    </b>
-                                    . Keep in mind that your test results will
-                                    be recorded as if you were still using{' '}
-                                    <b>
-                                        {browserName} {browserVersion}
-                                    </b>
-                                    .
-                                </span>
-                            </Alert>
-                        )}
+                        {!isAdmin &&
+                            uaBrowser !== browserName &&
+                            uaMajor !== '0' && (
+                                <Alert
+                                    variant="warning"
+                                    className="at-browser-details-modal-alert"
+                                >
+                                    <FontAwesomeIcon
+                                        icon={faExclamationTriangle}
+                                    />
+                                    <span>
+                                        We have automatically detected you are
+                                        now using{' '}
+                                        <b>
+                                            {uaBrowser} {uaMajor}.{uaMinor}.
+                                            {uaPatch}
+                                        </b>{' '}
+                                        which is a different browser from the
+                                        last one you were testing with, which
+                                        was{' '}
+                                        <b>
+                                            {browserName} {browserVersion}
+                                        </b>
+                                        .
+                                        <br />
+                                        <br />
+                                        You can&apos;t edit your Browser type,
+                                        but you can continue with{' '}
+                                        <b>
+                                            {uaBrowser} {uaMajor}.{uaMinor}.
+                                            {uaPatch}
+                                        </b>
+                                        . Keep in mind that your test results
+                                        will be recorded as if you were still
+                                        using{' '}
+                                        <b>
+                                            {browserName} {browserVersion}
+                                        </b>
+                                        .
+                                    </span>
+                                </Alert>
+                            )}
                         {/* Tester Scenario 5 */}
                         {!isAdmin &&
                             uaBrowser === browserName &&
@@ -356,7 +362,7 @@ const AtAndBrowserDetailsModal = ({
                                 </Alert>
                             )}
                         {/* Tester Scenario 7 */}
-                        {uaMajor === 0 && (
+                        {uaMajor === '0' && (
                             <Alert
                                 variant="warning"
                                 className="at-browser-details-modal-alert"
@@ -364,9 +370,9 @@ const AtAndBrowserDetailsModal = ({
                                 <FontAwesomeIcon icon={faExclamationTriangle} />
                                 <span>
                                     We could not automatically detect what
-                                    version of <b>{uaBrowser}</b> you are using.
-                                    Before continuing, please provide your
-                                    version number.
+                                    version of <b>{browserName}</b> you are
+                                    using. Before continuing, please provide
+                                    your version number.
                                 </span>
                             </Alert>
                         )}
