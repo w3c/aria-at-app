@@ -416,7 +416,7 @@ const ManageTestQueue = ({
             setFeedbackModalTitle('Successfully Added AT Version');
             setFeedbackModalContent(
                 <>
-                    Successfully added version{' '}
+                    Successfully added{' '}
                     <b>
                         {selectedAt.name} {updatedVersionText}
                     </b>
@@ -440,7 +440,7 @@ const ManageTestQueue = ({
             setFeedbackModalTitle('Successfully Updated AT Version');
             setFeedbackModalContent(
                 <>
-                    Successfully updated version{' '}
+                    Successfully updated{' '}
                     <b>
                         {selectedAt.name} {updatedVersionText}
                     </b>

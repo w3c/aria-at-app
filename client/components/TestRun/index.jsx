@@ -97,7 +97,7 @@ const TestRun = () => {
 
     const { runId: testPlanRunId, testPlanReportId } = params;
 
-    const { loading, data, error, refetch } = useQuery(
+    const { loading, data, error } = useQuery(
         testPlanRunId ? TEST_RUN_PAGE_QUERY : TEST_RUN_PAGE_ANON_QUERY,
         {
             variables: { testPlanRunId, testPlanReportId }
@@ -106,9 +106,21 @@ const TestRun = () => {
     const [
         createTestResult,
         { loading: createTestResultLoading }
-    ] = useMutation(FIND_OR_CREATE_TEST_RESULT_MUTATION);
-    const [saveTestResult] = useMutation(SAVE_TEST_RESULT_MUTATION);
-    const [submitTestResult] = useMutation(SUBMIT_TEST_RESULT_MUTATION);
+    ] = useMutation(FIND_OR_CREATE_TEST_RESULT_MUTATION, {
+        refetchQueries: [
+            { query: TEST_RUN_PAGE_QUERY, variables: { testPlanRunId } }
+        ]
+    });
+    const [saveTestResult] = useMutation(SAVE_TEST_RESULT_MUTATION, {
+        refetchQueries: [
+            { query: TEST_RUN_PAGE_QUERY, variables: { testPlanRunId } }
+        ]
+    });
+    const [submitTestResult] = useMutation(SUBMIT_TEST_RESULT_MUTATION, {
+        refetchQueries: [
+            { query: TEST_RUN_PAGE_QUERY, variables: { testPlanRunId } }
+        ]
+    });
     const [deleteTestResult] = useMutation(DELETE_TEST_RESULT_MUTATION);
     const [createBrowserVersion] = useMutation(
         FIND_OR_CREATE_BROWSER_VERSION_MUTATION
@@ -216,18 +228,15 @@ const TestRun = () => {
         atVersionId,
         browserVersionId
     ) => {
-        if (atVersionId && browserVersionId) {
-            await createTestResult({
-                variables: {
-                    testPlanRunId,
-                    testId,
-                    atVersionId,
-                    browserVersionId
-                }
-            });
-            pageReadyRef.current = true;
-            await refetch();
-        } else pageReadyRef.current = true;
+        await createTestResult({
+            variables: {
+                testPlanRunId,
+                testId,
+                atVersionId,
+                browserVersionId
+            }
+        });
+        pageReadyRef.current = true;
     };
 
     const tests = runnableTests.map((test, index) => ({
@@ -576,7 +585,6 @@ const TestRun = () => {
 
         await saveTestResult({ variables });
         if (isSubmit) await submitTestResult({ variables });
-        await refetch();
     };
 
     const handleReviewConflictsButtonClick = async () =>
@@ -1027,7 +1035,9 @@ const TestRun = () => {
                     <div className="at-browser-row">
                         <div className="info-label">
                             <b>AT:</b>{' '}
-                            {`${testPlanReport.at?.name} ${currentAtVersion.name}`}
+                            {`${testPlanReport.at?.name}${
+                                isSignedIn ? ` ${currentAtVersion.name}` : ''
+                            }`}
                         </div>
                         {isSignedIn && (
                             <Button
@@ -1042,7 +1052,9 @@ const TestRun = () => {
                     </div>
                     <div className="info-label">
                         <b>Browser:</b>{' '}
-                        {`${testPlanReport.browser?.name} ${currentBrowserVersion.name}`}
+                        {`${testPlanReport.browser?.name}${
+                            isSignedIn ? ` ${currentBrowserVersion.name}` : ''
+                        }`}
                     </div>
                 </div>
                 <div className="test-info-entity tests-completed">
