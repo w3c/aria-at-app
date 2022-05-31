@@ -17,7 +17,6 @@ const testPlanReportsResolver = async (_, { statuses }) => {
         undefined,
         undefined,
         undefined,
-        undefined,
         { order: [['createdAt', 'desc']] }
     );
 };

@@ -13,6 +13,7 @@ const testPlanVersionsResolver = async () => {
         null,
         null,
         null,
+        null,
         {
             order: [
                 ['updatedAt', 'desc'],

@@ -379,7 +379,7 @@ const ManageTestQueue = ({
 
         if (actionType === 'add') {
             const existingAtVersion = selectedManageAtVersions.find(
-                item => item.name === updatedVersionText
+                item => item.name.trim() === updatedVersionText.trim()
             );
             if (existingAtVersion) {
                 setSelectedManageAtVersionId(existingAtVersion.id);
