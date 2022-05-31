@@ -79,7 +79,7 @@ const AtAndBrowserDetailsModal = ({
         if (uaMajor === '0') setUpdatedBrowserVersion('Not detected');
 
         // needs to check if browser version exists in browserVersions
-        const matchingBrowser = browserVersions.find(item =>
+        const matchingBrowserVersion = browserVersions.find(item =>
             item.includes(`${uaMajor}.${uaMinor}.${uaPatch}`)
         );
 
@@ -89,12 +89,12 @@ const AtAndBrowserDetailsModal = ({
             // check that saved browserVersion is the same as detected
             !browserVersion.includes(`${uaMajor}.${uaMinor}.${uaPatch}`) &&
             uaBrowser === browserName &&
-            matchingBrowser
+            matchingBrowserVersion
         ) {
             setForceBrowserVersionUpdateMessage(true);
-            setUpdatedBrowserVersion(matchingBrowser);
+            setUpdatedBrowserVersion(matchingBrowserVersion);
         }
-    }, []);
+    }, [uaBrowser, uaMajor, uaMinor, uaPatch]);
 
     useEffect(() => {
         // check to support Tester Scenario 5
