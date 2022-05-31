@@ -157,6 +157,7 @@ const ManageTestQueue = ({
     const addAtVersionButtonRef = useRef();
     const editAtVersionButtonRef = useRef();
     const deleteAtVersionButtonRef = useRef();
+    const addTestPlanReportButtonRef = useRef();
 
     const [showManageATs, setShowManageATs] = useState(false);
     const [showAddTestPlans, setShowAddTestPlans] = useState(false);
@@ -505,6 +506,8 @@ const ManageTestQueue = ({
     };
 
     const handleAddTestPlanToTestQueue = async () => {
+        focusButtonRef.current = addTestPlanReportButtonRef.current;
+
         const selectedTestPlanVersion = filteredTestPlanVersions.find(
             item => item.id === selectedTestPlanVersionId
         );
@@ -724,6 +727,7 @@ const ManageTestQueue = ({
                     </Form.Group>
                 </div>
                 <Button
+                    ref={addTestPlanReportButtonRef}
                     variant="primary"
                     disabled={
                         !selectedTestPlanVersionId ||
