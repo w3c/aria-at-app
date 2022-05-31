@@ -86,7 +86,12 @@ const AtAndBrowserDetailsModal = ({
             item.includes(`${uaMajor}.${uaMinor}.${uaPatch}`)
         );
 
-        if (!isAdmin && !matchingBrowserVersion && uaMajor && uaMajor !== '0') {
+        if (
+            !matchingBrowserVersion &&
+            uaBrowser === browserName &&
+            uaMajor &&
+            uaMajor !== '0'
+        ) {
             matchingBrowserVersion = `${uaMajor}.${uaMinor}.${uaPatch}`;
             setUpdatedBrowserVersions([
                 matchingBrowserVersion,
