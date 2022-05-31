@@ -32,7 +32,10 @@ const SummarizeTestPlanReports = ({ testPlanReports }) => {
     let testPlanTargetsById = {};
     let testPlanVersionsById = {};
     testPlanReports.forEach(testPlanReport => {
-        const { testPlanTarget, testPlanVersion } = testPlanReport;
+        const { testPlanVersion, at, browser } = testPlanReport;
+
+        // Construct testPlanTarget
+        const testPlanTarget = { id: `${at.id}${browser.id}`, at, browser };
         testPlanReportsById[testPlanReport.id] = testPlanReport;
         testPlanTargetsById[testPlanTarget.id] = testPlanTarget;
         testPlanVersionsById[testPlanVersion.id] = testPlanVersion;
@@ -52,7 +55,10 @@ const SummarizeTestPlanReports = ({ testPlanReports }) => {
         });
     });
     testPlanReports.forEach(testPlanReport => {
-        const { testPlanTarget, testPlanVersion } = testPlanReport;
+        const { testPlanVersion, at, browser } = testPlanReport;
+
+        // Construct testPlanTarget
+        const testPlanTarget = { id: `${at.id}${browser.id}`, at, browser };
         tabularReports[testPlanVersion.id][testPlanTarget.id] = testPlanReport;
     });
 
@@ -81,7 +87,9 @@ const SummarizeTestPlanReports = ({ testPlanReports }) => {
                         <th>Test Plan</th>
                         {Object.values(testPlanTargetsById).map(
                             testPlanTarget => (
-                                <th key={testPlanTarget.id}>Target Progress</th>
+                                <th key={testPlanTarget.id}>
+                                    {getTestPlanTargetTitle(testPlanTarget)}
+                                </th>
                             )
                         )}
                     </tr>
@@ -126,19 +134,25 @@ const SummarizeTestPlanReports = ({ testPlanReports }) => {
                                                             `/targets/${testPlanReport.id}`
                                                         }
                                                     >
-                                                        {getTestPlanTargetTitle(
-                                                            testPlanTarget
-                                                        )}
-                                                        {` `}(
-                                                        {metrics.supportPercent}
-                                                        % completed)
-                                                        <div className="progress">
+                                                        <div
+                                                            className="progress"
+                                                            aria-label={`${getTestPlanTargetTitle(
+                                                                testPlanTarget
+                                                            )}, ${
+                                                                metrics.supportPercent
+                                                            }% completed`}
+                                                        >
                                                             <div
                                                                 className="progress-bar bg-info"
                                                                 style={{
                                                                     width: `${metrics.supportPercent}%`
                                                                 }}
-                                                            />
+                                                            >
+                                                                {
+                                                                    metrics.supportPercent
+                                                                }
+                                                                %
+                                                            </div>
                                                         </div>
                                                     </Link>
                                                 </td>
@@ -159,17 +173,6 @@ SummarizeTestPlanReports.propTypes = {
     testPlanReports: PropTypes.arrayOf(
         PropTypes.shape({
             id: PropTypes.string.isRequired,
-            testPlanTarget: PropTypes.shape({
-                id: PropTypes.string.isRequired,
-                browser: PropTypes.shape({
-                    name: PropTypes.string.isRequired
-                }).isRequired,
-                at: PropTypes.shape({
-                    name: PropTypes.string.isRequired
-                }).isRequired,
-                browserVersion: PropTypes.string.isRequired,
-                atVersion: PropTypes.string.isRequired
-            }).isRequired,
             testPlanVersion: PropTypes.shape({
                 id: PropTypes.string.isRequired,
                 title: PropTypes.string,

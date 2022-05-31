@@ -18,17 +18,13 @@ export const UPDATER_QUERY = gql`
     query Updater($testPlanReportId: ID!, $testPlanId: ID!) {
         testPlanReport(id: $testPlanReportId) {
             id
-            testPlanTarget {
-                at {
-                    name
-                    id
-                }
-                atVersion
-                browser {
-                    id
-                    name
-                }
-                browserVersion
+            at {
+                name
+                id
+            }
+            browser {
+                id
+                name
             }
             testPlanVersion {
                 id
@@ -91,6 +87,12 @@ export const VERSION_QUERY = gql`
                     test {
                         ...TestFragment
                     }
+                    atVersion {
+                        id
+                    }
+                    browserVersion {
+                        id
+                    }
                     completedAt
                     scenarioResults {
                         output
@@ -149,11 +151,26 @@ export const CREATE_TEST_PLAN_RUN_MUTATION = gql`
 `;
 
 export const CREATE_TEST_RESULT_MUTATION = gql`
-    mutation CreateTestResultMutation($testPlanRunId: ID!, $testId: ID!) {
+    mutation CreateTestResultMutation(
+        $testPlanRunId: ID!
+        $testId: ID!
+        $atVersionId: ID!
+        $browserVersionId: ID!
+    ) {
         testPlanRun(id: $testPlanRunId) {
-            findOrCreateTestResult(testId: $testId) {
+            findOrCreateTestResult(
+                testId: $testId
+                atVersionId: $atVersionId
+                browserVersionId: $browserVersionId
+            ) {
                 testResult {
                     id
+                    atVersion {
+                        id
+                    }
+                    browserVersion {
+                        id
+                    }
                     scenarioResults {
                         id
                         assertionResults {

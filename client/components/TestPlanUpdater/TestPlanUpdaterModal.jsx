@@ -55,7 +55,7 @@ const TestPlanUpdaterModal = ({
         setUpdaterData(updaterData);
 
         const testPlanVersionId = updaterData.testPlan.latestTestPlanVersion.id;
-        const atId = updaterData.testPlanReport.testPlanTarget.at.id;
+        const atId = updaterData.testPlanReport.at.id;
 
         const { data: versionData } = await client.query({
             query: VERSION_QUERY,
@@ -129,12 +129,8 @@ const TestPlanUpdaterModal = ({
     const {
         testPlanReport: {
             id: currentReportId,
-            testPlanTarget: {
-                at: { id: atId, name: atName },
-                atVersion,
-                browser: { id: browserId, name: browserName },
-                browserVersion
-            },
+            at: { id: atId, name: atName },
+            browser: { id: browserId, name: browserName },
             testPlanVersion: currentVersion
         },
         testPlan: { latestTestPlanVersion }
@@ -165,11 +161,11 @@ const TestPlanUpdaterModal = ({
         );
     }
 
-    const canCreateNewReport = versionData && runsWithResults.length > 0;
-
     const copyTestResult = (testResultSkeleton, testResult) => {
         return {
             id: testResultSkeleton.id,
+            atVersionId: testResultSkeleton.atVersion.id,
+            browserVersionId: testResultSkeleton.browserVersion.id,
             scenarioResults: testResultSkeleton.scenarioResults.map(
                 (scenarioResultSkeleton, index) => {
                     const scenarioResult = testResult.scenarioResults[index];
@@ -203,12 +199,8 @@ const TestPlanUpdaterModal = ({
             variables: {
                 input: {
                     testPlanVersionId: newTestPlanVersionId,
-                    testPlanTarget: {
-                        atId: atId,
-                        atVersion: atVersion,
-                        browserId: browserId,
-                        browserVersion: browserVersion
-                    }
+                    atId: atId,
+                    browserId: browserId
                 }
             }
         });
@@ -253,11 +245,18 @@ const TestPlanUpdaterModal = ({
 
             for (const testResult of testPlanRun.testResults) {
                 const testId = currentTestIdsToNewTestIds[testResult.test.id];
+                const atVersionId = testResult.atVersion.id;
+                const browserVersionId = testResult.browserVersion.id;
                 if (!testId) continue;
 
                 const { data: testResultData } = await client.mutate({
                     mutation: CREATE_TEST_RESULT_MUTATION,
-                    variables: { testPlanRunId, testId }
+                    variables: {
+                        testPlanRunId,
+                        testId,
+                        atVersionId,
+                        browserVersionId
+                    }
                 });
 
                 const testResultSkeleton =
@@ -344,8 +343,8 @@ const TestPlanUpdaterModal = ({
                                 <b>Test Plan:</b> {currentVersion.title}
                             </div>
                             <div className="version-info-label">
-                                <b>AT and Browser:</b> {atName} {atVersion} with{' '}
-                                {browserName} {browserVersion}
+                                <b>AT and Browser:</b> {atName} with{' '}
+                                {browserName}
                             </div>
                             <div className="current-version version-info-label">
                                 <b>Current version:</b>{' '}
@@ -366,22 +365,8 @@ const TestPlanUpdaterModal = ({
                         </div>
                         <div>
                             {(() => {
-                                if (!versionData) {
-                                    return (
-                                        <p>
-                                            The number of test results to copy
-                                            will be shown here after you choose
-                                            a new version.
-                                        </p>
-                                    );
-                                }
-                                if (runsWithResults.length === 0) {
-                                    return (
-                                        <p>
-                                            There are no test results associated
-                                            with this report.
-                                        </p>
-                                    );
+                                if (!runsWithResults?.length) {
+                                    return '';
                                 }
 
                                 const testers = runsWithResults.map(
@@ -473,7 +458,6 @@ const TestPlanUpdaterModal = ({
                                         !backupChecked ? 'danger' : 'primary'
                                     }
                                     className="submit-button"
-                                    disabled={!canCreateNewReport}
                                     onClick={createNewReportWithData}
                                 >
                                     Update Test Plan

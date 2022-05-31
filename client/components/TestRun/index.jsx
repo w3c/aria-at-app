@@ -8,7 +8,8 @@ import {
     faRedo,
     faExclamationCircle,
     faCheck,
-    faPen
+    faPen,
+    faEdit
 } from '@fortawesome/free-solid-svg-icons';
 import nextId from 'react-id-generator';
 import { Alert, Button, Col, Container, Row } from 'react-bootstrap';
@@ -19,6 +20,9 @@ import TestRenderer from '../TestRenderer';
 import OptionButton from './OptionButton';
 import PageStatus from '../common/PageStatus';
 import BasicModal from '../common/BasicModal';
+import BasicThemedModal from '../common/BasicThemedModal';
+import AtAndBrowserDetailsModal from '../common/AtAndBrowserDetailsModal';
+import { useDetectUa } from '../../hooks/useDetectUa';
 import DisplayNone from '../../utils/DisplayNone';
 import {
     TEST_RUN_PAGE_QUERY,
@@ -26,7 +30,8 @@ import {
     FIND_OR_CREATE_TEST_RESULT_MUTATION,
     SAVE_TEST_RESULT_MUTATION,
     SUBMIT_TEST_RESULT_MUTATION,
-    DELETE_TEST_RESULT_MUTATION
+    DELETE_TEST_RESULT_MUTATION,
+    FIND_OR_CREATE_BROWSER_VERSION_MUTATION
 } from './queries';
 import { evaluateAuth } from '../../utils/evaluateAuth';
 import './TestRun.css';
@@ -35,10 +40,11 @@ import ReviewConflicts from '../ReviewConflicts';
 const createGitHubIssueWithTitleAndBody = ({
     test,
     testPlanReport,
+    atVersion,
+    browserVersion,
     conflictMarkdown = null
 }) => {
-    const { testPlanVersion, testPlanTarget } = testPlanReport;
-    const { at, browser } = testPlanTarget;
+    const { testPlanVersion, at, browser } = testPlanReport;
 
     const title =
         `Feedback: "${test.title}" (${testPlanVersion.title}, ` +
@@ -53,9 +59,9 @@ const createGitHubIssueWithTitleAndBody = ({
         `- Test File at Exact Commit: ` +
         `[${shortenedUrl}](https://aria-at.w3.org${test.renderedUrl})\n` +
         `- AT: ` +
-        `${at.name} (version ${testPlanTarget.atVersion})\n` +
+        `${at.name} (version ${atVersion})\n` +
         `- Browser: ` +
-        `${browser.name} (version ${testPlanTarget.browserVersion})\n`;
+        `${browser.name} (version ${browserVersion})\n`;
 
     if (conflictMarkdown) {
         body += `\n${conflictMarkdown}`;
@@ -72,6 +78,9 @@ const TestRun = () => {
     const history = useHistory();
     const routerQuery = useRouterQuery();
 
+    // Detect UA information
+    const { uaBrowser, uaMajor, uaMinor, uaPatch } = useDetectUa();
+
     const titleRef = useRef();
     const pageReadyRef = useRef(false);
     const testRunStateRef = useRef();
@@ -82,32 +91,65 @@ const TestRun = () => {
     const testRunResultRef = useRef();
     const testRendererSubmitButtonRef = useRef();
     const conflictMarkdownRef = useRef();
+    const adminReviewerCheckedRef = useRef(false);
+    const adminReviewerOriginalTestRef = useRef();
+    const editAtBrowserDetailsButtonRef = useRef();
 
     const { runId: testPlanRunId, testPlanReportId } = params;
 
-    const { loading, data, error, refetch } = useQuery(
+    const { loading, data, error } = useQuery(
         testPlanRunId ? TEST_RUN_PAGE_QUERY : TEST_RUN_PAGE_ANON_QUERY,
         {
             variables: { testPlanRunId, testPlanReportId }
         }
     );
-    const [createTestResult, { loading: createTestLoading }] = useMutation(
-        FIND_OR_CREATE_TEST_RESULT_MUTATION
-    );
-    const [saveTestResult] = useMutation(SAVE_TEST_RESULT_MUTATION);
-    const [submitTestResult] = useMutation(SUBMIT_TEST_RESULT_MUTATION);
+    const [
+        createTestResult,
+        { loading: createTestResultLoading }
+    ] = useMutation(FIND_OR_CREATE_TEST_RESULT_MUTATION, {
+        refetchQueries: [
+            { query: TEST_RUN_PAGE_QUERY, variables: { testPlanRunId } }
+        ]
+    });
+    const [saveTestResult] = useMutation(SAVE_TEST_RESULT_MUTATION, {
+        refetchQueries: [
+            { query: TEST_RUN_PAGE_QUERY, variables: { testPlanRunId } }
+        ]
+    });
+    const [submitTestResult] = useMutation(SUBMIT_TEST_RESULT_MUTATION, {
+        refetchQueries: [
+            { query: TEST_RUN_PAGE_QUERY, variables: { testPlanRunId } }
+        ]
+    });
     const [deleteTestResult] = useMutation(DELETE_TEST_RESULT_MUTATION);
+    const [createBrowserVersion] = useMutation(
+        FIND_OR_CREATE_BROWSER_VERSION_MUTATION
+    );
 
+    const [isShowingAtBrowserModal, setIsShowingAtBrowserModal] = useState(
+        true
+    );
     const [isRendererReady, setIsRendererReady] = useState(false);
     const [isTestSubmitClicked, setIsTestSubmitClicked] = useState(false);
     const [isTestEditClicked, setIsTestEditClicked] = useState(false);
     const [showTestNavigator, setShowTestNavigator] = useState(true);
     const [currentTestIndex, setCurrentTestIndex] = useState(0);
+    const [atVersionId, setAtVersionId] = useState();
+    const [browserVersionId, setBrowserVersionId] = useState();
     const [showStartOverModal, setShowStartOverModal] = useState(false);
     const [showReviewConflictsModal, setShowReviewConflictsModal] = useState(
         false
     );
     const [showGetInvolvedModal, setShowGetInvolvedModal] = useState(false);
+
+    const [showThemedModal, setShowThemedModal] = useState(false);
+    const [themedModalTitle, setThemedModalTitle] = useState('');
+    const [themedModalContent, setThemedModalContent] = useState(<></>);
+    const [themedModalOtherButton, setThemedModalOtherButton] = useState(null);
+    const [
+        isEditAtBrowserDetailsModalClick,
+        setIsEditAtBrowserDetailsClicked
+    ] = useState(false);
 
     useEffect(() => setup(), [currentTestIndex]);
 
@@ -135,7 +177,7 @@ const TestRun = () => {
         );
     }
 
-    if (!data || loading || createTestLoading) {
+    if (!data || loading || createTestResultLoading) {
         return (
             <PageStatus
                 title="Loading - Test Results | ARIA-AT"
@@ -145,8 +187,7 @@ const TestRun = () => {
     }
 
     const auth = evaluateAuth(data && data.me ? data.me : {});
-    const { id: userId } = auth;
-    let { isSignedIn } = auth;
+    let { id: userId, isSignedIn, isAdmin } = auth;
 
     const { testPlanRun, users } = data;
     const { tester, testResults = [] } = testPlanRun || {};
@@ -157,12 +198,8 @@ const TestRun = () => {
     if (testPlanReportId) isSignedIn = false;
     if (!isSignedIn) testPlanReport = data.testPlanReport;
 
-    const {
-        testPlanTarget,
-        testPlanVersion,
-        runnableTests = [],
-        conflicts = []
-    } = testPlanReport || {};
+    const { testPlanVersion, runnableTests = [], conflicts = [] } =
+        testPlanReport || {};
 
     // check to ensure an admin that manually went to a test run url doesn't
     // run the test as themselves
@@ -171,8 +208,9 @@ const TestRun = () => {
             ? tester.id
             : null;
     const testerId = openAsUserId || userId;
+    const isAdminReviewer = !!(isAdmin && openAsUserId);
 
-    if (isSignedIn ? !testPlanRun || !testPlanTarget : !testPlanTarget) {
+    if (isSignedIn && !testPlanRun) {
         return (
             <PageStatus
                 title="Error - Test Results | ARIA-AT"
@@ -185,15 +223,20 @@ const TestRun = () => {
 
     const toggleTestNavigator = () => setShowTestNavigator(!showTestNavigator);
 
-    const createTestResultForRenderer = async testId => {
+    const createTestResultForRenderer = async (
+        testId,
+        atVersionId,
+        browserVersionId
+    ) => {
         await createTestResult({
             variables: {
                 testPlanRunId,
-                testId
+                testId,
+                atVersionId,
+                browserVersionId
             }
         });
         pageReadyRef.current = true;
-        await refetch();
     };
 
     const tests = runnableTests.map((test, index) => ({
@@ -206,13 +249,63 @@ const TestRun = () => {
     const currentTest = tests[currentTestIndex];
     const hasTestsToRun = tests.length;
 
+    if (
+        adminReviewerOriginalTestRef.current &&
+        adminReviewerOriginalTestRef.current !== currentTest.id
+    ) {
+        adminReviewerCheckedRef.current = false;
+    }
+
+    if (
+        isAdminReviewer &&
+        currentTest.testResult &&
+        !adminReviewerCheckedRef.current
+    ) {
+        adminReviewerOriginalTestRef.current = currentTest;
+    }
+
+    adminReviewerCheckedRef.current = true;
+
+    const defaultAtVersionId = testPlanReport.at.atVersions[0].id;
+    const defaultBrowserVersionId =
+        testPlanReport.browser.browserVersions[0].id;
+
+    const currentTestAtVersionId =
+        currentTest.testResult?.atVersion?.id ||
+        atVersionId ||
+        defaultAtVersionId;
+
+    const currentTestBrowserVersionId =
+        currentTest.testResult?.browserVersion?.id ||
+        browserVersionId ||
+        defaultBrowserVersionId;
+
+    const currentAtVersion =
+        currentTest.testResult?.atVersion ||
+        testPlanReport.at.atVersions.find(
+            item => item.id === currentTestAtVersionId
+        );
+
+    const currentBrowserVersion =
+        currentTest.testResult?.browserVersion ||
+        testPlanReport.browser.browserVersions.find(
+            item => item.id === currentTestBrowserVersionId
+        );
+
     if (!currentTest.testResult && !pageReadyRef.current && isSignedIn)
-        (async () => await createTestResultForRenderer(currentTest.id))();
+        (async () =>
+            await createTestResultForRenderer(
+                currentTest.id,
+                currentTestAtVersionId,
+                currentTestBrowserVersionId
+            ))();
     else pageReadyRef.current = true;
 
     const gitHubIssueLinkWithTitleAndBody = createGitHubIssueWithTitleAndBody({
         test: currentTest,
         testPlanReport,
+        atVersion: currentAtVersion.name,
+        browserVersion: currentBrowserVersion.name,
         conflictMarkdown: conflictMarkdownRef.current
     });
 
@@ -383,7 +476,11 @@ const TestRun = () => {
             );
 
             await handleSaveOrSubmitTestResultAction(
-                { scenarioResults },
+                {
+                    atVersionId: currentTestAtVersionId,
+                    browserVersionId: currentTestBrowserVersionId,
+                    scenarioResults
+                },
                 forceSave ? false : !!testRunResultRef.current
             );
             if (withResult && !forceSave) return !!testRunResultRef.current;
@@ -452,7 +549,7 @@ const TestRun = () => {
 
     const handleCloseRunClick = async () => performButtonAction('closeTest');
 
-    const handleEditClick = async () => performButtonAction('editTest');
+    const handleEditResultsClick = async () => performButtonAction('editTest');
 
     const handleStartOverButtonClick = async () => setShowStartOverModal(true);
 
@@ -464,29 +561,196 @@ const TestRun = () => {
         await deleteTestResult({ variables });
 
         setup();
-        await createTestResultForRenderer(currentTest.id);
+        await createTestResultForRenderer(
+            currentTest.id,
+            currentTestAtVersionId,
+            currentTestBrowserVersionId
+        );
 
         // close modal after action
         setShowStartOverModal(false);
     };
 
     const handleSaveOrSubmitTestResultAction = async (
-        { scenarioResults = [] },
+        { atVersionId, browserVersionId, scenarioResults = [] },
         isSubmit = false
     ) => {
         const { id } = currentTest.testResult;
         let variables = {
             id,
+            atVersionId,
+            browserVersionId,
             scenarioResults
         };
 
         await saveTestResult({ variables });
         if (isSubmit) await submitTestResult({ variables });
-        await refetch();
     };
 
     const handleReviewConflictsButtonClick = async () =>
         setShowReviewConflictsModal(true);
+
+    const handleEditAtBrowserDetailsClick = async () => {
+        setIsEditAtBrowserDetailsClicked(true);
+
+        if (isAdminReviewer && adminReviewerOriginalTestRef.current) {
+            if (testPlanReport.browser.name !== uaBrowser) {
+                setThemedModalTitle(
+                    'Your Browser is different than the one used to record this result'
+                );
+                setThemedModalContent(
+                    <>
+                        You are currently using{' '}
+                        <b>
+                            {uaBrowser} {uaMajor}.{uaMinor}.{uaPatch}
+                        </b>
+                        , but are trying to edit a test result that was
+                        submitted with{' '}
+                        <b>
+                            {testPlanReport.browser.name}{' '}
+                            {
+                                adminReviewerOriginalTestRef.current.testResult
+                                    .browserVersion.name
+                            }
+                        </b>
+                        .<br />
+                        <br />
+                        You can&apos;t change the Browser type but can make
+                        other changes. Please proceed with caution.
+                    </>
+                );
+                setThemedModalOtherButton(null);
+                setShowThemedModal(true);
+                return;
+            }
+
+            if (
+                currentTest.testResult?.atVersion?.name !==
+                adminReviewerOriginalTestRef.current.testResult?.atVersion?.name
+            ) {
+                setThemedModalTitle(
+                    'Your AT Version is different than the one used to record this result'
+                );
+                setThemedModalContent(
+                    <>
+                        You are currently running{' '}
+                        <b>
+                            {testPlanReport.at.name}{' '}
+                            {currentTest.testResult?.atVersion?.name}
+                        </b>
+                        , but are editing a test result that was submitted with{' '}
+                        <b>
+                            {testPlanReport.at.name}{' '}
+                            {
+                                adminReviewerOriginalTestRef.current.testResult
+                                    ?.atVersion?.name
+                            }
+                        </b>
+                        .<br />
+                        <br />
+                        Do you want to update the AT version used to record this
+                        test result?
+                    </>
+                );
+                setThemedModalOtherButton({
+                    text: 'Update AT Version',
+                    action: () => {
+                        setShowThemedModal(false);
+                        setIsShowingAtBrowserModal(true);
+                    }
+                });
+                setShowThemedModal(true);
+                return;
+            }
+
+            if (
+                !adminReviewerOriginalTestRef.current.testResult?.browserVersion?.name.includes(
+                    `${uaMajor}.${uaMinor}.${uaPatch}`
+                )
+            ) {
+                setThemedModalTitle(
+                    'Your Browser Version is different than the one used to record this result'
+                );
+                setThemedModalContent(
+                    <>
+                        You are currently using{' '}
+                        <b>
+                            {uaBrowser} {uaMajor}.{uaMinor}.{uaPatch}
+                        </b>
+                        , but are trying to edit a test result that was
+                        submitted with{' '}
+                        <b>
+                            {testPlanReport.browser.name}{' '}
+                            {
+                                adminReviewerOriginalTestRef.current.testResult
+                                    ?.browserVersion?.name
+                            }
+                        </b>
+                        .<br />
+                        <br />
+                        Do you want to update the Browser version used to record
+                        this test result?
+                    </>
+                );
+                setThemedModalOtherButton({
+                    text: 'Update Browser Version',
+                    action: () => {
+                        setShowThemedModal(false);
+                        setIsShowingAtBrowserModal(true);
+                    }
+                });
+                setShowThemedModal(true);
+                return;
+            }
+        }
+        setIsShowingAtBrowserModal(true);
+    };
+
+    const handleAtAndBrowserDetailsModalAction = async (
+        updatedAtVersionName,
+        updatedBrowserVersionName
+    ) => {
+        // Get version id for selected atVersion and browserVersion from name
+        const atVersionId = testPlanReport.at.atVersions.find(
+            item => item.name === updatedAtVersionName
+        ).id;
+
+        let browserVersionId = testPlanReport.browser.browserVersions.find(
+            item => item.name === updatedBrowserVersionName
+        )?.id;
+
+        // create version if not exists (accounting for admin providing new versions)
+        if (!browserVersionId) {
+            const createBrowserVersionResult = await createBrowserVersion({
+                variables: {
+                    browserId: testPlanReport.browser.id,
+                    browserVersionName: updatedBrowserVersionName
+                }
+            });
+
+            browserVersionId =
+                createBrowserVersionResult.data?.browser
+                    ?.findOrCreateBrowserVersion?.id;
+        }
+
+        setAtVersionId(atVersionId);
+        setBrowserVersionId(browserVersionId);
+
+        await createTestResultForRenderer(
+            currentTest.id,
+            atVersionId,
+            browserVersionId
+        );
+        setIsShowingAtBrowserModal(false);
+
+        if (isEditAtBrowserDetailsModalClick)
+            editAtBrowserDetailsButtonRef.current.focus();
+    };
+
+    const onThemedModalClose = () => {
+        setShowThemedModal(false);
+        editAtBrowserDetailsButtonRef.current.focus();
+    };
 
     const renderTestContent = (testPlanReport, currentTest, heading) => {
         const { index } = currentTest;
@@ -520,7 +784,7 @@ const TestRun = () => {
                 <Button
                     className="edit-results"
                     variant="secondary"
-                    onClick={handleEditClick}
+                    onClick={handleEditResultsClick}
                 >
                     <FontAwesomeIcon icon={faPen} />
                     Edit Results
@@ -620,7 +884,7 @@ const TestRun = () => {
                                 <Row>
                                     <TestRenderer
                                         key={nextId()}
-                                        at={testPlanTarget.at}
+                                        at={testPlanReport.at}
                                         testResult={
                                             !isSignedIn
                                                 ? {
@@ -768,8 +1032,29 @@ const TestRun = () => {
                     className="test-info-entity at-browser"
                     data-test="at-browser"
                 >
+                    <div className="at-browser-row">
+                        <div className="info-label">
+                            <b>AT:</b>{' '}
+                            {`${testPlanReport.at?.name}${
+                                isSignedIn ? ` ${currentAtVersion.name}` : ''
+                            }`}
+                        </div>
+                        {isSignedIn && (
+                            <Button
+                                ref={editAtBrowserDetailsButtonRef}
+                                id="edit-fa-button"
+                                aria-label="Edit version details for AT and Browser"
+                                onClick={handleEditAtBrowserDetailsClick}
+                            >
+                                <FontAwesomeIcon icon={faEdit} />
+                            </Button>
+                        )}
+                    </div>
                     <div className="info-label">
-                        <b>AT and Browser:</b> {`${testPlanTarget.title}`}
+                        <b>Browser:</b>{' '}
+                        {`${testPlanReport.browser?.name}${
+                            isSignedIn ? ` ${currentBrowserVersion.name}` : ''
+                        }`}
                     </div>
                 </div>
                 <div className="test-info-entity tests-completed">
@@ -833,7 +1118,7 @@ const TestRun = () => {
             <Helmet>
                 <title>
                     {hasTestsToRun
-                        ? `${currentTest.title} for ${testPlanTarget.title} ` +
+                        ? `${currentTest.title} for ${testPlanReport.at?.name} ${currentAtVersion.name} and ${testPlanReport.browser?.name} ${currentBrowserVersion.name} ` +
                           `| ARIA-AT`
                         : 'No tests for this AT and Browser | ARIA-AT'}
                 </title>
@@ -857,6 +1142,60 @@ const TestRun = () => {
                     </Row>
                 </Col>
             </Row>
+            {showThemedModal && (
+                <BasicThemedModal
+                    show={showThemedModal}
+                    theme={'warning'}
+                    title={themedModalTitle}
+                    dialogClassName="modal-50w"
+                    content={themedModalContent}
+                    actionButtons={
+                        themedModalOtherButton
+                            ? [
+                                  themedModalOtherButton,
+                                  {
+                                      text: 'Continue without changes',
+                                      action: onThemedModalClose
+                                  }
+                              ]
+                            : [
+                                  // only applies to Admin, Scenario 4
+                                  {
+                                      text: 'Continue',
+                                      action: onThemedModalClose
+                                  }
+                              ]
+                    }
+                    handleClose={onThemedModalClose}
+                />
+            )}
+            {isSignedIn && isShowingAtBrowserModal && (
+                <AtAndBrowserDetailsModal
+                    show={isShowingAtBrowserModal}
+                    firstLoad={!currentTest.testResult}
+                    isAdmin={isAdminReviewer}
+                    atName={testPlanReport.at.name}
+                    atVersion={currentTest.testResult?.atVersion?.name}
+                    atVersions={testPlanReport.at.atVersions.map(
+                        item => item.name
+                    )}
+                    browserName={testPlanReport.browser.name}
+                    browserVersion={
+                        currentTest.testResult?.browserVersion?.name
+                    }
+                    browserVersions={testPlanReport.browser.browserVersions.map(
+                        item => item.name
+                    )}
+                    patternName={testPlanVersion.title}
+                    testerName={tester.username}
+                    handleAction={handleAtAndBrowserDetailsModalAction}
+                    handleClose={() => {
+                        setIsShowingAtBrowserModal(false);
+                        if (isEditAtBrowserDetailsModalClick)
+                            editAtBrowserDetailsButtonRef.current.focus();
+                    }}
+                />
+            )}
         </Container>
     );
 };

@@ -243,13 +243,44 @@ main.container-fluid .test-iframe-container > .row {
 }
 
 .apg-example-name,
-.at-browser,
 .tests-completed,
 .test-version {
     background: #f5f8fa;
     border: 1px solid #d2d5d9;
     width: 37%;
     text-align: center;
+}
+
+.at-browser {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+
+    background: #f5f8fa;
+    border: 1px solid #d2d5d9;
+    width: 37%;
+    /*text-align: center;*/
+}
+
+.at-browser-row {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#edit-fa-button {
+    padding: 0;
+    margin: 0;
+    background: none;
+    color: #919191;
+    border: none;
+}
+
+#edit-fa-button svg {
+    padding: 0;
+    margin: 0;
 }
 
 .tests-completed {
@@ -349,4 +380,8 @@ fieldset .at-browser-details-modal-alert {
     .modal-60w {
         min-width: 60%;
     }
+}
+
+.form-control.is-invalid {
+    background-image: none;
 }

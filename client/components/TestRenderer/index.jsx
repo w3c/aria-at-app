@@ -423,9 +423,77 @@ const TestRenderer = ({
         }
         return () => {
             setSubmitCalled(false);
-            testRunStateRef.current = null;
+
+            // Use to validate whether or not errors exist on page. Error
+            // feedback may be erased on submit otherwise
+            if (
+                !checkStateForErrors(testRunStateRef.current) &&
+                !checkPageContentForErrors(pageContent)
+            )
+                testRunStateRef.current = null;
         };
     }, [pageContent]);
+
+    const checkStateForErrors = state => {
+        if (state) {
+            const { commands } = state;
+            // short circuit all checks
+            return commands.some(item => {
+                const atOutputError = item.atOutput.highlightRequired;
+                if (atOutputError) return true;
+
+                const assertionsError = item.assertions.some(
+                    item => item.highlightRequired
+                );
+                if (assertionsError) return true;
+
+                const unexpectedError = item.unexpected.highlightRequired;
+                if (unexpectedError) return true;
+
+                const { behaviors } = item.unexpected;
+                const uncheckedBehaviorsMoreError = behaviors.some(item => {
+                    if (item.more) return item.more.highlightRequired;
+                    return false;
+                });
+                if (uncheckedBehaviorsMoreError) return true;
+                return false;
+            });
+        }
+        return false;
+    };
+
+    const checkPageContentForErrors = pageContent => {
+        if (pageContent) {
+            const { commands } = pageContent.results;
+            // short circuit all checks
+            return commands.some(item => {
+                const atOutputError =
+                    item.atOutput.description[1].highlightRequired;
+                if (atOutputError) return true;
+
+                const assertionsError = item.assertions.some(
+                    item => item.description[1].highlightRequired
+                );
+                if (assertionsError) return true;
+
+                const unexpectedBehaviorError =
+                    item.unexpectedBehaviors.description[1].highlightRequired;
+                if (unexpectedBehaviorError) return true;
+
+                const { failChoice } = item.unexpectedBehaviors;
+                const failChoiceOptionsMoreError = failChoice.options.options.some(
+                    item => {
+                        if (item.more)
+                            return item.more.description[1].highlightRequired;
+                        else return false;
+                    }
+                );
+                if (failChoiceOptionsMoreError) return true;
+                return false;
+            });
+        }
+        return false;
+    };
 
     const parseRichContent = (instruction = []) => {
         let content = null;

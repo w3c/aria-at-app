@@ -1,5 +1,6 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useState } from 'react';
 import PropTypes from 'prop-types';
+import styled from '@emotion/styled';
 import { Helmet } from 'react-helmet';
 import { createGitHubIssueWithTitleAndBody } from '../TestRun';
 import getMetrics from './getMetrics';
@@ -10,10 +11,63 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faExclamationCircle,
     faExternalLinkAlt,
-    faHome
+    faHome,
+    faChevronDown,
+    faChevronUp
 } from '@fortawesome/free-solid-svg-icons';
 import { differenceBy } from 'lodash';
+import { convertDateToString } from '../../utils/formatter';
 import DisclaimerInfo from '../DisclaimerInfo';
+
+const DisclosureParent = styled.div`
+    border: 1px solid #d3d5da;
+    border-radius: 3px;
+`;
+
+const DisclosureButton = styled.button`
+    position: relative;
+    width: 100%;
+    margin: 0;
+    padding: 1.25rem;
+    text-align: left;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 3px;
+    background-color: transparent;
+
+    &:hover,
+    &:focus {
+        padding: 1.25rem;
+        border: 0 solid #005a9c;
+        background-color: #def;
+        cursor: pointer;
+    }
+
+    svg {
+        position: absolute;
+        margin: 0;
+        top: 50%;
+        right: 1.25rem;
+
+        color: #969696;
+        transform: translateY(-50%);
+    }
+`;
+
+const DisclosureContainer = styled.div`
+    display: ${({ show }) => (show ? 'flex' : 'none')};
+    flex-direction: column;
+    gap: 1.25rem;
+
+    background-color: #f8f9fa;
+    padding: 1.25rem;
+    border-top: 1px solid #d3d5da;
+
+    ul {
+        margin-bottom: 0;
+    }
+`;
 
 const getAssertionResultString = assertionResult => {
     let output = 'Good output';
@@ -26,14 +80,83 @@ const getAssertionResultString = assertionResult => {
     return `${output}: ${assertionResult.assertion.text}`;
 };
 
+const getTestersRunHistory = (
+    testPlanReport,
+    testId,
+    draftTestPlanRuns = []
+) => {
+    const { id: testPlanReportId, at, browser } = testPlanReport;
+    let lines = [];
+
+    draftTestPlanRuns.forEach(draftTestPlanRun => {
+        const { testPlanReport, testResults, tester } = draftTestPlanRun;
+
+        const testResult = testResults.find(item => item.test.id === testId);
+        if (
+            testPlanReportId === testPlanReport.id &&
+            testPlanReport.status === 'FINALIZED' &&
+            testResult
+        ) {
+            lines.push(
+                <li
+                    key={`${testResult.atVersion.id}-${testResult.browserVersion.id}-${testResult.test.id}-${tester.username}`}
+                >
+                    Tested with{' '}
+                    <b>
+                        {at.name} {testResult.atVersion.name}
+                    </b>{' '}
+                    and{' '}
+                    <b>
+                        {browser.name} {testResult.browserVersion.name}
+                    </b>{' '}
+                    by{' '}
+                    <b>
+                        <a href={`https://github.com/${tester.username}`}>
+                            {tester.username}
+                        </a>
+                    </b>{' '}
+                    on{' '}
+                    {convertDateToString(
+                        testResult.completedAt,
+                        'MMMM DD, YYYY'
+                    )}
+                    .
+                </li>
+            );
+        }
+    });
+
+    return <ul>{lines}</ul>;
+};
+
 const SummarizeTestPlanReport = ({ testPlanReport }) => {
-    const { testPlanVersion, testPlanTarget } = testPlanReport;
+    const { testPlanVersion, at, browser } = testPlanReport;
+
+    const [runHistoryItems, setRunHistoryItems] = useState({});
+
+    // Construct testPlanTarget
+    const testPlanTarget = {
+        id: `${at.id}${browser.id}`,
+        at,
+        browser
+    };
 
     const skippedTests = differenceBy(
         testPlanReport.runnableTests,
         testPlanReport.finalizedTestResults,
         testOrTestResult => testOrTestResult.test?.id ?? testOrTestResult.id
     );
+
+    const onClickRunHistory = testResultId => {
+        // { testResultId: boolean } ]
+        if (!runHistoryItems[testResultId])
+            setRunHistoryItems({ ...runHistoryItems, [testResultId]: true });
+        else
+            setRunHistoryItems({
+                ...runHistoryItems,
+                [testResultId]: !runHistoryItems[testResultId]
+            });
+    };
 
     return (
         <Container id="main" as="main" tabIndex="-1">
@@ -241,6 +364,34 @@ const SummarizeTestPlanReport = ({ testPlanReport }) => {
                                 )}
                             </tbody>
                         </Table>
+
+                        <DisclosureParent>
+                            <DisclosureButton
+                                type="button"
+                                aria-expanded={!!runHistoryItems[testResult.id]}
+                                aria-controls={`run-history-${testResult.id}`}
+                                onClick={() => onClickRunHistory(testResult.id)}
+                            >
+                                Run History
+                                <FontAwesomeIcon
+                                    icon={
+                                        runHistoryItems[testResult.id]
+                                            ? faChevronUp
+                                            : faChevronDown
+                                    }
+                                />
+                            </DisclosureButton>
+                            <DisclosureContainer
+                                id={`run-history-${testResult.id}`}
+                                show={!!runHistoryItems[testResult.id]}
+                            >
+                                {getTestersRunHistory(
+                                    testPlanReport,
+                                    testResult.test.id,
+                                    testPlanReport.draftTestPlanRuns
+                                )}
+                            </DisclosureContainer>
+                        </DisclosureParent>
                     </Fragment>
                 );
             })}
@@ -270,10 +421,18 @@ const SummarizeTestPlanReport = ({ testPlanReport }) => {
 
 SummarizeTestPlanReport.propTypes = {
     testPlanReport: PropTypes.shape({
+        id: PropTypes.string.isRequired,
         testPlanVersion: PropTypes.object.isRequired,
-        testPlanTarget: PropTypes.object.isRequired,
         runnableTests: PropTypes.arrayOf(PropTypes.object.isRequired)
             .isRequired,
+        at: PropTypes.shape({
+            id: PropTypes.string.isRequired,
+            name: PropTypes.string.isRequired
+        }).isRequired,
+        browser: PropTypes.shape({
+            id: PropTypes.string.isRequired,
+            name: PropTypes.string.isRequired
+        }).isRequired,
         finalizedTestResults: PropTypes.arrayOf(
             PropTypes.shape({
                 id: PropTypes.string.isRequired,
@@ -305,7 +464,14 @@ SummarizeTestPlanReport.propTypes = {
                     }).isRequired
                 ).isRequired
             }).isRequired
-        ).isRequired
+        ).isRequired,
+        draftTestPlanRuns: PropTypes.arrayOf(
+            PropTypes.shape({
+                tester: PropTypes.shape({
+                    username: PropTypes.string.isRequired
+                })
+            })
+        )
     }).isRequired
 };
 

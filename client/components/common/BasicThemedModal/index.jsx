@@ -15,7 +15,7 @@ const ModalInnerSectionContainer = styled.div`
     display: grid;
     grid-auto-flow: column;
 
-    grid-template-columns: 10% auto;
+    grid-template-columns: 50px auto;
     grid-gap: 10px;
 `;
 
@@ -40,7 +40,8 @@ const BasicThemedModal = ({
     content = null,
     actionButtons = [],
     closeLabel = 'Cancel',
-    handleClose = null
+    handleClose = null,
+    showCloseAction = true
 }) => {
     const headerRef = useRef();
 
@@ -89,7 +90,7 @@ const BasicThemedModal = ({
                     </ModalInnerSectionContainer>
                 </Modal.Body>
                 <Modal.Footer>
-                    {handleClose && (
+                    {showCloseAction && (
                         <Button variant="secondary" onClick={handleClose}>
                             {closeLabel}
                         </Button>
@@ -127,7 +128,8 @@ BasicThemedModal.propTypes = {
         })
     ),
     closeLabel: PropTypes.string,
-    handleClose: PropTypes.func
+    handleClose: PropTypes.func,
+    showCloseAction: PropTypes.bool
 };
 
 export default BasicThemedModal;

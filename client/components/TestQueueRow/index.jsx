@@ -51,7 +51,6 @@ const TestQueueRow = ({
     const { id, isAdmin, username } = user;
     const {
         id: testPlanReportId,
-        testPlanTarget,
         testPlanVersion,
         draftTestPlanRuns,
         runnableTests
@@ -238,10 +237,10 @@ const TestQueueRow = ({
     };
 
     const evaluateTestPlanRunTitle = () => {
-        const { title: testPlanTargetName } = testPlanTarget;
         const { title: apgExampleName, directory } = testPlanVersion;
+        const testPlanTargetTitle = `${testPlanReport.at?.name} and ${testPlanReport.browser?.name}`;
 
-        return `${apgExampleName || directory} for ${testPlanTargetName}`;
+        return `${apgExampleName || directory} for ${testPlanTargetTitle}`;
     };
 
     const renderOpenAsDropdown = () => {

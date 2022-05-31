@@ -4,18 +4,13 @@ export const REPORTS_PAGE_QUERY = gql`
     query {
         testPlanReports(statuses: [FINALIZED]) {
             id
-            testPlanTarget {
+            at {
                 id
-                at {
-                    id
-                    name
-                }
-                browser {
-                    id
-                    name
-                }
-                atVersion
-                browserVersion
+                name
+            }
+            browser {
+                id
+                name
             }
             testPlanVersion {
                 id
@@ -79,6 +74,29 @@ export const REPORTS_PAGE_QUERY = gql`
                         text
                         otherUnexpectedBehaviorText
                     }
+                }
+            }
+            draftTestPlanRuns {
+                tester {
+                    username
+                }
+                testPlanReport {
+                    id
+                    status
+                }
+                testResults {
+                    test {
+                        id
+                    }
+                    atVersion {
+                        id
+                        name
+                    }
+                    browserVersion {
+                        id
+                        name
+                    }
+                    completedAt
                 }
             }
         }

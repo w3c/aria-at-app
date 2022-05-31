@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
-import uaParser from 'ua-parser-js';
 import { Form, Alert } from 'react-bootstrap';
 import styled from '@emotion/styled';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -8,6 +7,7 @@ import {
     faInfoCircle,
     faExclamationTriangle
 } from '@fortawesome/free-solid-svg-icons';
+import { useDetectUa } from '../../../hooks/useDetectUa';
 import BasicModal from '../BasicModal';
 
 const ModalInnerSectionContainer = styled.div`
@@ -30,6 +30,7 @@ const ModalSubtitleStyle = styled.h2`
 const AtAndBrowserDetailsModal = ({
     show = false,
     isAdmin = false,
+    firstLoad = true,
     atName = '',
     atVersion = '',
     atVersions = [],
@@ -41,17 +42,24 @@ const AtAndBrowserDetailsModal = ({
     handleAction = () => {},
     handleClose = () => {}
 }) => {
-    const [updatedAtVersion, setUpdatedAtVersion] = useState(atVersion);
-    const [updatedBrowserVersion, setUpdatedBrowserVersion] = useState(
-        browserVersion
+    // Detect UA information
+    const { uaBrowser, uaMajor, uaMinor, uaPatch } = useDetectUa();
+    const updatedAtVersionDropdownRef = useRef();
+    const adminFreeTextBrowserVersionRef = useRef();
+
+    const [isFirstLoad, setIsFirstLoad] = useState(true);
+    const [updatedAtVersion, setUpdatedAtVersion] = useState(
+        'Select a Version'
     );
+    const [updatedBrowserVersion, setUpdatedBrowserVersion] = useState('');
+    const [freeTextBrowserVersion, setFreeTextBrowserVersion] = useState('');
 
-    const [uaBrowser, setUaBrowser] = useState();
-    const [uaMajor, setUaMajor] = useState();
-    const [uaMinor, setUaMinor] = useState();
-    const [uaPatch, setUaPatch] = useState();
+    const [isAtVersionError, setIsAtVersionError] = useState(false);
+    const [
+        isAdminFreeTextBrowserVersionError,
+        setIsAdminFreeTextBrowserVersionError
+    ] = useState(false);
 
-    const [firstDetection, setFirstDetection] = useState(false);
     const [
         forceBrowserVersionUpdateMessage,
         setForceBrowserVersionUpdateMessage
@@ -62,37 +70,35 @@ const AtAndBrowserDetailsModal = ({
     ] = useState(false);
 
     useEffect(() => {
-        // Detect UA information
-        const ua = uaParser();
-        const uaBrowser = ua?.browser?.name || 'Unknown';
-        const uaMajor = ua?.browser?.major || '0';
-        const uaMinor = ua?.browser?.version?.split('.')?.[1] || '0';
-        const uaPatch = ua?.browser?.version?.split('.')?.[2] || '0';
+        setIsFirstLoad(firstLoad);
+        if (!firstLoad) {
+            setUpdatedAtVersion(atVersion);
+            setUpdatedBrowserVersion(browserVersion);
+        }
 
-        setUaBrowser(uaBrowser);
-        setUaMajor(uaMajor);
-        setUaMinor(uaMinor);
-        setUaPatch(uaPatch);
+        if (uaMajor === '0') setUpdatedBrowserVersion('Not detected');
 
-        if (browserName === uaBrowser && !browserVersion)
-            setFirstDetection(true);
+        // needs to check if browser version exists in browserVersions
+        const matchingBrowserVersion = browserVersions.find(item =>
+            item.includes(`${uaMajor}.${uaMinor}.${uaPatch}`)
+        );
 
         if (
-            !isAdmin && // don't force browserVersion update with admin
-            browserVersion && // check that browserVersion exists
+            // don't force browserVersion update with admin (unless first run)
+            (!isAdmin || (isAdmin && firstLoad)) &&
+            // check that saved browserVersion is the same as detected
+            !browserVersion.includes(`${uaMajor}.${uaMinor}.${uaPatch}`) &&
             uaBrowser === browserName &&
-            `${uaMajor}.${uaMinor}.${uaPatch}` !== browserVersion &&
-            // needs to check if browser version exists in browserVersions
-            browserVersions.includes(`${uaMajor}.${uaMinor}.${uaPatch}`)
+            matchingBrowserVersion
         ) {
             setForceBrowserVersionUpdateMessage(true);
-            setUpdatedBrowserVersion(`${uaMajor}.${uaMinor}.${uaPatch}`);
+            setUpdatedBrowserVersion(matchingBrowserVersion);
         }
-    }, []);
+    }, [uaBrowser, uaMajor, uaMinor, uaPatch]);
 
     useEffect(() => {
         // check to support Tester Scenario 5
-        if (updatedBrowserVersion !== `${uaMajor}.${uaMinor}.${uaPatch}`)
+        if (!updatedBrowserVersion.includes(`${uaMajor}.${uaMinor}.${uaPatch}`))
             setBrowserVersionMismatchMessage(true);
         else setBrowserVersionMismatchMessage(!isAdmin && false);
     }, [updatedBrowserVersion, uaMajor, uaMinor, uaPatch]);
@@ -100,19 +106,41 @@ const AtAndBrowserDetailsModal = ({
     const handleAtVersionChange = e => {
         const value = e.target.value;
         setUpdatedAtVersion(value);
+        setIsAtVersionError(false);
     };
 
-    const handleBrowserVersionChange = e => {
+    const handleBrowserVersionChange = (e, setFreeTextBrowserVersion) => {
         const value = e.target.value;
-        setUpdatedBrowserVersion(value);
+
+        if (setFreeTextBrowserVersion) setFreeTextBrowserVersion(value);
+        else setUpdatedBrowserVersion(value);
 
         // remove message once browser has been changed
         !isAdmin && setForceBrowserVersionUpdateMessage(false);
+        setIsAdminFreeTextBrowserVersionError(false);
     };
 
     const onSubmit = () => {
-        // Passed action prop should account for AtVersion & browserVersion
-        handleAction(updatedAtVersion, updatedBrowserVersion);
+        // Passed action prop should account for AtVersion & BrowserVersion
+        const updatedAtVersionError = updatedAtVersion === 'Select a Version';
+        const adminBrowserVersionTextError = isAdmin && !updatedBrowserVersion;
+
+        if (updatedAtVersionError || adminBrowserVersionTextError) {
+            setIsAtVersionError(updatedAtVersionError);
+            updatedAtVersionDropdownRef.current.focus();
+
+            setIsAdminFreeTextBrowserVersionError(adminBrowserVersionTextError);
+            if (!updatedAtVersionError)
+                adminFreeTextBrowserVersionRef.current.focus();
+            return;
+        }
+
+        handleAction(
+            updatedAtVersion,
+            uaMajor === '0' && !isAdmin
+                ? freeTextBrowserVersion
+                : updatedBrowserVersion
+        );
     };
 
     // All scenarios here are based on https://github.com/w3c/aria-at-app/issues/406
@@ -152,7 +180,7 @@ const AtAndBrowserDetailsModal = ({
                             </ModalSubtitleStyle>
                         </legend>
                         {/* Tester Scenario 6 */}
-                        {updatedAtVersion !== atVersion && (
+                        {!isFirstLoad && !updatedAtVersion.includes(atVersion) && (
                             <Alert
                                 variant="warning"
                                 className="at-browser-details-modal-alert"
@@ -182,19 +210,35 @@ const AtAndBrowserDetailsModal = ({
                                 Assistive Technology Version
                             </Form.Label>
                             <Form.Control
+                                ref={updatedAtVersionDropdownRef}
                                 as="select"
                                 value={updatedAtVersion}
                                 onChange={handleAtVersionChange}
+                                isInvalid={isAtVersionError}
                             >
-                                {atVersions.map(item => (
-                                    <option
-                                        key={`atVersionKey-${item}`}
-                                        value={item}
-                                    >
-                                        {item}
-                                    </option>
-                                ))}
+                                {['Select a Version', ...atVersions].map(
+                                    item => (
+                                        <option
+                                            key={`atVersionKey-${item}`}
+                                            value={item}
+                                            disabled={
+                                                item === 'Select a Version'
+                                            }
+                                        >
+                                            {item}
+                                        </option>
+                                    )
+                                )}
                             </Form.Control>
+                            {isAtVersionError && (
+                                <Form.Control.Feedback
+                                    style={{ display: 'block' }}
+                                    type="invalid"
+                                >
+                                    Please select an Assistive Technology
+                                    Version.
+                                </Form.Control.Feedback>
+                            )}
                         </Form.Group>
                     </FieldsetRow>
                     <FieldsetRow>
@@ -204,7 +248,7 @@ const AtAndBrowserDetailsModal = ({
                             </ModalSubtitleStyle>
                         </legend>
                         {/* Tester Scenario 1 */}
-                        {firstDetection && (
+                        {isFirstLoad && (
                             <Alert
                                 variant="primary"
                                 className="at-browser-details-modal-alert"
@@ -217,65 +261,76 @@ const AtAndBrowserDetailsModal = ({
                             </Alert>
                         )}
                         {/* Tester Scenario 3 */}
-                        {!isAdmin && forceBrowserVersionUpdateMessage && (
-                            <Alert
-                                variant="warning"
-                                className="at-browser-details-modal-alert"
-                            >
-                                <FontAwesomeIcon icon={faExclamationTriangle} />
-                                <span>
-                                    We have automatically detected you are using
-                                    a different version of <b>{uaBrowser}</b>{' '}
-                                    and we have updated it below. The previous
-                                    version you were using was{' '}
-                                    <b>{browserVersion}</b>.
-                                    <br />
-                                    <br />
-                                    This change doesn&apos;t affect results that
-                                    have already been submitted for this plan.
-                                    However, results you submit during this
-                                    session will be recorded with the versions
-                                    specified in this form.
-                                </span>
-                            </Alert>
-                        )}
+                        {!isFirstLoad &&
+                            !isAdmin &&
+                            forceBrowserVersionUpdateMessage && (
+                                <Alert
+                                    variant="warning"
+                                    className="at-browser-details-modal-alert"
+                                >
+                                    <FontAwesomeIcon
+                                        icon={faExclamationTriangle}
+                                    />
+                                    <span>
+                                        We have automatically detected you are
+                                        using a different version of{' '}
+                                        <b>{uaBrowser}</b> and we have updated
+                                        it below. The previous version you were
+                                        using was <b>{browserVersion}</b>.
+                                        <br />
+                                        <br />
+                                        This change doesn&apos;t affect results
+                                        that have already been submitted for
+                                        this plan. However, results you submit
+                                        during this session will be recorded
+                                        with the versions specified in this
+                                        form.
+                                    </span>
+                                </Alert>
+                            )}
                         {/* Tester Scenario 4 */}
-                        {uaBrowser !== browserName && (
-                            <Alert
-                                variant="warning"
-                                className="at-browser-details-modal-alert"
-                            >
-                                <FontAwesomeIcon icon={faExclamationTriangle} />
-                                <span>
-                                    We have automatically detected you are now
-                                    using{' '}
-                                    <b>
-                                        {uaBrowser} {uaMajor}.{uaMinor}.
-                                        {uaPatch}
-                                    </b>{' '}
-                                    which is a different browser from the last
-                                    one you were testing with, which was{' '}
-                                    <b>
-                                        {browserName} {browserVersion}
-                                    </b>
-                                    .
-                                    <br />
-                                    <br />
-                                    You can&apos;t edit your Browser type, but
-                                    you can continue with{' '}
-                                    <b>
-                                        {uaBrowser} {uaMajor}.{uaMinor}.
-                                        {uaPatch}
-                                    </b>
-                                    . Keep in mind that your test results will
-                                    be recorded as if you were still using{' '}
-                                    <b>
-                                        {browserName} {browserVersion}
-                                    </b>
-                                    .
-                                </span>
-                            </Alert>
-                        )}
+                        {!isAdmin &&
+                            uaBrowser !== browserName &&
+                            uaMajor !== '0' && (
+                                <Alert
+                                    variant="warning"
+                                    className="at-browser-details-modal-alert"
+                                >
+                                    <FontAwesomeIcon
+                                        icon={faExclamationTriangle}
+                                    />
+                                    <span>
+                                        We have automatically detected you are
+                                        now using{' '}
+                                        <b>
+                                            {uaBrowser} {uaMajor}.{uaMinor}.
+                                            {uaPatch}
+                                        </b>{' '}
+                                        which is a different browser from the
+                                        last one you were testing with, which
+                                        was{' '}
+                                        <b>
+                                            {browserName} {browserVersion}
+                                        </b>
+                                        .
+                                        <br />
+                                        <br />
+                                        You can&apos;t edit your Browser type,
+                                        but you can continue with{' '}
+                                        <b>
+                                            {uaBrowser} {uaMajor}.{uaMinor}.
+                                            {uaPatch}
+                                        </b>
+                                        . Keep in mind that your test results
+                                        will be recorded as if you were still
+                                        using{' '}
+                                        <b>
+                                            {browserName} {browserVersion}
+                                        </b>
+                                        .
+                                    </span>
+                                </Alert>
+                            )}
                         {/* Tester Scenario 5 */}
                         {!isAdmin &&
                             uaBrowser === browserName &&
@@ -307,7 +362,7 @@ const AtAndBrowserDetailsModal = ({
                                 </Alert>
                             )}
                         {/* Tester Scenario 7 */}
-                        {uaMajor === 0 && (
+                        {uaMajor === '0' && (
                             <Alert
                                 variant="warning"
                                 className="at-browser-details-modal-alert"
@@ -315,9 +370,9 @@ const AtAndBrowserDetailsModal = ({
                                 <FontAwesomeIcon icon={faExclamationTriangle} />
                                 <span>
                                     We could not automatically detect what
-                                    version of <b>{uaBrowser}</b> you are using.
-                                    Before continuing, please provide your
-                                    version number.
+                                    version of <b>{browserName}</b> you are
+                                    using. Before continuing, please provide
+                                    your version number.
                                 </span>
                             </Alert>
                         )}
@@ -364,24 +419,47 @@ const AtAndBrowserDetailsModal = ({
 
                         <Form.Group>
                             <Form.Label>Browser Version</Form.Label>
-                            <Form.Control
-                                as="select"
-                                disabled={uaMajor === '0'}
-                                value={updatedBrowserVersion}
-                                onChange={handleBrowserVersionChange}
-                            >
-                                {(uaMajor === '0'
-                                    ? ['Not detected', ...browserVersions]
-                                    : browserVersions
-                                ).map(item => (
-                                    <option
-                                        key={`browserVersionKey-${item}`}
-                                        value={item}
-                                    >
-                                        {item}
-                                    </option>
-                                ))}
-                            </Form.Control>
+                            {isAdmin ? (
+                                <>
+                                    <Form.Control
+                                        ref={adminFreeTextBrowserVersionRef}
+                                        type="text"
+                                        value={updatedBrowserVersion}
+                                        onChange={handleBrowserVersionChange}
+                                        isInvalid={
+                                            isAdminFreeTextBrowserVersionError
+                                        }
+                                    />
+                                    {isAdminFreeTextBrowserVersionError && (
+                                        <Form.Control.Feedback
+                                            style={{ display: 'block' }}
+                                            type="invalid"
+                                        >
+                                            Please enter a valid Browser
+                                            Version.
+                                        </Form.Control.Feedback>
+                                    )}
+                                </>
+                            ) : (
+                                <Form.Control
+                                    as="select"
+                                    disabled={uaMajor === '0'}
+                                    value={updatedBrowserVersion}
+                                    onChange={handleBrowserVersionChange}
+                                >
+                                    {(uaMajor === '0'
+                                        ? ['Not detected', ...browserVersions]
+                                        : browserVersions
+                                    ).map(item => (
+                                        <option
+                                            key={`browserVersionKey-${item}`}
+                                            value={item}
+                                        >
+                                            {item}
+                                        </option>
+                                    ))}
+                                </Form.Control>
+                            )}
                         </Form.Group>
 
                         {/* Tester Scenario 7 */}
@@ -390,7 +468,13 @@ const AtAndBrowserDetailsModal = ({
                                 <Form.Label>Enter Browser Version</Form.Label>
                                 <Form.Control
                                     type="text"
-                                    onChange={handleBrowserVersionChange}
+                                    value={freeTextBrowserVersion}
+                                    onChange={e =>
+                                        handleBrowserVersionChange(
+                                            e,
+                                            setFreeTextBrowserVersion
+                                        )
+                                    }
                                 />
                             </Form.Group>
                         )}
@@ -407,12 +491,13 @@ const AtAndBrowserDetailsModal = ({
 AtAndBrowserDetailsModal.propTypes = {
     show: PropTypes.bool,
     isAdmin: PropTypes.bool,
-    atName: PropTypes.string.isRequired,
-    atVersion: PropTypes.string.isRequired,
-    atVersions: PropTypes.arrayOf(PropTypes.string).isRequired,
-    browserName: PropTypes.string.isRequired,
+    firstLoad: PropTypes.bool,
+    atName: PropTypes.string,
+    atVersion: PropTypes.string,
+    atVersions: PropTypes.arrayOf(PropTypes.string),
+    browserName: PropTypes.string,
     browserVersion: PropTypes.string,
-    browserVersions: PropTypes.arrayOf(PropTypes.string).isRequired,
+    browserVersions: PropTypes.arrayOf(PropTypes.string),
     patternName: PropTypes.string,
     testerName: PropTypes.string,
     handleClose: PropTypes.func,

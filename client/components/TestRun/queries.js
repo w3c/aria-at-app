@@ -14,6 +14,14 @@ export const TEST_RUN_PAGE_QUERY = gql`
                     id
                     renderableContent
                 }
+                atVersion {
+                    id
+                    name
+                }
+                browserVersion {
+                    id
+                    name
+                }
                 startedAt
                 completedAt
                 scenarioResults {
@@ -72,17 +80,21 @@ export const TEST_RUN_PAGE_QUERY = gql`
                         }
                     }
                 }
-                testPlanTarget {
-                    title
-                    at {
+                at {
+                    id
+                    name
+                    atVersions {
                         id
                         name
                     }
-                    atVersion
-                    browser {
+                }
+                browser {
+                    id
+                    name
+                    browserVersions {
+                        id
                         name
                     }
-                    browserVersion
                 }
                 testPlanVersion {
                     id
@@ -177,17 +189,21 @@ export const TEST_RUN_PAGE_ANON_QUERY = gql`
                     }
                 }
             }
-            testPlanTarget {
-                title
-                at {
+            at {
+                id
+                name
+                atVersions {
                     id
                     name
                 }
-                atVersion
-                browser {
+            }
+            browser {
+                id
+                name
+                browserVersions {
+                    id
                     name
                 }
-                browserVersion
             }
             testPlanVersion {
                 id
@@ -231,9 +247,18 @@ export const TEST_RUN_PAGE_ANON_QUERY = gql`
 `;
 
 export const FIND_OR_CREATE_TEST_RESULT_MUTATION = gql`
-    mutation FindOrCreateTestResult($testPlanRunId: ID!, $testId: ID!) {
+    mutation FindOrCreateTestResult(
+        $testPlanRunId: ID!
+        $testId: ID!
+        $atVersionId: ID!
+        $browserVersionId: ID!
+    ) {
         testPlanRun(id: $testPlanRunId) {
-            findOrCreateTestResult(testId: $testId) {
+            findOrCreateTestResult(
+                testId: $testId
+                atVersionId: $atVersionId
+                browserVersionId: $browserVersionId
+            ) {
                 locationOfData
             }
         }
@@ -243,11 +268,18 @@ export const FIND_OR_CREATE_TEST_RESULT_MUTATION = gql`
 export const SAVE_TEST_RESULT_MUTATION = gql`
     mutation SaveTestResult(
         $id: ID!
+        $atVersionId: ID!
+        $browserVersionId: ID!
         $scenarioResults: [ScenarioResultInput]!
     ) {
         testResult(id: $id) {
             saveTestResult(
-                input: { id: $id, scenarioResults: $scenarioResults }
+                input: {
+                    id: $id
+                    atVersionId: $atVersionId
+                    browserVersionId: $browserVersionId
+                    scenarioResults: $scenarioResults
+                }
             ) {
                 locationOfData
             }
@@ -258,11 +290,18 @@ export const SAVE_TEST_RESULT_MUTATION = gql`
 export const SUBMIT_TEST_RESULT_MUTATION = gql`
     mutation SubmitTestResult(
         $id: ID!
+        $atVersionId: ID!
+        $browserVersionId: ID!
         $scenarioResults: [ScenarioResultInput]!
     ) {
         testResult(id: $id) {
             submitTestResult(
-                input: { id: $id, scenarioResults: $scenarioResults }
+                input: {
+                    id: $id
+                    atVersionId: $atVersionId
+                    browserVersionId: $browserVersionId
+                    scenarioResults: $scenarioResults
+                }
             ) {
                 locationOfData
             }
@@ -275,6 +314,20 @@ export const DELETE_TEST_RESULT_MUTATION = gql`
         testResult(id: $id) {
             deleteTestResult {
                 locationOfData
+            }
+        }
+    }
+`;
+
+export const FIND_OR_CREATE_BROWSER_VERSION_MUTATION = gql`
+    mutation FindOrCreateBrowserVersion(
+        $browserId: ID!
+        $browserVersionName: String!
+    ) {
+        browser(id: $browserId) {
+            findOrCreateBrowserVersion(input: { name: $browserVersionName }) {
+                id
+                name
             }
         }
     }

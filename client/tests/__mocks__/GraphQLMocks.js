@@ -13,6 +13,8 @@ export const TEST_QUEUE_PAGE_NOT_POPULATED_MOCK_ADMIN = [
                     roles: ['ADMIN', 'TESTER'],
                     __typename: 'User'
                 },
+                ats: [],
+                browsers: [],
                 users: [
                     {
                         id: '1',
@@ -30,6 +32,7 @@ export const TEST_QUEUE_PAGE_NOT_POPULATED_MOCK_ADMIN = [
                         roles: ['TESTER']
                     }
                 ],
+                testPlanVersions: [],
                 testPlanReports: [],
                 testPlans: []
             }
@@ -50,6 +53,8 @@ export const TEST_QUEUE_PAGE_NOT_POPULATED_MOCK_TESTER = [
                     roles: ['TESTER'],
                     __typename: 'User'
                 },
+                ats: [],
+                browsers: [],
                 users: [
                     {
                         id: '1',
@@ -70,6 +75,7 @@ export const TEST_QUEUE_PAGE_NOT_POPULATED_MOCK_TESTER = [
                         __typename: 'User'
                     }
                 ],
+                testPlanVersions: [],
                 testPlanReports: [],
                 testPlans: []
             }
@@ -89,6 +95,75 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK_ADMIN = [
                     username: 'alflennik',
                     roles: ['ADMIN', 'TESTER']
                 },
+                ats: [
+                    {
+                        id: '1',
+                        name: 'JAWS',
+                        atVersions: [
+                            {
+                                id: '6',
+                                name: '2021.2103.174',
+                                releasedAt: '2022-08-02T14:36:02.659Z'
+                            }
+                        ]
+                    },
+                    {
+                        id: '2',
+                        name: 'NVDA',
+                        atVersions: [
+                            {
+                                id: '5',
+                                name: '2020.4',
+                                releasedAt: '2022-01-01T12:00:00.000Z'
+                            },
+                            {
+                                id: '4',
+                                name: '2020.3',
+                                releasedAt: '2022-01-01T12:00:00.000Z'
+                            },
+                            {
+                                id: '3',
+                                name: '2020.2',
+                                releasedAt: '2022-01-01T12:00:00.000Z'
+                            },
+                            {
+                                id: '2',
+                                name: '2020.1',
+                                releasedAt: '2022-01-01T12:00:00.000Z'
+                            },
+                            {
+                                id: '1',
+                                name: '2019.3',
+                                releasedAt: '2022-01-01T12:00:00.000Z'
+                            }
+                        ]
+                    },
+                    {
+                        id: '3',
+                        name: 'VoiceOver for macOS',
+                        atVersions: [
+                            {
+                                id: '7',
+                                name: '11.5.2',
+                                releasedAt: '2022-01-01T12:00:00.000Z'
+                            }
+                        ]
+                    }
+                ],
+                browsers: [
+                    {
+                        id: '2',
+                        name: 'Chrome'
+                    },
+                    {
+                        id: '1',
+                        name: 'Firefox'
+                    },
+                    {
+                        id: '3',
+                        name: 'Safari'
+                    }
+                ],
                 users: [
                     {
                         id: '1',
@@ -100,6 +175,41 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK_ADMIN = [
                         id: '101',
                         username: 'alflennik',
                         roles: ['TESTER', 'ADMIN']
+                    }
+                ],
+                testPlanVersions: [
+                    {
+                        id: '1',
+                        title: 'Alert Example',
+                        gitSha: '97d4bd6c2078849ad4ee01eeeb3667767ca6f992',
+                        gitMessage:
+                            'Create tests for APG design pattern example: Navigation Menu Button (#524)',
+                        testPlan: {
+                            directory: 'alert'
+                        },
+                        updatedAt: '2022-04-15T19:09:53.000Z'
+                    },
+                    {
+                        id: '2',
+                        title: 'Banner Landmark',
+                        gitSha: '97d4bd6c2078849ad4ee01eeeb3667767ca6f992',
+                        gitMessage:
+                            'Create tests for APG design pattern example: Navigation Menu Button (#524)',
+                        testPlan: {
+                            directory: 'banner'
+                        },
+                        updatedAt: '2022-04-15T19:09:53.000Z'
+                    },
+                    {
+                        id: '3',
+                        title: 'Breadcrumb Example',
+                        gitSha: '97d4bd6c2078849ad4ee01eeeb3667767ca6f992',
+                        gitMessage:
+                            'Create tests for APG design pattern example: Navigation Menu Button (#524)',
+                        testPlan: {
+                            directory: 'breadcrumb'
+                        },
+                        updatedAt: '2022-04-15T19:09:53.000Z'
                     }
                 ],
                 testPlanReports: [
@@ -126,14 +236,8 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK_ADMIN = [
                             { id: 'MjU2ZeyIyIjoiMSJ9jQ2YW' },
                             { id: 'NzhkZeyIyIjoiMSJ9jg4Ym' }
                         ],
-                        testPlanTarget: {
-                            id: '1',
-                            title: 'JAWS 2021.2103.174 with Chrome 91.0.4472',
-                            at: { id: '1', name: 'JAWS' },
-                            browser: { id: '2', name: 'Chrome' },
-                            atVersion: '2021.2103.174',
-                            browserVersion: '91.0.4472'
-                        },
+                        at: { id: '1', name: 'JAWS' },
+                        browser: { id: '2', name: 'Chrome' },
                         testPlanVersion: {
                             id: '1',
                             title: 'Checkbox Example (Two State)',
@@ -197,15 +301,8 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK_ADMIN = [
                             { id: 'MjU2ZeyIyIjoiMSJ9jQ2YW' },
                             { id: 'NzhkZeyIyIjoiMSJ9jg4Ym' }
                         ],
-                        testPlanTarget: {
-                            id: '1',
-                            title:
-                                'VoiceOver for macOS 11.5.2 with Safari 14.1.2',
-                            at: { id: '3', name: 'VoiceOver for macOS' },
-                            browser: { id: '3', name: 'Safari' },
-                            atVersion: '11.5.2',
-                            browserVersion: '14.1.2'
-                        },
+                        at: { id: '3', name: 'VoiceOver for macOS' },
+                        browser: { id: '3', name: 'Safari' },
                         testPlanVersion: {
                             id: '1',
                             title: 'Checkbox Example (Two State)',
@@ -336,14 +433,8 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK_ADMIN = [
                             { id: 'MjU2ZeyIyIjoiMSJ9jQ2YW' },
                             { id: 'NzhkZeyIyIjoiMSJ9jg4Ym' }
                         ],
-                        testPlanTarget: {
-                            id: '2',
-                            title: 'NVDA 2020.4 with Firefox 88.0.1',
-                            at: { id: '2', name: 'NVDA' },
-                            browser: { id: '1', name: 'Firefox' },
-                            atVersion: '2020.4',
-                            browserVersion: '88.0.1'
-                        },
+                        at: { id: '2', name: 'NVDA' },
+                        browser: { id: '1', name: 'Firefox' },
                         testPlanVersion: {
                             id: '1',
                             title: 'Checkbox Example (Two State)',
@@ -471,6 +562,75 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK_TESTER = [
                     roles: ['TESTER'],
                     __typename: 'User'
                 },
+                ats: [
+                    {
+                        id: '1',
+                        name: 'JAWS',
+                        atVersions: [
+                            {
+                                id: '6',
+                                name: '2021.2103.174',
+                                releasedAt: '2022-08-02T14:36:02.659Z'
+                            }
+                        ]
+                    },
+                    {
+                        id: '2',
+                        name: 'NVDA',
+                        atVersions: [
+                            {
+                                id: '5',
+                                name: '2020.4',
+                                releasedAt: '2022-01-01T12:00:00.000Z'
+                            },
+                            {
+                                id: '4',
+                                name: '2020.3',
+                                releasedAt: '2022-01-01T12:00:00.000Z'
+                            },
+                            {
+                                id: '3',
+                                name: '2020.2',
+                                releasedAt: '2022-01-01T12:00:00.000Z'
+                            },
+                            {
+                                id: '2',
+                                name: '2020.1',
+                                releasedAt: '2022-01-01T12:00:00.000Z'
+                            },
+                            {
+                                id: '1',
+                                name: '2019.3',
+                                releasedAt: '2022-01-01T12:00:00.000Z'
+                            }
+                        ]
+                    },
+                    {
+                        id: '3',
+                        name: 'VoiceOver for macOS',
+                        atVersions: [
+                            {
+                                id: '7',
+                                name: '11.5.2',
+                                releasedAt: '2022-01-01T12:00:00.000Z'
+                            }
+                        ]
+                    }
+                ],
+                browsers: [
+                    {
+                        id: '2',
+                        name: 'Chrome'
+                    },
+                    {
+                        id: '1',
+                        name: 'Firefox'
+                    },
+                    {
+                        id: '3',
+                        name: 'Safari'
+                    }
+                ],
                 users: [
                     {
                         id: '1',
@@ -486,6 +646,41 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK_TESTER = [
                         id: '5',
                         username: 'boo-far',
                         roles: ['TESTER']
+                    }
+                ],
+                testPlanVersions: [
+                    {
+                        id: '1',
+                        title: 'Alert Example',
+                        gitSha: '97d4bd6c2078849ad4ee01eeeb3667767ca6f992',
+                        gitMessage:
+                            'Create tests for APG design pattern example: Navigation Menu Button (#524)',
+                        testPlan: {
+                            directory: 'alert'
+                        },
+                        updatedAt: '2022-04-15T19:09:53.000Z'
+                    },
+                    {
+                        id: '2',
+                        title: 'Banner Landmark',
+                        gitSha: '97d4bd6c2078849ad4ee01eeeb3667767ca6f992',
+                        gitMessage:
+                            'Create tests for APG design pattern example: Navigation Menu Button (#524)',
+                        testPlan: {
+                            directory: 'banner'
+                        },
+                        updatedAt: '2022-04-15T19:09:53.000Z'
+                    },
+                    {
+                        id: '3',
+                        title: 'Breadcrumb Example',
+                        gitSha: '97d4bd6c2078849ad4ee01eeeb3667767ca6f992',
+                        gitMessage:
+                            'Create tests for APG design pattern example: Navigation Menu Button (#524)',
+                        testPlan: {
+                            directory: 'breadcrumb'
+                        },
+                        updatedAt: '2022-04-15T19:09:53.000Z'
                     }
                 ],
                 testPlanReports: [
@@ -546,19 +741,13 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK_TESTER = [
                                 id: 'YjNkMeyIyIjoiNjUifQGQwMG'
                             }
                         ],
-                        testPlanTarget: {
+                        at: {
                             id: '2',
-                            title: 'NVDA 1 with Firefox 1',
-                            at: {
-                                id: '2',
-                                name: 'NVDA'
-                            },
-                            browser: {
-                                id: '1',
-                                name: 'Firefox'
-                            },
-                            atVersion: '1',
-                            browserVersion: '1'
+                            name: 'NVDA'
+                        },
+                        browser: {
+                            id: '1',
+                            name: 'Firefox'
                         },
                         testPlanVersion: {
                             id: '65',
@@ -689,19 +878,13 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK_TESTER = [
                                 id: 'YjNkMeyIyIjoiNjUifQGQwMG'
                             }
                         ],
-                        testPlanTarget: {
+                        at: {
                             id: '2',
-                            title: 'JAWS 1 with Firefox 1',
-                            at: {
-                                id: '2',
-                                name: 'JAWS'
-                            },
-                            browser: {
-                                id: '1',
-                                name: 'Firefox'
-                            },
-                            atVersion: '1',
-                            browserVersion: '1'
+                            name: 'JAWS'
+                        },
+                        browser: {
+                            id: '1',
+                            name: 'Firefox'
                         },
                         testPlanVersion: {
                             id: '65',
@@ -775,19 +958,13 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK_TESTER = [
                                 id: 'NjM1MeyIyIjoiNzQifQ2U3YT'
                             }
                         ],
-                        testPlanTarget: {
-                            id: '4',
-                            title: 'VoiceOver for macOS 1 with Firefox 3',
-                            at: {
-                                id: '3',
-                                name: 'VoiceOver for macOS'
-                            },
-                            browser: {
-                                id: '1',
-                                name: 'Firefox'
-                            },
-                            atVersion: '1',
-                            browserVersion: '3'
+                        at: {
+                            id: '3',
+                            name: 'VoiceOver for macOS'
+                        },
+                        browser: {
+                            id: '1',
+                            name: 'Firefox'
                         },
                         testPlanVersion: {
                             id: '74',

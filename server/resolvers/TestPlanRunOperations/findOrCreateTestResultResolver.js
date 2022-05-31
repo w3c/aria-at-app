@@ -66,6 +66,19 @@ const findOrCreateTestResultResolver = async (
         await updateTestPlanRun(testPlanRun.id, {
             testResults: newTestResults
         });
+    } else {
+        // atVersionId and browserVersionId update
+        const testResultIndex = testPlanRun.testResults.findIndex(
+            testResult => testResult.id === newTestResult.id
+        );
+        const newTestResults = [...testPlanRun.testResults];
+
+        newTestResults[testResultIndex].atVersionId = atVersionId;
+        newTestResults[testResultIndex].browserVersionId = browserVersionId;
+
+        await updateTestPlanRun(testPlanRun.id, {
+            testResults: newTestResults
+        });
     }
 
     return populateData({ testResultId: newTestResult.id });
