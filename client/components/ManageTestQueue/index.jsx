@@ -508,7 +508,7 @@ const ManageTestQueue = ({
     const handleAddTestPlanToTestQueue = async () => {
         focusButtonRef.current = addTestPlanReportButtonRef.current;
 
-        const selectedTestPlanVersion = filteredTestPlanVersions.find(
+        const selectedTestPlanVersion = allTestPlanVersions.find(
             item => item.id === selectedTestPlanVersionId
         );
         const selectedAt = ats.find(item => item.id === selectedAtId);
