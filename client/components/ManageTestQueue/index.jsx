@@ -3,7 +3,12 @@ import { useMutation } from '@apollo/client';
 import { Button, Form } from 'react-bootstrap';
 import styled from '@emotion/styled';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import {
+    faEdit,
+    faTrashAlt,
+    faChevronUp,
+    faChevronDown
+} from '@fortawesome/free-solid-svg-icons';
 import PropTypes from 'prop-types';
 import BasicModal from '../common/BasicModal';
 import UpdateVersionModal from '../common/UpdateVersionModal';
@@ -56,18 +61,14 @@ const DisclosureButton = styled.button`
         cursor: pointer;
     }
 
-    &[aria-expanded='true']::after {
-        content: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='16' height='9.148' viewBox='0 0 16 9.148'%3e%3cpath d='M14.19,17.637l6.05-6.055a1.139,1.139,0,0,1,1.615,0,1.153,1.153,0,0,1,0,1.62L15,20.062a1.141,1.141,0,0,1-1.577.033l-6.9-6.888a1.144,1.144,0,0,1,1.615-1.62Z' transform='translate(22.188 20.395) rotate(180)' fill='%23969696'/%3e%3c/svg%3e") /
-            'Up arrow';
+    svg {
         position: absolute;
+        margin: 0;
+        top: 50%;
         right: 1.25rem;
-    }
 
-    &[aria-expanded='false']::after {
-        content: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='16' height='9.148' viewBox='0 0 16 9.148'%3e%3cpath d='M14.19,17.637l6.05-6.055a1.139,1.139,0,0,1,1.615,0,1.153,1.153,0,0,1,0,1.62L15,20.062a1.141,1.141,0,0,1-1.577.033l-6.9-6.888a1.144,1.144,0,0,1,1.615-1.62Z' transform='translate(-6.188 -11.246)' fill='%23969696'/%3e%3c/svg%3e") /
-            'Down arrow';
-        position: absolute;
-        right: 1.25rem;
+        color: #969696;
+        transform: translateY(-50%);
     }
 `;
 
@@ -547,6 +548,9 @@ const ManageTestQueue = ({
                 onClick={onManageAtsClick}
             >
                 Manage Assistive Technology Versions
+                <FontAwesomeIcon
+                    icon={showManageATs ? faChevronUp : faChevronDown}
+                />
             </DisclosureButton>
             <DisclosureContainer id="id_manage_ats" show={showManageATs}>
                 <span>
@@ -627,6 +631,9 @@ const ManageTestQueue = ({
                 onClick={onAddTestPlansClick}
             >
                 Add Test Plans to the Test Queue
+                <FontAwesomeIcon
+                    icon={showAddTestPlans ? faChevronUp : faChevronDown}
+                />
             </DisclosureButton>
             <DisclosureContainer id="id_test_plans" show={showAddTestPlans}>
                 <span>
