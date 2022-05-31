@@ -88,6 +88,7 @@ const UpdateVersionModal = ({
         const versionTextError = !updatedVersionText;
         const dateTextError =
             !updatedDateAvailabilityText ||
+            updatedDateAvailabilityText.length !== 10 ||
             !isValidDate(updatedDateAvailabilityText);
 
         if (versionTextError || dateTextError) {
