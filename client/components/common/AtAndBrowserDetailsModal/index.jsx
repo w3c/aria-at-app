@@ -53,6 +53,9 @@ const AtAndBrowserDetailsModal = ({
     );
     const [updatedBrowserVersion, setUpdatedBrowserVersion] = useState('');
     const [freeTextBrowserVersion, setFreeTextBrowserVersion] = useState('');
+    const [updatedBrowserVersions, setUpdatedBrowserVersions] = useState(
+        browserVersions
+    );
 
     const [isAtVersionError, setIsAtVersionError] = useState(false);
     const [
@@ -79,9 +82,17 @@ const AtAndBrowserDetailsModal = ({
         if (uaMajor === '0') setUpdatedBrowserVersion('Not detected');
 
         // needs to check if browser version exists in browserVersions
-        const matchingBrowserVersion = browserVersions.find(item =>
+        let matchingBrowserVersion = browserVersions.find(item =>
             item.includes(`${uaMajor}.${uaMinor}.${uaPatch}`)
         );
+
+        if (!isAdmin && !matchingBrowserVersion && uaMajor && uaMajor !== '0') {
+            matchingBrowserVersion = `${uaMajor}.${uaMinor}.${uaPatch}`;
+            setUpdatedBrowserVersions([
+                matchingBrowserVersion,
+                ...updatedBrowserVersions
+            ]);
+        }
 
         if (
             // don't force browserVersion update with admin (unless first run)
@@ -448,8 +459,11 @@ const AtAndBrowserDetailsModal = ({
                                     onChange={handleBrowserVersionChange}
                                 >
                                     {(uaMajor === '0'
-                                        ? ['Not detected', ...browserVersions]
-                                        : browserVersions
+                                        ? [
+                                              'Not detected',
+                                              ...updatedBrowserVersions
+                                          ]
+                                        : updatedBrowserVersions
                                     ).map(item => (
                                         <option
                                             key={`browserVersionKey-${item}`}
