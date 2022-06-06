@@ -87,10 +87,20 @@ ansible-vault edit files/config-sandbox.env
 ```
 
 ## Manual DB Backup
+From the `deploy` folder:
 
+1. Retrieve the database user (aka PGUSER) and database password (aka PGPASSWORD).
+   `ansible-vault view --vault-password-file ansible-vault-password.txt files/config-<environment>.env`
+2. Ssh into the machine.
+  `ssh -i <deploy key> root@aria-at-staging.w3.org`
+3. Create the backup and save it to a file.
+  `pg_dump -U <value for PGUSER> -h localhost -d aria_at_report > <environment>_dump_<timestamp>.sql`
+4. Copy the backup to your machine
+  `scp root@aria-at-staging.w3.org:<environment>_dump_<timestamp>.sql .`
+
+## Database Restore
 1. Ssh into the machine.
   `ssh -i <deploy key> root@aria-at.w3.org`
-2. Create the backup and save it to a file.
-  `pg_dump aria_at_report | tee /tmp/aria_at_report_<datetime>.sql`
-3. If needed copy that data to another machine, download it with `scp`.
-  `scp root@aria-at.w3.org:/tmp/aria_at_report_<datetime>.sql /tmp/aria_at_report_<datetime>.sql`
+2. Load the backup that was created
+  `psql -d aria_at_report -f <environment>_dump_<timestamp>.sql`
+
