@@ -95,7 +95,7 @@ const getTestersRunHistory = (
         if (
             testPlanReportId === testPlanReport.id &&
             testPlanReport.status === 'FINALIZED' &&
-            testResult
+            testResult?.completedAt
         ) {
             lines.push(
                 <li
