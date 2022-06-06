@@ -7,8 +7,9 @@ import {
     faInfoCircle,
     faExclamationTriangle
 } from '@fortawesome/free-solid-svg-icons';
-import { useDetectUa } from '../../../hooks/useDetectUa';
 import BasicModal from '../BasicModal';
+import SelectCombobox from '../SelectCombobox';
+import { useDetectUa } from '../../../hooks/useDetectUa';
 
 const ModalInnerSectionContainer = styled.div`
     display: flex;
@@ -119,15 +120,12 @@ const AtAndBrowserDetailsModal = ({
         else setBrowserVersionMismatchMessage(!isAdmin && false);
     }, [updatedBrowserVersion, uaMajor, uaMinor, uaPatch]);
 
-    const handleAtVersionChange = e => {
-        const value = e.target.value;
-        setUpdatedAtVersion(value);
+    const handleAtVersionChange = id => {
+        setUpdatedAtVersion(id);
         setIsAtVersionError(false);
     };
 
-    const handleBrowserVersionChange = (e, setFreeTextBrowserVersion) => {
-        const value = e.target.value;
-
+    const handleBrowserVersionChange = (value, setFreeTextBrowserVersion) => {
         if (setFreeTextBrowserVersion) setFreeTextBrowserVersion(value);
         else setUpdatedBrowserVersion(value);
 
@@ -225,27 +223,27 @@ const AtAndBrowserDetailsModal = ({
                             <Form.Label>
                                 Assistive Technology Version
                             </Form.Label>
-                            <Form.Control
+                            <SelectCombobox
                                 ref={updatedAtVersionDropdownRef}
-                                as="select"
-                                value={updatedAtVersion}
-                                onChange={handleAtVersionChange}
+                                id="atVersion"
+                                options={[
+                                    {
+                                        value: -1,
+                                        displayValue: 'Select a Version',
+                                        disabled: true
+                                    },
+                                    ...atVersions.map(item => {
+                                        return {
+                                            value: item,
+                                            displayValue: item,
+                                            isSelected:
+                                                item === updatedAtVersion
+                                        };
+                                    })
+                                ]}
+                                onOptionSelect={handleAtVersionChange}
                                 isInvalid={isAtVersionError}
-                            >
-                                {['Select a Version', ...atVersions].map(
-                                    item => (
-                                        <option
-                                            key={`atVersionKey-${item}`}
-                                            value={item}
-                                            disabled={
-                                                item === 'Select a Version'
-                                            }
-                                        >
-                                            {item}
-                                        </option>
-                                    )
-                                )}
-                            </Form.Control>
+                            />
                             {isAtVersionError && (
                                 <Form.Control.Feedback
                                     style={{ display: 'block' }}
@@ -441,7 +439,11 @@ const AtAndBrowserDetailsModal = ({
                                         ref={adminFreeTextBrowserVersionRef}
                                         type="text"
                                         value={updatedBrowserVersion}
-                                        onChange={handleBrowserVersionChange}
+                                        onChange={e => {
+                                            handleBrowserVersionChange(
+                                                e.target.value
+                                            );
+                                        }}
                                         isInvalid={
                                             isAdminFreeTextBrowserVersionError
                                         }
@@ -457,27 +459,21 @@ const AtAndBrowserDetailsModal = ({
                                     )}
                                 </>
                             ) : (
-                                <Form.Control
-                                    as="select"
-                                    disabled={uaMajor === '0'}
-                                    value={updatedBrowserVersion}
-                                    onChange={handleBrowserVersionChange}
-                                >
-                                    {(uaMajor === '0'
-                                        ? [
-                                              'Not detected',
-                                              ...updatedBrowserVersions
-                                          ]
+                                <SelectCombobox
+                                    id="browserVersion"
+                                    options={(uaMajor === '0'
+                                        ? ['Not detected']
                                         : updatedBrowserVersions
-                                    ).map(item => (
-                                        <option
-                                            key={`browserVersionKey-${item}`}
-                                            value={item}
-                                        >
-                                            {item}
-                                        </option>
-                                    ))}
-                                </Form.Control>
+                                    ).map(item => ({
+                                        value: item,
+                                        displayValue: item,
+                                        isSelected: updatedBrowserVersion.includes(
+                                            item
+                                        )
+                                    }))}
+                                    isDisabled={uaMajor === '0'}
+                                    onOptionSelect={handleBrowserVersionChange}
+                                />
                             )}
                         </Form.Group>
 
@@ -490,7 +486,7 @@ const AtAndBrowserDetailsModal = ({
                                     value={freeTextBrowserVersion}
                                     onChange={e =>
                                         handleBrowserVersionChange(
-                                            e,
+                                            e.target.value,
                                             setFreeTextBrowserVersion
                                         )
                                     }

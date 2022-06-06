@@ -1,32 +1,44 @@
-import React, { useRef, useState } from 'react';
+/**
+ * Based on example: https://www.w3.org/WAI/ARIA/apg/example-index/combobox/combobox-select-only.html
+ * Example HTML: https://github.com/w3c/aria-practices/blob/main/examples/combobox/combobox-select-only.html
+ * Example JS: https://github.com/w3c/aria-practices/blob/main/examples/combobox/js/select-only.js
+ */
+import React, { forwardRef, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import styled from '@emotion/styled';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 
 const Container = styled.div`
     width: inherit;
     max-width: inherit;
-
-    ::after {
-        border-bottom: 2px solid rgb(0 0 0 / 75%);
-        border-right: 2px solid rgb(0 0 0 / 75%);
-        content: '';
-        display: block;
-        height: 12px;
-        pointer-events: none;
-        position: absolute;
-        right: 16px;
-        top: 50%;
-        transform: translate(0, -65%) rotate(45deg);
-        width: 12px;
-    }
 `;
 
 const Combobox = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
     word-wrap: normal;
     text-transform: none;
     margin: 0;
     font-family: inherit;
     cursor: default;
+
+    border-color: ${({ isInvalid }) => (isInvalid ? '#dc3545' : '')};
+    background-color: ${({ isDisabled }) => (isDisabled ? '#e9ecef' : '')};
+    pointer-events: ${({ isDisabled }) => (isDisabled ? 'none' : '')};
+
+    svg {
+        margin: 0;
+    }
+
+    span {
+        width: 100%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
 
     :focus {
         color: #495057;
@@ -45,7 +57,7 @@ const Listbox = styled.div`
     color: #495057;
 
     max-height: 200px;
-    overflow-y: hidden;
+    overflow-y: scroll;
 
     z-index: 100;
 
@@ -54,10 +66,12 @@ const Listbox = styled.div`
     border-radius: 0.25rem;
 `;
 
-const Option = styled.option`
-    padding: 0.375rem 2rem;
+const Option = styled.div`
+    padding: 0.1875rem 1rem 0.1875rem 2rem;
     background-color: ${({ current }) => (current ? 'rgb(0 0 0 / 10%)' : '')};
     cursor: default;
+
+    opacity: ${({ disabled }) => (disabled ? '0.6' : '')};
 
     :hover {
         background-color: rgb(0 0 0 / 10%);
@@ -74,7 +88,7 @@ const Option = styled.option`
         height: 12px;
 
         left: 12px;
-        top: 50%;
+        top: 45%;
 
         border-bottom: 2px solid #495057;
         border-right: 2px solid #495057;
@@ -160,10 +174,15 @@ function getActionFromKey(event, menuOpen) {
 
 // return the index of an option from an array of options, based on a search string
 // if the filter is multiple iterations of the same letter (e.g "aaa"), then cycle through first-letter matches
-function getIndexByLetter(options, filter, startIndex = 0) {
+function getIndexByLetter(
+    options,
+    filter,
+    startIndex = 0,
+    isFirstDisabled = false
+) {
     const orderedOptions = [
         ...options.slice(startIndex),
-        ...options.slice(0, startIndex)
+        ...options.slice(isFirstDisabled ? 1 : 0, startIndex)
     ];
     const firstMatch = filterOptions(orderedOptions, filter)[0];
     const allSameLetter = array => array.every(letter => letter === array[0]);
@@ -186,20 +205,25 @@ function getIndexByLetter(options, filter, startIndex = 0) {
 }
 
 // get an updated option index after performing an action
-function getUpdatedIndex(currentIndex, maxIndex, action) {
+function getUpdatedIndex(
+    currentIndex,
+    maxIndex,
+    action,
+    isFirstDisabled = false
+) {
     const pageSize = 10; // used for pageup/pagedown
 
     switch (action) {
         case SelectActions.First:
-            return 0;
+            return isFirstDisabled ? 1 : 0;
         case SelectActions.Last:
             return maxIndex;
         case SelectActions.Previous:
-            return Math.max(0, currentIndex - 1);
+            return Math.max(isFirstDisabled ? 1 : 0, currentIndex - 1);
         case SelectActions.Next:
             return Math.min(maxIndex, currentIndex + 1);
         case SelectActions.PageUp:
-            return Math.max(0, currentIndex - pageSize);
+            return Math.max(isFirstDisabled ? 1 : 0, currentIndex - pageSize);
         case SelectActions.PageDown:
             return Math.min(maxIndex, currentIndex + pageSize);
         default:
@@ -242,230 +266,280 @@ function maintainScrollVisibility(activeElement, scrollParent) {
     }
 }
 
-const SelectCombobox = ({
-    id = 'browser',
-    options = ['--', 'Chrome', 'Firefox', 'Safari']
-}) => {
-    const comboboxRef = useRef();
-    const listboxRef = useRef();
+// forwardRef usage required for AtAndBrowserDetailsModal's ref,
+// updatedAtVersionDropdownRef which is used to focus on the combobox element
+// when there is an invalid entry
+const SelectCombobox = forwardRef(
+    (
+        {
+            id,
+            options = [],
+            onOptionSelect = () => {},
+            isDisabled = false,
+            isInvalid = false
+        },
+        comboboxRef
+    ) => {
+        if (!comboboxRef) comboboxRef = useRef();
+        const listboxRef = useRef();
 
-    const activeIndexRef = useRef(0);
-    const ignoreBlurRef = useRef(false);
-    const openRef = useRef(false);
-    const searchStringRef = useRef('');
-    const searchTimeoutRef = useRef(null);
-    const optionElRefs = useRef({});
+        const activeIndexRef = useRef(0);
+        const selectedIndexRef = useRef(0);
+        const ignoreBlurRef = useRef(false);
+        const openRef = useRef(false);
+        const searchStringRef = useRef('');
+        const searchTimeoutRef = useRef(null);
+        const optionElRefs = useRef({});
 
-    const [isOpen, setIsOpen] = useState(false);
-    const [activeId, setActiveId] = useState('');
-    const [selectedIndex, setSelectedIndex] = useState(0);
+        const [isOpen, setIsOpen] = useState(false);
+        const [activeId, setActiveId] = useState('');
 
-    const getSearchString = char => {
-        // reset typing timeout and start new timeout
-        // this allows us to make multiple-letter matches, like a native select
-        if (typeof searchTimeoutRef.current === 'number') {
-            window.clearTimeout(searchTimeoutRef.current);
-        }
+        const isFirstOptionDisabled = options.length && options[0].disabled;
+        let initialOption = '--';
 
-        searchTimeoutRef.current = window.setTimeout(() => {
-            searchStringRef.current = '';
-        }, 500);
-
-        // add most recent letter to saved search string
-        searchStringRef.current += char;
-        return searchStringRef.current;
-    };
-
-    const onComboBlur = () => {
-        // do not do blur action if ignoreBlur flag has been set
-        if (ignoreBlurRef.current) {
-            ignoreBlurRef.current = false;
-            return;
-        }
-
-        // select current option and close
-        if (openRef.current) {
-            selectOption(activeIndexRef.current);
-            updateMenuState(false, false);
-        }
-    };
-
-    const onComboClick = () => {
-        updateMenuState(!openRef.current, false);
-    };
-
-    const onComboKeyDown = e => {
-        const { key } = e;
-        const max = options.length - 1;
-
-        const action = getActionFromKey(e, openRef.current);
-
-        switch (action) {
-            case SelectActions.Last:
-            case SelectActions.First:
-                updateMenuState(true);
-            // intentional fallthrough
-            case SelectActions.Next:
-            case SelectActions.Previous:
-            case SelectActions.PageUp:
-            case SelectActions.PageDown:
-                e.preventDefault();
-                return onOptionChange(
-                    getUpdatedIndex(activeIndexRef.current, max, action)
-                );
-            case SelectActions.CloseSelect:
-                e.preventDefault();
-                selectOption(activeIndexRef.current);
-            // intentional fallthrough
-            case SelectActions.Close:
-                e.preventDefault();
-                return updateMenuState(false);
-            case SelectActions.Type:
-                return onComboType(key);
-            case SelectActions.Open:
-                e.preventDefault();
-                return updateMenuState(true);
-        }
-    };
-
-    const onComboType = letter => {
-        // open the listbox if it is closed
-        updateMenuState(true);
-
-        // find the index of the first matching option
-        const searchString = getSearchString(letter);
-        const searchIndex = getIndexByLetter(
-            options,
-            searchString,
-            activeIndexRef.current + 1
-        );
-
-        // if a match was found, go to it
-        if (searchIndex >= 0) {
-            onOptionChange(searchIndex);
-        }
-        // if no matches, clear the timeout and search string
-        else {
-            window.clearTimeout(searchTimeoutRef.current);
-            searchStringRef.current = '';
-        }
-    };
-
-    const onOptionChange = index => {
-        // update state
-        activeIndexRef.current = index;
-
-        // update aria-activedescendant
-        setActiveId(`combobox-${id}-${activeIndexRef.current}`);
-
-        // ensure the new option is in view
-        if (isScrollable(listboxRef.current)) {
-            maintainScrollVisibility(
-                optionElRefs.current[index],
-                listboxRef.current
+        if (options.length) {
+            const selectedOptionIndex = options.findIndex(
+                item => item.isSelected
             );
+            if (selectedOptionIndex > -1) {
+                initialOption = options[selectedOptionIndex].displayValue;
+                activeIndexRef.current = selectedOptionIndex;
+                selectedIndexRef.current = selectedOptionIndex;
+            } else
+                initialOption = options[selectedIndexRef.current].displayValue;
         }
 
-        // ensure the new option is in view
-        if (!isElementInView(optionElRefs.current[index])) {
-            optionElRefs.current[index].scrollIntoView({
-                behavior: 'smooth',
-                block: 'nearest'
-            });
-        }
-    };
+        const getSearchString = char => {
+            // reset typing timeout and start new timeout
+            // this allows us to make multiple-letter matches, like a native select
+            if (typeof searchTimeoutRef.current === 'number') {
+                window.clearTimeout(searchTimeoutRef.current);
+            }
 
-    const onOptionClick = index => {
-        onOptionChange(index);
-        selectOption(index);
-        updateMenuState(false);
-    };
+            searchTimeoutRef.current = window.setTimeout(() => {
+                searchStringRef.current = '';
+            }, 500);
 
-    const onOptionMouseDown = () => {
-        // Clicking an option will cause a blur event,
-        // but we don't want to perform the default keyboard blur action
-        ignoreBlurRef.current = true;
-    };
+            // add most recent letter to saved search string
+            searchStringRef.current += char;
+            return searchStringRef.current;
+        };
 
-    const selectOption = index => {
-        // update state
-        activeIndexRef.current = index;
+        const onComboBlur = () => {
+            // do not do blur action if ignoreBlur flag has been set
+            if (ignoreBlurRef.current) {
+                ignoreBlurRef.current = false;
+                return;
+            }
 
-        // update displayed value
-        setSelectedIndex(index);
-    };
+            // select current option and close
+            if (openRef.current) {
+                selectOption(activeIndexRef.current);
+                updateMenuState(false, false);
+            }
+        };
 
-    const updateMenuState = (open, callFocus = true) => {
-        if (openRef.current === open) {
-            return;
-        }
+        const onComboClick = () => {
+            updateMenuState(!openRef.current, false);
+        };
 
-        // update state
-        openRef.current = open;
+        const onComboKeyDown = e => {
+            const { key } = e;
+            const max = options.length - 1;
 
-        // update aria-expanded
-        setIsOpen(open);
+            const action = getActionFromKey(e, openRef.current);
 
-        // update activedescendant
-        const activeId = open ? `combobox-${id}-${activeIndexRef.current}` : '';
-        setActiveId(activeId);
+            switch (action) {
+                case SelectActions.Last:
+                case SelectActions.First:
+                    updateMenuState(true);
+                // intentional fallthrough
+                case SelectActions.Next:
+                case SelectActions.Previous:
+                case SelectActions.PageUp:
+                case SelectActions.PageDown:
+                    e.preventDefault();
+                    return onOptionChange(
+                        getUpdatedIndex(
+                            activeIndexRef.current,
+                            max,
+                            action,
+                            isFirstOptionDisabled
+                        )
+                    );
+                case SelectActions.CloseSelect:
+                    e.preventDefault();
+                    selectOption(activeIndexRef.current);
+                // intentional fallthrough
+                case SelectActions.Close:
+                    e.preventDefault();
+                    return updateMenuState(false);
+                case SelectActions.Type:
+                    return onComboType(key);
+                case SelectActions.Open:
+                    e.preventDefault();
+                    return updateMenuState(true);
+            }
+        };
 
-        if (activeId === '' && !isElementInView(comboboxRef.current)) {
-            comboboxRef.current.scrollIntoView({
-                behavior: 'smooth',
-                block: 'nearest'
-            });
-        }
+        const onComboType = letter => {
+            // open the listbox if it is closed
+            updateMenuState(true);
 
-        // move focus back to the combobox, if needed
-        callFocus && comboboxRef.current.focus();
-    };
+            // find the index of the first matching option
+            const searchString = getSearchString(letter);
+            const searchIndex = getIndexByLetter(
+                options.map(item => item.displayValue),
+                searchString,
+                activeIndexRef.current + 1,
+                isFirstOptionDisabled
+            );
 
-    return (
-        <Container>
-            <Combobox
-                ref={comboboxRef}
-                role="combobox"
-                className="form-control"
-                tabIndex="0"
-                aria-expanded={isOpen}
-                aria-activedescendant={isOpen && activeId ? activeId : null}
-                onBlur={onComboBlur}
-                onClick={onComboClick}
-                onKeyDown={onComboKeyDown}
-            >
-                {options[selectedIndex]}
-            </Combobox>
-            <Listbox
-                ref={listboxRef}
-                role="listbox"
-                open={isOpen}
-                tabIndex="-1"
-            >
-                {options.map((option, index) => (
-                    <Option
-                        ref={ref => [(optionElRefs.current[index] = ref)]}
-                        id={`combobox-${id}-${index}`}
-                        key={`combobox-${id}-${index}`}
-                        current={activeId === `combobox-${id}-${index}`}
-                        aria-selected={selectedIndex === index}
-                        onClick={e => {
-                            e.stopPropagation();
-                            onOptionClick(index);
-                        }}
-                        onMouseDown={onOptionMouseDown}
-                    >
-                        {option}
-                    </Option>
-                ))}
-            </Listbox>
-        </Container>
-    );
-};
+            // if a match was found, go to it
+            if (searchIndex >= 0) {
+                onOptionChange(searchIndex);
+            }
+            // if no matches, clear the timeout and search string
+            else {
+                window.clearTimeout(searchTimeoutRef.current);
+                searchStringRef.current = '';
+            }
+        };
+
+        const onOptionChange = index => {
+            // update state
+            activeIndexRef.current = index;
+
+            // update aria-activedescendant
+            setActiveId(`combobox-${id}-${activeIndexRef.current}`);
+
+            // ensure the new option is in view
+            if (isScrollable(listboxRef.current)) {
+                maintainScrollVisibility(
+                    optionElRefs.current[index],
+                    listboxRef.current
+                );
+            }
+
+            // ensure the new option is in view
+            if (!isElementInView(optionElRefs.current[index])) {
+                optionElRefs.current[index].scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'nearest'
+                });
+            }
+        };
+
+        const onOptionClick = index => {
+            if (isFirstOptionDisabled && index === 0) {
+                comboboxRef.current.focus();
+                return;
+            }
+            onOptionChange(index);
+            selectOption(index);
+            updateMenuState(false);
+        };
+
+        const onOptionMouseDown = () => {
+            // Clicking an option will cause a blur event,
+            // but we don't want to perform the default keyboard blur action
+            ignoreBlurRef.current = true;
+        };
+
+        const selectOption = index => {
+            // update state
+            activeIndexRef.current = index;
+
+            // update displayed value
+            selectedIndexRef.current = index;
+
+            if (isFirstOptionDisabled && index === 0) return;
+            onOptionSelect(options[index].value);
+        };
+
+        const updateMenuState = (open, callFocus = true) => {
+            if (openRef.current === open) {
+                return;
+            }
+
+            // update state
+            openRef.current = open;
+
+            // update aria-expanded
+            setIsOpen(open);
+
+            // update activedescendant
+            const activeId = open
+                ? `combobox-${id}-${activeIndexRef.current}`
+                : '';
+            setActiveId(activeId);
+
+            if (activeId === '' && !isElementInView(comboboxRef.current)) {
+                comboboxRef.current.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'nearest'
+                });
+            }
+
+            // move focus back to the combobox, if needed
+            callFocus && comboboxRef.current.focus();
+        };
+
+        return (
+            <Container>
+                <Combobox
+                    ref={comboboxRef}
+                    role="combobox"
+                    className="form-control"
+                    tabIndex="0"
+                    aria-expanded={isOpen}
+                    aria-activedescendant={isOpen && activeId ? activeId : null}
+                    onBlur={onComboBlur}
+                    onClick={onComboClick}
+                    onKeyDown={onComboKeyDown}
+                    isDisabled={isDisabled}
+                    isInvalid={isInvalid}
+                >
+                    <span>{initialOption}</span>
+                    <FontAwesomeIcon icon={faChevronDown} size="xs" />
+                </Combobox>
+                <Listbox
+                    ref={listboxRef}
+                    role="listbox"
+                    open={isOpen}
+                    tabIndex="-1"
+                >
+                    {options.map((option, index) => (
+                        <Option
+                            role="option"
+                            ref={ref => [(optionElRefs.current[index] = ref)]}
+                            id={`combobox-${id}-${index}`}
+                            key={`combobox-${id}-${index}`}
+                            current={activeId === `combobox-${id}-${index}`}
+                            disabled={option.disabled}
+                            aria-selected={selectedIndexRef.current === index}
+                            aria-disabled={option.disabled}
+                            onClick={e => {
+                                e.stopPropagation();
+                                onOptionClick(index);
+                            }}
+                            onMouseDown={onOptionMouseDown}
+                        >
+                            {option.displayValue}
+                        </Option>
+                    ))}
+                </Listbox>
+            </Container>
+        );
+    }
+);
 
 SelectCombobox.propTypes = {
     id: PropTypes.string,
-    options: PropTypes.array
+    options: PropTypes.array,
+    onOptionSelect: PropTypes.func,
+    isDisabled: PropTypes.bool,
+    isInvalid: PropTypes.bool
 };
 
 export default SelectCombobox;

@@ -13,6 +13,7 @@ import PropTypes from 'prop-types';
 import BasicModal from '../common/BasicModal';
 import UpdateVersionModal from '../common/UpdateVersionModal';
 import BasicThemedModal from '../common/BasicThemedModal';
+import SelectCombobox from '../common/SelectCombobox';
 import {
     ADD_AT_VERSION_MUTATION,
     EDIT_AT_VERSION_MUTATION,
@@ -139,6 +140,10 @@ const DisclosureContainer = styled.div`
         grid-auto-flow: column;
         grid-template-columns: 1fr 1fr 1fr 1fr;
         grid-gap: 1rem;
+    }
+
+    .form-group {
+        min-width: 100%;
     }
 
     .disclosure-form-label {
@@ -268,20 +273,16 @@ const ManageTestQueue = ({
         setSelectedTestPlanVersionId(matchingTestPlanVersions[0].id);
     };
 
-    const onManageAtChange = e => {
-        const { value } = e.target;
-        if (selectedManageAtId !== value) {
-            setSelectedManageAtId(value);
-            const at = ats.find(item => item.id === value);
+    const onManageAtChange = id => {
+        if (selectedManageAtId !== id) {
+            setSelectedManageAtId(id);
+            const at = ats.find(item => item.id === id);
             setSelectedManageAtVersions(at.atVersions);
             setSelectedManageAtVersionId(at.atVersions[0].id);
         }
     };
 
-    const onManageAtVersionChange = e => {
-        const { value } = e.target;
-        setSelectedManageAtVersionId(value);
-    };
+    const onManageAtVersionChange = id => setSelectedManageAtVersionId(id);
 
     const onOpenAtVersionModalClick = (type = 'add') => {
         if (type === 'add') {
@@ -357,20 +358,11 @@ const ManageTestQueue = ({
         return selectedManageAtVersions.find(item => id === item.id);
     };
 
-    const onAtChange = e => {
-        const { value } = e.target;
-        setSelectedAtId(value);
-    };
+    const onAtChange = id => setSelectedAtId(id);
 
-    const onBrowserChange = e => {
-        const { value } = e.target;
-        setSelectedBrowserId(value);
-    };
+    const onBrowserChange = id => setSelectedBrowserId(id);
 
-    const onTestPlanVersionChange = e => {
-        const { value } = e.target;
-        setSelectedTestPlanVersionId(value);
-    };
+    const onTestPlanVersionChange = id => setSelectedTestPlanVersionId(id);
 
     const onUpdateAtVersionAction = async (
         actionType,
@@ -562,40 +554,32 @@ const ManageTestQueue = ({
                         <Form.Label className="disclosure-form-label">
                             Assistive Technology
                         </Form.Label>
-                        <Form.Control
-                            as="select"
-                            value={selectedManageAtId}
-                            onChange={onManageAtChange}
-                        >
-                            {ats.map(item => (
-                                <option
-                                    key={`manage-${item.name}-${item.id}`}
-                                    value={item.id}
-                                >
-                                    {item.name}
-                                </option>
-                            ))}
-                        </Form.Control>
+                        <SelectCombobox
+                            id="manageAt"
+                            options={ats.map(item => {
+                                return {
+                                    value: item.id,
+                                    displayValue: item.name
+                                };
+                            })}
+                            onOptionSelect={onManageAtChange}
+                        />
                     </Form.Group>
                     <div className="at-versions-container">
                         <Form.Group>
                             <Form.Label className="disclosure-form-label">
                                 Available Versions
                             </Form.Label>
-                            <Form.Control
-                                as="select"
-                                value={selectedManageAtVersionId}
-                                onChange={onManageAtVersionChange}
-                            >
-                                {selectedManageAtVersions.map(item => (
-                                    <option
-                                        key={`${selectedManageAtId}-${item.id}-${item.name}`}
-                                        value={item.id}
-                                    >
-                                        {item.name}
-                                    </option>
-                                ))}
-                            </Form.Control>
+                            <SelectCombobox
+                                id="manageAtVersion"
+                                options={selectedManageAtVersions.map(item => {
+                                    return {
+                                        value: item.id,
+                                        displayValue: item.name
+                                    };
+                                })}
+                                onOptionSelect={onManageAtVersionChange}
+                            />
                         </Form.Group>
                         <div className="disclosure-buttons-row">
                             <button
@@ -645,92 +629,86 @@ const ManageTestQueue = ({
                         <Form.Label className="disclosure-form-label">
                             Test Plan
                         </Form.Label>
-                        <Form.Control
-                            as="select"
-                            onChange={e => {
-                                const { value } = e.target;
+                        <SelectCombobox
+                            id="filteredTestPlanVersions"
+                            options={filteredTestPlanVersions.map(item => {
+                                return {
+                                    value: item.id,
+                                    displayValue: `${item.title ||
+                                        item.testPlan.directory}`
+                                };
+                            })}
+                            onOptionSelect={value => {
                                 updateMatchingTestPlanVersions(
                                     value,
                                     allTestPlanVersions
                                 );
                             }}
-                        >
-                            {filteredTestPlanVersions.map(item => (
-                                <option
-                                    key={`${item.title ||
-                                        item.testPlan.directory}-${item.id}`}
-                                    value={item.id}
-                                >
-                                    {item.title ||
-                                        `"${item.testPlan.directory}"`}
-                                </option>
-                            ))}
-                        </Form.Control>
+                        />
                     </Form.Group>
                     <Form.Group>
                         <Form.Label className="disclosure-form-label">
                             Test Plan Version
                         </Form.Label>
-                        <Form.Control
-                            as="select"
-                            value={selectedTestPlanVersionId}
-                            onChange={onTestPlanVersionChange}
-                        >
-                            {matchingTestPlanVersions.map(item => (
-                                <option
-                                    key={`${item.gitSha}-${item.id}`}
-                                    value={item.id}
-                                >
-                                    {gitUpdatedDateToString(item.updatedAt)}{' '}
-                                    {item.gitMessage} (
-                                    {item.gitSha.substring(0, 7)})
-                                </option>
-                            ))}
-                        </Form.Control>
+                        <SelectCombobox
+                            id="matchingTestPlanVersions"
+                            options={matchingTestPlanVersions.map(item => {
+                                return {
+                                    value: item.id,
+                                    displayValue: `${gitUpdatedDateToString(
+                                        item.updatedAt
+                                    )} ${
+                                        item.gitMessage
+                                    } (${item.gitSha.substring(0, 7)})`
+                                };
+                            })}
+                            onOptionSelect={onTestPlanVersionChange}
+                        />
                     </Form.Group>
                     <Form.Group>
                         <Form.Label className="disclosure-form-label">
                             Assistive Technology
                         </Form.Label>
-                        <Form.Control
-                            as="select"
-                            value={selectedAtId}
-                            onChange={onAtChange}
-                        >
-                            <option value={''} disabled>
-                                --
-                            </option>
-                            {ats.map(item => (
-                                <option
-                                    key={`${item.name}-${item.id}`}
-                                    value={item.id}
-                                >
-                                    {item.name}
-                                </option>
-                            ))}
-                        </Form.Control>
+                        <SelectCombobox
+                            id="at"
+                            options={[
+                                {
+                                    value: -1,
+                                    displayValue:
+                                        'Select an Assistive Technology',
+                                    disabled: true
+                                },
+                                ...ats.map(item => {
+                                    return {
+                                        value: item.id,
+                                        displayValue: item.name
+                                    };
+                                })
+                            ]}
+                            onOptionSelect={onAtChange}
+                        />
                     </Form.Group>
                     <Form.Group>
                         <Form.Label className="disclosure-form-label">
                             Browser
                         </Form.Label>
-                        <Form.Control
-                            as="select"
-                            value={selectedBrowserId}
-                            onChange={onBrowserChange}
-                        >
-                            <option value={''} disabled>
-                                --
-                            </option>
-                            {browsers.map(item => (
-                                <option
-                                    key={`${item.name}-${item.id}`}
-                                    value={item.id}
-                                >
-                                    {item.name}
-                                </option>
-                            ))}
-                        </Form.Control>
+                        <SelectCombobox
+                            id="browser"
+                            options={[
+                                {
+                                    value: -1,
+                                    displayValue: 'Select a Browser',
+                                    disabled: true
+                                },
+                                ...browsers.map(item => {
+                                    return {
+                                        value: item.id,
+                                        displayValue: item.name
+                                    };
+                                })
+                            ]}
+                            onOptionSelect={onBrowserChange}
+                        />
                     </Form.Group>
                 </div>
                 <Button
