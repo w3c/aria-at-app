@@ -467,9 +467,8 @@ const AtAndBrowserDetailsModal = ({
                                     ).map(item => ({
                                         value: item,
                                         displayValue: item,
-                                        isSelected: updatedBrowserVersion.includes(
-                                            item
-                                        )
+                                        isSelected:
+                                            item === updatedBrowserVersion
                                     }))}
                                     isDisabled={uaMajor === '0'}
                                     onOptionSelect={handleBrowserVersionChange}
