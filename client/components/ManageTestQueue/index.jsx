@@ -25,6 +25,11 @@ import { convertStringToDate } from '../../utils/formatter';
 const Container = styled.div`
     border: 1px solid #d3d5da;
     border-radius: 3px;
+
+    h3 {
+        margin: 0;
+        padding: 0;
+    }
 `;
 
 const DisclosureButton = styled.button`
@@ -39,24 +44,21 @@ const DisclosureButton = styled.button`
     border-radius: 3px;
     background-color: transparent;
 
+    &.top-border {
+        border-top: 1px solid #d3d5da;
+    }
+
     &:nth-of-type(1) {
         border-radius: 3px 3px 0 0;
     }
 
     &:nth-last-of-type(1) {
-        border-top: 1px solid #d3d5da;
         border-radius: 0 0 3px 3px;
-
-        &:hover,
-        &:focus {
-            border-top: 1px solid #d3d5da;
-        }
     }
 
     &:hover,
     &:focus {
         padding: 1.25rem;
-        border: 0 solid #005a9c;
         background-color: #def;
         cursor: pointer;
     }
@@ -541,18 +543,26 @@ const ManageTestQueue = ({
 
     return (
         <Container>
-            <DisclosureButton
-                type="button"
-                aria-expanded={showManageATs}
-                aria-controls="id_manage_ats"
-                onClick={onManageAtsClick}
+            <h3>
+                <DisclosureButton
+                    id="id_manage_ats_button"
+                    type="button"
+                    aria-expanded={showManageATs}
+                    aria-controls="id_manage_ats"
+                    onClick={onManageAtsClick}
+                >
+                    Manage Assistive Technology Versions
+                    <FontAwesomeIcon
+                        icon={showManageATs ? faChevronUp : faChevronDown}
+                    />
+                </DisclosureButton>
+            </h3>
+            <DisclosureContainer
+                role="region"
+                id="id_manage_ats"
+                aria-labelledby="id_manage_ats_button"
+                show={showManageATs}
             >
-                Manage Assistive Technology Versions
-                <FontAwesomeIcon
-                    icon={showManageATs ? faChevronUp : faChevronDown}
-                />
-            </DisclosureButton>
-            <DisclosureContainer id="id_manage_ats" show={showManageATs}>
                 <span>
                     Select an Assistive Technology and manage its versions in
                     the ARIA-AT App
@@ -624,18 +634,27 @@ const ManageTestQueue = ({
                     </div>
                 </div>
             </DisclosureContainer>
-            <DisclosureButton
-                type="button"
-                aria-expanded={showAddTestPlans}
-                aria-controls="id_test_plans"
-                onClick={onAddTestPlansClick}
+            <h3>
+                <DisclosureButton
+                    id="id_test_plans_button"
+                    type="button"
+                    aria-expanded={showAddTestPlans}
+                    aria-controls="id_test_plans"
+                    onClick={onAddTestPlansClick}
+                    className="top-border"
+                >
+                    Add Test Plans to the Test Queue
+                    <FontAwesomeIcon
+                        icon={showAddTestPlans ? faChevronUp : faChevronDown}
+                    />
+                </DisclosureButton>
+            </h3>
+            <DisclosureContainer
+                role="region"
+                id="id_test_plans"
+                aria-labelledby="id_test_plans_button"
+                show={showAddTestPlans}
             >
-                Add Test Plans to the Test Queue
-                <FontAwesomeIcon
-                    icon={showAddTestPlans ? faChevronUp : faChevronDown}
-                />
-            </DisclosureButton>
-            <DisclosureContainer id="id_test_plans" show={showAddTestPlans}>
                 <span>
                     Select a Test Plan and version and an Assistive Technology
                     and Browser to add it to the Test Queue
