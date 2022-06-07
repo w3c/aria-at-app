@@ -1166,30 +1166,31 @@ const TestRenderer = ({
                                                                                 </Feedback>
                                                                             )}
                                                                         </label>
-                                                                        <input
-                                                                            key={`${description}__${commandIndex}__input`}
-                                                                            type="text"
-                                                                            id={`${description}-${commandIndex}-input`}
-                                                                            name={`${description}-${commandIndex}-input`}
-                                                                            className={`undesirable-${description.toLowerCase()}-input`}
-                                                                            autoFocus={
-                                                                                isSubmitted &&
-                                                                                more.focus
-                                                                            }
-                                                                            value={
-                                                                                more.value
-                                                                            }
-                                                                            onChange={e =>
-                                                                                more.change(
-                                                                                    e
-                                                                                        .target
-                                                                                        .value
-                                                                                )
-                                                                            }
-                                                                            disabled={
-                                                                                !checked
-                                                                            }
-                                                                        />
+                                                                        <Text>
+                                                                            <textarea
+                                                                                key={`${description}__${commandIndex}__input`}
+                                                                                id={`${description}-${commandIndex}-input`}
+                                                                                name={`${description}-${commandIndex}-input`}
+                                                                                className={`undesirable-${description.toLowerCase()}-input`}
+                                                                                autoFocus={
+                                                                                    isSubmitted &&
+                                                                                    more.focus
+                                                                                }
+                                                                                value={
+                                                                                    more.value
+                                                                                }
+                                                                                onChange={e =>
+                                                                                    more.change(
+                                                                                        e
+                                                                                            .target
+                                                                                            .value
+                                                                                    )
+                                                                                }
+                                                                                disabled={
+                                                                                    !more.enabled
+                                                                                }
+                                                                            />
+                                                                        </Text>
                                                                     </div>
                                                                 )}
                                                             </Fragment>
