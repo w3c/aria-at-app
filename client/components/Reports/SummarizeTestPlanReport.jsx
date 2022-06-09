@@ -22,6 +22,11 @@ import DisclaimerInfo from '../DisclaimerInfo';
 const DisclosureParent = styled.div`
     border: 1px solid #d3d5da;
     border-radius: 3px;
+
+    h3 {
+        margin: 0;
+        padding: 0;
+    }
 `;
 
 const DisclosureButton = styled.button`
@@ -366,23 +371,32 @@ const SummarizeTestPlanReport = ({ testPlanReport }) => {
                         </Table>
 
                         <DisclosureParent>
-                            <DisclosureButton
-                                type="button"
-                                aria-expanded={!!runHistoryItems[testResult.id]}
-                                aria-controls={`run-history-${testResult.id}`}
-                                onClick={() => onClickRunHistory(testResult.id)}
-                            >
-                                Run History
-                                <FontAwesomeIcon
-                                    icon={
-                                        runHistoryItems[testResult.id]
-                                            ? faChevronUp
-                                            : faChevronDown
+                            <h3>
+                                <DisclosureButton
+                                    id={`run-history-${testResult.id}-button`}
+                                    type="button"
+                                    aria-expanded={
+                                        !!runHistoryItems[testResult.id]
                                     }
-                                />
-                            </DisclosureButton>
+                                    aria-controls={`run-history-${testResult.id}`}
+                                    onClick={() =>
+                                        onClickRunHistory(testResult.id)
+                                    }
+                                >
+                                    Run History
+                                    <FontAwesomeIcon
+                                        icon={
+                                            runHistoryItems[testResult.id]
+                                                ? faChevronUp
+                                                : faChevronDown
+                                        }
+                                    />
+                                </DisclosureButton>
+                            </h3>
                             <DisclosureContainer
+                                role="region"
                                 id={`run-history-${testResult.id}`}
+                                aria-labelledby={`run-history-${testResult.id}-button`}
                                 show={!!runHistoryItems[testResult.id]}
                             >
                                 {getTestersRunHistory(
