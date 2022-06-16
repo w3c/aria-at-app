@@ -1,19 +1,27 @@
 const {
     getTestPlanVersions
 } = require('../models/services/TestPlanVersionService');
+const retrieveAttributes = require('./helpers/retrieveAttributes');
+const { TEST_PLAN_VERSION_ATTRIBUTES } = require('../models/services/helpers');
 
-const testPlanVersionsResolver = async () => {
+const testPlanVersionsResolver = async (root, args, context, info) => {
+    const { attributes: testPlanVersionAttributes } = retrieveAttributes(
+        'testPlanVersion',
+        TEST_PLAN_VERSION_ATTRIBUTES,
+        info
+    );
+
     return getTestPlanVersions(
         null,
         {},
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
+        testPlanVersionAttributes,
+        [],
+        [],
+        [],
+        [],
+        [],
+        [],
+        [],
         {
             order: [
                 ['updatedAt', 'desc'],

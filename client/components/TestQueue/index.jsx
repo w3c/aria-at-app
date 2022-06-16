@@ -16,6 +16,7 @@ import './TestQueue.css';
 const TestQueue = () => {
     const { loading, data, refetch } = useQuery(TEST_QUEUE_PAGE_QUERY);
 
+    const [pageReady, setPageReady] = useState(false);
     const [testers, setTesters] = useState([]);
     const [ats, setAts] = useState([]);
     const [browsers, setBrowsers] = useState([]);
@@ -64,6 +65,7 @@ const TestQueue = () => {
             setBrowsers(browsers);
             setTestPlanReports(testPlanReports);
             setLatestTestPlanVersions(testPlans);
+            setPageReady(true);
         }
     }, [data]);
 
@@ -190,7 +192,7 @@ const TestQueue = () => {
         setDeleteResultsDetails({});
     };
 
-    if (loading) {
+    if (loading || !pageReady) {
         return (
             <PageStatus
                 title="Loading - Test Queue | ARIA-AT"
