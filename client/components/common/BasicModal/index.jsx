@@ -23,7 +23,8 @@ const BasicModal = ({
     actionLabel = 'Continue',
     handleClose = null,
     handleAction = null,
-    handleHide = null
+    handleHide = null,
+    staticBackdrop = false
 }) => {
     const headerRef = useRef();
 
@@ -43,6 +44,7 @@ const BasicModal = ({
                 autoFocus={false}
                 aria-labelledby="basic-modal"
                 dialogClassName={dialogClassName}
+                backdrop={staticBackdrop ? 'static' : true}
             >
                 <Modal.Header
                     closeButton={closeButton}
@@ -88,7 +90,8 @@ BasicModal.propTypes = {
     actionLabel: PropTypes.string,
     handleClose: PropTypes.func,
     handleAction: PropTypes.func,
-    handleHide: PropTypes.func
+    handleHide: PropTypes.func,
+    staticBackdrop: PropTypes.bool
 };
 
 export default BasicModal;

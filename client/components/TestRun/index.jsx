@@ -6,10 +6,11 @@ import { useQuery, useMutation } from '@apollo/client';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faRedo,
-    faExclamationCircle,
     faCheck,
     faPen,
-    faEdit
+    faEdit,
+    faCheckCircle,
+    faExclamationCircle
 } from '@fortawesome/free-solid-svg-icons';
 import nextId from 'react-id-generator';
 import { Alert, Button, Col, Container, Row } from 'react-bootstrap';
@@ -155,6 +156,7 @@ const TestRun = () => {
         isEditAtBrowserDetailsModalClick,
         setIsEditAtBrowserDetailsClicked
     ] = useState(false);
+    const [updateMessageComponent, setUpdateMessageComponent] = useState(null);
 
     useEffect(() => setup(), [currentTestIndex]);
 
@@ -714,7 +716,8 @@ const TestRun = () => {
 
     const handleAtAndBrowserDetailsModalAction = async (
         updatedAtVersionName,
-        updatedBrowserVersionName
+        updatedBrowserVersionName,
+        updateMessage
     ) => {
         // Get version id for selected atVersion and browserVersion from name
         const atVersionId = testPlanReport.at.atVersions.find(
@@ -739,8 +742,16 @@ const TestRun = () => {
                     ?.findOrCreateBrowserVersion?.id;
         }
 
+        const updateMessageComponent = updateMessage ? (
+            <>
+                <FontAwesomeIcon icon={faCheckCircle} />
+                <span>{updateMessage}</span>
+            </>
+        ) : null;
+
         setAtVersionId(atVersionId);
         setBrowserVersionId(browserVersionId);
+        setUpdateMessageComponent(updateMessageComponent);
 
         await createTestResultForRenderer(
             currentTest.id,
@@ -1129,6 +1140,14 @@ const TestRun = () => {
                         : 'No tests for this AT and Browser | ARIA-AT'}
                 </title>
             </Helmet>
+            {updateMessageComponent && (
+                <Alert
+                    variant="success"
+                    className="at-browser-details-modal-alert"
+                >
+                    {updateMessageComponent}
+                </Alert>
+            )}
             <Row>
                 <TestNavigator
                     show={showTestNavigator}

@@ -155,7 +155,45 @@ const AtAndBrowserDetailsModal = ({
             return;
         }
 
-        handleAction(updatedAtVersion, updatedBrowserVersion);
+        let updateMessage = null;
+        if (isFirstLoad)
+            updateMessage =
+                'Your AT and Browser versions have been successfully saved.';
+        else {
+            if (
+                updatedAtVersion !== atVersion &&
+                updatedBrowserVersion !== browserVersion
+            )
+                updateMessage = (
+                    <>
+                        Your version of <b>{atName}</b> has been updated to{' '}
+                        <b>{updatedAtVersion}</b>. Your previous version was{' '}
+                        <b>{atVersion}</b>.
+                        <br />
+                        Your version of <b>{browserName}</b> has been updated to{' '}
+                        <b>{updatedBrowserVersion}</b>. Your previous version
+                        was <b>{browserVersion}</b>.
+                    </>
+                );
+            else if (updatedAtVersion !== atVersion)
+                updateMessage = (
+                    <>
+                        Your version of <b>{atName}</b> has been updated to{' '}
+                        <b>{updatedAtVersion}</b>. Your previous version was{' '}
+                        <b>{atVersion}</b>.
+                    </>
+                );
+            else if (updatedBrowserVersion !== browserVersion)
+                updateMessage = (
+                    <>
+                        Your version of <b>{browserName}</b> has been updated to{' '}
+                        <b>{updatedBrowserVersion}</b>. Your previous version
+                        was <b>{browserVersion}</b>.
+                    </>
+                );
+        }
+
+        handleAction(updatedAtVersion, updatedBrowserVersion, updateMessage);
     };
 
     const handleHide = () => setShowExitModal(true);
@@ -180,6 +218,7 @@ const AtAndBrowserDetailsModal = ({
                 closeLabel="Cancel"
                 handleAction={() => history.push('/test-queue')}
                 handleClose={() => setShowExitModal(false)}
+                staticBackdrop={true}
             />
 
             {!showExitModal && (
@@ -226,7 +265,7 @@ const AtAndBrowserDetailsModal = ({
                                 </legend>
                                 {/* Tester Scenario 6 */}
                                 {!isFirstLoad &&
-                                    !updatedAtVersion.includes(atVersion) && (
+                                    updatedAtVersion !== atVersion && (
                                         <Alert
                                             variant="warning"
                                             className="at-browser-details-modal-alert"
@@ -555,6 +594,7 @@ const AtAndBrowserDetailsModal = ({
                     }
                     handleClose={!isFirstLoad ? handleClose : null}
                     handleHide={handleHide}
+                    staticBackdrop={true}
                 />
             )}
         </>
