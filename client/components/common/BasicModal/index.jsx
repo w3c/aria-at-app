@@ -22,7 +22,8 @@ const BasicModal = ({
     closeLabel = 'Cancel',
     actionLabel = 'Continue',
     handleClose = null,
-    handleAction = null
+    handleAction = null,
+    handleHide = null
 }) => {
     const headerRef = useRef();
 
@@ -37,7 +38,7 @@ const BasicModal = ({
                 show={show}
                 centered={centered}
                 animation={animation}
-                onHide={handleClose}
+                onHide={handleHide || handleClose}
                 /* Disabled due to buggy implementation which jumps the page */
                 autoFocus={false}
                 aria-labelledby="basic-modal"
@@ -86,7 +87,8 @@ BasicModal.propTypes = {
     closeLabel: PropTypes.string,
     actionLabel: PropTypes.string,
     handleClose: PropTypes.func,
-    handleAction: PropTypes.func
+    handleAction: PropTypes.func,
+    handleHide: PropTypes.func
 };
 
 export default BasicModal;

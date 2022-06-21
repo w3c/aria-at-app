@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
+import { useHistory } from 'react-router-dom';
 import { Form, Alert } from 'react-bootstrap';
 import styled from '@emotion/styled';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -51,9 +52,13 @@ const AtAndBrowserDetailsModal = ({
 }) => {
     // Detect UA information
     const { uaBrowser, uaMajor, uaMinor, uaPatch } = useDetectUa();
+
+    const history = useHistory();
+
     const updatedAtVersionDropdownRef = useRef();
     const updatedBrowserVersionTextRef = useRef();
 
+    const [showExitModal, setShowExitModal] = useState(false);
     const [isFirstLoad, setIsFirstLoad] = useState(true);
     const [updatedAtVersion, setUpdatedAtVersion] = useState(
         'Select a Version'
@@ -153,353 +158,406 @@ const AtAndBrowserDetailsModal = ({
         handleAction(updatedAtVersion, updatedBrowserVersion);
     };
 
+    const handleHide = () => setShowExitModal(true);
+
     // All scenarios here are based on
     // https://github.com/w3c/aria-at-app/issues/406 &
     // https://github.com/w3c/aria-at-app/issues/436
     return (
-        <BasicModal
-            show={show}
-            closeButton={true}
-            cancelButton={
-                updatedAtVersion !== atVersion ||
-                updatedBrowserVersion !== browserVersion
-            }
-            headerSep={false}
-            title="Assistive Technology and Browser Details"
-            dialogClassName="modal-60w"
-            content={
-                <ModalInnerSectionContainer>
-                    {/* Admin Scenario 1 */}
-                    {isAdmin && (
-                        <Alert
-                            variant="warning"
-                            className="at-browser-details-modal-alert"
-                        >
-                            <FontAwesomeIcon icon={faExclamationTriangle} />
-                            <span>
-                                You are about to review <b>{patternName}</b> as{' '}
-                                <b>{testerName}</b>. Your Assistive Technology
-                                and Browser might be different. Please proceed
-                                with caution.
-                            </span>
-                        </Alert>
-                    )}
-                    Your Assistive Technology and Browser Details are the
-                    following. Please make sure this information is still
-                    accurate.
-                    <br />
-                    <br />
-                    <FieldsetRow>
-                        <legend>
-                            <ModalSubtitleStyle>
-                                Assistive Technology Details
-                            </ModalSubtitleStyle>
-                        </legend>
-                        {/* Tester Scenario 6 */}
-                        {!isFirstLoad && !updatedAtVersion.includes(atVersion) && (
-                            <Alert
-                                variant="warning"
-                                className="at-browser-details-modal-alert"
-                            >
-                                <FontAwesomeIcon icon={faExclamationTriangle} />
-                                <span>
-                                    The version of {atName} you have selected is
-                                    different from the one previously selected,
-                                    which was <b>{atVersion}</b>.
-                                    <br />
-                                    <br />
-                                    This change doesn&apos;t affect results that
-                                    have already been submitted for this plan.
-                                    However, results you submit during this
-                                    session will be recorded with the versions
-                                    specified in this form.
-                                </span>
-                            </Alert>
-                        )}
-                        <Form.Group>
-                            <Form.Label>Assistive Technology Name</Form.Label>
-                            <Form.Control disabled type="text" value={atName} />
-                        </Form.Group>
+        <>
+            <BasicModal
+                show={showExitModal}
+                closeButton={false}
+                title="Are you sure you want to exit?"
+                content={
+                    <>
+                        You will be taken back to the <b>Test Queue</b>. Any
+                        changes you made to your Assistive Technology and
+                        Browser versions will not be saved.
+                    </>
+                }
+                actionLabel="Ok"
+                closeLabel="Cancel"
+                handleAction={() => history.push('/test-queue')}
+                handleClose={() => setShowExitModal(false)}
+            />
 
-                        <Form.Group>
-                            <Form.Label>
-                                Assistive Technology Version
-                                <Required aria-hidden />
-                            </Form.Label>
-                            <Form.Control
-                                ref={updatedAtVersionDropdownRef}
-                                as="select"
-                                value={updatedAtVersion}
-                                onChange={handleAtVersionChange}
-                                isInvalid={isAtVersionError}
-                                required
-                            >
-                                {['Select a Version', ...atVersions].map(
-                                    item => (
-                                        <option
-                                            key={`atVersionKey-${item}`}
-                                            value={item}
-                                            disabled={
-                                                item === 'Select a Version'
-                                            }
+            {!showExitModal && (
+                <BasicModal
+                    show={show}
+                    closeButton={true}
+                    cancelButton={
+                        updatedAtVersion !== atVersion ||
+                        updatedBrowserVersion !== browserVersion
+                    }
+                    headerSep={false}
+                    title="Assistive Technology and Browser Details"
+                    dialogClassName="modal-60w"
+                    content={
+                        <ModalInnerSectionContainer>
+                            {/* Admin Scenario 1 */}
+                            {isAdmin && (
+                                <Alert
+                                    variant="warning"
+                                    className="at-browser-details-modal-alert"
+                                >
+                                    <FontAwesomeIcon
+                                        icon={faExclamationTriangle}
+                                    />
+                                    <span>
+                                        You are about to review{' '}
+                                        <b>{patternName}</b> as{' '}
+                                        <b>{testerName}</b>. Your Assistive
+                                        Technology and Browser might be
+                                        different. Please proceed with caution.
+                                    </span>
+                                </Alert>
+                            )}
+                            Your Assistive Technology and Browser Details are
+                            the following. Please make sure this information is
+                            still accurate.
+                            <br />
+                            <br />
+                            <FieldsetRow>
+                                <legend>
+                                    <ModalSubtitleStyle>
+                                        Assistive Technology Details
+                                    </ModalSubtitleStyle>
+                                </legend>
+                                {/* Tester Scenario 6 */}
+                                {!isFirstLoad &&
+                                    !updatedAtVersion.includes(atVersion) && (
+                                        <Alert
+                                            variant="warning"
+                                            className="at-browser-details-modal-alert"
                                         >
-                                            {item}
-                                        </option>
-                                    )
-                                )}
-                            </Form.Control>
-                            {isAtVersionError && (
-                                <Form.Control.Feedback
-                                    style={{ display: 'block' }}
-                                    type="invalid"
-                                >
-                                    Please select an Assistive Technology
-                                    Version.
-                                </Form.Control.Feedback>
-                            )}
-                        </Form.Group>
-                    </FieldsetRow>
-                    <FieldsetRow>
-                        <legend>
-                            <ModalSubtitleStyle>
-                                Browser Details
-                            </ModalSubtitleStyle>
-                        </legend>
-                        {/* Tester Scenario 1 */}
-                        {isFirstLoad && uaBrowser && uaMajor !== '0' && (
-                            <Alert
-                                variant="primary"
-                                className="at-browser-details-modal-alert"
-                            >
-                                <FontAwesomeIcon icon={faInfoCircle} />
-                                <span>
-                                    We have automatically detected your version
-                                    of {uaBrowser}
-                                </span>
-                            </Alert>
-                        )}
-                        {/* Tester Scenario 3 */}
-                        {!isFirstLoad &&
-                            !isAdmin &&
-                            forceBrowserVersionUpdateMessage && (
-                                <Alert
-                                    variant="warning"
-                                    className="at-browser-details-modal-alert"
-                                >
-                                    <FontAwesomeIcon
-                                        icon={faExclamationTriangle}
+                                            <FontAwesomeIcon
+                                                icon={faExclamationTriangle}
+                                            />
+                                            <span>
+                                                The version of {atName} you have
+                                                selected is different from the
+                                                one previously selected, which
+                                                was <b>{atVersion}</b>.
+                                                <br />
+                                                <br />
+                                                This change doesn&apos;t affect
+                                                results that have already been
+                                                submitted for this plan.
+                                                However, results you submit
+                                                during this session will be
+                                                recorded with the versions
+                                                specified in this form.
+                                            </span>
+                                        </Alert>
+                                    )}
+                                <Form.Group>
+                                    <Form.Label>
+                                        Assistive Technology Name
+                                    </Form.Label>
+                                    <Form.Control
+                                        disabled
+                                        type="text"
+                                        value={atName}
                                     />
-                                    <span>
-                                        We have automatically detected you are
-                                        using a different version of{' '}
-                                        <b>{uaBrowser}</b> and we have updated
-                                        it below. The previous version you were
-                                        using was <b>{browserVersion}</b>.
-                                        <br />
-                                        <br />
-                                        This change doesn&apos;t affect results
-                                        that have already been submitted for
-                                        this plan. However, results you submit
-                                        during this session will be recorded
-                                        with the versions specified in this
-                                        form.
-                                    </span>
-                                </Alert>
-                            )}
-                        {isFirstLoad &&
-                            uaBrowser !== browserName &&
-                            uaMajor !== '0' && (
-                                <Alert
-                                    variant="warning"
-                                    className="at-browser-details-modal-alert"
-                                >
-                                    <FontAwesomeIcon
-                                        icon={faExclamationTriangle}
-                                    />
-                                    <span>
-                                        We have automatically detected you are
-                                        using{' '}
-                                        <b>
-                                            {uaBrowser} {uaMajor}.{uaMinor}.
-                                            {uaPatch}
-                                        </b>
-                                        . This test plan requires{' '}
-                                        <b>{browserName}</b>. If you are
-                                        recording results on behalf of someone
-                                        else, please provide the Browser version
-                                        below.
-                                    </span>
-                                </Alert>
-                            )}
-                        {/* Tester Scenario 4 */}
-                        {!isAdmin &&
-                            !isFirstLoad &&
-                            uaBrowser !== browserName &&
-                            uaMajor !== '0' && (
-                                <Alert
-                                    variant="warning"
-                                    className="at-browser-details-modal-alert"
-                                >
-                                    <FontAwesomeIcon
-                                        icon={faExclamationTriangle}
-                                    />
-                                    <span>
-                                        We have automatically detected you are
-                                        now using{' '}
-                                        <b>
-                                            {uaBrowser} {uaMajor}.{uaMinor}.
-                                            {uaPatch}
-                                        </b>
-                                        , which is a different browser from the
-                                        last one you were testing with, which
-                                        was{' '}
-                                        <b>
-                                            {browserName} {browserVersion}
-                                        </b>
-                                        .
-                                        <br />
-                                        <br />
-                                        You can&apos;t edit your Browser type,
-                                        but you can continue with{' '}
-                                        <b>
-                                            {uaBrowser} {uaMajor}.{uaMinor}.
-                                            {uaPatch}
-                                        </b>
-                                        . Keep in mind that your test results
-                                        will be recorded as if you were still
-                                        using{' '}
-                                        <b>
-                                            {browserName} {browserVersion}
-                                        </b>
-                                        .
-                                    </span>
-                                </Alert>
-                            )}
-                        {/* Tester Scenario 5 */}
-                        {!isAdmin &&
-                            uaBrowser === browserName &&
-                            browserVersionMismatchMessage && (
-                                <Alert
-                                    variant="warning"
-                                    className="at-browser-details-modal-alert"
-                                >
-                                    <FontAwesomeIcon
-                                        icon={faExclamationTriangle}
-                                    />
-                                    <span>
-                                        The version of {browserName} you have
-                                        selected is different from the one we
-                                        have automatically detected, which is{' '}
-                                        <b>
-                                            {uaMajor}.{uaMinor}.{uaPatch}
-                                        </b>
-                                        .
-                                        <br />
-                                        <br />
-                                        This change doesn&apos;t affect results
-                                        that have already been submitted for
-                                        this plan. However, results you submit
-                                        during this session will be recorded
-                                        with the versions specified in this
-                                        form.
-                                    </span>
-                                </Alert>
-                            )}
-                        {/* Tester Scenario 7 */}
-                        {uaMajor === '0' && (
-                            <Alert
-                                variant="warning"
-                                className="at-browser-details-modal-alert"
-                            >
-                                <FontAwesomeIcon icon={faExclamationTriangle} />
-                                <span>
-                                    We could not automatically detect what
-                                    version of <b>{browserName}</b> you are
-                                    using. Before continuing, please provide
-                                    your version number.
-                                </span>
-                            </Alert>
-                        )}
-                        {/* Admin Scenario 1 */}
-                        {isAdmin &&
-                            (uaBrowser !== browserName ||
-                                browserVersionMismatchMessage) && (
-                                <Alert
-                                    variant="warning"
-                                    className="at-browser-details-modal-alert"
-                                >
-                                    <FontAwesomeIcon
-                                        icon={faExclamationTriangle}
-                                    />
-                                    <span>
-                                        We have automatically detected you are
-                                        using{' '}
-                                        <b>
-                                            {uaBrowser} {uaMajor}.{uaMinor}.
-                                            {uaPatch}
-                                        </b>
-                                        . This version is different than what{' '}
-                                        <b>{testerName}</b> was using last time,
-                                        which was{' '}
-                                        <b>
-                                            {browserName} {browserVersion}
-                                        </b>
-                                        .
-                                        <br />
-                                        <br />
-                                        We have not updated this information
-                                        below. Please proceed with caution.
-                                    </span>
-                                </Alert>
-                            )}
-                        <Form.Group>
-                            <Form.Label>Browser Name</Form.Label>
-                            <Form.Control
-                                disabled
-                                type="text"
-                                value={browserName}
-                            />
-                        </Form.Group>
+                                </Form.Group>
 
-                        <Form.Group>
-                            <Form.Label>
-                                Browser Version
-                                <Required aria-hidden />
-                            </Form.Label>
-                            <Form.Control
-                                ref={updatedBrowserVersionTextRef}
-                                type="text"
-                                value={updatedBrowserVersion}
-                                onChange={handleBrowserVersionChange}
-                                isInvalid={isBrowserVersionError}
-                                required
-                            />
-                            {isBrowserVersionError && (
-                                <Form.Control.Feedback
-                                    style={{ display: 'block' }}
-                                    type="invalid"
-                                >
-                                    Please enter a valid Browser Version.
-                                </Form.Control.Feedback>
-                            )}
-                        </Form.Group>
-                    </FieldsetRow>
-                </ModalInnerSectionContainer>
-            }
-            actionLabel={
-                updatedAtVersion !== atVersion ||
-                updatedBrowserVersion !== browserVersion
-                    ? 'Save and Continue'
-                    : 'Continue'
-            }
-            handleAction={
-                updatedAtVersion !== atVersion ||
-                updatedBrowserVersion !== browserVersion
-                    ? onSubmit
-                    : handleClose
-            }
-            handleClose={handleClose}
-        />
+                                <Form.Group>
+                                    <Form.Label>
+                                        Assistive Technology Version
+                                        <Required aria-hidden />
+                                    </Form.Label>
+                                    <Form.Control
+                                        ref={updatedAtVersionDropdownRef}
+                                        as="select"
+                                        value={updatedAtVersion}
+                                        onChange={handleAtVersionChange}
+                                        isInvalid={isAtVersionError}
+                                        required
+                                    >
+                                        {[
+                                            'Select a Version',
+                                            ...atVersions
+                                        ].map(item => (
+                                            <option
+                                                key={`atVersionKey-${item}`}
+                                                value={item}
+                                                disabled={
+                                                    item === 'Select a Version'
+                                                }
+                                            >
+                                                {item}
+                                            </option>
+                                        ))}
+                                    </Form.Control>
+                                    {isAtVersionError && (
+                                        <Form.Control.Feedback
+                                            style={{ display: 'block' }}
+                                            type="invalid"
+                                        >
+                                            Please select an Assistive
+                                            Technology Version.
+                                        </Form.Control.Feedback>
+                                    )}
+                                </Form.Group>
+                            </FieldsetRow>
+                            <FieldsetRow>
+                                <legend>
+                                    <ModalSubtitleStyle>
+                                        Browser Details
+                                    </ModalSubtitleStyle>
+                                </legend>
+                                {/* Tester Scenario 1 */}
+                                {isFirstLoad && uaBrowser && uaMajor !== '0' && (
+                                    <Alert
+                                        variant="primary"
+                                        className="at-browser-details-modal-alert"
+                                    >
+                                        <FontAwesomeIcon icon={faInfoCircle} />
+                                        <span>
+                                            We have automatically detected your
+                                            version of {uaBrowser}
+                                        </span>
+                                    </Alert>
+                                )}
+                                {/* Tester Scenario 3 */}
+                                {!isFirstLoad &&
+                                    !isAdmin &&
+                                    forceBrowserVersionUpdateMessage && (
+                                        <Alert
+                                            variant="warning"
+                                            className="at-browser-details-modal-alert"
+                                        >
+                                            <FontAwesomeIcon
+                                                icon={faExclamationTriangle}
+                                            />
+                                            <span>
+                                                We have automatically detected
+                                                you are using a different
+                                                version of <b>{uaBrowser}</b>{' '}
+                                                and we have updated it below.
+                                                The previous version you were
+                                                using was{' '}
+                                                <b>{browserVersion}</b>.
+                                                <br />
+                                                <br />
+                                                This change doesn&apos;t affect
+                                                results that have already been
+                                                submitted for this plan.
+                                                However, results you submit
+                                                during this session will be
+                                                recorded with the versions
+                                                specified in this form.
+                                            </span>
+                                        </Alert>
+                                    )}
+                                {isFirstLoad &&
+                                    uaBrowser !== browserName &&
+                                    uaMajor !== '0' && (
+                                        <Alert
+                                            variant="warning"
+                                            className="at-browser-details-modal-alert"
+                                        >
+                                            <FontAwesomeIcon
+                                                icon={faExclamationTriangle}
+                                            />
+                                            <span>
+                                                We have automatically detected
+                                                you are using{' '}
+                                                <b>
+                                                    {uaBrowser} {uaMajor}.
+                                                    {uaMinor}.{uaPatch}
+                                                </b>
+                                                . This test plan requires{' '}
+                                                <b>{browserName}</b>. If you are
+                                                recording results on behalf of
+                                                someone else, please provide the
+                                                Browser version below.
+                                            </span>
+                                        </Alert>
+                                    )}
+                                {/* Tester Scenario 4 */}
+                                {!isAdmin &&
+                                    !isFirstLoad &&
+                                    uaBrowser !== browserName &&
+                                    uaMajor !== '0' && (
+                                        <Alert
+                                            variant="warning"
+                                            className="at-browser-details-modal-alert"
+                                        >
+                                            <FontAwesomeIcon
+                                                icon={faExclamationTriangle}
+                                            />
+                                            <span>
+                                                We have automatically detected
+                                                you are now using{' '}
+                                                <b>
+                                                    {uaBrowser} {uaMajor}.
+                                                    {uaMinor}.{uaPatch}
+                                                </b>
+                                                , which is a different browser
+                                                from the last one you were
+                                                testing with, which was{' '}
+                                                <b>
+                                                    {browserName}{' '}
+                                                    {browserVersion}
+                                                </b>
+                                                .
+                                                <br />
+                                                <br />
+                                                You can&apos;t edit your Browser
+                                                type, but you can continue with{' '}
+                                                <b>
+                                                    {uaBrowser} {uaMajor}.
+                                                    {uaMinor}.{uaPatch}
+                                                </b>
+                                                . Keep in mind that your test
+                                                results will be recorded as if
+                                                you were still using{' '}
+                                                <b>
+                                                    {browserName}{' '}
+                                                    {browserVersion}
+                                                </b>
+                                                .
+                                            </span>
+                                        </Alert>
+                                    )}
+                                {/* Tester Scenario 5 */}
+                                {!isAdmin &&
+                                    uaBrowser === browserName &&
+                                    browserVersionMismatchMessage && (
+                                        <Alert
+                                            variant="warning"
+                                            className="at-browser-details-modal-alert"
+                                        >
+                                            <FontAwesomeIcon
+                                                icon={faExclamationTriangle}
+                                            />
+                                            <span>
+                                                The version of {browserName} you
+                                                have selected is different from
+                                                the one we have automatically
+                                                detected, which is{' '}
+                                                <b>
+                                                    {uaMajor}.{uaMinor}.
+                                                    {uaPatch}
+                                                </b>
+                                                .
+                                                <br />
+                                                <br />
+                                                This change doesn&apos;t affect
+                                                results that have already been
+                                                submitted for this plan.
+                                                However, results you submit
+                                                during this session will be
+                                                recorded with the versions
+                                                specified in this form.
+                                            </span>
+                                        </Alert>
+                                    )}
+                                {/* Tester Scenario 7 */}
+                                {uaMajor === '0' && (
+                                    <Alert
+                                        variant="warning"
+                                        className="at-browser-details-modal-alert"
+                                    >
+                                        <FontAwesomeIcon
+                                            icon={faExclamationTriangle}
+                                        />
+                                        <span>
+                                            We could not automatically detect
+                                            what version of <b>{browserName}</b>{' '}
+                                            you are using. Before continuing,
+                                            please provide your version number.
+                                        </span>
+                                    </Alert>
+                                )}
+                                {/* Admin Scenario 1 */}
+                                {isAdmin &&
+                                    (uaBrowser !== browserName ||
+                                        browserVersionMismatchMessage) && (
+                                        <Alert
+                                            variant="warning"
+                                            className="at-browser-details-modal-alert"
+                                        >
+                                            <FontAwesomeIcon
+                                                icon={faExclamationTriangle}
+                                            />
+                                            <span>
+                                                We have automatically detected
+                                                you are using{' '}
+                                                <b>
+                                                    {uaBrowser} {uaMajor}.
+                                                    {uaMinor}.{uaPatch}
+                                                </b>
+                                                . This version is different than
+                                                what <b>{testerName}</b> was
+                                                using last time, which was{' '}
+                                                <b>
+                                                    {browserName}{' '}
+                                                    {browserVersion}
+                                                </b>
+                                                .
+                                                <br />
+                                                <br />
+                                                We have not updated this
+                                                information below. Please
+                                                proceed with caution.
+                                            </span>
+                                        </Alert>
+                                    )}
+                                <Form.Group>
+                                    <Form.Label>Browser Name</Form.Label>
+                                    <Form.Control
+                                        disabled
+                                        type="text"
+                                        value={browserName}
+                                    />
+                                </Form.Group>
+
+                                <Form.Group>
+                                    <Form.Label>
+                                        Browser Version
+                                        <Required aria-hidden />
+                                    </Form.Label>
+                                    <Form.Control
+                                        ref={updatedBrowserVersionTextRef}
+                                        type="text"
+                                        value={updatedBrowserVersion}
+                                        onChange={handleBrowserVersionChange}
+                                        isInvalid={isBrowserVersionError}
+                                        required
+                                    />
+                                    {isBrowserVersionError && (
+                                        <Form.Control.Feedback
+                                            style={{ display: 'block' }}
+                                            type="invalid"
+                                        >
+                                            Please enter a valid Browser
+                                            Version.
+                                        </Form.Control.Feedback>
+                                    )}
+                                </Form.Group>
+                            </FieldsetRow>
+                        </ModalInnerSectionContainer>
+                    }
+                    actionLabel={
+                        updatedAtVersion !== atVersion ||
+                        updatedBrowserVersion !== browserVersion
+                            ? 'Save and Continue'
+                            : 'Continue'
+                    }
+                    handleAction={
+                        updatedAtVersion !== atVersion ||
+                        updatedBrowserVersion !== browserVersion
+                            ? onSubmit
+                            : handleClose
+                    }
+                    handleClose={handleClose}
+                    handleHide={handleHide}
+                />
+            )}
+        </>
     );
 };
 
