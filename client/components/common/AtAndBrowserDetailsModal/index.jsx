@@ -553,7 +553,7 @@ const AtAndBrowserDetailsModal = ({
                             ? onSubmit
                             : handleClose
                     }
-                    handleClose={handleClose}
+                    handleClose={!isFirstLoad ? handleClose : null}
                     handleHide={handleHide}
                 />
             )}
