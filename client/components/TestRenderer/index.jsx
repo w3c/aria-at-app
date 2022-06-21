@@ -1089,6 +1089,84 @@ const TestRenderer = ({
                                                             .header
                                                     }
                                                 </legend>
+                                                {unexpectedBehaviors.failChoice
+                                                    .options.more && (
+                                                    <div>
+                                                        <label
+                                                            htmlFor={`unexpectedMore-${commandIndex}-input`}
+                                                        >
+                                                            {
+                                                                unexpectedBehaviors
+                                                                    .failChoice
+                                                                    .options
+                                                                    .more
+                                                                    .description[0]
+                                                            }
+                                                            {isSubmitted && (
+                                                                <Feedback
+                                                                    className={`${unexpectedBehaviors
+                                                                        .failChoice
+                                                                        .options
+                                                                        .more
+                                                                        .description[1]
+                                                                        .required &&
+                                                                        'required'} ${unexpectedBehaviors
+                                                                        .failChoice
+                                                                        .options
+                                                                        .more
+                                                                        .description[1]
+                                                                        .highlightRequired &&
+                                                                        'highlight-required'}`}
+                                                                >
+                                                                    {
+                                                                        unexpectedBehaviors
+                                                                            .failChoice
+                                                                            .options
+                                                                            .more
+                                                                            .description[1]
+                                                                            .description
+                                                                    }
+                                                                </Feedback>
+                                                            )}
+                                                        </label>
+                                                        <Text>
+                                                            <textarea
+                                                                key={`unexpectedMore__${commandIndex}__input`}
+                                                                id={`$unexpectedMore__-${commandIndex}-input`}
+                                                                name={`unexpectedMore__-${commandIndex}-input`}
+                                                                className={`unexpectedMore__${unexpectedBehaviors.failChoice.options.more.description[0].toLowerCase()}-input`}
+                                                                autoFocus={
+                                                                    isSubmitted &&
+                                                                    unexpectedBehaviors
+                                                                        .failChoice
+                                                                        .options
+                                                                        .more
+                                                                        .focus
+                                                                }
+                                                                value={
+                                                                    unexpectedBehaviors
+                                                                        .failChoice
+                                                                        .options
+                                                                        .more
+                                                                        .value
+                                                                }
+                                                                onChange={e =>
+                                                                    unexpectedBehaviors.failChoice.options.more.change(
+                                                                        e.target
+                                                                            .value
+                                                                    )
+                                                                }
+                                                                disabled={
+                                                                    !unexpectedBehaviors
+                                                                        .failChoice
+                                                                        .options
+                                                                        .more
+                                                                        .enabled
+                                                                }
+                                                            />
+                                                        </Text>
+                                                    </div>
+                                                )}
                                                 {unexpectedBehaviors.failChoice.options.options.map(
                                                     (option, optionIndex) => {
                                                         const {
@@ -1139,60 +1217,6 @@ const TestRenderer = ({
                                                                     }
                                                                 </label>
                                                                 <br />
-                                                                {more && (
-                                                                    <div>
-                                                                        <label
-                                                                            htmlFor={`${description}-${commandIndex}-input`}
-                                                                        >
-                                                                            {
-                                                                                more
-                                                                                    .description[0]
-                                                                            }
-                                                                            {isSubmitted && (
-                                                                                <Feedback
-                                                                                    className={`${more
-                                                                                        .description[1]
-                                                                                        .required &&
-                                                                                        'required'} ${more
-                                                                                        .description[1]
-                                                                                        .highlightRequired &&
-                                                                                        'highlight-required'}`}
-                                                                                >
-                                                                                    {
-                                                                                        more
-                                                                                            .description[1]
-                                                                                            .description
-                                                                                    }
-                                                                                </Feedback>
-                                                                            )}
-                                                                        </label>
-                                                                        <Text>
-                                                                            <textarea
-                                                                                key={`${description}__${commandIndex}__input`}
-                                                                                id={`${description}-${commandIndex}-input`}
-                                                                                name={`${description}-${commandIndex}-input`}
-                                                                                className={`undesirable-${description.toLowerCase()}-input`}
-                                                                                autoFocus={
-                                                                                    isSubmitted &&
-                                                                                    more.focus
-                                                                                }
-                                                                                value={
-                                                                                    more.value
-                                                                                }
-                                                                                onChange={e =>
-                                                                                    more.change(
-                                                                                        e
-                                                                                            .target
-                                                                                            .value
-                                                                                    )
-                                                                                }
-                                                                                disabled={
-                                                                                    !more.enabled
-                                                                                }
-                                                                            />
-                                                                        </Text>
-                                                                    </div>
-                                                                )}
                                                             </Fragment>
                                                         );
                                                     }

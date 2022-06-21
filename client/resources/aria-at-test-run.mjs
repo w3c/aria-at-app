@@ -297,6 +297,34 @@ export function instructionDocument(resultState, hooks) {
                         }),
                     options: {
                         header: 'Undesirable behaviors',
+                        more: {
+                            description: /** @type {Description[]} */ ([
+                                `If "other" selected, explain`,
+                                {
+                                    required: true,
+                                    highlightRequired: !!resultUnexpectedBehavior.behaviors.some(
+                                        b => b.checked
+                                    ),
+                                    description: '(required)'
+                                }
+                            ]),
+                            enabled: !!resultUnexpectedBehavior.behaviors.some(
+                                b => b.checked
+                            ),
+                            value: resultUnexpectedBehavior.more.value,
+                            focus:
+                                resultState.currentUserAction ===
+                                    'validateResults' &&
+                                !!resultUnexpectedBehavior.behaviors.some(
+                                    b => b.checked
+                                ) &&
+                                focusFirstRequired(),
+                            change: value =>
+                                hooks.setCommandUnexpectedBehaviorMore({
+                                    commandIndex,
+                                    more: value
+                                })
+                        },
                         options: resultUnexpectedBehavior.behaviors.map(
                             (behavior, unexpectedIndex) => {
                                 return {
@@ -347,39 +375,7 @@ export function instructionDocument(resultState, hooks) {
                                             return true;
                                         }
                                         return false;
-                                    },
-                                    more: behavior.more
-                                        ? {
-                                              description: /** @type {Description[]} */ ([
-                                                  `If "other" selected, explain`,
-                                                  {
-                                                      required: true,
-                                                      highlightRequired:
-                                                          behavior.more
-                                                              .highlightRequired,
-                                                      description: '(required)'
-                                                  }
-                                              ]),
-                                              enabled: !!resultUnexpectedBehavior.behaviors.some(
-                                                  b => b.checked
-                                              ),
-                                              value: behavior.more.value,
-                                              focus:
-                                                  resultState.currentUserAction ===
-                                                      'validateResults' &&
-                                                  behavior.more
-                                                      .highlightRequired &&
-                                                  focusFirstRequired(),
-                                              change: value =>
-                                                  hooks.setCommandUnexpectedBehaviorMore(
-                                                      {
-                                                          commandIndex,
-                                                          unexpectedIndex,
-                                                          more: value
-                                                      }
-                                                  )
-                                          }
-                                        : null
+                                    }
                                 };
                             }
                         )
@@ -784,18 +780,10 @@ export function userChangeCommandUnexpectedBehaviorMore({
                           ...command,
                           unexpected: {
                               ...command.unexpected,
-                              behaviors: command.unexpected.behaviors.map(
-                                  (unexpected, unexpectedI) =>
-                                      unexpectedI !== unexpectedIndex
-                                          ? unexpected
-                                          : /** @type {TestRunUnexpectedBehavior} */ ({
-                                                ...unexpected,
-                                                more: {
-                                                    ...unexpected.more,
-                                                    value: more
-                                                }
-                                            })
-                              )
+                              more: {
+                                  ...command.unexpected.more,
+                                  value: more
+                              }
                           }
                       })
             )
