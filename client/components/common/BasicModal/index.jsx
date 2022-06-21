@@ -14,6 +14,7 @@ const BasicModal = ({
     centered = false,
     animation = true,
     closeButton = true,
+    cancelButton = true,
     headerSep = true,
     dialogClassName = '',
     title = null,
@@ -56,7 +57,7 @@ const BasicModal = ({
                 </Modal.Header>
                 <Modal.Body>{content}</Modal.Body>
                 <Modal.Footer>
-                    {handleClose && (
+                    {cancelButton && handleClose && (
                         <Button variant="secondary" onClick={handleClose}>
                             {closeLabel}
                         </Button>
@@ -77,6 +78,7 @@ BasicModal.propTypes = {
     centered: PropTypes.bool,
     animation: PropTypes.bool,
     closeButton: PropTypes.bool,
+    cancelButton: PropTypes.bool,
     headerSep: PropTypes.bool,
     dialogClassName: PropTypes.string,
     title: PropTypes.node.isRequired,

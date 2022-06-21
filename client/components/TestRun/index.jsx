@@ -297,14 +297,15 @@ const TestRun = () => {
             item => item.id === currentTestBrowserVersionId
         );
 
-    if (!currentTest.testResult && !pageReadyRef.current && isSignedIn)
-        (async () =>
-            await createTestResultForRenderer(
-                currentTest.id,
-                currentTestAtVersionId,
-                currentTestBrowserVersionId
-            ))();
-    else pageReadyRef.current = true;
+    if (!currentTest.testResult && !pageReadyRef.current && isSignedIn) {
+        // Do nothing
+        // (async () =>
+        //     await createTestResultForRenderer(
+        //         currentTest.id,
+        //         currentTestAtVersionId,
+        //         currentTestBrowserVersionId
+        //     ))();
+    } else pageReadyRef.current = true;
 
     const gitHubIssueLinkWithTitleAndBody = createGitHubIssueWithTitleAndBody({
         test: currentTest,
