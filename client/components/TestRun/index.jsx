@@ -1066,7 +1066,9 @@ const TestRun = () => {
                     <div className="info-label">
                         <b>Browser:</b>{' '}
                         {`${testPlanReport.browser?.name}${
-                            isSignedIn ? ` ${currentBrowserVersion?.name}` : ''
+                            isSignedIn
+                                ? ` ${currentBrowserVersion?.name || ''}`
+                                : ''
                         }`}
                     </div>
                 </div>
