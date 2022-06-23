@@ -291,29 +291,25 @@ const TestRun = () => {
         currentTest.testResult?.atVersion ||
         testPlanReport.at.atVersions.find(
             item => item.id === currentTestAtVersionId
-        );
+        ) ||
+        'N/A';
 
     const currentBrowserVersion =
         currentTest.testResult?.browserVersion ||
         testPlanReport.browser.browserVersions.find(
             item => item.id === currentTestBrowserVersionId
-        );
+        ) ||
+        'N/A';
 
     if (!currentTest.testResult && !pageReadyRef.current && isSignedIn) {
         // Do nothing
-        // (async () =>
-        //     await createTestResultForRenderer(
-        //         currentTest.id,
-        //         currentTestAtVersionId,
-        //         currentTestBrowserVersionId
-        //     ))();
     } else pageReadyRef.current = true;
 
     const gitHubIssueLinkWithTitleAndBody = createGitHubIssueWithTitleAndBody({
         test: currentTest,
         testPlanReport,
-        atVersion: currentAtVersion.name,
-        browserVersion: currentBrowserVersion.name,
+        atVersion: currentAtVersion?.name,
+        browserVersion: currentBrowserVersion?.name,
         conflictMarkdown: conflictMarkdownRef.current
     });
 
@@ -1053,7 +1049,7 @@ const TestRun = () => {
                         <div className="info-label">
                             <b>AT:</b>{' '}
                             {`${testPlanReport.at?.name}${
-                                isSignedIn ? ` ${currentAtVersion.name}` : ''
+                                isSignedIn ? ` ${currentAtVersion?.name}` : ''
                             }`}
                         </div>
                         {isSignedIn && (
@@ -1070,7 +1066,7 @@ const TestRun = () => {
                     <div className="info-label">
                         <b>Browser:</b>{' '}
                         {`${testPlanReport.browser?.name}${
-                            isSignedIn ? ` ${currentBrowserVersion.name}` : ''
+                            isSignedIn ? ` ${currentBrowserVersion?.name}` : ''
                         }`}
                     </div>
                 </div>
@@ -1135,7 +1131,7 @@ const TestRun = () => {
             <Helmet>
                 <title>
                     {hasTestsToRun
-                        ? `${currentTest.title} for ${testPlanReport.at?.name} ${currentAtVersion.name} and ${testPlanReport.browser?.name} ${currentBrowserVersion.name} ` +
+                        ? `${currentTest.title} for ${testPlanReport.at?.name} ${currentAtVersion?.name} and ${testPlanReport.browser?.name} ${currentBrowserVersion?.name} ` +
                           `| ARIA-AT`
                         : 'No tests for this AT and Browser | ARIA-AT'}
                 </title>
