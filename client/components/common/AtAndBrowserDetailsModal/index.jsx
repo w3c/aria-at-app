@@ -274,10 +274,12 @@ const AtAndBrowserDetailsModal = ({
                                                 icon={faExclamationTriangle}
                                             />
                                             <span>
-                                                The version of {atName} you have
-                                                selected is different from the
-                                                one previously selected, which
-                                                was <b>{atVersion}</b>.
+                                                You have selected{' '}
+                                                <b>{updatedAtVersion}</b> for{' '}
+                                                <b>{atName}</b>. This version is
+                                                different from the one
+                                                previously selected which was{' '}
+                                                <b>{atVersion}</b>.
                                                 <br />
                                                 <br />
                                                 This change doesn&apos;t affect
@@ -474,8 +476,8 @@ const AtAndBrowserDetailsModal = ({
                                             />
                                             <span>
                                                 The version of {browserName} you
-                                                have selected is different from
-                                                the one we have automatically
+                                                have set is different from the
+                                                one we have automatically
                                                 detected, which is{' '}
                                                 <b>
                                                     {uaMajor}.{uaMinor}.
