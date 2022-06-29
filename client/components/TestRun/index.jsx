@@ -44,20 +44,25 @@ const createGitHubIssueWithTitleAndBody = ({
     browserVersion,
     conflictMarkdown = null
 }) => {
+    let modifiedRenderedUrl = test.renderedUrl.replace(
+        /.+(?=\/tests)/,
+        'https://aria-at.netlify.app'
+    );
+
     const { testPlanVersion, at, browser } = testPlanReport;
 
     const title =
         `Feedback: "${test.title}" (${testPlanVersion.title}, ` +
         `Test ${test.rowNumber})`;
 
-    const shortenedUrl = test.renderedUrl.match(/[^/]+$/)[0];
+    const shortenedUrl = modifiedRenderedUrl.match(/[^/]+$/)[0];
 
     let body =
         `## Description of Behavior\n\n` +
         `<!-- write your description here -->\n\n` +
         `## Test Setup\n\n` +
-        `- Test File at Exact Commit: ` +
-        `[${shortenedUrl}](https://aria-at.w3.org${test.renderedUrl})\n` +
+        `- Test File: ` +
+        `[${shortenedUrl}](${modifiedRenderedUrl})\n` +
         `- AT: ` +
         `${at.name} (version ${atVersion})\n` +
         `- Browser: ` +
