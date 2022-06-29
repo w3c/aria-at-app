@@ -353,14 +353,14 @@ const TestRenderer = ({
                         commands[i].unexpected.behaviors[3].checked = true;
                     if (unexpectedBehavior.id === 'BROWSER_CRASHED')
                         commands[i].unexpected.behaviors[4].checked = true;
-                    if (unexpectedBehavior.id === 'OTHER') {
-                        commands[i].unexpected.behaviors[5].checked = true;
+                    if (commands[i].unexpected.behaviors[5].more) {
+                        commands[i].unexpected.behaviors[5].checked = unexpectedBehavior.otherChecked;
                         commands[i].unexpected.behaviors[5].more.value =
-                            unexpectedBehavior.otherUnexpectedBehaviorText;
-                        commands[
-                            i
-                        ].unexpected.behaviors[5].more.highlightRequired =
-                            unexpectedBehavior.highlightRequired;
+                        unexpectedBehavior.otherUnexpectedBehaviorText;
+                    commands[
+                        i
+                    ].unexpected.behaviors[5].more.highlightRequired =
+                        unexpectedBehavior.highlightRequired;
                     }
                 }
             } else if (unexpectedBehaviors)
@@ -1187,7 +1187,7 @@ const TestRenderer = ({
                                                                                 )
                                                                             }
                                                                             disabled={
-                                                                                !checked
+                                                                                !unexpectedBehaviors.failChoice.options.options.some(b => b.checked)
                                                                             }
                                                                         />
                                                                     </div>

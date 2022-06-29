@@ -647,6 +647,7 @@ const graphqlSchema = gql`
         behaviors this field can be ignored.
         """
         otherUnexpectedBehaviorText: String
+        otherChecked: Boolean
     }
 
     """
@@ -661,6 +662,7 @@ const graphqlSchema = gql`
         See UnexpectedBehavior for more information.
         """
         otherUnexpectedBehaviorText: String
+        otherChecked: Boolean
     }
 
     """

@@ -408,21 +408,22 @@ const TestRun = () => {
                             unexpectedBehaviors.push({ id: 'AT_CRASHED' });
                         if (i === 4)
                             unexpectedBehaviors.push({ id: 'BROWSER_CRASHED' });
-                        if (i === 5) {
-                            const moreResult = {
-                                id: 'OTHER',
-                                otherUnexpectedBehaviorText: behavior.more.value
-                            };
-                            unexpectedBehaviors.push(
-                                captureHighlightRequired
-                                    ? {
-                                          ...moreResult,
-                                          highlightRequired:
-                                              behavior.more.highlightRequired
-                                      }
-                                    : moreResult
-                            );
-                        }
+                    }
+                    if (behavior.more) {
+                        const moreResult = {
+                            id: 'OTHER',
+                            otherUnexpectedBehaviorText: behavior.more.value,
+                            otherChecked: behavior.checked
+                        };
+                        unexpectedBehaviors.push(
+                            captureHighlightRequired
+                                ? {
+                                      ...moreResult,
+                                      highlightRequired:
+                                          behavior.more.highlightRequired
+                                  }
+                                : moreResult
+                        );
                     }
                 }
             } else if (hasUnexpected === 'doesNotHaveUnexpected')

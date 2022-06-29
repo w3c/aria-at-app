@@ -1090,6 +1090,7 @@ export class TestRunInputOutput {
               ? {
                   text: behavior.description,
                   otherUnexpectedBehaviorText: behavior.more ? behavior.more.value : null,
+                  otherChecked: behavior.otherChecked
                 }
               : null
           )
