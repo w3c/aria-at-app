@@ -717,7 +717,7 @@ const ManageTestQueue = ({
                             onChange={onAtChange}
                         >
                             <option value={''} disabled>
-                                --
+                                Select an Assistive Technology
                             </option>
                             {ats.map(item => (
                                 <option
@@ -739,7 +739,7 @@ const ManageTestQueue = ({
                             onChange={onBrowserChange}
                         >
                             <option value={''} disabled>
-                                --
+                                Select a Browser
                             </option>
                             {browsers.map(item => (
                                 <option

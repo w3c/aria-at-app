@@ -14,6 +14,7 @@ const BasicModal = ({
     centered = false,
     animation = true,
     closeButton = true,
+    cancelButton = true,
     headerSep = true,
     dialogClassName = '',
     title = null,
@@ -21,7 +22,9 @@ const BasicModal = ({
     closeLabel = 'Cancel',
     actionLabel = 'Continue',
     handleClose = null,
-    handleAction = null
+    handleAction = null,
+    handleHide = null,
+    staticBackdrop = false
 }) => {
     const headerRef = useRef();
 
@@ -36,11 +39,12 @@ const BasicModal = ({
                 show={show}
                 centered={centered}
                 animation={animation}
-                onHide={handleClose}
+                onHide={handleHide || handleClose}
                 /* Disabled due to buggy implementation which jumps the page */
                 autoFocus={false}
                 aria-labelledby="basic-modal"
                 dialogClassName={dialogClassName}
+                backdrop={staticBackdrop ? 'static' : true}
             >
                 <Modal.Header
                     closeButton={closeButton}
@@ -56,7 +60,7 @@ const BasicModal = ({
                 </Modal.Header>
                 <Modal.Body>{content}</Modal.Body>
                 <Modal.Footer>
-                    {handleClose && (
+                    {cancelButton && handleClose && (
                         <Button variant="secondary" onClick={handleClose}>
                             {closeLabel}
                         </Button>
@@ -77,6 +81,7 @@ BasicModal.propTypes = {
     centered: PropTypes.bool,
     animation: PropTypes.bool,
     closeButton: PropTypes.bool,
+    cancelButton: PropTypes.bool,
     headerSep: PropTypes.bool,
     dialogClassName: PropTypes.string,
     title: PropTypes.node.isRequired,
@@ -84,7 +89,9 @@ BasicModal.propTypes = {
     closeLabel: PropTypes.string,
     actionLabel: PropTypes.string,
     handleClose: PropTypes.func,
-    handleAction: PropTypes.func
+    handleAction: PropTypes.func,
+    handleHide: PropTypes.func,
+    staticBackdrop: PropTypes.bool
 };
 
 export default BasicModal;
