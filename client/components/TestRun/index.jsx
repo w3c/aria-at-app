@@ -89,6 +89,9 @@ const TestRun = () => {
 
     const titleRef = useRef();
     const pageReadyRef = useRef(false);
+    // To prevent default AT/Browser versions being set before initial
+    // AT & Browser Details Modal is saved
+    const initialTestResultReadyRef = useRef(false);
     const testRunStateRef = useRef();
     // HACK: Temporary fix to allow for consistency of TestRenderer after
     // testRunStateRef is nullified during unmount.
@@ -301,8 +304,18 @@ const TestRun = () => {
         ) ||
         'N/A';
 
-    if (!currentTest.testResult && !pageReadyRef.current && isSignedIn) {
-        // Do nothing
+    if (
+        !currentTest.testResult &&
+        !pageReadyRef.current &&
+        isSignedIn &&
+        initialTestResultReadyRef.current
+    ) {
+        (async () =>
+            await createTestResultForRenderer(
+                currentTest.id,
+                currentTestAtVersionId,
+                currentTestBrowserVersionId
+            ))();
     } else pageReadyRef.current = true;
 
     const gitHubIssueLinkWithTitleAndBody = createGitHubIssueWithTitleAndBody({
@@ -471,7 +484,7 @@ const TestRun = () => {
             else setIsTestEditClicked(false);
 
             if (!isSignedIn) return true;
-            if (!forceEdit && currentTest.testResult.completedAt) return true;
+            if (!forceEdit && currentTest.testResult?.completedAt) return true;
 
             const scenarioResults = remapScenarioResults(
                 testRunStateRef.current || recentTestRunStateRef.current,
@@ -755,6 +768,7 @@ const TestRun = () => {
             browserVersionId
         );
         setIsShowingAtBrowserModal(false);
+        initialTestResultReadyRef.current = true;
 
         if (isEditAtBrowserDetailsModalClick)
             editAtBrowserDetailsButtonRef.current.focus();
