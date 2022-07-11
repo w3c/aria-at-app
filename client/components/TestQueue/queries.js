@@ -38,17 +38,15 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
         testPlanReports(statuses: [DRAFT, IN_REVIEW]) {
             id
             status
-            conflicts {
-                source {
-                    locationOfData
-                }
-                conflictingResults {
-                    locationOfData
-                }
-            }
-            runnableTests {
-                id
-            }
+            #            conflicts {
+            #                source {
+            #                    locationOfData
+            #                }
+            #                conflictingResults {
+            #                    locationOfData
+            #                }
+            #            }
+            runnableTestsLength
             at {
                 id
                 name
@@ -73,13 +71,13 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
                     id
                     username
                 }
-                testResults {
-                    id
-                    test {
-                        id
-                    }
-                    completedAt
-                }
+                #                testResults {
+                #                    id
+                #                    test {
+                #                        id
+                #                    }
+                #                    completedAt
+                #                }
             }
         }
         testPlans {

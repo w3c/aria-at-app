@@ -70,7 +70,7 @@ const TestQueueRow = ({
         id: testPlanReportId,
         testPlanVersion,
         draftTestPlanRuns,
-        runnableTests
+        runnableTestsLength = 0
     } = testPlanReport;
 
     const isSignedIn = !!id;
@@ -87,7 +87,7 @@ const TestQueueRow = ({
         : {};
 
     const testPlanRunsWithResults = draftTestPlanRuns.filter(
-        ({ testResults }) => testResults.length > 0
+        ({ testResults = [] }) => testResults.length > 0
     );
 
     const getTestPlanRunIdByUserId = userId => {
@@ -382,7 +382,7 @@ const TestQueueRow = ({
     };
 
     const evaluateStatusAndResults = () => {
-        const { status: runStatus, conflicts } = testPlanReport;
+        const { status: runStatus, conflicts = [] } = testPlanReport;
 
         let status, results;
         const conflictCount = conflicts.length;
@@ -408,7 +408,7 @@ const TestQueueRow = ({
     };
 
     const evaluateNewReportStatus = () => {
-        const { status, conflicts } = testPlanReport;
+        const { status, conflicts = [] } = testPlanReport;
         const conflictCount = conflicts.length;
 
         // If there are no conflicts OR the test has been marked as "final",
@@ -478,7 +478,7 @@ const TestQueueRow = ({
                         {draftTestPlanRuns.length !== 0 ? (
                             <ul className="assignees">
                                 {draftTestPlanRuns.map(
-                                    ({ tester, testResults }) => (
+                                    ({ tester, testResults = [] }) => (
                                         <li key={nextId()}>
                                             <a
                                                 href={
@@ -502,9 +502,7 @@ const TestQueueRow = ({
                                                         acc +
                                                         (completedAt ? 1 : 0),
                                                     0
-                                                )} of ${
-                                                    runnableTests.length
-                                                } tests complete)`}
+                                                )} of ${runnableTestsLength} tests complete)`}
                                             </div>
                                         </li>
                                     )
@@ -553,10 +551,10 @@ const TestQueueRow = ({
                                 href={`/run/${currentUserTestPlanRun.id}`}
                                 disabled={!currentUserAssigned}
                             >
-                                {currentUserTestPlanRun.testResults.length >
-                                    0 &&
-                                currentUserTestPlanRun.testResults.length <
-                                    runnableTests.length
+                                {(currentUserTestPlanRun.testResults || [])
+                                    .length > 0 &&
+                                (currentUserTestPlanRun.testResults || [])
+                                    .length < runnableTestsLength
                                     ? 'Continue testing'
                                     : 'Start testing'}
                             </Button>

@@ -460,6 +460,25 @@ const getTestPlans = async ({
     return testPlans;
 };
 
+const getTestPlanVersionTestsForAtCount = async (
+    testPlanVersionId,
+    directory,
+    atId
+) => {
+    const [results] = await sequelize.query(
+        `
+            WITH testPlanVersionResult as ( select id, directory, unnest("tests") as results from "TestPlanVersion" )
+            SELECT COUNT(*)
+            FROM testPlanVersionResult
+            WHERE testPlanVersionResult.results @> '{"atIds": [?]}'
+                AND testPlanVersionResult.id = ?
+                AND testPlanVersionResult.directory = ?;
+        `,
+        { replacements: [atId, testPlanVersionId, directory] }
+    );
+    return results[0].count;
+};
+
 const getTestPlanById = async id => {
     const result = await getTestPlans({ id });
     return result[0];
@@ -474,5 +493,6 @@ module.exports = {
 
     // Custom functions
     getTestPlans,
-    getTestPlanById
+    getTestPlanById,
+    getTestPlanVersionTestsForAtCount
 };

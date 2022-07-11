@@ -759,6 +759,7 @@ const graphqlSchema = gql`
         where the AT matches the report's AT.
         """
         runnableTests: [Test]!
+        runnableTestsLength: Int!
         """
         A list of conflicts between runs, which may occur at the level of the
         Scenario if the output or unexpected behaviors do not match, or even at
