@@ -474,22 +474,6 @@ describe('test queue', () => {
                   "conflictingResults": Array [
                     Object {
                       "assertionResult": Object {
-                        "failedReason": "INCORRECT_OUTPUT",
-                        "passed": false,
-                      },
-                      "scenarioResult": Object {
-                        "output": "automatically seeded sample output",
-                        "unexpectedBehaviors": Array [],
-                      },
-                      "testPlanRun": Object {
-                        "id": "3",
-                        "tester": Object {
-                          "username": "tom-proudfeet",
-                        },
-                      },
-                    },
-                    Object {
-                      "assertionResult": Object {
                         "failedReason": null,
                         "passed": true,
                       },
@@ -501,6 +485,22 @@ describe('test queue', () => {
                         "id": "2",
                         "tester": Object {
                           "username": "esmeralda-baggins",
+                        },
+                      },
+                    },
+                    Object {
+                      "assertionResult": Object {
+                        "failedReason": "INCORRECT_OUTPUT",
+                        "passed": false,
+                      },
+                      "scenarioResult": Object {
+                        "output": "automatically seeded sample output",
+                        "unexpectedBehaviors": Array [],
+                      },
+                      "testPlanRun": Object {
+                        "id": "3",
+                        "tester": Object {
+                          "username": "tom-proudfeet",
                         },
                       },
                     },
@@ -526,22 +526,6 @@ describe('test queue', () => {
                   "conflictingResults": Array [
                     Object {
                       "assertionResult": Object {
-                        "failedReason": "NO_OUTPUT",
-                        "passed": false,
-                      },
-                      "scenarioResult": Object {
-                        "output": "automatically seeded sample output",
-                        "unexpectedBehaviors": Array [],
-                      },
-                      "testPlanRun": Object {
-                        "id": "3",
-                        "tester": Object {
-                          "username": "tom-proudfeet",
-                        },
-                      },
-                    },
-                    Object {
-                      "assertionResult": Object {
                         "failedReason": "INCORRECT_OUTPUT",
                         "passed": false,
                       },
@@ -553,6 +537,22 @@ describe('test queue', () => {
                         "id": "2",
                         "tester": Object {
                           "username": "esmeralda-baggins",
+                        },
+                      },
+                    },
+                    Object {
+                      "assertionResult": Object {
+                        "failedReason": "NO_OUTPUT",
+                        "passed": false,
+                      },
+                      "scenarioResult": Object {
+                        "output": "automatically seeded sample output",
+                        "unexpectedBehaviors": Array [],
+                      },
+                      "testPlanRun": Object {
+                        "id": "3",
+                        "tester": Object {
+                          "username": "tom-proudfeet",
                         },
                       },
                     },
@@ -580,6 +580,19 @@ describe('test queue', () => {
                       "assertionResult": null,
                       "scenarioResult": Object {
                         "output": "automatically seeded sample output",
+                        "unexpectedBehaviors": Array [],
+                      },
+                      "testPlanRun": Object {
+                        "id": "2",
+                        "tester": Object {
+                          "username": "esmeralda-baggins",
+                        },
+                      },
+                    },
+                    Object {
+                      "assertionResult": null,
+                      "scenarioResult": Object {
+                        "output": "automatically seeded sample output",
                         "unexpectedBehaviors": Array [
                           Object {
                             "otherUnexpectedBehaviorText": "Seeded other unexpected behavior",
@@ -591,19 +604,6 @@ describe('test queue', () => {
                         "id": "3",
                         "tester": Object {
                           "username": "tom-proudfeet",
-                        },
-                      },
-                    },
-                    Object {
-                      "assertionResult": null,
-                      "scenarioResult": Object {
-                        "output": "automatically seeded sample output",
-                        "unexpectedBehaviors": Array [],
-                      },
-                      "testPlanRun": Object {
-                        "id": "2",
-                        "tester": Object {
-                          "username": "esmeralda-baggins",
                         },
                       },
                     },
@@ -629,6 +629,19 @@ describe('test queue', () => {
                       "assertionResult": null,
                       "scenarioResult": Object {
                         "output": "automatically seeded sample output",
+                        "unexpectedBehaviors": Array [],
+                      },
+                      "testPlanRun": Object {
+                        "id": "2",
+                        "tester": Object {
+                          "username": "esmeralda-baggins",
+                        },
+                      },
+                    },
+                    Object {
+                      "assertionResult": null,
+                      "scenarioResult": Object {
+                        "output": "automatically seeded sample output",
                         "unexpectedBehaviors": Array [
                           Object {
                             "otherUnexpectedBehaviorText": null,
@@ -644,19 +657,6 @@ describe('test queue', () => {
                         "id": "3",
                         "tester": Object {
                           "username": "tom-proudfeet",
-                        },
-                      },
-                    },
-                    Object {
-                      "assertionResult": null,
-                      "scenarioResult": Object {
-                        "output": "automatically seeded sample output",
-                        "unexpectedBehaviors": Array [],
-                      },
-                      "testPlanRun": Object {
-                        "id": "2",
-                        "tester": Object {
-                          "username": "esmeralda-baggins",
                         },
                       },
                     },
@@ -680,6 +680,22 @@ describe('test queue', () => {
                   "conflictingResults": Array [
                     Object {
                       "assertionResult": Object {
+                        "failedReason": "NO_OUTPUT",
+                        "passed": false,
+                      },
+                      "scenarioResult": Object {
+                        "output": "automatically seeded sample output",
+                        "unexpectedBehaviors": Array [],
+                      },
+                      "testPlanRun": Object {
+                        "id": "2",
+                        "tester": Object {
+                          "username": "esmeralda-baggins",
+                        },
+                      },
+                    },
+                    Object {
+                      "assertionResult": Object {
                         "failedReason": "INCORRECT_OUTPUT",
                         "passed": false,
                       },
@@ -700,22 +716,6 @@ describe('test queue', () => {
                         "id": "3",
                         "tester": Object {
                           "username": "tom-proudfeet",
-                        },
-                      },
-                    },
-                    Object {
-                      "assertionResult": Object {
-                        "failedReason": "NO_OUTPUT",
-                        "passed": false,
-                      },
-                      "scenarioResult": Object {
-                        "output": "automatically seeded sample output",
-                        "unexpectedBehaviors": Array [],
-                      },
-                      "testPlanRun": Object {
-                        "id": "2",
-                        "tester": Object {
-                          "username": "esmeralda-baggins",
                         },
                       },
                     },

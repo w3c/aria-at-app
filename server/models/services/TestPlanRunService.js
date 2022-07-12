@@ -426,7 +426,7 @@ const getTestResultsUsingAtVersion = async atVersionId => {
             WITH "testPlanRunTestResult" AS (
                 SELECT
                     id,
-                    unnest("testResults") AS "testResult"
+                    jsonb_array_elements("testResults") AS "testResult"
                 FROM "TestPlanRun"
             )
             SELECT
