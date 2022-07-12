@@ -46,6 +46,9 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
             #                    locationOfData
             #                }
             #            }
+            #            runnableTests {
+            #                id
+            #            }
             runnableTestsLength
             at {
                 id
@@ -71,6 +74,13 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
                     id
                     username
                 }
+                #                testResults {
+                #                    id
+                #                    test {
+                #                        id
+                #                    }
+                #                    completedAt
+                #                }
                 testResultsLength
             }
         }

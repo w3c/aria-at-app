@@ -444,7 +444,7 @@ const getTestResultsUsingAtVersion = async atVersionId => {
 const getTesterTestsResultsCount = async testPlanRunId => {
     const [results] = await sequelize.query(
         `
-            WITH testPlanRunResult AS ( SELECT id, "testerUserId", "testPlanReportId", unnest("testResults") AS results
+            WITH testPlanRunResult AS ( SELECT id, "testerUserId", "testPlanReportId", jsonb_array_elements("testResults") AS results
                                         FROM "TestPlanRun" )
             SELECT COUNT(*)
             FROM testPlanRunResult

@@ -467,7 +467,7 @@ const getTestPlanVersionTestsForAtCount = async (
 ) => {
     const [results] = await sequelize.query(
         `
-            WITH testPlanVersionResult as ( select id, directory, unnest("tests") as results from "TestPlanVersion" )
+            WITH testPlanVersionResult as ( select id, directory, jsonb_array_elements("tests") as results from "TestPlanVersion" )
             SELECT COUNT(*)
             FROM testPlanVersionResult
             WHERE testPlanVersionResult.results @> '{"atIds": [?]}'
