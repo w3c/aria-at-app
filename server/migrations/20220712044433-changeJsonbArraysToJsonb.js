@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = {
-    up: (queryInterface, Sequelize) => {
+    up: (queryInterface) => {
         return queryInterface.sequelize.transaction(async (transaction) => {
             // https://stackoverflow.com/a/45231776
             await queryInterface.sequelize.query(
@@ -39,7 +39,7 @@ module.exports = {
         });
     },
 
-    down: (queryInterface, Sequelize) => {
+    down: (queryInterface) => {
         return queryInterface.sequelize.transaction(async (transaction) => {
             await queryInterface.sequelize.query(
                 `CREATE OR REPLACE FUNCTION jsonb_to_jsonb_array(jsonb)
