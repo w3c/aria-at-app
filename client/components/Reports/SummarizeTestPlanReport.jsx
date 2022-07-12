@@ -212,6 +212,12 @@ const SummarizeTestPlanReport = ({ testPlanReport }) => {
                     { test, testPlanReport }
                 );
 
+                // TODO: fix renderedUrl
+                let modifiedRenderedUrl = test.renderedUrl.replace(
+                    /.+(?=\/tests)/,
+                    'https://aria-at.netlify.app'
+                );
+
                 return (
                     <Fragment key={testResult.id}>
                         <div className="test-result-heading">
@@ -237,7 +243,7 @@ const SummarizeTestPlanReport = ({ testPlanReport }) => {
                                 <Button
                                     target="_blank"
                                     rel="noreferrer"
-                                    href={test.renderedUrl}
+                                    href={modifiedRenderedUrl}
                                     variant="secondary"
                                 >
                                     <FontAwesomeIcon icon={faExternalLinkAlt} />
