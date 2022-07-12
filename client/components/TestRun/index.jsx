@@ -488,7 +488,7 @@ const TestRun = () => {
 
             const scenarioResults = remapScenarioResults(
                 testRunStateRef.current || recentTestRunStateRef.current,
-                currentTest.testResult.scenarioResults,
+                currentTest.testResult?.scenarioResults,
                 false
             );
 
@@ -767,9 +767,12 @@ const TestRun = () => {
             atVersionId,
             browserVersionId
         );
+        handleAtAndBrowserDetailsModalCloseAction();
+    };
+
+    const handleAtAndBrowserDetailsModalCloseAction = () => {
         setIsShowingAtBrowserModal(false);
         initialTestResultReadyRef.current = true;
-
         if (isEditAtBrowserDetailsModalClick)
             editAtBrowserDetailsButtonRef.current.focus();
     };
@@ -1226,11 +1229,7 @@ const TestRun = () => {
                     patternName={testPlanVersion.title}
                     testerName={tester.username}
                     handleAction={handleAtAndBrowserDetailsModalAction}
-                    handleClose={() => {
-                        setIsShowingAtBrowserModal(false);
-                        if (isEditAtBrowserDetailsModalClick)
-                            editAtBrowserDetailsButtonRef.current.focus();
-                    }}
+                    handleClose={handleAtAndBrowserDetailsModalCloseAction}
                 />
             )}
         </Container>
