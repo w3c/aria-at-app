@@ -450,6 +450,7 @@ const getTesterTestsResultsCount = async testPlanRunId => {
             FROM testPlanRunResult
             WHERE testPlanRunResult.id = ?
               AND (testPlanRunResult.results -> 'completedAt') IS NOT NULL
+              AND (testPlanRunResult.results -> 'completedAt') != 'null'
         `,
         { replacements: [testPlanRunId] }
     );
