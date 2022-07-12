@@ -71,13 +71,7 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
                     id
                     username
                 }
-                #                testResults {
-                #                    id
-                #                    test {
-                #                        id
-                #                    }
-                #                    completedAt
-                #                }
+                testResultsLength
             }
         }
         testPlans {

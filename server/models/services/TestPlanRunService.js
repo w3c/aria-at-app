@@ -441,6 +441,21 @@ const getTestResultsUsingAtVersion = async atVersionId => {
     return results;
 };
 
+const getTesterTestsResultsCount = async testPlanRunId => {
+    const [results] = await sequelize.query(
+        `
+            WITH testPlanRunResult AS ( SELECT id, "testerUserId", "testPlanReportId", unnest("testResults") AS results
+                                        FROM "TestPlanRun" )
+            SELECT COUNT(*)
+            FROM testPlanRunResult
+            WHERE testPlanRunResult.id = ?
+              AND (testPlanRunResult.results -> 'completedAt') IS NOT NULL
+        `,
+        { replacements: [testPlanRunId] }
+    );
+    return results[0].count;
+};
+
 module.exports = {
     // TestPlanRun
     getTestPlanRunById,
@@ -452,5 +467,6 @@ module.exports = {
     removeTestPlanRunResultsByQuery,
 
     // Custom functions
-    getTestResultsUsingAtVersion
+    getTestResultsUsingAtVersion,
+    getTesterTestsResultsCount
 };

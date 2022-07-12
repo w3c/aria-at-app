@@ -685,6 +685,7 @@ const graphqlSchema = gql`
         found on the TestPlanVersion type.
         """
         testResults: [TestResult]!
+        testResultsLength: Int!
     }
 
     """

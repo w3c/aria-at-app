@@ -87,7 +87,7 @@ const TestQueueRow = ({
         : {};
 
     const testPlanRunsWithResults = draftTestPlanRuns.filter(
-        ({ testResults = [] }) => testResults.length > 0
+        ({ testResultsLength = 0 }) => testResultsLength > 0
     );
 
     const getTestPlanRunIdByUserId = userId => {
@@ -478,7 +478,7 @@ const TestQueueRow = ({
                         {draftTestPlanRuns.length !== 0 ? (
                             <ul className="assignees">
                                 {draftTestPlanRuns.map(
-                                    ({ tester, testResults = [] }) => (
+                                    ({ tester, testResultsLength = 0 }) => (
                                         <li key={nextId()}>
                                             <a
                                                 href={
@@ -497,12 +497,7 @@ const TestQueueRow = ({
                                                 {tester.username}
                                             </a>
                                             <div id={getRowId(tester)}>
-                                                {`(${testResults.reduce(
-                                                    (acc, { completedAt }) =>
-                                                        acc +
-                                                        (completedAt ? 1 : 0),
-                                                    0
-                                                )} of ${runnableTestsLength} tests complete)`}
+                                                {`${testResultsLength} of ${runnableTestsLength} tests complete)`}
                                             </div>
                                         </li>
                                     )
@@ -551,10 +546,9 @@ const TestQueueRow = ({
                                 href={`/run/${currentUserTestPlanRun.id}`}
                                 disabled={!currentUserAssigned}
                             >
-                                {(currentUserTestPlanRun.testResults || [])
-                                    .length > 0 &&
-                                (currentUserTestPlanRun.testResults || [])
-                                    .length < runnableTestsLength
+                                {currentUserTestPlanRun.testResultsLength > 0 &&
+                                currentUserTestPlanRun.testResultsLength <
+                                    runnableTestsLength
                                     ? 'Continue testing'
                                     : 'Start testing'}
                             </Button>
@@ -595,8 +589,7 @@ const TestQueueRow = ({
                             {isAdmin && renderOpenAsDropdown()}
                             {isAdmin && renderDeleteMenu()}
                             {(!isAdmin &&
-                                currentUserTestPlanRun.testResults &&
-                                currentUserTestPlanRun.testResults.length && (
+                                currentUserTestPlanRun.testResultsLength && (
                                     <Button
                                         ref={deleteTesterResultsButtonRef}
                                         variant="danger"
