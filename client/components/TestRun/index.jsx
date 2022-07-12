@@ -45,6 +45,7 @@ const createGitHubIssueWithTitleAndBody = ({
     browserVersion,
     conflictMarkdown = null
 }) => {
+    // TODO: fix renderedUrl
     let modifiedRenderedUrl = test.renderedUrl.replace(
         /.+(?=\/tests)/,
         'https://aria-at.netlify.app'
