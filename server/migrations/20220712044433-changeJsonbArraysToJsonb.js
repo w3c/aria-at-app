@@ -1,8 +1,8 @@
 'use strict';
 
 module.exports = {
-    up: (queryInterface) => {
-        return queryInterface.sequelize.transaction(async (transaction) => {
+    up: queryInterface => {
+        return queryInterface.sequelize.transaction(async transaction => {
             // https://stackoverflow.com/a/45231776
             await queryInterface.sequelize.query(
                 `ALTER TABLE "TestPlanVersion" ALTER COLUMN "tests" DROP DEFAULT;`,
@@ -12,7 +12,7 @@ module.exports = {
                 'TestPlanVersion',
                 'tests',
                 {
-                    type: 'JSONB USING to_jsonb(tests)',
+                    type: 'JSONB USING to_jsonb(tests)'
                 },
                 { transaction }
             );
@@ -28,7 +28,7 @@ module.exports = {
                 'TestPlanRun',
                 'testResults',
                 {
-                    type: 'JSONB USING to_jsonb("testResults")',
+                    type: 'JSONB USING to_jsonb("testResults")'
                 },
                 { transaction }
             );
@@ -39,8 +39,8 @@ module.exports = {
         });
     },
 
-    down: (queryInterface) => {
-        return queryInterface.sequelize.transaction(async (transaction) => {
+    down: queryInterface => {
+        return queryInterface.sequelize.transaction(async transaction => {
             await queryInterface.sequelize.query(
                 `CREATE OR REPLACE FUNCTION jsonb_to_jsonb_array(jsonb)
                 returns jsonb[] language sql as $$
@@ -57,7 +57,7 @@ module.exports = {
                 'TestPlanVersion',
                 'tests',
                 {
-                    type: 'JSONB[] USING jsonb_to_jsonb_array(tests)',
+                    type: 'JSONB[] USING jsonb_to_jsonb_array(tests)'
                 },
                 { transaction }
             );
@@ -73,7 +73,7 @@ module.exports = {
                 'TestPlanRun',
                 'testResults',
                 {
-                    type: 'JSONB[] USING jsonb_to_jsonb_array("testResults")',
+                    type: 'JSONB[] USING jsonb_to_jsonb_array("testResults")'
                 },
                 { transaction }
             );
@@ -82,5 +82,5 @@ module.exports = {
                 { transaction }
             );
         });
-    },
+    }
 };
