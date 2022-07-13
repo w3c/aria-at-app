@@ -12,6 +12,6 @@ module.exports = {
             multipleStatements: true
         },
         seederStorage: 'sequelize',
-        logging: console.log // eslint-disable-line no-console
+        logging: false // console.log // eslint-disable-line no-console
     }
 };
