@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useQuery } from '@apollo/client';
+import { useApolloClient, useQuery } from '@apollo/client';
 import { Link } from 'react-router-dom';
 import { Container, Table, Alert } from 'react-bootstrap';
 import { Helmet } from 'react-helmet';
@@ -9,11 +9,16 @@ import ManageTestQueue from '../ManageTestQueue';
 import DeleteTestPlanReportModal from '../DeleteTestPlanReportModal';
 import DeleteResultsModal from '../DeleteResultsModal';
 import PageStatus from '../common/PageStatus';
-import { TEST_QUEUE_PAGE_QUERY } from './queries';
+import {
+    TEST_QUEUE_PAGE_QUERY,
+    TEST_QUEUE_PAGE_CONFLICTS_QUERY
+} from './queries';
 import { evaluateAuth } from '../../utils/evaluateAuth';
 import './TestQueue.css';
 
 const TestQueue = () => {
+    const client = useApolloClient();
+
     const { loading, data, error, refetch } = useQuery(TEST_QUEUE_PAGE_QUERY);
 
     const [pageReady, setPageReady] = useState(false);
@@ -66,6 +71,19 @@ const TestQueue = () => {
             setTestPlanReports(testPlanReports);
             setLatestTestPlanVersions(testPlans);
             setPageReady(true);
+
+            (async () => {
+                const { data: conflictsResultData } = await client.query({
+                    query: TEST_QUEUE_PAGE_CONFLICTS_QUERY
+                });
+
+                // merge conflicts to original testPlanReports data
+                const result = conflictsResultData.testPlanReports.map(
+                    ({ id, conflicts }, i) =>
+                        Object.assign({}, { id, conflicts }, testPlanReports[i])
+                );
+                setTestPlanReports(result);
+            })();
         }
     }, [data]);
 

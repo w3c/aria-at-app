@@ -96,6 +96,39 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
     }
 `;
 
+export const TEST_QUEUE_PAGE_CONFLICTS_QUERY = gql`
+    query TestQueuePageConflicts {
+        testPlanReports(statuses: [DRAFT, IN_REVIEW]) {
+            id
+            conflicts {
+                source {
+                    locationOfData
+                }
+                conflictingResults {
+                    locationOfData
+                }
+            }
+            runnableTests {
+                id
+            }
+            draftTestPlanRuns {
+                id
+                tester {
+                    id
+                    username
+                }
+                testResults {
+                    id
+                    test {
+                        id
+                    }
+                    completedAt
+                }
+            }
+        }
+    }
+`;
+
 export const POPULATE_ADD_TEST_PLAN_TO_QUEUE_MODAL_QUERY = gql`
     query TestQueueAddTestPlanModal {
         ats {
