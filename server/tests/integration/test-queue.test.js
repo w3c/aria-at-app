@@ -1,6 +1,7 @@
 const { gql } = require('apollo-server');
 const dbCleaner = require('../util/db-cleaner');
 const { query, mutate } = require('../util/graphql-test-utilities');
+const { sortBy } = require('lodash');
 const db = require('../../models');
 
 afterAll(async () => {
@@ -385,7 +386,7 @@ describe('test queue', () => {
 
     it('can be deleted along with associated runs', async () => {
         await dbCleaner(async () => {
-            const testPlanReportId = '2';
+            const testPlanReportId = '3';
             const queryBefore = await query(gql`
                 query {
                     testPlanReport(id: ${testPlanReportId}) {
@@ -466,6 +467,16 @@ describe('test queue', () => {
                 }
             }
         `);
+
+        // Nested sorting turns out to be inconsistent across environments -
+        // it might be nice to figure out an elegant way to establish a default
+        // sorting scheme for nested models, but this will do for now
+        result.testPlanReport.conflicts = result.testPlanReport.conflicts.map(
+            conflict => ({
+                ...conflict,
+                conflictingResults: sortBy(conflict.conflictingResults, ['id'])
+            })
+        );
 
         expect(result.testPlanReport).toMatchInlineSnapshot(`
             Object {
