@@ -21,6 +21,7 @@ import {
 } from '../TestQueue/queries';
 import { gitUpdatedDateToString } from '../../utils/gitUtils';
 import { convertStringToDate } from '../../utils/formatter';
+import LoadingModal from '@components/common/LoadingModal';
 
 const Container = styled.div`
     border: 1px solid #d3d5da;
@@ -202,6 +203,9 @@ const ManageTestQueue = ({
 
     const [selectedAtId, setSelectedAtId] = useState('');
     const [selectedBrowserId, setSelectedBrowserId] = useState('');
+
+    const [showLoadingModal, setShowLoadingModal] = useState(false);
+    const [loadingModalTitle, setLoadingModalTitle] = useState('');
 
     const [addAtVersion] = useMutation(ADD_AT_VERSION_MUTATION);
     const [editAtVersion] = useMutation(EDIT_AT_VERSION_MUTATION);
@@ -403,6 +407,10 @@ const ManageTestQueue = ({
                 return;
             }
 
+            onUpdateModalClose();
+            showLoadingMessage({
+                message: 'Adding Assistive Technology Version'
+            });
             const addAtVersionData = await addAtVersion({
                 variables: {
                     atId: selectedManageAtId,
@@ -415,9 +423,11 @@ const ManageTestQueue = ({
             );
 
             await triggerUpdate();
-            onUpdateModalClose();
+            showLoadingMessage({ show: false });
 
-            setFeedbackModalTitle('Successfully Added AT Version');
+            setFeedbackModalTitle(
+                'Successfully Added Assistive Technology Version'
+            );
             setFeedbackModalContent(
                 <>
                     Successfully added{' '}
@@ -431,6 +441,10 @@ const ManageTestQueue = ({
         }
 
         if (actionType === 'edit') {
+            onUpdateModalClose();
+            showLoadingMessage({
+                message: 'Updating Assistive Technology Version'
+            });
             await editAtVersion({
                 variables: {
                     atVersionId: selectedManageAtVersionId,
@@ -439,9 +453,11 @@ const ManageTestQueue = ({
                 }
             });
             await triggerUpdate();
-            onUpdateModalClose();
+            showLoadingMessage({ show: false });
 
-            setFeedbackModalTitle('Successfully Updated AT Version');
+            setFeedbackModalTitle(
+                'Successfully Updated Assistive Technology Version'
+            );
             setFeedbackModalContent(
                 <>
                     Successfully updated{' '}
@@ -490,7 +506,11 @@ const ManageTestQueue = ({
                 setShowThemedModal(true);
             } else {
                 onThemedModalClose();
+                showLoadingMessage({
+                    message: 'Removing Assistive Technology Version'
+                });
                 await triggerUpdate();
+                showLoadingMessage({ show: false });
 
                 // Show confirmation that AT has been deleted
                 setFeedbackModalTitle('Successfully Removed AT Version');
@@ -519,6 +539,7 @@ const ManageTestQueue = ({
             item => item.id === selectedBrowserId
         );
 
+        showLoadingMessage({ message: 'Adding Test Plan to Test Queue' });
         await addTestPlanReport({
             variables: {
                 testPlanVersionId: selectedTestPlanVersionId,
@@ -527,6 +548,7 @@ const ManageTestQueue = ({
             }
         });
         await triggerUpdate();
+        showLoadingMessage({ show: false });
 
         setFeedbackModalTitle('Successfully Added Test Plan');
         setFeedbackModalContent(
@@ -539,6 +561,12 @@ const ManageTestQueue = ({
             </>
         );
         setShowFeedbackModal(true);
+    };
+
+    const showLoadingMessage = ({ message = 'Loading', show = true }) => {
+        if (!show) return setShowLoadingModal(false);
+        setLoadingModalTitle(message);
+        setShowLoadingModal(true);
     };
 
     return (
@@ -814,6 +842,8 @@ const ManageTestQueue = ({
                     }}
                 />
             )}
+
+            {showLoadingModal && <LoadingModal title={loadingModalTitle} />}
         </Container>
     );
 };

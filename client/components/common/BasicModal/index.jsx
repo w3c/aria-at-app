@@ -16,6 +16,7 @@ const BasicModal = ({
     closeButton = true,
     cancelButton = true,
     headerSep = true,
+    showFooter = true,
     dialogClassName = '',
     title = null,
     content = null,
@@ -59,18 +60,20 @@ const BasicModal = ({
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>{content}</Modal.Body>
-                <Modal.Footer>
-                    {cancelButton && handleClose && (
-                        <Button variant="secondary" onClick={handleClose}>
-                            {closeLabel}
-                        </Button>
-                    )}
-                    {handleAction && (
-                        <Button variant="primary" onClick={handleAction}>
-                            {actionLabel}
-                        </Button>
-                    )}
-                </Modal.Footer>
+                {showFooter && (
+                    <Modal.Footer>
+                        {cancelButton && handleClose && (
+                            <Button variant="secondary" onClick={handleClose}>
+                                {closeLabel}
+                            </Button>
+                        )}
+                        {handleAction && (
+                            <Button variant="primary" onClick={handleAction}>
+                                {actionLabel}
+                            </Button>
+                        )}
+                    </Modal.Footer>
+                )}
             </Modal>
         </>
     );

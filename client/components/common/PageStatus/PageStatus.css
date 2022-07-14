@@ -1,0 +1,11 @@
+.loading {
+    display: inline-block;
+    clip-path: inset(0 1ch 0 0);
+    animation: dots 1s steps(4) infinite;
+}
+
+@keyframes dots {
+    to {
+        clip-path: inset(0 -1ch 0 0)
+    }
+}

@@ -14,7 +14,7 @@ import { evaluateAuth } from '../../utils/evaluateAuth';
 import './TestQueue.css';
 
 const TestQueue = () => {
-    const { loading, data, refetch } = useQuery(TEST_QUEUE_PAGE_QUERY);
+    const { loading, data, error, refetch } = useQuery(TEST_QUEUE_PAGE_QUERY);
 
     const [pageReady, setPageReady] = useState(false);
     const [testers, setTesters] = useState([]);
@@ -154,17 +154,17 @@ const TestQueue = () => {
     };
 
     const handleDeleteTestPlanReport = async () => {
+        handleCloseDeleteTestPlanReportModal();
+
         if (deleteTestPlanReportDetails.deleteFunction)
             await deleteTestPlanReportDetails.deleteFunction();
-        handleCloseDeleteTestPlanReportModal();
-    };
-
-    const handleCloseDeleteTestPlanReportModal = () => {
-        setDeleteTestPlanReportModal(false);
 
         // reset deleteTestPlanDetails
         setDeleteTestPlanReportDetails({});
     };
+
+    const handleCloseDeleteTestPlanReportModal = () =>
+        setDeleteTestPlanReportModal(false);
 
     const triggerDeleteResultsModal = (
         title = null,
@@ -180,17 +180,27 @@ const TestQueue = () => {
     };
 
     const handleDeleteResults = async () => {
+        handleCloseDeleteResultsModal();
+
         if (deleteResultsDetails.deleteFunction)
             await deleteResultsDetails.deleteFunction();
-        handleCloseDeleteResultsModal();
-    };
-
-    const handleCloseDeleteResultsModal = () => {
-        setDeleteResultsModal(false);
 
         // reset deleteResultsDetails
         setDeleteResultsDetails({});
     };
+
+    const handleCloseDeleteResultsModal = () => setDeleteResultsModal(false);
+
+    if (error) {
+        return (
+            <PageStatus
+                title="Test Queue | ARIA-AT"
+                heading="Test Queue"
+                message={error.message}
+                isError
+            />
+        );
+    }
 
     if (loading || !pageReady) {
         return (

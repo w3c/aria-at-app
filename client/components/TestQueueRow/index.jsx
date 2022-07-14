@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useMutation } from '@apollo/client';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -22,6 +22,7 @@ import {
 } from '../TestQueue/queries';
 import { gitUpdatedDateToString } from '../../utils/gitUtils';
 import TestPlanUpdaterModal from '../TestPlanUpdater/TestPlanUpdaterModal';
+import LoadingModal from '@components/common/LoadingModal';
 
 const TestQueueRow = ({
     user = {},
@@ -32,7 +33,16 @@ const TestQueueRow = ({
     triggerDeleteResultsModal = () => {},
     triggerTestPlanReportUpdate = () => {}
 }) => {
+    const focusButtonRef = useRef();
+    const dropdownAssignTesterButtonRef = useRef();
+    const assignTesterButtonRef = useRef();
+    const dropdownDeleteTesterResultsButtonRef = useRef();
+    const deleteTesterResultsButtonRef = useRef();
+    const deleteTestPlanButtonRef = useRef();
+
     const [alertMessage, setAlertMessage] = useState('');
+    const [showLoadingModal, setShowLoadingModal] = useState(false);
+    const [loadingModalTitle, setLoadingModalTitle] = useState('');
 
     const [assignTester] = useMutation(ASSIGN_TESTER_MUTATION);
     const [updateTestPlanReportStatus] = useMutation(
@@ -82,6 +92,8 @@ const TestQueueRow = ({
         const tester = testers.find(tester => tester.username === username);
 
         if (isTesterAssigned) {
+            setLoadingModalTitle('Updating Test Plan Assignees');
+            setShowLoadingModal(true);
             await removeTester({
                 variables: {
                     testReportId: testPlanReport.id,
@@ -89,6 +101,8 @@ const TestQueueRow = ({
                 }
             });
         } else {
+            setLoadingModalTitle('Updating Test Plan Assignees');
+            setShowLoadingModal(true);
             await assignTester({
                 variables: {
                     testReportId: testPlanReport.id,
@@ -98,6 +112,8 @@ const TestQueueRow = ({
         }
 
         await triggerTestPlanReportUpdate();
+        setShowLoadingModal(false);
+        if (focusButtonRef.current) focusButtonRef.current.focus();
     };
 
     const handleRemoveTestPlanReport = async () => {
@@ -183,6 +199,7 @@ const TestQueueRow = ({
             <>
                 <Dropdown aria-label="Assign testers menu">
                     <Dropdown.Toggle
+                        ref={dropdownAssignTesterButtonRef}
                         aria-label="Assign testers"
                         className="assign-tester"
                         variant="secondary"
@@ -205,6 +222,8 @@ const TestQueueRow = ({
                                         as="button"
                                         key={nextId()}
                                         onClick={async () => {
+                                            focusButtonRef.current =
+                                                dropdownAssignTesterButtonRef.current;
                                             await toggleTesterAssign(username);
                                             setAlertMessage(
                                                 `You have been ${
@@ -278,7 +297,10 @@ const TestQueueRow = ({
             return (
                 <>
                     <Dropdown aria-label="Delete results menu">
-                        <Dropdown.Toggle variant="danger">
+                        <Dropdown.Toggle
+                            ref={dropdownDeleteTesterResultsButtonRef}
+                            variant="danger"
+                        >
                             <FontAwesomeIcon icon={faTrashAlt} />
                             Delete for...
                         </Dropdown.Toggle>
@@ -294,10 +316,17 @@ const TestQueueRow = ({
                                             triggerDeleteResultsModal(
                                                 evaluateTestPlanRunTitle(),
                                                 tester.username,
-                                                () =>
-                                                    handleRemoveTesterResults(
+                                                async () => {
+                                                    setLoadingModalTitle(
+                                                        'Removing Test Results'
+                                                    );
+                                                    setShowLoadingModal(true);
+                                                    await handleRemoveTesterResults(
                                                         id
-                                                    )
+                                                    );
+                                                    setShowLoadingModal(false);
+                                                    dropdownDeleteTesterResultsButtonRef.current.focus();
+                                                }
                                             );
                                         }}
                                     >
@@ -400,8 +429,13 @@ const TestQueueRow = ({
                             {isAdmin && renderAssignMenu()}
                             <div className="assign-actions">
                                 <Button
+                                    ref={assignTesterButtonRef}
                                     variant="secondary"
-                                    onClick={() => toggleTesterAssign(username)}
+                                    onClick={() => {
+                                        focusButtonRef.current =
+                                            assignTesterButtonRef.current;
+                                        toggleTesterAssign(username);
+                                    }}
                                     className="assign-self"
                                 >
                                     {!currentUserAssigned
@@ -509,12 +543,21 @@ const TestQueueRow = ({
 
                         {isAdmin && (
                             <Button
+                                ref={deleteTestPlanButtonRef}
                                 variant="danger"
                                 onClick={() => {
                                     triggerDeleteTestPlanReportModal(
                                         testPlanReport.id,
                                         evaluateTestPlanRunTitle(),
-                                        () => handleRemoveTestPlanReport()
+                                        async () => {
+                                            setLoadingModalTitle(
+                                                'Removing Test Plan'
+                                            );
+                                            setShowLoadingModal(true);
+                                            await handleRemoveTestPlanReport();
+                                            setShowLoadingModal(false);
+                                            deleteTestPlanButtonRef.current.focus();
+                                        }
                                     );
                                 }}
                             >
@@ -539,15 +582,23 @@ const TestQueueRow = ({
                                 currentUserTestPlanRun.testResults &&
                                 currentUserTestPlanRun.testResults.length && (
                                     <Button
+                                        ref={deleteTesterResultsButtonRef}
                                         variant="danger"
                                         onClick={() => {
                                             triggerDeleteResultsModal(
                                                 evaluateTestPlanRunTitle(),
                                                 username,
-                                                async () =>
+                                                async () => {
+                                                    setLoadingModalTitle(
+                                                        'Removing Test Results'
+                                                    );
+                                                    setShowLoadingModal(true);
                                                     await handleRemoveTesterResults(
                                                         currentUserTestPlanRun.id
-                                                    )
+                                                    );
+                                                    setShowLoadingModal(false);
+                                                    deleteTesterResultsButtonRef.current.focus();
+                                                }
                                             );
                                         }}
                                         aria-label="Delete my results"
@@ -576,6 +627,7 @@ const TestQueueRow = ({
                     triggerTestPlanReportUpdate={triggerTestPlanReportUpdate}
                 />
             )}
+            {showLoadingModal && <LoadingModal title={loadingModalTitle} />}
         </>
     );
 };
