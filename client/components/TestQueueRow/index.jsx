@@ -22,6 +22,7 @@ import {
 } from '../TestQueue/queries';
 import { gitUpdatedDateToString } from '../../utils/gitUtils';
 import TestPlanUpdaterModal from '../TestPlanUpdater/TestPlanUpdaterModal';
+import BasicThemedModal from '@components/common/BasicThemedModal';
 import LoadingModal from '@components/common/LoadingModal';
 
 const TestQueueRow = ({
@@ -39,10 +40,16 @@ const TestQueueRow = ({
     const dropdownDeleteTesterResultsButtonRef = useRef();
     const deleteTesterResultsButtonRef = useRef();
     const deleteTestPlanButtonRef = useRef();
+    const updateTestPlanStatusButtonRef = useRef();
 
     const [alertMessage, setAlertMessage] = useState('');
     const [showLoadingModal, setShowLoadingModal] = useState(false);
     const [loadingModalTitle, setLoadingModalTitle] = useState('');
+
+    const [showThemedModal, setShowThemedModal] = useState(false);
+    const [themedModalType, setThemedModalType] = useState('warning');
+    const [themedModalTitle, setThemedModalTitle] = useState('');
+    const [themedModalContent, setThemedModalContent] = useState(<></>);
 
     const [assignTester] = useMutation(ASSIGN_TESTER_MUTATION);
     const [updateTestPlanReportStatus] = useMutation(
@@ -92,8 +99,7 @@ const TestQueueRow = ({
         const tester = testers.find(tester => tester.username === username);
 
         if (isTesterAssigned) {
-            setLoadingModalTitle('Updating Test Plan Assignees');
-            setShowLoadingModal(true);
+            showLoadingMessage({ message: 'Updating Test Plan Assignees' });
             await removeTester({
                 variables: {
                     testReportId: testPlanReport.id,
@@ -101,8 +107,7 @@ const TestQueueRow = ({
                 }
             });
         } else {
-            setLoadingModalTitle('Updating Test Plan Assignees');
-            setShowLoadingModal(true);
+            showLoadingMessage({ message: 'Updating Test Plan Assignees' });
             await assignTester({
                 variables: {
                     testReportId: testPlanReport.id,
@@ -112,7 +117,7 @@ const TestQueueRow = ({
         }
 
         await triggerTestPlanReportUpdate();
-        setShowLoadingModal(false);
+        showLoadingMessage({ show: false });
         if (focusButtonRef.current) focusButtonRef.current.focus();
     };
 
@@ -134,6 +139,24 @@ const TestQueueRow = ({
 
         // force data after assignment changes
         await triggerTestPlanReportUpdate();
+    };
+
+    const showLoadingMessage = ({ message = 'Loading', show = true }) => {
+        if (!show) return setShowLoadingModal(false);
+        setLoadingModalTitle(message);
+        setShowLoadingModal(true);
+    };
+
+    const showThemedMessage = (title, content, theme) => {
+        setThemedModalTitle(title);
+        setThemedModalContent(content);
+        setThemedModalType(theme);
+        setShowThemedModal(true);
+    };
+
+    const onThemedModalClose = () => {
+        setShowThemedModal(false);
+        focusButtonRef.current.focus();
     };
 
     const renderAssignedUserToTestPlan = () => {
@@ -317,14 +340,16 @@ const TestQueueRow = ({
                                                 evaluateTestPlanRunTitle(),
                                                 tester.username,
                                                 async () => {
-                                                    setLoadingModalTitle(
-                                                        'Removing Test Results'
-                                                    );
-                                                    setShowLoadingModal(true);
+                                                    showLoadingMessage({
+                                                        message:
+                                                            'Removing Test Results'
+                                                    });
                                                     await handleRemoveTesterResults(
                                                         id
                                                     );
-                                                    setShowLoadingModal(false);
+                                                    showLoadingMessage({
+                                                        show: false
+                                                    });
                                                     dropdownDeleteTesterResultsButtonRef.current.focus();
                                                 }
                                             );
@@ -343,13 +368,24 @@ const TestQueueRow = ({
     };
 
     const updateReportStatus = async status => {
-        await updateTestPlanReportStatus({
-            variables: {
-                testReportId: testPlanReport.id,
-                status: status
-            }
-        });
-        await triggerTestPlanReportUpdate();
+        showLoadingMessage({ message: 'Updating Test Plan Status' });
+        try {
+            await updateTestPlanReportStatus({
+                variables: {
+                    testReportId: testPlanReport.id,
+                    status: status
+                }
+            });
+            await triggerTestPlanReportUpdate();
+            showLoadingMessage({ show: false });
+        } catch (e) {
+            showLoadingMessage({ show: false });
+            showThemedMessage(
+                'Error Updating Test Plan Status',
+                <>{e.message}</>,
+                'warning'
+            );
+        }
     };
 
     const evaluateStatusAndResults = () => {
@@ -495,29 +531,21 @@ const TestQueueRow = ({
                             {isAdmin && nextReportStatus && (
                                 <>
                                     <Button
+                                        ref={updateTestPlanStatusButtonRef}
                                         variant="secondary"
-                                        onClick={() =>
-                                            updateReportStatus(nextReportStatus)
-                                        }
+                                        onClick={async () => {
+                                            focusButtonRef.current =
+                                                updateTestPlanStatusButtonRef.current;
+                                            await updateReportStatus(
+                                                nextReportStatus
+                                            );
+                                        }}
                                     >
                                         Mark as{' '}
                                         {capitalizeEachWord(nextReportStatus, {
                                             splitChar: '_'
                                         })}
                                     </Button>
-                                    {nextReportStatus === 'Final' ? (
-                                        <Button
-                                            variant="link"
-                                            className="mt-1"
-                                            onClick={() =>
-                                                updateReportStatus('DRAFT')
-                                            }
-                                        >
-                                            Mark as Draft
-                                        </Button>
-                                    ) : (
-                                        <></>
-                                    )}
                                 </>
                             )}
                             {results}
@@ -550,12 +578,11 @@ const TestQueueRow = ({
                                         testPlanReport.id,
                                         evaluateTestPlanRunTitle(),
                                         async () => {
-                                            setLoadingModalTitle(
-                                                'Removing Test Plan'
-                                            );
-                                            setShowLoadingModal(true);
+                                            showLoadingMessage({
+                                                message: 'Removing Test Plan'
+                                            });
                                             await handleRemoveTestPlanReport();
-                                            setShowLoadingModal(false);
+                                            showLoadingMessage({ show: false });
                                             deleteTestPlanButtonRef.current.focus();
                                         }
                                     );
@@ -589,14 +616,16 @@ const TestQueueRow = ({
                                                 evaluateTestPlanRunTitle(),
                                                 username,
                                                 async () => {
-                                                    setLoadingModalTitle(
-                                                        'Removing Test Results'
-                                                    );
-                                                    setShowLoadingModal(true);
+                                                    showLoadingMessage({
+                                                        message:
+                                                            'Removing Test Results'
+                                                    });
                                                     await handleRemoveTesterResults(
                                                         currentUserTestPlanRun.id
                                                     );
-                                                    setShowLoadingModal(false);
+                                                    showLoadingMessage({
+                                                        show: false
+                                                    });
                                                     deleteTesterResultsButtonRef.current.focus();
                                                 }
                                             );
@@ -625,6 +654,23 @@ const TestQueueRow = ({
                     handleClose={() => setShowTestPlanUpdaterModal(false)}
                     testPlanReportId={testPlanReportId}
                     triggerTestPlanReportUpdate={triggerTestPlanReportUpdate}
+                />
+            )}
+            {showThemedModal && (
+                <BasicThemedModal
+                    show={showThemedModal}
+                    theme={themedModalType}
+                    title={themedModalTitle}
+                    dialogClassName="modal-50w"
+                    content={themedModalContent}
+                    actionButtons={[
+                        {
+                            text: 'Ok',
+                            action: onThemedModalClose
+                        }
+                    ]}
+                    handleClose={onThemedModalClose}
+                    showCloseAction={false}
                 />
             )}
             {showLoadingModal && <LoadingModal title={loadingModalTitle} />}

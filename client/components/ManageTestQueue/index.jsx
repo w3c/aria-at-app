@@ -327,12 +327,10 @@ const ManageTestQueue = ({
         const theme = 'danger';
         const selectedAt = ats.find(item => item.id === selectedManageAtId);
 
-        setThemedModalTitle(
+        showThemedMessage(
             `Remove ${selectedAt.name} Version ${
                 getAtVersionFromId(selectedManageAtVersionId)?.name
-            }`
-        );
-        setThemedModalContent(
+            }`,
             <>
                 You are about to remove{' '}
                 <b>
@@ -340,11 +338,9 @@ const ManageTestQueue = ({
                     {getAtVersionFromId(selectedManageAtVersionId)?.name}
                 </b>{' '}
                 from the ARIA-AT App.
-            </>
+            </>,
+            theme
         );
-
-        setThemedModalType(theme);
-        setShowThemedModal(true);
     };
 
     const onUpdateModalClose = () => {
@@ -392,9 +388,8 @@ const ManageTestQueue = ({
                 setSelectedManageAtVersionId(existingAtVersion.id);
 
                 onUpdateModalClose();
-
-                setFeedbackModalTitle('Existing Assistive Technology Version');
-                setFeedbackModalContent(
+                showFeedbackMessage(
+                    'Existing Assistive Technology Version',
                     <>
                         <b>
                             {selectedAt.name} {updatedVersionText}
@@ -403,7 +398,6 @@ const ManageTestQueue = ({
                         different one.
                     </>
                 );
-                setShowFeedbackModal(true);
                 return;
             }
 
@@ -425,10 +419,8 @@ const ManageTestQueue = ({
             await triggerUpdate();
             showLoadingMessage({ show: false });
 
-            setFeedbackModalTitle(
-                'Successfully Added Assistive Technology Version'
-            );
-            setFeedbackModalContent(
+            showFeedbackMessage(
+                'Successfully Added Assistive Technology Version',
                 <>
                     Successfully added{' '}
                     <b>
@@ -437,7 +429,6 @@ const ManageTestQueue = ({
                     .
                 </>
             );
-            setShowFeedbackModal(true);
         }
 
         if (actionType === 'edit') {
@@ -455,10 +446,8 @@ const ManageTestQueue = ({
             await triggerUpdate();
             showLoadingMessage({ show: false });
 
-            setFeedbackModalTitle(
-                'Successfully Updated Assistive Technology Version'
-            );
-            setFeedbackModalContent(
+            showFeedbackMessage(
+                'Successfully Updated Assistive Technology Version',
                 <>
                     Successfully updated{' '}
                     <b>
@@ -467,7 +456,6 @@ const ManageTestQueue = ({
                     .
                 </>
             );
-            setShowFeedbackModal(true);
         }
 
         if (actionType === 'delete') {
@@ -485,10 +473,8 @@ const ManageTestQueue = ({
                 const theme = 'warning';
 
                 // Removing an AT Version already in use
-                setThemedModalTitle(
-                    'Assistive Technology Version already being used'
-                );
-                setThemedModalContent(
+                showThemedMessage(
+                    'Assistive Technology Version already being used',
                     <>
                         <b>
                             {selectedAt.name} Version{' '}
@@ -499,11 +485,9 @@ const ManageTestQueue = ({
                         </b>{' '}
                         can&apos;t be removed because it is already being used
                         to test the <b>{patternName}</b> Test Plan.
-                    </>
+                    </>,
+                    theme
                 );
-
-                setThemedModalType(theme);
-                setShowThemedModal(true);
             } else {
                 onThemedModalClose();
                 showLoadingMessage({
@@ -513,14 +497,13 @@ const ManageTestQueue = ({
                 showLoadingMessage({ show: false });
 
                 // Show confirmation that AT has been deleted
-                setFeedbackModalTitle('Successfully Removed AT Version');
-                setFeedbackModalContent(
+                showFeedbackMessage(
+                    'Successfully Removed Assistive Technology Version',
                     <>
                         Successfully removed version for{' '}
                         <b>{selectedAt.name}</b>.
                     </>
                 );
-                setShowFeedbackModal(true);
 
                 // Reset atVersion to valid existing item
                 setSelectedManageAtVersionId(selectedAt.atVersions[0]?.id);
@@ -549,9 +532,8 @@ const ManageTestQueue = ({
         });
         await triggerUpdate();
         showLoadingMessage({ show: false });
-
-        setFeedbackModalTitle('Successfully Added Test Plan');
-        setFeedbackModalContent(
+        showFeedbackMessage(
+            'Successfully Added Test Plan',
             <>
                 Successfully added <b>{selectedTestPlanVersion.title}</b> for{' '}
                 <b>
@@ -560,13 +542,25 @@ const ManageTestQueue = ({
                 to the Test Queue.
             </>
         );
-        setShowFeedbackModal(true);
     };
 
     const showLoadingMessage = ({ message = 'Loading', show = true }) => {
         if (!show) return setShowLoadingModal(false);
         setLoadingModalTitle(message);
         setShowLoadingModal(true);
+    };
+
+    const showFeedbackMessage = (title, content) => {
+        setFeedbackModalTitle(title);
+        setFeedbackModalContent(content);
+        setShowFeedbackModal(true);
+    };
+
+    const showThemedMessage = (title, content, theme) => {
+        setThemedModalTitle(title);
+        setThemedModalContent(content);
+        setThemedModalType(theme);
+        setShowThemedModal(true);
     };
 
     return (
