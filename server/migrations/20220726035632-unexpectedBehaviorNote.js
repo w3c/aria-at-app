@@ -11,18 +11,20 @@ module.exports = {
                         ...testResult,
                         scenarioResults: testResult.scenarioResults.map(
                             scenarioResult => {
-                                const note = scenarioResult.unexpectedBehaviors.find(
-                                    each => !!each.otherUnexpectedBehaviorText
-                                )?.otherUnexpectedBehaviorText;
+                                const note =
+                                    scenarioResult.unexpectedBehaviors?.find(
+                                        each =>
+                                            !!each.otherUnexpectedBehaviorText
+                                    )?.otherUnexpectedBehaviorText ?? null;
                                 return {
                                     ...scenarioResult,
-                                    unexpectedBehaviors: scenarioResult.unexpectedBehaviors.map(
+                                    unexpectedBehaviors: scenarioResult.unexpectedBehaviors?.map(
                                         unexpectedBehavior =>
                                             omit(unexpectedBehavior, [
                                                 'otherUnexpectedBehaviorText'
                                             ])
                                     ),
-                                    unexpectedBehaviorNote: note ?? null
+                                    unexpectedBehaviorNote: note
                                 };
                             }
                         )
@@ -46,7 +48,7 @@ module.exports = {
                                 return omit(
                                     {
                                         ...scenarioResult,
-                                        unexpectedBehaviors: scenarioResult.unexpectedBehaviors.map(
+                                        unexpectedBehaviors: scenarioResult.unexpectedBehaviors?.map(
                                             unexpectedBehavior => {
                                                 return unexpectedBehavior.id !==
                                                     'OTHER'

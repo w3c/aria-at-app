@@ -31,11 +31,10 @@ const saveTestResultCommon = async ({
         throw new AuthenticationError();
     }
 
-    // The populateData function will populate associations of JSON-based
-    // models, but not Sequelize-based models. This is why the
-    // convertTestResultToInput function is needed to make testResultPopulated
-    // equivalent to testPlanRun.testResults.
     const oldTestResults = testPlanRun.testResults;
+    // testResultPopulated is a TestResult type and has populated scenario,
+    // test, assertion etc. fields. It should just be a TestResultInput type for
+    // saving in the database. See graphql-schema.js for more info.
     const oldTestResult = convertTestResultToInput(testResultPopulated);
 
     const newTestResult = deepCustomMerge(oldTestResult, input, {
@@ -105,7 +104,12 @@ const assertTestResultIsValid = newTestResult => {
     };
 
     const checkScenarioResult = scenarioResult => {
-        if (!scenarioResult.output || !scenarioResult.unexpectedBehaviors) {
+        if (
+            !scenarioResult.output ||
+            !scenarioResult.unexpectedBehaviors ||
+            (scenarioResult.unexpectedBehaviorNote &&
+                !scenarioResult.unexpectedBehaviors.length)
+        ) {
             failed = true;
         }
         scenarioResult.assertionResults.forEach(checkAssertionResult);

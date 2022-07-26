@@ -365,10 +365,21 @@ const SummarizeTestPlanReport = ({ testPlanReport }) => {
                                                                             )
                                                                         )}
                                                                     </ul>
-                                                                    <div>
-                                                                        {scenarioResult.unexpectedBehaviorNote ??
-                                                                            ''}
-                                                                    </div>
+                                                                    {scenarioResult.unexpectedBehaviorNote ? (
+                                                                        <div>
+                                                                            Tester&apos;s
+                                                                            explanation:&nbsp;
+                                                                            <em>
+                                                                                &quot;
+                                                                                {
+                                                                                    scenarioResult.unexpectedBehaviorNote
+                                                                                }
+                                                                                &quot;
+                                                                            </em>
+                                                                        </div>
+                                                                    ) : (
+                                                                        ''
+                                                                    )}
                                                                 </>
                                                             ) : (
                                                                 'None'

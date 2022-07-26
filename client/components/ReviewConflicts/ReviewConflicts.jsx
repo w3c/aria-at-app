@@ -91,19 +91,22 @@ const ReviewConflicts = ({
             const { testPlanRun, scenarioResult } = result;
             let resultFormatted;
             if (scenarioResult.unexpectedBehaviors.length) {
-                resultFormatted = scenarioResult.unexpectedBehaviors
-                    .map(({ text }) => text)
-                    .join(' and ');
+                resultFormatted =
+                    'the unexpected behavior ' +
+                    scenarioResult.unexpectedBehaviors
+                        .map(({ text }) => `"${text.toLowerCase()}"`)
+                        .join(' and ');
             } else {
                 resultFormatted = 'no unexpected behavior';
             }
             let noteFormatted = scenarioResult.unexpectedBehaviorNote
-                ? `with the note: "${scenarioResult.unexpectedBehaviorNote}"`
+                ? ` with the explanation ` +
+                  `"${scenarioResult.unexpectedBehaviorNote}"`
                 : '';
             return (
                 <li key={testPlanRun.id}>
                     Tester {testPlanRun.tester.username} recorded output &quot;
-                    {scenarioResult.output}&quot; and identified&nbsp;
+                    {scenarioResult.output}&quot; and noted&nbsp;
                     {resultFormatted + noteFormatted}.
                 </li>
             );
