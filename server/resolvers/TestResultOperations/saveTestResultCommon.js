@@ -50,7 +50,7 @@ const saveTestResultCommon = async ({
         ],
         {
             pickKeys: ['id', 'testId', 'scenarioId', 'assertionId'],
-            excludeKeys: ['unexpectedBehaviors']
+            excludeKeys: ['unexpectedBehaviors', 'unexpectedBehaviorNote']
         }
     );
     if (isCorrupted) {
@@ -95,13 +95,11 @@ const assertTestResultIsValid = newTestResult => {
         }
     };
 
-    const checkUnexpectedBehavior = unexpectedBehavior => {
-        if (
-            (!!unexpectedBehavior.otherUnexpectedBehaviorText &&
-                unexpectedBehavior.id !== 'OTHER') ||
-            (!unexpectedBehavior.otherUnexpectedBehaviorText &&
-                unexpectedBehavior.id === 'OTHER')
-        ) {
+    const checkUnexpectedBehavior = (
+        unexpectedBehavior,
+        unexpectedBehaviorNote
+    ) => {
+        if (!unexpectedBehaviorNote && unexpectedBehavior.id === 'OTHER') {
             failed = true;
         }
     };
@@ -111,7 +109,12 @@ const assertTestResultIsValid = newTestResult => {
             failed = true;
         }
         scenarioResult.assertionResults.forEach(checkAssertionResult);
-        scenarioResult.unexpectedBehaviors?.forEach(checkUnexpectedBehavior);
+        scenarioResult.unexpectedBehaviors?.forEach(unexpectedBehavior => {
+            checkUnexpectedBehavior(
+                unexpectedBehavior,
+                scenarioResult.unexpectedBehaviorNote
+            );
+        });
     };
 
     newTestResult.scenarioResults.forEach(checkScenarioResult);

@@ -221,9 +221,10 @@ const getFake = async ({
             break;
         case 'failingDueToUnexpectedBehaviors':
             testResult.scenarioResults[0].unexpectedBehaviors.push({
-                id: 'OTHER',
-                otherUnexpectedBehaviorText: 'Seeded other unexpected behavior'
+                id: 'OTHER'
             });
+            testResult.scenarioResults[0].unexpectedBehaviorNote =
+                'Seeded other unexpected behavior';
             break;
         case 'failingDueToMultiple':
             testResult.scenarioResults[0].assertionResults[0].passed = false;
@@ -233,9 +234,10 @@ const getFake = async ({
                 id: 'EXCESSIVELY_VERBOSE'
             });
             testResult.scenarioResults[0].unexpectedBehaviors.push({
-                id: 'OTHER',
-                otherUnexpectedBehaviorText: 'Seeded other unexpected behavior'
+                id: 'OTHER'
             });
+            testResult.scenarioResults[0].unexpectedBehaviorNote =
+                'Seeded other unexpected behavior';
             break;
         default:
             throw new Error();

@@ -544,6 +544,10 @@ const graphqlSchema = gql`
         Submitted test results require this field to be filled in.
         """
         unexpectedBehaviors: [UnexpectedBehavior]
+        """
+        Optional note provided by the tester explaining the unexpected behavior.
+        """
+        unexpectedBehaviorNote: String
     }
 
     """
@@ -565,7 +569,11 @@ const graphqlSchema = gql`
         """
         See ScenarioResult type for more information.
         """
-        unexpectedBehaviors: [UnexpectedBehaviorInput]
+        unexpectedBehaviors: [UnexpectedBehaviorId]
+        """
+        See ScenarioResult type for more information.
+        """
+        unexpectedBehaviorNote: String
     }
 
     # TODO: figure out if this type can be removed and NO_OUTPUT can become an
@@ -641,26 +649,6 @@ const graphqlSchema = gql`
         Human-readable sentence describing the failure.
         """
         text: String!
-        """
-        One of the unexpected behaviors is "other", which means the user must
-        provide text explaining what occurred. For all other unexpected
-        behaviors this field can be ignored.
-        """
-        otherUnexpectedBehaviorText: String
-    }
-
-    """
-    Minimal plain representation of an UnexpectedBehavior.
-    """
-    input UnexpectedBehaviorInput {
-        """
-        See UnexpectedBehavior for more information.
-        """
-        id: UnexpectedBehaviorId!
-        """
-        See UnexpectedBehavior for more information.
-        """
-        otherUnexpectedBehaviorText: String
     }
 
     """

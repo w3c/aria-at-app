@@ -308,6 +308,7 @@ const TestRenderer = ({
                 output,
                 assertionResults,
                 unexpectedBehaviors,
+                unexpectedBehaviorNote,
                 highlightRequired = false, // atOutput
                 unexpectedBehaviorHighlightRequired = false
             } = scenarioResults[i];
@@ -355,8 +356,10 @@ const TestRenderer = ({
                         commands[i].unexpected.behaviors[4].checked = true;
                     if (unexpectedBehavior.id === 'OTHER') {
                         commands[i].unexpected.behaviors[5].checked = true;
-                        commands[i].unexpected.behaviors[5].more.value =
-                            unexpectedBehavior.otherUnexpectedBehaviorText;
+                        // TODO: Allow for any unexpected behavior type
+                        commands[
+                            i
+                        ].unexpected.behaviors[5].more.value = unexpectedBehaviorNote;
                         commands[
                             i
                         ].unexpected.behaviors[5].more.highlightRequired =

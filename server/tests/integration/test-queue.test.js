@@ -455,8 +455,8 @@ describe('test queue', () => {
                                 output
                                 unexpectedBehaviors {
                                     text
-                                    otherUnexpectedBehaviorText
                                 }
+                                unexpectedBehaviorNote
                             }
                             assertionResult {
                                 passed

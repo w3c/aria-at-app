@@ -50,7 +50,8 @@ const conflictsResolver = async testPlanReport => {
 
         for (let i = 0; i < testResults[0].scenarioResults.length; i += 1) {
             const scenarioResultComparisons = testResults.map(testResult => {
-                // Note that output is not considered
+                // Note that the output and unexpectedBehaviorNote are not
+                // considered
                 return pick(testResult.scenarioResults[i], [
                     'unexpectedBehaviors'
                 ]);

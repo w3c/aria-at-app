@@ -102,8 +102,8 @@ export const VERSION_QUERY = gql`
                         }
                         unexpectedBehaviors {
                             id
-                            otherUnexpectedBehaviorText
                         }
+                        unexpectedBehaviorNote
                     }
                 }
             }

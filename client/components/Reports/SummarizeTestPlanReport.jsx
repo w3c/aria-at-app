@@ -349,20 +349,27 @@ const SummarizeTestPlanReport = ({ testPlanReport }) => {
                                                             {scenarioResult
                                                                 .unexpectedBehaviors
                                                                 .length ? (
-                                                                <ul>
-                                                                    {scenarioResult.unexpectedBehaviors.map(
-                                                                        unexpected => (
-                                                                            <li
-                                                                                key={
-                                                                                    unexpected.id
-                                                                                }
-                                                                            >
-                                                                                {unexpected.otherUnexpectedBehaviorText ??
-                                                                                    unexpected.text}
-                                                                            </li>
-                                                                        )
-                                                                    )}
-                                                                </ul>
+                                                                <>
+                                                                    <ul>
+                                                                        {scenarioResult.unexpectedBehaviors.map(
+                                                                            unexpected => (
+                                                                                <li
+                                                                                    key={
+                                                                                        unexpected.id
+                                                                                    }
+                                                                                >
+                                                                                    {
+                                                                                        unexpected.text
+                                                                                    }
+                                                                                </li>
+                                                                            )
+                                                                        )}
+                                                                    </ul>
+                                                                    <div>
+                                                                        {scenarioResult.unexpectedBehaviorNote ??
+                                                                            ''}
+                                                                    </div>
+                                                                </>
                                                             ) : (
                                                                 'None'
                                                             )}
@@ -477,10 +484,10 @@ SummarizeTestPlanReport.propTypes = {
                         unexpectedBehaviors: PropTypes.arrayOf(
                             PropTypes.shape({
                                 id: PropTypes.string.isRequired,
-                                text: PropTypes.string.isRequired,
-                                otherUnexpectedBehaviorText: PropTypes.string
+                                text: PropTypes.string.isRequired
                             }).isRequired
-                        ).isRequired
+                        ).isRequired,
+                        unexpectedBehaviorNote: PropTypes.string
                     }).isRequired
                 ).isRequired
             }).isRequired

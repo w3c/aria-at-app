@@ -330,8 +330,8 @@ describe('graphql', () => {
                                         __typename
                                         id
                                         text
-                                        otherUnexpectedBehaviorText
                                     }
+                                    unexpectedBehaviorNote
                                 }
                             }
                         }
@@ -687,8 +687,8 @@ const getMutationInputs = async () => {
                 }
                 unexpectedBehaviors {
                     id
-                    otherUnexpectedBehaviorText
                 }
+                unexpectedBehaviorNote
             }
         }
 
