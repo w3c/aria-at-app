@@ -22,8 +22,8 @@ import {
 } from '../TestQueue/queries';
 import { gitUpdatedDateToString } from '../../utils/gitUtils';
 import TestPlanUpdaterModal from '../TestPlanUpdater/TestPlanUpdaterModal';
-import BasicThemedModal from '@components/common/BasicThemedModal';
-import LoadingModal from '@components/common/LoadingModal';
+import BasicThemedModal from '../common/BasicThemedModal';
+import { LoadingStatus, useTriggerLoad } from '../common/LoadingStatus';
 
 const TestQueueRow = ({
     user = {},
@@ -34,6 +34,8 @@ const TestQueueRow = ({
     triggerDeleteResultsModal = () => {},
     triggerTestPlanReportUpdate = () => {}
 }) => {
+    const { triggerLoad, loadingMessage } = useTriggerLoad();
+
     const focusButtonRef = useRef();
     const dropdownAssignTesterButtonRef = useRef();
     const assignTesterButtonRef = useRef();
@@ -43,8 +45,6 @@ const TestQueueRow = ({
     const updateTestPlanStatusButtonRef = useRef();
 
     const [alertMessage, setAlertMessage] = useState('');
-    const [showLoadingModal, setShowLoadingModal] = useState(false);
-    const [loadingModalTitle, setLoadingModalTitle] = useState('');
 
     const [showThemedModal, setShowThemedModal] = useState(false);
     const [themedModalType, setThemedModalType] = useState('warning');
@@ -99,25 +99,27 @@ const TestQueueRow = ({
         const tester = testers.find(tester => tester.username === username);
 
         if (isTesterAssigned) {
-            showLoadingMessage({ message: 'Updating Test Plan Assignees' });
-            await removeTester({
-                variables: {
-                    testReportId: testPlanReport.id,
-                    testerId: tester.id
-                }
-            });
+            await triggerLoad(async () => {
+                await removeTester({
+                    variables: {
+                        testReportId: testPlanReport.id,
+                        testerId: tester.id
+                    }
+                });
+                await triggerTestPlanReportUpdate();
+            }, 'Updating Test Plan Assignees');
         } else {
-            showLoadingMessage({ message: 'Updating Test Plan Assignees' });
-            await assignTester({
-                variables: {
-                    testReportId: testPlanReport.id,
-                    testerId: tester.id
-                }
-            });
+            await triggerLoad(async () => {
+                await assignTester({
+                    variables: {
+                        testReportId: testPlanReport.id,
+                        testerId: tester.id
+                    }
+                });
+                await triggerTestPlanReportUpdate();
+            }, 'Updating Test Plan Assignees');
         }
 
-        await triggerTestPlanReportUpdate();
-        showLoadingMessage({ show: false });
         if (focusButtonRef.current) focusButtonRef.current.focus();
     };
 
@@ -139,12 +141,6 @@ const TestQueueRow = ({
 
         // force data after assignment changes
         await triggerTestPlanReportUpdate();
-    };
-
-    const showLoadingMessage = ({ message = 'Loading', show = true }) => {
-        if (!show) return setShowLoadingModal(false);
-        setLoadingModalTitle(message);
-        setShowLoadingModal(true);
     };
 
     const showThemedMessage = (title, content, theme) => {
@@ -340,16 +336,14 @@ const TestQueueRow = ({
                                                 evaluateTestPlanRunTitle(),
                                                 tester.username,
                                                 async () => {
-                                                    showLoadingMessage({
-                                                        message:
-                                                            'Removing Test Results'
-                                                    });
-                                                    await handleRemoveTesterResults(
-                                                        id
+                                                    await triggerLoad(
+                                                        async () => {
+                                                            await handleRemoveTesterResults(
+                                                                id
+                                                            );
+                                                        },
+                                                        'Removing Test Results'
                                                     );
-                                                    showLoadingMessage({
-                                                        show: false
-                                                    });
                                                     dropdownDeleteTesterResultsButtonRef.current.focus();
                                                 }
                                             );
@@ -368,18 +362,17 @@ const TestQueueRow = ({
     };
 
     const updateReportStatus = async status => {
-        showLoadingMessage({ message: 'Updating Test Plan Status' });
         try {
-            await updateTestPlanReportStatus({
-                variables: {
-                    testReportId: testPlanReport.id,
-                    status: status
-                }
-            });
-            await triggerTestPlanReportUpdate();
-            showLoadingMessage({ show: false });
+            await triggerLoad(async () => {
+                await updateTestPlanReportStatus({
+                    variables: {
+                        testReportId: testPlanReport.id,
+                        status: status
+                    }
+                });
+                await triggerTestPlanReportUpdate();
+            }, 'Updating Test Plan Status');
         } catch (e) {
-            showLoadingMessage({ show: false });
             showThemedMessage(
                 'Error Updating Test Plan Status',
                 <>{e.message}</>,
@@ -456,7 +449,7 @@ const TestQueueRow = ({
         ].join('-');
 
     return (
-        <>
+        <LoadingStatus message={loadingMessage}>
             <tr className="test-queue-run-row">
                 <th>{renderAssignedUserToTestPlan()}</th>
                 <td>
@@ -467,10 +460,10 @@ const TestQueueRow = ({
                                 <Button
                                     ref={assignTesterButtonRef}
                                     variant="secondary"
-                                    onClick={() => {
+                                    onClick={async () => {
                                         focusButtonRef.current =
                                             assignTesterButtonRef.current;
-                                        toggleTesterAssign(username);
+                                        await toggleTesterAssign(username);
                                     }}
                                     className="assign-self"
                                 >
@@ -578,11 +571,9 @@ const TestQueueRow = ({
                                         testPlanReport.id,
                                         evaluateTestPlanRunTitle(),
                                         async () => {
-                                            showLoadingMessage({
-                                                message: 'Removing Test Plan'
-                                            });
-                                            await handleRemoveTestPlanReport();
-                                            showLoadingMessage({ show: false });
+                                            await triggerLoad(async () => {
+                                                await handleRemoveTestPlanReport();
+                                            }, 'Removing Test Plan');
                                             deleteTestPlanButtonRef.current.focus();
                                         }
                                     );
@@ -616,16 +607,14 @@ const TestQueueRow = ({
                                                 evaluateTestPlanRunTitle(),
                                                 username,
                                                 async () => {
-                                                    showLoadingMessage({
-                                                        message:
-                                                            'Removing Test Results'
-                                                    });
-                                                    await handleRemoveTesterResults(
-                                                        currentUserTestPlanRun.id
+                                                    await triggerLoad(
+                                                        async () => {
+                                                            await handleRemoveTesterResults(
+                                                                currentUserTestPlanRun.id
+                                                            );
+                                                        },
+                                                        'Removing Test Results'
                                                     );
-                                                    showLoadingMessage({
-                                                        show: false
-                                                    });
                                                     deleteTesterResultsButtonRef.current.focus();
                                                 }
                                             );
@@ -673,8 +662,7 @@ const TestQueueRow = ({
                     showCloseAction={false}
                 />
             )}
-            {showLoadingModal && <LoadingModal title={loadingModalTitle} />}
-        </>
+        </LoadingStatus>
     );
 };
 

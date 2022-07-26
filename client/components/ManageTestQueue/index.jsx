@@ -21,7 +21,7 @@ import {
 } from '../TestQueue/queries';
 import { gitUpdatedDateToString } from '../../utils/gitUtils';
 import { convertStringToDate } from '../../utils/formatter';
-import LoadingModal from '@components/common/LoadingModal';
+import { LoadingStatus, useTriggerLoad } from '../common/LoadingStatus';
 
 const Container = styled.div`
     border: 1px solid #d3d5da;
@@ -156,6 +156,8 @@ const ManageTestQueue = ({
     testPlanVersions = [],
     triggerUpdate = () => {}
 }) => {
+    const { triggerLoad, loadingMessage } = useTriggerLoad();
+
     const loadedAts = useRef(false);
     const focusButtonRef = useRef();
     const addAtVersionButtonRef = useRef();
@@ -204,8 +206,8 @@ const ManageTestQueue = ({
     const [selectedAtId, setSelectedAtId] = useState('');
     const [selectedBrowserId, setSelectedBrowserId] = useState('');
 
-    const [showLoadingModal, setShowLoadingModal] = useState(false);
-    const [loadingModalTitle, setLoadingModalTitle] = useState('');
+    // const [showLoadingModal, setShowLoadingModal] = useState(false);
+    // const [loadingModalTitle, setLoadingModalTitle] = useState('');
 
     const [addAtVersion] = useMutation(ADD_AT_VERSION_MUTATION);
     const [editAtVersion] = useMutation(EDIT_AT_VERSION_MUTATION);
@@ -402,22 +404,21 @@ const ManageTestQueue = ({
             }
 
             onUpdateModalClose();
-            showLoadingMessage({
-                message: 'Adding Assistive Technology Version'
-            });
-            const addAtVersionData = await addAtVersion({
-                variables: {
-                    atId: selectedManageAtId,
-                    name: updatedVersionText,
-                    releasedAt: convertStringToDate(updatedDateAvailabilityText)
-                }
-            });
-            setSelectedManageAtVersionId(
-                addAtVersionData.data?.at?.findOrCreateAtVersion?.id
-            );
-
-            await triggerUpdate();
-            showLoadingMessage({ show: false });
+            await triggerLoad(async () => {
+                const addAtVersionData = await addAtVersion({
+                    variables: {
+                        atId: selectedManageAtId,
+                        name: updatedVersionText,
+                        releasedAt: convertStringToDate(
+                            updatedDateAvailabilityText
+                        )
+                    }
+                });
+                setSelectedManageAtVersionId(
+                    addAtVersionData.data?.at?.findOrCreateAtVersion?.id
+                );
+                await triggerUpdate();
+            }, 'Adding Assistive Technology Version');
 
             showFeedbackMessage(
                 'Successfully Added Assistive Technology Version',
@@ -433,18 +434,18 @@ const ManageTestQueue = ({
 
         if (actionType === 'edit') {
             onUpdateModalClose();
-            showLoadingMessage({
-                message: 'Updating Assistive Technology Version'
-            });
-            await editAtVersion({
-                variables: {
-                    atVersionId: selectedManageAtVersionId,
-                    name: updatedVersionText,
-                    releasedAt: convertStringToDate(updatedDateAvailabilityText)
-                }
-            });
-            await triggerUpdate();
-            showLoadingMessage({ show: false });
+            await triggerLoad(async () => {
+                await editAtVersion({
+                    variables: {
+                        atVersionId: selectedManageAtVersionId,
+                        name: updatedVersionText,
+                        releasedAt: convertStringToDate(
+                            updatedDateAvailabilityText
+                        )
+                    }
+                });
+                await triggerUpdate();
+            }, 'Updating Assistive Technology Version');
 
             showFeedbackMessage(
                 'Successfully Updated Assistive Technology Version',
@@ -490,11 +491,9 @@ const ManageTestQueue = ({
                 );
             } else {
                 onThemedModalClose();
-                showLoadingMessage({
-                    message: 'Removing Assistive Technology Version'
-                });
-                await triggerUpdate();
-                showLoadingMessage({ show: false });
+                await triggerLoad(async () => {
+                    await triggerUpdate();
+                }, 'Removing Assistive Technology Version');
 
                 // Show confirmation that AT has been deleted
                 showFeedbackMessage(
@@ -522,16 +521,17 @@ const ManageTestQueue = ({
             item => item.id === selectedBrowserId
         );
 
-        showLoadingMessage({ message: 'Adding Test Plan to Test Queue' });
-        await addTestPlanReport({
-            variables: {
-                testPlanVersionId: selectedTestPlanVersionId,
-                atId: selectedAtId,
-                browserId: selectedBrowserId
-            }
-        });
-        await triggerUpdate();
-        showLoadingMessage({ show: false });
+        await triggerLoad(async () => {
+            await addTestPlanReport({
+                variables: {
+                    testPlanVersionId: selectedTestPlanVersionId,
+                    atId: selectedAtId,
+                    browserId: selectedBrowserId
+                }
+            });
+            await triggerUpdate();
+        }, 'Adding Test Plan to Test Queue');
+
         showFeedbackMessage(
             'Successfully Added Test Plan',
             <>
@@ -542,12 +542,6 @@ const ManageTestQueue = ({
                 to the Test Queue.
             </>
         );
-    };
-
-    const showLoadingMessage = ({ message = 'Loading', show = true }) => {
-        if (!show) return setShowLoadingModal(false);
-        setLoadingModalTitle(message);
-        setShowLoadingModal(true);
     };
 
     const showFeedbackMessage = (title, content) => {
@@ -564,64 +558,45 @@ const ManageTestQueue = ({
     };
 
     return (
-        <Container>
-            <h3>
-                <DisclosureButton
-                    id="id_manage_ats_button"
-                    type="button"
-                    aria-expanded={showManageATs}
-                    aria-controls="id_manage_ats"
-                    onClick={onManageAtsClick}
+        <LoadingStatus message={loadingMessage}>
+            <Container>
+                <h3>
+                    <DisclosureButton
+                        id="id_manage_ats_button"
+                        type="button"
+                        aria-expanded={showManageATs}
+                        aria-controls="id_manage_ats"
+                        onClick={onManageAtsClick}
+                    >
+                        Manage Assistive Technology Versions
+                        <FontAwesomeIcon
+                            icon={showManageATs ? faChevronUp : faChevronDown}
+                        />
+                    </DisclosureButton>
+                </h3>
+                <DisclosureContainer
+                    role="region"
+                    id="id_manage_ats"
+                    aria-labelledby="id_manage_ats_button"
+                    show={showManageATs}
                 >
-                    Manage Assistive Technology Versions
-                    <FontAwesomeIcon
-                        icon={showManageATs ? faChevronUp : faChevronDown}
-                    />
-                </DisclosureButton>
-            </h3>
-            <DisclosureContainer
-                role="region"
-                id="id_manage_ats"
-                aria-labelledby="id_manage_ats_button"
-                show={showManageATs}
-            >
-                <span>
-                    Select an Assistive Technology and manage its versions in
-                    the ARIA-AT App
-                </span>
-                <div className="disclosure-row-manage-ats">
-                    <Form.Group className="ats-container">
-                        <Form.Label className="disclosure-form-label">
-                            Assistive Technology
-                        </Form.Label>
-                        <Form.Control
-                            as="select"
-                            value={selectedManageAtId}
-                            onChange={onManageAtChange}
-                        >
-                            {ats.map(item => (
-                                <option
-                                    key={`manage-${item.name}-${item.id}`}
-                                    value={item.id}
-                                >
-                                    {item.name}
-                                </option>
-                            ))}
-                        </Form.Control>
-                    </Form.Group>
-                    <div className="at-versions-container">
-                        <Form.Group>
+                    <span>
+                        Select an Assistive Technology and manage its versions
+                        in the ARIA-AT App
+                    </span>
+                    <div className="disclosure-row-manage-ats">
+                        <Form.Group className="ats-container">
                             <Form.Label className="disclosure-form-label">
-                                Available Versions
+                                Assistive Technology
                             </Form.Label>
                             <Form.Control
                                 as="select"
-                                value={selectedManageAtVersionId}
-                                onChange={onManageAtVersionChange}
+                                value={selectedManageAtId}
+                                onChange={onManageAtChange}
                             >
-                                {selectedManageAtVersions.map(item => (
+                                {ats.map(item => (
                                     <option
-                                        key={`${selectedManageAtId}-${item.id}-${item.name}`}
+                                        key={`manage-${item.name}-${item.id}`}
                                         value={item.id}
                                     >
                                         {item.name}
@@ -629,216 +604,246 @@ const ManageTestQueue = ({
                                 ))}
                             </Form.Control>
                         </Form.Group>
-                        <div className="disclosure-buttons-row">
-                            <button
-                                ref={addAtVersionButtonRef}
-                                onClick={() => onOpenAtVersionModalClick('add')}
-                            >
-                                Add a New Version
-                            </button>
-                            <button
-                                ref={editAtVersionButtonRef}
-                                onClick={() =>
-                                    onOpenAtVersionModalClick('edit')
-                                }
-                            >
-                                <FontAwesomeIcon icon={faEdit} />
-                                Edit
-                            </button>
-                            <button
-                                ref={deleteAtVersionButtonRef}
-                                onClick={onRemoveClick}
-                            >
-                                <FontAwesomeIcon icon={faTrashAlt} />
-                                Remove
-                            </button>
+                        <div className="at-versions-container">
+                            <Form.Group>
+                                <Form.Label className="disclosure-form-label">
+                                    Available Versions
+                                </Form.Label>
+                                <Form.Control
+                                    as="select"
+                                    value={selectedManageAtVersionId}
+                                    onChange={onManageAtVersionChange}
+                                >
+                                    {selectedManageAtVersions.map(item => (
+                                        <option
+                                            key={`${selectedManageAtId}-${item.id}-${item.name}`}
+                                            value={item.id}
+                                        >
+                                            {item.name}
+                                        </option>
+                                    ))}
+                                </Form.Control>
+                            </Form.Group>
+                            <div className="disclosure-buttons-row">
+                                <button
+                                    ref={addAtVersionButtonRef}
+                                    onClick={() =>
+                                        onOpenAtVersionModalClick('add')
+                                    }
+                                >
+                                    Add a New Version
+                                </button>
+                                <button
+                                    ref={editAtVersionButtonRef}
+                                    onClick={() =>
+                                        onOpenAtVersionModalClick('edit')
+                                    }
+                                >
+                                    <FontAwesomeIcon icon={faEdit} />
+                                    Edit
+                                </button>
+                                <button
+                                    ref={deleteAtVersionButtonRef}
+                                    onClick={onRemoveClick}
+                                >
+                                    <FontAwesomeIcon icon={faTrashAlt} />
+                                    Remove
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </DisclosureContainer>
-            <h3>
-                <DisclosureButton
-                    id="id_test_plans_button"
-                    type="button"
-                    aria-expanded={showAddTestPlans}
-                    aria-controls="id_test_plans"
-                    onClick={onAddTestPlansClick}
-                    className="top-border"
+                </DisclosureContainer>
+                <h3>
+                    <DisclosureButton
+                        id="id_test_plans_button"
+                        type="button"
+                        aria-expanded={showAddTestPlans}
+                        aria-controls="id_test_plans"
+                        onClick={onAddTestPlansClick}
+                        className="top-border"
+                    >
+                        Add Test Plans to the Test Queue
+                        <FontAwesomeIcon
+                            icon={
+                                showAddTestPlans ? faChevronUp : faChevronDown
+                            }
+                        />
+                    </DisclosureButton>
+                </h3>
+                <DisclosureContainer
+                    role="region"
+                    id="id_test_plans"
+                    aria-labelledby="id_test_plans_button"
+                    show={showAddTestPlans}
                 >
-                    Add Test Plans to the Test Queue
-                    <FontAwesomeIcon
-                        icon={showAddTestPlans ? faChevronUp : faChevronDown}
-                    />
-                </DisclosureButton>
-            </h3>
-            <DisclosureContainer
-                role="region"
-                id="id_test_plans"
-                aria-labelledby="id_test_plans_button"
-                show={showAddTestPlans}
-            >
-                <span>
-                    Select a Test Plan and version and an Assistive Technology
-                    and Browser to add it to the Test Queue
-                </span>
-                <div className="disclosure-row-test-plans">
-                    <Form.Group>
-                        <Form.Label className="disclosure-form-label">
-                            Test Plan
-                        </Form.Label>
-                        <Form.Control
-                            as="select"
-                            onChange={e => {
-                                const { value } = e.target;
-                                updateMatchingTestPlanVersions(
-                                    value,
-                                    allTestPlanVersions
-                                );
-                            }}
-                        >
-                            {filteredTestPlanVersions.map(item => (
-                                <option
-                                    key={`${item.title ||
-                                        item.testPlan.directory}-${item.id}`}
-                                    value={item.id}
-                                >
-                                    {item.title ||
-                                        `"${item.testPlan.directory}"`}
+                    <span>
+                        Select a Test Plan and version and an Assistive
+                        Technology and Browser to add it to the Test Queue
+                    </span>
+                    <div className="disclosure-row-test-plans">
+                        <Form.Group>
+                            <Form.Label className="disclosure-form-label">
+                                Test Plan
+                            </Form.Label>
+                            <Form.Control
+                                as="select"
+                                onChange={e => {
+                                    const { value } = e.target;
+                                    updateMatchingTestPlanVersions(
+                                        value,
+                                        allTestPlanVersions
+                                    );
+                                }}
+                            >
+                                {filteredTestPlanVersions.map(item => (
+                                    <option
+                                        key={`${item.title ||
+                                            item.testPlan.directory}-${
+                                            item.id
+                                        }`}
+                                        value={item.id}
+                                    >
+                                        {item.title ||
+                                            `"${item.testPlan.directory}"`}
+                                    </option>
+                                ))}
+                            </Form.Control>
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Label className="disclosure-form-label">
+                                Test Plan Version
+                            </Form.Label>
+                            <Form.Control
+                                as="select"
+                                value={selectedTestPlanVersionId}
+                                onChange={onTestPlanVersionChange}
+                            >
+                                {matchingTestPlanVersions.map(item => (
+                                    <option
+                                        key={`${item.gitSha}-${item.id}`}
+                                        value={item.id}
+                                    >
+                                        {gitUpdatedDateToString(item.updatedAt)}{' '}
+                                        {item.gitMessage} (
+                                        {item.gitSha.substring(0, 7)})
+                                    </option>
+                                ))}
+                            </Form.Control>
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Label className="disclosure-form-label">
+                                Assistive Technology
+                            </Form.Label>
+                            <Form.Control
+                                as="select"
+                                value={selectedAtId}
+                                onChange={onAtChange}
+                            >
+                                <option value={''} disabled>
+                                    Select an Assistive Technology
                                 </option>
-                            ))}
-                        </Form.Control>
-                    </Form.Group>
-                    <Form.Group>
-                        <Form.Label className="disclosure-form-label">
-                            Test Plan Version
-                        </Form.Label>
-                        <Form.Control
-                            as="select"
-                            value={selectedTestPlanVersionId}
-                            onChange={onTestPlanVersionChange}
-                        >
-                            {matchingTestPlanVersions.map(item => (
-                                <option
-                                    key={`${item.gitSha}-${item.id}`}
-                                    value={item.id}
-                                >
-                                    {gitUpdatedDateToString(item.updatedAt)}{' '}
-                                    {item.gitMessage} (
-                                    {item.gitSha.substring(0, 7)})
+                                {ats.map(item => (
+                                    <option
+                                        key={`${item.name}-${item.id}`}
+                                        value={item.id}
+                                    >
+                                        {item.name}
+                                    </option>
+                                ))}
+                            </Form.Control>
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Label className="disclosure-form-label">
+                                Browser
+                            </Form.Label>
+                            <Form.Control
+                                as="select"
+                                value={selectedBrowserId}
+                                onChange={onBrowserChange}
+                            >
+                                <option value={''} disabled>
+                                    Select a Browser
                                 </option>
-                            ))}
-                        </Form.Control>
-                    </Form.Group>
-                    <Form.Group>
-                        <Form.Label className="disclosure-form-label">
-                            Assistive Technology
-                        </Form.Label>
-                        <Form.Control
-                            as="select"
-                            value={selectedAtId}
-                            onChange={onAtChange}
-                        >
-                            <option value={''} disabled>
-                                Select an Assistive Technology
-                            </option>
-                            {ats.map(item => (
-                                <option
-                                    key={`${item.name}-${item.id}`}
-                                    value={item.id}
-                                >
-                                    {item.name}
-                                </option>
-                            ))}
-                        </Form.Control>
-                    </Form.Group>
-                    <Form.Group>
-                        <Form.Label className="disclosure-form-label">
-                            Browser
-                        </Form.Label>
-                        <Form.Control
-                            as="select"
-                            value={selectedBrowserId}
-                            onChange={onBrowserChange}
-                        >
-                            <option value={''} disabled>
-                                Select a Browser
-                            </option>
-                            {browsers.map(item => (
-                                <option
-                                    key={`${item.name}-${item.id}`}
-                                    value={item.id}
-                                >
-                                    {item.name}
-                                </option>
-                            ))}
-                        </Form.Control>
-                    </Form.Group>
-                </div>
-                <Button
-                    ref={addTestPlanReportButtonRef}
-                    variant="primary"
-                    disabled={
-                        !selectedTestPlanVersionId ||
-                        !selectedAtId ||
-                        !selectedBrowserId
-                    }
-                    onClick={handleAddTestPlanToTestQueue}
-                >
-                    Add Test Plan to Test Queue
-                </Button>
-            </DisclosureContainer>
-
-            {showAtVersionModal && (
-                <UpdateVersionModal
-                    show={showAtVersionModal}
-                    title={atVersionModalTitle}
-                    actionType={atVersionModalType}
-                    versionText={atVersionModalVersionText}
-                    dateAvailabilityText={atVersionModalDateText}
-                    handleAction={onUpdateAtVersionAction}
-                    handleClose={onUpdateModalClose}
-                />
-            )}
-
-            {showThemedModal && (
-                <BasicThemedModal
-                    show={showThemedModal}
-                    theme={themedModalType}
-                    title={themedModalTitle}
-                    dialogClassName="modal-50w"
-                    content={themedModalContent}
-                    actionButtons={[
-                        {
-                            text:
-                                themedModalType === 'danger' ? 'Remove' : 'Ok',
-                            action:
-                                themedModalType === 'danger'
-                                    ? () =>
-                                          onUpdateAtVersionAction('delete', {})
-                                    : onThemedModalClose
+                                {browsers.map(item => (
+                                    <option
+                                        key={`${item.name}-${item.id}`}
+                                        value={item.id}
+                                    >
+                                        {item.name}
+                                    </option>
+                                ))}
+                            </Form.Control>
+                        </Form.Group>
+                    </div>
+                    <Button
+                        ref={addTestPlanReportButtonRef}
+                        variant="primary"
+                        disabled={
+                            !selectedTestPlanVersionId ||
+                            !selectedAtId ||
+                            !selectedBrowserId
                         }
-                    ]}
-                    handleClose={onThemedModalClose}
-                    showCloseAction={themedModalType === 'danger'}
-                />
-            )}
+                        onClick={handleAddTestPlanToTestQueue}
+                    >
+                        Add Test Plan to Test Queue
+                    </Button>
+                </DisclosureContainer>
 
-            {showFeedbackModal && (
-                <BasicModal
-                    show={showFeedbackModal}
-                    closeButton={false}
-                    title={feedbackModalTitle}
-                    content={feedbackModalContent}
-                    closeLabel="Ok"
-                    handleClose={() => {
-                        setShowFeedbackModal(false);
-                        focusButtonRef.current.focus();
-                    }}
-                />
-            )}
+                {showAtVersionModal && (
+                    <UpdateVersionModal
+                        show={showAtVersionModal}
+                        title={atVersionModalTitle}
+                        actionType={atVersionModalType}
+                        versionText={atVersionModalVersionText}
+                        dateAvailabilityText={atVersionModalDateText}
+                        handleAction={onUpdateAtVersionAction}
+                        handleClose={onUpdateModalClose}
+                    />
+                )}
 
-            {showLoadingModal && <LoadingModal title={loadingModalTitle} />}
-        </Container>
+                {showThemedModal && (
+                    <BasicThemedModal
+                        show={showThemedModal}
+                        theme={themedModalType}
+                        title={themedModalTitle}
+                        dialogClassName="modal-50w"
+                        content={themedModalContent}
+                        actionButtons={[
+                            {
+                                text:
+                                    themedModalType === 'danger'
+                                        ? 'Remove'
+                                        : 'Ok',
+                                action:
+                                    themedModalType === 'danger'
+                                        ? () =>
+                                              onUpdateAtVersionAction(
+                                                  'delete',
+                                                  {}
+                                              )
+                                        : onThemedModalClose
+                            }
+                        ]}
+                        handleClose={onThemedModalClose}
+                        showCloseAction={themedModalType === 'danger'}
+                    />
+                )}
+
+                {showFeedbackModal && (
+                    <BasicModal
+                        show={showFeedbackModal}
+                        closeButton={false}
+                        title={feedbackModalTitle}
+                        content={feedbackModalContent}
+                        closeLabel="Ok"
+                        handleClose={() => {
+                            setShowFeedbackModal(false);
+                            focusButtonRef.current.focus();
+                        }}
+                    />
+                )}
+            </Container>
+        </LoadingStatus>
     );
 };
 
