@@ -206,9 +206,6 @@ const ManageTestQueue = ({
     const [selectedAtId, setSelectedAtId] = useState('');
     const [selectedBrowserId, setSelectedBrowserId] = useState('');
 
-    // const [showLoadingModal, setShowLoadingModal] = useState(false);
-    // const [loadingModalTitle, setLoadingModalTitle] = useState('');
-
     const [addAtVersion] = useMutation(ADD_AT_VERSION_MUTATION);
     const [editAtVersion] = useMutation(EDIT_AT_VERSION_MUTATION);
     const [deleteAtVersion] = useMutation(DELETE_AT_VERSION_MUTATION);

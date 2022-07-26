@@ -49,7 +49,6 @@ const LoadingStatus = ({ message, children }) => {
 };
 
 LoadingStatus.propTypes = {
-    isLoading: PropTypes.bool,
     message: PropTypes.string,
     children: PropTypes.node
 };
