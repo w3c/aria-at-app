@@ -220,9 +220,7 @@ const getFake = async ({
                 'NO_OUTPUT';
             break;
         case 'failingDueToUnexpectedBehaviors':
-            testResult.scenarioResults[0].unexpectedBehaviors.push({
-                id: 'OTHER'
-            });
+            testResult.scenarioResults[0].unexpectedBehaviors.push('OTHER');
             testResult.scenarioResults[0].unexpectedBehaviorNote =
                 'Seeded other unexpected behavior';
             break;
@@ -230,12 +228,10 @@ const getFake = async ({
             testResult.scenarioResults[0].assertionResults[0].passed = false;
             testResult.scenarioResults[0].assertionResults[0].failedReason =
                 'INCORRECT_OUTPUT';
-            testResult.scenarioResults[0].unexpectedBehaviors.push({
-                id: 'EXCESSIVELY_VERBOSE'
-            });
-            testResult.scenarioResults[0].unexpectedBehaviors.push({
-                id: 'OTHER'
-            });
+            testResult.scenarioResults[0].unexpectedBehaviors.push(
+                'EXCESSIVELY_VERBOSE'
+            );
+            testResult.scenarioResults[0].unexpectedBehaviors.push('OTHER');
             testResult.scenarioResults[0].unexpectedBehaviorNote =
                 'Seeded other unexpected behavior';
             break;
