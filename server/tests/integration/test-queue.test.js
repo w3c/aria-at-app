@@ -474,7 +474,9 @@ describe('test queue', () => {
         result.testPlanReport.conflicts = result.testPlanReport.conflicts.map(
             conflict => ({
                 ...conflict,
-                conflictingResults: sortBy(conflict.conflictingResults, ['id'])
+                conflictingResults: sortBy(conflict.conflictingResults, [
+                    'testPlanRun.id'
+                ])
             })
         );
 
