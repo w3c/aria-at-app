@@ -95,9 +95,9 @@ class KeysInput {
   /** @param {AriaATFile.CollectedTest} collectedTest */
   static fromCollectedTest(collectedTest) {
     return new KeysInput({
-      origin: 'test.collected.json',
-      keys: collectedTest.commands.reduce((carry, { keypresses }) => {
-        return keypresses.reduce((carry, { id, keystroke }) => {
+      origin: "test.collected.json",
+      keys: collectedTest.commands.reduce((carry, {keypresses}) => {
+        return keypresses.reduce((carry, {id, keystroke}) => {
           carry[id] = keystroke;
           return carry;
         }, carry);
@@ -429,10 +429,14 @@ class ScriptsInput {
       return new ScriptsInput({scripts: ScriptsInput.scriptsFromSource(setupScript)});
     } catch (error) {
       try {
-        return new ScriptsInput({scripts: await ScriptsInput.scriptsFromModuleAsync(setupScript, dataUrl)});
+        return new ScriptsInput({
+          scripts: await ScriptsInput.scriptsFromModuleAsync(setupScript, dataUrl),
+        });
       } catch (error2) {
         try {
-          return new ScriptsInput({scripts: await ScriptsInput.scriptsFromJsonpAsync(setupScript, dataUrl)});
+          return new ScriptsInput({
+            scripts: await ScriptsInput.scriptsFromJsonpAsync(setupScript, dataUrl),
+          });
         } catch (error3) {
           throw new Error([error, error2, error3].map(error => error.stack || error.message).join("\n\n"));
         }
@@ -571,7 +575,7 @@ class BehaviorInput {
         modeInstructions: instructions.mode,
         appliesTo: [target.at.name],
         specificUserInstruction: instructions.raw,
-        setupScriptDescription: target.setupScript ? target.setupScript.description : '',
+        setupScriptDescription: target.setupScript ? target.setupScript.description : "",
         setupTestPage: target.setupScript ? target.setupScript.name : undefined,
         commands: commandsInput.getCommands(info.task, target.mode),
         assertions: assertions.map(({priority, expectation: assertion}) => ({
@@ -873,38 +877,35 @@ export class TestRunInputOutput {
       openTest: {
         enabled: true,
       },
-      commands: test.commands.map(
-        command =>
-          /** @type {import("./aria-at-test-run.mjs").TestRunCommand} */ ({
-            description: command,
-            atOutput: {
-              highlightRequired: false,
-              value: "",
-            },
-            assertions: test.assertions.map(assertion => ({
-              description: assertion.assertion,
-              highlightRequired: false,
-              priority: assertion.priority,
-              result: CommonResultMap.NOT_SET,
-            })),
-            additionalAssertions: test.additionalAssertions.map(assertion => ({
-              description: assertion.assertion,
-              highlightRequired: false,
-              priority: assertion.priority,
-              result: CommonResultMap.NOT_SET,
-            })),
-            unexpected: {
-              highlightRequired: false,
-              hasUnexpected: HasUnexpectedBehaviorMap.NOT_SET,
-              tabbedBehavior: 0,
-              behaviors: test.unexpectedBehaviors.map(({description, requireExplanation}) => ({
-                description,
-                checked: false,
-                more: requireExplanation ? {highlightRequired: false, value: ""} : null,
-              })),
-            },
-          })
-      ),
+      commands: test.commands.map(command => /** @type {import("./aria-at-test-run.mjs").TestRunCommand} */ ({
+        description: command,
+        atOutput: {
+          highlightRequired: false,
+          value: "",
+        },
+        assertions: test.assertions.map(assertion => ({
+          description: assertion.assertion,
+          highlightRequired: false,
+          priority: assertion.priority,
+          result: CommonResultMap.NOT_SET,
+        })),
+        additionalAssertions: test.additionalAssertions.map(assertion => ({
+          description: assertion.assertion,
+          highlightRequired: false,
+          priority: assertion.priority,
+          result: CommonResultMap.NOT_SET,
+        })),
+        unexpected: {
+          highlightRequired: false,
+          hasUnexpected: HasUnexpectedBehaviorMap.NOT_SET,
+          tabbedBehavior: 0,
+          behaviors: test.unexpectedBehaviors.map(({description, requireExplanation}) => ({
+            description,
+            checked: false,
+            more: requireExplanation ? {highlightRequired: false, value: ""} : null,
+          })),
+        },
+      })),
     };
 
     if (this.configInput.resultJSON()) {

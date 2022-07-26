@@ -198,7 +198,8 @@ const getFake = async ({
                     passed: true
                 })
             ),
-            unexpectedBehaviors: []
+            unexpectedBehaviors: [],
+            unexpectedBehaviorNote: null
         }))
     });
 

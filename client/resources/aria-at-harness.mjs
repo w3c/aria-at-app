@@ -91,7 +91,10 @@ export async function loadCollectedTestAsync(testRoot, testFileName) {
   const collectedTestResponse = await fetch(`${testRoot}/${testFileName}`);
   const collectedTestJson = await collectedTestResponse.json();
   await testRunIO.setInputsFromCollectedTestAsync(collectedTestJson, testRoot);
-  testRunIO.setConfigInputFromQueryParamsAndSupport([['at', collectedTestJson.target.at.key], ...Array.from(new URL(document.location).searchParams)]);
+  testRunIO.setConfigInputFromQueryParamsAndSupport([
+    ["at", collectedTestJson.target.at.key],
+    ...Array.from(new URL(document.location).searchParams),
+  ]);
 
   displayInstructionsForBehaviorTest();
 }
@@ -152,7 +155,7 @@ function displayInstructionsForBehaviorTest() {
   if (window.parent && window.parent.postMessage) {
     // results can be submitted by parent posting a message to the
     // iFrame with a data.type property of 'submit'
-    window.addEventListener("message", function (message) {
+    window.addEventListener("message", function(message) {
       if (!validateMessage(message, "submit")) return;
       app.hooks.submit();
     });
@@ -284,7 +287,7 @@ function renderVirtualTestPage(doc) {
           section(
             id("errors"),
             style({display: doc.errors && doc.errors.visible ? "block" : "none"}),
-            h2(doc.errors ? doc.errors.header : ''),
+            h2(doc.errors ? doc.errors.header : ""),
             ul(...(doc.errors && doc.errors.errors ? doc.errors.errors.map(error => li(error)) : [])),
             hr()
           ),
