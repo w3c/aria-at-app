@@ -30,6 +30,11 @@ const graphqlSchema = gql`
         of a special GitHub team, which is different for each app environment.
         """
         ADMIN
+        """
+        Whether the user can perform vendor actions, such as reviewing
+        candidate test plans. Vendors are specified in vendors.txt.
+        """
+        VENDOR
     }
 
     type User {
