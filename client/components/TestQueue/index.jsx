@@ -10,7 +10,7 @@ import DeleteTestPlanReportModal from '../DeleteTestPlanReportModal';
 import DeleteResultsModal from '../DeleteResultsModal';
 import PageStatus from '../common/PageStatus';
 import {
-    TEST_QUEUE_PAGE_QUERY,
+    TEST_QUEUE_PAGE_NO_CONFLICTS_QUERY,
     TEST_QUEUE_PAGE_CONFLICTS_QUERY
 } from './queries';
 import { evaluateAuth } from '../../utils/evaluateAuth';
@@ -19,9 +19,13 @@ import './TestQueue.css';
 const TestQueue = () => {
     const client = useApolloClient();
 
-    const { loading, data, error, refetch } = useQuery(TEST_QUEUE_PAGE_QUERY);
+    const { loading, data, error, refetch } = useQuery(
+        TEST_QUEUE_PAGE_NO_CONFLICTS_QUERY
+    );
 
     const [pageReady, setPageReady] = useState(false);
+    const [conflictsReady, setConflictsReady] = useState(false);
+
     const [testers, setTesters] = useState([]);
     const [ats, setAts] = useState([]);
     const [browsers, setBrowsers] = useState([]);
@@ -72,6 +76,7 @@ const TestQueue = () => {
             setLatestTestPlanVersions(testPlans);
             setPageReady(true);
 
+            setConflictsReady(false);
             (async () => {
                 const { data: conflictsResultData } = await client.query({
                     query: TEST_QUEUE_PAGE_CONFLICTS_QUERY
@@ -83,6 +88,7 @@ const TestQueue = () => {
                         Object.assign({}, { id, conflicts }, testPlanReports[i])
                 );
                 setTestPlanReports(result);
+                setConflictsReady(true);
             })();
         }
     }, [data]);
@@ -142,6 +148,7 @@ const TestQueue = () => {
                                     key={key}
                                     user={auth}
                                     testers={testers}
+                                    conflictsReady={conflictsReady}
                                     testPlanReport={testPlanReport}
                                     latestTestPlanVersions={
                                         latestTestPlanVersions

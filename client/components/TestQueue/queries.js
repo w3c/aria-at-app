@@ -38,17 +38,17 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
         testPlanReports(statuses: [DRAFT, IN_REVIEW]) {
             id
             status
-            #            conflicts {
-            #                source {
-            #                    locationOfData
-            #                }
-            #                conflictingResults {
-            #                    locationOfData
-            #                }
-            #            }
-            #            runnableTests {
-            #                id
-            #            }
+            conflicts {
+                source {
+                    locationOfData
+                }
+                conflictingResults {
+                    locationOfData
+                }
+            }
+            runnableTests {
+                id
+            }
             runnableTestsLength
             at {
                 id
@@ -74,13 +74,91 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
                     id
                     username
                 }
-                #                testResults {
-                #                    id
-                #                    test {
-                #                        id
-                #                    }
-                #                    completedAt
-                #                }
+                testResults {
+                    id
+                    test {
+                        id
+                    }
+                    completedAt
+                }
+                testResultsLength
+            }
+        }
+        testPlans {
+            latestTestPlanVersion {
+                id
+                gitSha
+                testPlan {
+                    id
+                }
+            }
+        }
+    }
+`;
+
+export const TEST_QUEUE_PAGE_NO_CONFLICTS_QUERY = gql`
+    query TestQueuePageNoConflicts {
+        me {
+            id
+            username
+            roles
+        }
+        users {
+            id
+            username
+            roles
+        }
+        ats {
+            id
+            name
+            atVersions {
+                id
+                name
+                releasedAt
+            }
+        }
+        browsers {
+            id
+            name
+        }
+        testPlanVersions {
+            id
+            title
+            gitSha
+            gitMessage
+            testPlan {
+                directory
+            }
+            updatedAt
+        }
+        testPlanReports(statuses: [DRAFT, IN_REVIEW]) {
+            id
+            status
+            runnableTestsLength
+            at {
+                id
+                name
+            }
+            browser {
+                id
+                name
+            }
+            testPlanVersion {
+                id
+                title
+                gitSha
+                gitMessage
+                testPlan {
+                    directory
+                }
+                updatedAt
+            }
+            draftTestPlanRuns {
+                id
+                tester {
+                    id
+                    username
+                }
                 testResultsLength
             }
         }

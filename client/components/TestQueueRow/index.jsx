@@ -28,6 +28,7 @@ import { LoadingStatus, useTriggerLoad } from '../common/LoadingStatus';
 const TestQueueRow = ({
     user = {},
     testers = [],
+    conflictsReady = false,
     testPlanReport = {},
     latestTestPlanVersions = [],
     triggerDeleteTestPlanReportModal = () => {},
@@ -387,7 +388,11 @@ const TestQueueRow = ({
         let status, results;
         const conflictCount = conflicts.length;
 
-        if (conflictCount > 0) {
+        if (!conflictsReady) {
+            status = (
+                <span className="status-label not-started">Loading ...</span>
+            );
+        } else if (conflictCount > 0) {
             let pluralizedStatus = `${conflictCount} Conflict${
                 conflictCount === 1 ? '' : 's'
             }`;
@@ -514,7 +519,7 @@ const TestQueueRow = ({
                     <div className="status-wrapper">{status}</div>
                     {isSignedIn && (
                         <div className="secondary-actions">
-                            {isAdmin && nextReportStatus && (
+                            {isAdmin && nextReportStatus && conflictsReady && (
                                 <>
                                     <Button
                                         ref={updateTestPlanStatusButtonRef}
@@ -658,10 +663,11 @@ const TestQueueRow = ({
 };
 
 TestQueueRow.propTypes = {
-    latestTestPlanVersions: PropTypes.array,
     user: PropTypes.object,
     testers: PropTypes.array,
+    conflictsReady: PropTypes.bool,
     testPlanReport: PropTypes.object,
+    latestTestPlanVersions: PropTypes.array,
     triggerDeleteTestPlanReportModal: PropTypes.func,
     triggerDeleteResultsModal: PropTypes.func,
     triggerTestPlanReportUpdate: PropTypes.func
