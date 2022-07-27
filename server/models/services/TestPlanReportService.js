@@ -1,3 +1,4 @@
+const { sequelize } = require('../');
 const ModelService = require('./ModelService');
 const {
     TEST_PLAN_REPORT_ATTRIBUTES,
@@ -123,8 +124,40 @@ const getTestPlanReportById = async (
         id,
         testPlanReportAttributes,
         [
-            testPlanRunAssociation(testPlanRunAttributes, userAttributes),
-            testPlanVersionAssociation(testPlanVersionAttributes),
+            testPlanRunAssociation(
+                testPlanRunAttributes.concat([
+                    [
+                        sequelize.literal(`( WITH testPlanRunResult AS ( SELECT jsonb_array_elements("testResults") AS results )
+                                            SELECT COUNT(*)
+                                                FROM testPlanRunResult
+                                                WHERE (testPlanRunResult.results -> 'completedAt') IS NOT NULL
+                                                AND (testPlanRunResult.results -> 'completedAt') != 'null' )`),
+                        'testResultsLength'
+                    ]
+                ]),
+                userAttributes
+            ),
+            testPlanVersionAssociation(
+                testPlanVersionAttributes.concat([
+                    [
+                        sequelize.literal(`( WITH testPlanVersionResult AS ( SELECT jsonb_array_elements("tests") AS results )
+                                            SELECT json_build_array(
+                                                ( SELECT COUNT(*)
+                                                    FROM testPlanVersionResult
+                                                    WHERE testPlanVersionResult.results @> '{"atIds": [1]}' ),
+                                                ( SELECT COUNT (*)
+                                                    FROM testPlanVersionResult
+                                                    WHERE testPlanVersionResult.results @> '{"atIds": [2]}' ),
+                                                ( SELECT COUNT(*)
+                                                    FROM testPlanVersionResult
+                                                    WHERE testPlanVersionResult.results @> '{"atIds": [3]}' )
+                                            )
+                                        FROM testPlanVersionResult
+                                        LIMIT 1 )`),
+                        'runnableTestsCount'
+                    ]
+                ])
+            ),
             atAssociation(atAttributes, atVersionAttributes),
             browserAssociation(browserAttributes, browserVersionAttributes)
         ],
@@ -174,8 +207,40 @@ const getTestPlanReports = async (
         where,
         testPlanReportAttributes,
         [
-            testPlanRunAssociation(testPlanRunAttributes, userAttributes),
-            testPlanVersionAssociation(testPlanVersionAttributes),
+            testPlanRunAssociation(
+                testPlanRunAttributes.concat([
+                    [
+                        sequelize.literal(`( WITH testPlanRunResult AS ( SELECT jsonb_array_elements("testResults") AS results )
+                                            SELECT COUNT(*)
+                                                FROM testPlanRunResult
+                                                WHERE (testPlanRunResult.results -> 'completedAt') IS NOT NULL
+                                                AND (testPlanRunResult.results -> 'completedAt') != 'null' )`),
+                        'testResultsLength'
+                    ]
+                ]),
+                userAttributes
+            ),
+            testPlanVersionAssociation(
+                testPlanVersionAttributes.concat([
+                    [
+                        sequelize.literal(`( WITH testPlanVersionResult AS ( SELECT jsonb_array_elements("tests") AS results )
+                                        SELECT json_build_array(
+                                            ( SELECT COUNT(*)
+                                                FROM testPlanVersionResult
+                                                WHERE testPlanVersionResult.results @> '{"atIds": [1]}' ),
+                                            ( SELECT COUNT (*)
+                                                FROM testPlanVersionResult
+                                                WHERE testPlanVersionResult.results @> '{"atIds": [2]}' ),
+                                            ( SELECT COUNT(*)
+                                                FROM testPlanVersionResult
+                                                WHERE testPlanVersionResult.results @> '{"atIds": [3]}' )
+                                        )
+                                    FROM testPlanVersionResult
+                                    LIMIT 1 )`),
+                        'runnableTestsCount'
+                    ]
+                ])
+            ),
             atAssociation(atAttributes, atVersionAttributes),
             browserAssociation(browserAttributes, browserVersionAttributes)
         ],

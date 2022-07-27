@@ -1,19 +1,7 @@
-const {
-    getTestPlanVersionTestsForAtCount
-} = require('../../models/services/TestPlanVersionService');
-
 const runnableTestsLengthResolver = async testPlanReport => {
-    const isTestPlanVersion = !!testPlanReport.tests;
-    const testPlanReportResult = isTestPlanVersion ? null : testPlanReport;
-    const testPlanVersion = isTestPlanVersion
-        ? testPlanReport
-        : testPlanReportResult.testPlanVersion;
-
-    return await getTestPlanVersionTestsForAtCount(
-        testPlanVersion.id,
-        testPlanVersion.directory,
-        testPlanReport.atId
-    );
+    return testPlanReport.testPlanVersion.dataValues.runnableTestsCount[
+        testPlanReport.atId - 1
+    ];
 };
 
 module.exports = runnableTestsLengthResolver;
