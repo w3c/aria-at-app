@@ -262,7 +262,7 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK_ADMIN = [
                         ]
                     },
                     {
-                        id: '1',
+                        id: '2',
                         status: 'DRAFT',
                         conflicts: [],
                         runnableTestsLength: 17,
@@ -288,7 +288,7 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK_ADMIN = [
                         ]
                     },
                     {
-                        id: '2',
+                        id: '3',
                         status: 'DRAFT',
                         runnableTestsLength: 17,
                         at: { id: '2', name: 'NVDA' },
@@ -389,7 +389,7 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK_ADMIN = [
                         ]
                     },
                     {
-                        id: '1',
+                        id: '2',
                         conflicts: [],
                         runnableTests: [
                             { id: 'NjgwYeyIyIjoiMSJ9zYxZT' },
@@ -443,7 +443,7 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK_ADMIN = [
                         ]
                     },
                     {
-                        id: '2',
+                        id: '3',
                         conflicts: [
                             {
                                 source: {

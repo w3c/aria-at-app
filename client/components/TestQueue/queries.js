@@ -207,6 +207,60 @@ export const TEST_QUEUE_PAGE_CONFLICTS_QUERY = gql`
     }
 `;
 
+export const TEST_PLAN_REPORT_QUERY = gql`
+    query TestPlanReport($testPlanReportId: ID!) {
+        testPlanReport(id: $testPlanReportId) {
+            id
+            status
+            conflicts {
+                source {
+                    locationOfData
+                }
+                conflictingResults {
+                    locationOfData
+                }
+            }
+            runnableTests {
+                id
+            }
+            runnableTestsLength
+            at {
+                id
+                name
+            }
+            browser {
+                id
+                name
+            }
+            testPlanVersion {
+                id
+                title
+                gitSha
+                gitMessage
+                testPlan {
+                    directory
+                }
+                updatedAt
+            }
+            draftTestPlanRuns {
+                id
+                tester {
+                    id
+                    username
+                }
+                testResults {
+                    id
+                    test {
+                        id
+                    }
+                    completedAt
+                }
+                testResultsLength
+            }
+        }
+    }
+`;
+
 export const POPULATE_ADD_TEST_PLAN_TO_QUEUE_MODAL_QUERY = gql`
     query TestQueueAddTestPlanModal {
         ats {

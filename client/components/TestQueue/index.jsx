@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useApolloClient, useQuery } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 import { Link } from 'react-router-dom';
 import { Container, Table, Alert } from 'react-bootstrap';
 import { Helmet } from 'react-helmet';
@@ -17,14 +17,15 @@ import { evaluateAuth } from '../../utils/evaluateAuth';
 import './TestQueue.css';
 
 const TestQueue = () => {
-    const client = useApolloClient();
-
     const { loading, data, error, refetch } = useQuery(
         TEST_QUEUE_PAGE_NO_CONFLICTS_QUERY
     );
+    const { data: conflictsData } = useQuery(TEST_QUEUE_PAGE_CONFLICTS_QUERY, {
+        skip: !data
+    });
 
     const [pageReady, setPageReady] = useState(false);
-    const [conflictsReady, setConflictsReady] = useState(false);
+    const [isConflictsLoading, setIsConflictsLoading] = useState(true);
 
     const [testers, setTesters] = useState([]);
     const [ats, setAts] = useState([]);
@@ -53,14 +54,14 @@ const TestQueue = () => {
     const isSignedIn = !!id;
 
     useEffect(() => {
-        // const abortController = new AbortController();
         if (data) {
+            setIsConflictsLoading(true);
             const {
                 users = [],
                 ats = [],
                 browsers = [],
                 testPlanVersions = [],
-                testPlanReports = [],
+                testPlanReports: dataTestPlanReports = [],
                 testPlans = []
             } = data;
             setTesters(
@@ -73,32 +74,45 @@ const TestQueue = () => {
             setAts(ats);
             setTestPlanVersions(testPlanVersions);
             setBrowsers(browsers);
-            setTestPlanReports(testPlanReports);
+
+            // Don't force other rows conflicts to be evaluated if no active
+            // refetch trigger
+            if (testPlanReports.length) {
+                const result = dataTestPlanReports.map(testPlanReport => ({
+                    ...testPlanReport,
+                    conflicts:
+                        testPlanReports.find(t => t.id === testPlanReport.id)
+                            ?.conflicts || []
+                }));
+
+                // Filter in rare case where additional array may have been
+                // added which would cause rendering issues if other attributes
+                // are not present. Allows current size of initial list to
+                // remain consistent
+                setTestPlanReports(result.filter(r => !!r.conflicts));
+            } else setTestPlanReports(dataTestPlanReports);
             setLatestTestPlanVersions(testPlans);
             setPageReady(true);
-
-            setConflictsReady(false);
-            (async () => {
-                const { data: conflictsResultData } = await client.query({
-                    query: TEST_QUEUE_PAGE_CONFLICTS_QUERY /*,
-                    context: {
-                        fetchOptions: {
-                            signal: abortController.signal
-                        }
-                    }*/
-                });
-
-                // merge conflicts to original testPlanReports data
-                const result = conflictsResultData.testPlanReports.map(
-                    ({ id, conflicts }, i) =>
-                        Object.assign({}, { id, conflicts }, testPlanReports[i])
-                );
-                setTestPlanReports(result);
-                setConflictsReady(true);
-            })();
         }
-        // return () => abortController.abort();
     }, [data]);
+
+    useEffect(() => {
+        if (conflictsData) {
+            // merge conflicts to original testPlanReports data
+            const result = conflictsData.testPlanReports.map(
+                ({ id, conflicts }) => ({
+                    ...testPlanReports.find(t => t.id === id),
+                    conflicts
+                })
+            );
+
+            // Filter in rare case where additional array may have been added,
+            // which would cause rendering issues if other attributes are not
+            // present. Allows current size of initial list to remain consistent
+            setTestPlanReports(result.filter(r => !!r.status));
+            setIsConflictsLoading(false);
+        }
+    }, [conflictsData]);
 
     useEffect(() => {
         const structuredTestPlanTargets = generateStructuredTestPlanVersions(
@@ -155,8 +169,8 @@ const TestQueue = () => {
                                     key={key}
                                     user={auth}
                                     testers={testers}
-                                    conflictsReady={conflictsReady}
-                                    testPlanReport={testPlanReport}
+                                    isConflictsLoading={isConflictsLoading}
+                                    testPlanReportData={testPlanReport}
                                     latestTestPlanVersions={
                                         latestTestPlanVersions
                                     }
@@ -166,7 +180,7 @@ const TestQueue = () => {
                                     triggerDeleteResultsModal={
                                         triggerDeleteResultsModal
                                     }
-                                    triggerTestPlanReportUpdate={refetch}
+                                    triggerPageUpdate={refetch}
                                 />
                             );
                         })}
