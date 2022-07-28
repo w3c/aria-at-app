@@ -53,6 +53,7 @@ const TestQueue = () => {
     const isSignedIn = !!id;
 
     useEffect(() => {
+        // const abortController = new AbortController();
         if (data) {
             const {
                 users = [],
@@ -79,7 +80,12 @@ const TestQueue = () => {
             setConflictsReady(false);
             (async () => {
                 const { data: conflictsResultData } = await client.query({
-                    query: TEST_QUEUE_PAGE_CONFLICTS_QUERY
+                    query: TEST_QUEUE_PAGE_CONFLICTS_QUERY /*,
+                    context: {
+                        fetchOptions: {
+                            signal: abortController.signal
+                        }
+                    }*/
                 });
 
                 // merge conflicts to original testPlanReports data
@@ -91,6 +97,7 @@ const TestQueue = () => {
                 setConflictsReady(true);
             })();
         }
+        // return () => abortController.abort();
     }, [data]);
 
     useEffect(() => {

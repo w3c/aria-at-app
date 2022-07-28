@@ -685,6 +685,9 @@ const graphqlSchema = gql`
         found on the TestPlanVersion type.
         """
         testResults: [TestResult]!
+        """
+        The number of completed tests for this TestPlanRun.
+        """
         testResultsLength: Int!
     }
 
@@ -760,6 +763,9 @@ const graphqlSchema = gql`
         where the AT matches the report's AT.
         """
         runnableTests: [Test]!
+        """
+        The number of tests available for this TestPlanReport's AT.
+        """
         runnableTestsLength: Int!
         """
         A list of conflicts between runs, which may occur at the level of the

@@ -125,22 +125,25 @@ const getTestPlanReportById = async (
         testPlanReportAttributes,
         [
             testPlanRunAssociation(
-                testPlanRunAttributes.concat([
-                    [
-                        sequelize.literal(`( WITH testPlanRunResult AS ( SELECT jsonb_array_elements("testResults") AS results )
+                testPlanRunAttributes?.length
+                    ? testPlanRunAttributes.concat([
+                          [
+                              sequelize.literal(`( WITH testPlanRunResult AS ( SELECT jsonb_array_elements("testResults") AS results )
                                             SELECT COUNT(*)
                                                 FROM testPlanRunResult
                                                 WHERE (testPlanRunResult.results -> 'completedAt') IS NOT NULL
                                                 AND (testPlanRunResult.results -> 'completedAt') != 'null' )`),
-                        'testResultsLength'
-                    ]
-                ]),
+                              'testResultsLength'
+                          ]
+                      ])
+                    : testPlanRunAttributes,
                 userAttributes
             ),
             testPlanVersionAssociation(
-                testPlanVersionAttributes.concat([
-                    [
-                        sequelize.literal(`( WITH testPlanVersionResult AS ( SELECT jsonb_array_elements("tests") AS results )
+                testPlanVersionAttributes?.length
+                    ? testPlanVersionAttributes.concat([
+                          [
+                              sequelize.literal(`( WITH testPlanVersionResult AS ( SELECT jsonb_array_elements("tests") AS results )
                                             SELECT json_build_array(
                                                 ( SELECT COUNT(*)
                                                     FROM testPlanVersionResult
@@ -154,9 +157,10 @@ const getTestPlanReportById = async (
                                             )
                                         FROM testPlanVersionResult
                                         LIMIT 1 )`),
-                        'runnableTestsCount'
-                    ]
-                ])
+                              'runnableTestsCount'
+                          ]
+                      ])
+                    : testPlanVersionAttributes
             ),
             atAssociation(atAttributes, atVersionAttributes),
             browserAssociation(browserAttributes, browserVersionAttributes)
@@ -208,22 +212,25 @@ const getTestPlanReports = async (
         testPlanReportAttributes,
         [
             testPlanRunAssociation(
-                testPlanRunAttributes.concat([
-                    [
-                        sequelize.literal(`( WITH testPlanRunResult AS ( SELECT jsonb_array_elements("testResults") AS results )
+                testPlanRunAttributes?.length
+                    ? testPlanRunAttributes.concat([
+                          [
+                              sequelize.literal(`( WITH testPlanRunResult AS ( SELECT jsonb_array_elements("testResults") AS results )
                                             SELECT COUNT(*)
                                                 FROM testPlanRunResult
                                                 WHERE (testPlanRunResult.results -> 'completedAt') IS NOT NULL
                                                 AND (testPlanRunResult.results -> 'completedAt') != 'null' )`),
-                        'testResultsLength'
-                    ]
-                ]),
+                              'testResultsLength'
+                          ]
+                      ])
+                    : testPlanRunAttributes,
                 userAttributes
             ),
             testPlanVersionAssociation(
-                testPlanVersionAttributes.concat([
-                    [
-                        sequelize.literal(`( WITH testPlanVersionResult AS ( SELECT jsonb_array_elements("tests") AS results )
+                testPlanVersionAttributes?.length
+                    ? testPlanVersionAttributes.concat([
+                          [
+                              sequelize.literal(`( WITH testPlanVersionResult AS ( SELECT jsonb_array_elements("tests") AS results )
                                         SELECT json_build_array(
                                             ( SELECT COUNT(*)
                                                 FROM testPlanVersionResult
@@ -237,9 +244,10 @@ const getTestPlanReports = async (
                                         )
                                     FROM testPlanVersionResult
                                     LIMIT 1 )`),
-                        'runnableTestsCount'
-                    ]
-                ])
+                              'runnableTestsCount'
+                          ]
+                      ])
+                    : testPlanVersionAttributes
             ),
             atAssociation(atAttributes, atVersionAttributes),
             browserAssociation(browserAttributes, browserVersionAttributes)

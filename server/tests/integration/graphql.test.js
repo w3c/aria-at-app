@@ -287,6 +287,7 @@ describe('graphql', () => {
                             renderableContent
                             renderedUrl
                         }
+                        runnableTestsLength
                         draftTestPlanRuns {
                             __typename
                             id
@@ -334,6 +335,7 @@ describe('graphql', () => {
                                     }
                                 }
                             }
+                            testResultsLength
                         }
                         conflicts {
                             __typename
