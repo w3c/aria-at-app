@@ -386,7 +386,7 @@ function renderVirtualInstructionDocument(doc) {
               type("checkbox"),
               value(failOption.description),
               id(`${failOption.description}-${commandIndex}`),
-              className([`undesirable-${commandIndex}`]),
+              className([`unexpected-${commandIndex}`]),
               tabIndex(failOption.tabbable ? "0" : "-1"),
               disabled(!failOption.enabled),
               checked(failOption.checked),
@@ -400,21 +400,21 @@ function renderVirtualInstructionDocument(doc) {
               })
             ),
             label(forInput(`${failOption.description}-${commandIndex}`), rich(failOption.description)),
-            br(),
-            failOption.more
-              ? div(
-                  label(forInput(`${failOption.description}-${commandIndex}-input`), rich(failOption.more.description)),
-                  input(
-                    type("text"),
-                    id(`${failOption.description}-${commandIndex}-input`),
-                    name(`${failOption.description}-${commandIndex}-input`),
-                    className(["undesirable-other-input"]),
-                    disabled(!failOption.more.enabled),
-                    value(failOption.more.value),
-                    onchange(ev => failOption.more.change(/** @type {HTMLInputElement} */ (ev.currentTarget).value))
-                  )
-                )
-              : fragment()
+            br()
+          )
+        ),
+        fragment(
+          // TODO: Figure out why this isn't appearing
+          div(
+            label(forInput("unexpected-behavior-note"), rich("Add an explanation")),
+            input(
+              type("text"),
+              id("unexpected-behavior-note"),
+              name("unexpected-behavior-note"),
+              className(["unexpected-behavior-note"]),
+              value(unexpected.note.value),
+              onchange(ev => unexpected.note.change(/** @type {HTMLInputElement} */ (ev.currentTarget).value))
+            )
           )
         )
       )

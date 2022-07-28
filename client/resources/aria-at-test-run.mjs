@@ -19,7 +19,7 @@ export class TestRun {
       setCommandAssertion: bindDispatch(userChangeCommandAssertion),
       setCommandHasUnexpectedBehavior: bindDispatch(userChangeCommandHasUnexpectedBehavior),
       setCommandUnexpectedBehavior: bindDispatch(userChangeCommandUnexpectedBehavior),
-      setCommandUnexpectedBehaviorMore: bindDispatch(userChangeCommandUnexpectedBehaviorMore),
+      setCommandUnexpectedBehaviorNote: bindDispatch(userChangeCommandUnexpectedBehaviorNote),
       setCommandOutput: bindDispatch(userChangeCommandOutput),
       submit: () => submitResult(this),
       ...hooks,
@@ -228,7 +228,7 @@ export function instructionDocument(resultState, hooks) {
       ],
       unexpectedBehaviors: {
         description: [
-          "Were there additional undesirable behaviors?",
+          "Were there additional unexpected behaviors?",
           {
             required: true,
             highlightRequired: resultStateCommand.unexpected.highlightRequired,
@@ -236,7 +236,7 @@ export function instructionDocument(resultState, hooks) {
           },
         ],
         passChoice: {
-          label: "No, there were no additional undesirable behaviors.",
+          label: "No, there were no additional unexpected behaviors.",
           checked: resultUnexpectedBehavior.hasUnexpected === HasUnexpectedBehaviorMap.DOES_NOT_HAVE_UNEXPECTED,
           focus:
             resultState.currentUserAction === "validateResults" &&
@@ -250,7 +250,7 @@ export function instructionDocument(resultState, hooks) {
             }),
         },
         failChoice: {
-          label: "Yes, there were additional undesirable behaviors",
+          label: "Yes, there were additional unexpected behaviors.",
           checked: resultUnexpectedBehavior.hasUnexpected === HasUnexpectedBehaviorMap.HAS_UNEXPECTED,
           focus:
             resultState.currentUserAction === "validateResults" &&
@@ -263,7 +263,7 @@ export function instructionDocument(resultState, hooks) {
               hasUnexpected: HasUnexpectedBehaviorMap.HAS_UNEXPECTED,
             }),
           options: {
-            header: "Undesirable behaviors",
+            header: "Unexpected behaviors",
             options: resultUnexpectedBehavior.behaviors.map((behavior, unexpectedIndex) => {
               return {
                 description: behavior.description,
@@ -272,7 +272,7 @@ export function instructionDocument(resultState, hooks) {
                 checked: behavior.checked,
                 focus:
                   typeof resultState.currentUserAction === "object" &&
-                  resultState.currentUserAction.action === UserObjectActionMap.FOCUS_UNDESIRABLE
+                  resultState.currentUserAction.action === UserObjectActionMap.FOCUS_UNEXPECTED
                     ? resultState.currentUserAction.commandIndex === commandIndex &&
                       resultUnexpectedBehavior.tabbedBehavior === unexpectedIndex
                     : resultState.currentUserAction === UserActionMap.VALIDATE_RESULTS &&
@@ -288,29 +288,23 @@ export function instructionDocument(resultState, hooks) {
                   }
                   return false;
                 },
-                more: behavior.more
-                  ? {
-                      description: /** @type {Description[]} */ ([
-                        `If "other" selected, explain`,
-                        {
-                          required: true,
-                          highlightRequired: behavior.more.highlightRequired,
-                          description: "(required)",
-                        },
-                      ]),
-                      enabled: behavior.checked,
-                      value: behavior.more.value,
-                      focus:
-                        resultState.currentUserAction === "validateResults" &&
-                        behavior.more.highlightRequired &&
-                        focusFirstRequired(),
-                      change: value =>
-                        hooks.setCommandUnexpectedBehaviorMore({commandIndex, unexpectedIndex, more: value}),
-                    }
-                  : null,
               };
             }),
           },
+        },
+        note: {
+          description: /** @type {Description[]} */ ([
+            `If "other" selected, explain`,
+            {
+              required: false,
+              highlightRequired: true, // behavior.more.highlightRequired,
+              description: "(not required)",
+            },
+          ]),
+          enabled: true, // behavior.checked,
+          value: "", // behavior.more.value,
+          focus: resultState.currentUserAction === "validateResults" && focusFirstRequired(),
+          change: value => hooks.setCommandUnexpectedBehaviorNote({commandIndex, note: value}),
         },
       },
     };
@@ -428,7 +422,7 @@ export const UserActionMap = createEnumMap({
  */
 
 export const UserObjectActionMap = createEnumMap({
-  FOCUS_UNDESIRABLE: "focusUndesirable",
+  FOCUS_UNEXPECTED: "focusUnexpected",
 });
 
 /**
@@ -620,7 +614,7 @@ export function userChangeCommandUnexpectedBehavior({commandIndex, unexpectedInd
  * @param {string} props.more
  * @returns {(state: TestRunState) => TestRunState}
  */
-export function userChangeCommandUnexpectedBehaviorMore({commandIndex, unexpectedIndex, more}) {
+export function userChangeCommandUnexpectedBehaviorNote({commandIndex, unexpectedIndex, note}) {
   return function(state) {
     return {
       ...state,
@@ -632,17 +626,10 @@ export function userChangeCommandUnexpectedBehaviorMore({commandIndex, unexpecte
               ...command,
               unexpected: {
                 ...command.unexpected,
-                behaviors: command.unexpected.behaviors.map((unexpected, unexpectedI) =>
-                  unexpectedI !== unexpectedIndex
-                    ? unexpected
-                    : /** @type {TestRunUnexpectedBehavior} */ ({
-                        ...unexpected,
-                        more: {
-                          ...unexpected.more,
-                          value: more,
-                        },
-                      })
-                ),
+                note: {
+                  ...unexpected.note,
+                  value: note,
+                },
               },
             })
       ),
@@ -854,7 +841,7 @@ export function userFocusCommandUnexpectedBehavior({commandIndex, unexpectedInde
     return {
       ...state,
       currentUserAction: {
-        action: UserObjectActionMap.FOCUS_UNDESIRABLE,
+        action: UserObjectActionMap.FOCUS_UNEXPECTED,
         commandIndex,
         unexpectedIndex: newUnexpectedIndex,
       },
@@ -1125,13 +1112,13 @@ export function userValidateState() {
  * @property {(options: {commandIndex: number, hasUnexpected: HasUnexpectedBehavior}) => void } setCommandHasUnexpectedBehavior
  * @property {(options: {commandIndex: number, atOutput: string}) => void} setCommandOutput
  * @property {(options: {commandIndex: number, unexpectedIndex: number, checked}) => void } setCommandUnexpectedBehavior
- * @property {(options: {commandIndex: number, unexpectedIndex: number, more: string}) => void } setCommandUnexpectedBehaviorMore
+ * @property {(options: {commandIndex: number, unexpectedIndex: number, more: string}) => void } setCommandUnexpectedBehaviorNote
  * @property {() => void} submit
  */
 
 /**
  * @typedef UserActionFocusUnexpected
- * @property {typeof UserObjectActionMap["FOCUS_UNDESIRABLE"]} action
+ * @property {typeof UserObjectActionMap["FOCUS_UNEXPECTED"]} action
  * @property {number} commandIndex
  * @property {number} unexpectedIndex
  */
