@@ -75,8 +75,6 @@ const TestQueue = () => {
             setTestPlanVersions(testPlanVersions);
             setBrowsers(browsers);
 
-            // Don't force other rows conflicts to be evaluated if no active
-            // refetch trigger
             if (testPlanReports.length) {
                 const result = dataTestPlanReports.map(testPlanReport => ({
                     ...testPlanReport,
