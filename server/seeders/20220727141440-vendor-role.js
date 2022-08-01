@@ -1,6 +1,6 @@
 'use strict';
 
-const { Role, User } = require('../models');
+const { Role } = require('../models');
 
 module.exports = {
     up: async queryInterface => {
