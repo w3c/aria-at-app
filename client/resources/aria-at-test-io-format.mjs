@@ -11,7 +11,6 @@ import {
   CommonResultMap,
 } from "./aria-at-test-run.mjs";
 import * as keysModule from "./keys.mjs";
-import * as keys from "@client/resources/keys.mjs";
 
 const UNEXPECTED_BEHAVIORS = [
   "Output is excessively verbose, e.g., includes redundant and/or irrelevant speech",
