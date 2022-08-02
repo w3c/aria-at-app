@@ -686,7 +686,9 @@ const graphqlSchema = gql`
         """
         testResults: [TestResult]!
         """
-        The number of completed tests for this TestPlanRun.
+        The number of completed tests for this TestPlanRun. Foregoes the need of
+        getting the length from testResults which would require running
+        expensive time-consuming operations to calculate.
         """
         testResultsLength: Int!
     }
@@ -764,7 +766,9 @@ const graphqlSchema = gql`
         """
         runnableTests: [Test]!
         """
-        The number of tests available for this TestPlanReport's AT.
+        The number of tests available for this TestPlanReport's AT. Foregoes the
+        need of getting the length from runnableTests which would require
+        running expensive time-consuming operations to calculate.
         """
         runnableTestsLength: Int!
         """
