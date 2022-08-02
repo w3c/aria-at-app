@@ -685,6 +685,12 @@ const graphqlSchema = gql`
         found on the TestPlanVersion type.
         """
         testResults: [TestResult]!
+        """
+        The number of completed tests for this TestPlanRun. Foregoes the need of
+        getting the length from testResults which would require running
+        expensive time-consuming operations to calculate.
+        """
+        testResultsLength: Int!
     }
 
     """
@@ -759,6 +765,12 @@ const graphqlSchema = gql`
         where the AT matches the report's AT.
         """
         runnableTests: [Test]!
+        """
+        The number of tests available for this TestPlanReport's AT. Foregoes the
+        need of getting the length from runnableTests which would require
+        running expensive time-consuming operations to calculate.
+        """
+        runnableTestsLength: Int!
         """
         A list of conflicts between runs, which may occur at the level of the
         Scenario if the output or unexpected behaviors do not match, or even at

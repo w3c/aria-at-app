@@ -1,3 +1,4 @@
+const { sequelize } = require('../');
 const ModelService = require('./ModelService');
 const {
     TEST_PLAN_REPORT_ATTRIBUTES,
@@ -11,8 +12,38 @@ const {
 } = require('./helpers');
 const { TestPlanReport } = require('../');
 
-// association helpers to be included with Models' results
+// custom column additions to Models being queried
+const testPlanRunLiterals = [
+    sequelize.literal(`(
+        WITH testPlanRunResult AS ( SELECT jsonb_array_elements("testResults") AS results )
+        SELECT COUNT(*)
+        FROM testPlanRunResult
+        WHERE (testPlanRunResult.results -> 'completedAt') IS NOT NULL
+            AND (testPlanRunResult.results -> 'completedAt') != 'null'
+    )`),
+    'testResultsLength'
+];
 
+const testPlanVersionLiterals = [
+    sequelize.literal(`(
+        WITH testPlanVersionResult AS ( SELECT jsonb_array_elements("tests") AS results )
+        SELECT json_build_array(
+            ( SELECT COUNT(*)
+                FROM testPlanVersionResult
+                WHERE testPlanVersionResult.results @> '{"atIds": [1]}' ),
+            ( SELECT COUNT (*)
+                FROM testPlanVersionResult
+                WHERE testPlanVersionResult.results @> '{"atIds": [2]}' ),
+            ( SELECT COUNT(*)
+                FROM testPlanVersionResult
+                WHERE testPlanVersionResult.results @> '{"atIds": [3]}' )
+        )
+        FROM testPlanVersionResult
+        LIMIT 1 )`),
+    'runnableTestsCount'
+];
+
+// association helpers to be included with Models' results
 /**
  * @param {string[]} testPlanRunAttributes - TestPlanRun attributes
  * @param {string[]} userAttributes - User attributes
@@ -20,7 +51,9 @@ const { TestPlanReport } = require('../');
  */
 const testPlanRunAssociation = (testPlanRunAttributes, userAttributes) => ({
     association: 'testPlanRuns',
-    attributes: testPlanRunAttributes,
+    attributes: testPlanRunAttributes?.length
+        ? testPlanRunAttributes.concat([testPlanRunLiterals])
+        : testPlanRunAttributes,
     include: [
         // eslint-disable-next-line no-use-before-define
         userAssociation(userAttributes)
@@ -33,7 +66,9 @@ const testPlanRunAssociation = (testPlanRunAttributes, userAttributes) => ({
  */
 const testPlanVersionAssociation = testPlanVersionAttributes => ({
     association: 'testPlanVersion',
-    attributes: testPlanVersionAttributes
+    attributes: testPlanVersionAttributes?.length
+        ? testPlanVersionAttributes.concat([testPlanVersionLiterals])
+        : testPlanVersionAttributes
 });
 
 /**

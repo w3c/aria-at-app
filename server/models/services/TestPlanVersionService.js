@@ -359,10 +359,11 @@ const updateTestPlanVersion = async (
  * @returns {*} - TestPlans as specified in GraphQL
  */
 const getTestPlans = async ({
+    id,
     includeLatestTestPlanVersion = true,
     includeTestPlanVersions = true,
     testPlanVersionOrder = null,
-    id
+    testPlanVersionAttributes = undefined
 } = {}) => {
     const getTestPlansAndLatestVersionId = async () => {
         const whereClause = id ? `WHERE directory = ?` : '';
@@ -408,9 +409,13 @@ const getTestPlans = async ({
         const latestTestPlanVersionIds = testPlans.map(
             testPlan => testPlan.latestTestPlanVersionId
         );
-        const latestTestPlanVersions = await getTestPlanVersions('', {
-            id: latestTestPlanVersionIds
-        });
+        const latestTestPlanVersions = await getTestPlanVersions(
+            '',
+            {
+                id: latestTestPlanVersionIds
+            },
+            testPlanVersionAttributes
+        );
         testPlans = testPlans.map(testPlan => {
             return {
                 ...testPlan,
@@ -427,7 +432,7 @@ const getTestPlans = async ({
         const testPlanVersions = await getTestPlanVersions(
             undefined,
             undefined,
-            undefined,
+            testPlanVersionAttributes,
             undefined,
             undefined,
             undefined,

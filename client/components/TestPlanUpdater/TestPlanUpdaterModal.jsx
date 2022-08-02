@@ -29,7 +29,7 @@ const TestPlanUpdaterModal = ({
     show,
     handleClose,
     testPlanReportId,
-    triggerTestPlanReportUpdate
+    triggerPageUpdate
 }) => {
     const loadInitialData = async ({
         client,
@@ -325,7 +325,7 @@ const TestPlanUpdaterModal = ({
 
     const closeAndReload = async () => {
         if (newReport) {
-            await triggerTestPlanReportUpdate();
+            await triggerPageUpdate();
         }
         handleClose();
     };
@@ -511,7 +511,7 @@ TestPlanUpdaterModal.propTypes = {
     handleClose: PropTypes.func,
     handleAction: PropTypes.func,
     testPlanReportId: PropTypes.string,
-    triggerTestPlanReportUpdate: PropTypes.func
+    triggerPageUpdate: PropTypes.func
 };
 
 export default TestPlanUpdaterModal;

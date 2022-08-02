@@ -39,8 +39,12 @@ const deriveAttributesFromCustomField = (modelName, customFields) => {
     fields.push(...getChildPaths(modelName, fields));
 
     switch (modelName) {
-        case 'testPlanVersion': {
-            if (fields.includes('testPlan.directory'))
+        case 'testPlanVersion':
+        case 'latestTestPlanVersion': {
+            if (
+                fields.includes('testPlan.id') ||
+                fields.includes('testPlan.directory')
+            )
                 derived.push('directory');
             break;
         }

@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
 
-export const TEST_QUEUE_PAGE_QUERY = gql`
-    query TestQueuePage {
+export const TEST_QUEUE_PAGE_NO_CONFLICTS_QUERY = gql`
+    query TestQueuePageNoConflicts {
         me {
             id
             username
@@ -38,6 +38,50 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
         testPlanReports(statuses: [DRAFT, IN_REVIEW]) {
             id
             status
+            runnableTestsLength
+            at {
+                id
+                name
+            }
+            browser {
+                id
+                name
+            }
+            testPlanVersion {
+                id
+                title
+                gitSha
+                gitMessage
+                testPlan {
+                    directory
+                }
+                updatedAt
+            }
+            draftTestPlanRuns {
+                id
+                tester {
+                    id
+                    username
+                }
+                testResultsLength
+            }
+        }
+        testPlans {
+            latestTestPlanVersion {
+                id
+                gitSha
+                testPlan {
+                    id
+                }
+            }
+        }
+    }
+`;
+
+export const TEST_QUEUE_PAGE_CONFLICTS_QUERY = gql`
+    query TestQueuePageConflicts {
+        testPlanReports(statuses: [DRAFT, IN_REVIEW]) {
+            id
             conflicts {
                 source {
                     locationOfData
@@ -49,6 +93,41 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
             runnableTests {
                 id
             }
+            draftTestPlanRuns {
+                id
+                tester {
+                    id
+                    username
+                }
+                testResults {
+                    id
+                    test {
+                        id
+                    }
+                    completedAt
+                }
+            }
+        }
+    }
+`;
+
+export const TEST_PLAN_REPORT_QUERY = gql`
+    query TestPlanReport($testPlanReportId: ID!) {
+        testPlanReport(id: $testPlanReportId) {
+            id
+            status
+            conflicts {
+                source {
+                    locationOfData
+                }
+                conflictingResults {
+                    locationOfData
+                }
+            }
+            runnableTests {
+                id
+            }
+            runnableTestsLength
             at {
                 id
                 name
@@ -80,15 +159,7 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
                     }
                     completedAt
                 }
-            }
-        }
-        testPlans {
-            latestTestPlanVersion {
-                id
-                gitSha
-                testPlan {
-                    id
-                }
+                testResultsLength
             }
         }
     }

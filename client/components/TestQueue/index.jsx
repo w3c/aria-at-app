@@ -9,14 +9,24 @@ import ManageTestQueue from '../ManageTestQueue';
 import DeleteTestPlanReportModal from '../DeleteTestPlanReportModal';
 import DeleteResultsModal from '../DeleteResultsModal';
 import PageStatus from '../common/PageStatus';
-import { TEST_QUEUE_PAGE_QUERY } from './queries';
+import {
+    TEST_QUEUE_PAGE_NO_CONFLICTS_QUERY,
+    TEST_QUEUE_PAGE_CONFLICTS_QUERY
+} from './queries';
 import { evaluateAuth } from '../../utils/evaluateAuth';
 import './TestQueue.css';
 
 const TestQueue = () => {
-    const { loading, data, error, refetch } = useQuery(TEST_QUEUE_PAGE_QUERY);
+    const { loading, data, error, refetch } = useQuery(
+        TEST_QUEUE_PAGE_NO_CONFLICTS_QUERY
+    );
+    const { data: conflictsData } = useQuery(TEST_QUEUE_PAGE_CONFLICTS_QUERY, {
+        skip: !data
+    });
 
     const [pageReady, setPageReady] = useState(false);
+    const [isConflictsLoading, setIsConflictsLoading] = useState(true);
+
     const [testers, setTesters] = useState([]);
     const [ats, setAts] = useState([]);
     const [browsers, setBrowsers] = useState([]);
@@ -45,12 +55,13 @@ const TestQueue = () => {
 
     useEffect(() => {
         if (data) {
+            setIsConflictsLoading(true);
             const {
                 users = [],
                 ats = [],
                 browsers = [],
                 testPlanVersions = [],
-                testPlanReports = [],
+                testPlanReports: dataTestPlanReports = [],
                 testPlans = []
             } = data;
             setTesters(
@@ -63,11 +74,43 @@ const TestQueue = () => {
             setAts(ats);
             setTestPlanVersions(testPlanVersions);
             setBrowsers(browsers);
-            setTestPlanReports(testPlanReports);
+
+            if (testPlanReports.length) {
+                const result = dataTestPlanReports.map(testPlanReport => ({
+                    ...testPlanReport,
+                    conflicts:
+                        testPlanReports.find(t => t.id === testPlanReport.id)
+                            ?.conflicts || []
+                }));
+
+                // Filter in rare case where additional array may have been
+                // added which would cause rendering issues if other attributes
+                // are not present. Allows current size of initial list to
+                // remain consistent
+                setTestPlanReports(result.filter(r => !!r.conflicts));
+            } else setTestPlanReports(dataTestPlanReports);
             setLatestTestPlanVersions(testPlans);
             setPageReady(true);
         }
     }, [data]);
+
+    useEffect(() => {
+        if (conflictsData) {
+            // merge conflicts to original testPlanReports data
+            const result = conflictsData.testPlanReports.map(
+                ({ id, conflicts }) => ({
+                    ...testPlanReports.find(t => t.id === id),
+                    conflicts
+                })
+            );
+
+            // Filter in rare case where additional array may have been added,
+            // which would cause rendering issues if other attributes are not
+            // present. Allows current size of initial list to remain consistent
+            setTestPlanReports(result.filter(r => !!r.status));
+            setIsConflictsLoading(false);
+        }
+    }, [conflictsData]);
 
     useEffect(() => {
         const structuredTestPlanTargets = generateStructuredTestPlanVersions(
@@ -124,7 +167,8 @@ const TestQueue = () => {
                                     key={key}
                                     user={auth}
                                     testers={testers}
-                                    testPlanReport={testPlanReport}
+                                    isConflictsLoading={isConflictsLoading}
+                                    testPlanReportData={testPlanReport}
                                     latestTestPlanVersions={
                                         latestTestPlanVersions
                                     }
@@ -134,7 +178,7 @@ const TestQueue = () => {
                                     triggerDeleteResultsModal={
                                         triggerDeleteResultsModal
                                     }
-                                    triggerTestPlanReportUpdate={refetch}
+                                    triggerPageUpdate={refetch}
                                 />
                             );
                         })}

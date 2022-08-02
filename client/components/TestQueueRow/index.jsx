@@ -1,6 +1,6 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
-import { useMutation } from '@apollo/client';
+import { useApolloClient, useMutation } from '@apollo/client';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faCheck,
@@ -14,6 +14,7 @@ import ATAlert from '../ATAlert';
 import { capitalizeEachWord } from '../../utils/formatter';
 import './TestQueueRow.css';
 import {
+    TEST_PLAN_REPORT_QUERY,
     ASSIGN_TESTER_MUTATION,
     UPDATE_TEST_PLAN_REPORT_MUTATION,
     REMOVE_TEST_PLAN_REPORT_MUTATION,
@@ -28,12 +29,14 @@ import { LoadingStatus, useTriggerLoad } from '../common/LoadingStatus';
 const TestQueueRow = ({
     user = {},
     testers = [],
-    testPlanReport = {},
+    isConflictsLoading,
+    testPlanReportData = {},
     latestTestPlanVersions = [],
     triggerDeleteTestPlanReportModal = () => {},
     triggerDeleteResultsModal = () => {},
-    triggerTestPlanReportUpdate = () => {}
+    triggerPageUpdate = () => {}
 }) => {
+    const client = useApolloClient();
     const { triggerLoad, loadingMessage } = useTriggerLoad();
 
     const focusButtonRef = useRef();
@@ -64,16 +67,26 @@ const TestQueueRow = ({
     const [showTestPlanUpdaterModal, setShowTestPlanUpdaterModal] = useState(
         false
     );
+    const [testPlanReport, setTestPlanReport] = useState(testPlanReportData);
+    const [isTestPlanReportLoading, setIsTestPlanReportLoading] = useState(
+        false
+    );
 
     const { id, isAdmin, username } = user;
     const {
         id: testPlanReportId,
         testPlanVersion,
         draftTestPlanRuns,
-        runnableTests
+        runnableTestsLength = 0
     } = testPlanReport;
 
     const isSignedIn = !!id;
+
+    let isLoading = isTestPlanReportLoading || isConflictsLoading;
+
+    useEffect(() => {
+        setTestPlanReport(testPlanReportData);
+    }, [testPlanReportData]);
 
     const checkIsTesterAssigned = username => {
         return draftTestPlanRuns.some(
@@ -87,11 +100,22 @@ const TestQueueRow = ({
         : {};
 
     const testPlanRunsWithResults = draftTestPlanRuns.filter(
-        ({ testResults }) => testResults.length > 0
+        ({ testResultsLength = 0 }) => testResultsLength > 0
     );
 
     const getTestPlanRunIdByUserId = userId => {
         return draftTestPlanRuns.find(({ tester }) => tester.id === userId).id;
+    };
+
+    const triggerTestPlanReportUpdate = async () => {
+        setIsTestPlanReportLoading(true);
+        const { data } = await client.query({
+            query: TEST_PLAN_REPORT_QUERY,
+            variables: { testPlanReportId: testPlanReport.id },
+            fetchPolicy: 'network-only'
+        });
+        setTestPlanReport(data.testPlanReport);
+        setIsTestPlanReportLoading(false);
     };
 
     const toggleTesterAssign = async username => {
@@ -129,7 +153,7 @@ const TestQueueRow = ({
                 testReportId: testPlanReport.id
             }
         });
-        await triggerTestPlanReportUpdate();
+        await triggerPageUpdate();
     };
 
     const handleRemoveTesterResults = async testPlanRunId => {
@@ -138,8 +162,6 @@ const TestQueueRow = ({
                 testPlanRunId
             }
         });
-
-        // force data after assignment changes
         await triggerTestPlanReportUpdate();
     };
 
@@ -382,12 +404,16 @@ const TestQueueRow = ({
     };
 
     const evaluateStatusAndResults = () => {
-        const { status: runStatus, conflicts } = testPlanReport;
+        const { status: runStatus, conflicts = [] } = testPlanReport;
 
         let status, results;
         const conflictCount = conflicts.length;
 
-        if (conflictCount > 0) {
+        if (isLoading) {
+            status = (
+                <span className="status-label not-started">Loading ...</span>
+            );
+        } else if (conflictCount > 0) {
             let pluralizedStatus = `${conflictCount} Conflict${
                 conflictCount === 1 ? '' : 's'
             }`;
@@ -408,7 +434,7 @@ const TestQueueRow = ({
     };
 
     const evaluateNewReportStatus = () => {
-        const { status, conflicts } = testPlanReport;
+        const { status, conflicts = [] } = testPlanReport;
         const conflictCount = conflicts.length;
 
         // If there are no conflicts OR the test has been marked as "final",
@@ -478,7 +504,7 @@ const TestQueueRow = ({
                         {draftTestPlanRuns.length !== 0 ? (
                             <ul className="assignees">
                                 {draftTestPlanRuns.map(
-                                    ({ tester, testResults }) => (
+                                    ({ tester, testResultsLength = 0 }) => (
                                         <li key={nextId()}>
                                             <a
                                                 href={
@@ -497,14 +523,7 @@ const TestQueueRow = ({
                                                 {tester.username}
                                             </a>
                                             <div id={getRowId(tester)}>
-                                                {`(${testResults.reduce(
-                                                    (acc, { completedAt }) =>
-                                                        acc +
-                                                        (completedAt ? 1 : 0),
-                                                    0
-                                                )} of ${
-                                                    runnableTests.length
-                                                } tests complete)`}
+                                                {`${testResultsLength} of ${runnableTestsLength} tests complete)`}
                                             </div>
                                         </li>
                                     )
@@ -521,7 +540,7 @@ const TestQueueRow = ({
                     <div className="status-wrapper">{status}</div>
                     {isSignedIn && (
                         <div className="secondary-actions">
-                            {isAdmin && nextReportStatus && (
+                            {isAdmin && !isLoading && nextReportStatus && (
                                 <>
                                     <Button
                                         ref={updateTestPlanStatusButtonRef}
@@ -553,10 +572,9 @@ const TestQueueRow = ({
                                 href={`/run/${currentUserTestPlanRun.id}`}
                                 disabled={!currentUserAssigned}
                             >
-                                {currentUserTestPlanRun.testResults.length >
-                                    0 &&
-                                currentUserTestPlanRun.testResults.length <
-                                    runnableTests.length
+                                {currentUserTestPlanRun.testResultsLength > 0 &&
+                                currentUserTestPlanRun.testResultsLength <
+                                    runnableTestsLength
                                     ? 'Continue testing'
                                     : 'Start testing'}
                             </Button>
@@ -597,8 +615,7 @@ const TestQueueRow = ({
                             {isAdmin && renderOpenAsDropdown()}
                             {isAdmin && renderDeleteMenu()}
                             {(!isAdmin &&
-                                currentUserTestPlanRun.testResults &&
-                                currentUserTestPlanRun.testResults.length && (
+                                currentUserTestPlanRun.testResultsLength && (
                                     <Button
                                         ref={deleteTesterResultsButtonRef}
                                         variant="danger"
@@ -642,7 +659,7 @@ const TestQueueRow = ({
                     show={showTestPlanUpdaterModal}
                     handleClose={() => setShowTestPlanUpdaterModal(false)}
                     testPlanReportId={testPlanReportId}
-                    triggerTestPlanReportUpdate={triggerTestPlanReportUpdate}
+                    triggerPageUpdate={triggerPageUpdate}
                 />
             )}
             {showThemedModal && (
@@ -667,13 +684,14 @@ const TestQueueRow = ({
 };
 
 TestQueueRow.propTypes = {
-    latestTestPlanVersions: PropTypes.array,
     user: PropTypes.object,
     testers: PropTypes.array,
-    testPlanReport: PropTypes.object,
+    isConflictsLoading: PropTypes.bool,
+    testPlanReportData: PropTypes.object,
+    latestTestPlanVersions: PropTypes.array,
     triggerDeleteTestPlanReportModal: PropTypes.func,
     triggerDeleteResultsModal: PropTypes.func,
-    triggerTestPlanReportUpdate: PropTypes.func
+    triggerPageUpdate: PropTypes.func
 };
 
 export default TestQueueRow;
