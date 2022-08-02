@@ -138,8 +138,8 @@ const TestQueueRow = ({
                     variables: {
                         testReportId: testPlanReport.id,
                         testerId: tester.id
-        }
-});
+                    }
+                });
                 await triggerTestPlanReportUpdate();
             }, 'Updating Test Plan Assignees');
         }
