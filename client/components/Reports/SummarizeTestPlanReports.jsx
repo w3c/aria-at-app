@@ -17,7 +17,7 @@ const SummarizeTestPlanReports = ({ testPlanReports }) => {
         return (
             <FullHeightContainer id="main" as="main" tabIndex="-1">
                 <Helmet>
-                    <title>ARIA-AT Test Reports</title>
+                    <title>Test Reports | ARIA-AT</title>
                 </Helmet>
                 <h1>Test Reports</h1>
                 <p>
@@ -65,7 +65,7 @@ const SummarizeTestPlanReports = ({ testPlanReports }) => {
     return (
         <FullHeightContainer id="main" as="main" tabIndex="-1">
             <Helmet>
-                <title>ARIA-AT Test Reports</title>
+                <title>Test Reports | ARIA-AT</title>
             </Helmet>
             <h1>Test Reports</h1>
             <h2>Introduction</h2>

@@ -1,14 +1,36 @@
 import React from 'react';
 import { useQuery } from '@apollo/client';
-import { REPORTS_PAGE_QUERY } from './queries';
+import { Redirect, Route, Switch } from 'react-router';
 import SummarizeTestPlanReports from './SummarizeTestPlanReports';
 import SummarizeTestPlanVersion from './SummarizeTestPlanVersion';
 import SummarizeTestPlanReport from './SummarizeTestPlanReport';
-import { Redirect, Route, Switch } from 'react-router';
+import PageStatus from '../common/PageStatus';
+import { REPORTS_PAGE_QUERY } from './queries';
 import './Reports.css';
 
 const Reports = () => {
-    const { data } = useQuery(REPORTS_PAGE_QUERY);
+    const { loading, data, error } = useQuery(REPORTS_PAGE_QUERY);
+
+    if (error) {
+        return (
+            <PageStatus
+                title="Test Reports | ARIA-AT"
+                heading="Test Reports"
+                message={error.message}
+                isError
+            />
+        );
+    }
+
+    if (loading) {
+        return (
+            <PageStatus
+                title="Loading - Test Reports | ARIA-AT"
+                heading="Test Reports"
+            />
+        );
+    }
+
     if (!data) return null;
 
     return (
