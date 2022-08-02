@@ -902,8 +902,12 @@ export class TestRunInputOutput {
           behaviors: test.unexpectedBehaviors.map(({description, requireExplanation}) => ({
             description,
             checked: false,
-            more: requireExplanation ? {highlightRequired: false, value: ""} : null,
+            requireExplanation,
           })),
+          note: {
+            highlightRequired: false,
+            value: "",
+          },
         },
       })),
     };
@@ -983,7 +987,7 @@ export class TestRunInputOutput {
         assertions: [...command.assertions, ...command.additionalAssertions].map(assertionToAssertion),
         unexpected_behaviors: command.unexpected.behaviors
           .filter(({checked}) => checked)
-          .map(({description, more}) => (more ? more.value : description)),
+          .map(({description}) => description),
       })),
     };
 
@@ -1090,11 +1094,11 @@ export class TestRunInputOutput {
             behavior.checked
               ? {
                   text: behavior.description,
-                  otherUnexpectedBehaviorText: behavior.more ? behavior.more.value : null,
                 }
               : null
           )
           .filter(Boolean),
+        unexpectedBehaviorNote: command.unexpected.note.value || null,
       })),
     };
   }
@@ -1156,14 +1160,12 @@ export class TestRunInputOutput {
               return {
                 ...behavior,
                 checked: behaviorResult ? true : false,
-                more: behavior.more
-                  ? {
-                      highlightRequired: false,
-                      value: behaviorResult ? behaviorResult.otherUnexpectedBehaviorText : "",
-                    }
-                  : behavior.more,
               };
             }),
+            note: {
+              highlightRequired: false,
+              value: scenarioResult.unexpectedBehaviorNote || "",
+            },
           },
         };
       }),

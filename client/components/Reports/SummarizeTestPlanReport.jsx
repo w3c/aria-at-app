@@ -367,8 +367,7 @@ const SummarizeTestPlanReport = ({ testPlanReport }) => {
                                                                     </ul>
                                                                     {scenarioResult.unexpectedBehaviorNote ? (
                                                                         <div>
-                                                                            Tester&apos;s
-                                                                            explanation:&nbsp;
+                                                                            Explanation:&nbsp;
                                                                             <em>
                                                                                 &quot;
                                                                                 {

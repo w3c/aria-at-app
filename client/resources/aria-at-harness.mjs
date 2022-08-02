@@ -531,8 +531,16 @@ function renderVirtualResultsTable(results) {
    * @param {Description} list.description
    * @param {Description[]} list.items
    */
-  function commandDetailsList({description, items}) {
-    return div(description, ul(...items.map(description => li(rich(description)))));
+  function commandDetailsList({description, items, note}) {
+    return div(
+      description,
+      ul(
+        ...items.map(
+          description => li(rich(description)),
+          note.length ? li(rich("Explanation:"), em(note)) : fragment()
+        )
+      )
+    );
   }
 }
 

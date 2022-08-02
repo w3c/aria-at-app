@@ -291,20 +291,46 @@ export function instructionDocument(resultState, hooks) {
               };
             }),
           },
-        },
-        note: {
-          description: /** @type {Description[]} */ ([
-            `If "other" selected, explain`,
-            {
-              required: false,
-              highlightRequired: true, // behavior.more.highlightRequired,
-              description: "(not required)",
-            },
-          ]),
-          enabled: true, // behavior.checked,
-          value: "", // behavior.more.value,
-          focus: resultState.currentUserAction === "validateResults" && focusFirstRequired(),
-          change: value => hooks.setCommandUnexpectedBehaviorNote({commandIndex, note: value}),
+          note: {
+            description: /** @type {Description[]} */ ([
+              `Add an explanation`,
+              {
+                required: resultUnexpectedBehavior.behaviors.some(
+                  ({checked, requireExplanation}) => requireExplanation && checked
+                ),
+                highlightRequired:
+                  resultState.currentUserAction === "validateResults" &&
+                  resultUnexpectedBehavior.behaviors.some(
+                    ({checked, requireExplanation}) => requireExplanation && checked
+                  ),
+                description: resultUnexpectedBehavior.behaviors.some(
+                  ({checked, requireExplanation}) => requireExplanation && checked
+                )
+                  ? " (required)"
+                  : " (not required)",
+                log: (() => {
+                  console.log(
+                    "highlight required",
+                    resultState.currentUserAction === "validateResults" &&
+                      resultUnexpectedBehavior.behaviors.some(
+                        ({checked, requireExplanation}) => requireExplanation && checked
+                      )
+                  );
+                })(),
+              },
+            ]),
+            enabled:
+              resultUnexpectedBehavior.hasUnexpected === HasUnexpectedBehaviorMap.HAS_UNEXPECTED &&
+              resultUnexpectedBehavior.behaviors.some(({checked}) => checked),
+            value: resultUnexpectedBehavior.note.value,
+            focus:
+              resultState.currentUserAction === "validateResults" &&
+              resultUnexpectedBehavior.behaviors.some(
+                ({checked, requireExplanation}) => requireExplanation && checked
+              ) &&
+              focusFirstRequired(),
+            change: value => hooks.setCommandUnexpectedBehaviorNote({commandIndex, note: value}),
+          },
         },
       },
     };
@@ -564,7 +590,6 @@ export function userChangeCommandHasUnexpectedBehavior({commandIndex, hasUnexpec
                 behaviors: command.unexpected.behaviors.map(behavior => ({
                   ...behavior,
                   checked: false,
-                  more: behavior.more ? {...behavior.more, value: ""} : null,
                 })),
               },
             }
@@ -610,11 +635,10 @@ export function userChangeCommandUnexpectedBehavior({commandIndex, unexpectedInd
 /**
  * @param {object} props
  * @param {number} props.commandIndex
- * @param {number} props.unexpectedIndex
- * @param {string} props.more
+ * @param {string} props.note
  * @returns {(state: TestRunState) => TestRunState}
  */
-export function userChangeCommandUnexpectedBehaviorNote({commandIndex, unexpectedIndex, note}) {
+export function userChangeCommandUnexpectedBehaviorNote({commandIndex, note}) {
   return function(state) {
     return {
       ...state,
@@ -627,7 +651,7 @@ export function userChangeCommandUnexpectedBehaviorNote({commandIndex, unexpecte
               unexpected: {
                 ...command.unexpected,
                 note: {
-                  ...unexpected.note,
+                  ...command.unexpected.note,
                   value: note,
                 },
               },
@@ -714,7 +738,7 @@ function isSomeFieldRequired(state) {
       (command.unexpected.hasUnexpected === HasUnexpectedBehaviorMap.HAS_UNEXPECTED &&
         (command.unexpected.behaviors.every(({checked}) => !checked) ||
           command.unexpected.behaviors.some(
-            behavior => behavior.checked && behavior.more && behavior.more.value.trim() === ""
+            behavior => behavior.checked && command.unexpected.note && command.unexpected.note.value.trim() === ""
           )))
   );
 }
@@ -765,7 +789,7 @@ function resultsTableDocument(state) {
         if (command.unexpected.behaviors.some(({checked}) => checked)) {
           unexpectedBehaviors = command.unexpected.behaviors
             .filter(({checked}) => checked)
-            .map(({description, more}) => (more ? more.value : description));
+            .map(({description}) => description);
         }
 
         return {
@@ -801,6 +825,7 @@ function resultsTableDocument(state) {
             unexpectedBehaviors: {
               description: "Unexpected Behavior",
               items: unexpectedBehaviors,
+              note: command.unexpected.note.value,
             },
           },
         };
@@ -892,17 +917,14 @@ export function userValidateState() {
               command.unexpected.hasUnexpected === HasUnexpectedBehaviorMap.NOT_SET ||
               (command.unexpected.hasUnexpected === HasUnexpectedBehaviorMap.HAS_UNEXPECTED &&
                 command.unexpected.behaviors.every(({checked}) => !checked)),
-            behaviors: command.unexpected.behaviors.map(unexpected => {
-              return unexpected.more
-                ? {
-                    ...unexpected,
-                    more: {
-                      ...unexpected.more,
-                      highlightRequired: unexpected.checked && !unexpected.more.value.trim(),
-                    },
-                  }
-                : unexpected;
-            }),
+            note: {
+              ...command.unexpected.note,
+              highlightRequired:
+                command.unexpected.note.value.trim() === "" &&
+                command.unexpected.hasUnexpected === HasUnexpectedBehaviorMap.HAS_UNEXPECTED &&
+                (command.unexpected.behaviors.every(({checked}) => !checked) ||
+                  command.unexpected.behaviors.some(({checked, requireExplanation}) => requireExplanation && checked)),
+            },
           },
         };
       }),

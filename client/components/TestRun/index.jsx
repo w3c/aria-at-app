@@ -408,34 +408,16 @@ const TestRun = () => {
                     const behavior = behaviors[i];
                     if (behavior.checked) {
                         if (i === 0)
-                            unexpectedBehaviors.push({
-                                id: 'EXCESSIVELY_VERBOSE'
-                            });
+                            unexpectedBehaviors.push('EXCESSIVELY_VERBOSE');
                         if (i === 1)
-                            unexpectedBehaviors.push({
-                                id: 'UNEXPECTED_CURSOR_POSITION'
-                            });
-                        if (i === 2)
-                            unexpectedBehaviors.push({ id: 'SLUGGISH' });
-                        if (i === 3)
-                            unexpectedBehaviors.push({ id: 'AT_CRASHED' });
-                        if (i === 4)
-                            unexpectedBehaviors.push({ id: 'BROWSER_CRASHED' });
-                        if (i === 5) {
-                            const moreResult = {
-                                id: 'OTHER',
-                                otherUnexpectedBehaviorText: behavior.more.value
-                            };
                             unexpectedBehaviors.push(
-                                captureHighlightRequired
-                                    ? {
-                                          ...moreResult,
-                                          highlightRequired:
-                                              behavior.more.highlightRequired
-                                      }
-                                    : moreResult
+                                'UNEXPECTED_CURSOR_POSITION'
                             );
-                        }
+                        if (i === 2) unexpectedBehaviors.push('SLUGGISH');
+                        if (i === 3) unexpectedBehaviors.push('AT_CRASHED');
+                        if (i === 4)
+                            unexpectedBehaviors.push('BROWSER_CRASHED');
+                        if (i === 5) unexpectedBehaviors.push('OTHER');
                     }
                 }
             } else if (hasUnexpected === 'doesNotHaveUnexpected')
@@ -449,6 +431,8 @@ const TestRun = () => {
             scenarioResult.unexpectedBehaviors = unexpectedBehaviors
                 ? [...unexpectedBehaviors]
                 : null;
+            scenarioResult.unexpectedBehaviorNote =
+                unexpected.note.value === '' ? null : unexpected.note.value;
             if (captureHighlightRequired)
                 scenarioResult.unexpectedBehaviorHighlightRequired = highlightRequired;
 
