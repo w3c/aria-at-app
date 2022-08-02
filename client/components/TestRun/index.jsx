@@ -137,7 +137,7 @@ const TestRun = () => {
     );
 
     const [isShowingAtBrowserModal, setIsShowingAtBrowserModal] = useState(
-        true
+        false // TODO TEMPORARY
     );
     const [isRendererReady, setIsRendererReady] = useState(false);
     const [isTestSubmitClicked, setIsTestSubmitClicked] = useState(false);
@@ -910,9 +910,9 @@ const TestRun = () => {
                 />
                 {pageReadyRef.current &&
                     (isSignedIn ? currentTest.testResult : true) && (
-                        <Row>
-                            <Col className="test-iframe-container" md={9}>
-                                <Row>
+                        <>
+                            <Col className="test-iframe-container">
+                                <>
                                     <TestRenderer
                                         key={nextId()}
                                         at={testPlanReport.at}
@@ -934,6 +934,9 @@ const TestRun = () => {
                                         testPageUrl={
                                             testPlanVersion.testPageUrl
                                         }
+                                        test={currentTest}
+                                        testIndex={currentTestIndex + 1}
+                                        testsLength={tests.length}
                                         testRunStateRef={testRunStateRef}
                                         recentTestRunStateRef={
                                             recentTestRunStateRef
@@ -946,9 +949,9 @@ const TestRun = () => {
                                         isEdit={isTestEditClicked}
                                         setIsRendererReady={setIsRendererReady}
                                     />
-                                </Row>
+                                </>
                                 {isRendererReady && (
-                                    <Row>
+                                    <>
                                         <h2
                                             id="test-toolbar-heading"
                                             className="sr-only"
@@ -963,13 +966,13 @@ const TestRun = () => {
                                                 <li key={nextId()}>{button}</li>
                                             ))}
                                         </ul>
-                                    </Row>
+                                    </>
                                 )}
                             </Col>
-                            <Col className="current-test-options" md={3}>
-                                {menuRightOfContent}
-                            </Col>
-                        </Row>
+                            {/*<Col className="current-test-options" md={3}>*/}
+                            {/*    {menuRightOfContent}*/}
+                            {/*</Col>*/}
+                        </>
                     )}
                 <DisplayNone>
                     <ReviewConflicts

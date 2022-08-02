@@ -22,28 +22,61 @@ import { evaluateAtNameKey } from '../../utils/aria';
 const Container = styled.div`
     width: 100%;
 
-    border: black solid 2px;
-    border-radius: 0.25rem;
-    padding: 1rem;
+    border: 1px solid #d2d5d9;
+    border-radius: 2px 2px 0 0;
 
-    font-size: 14px;
+    font-size: 0.875rem;
 `;
 
 const ErrorSection = styled.section`
     display: ${({ hasErrors }) => (hasErrors ? 'block' : 'none')};
 `;
 
-const InstructionsSection = styled.section``;
+const HeadingSection = styled.section`
+    padding: 1rem 1.25rem;
 
-const HeadingText = styled.h1``;
+    background: #f5f8fa;
+    border-bottom: 1px solid #d2d5d9;
 
-const SubHeadingText = styled.h2``;
+    p:last-of-type {
+        margin-bottom: 0;
+    }
+`;
+
+const HeadingText = styled.h1`
+    font-size: 1.625rem;
+    padding-bottom: 0;
+    border-bottom: none;
+`;
+
+const SubHeadingText = styled.h2`
+    font-size: 1.5rem;
+`;
 
 const InnerSectionHeadingText = styled.h3``;
 
+const InstructionsSection = styled.section`
+    padding: 1rem 1.25rem 0 1.25rem;
+
+    h2 {
+        margin: 0.25rem 0 0.75rem 0;
+
+        :last-of-type {
+            margin-top: 2.5rem;
+        }
+    }
+`;
+
 const Text = styled.p`
+    font-size: 0.875rem;
+
     > textarea {
         width: 100%;
+    }
+
+    &.large {
+        font-size: 1.125rem;
+        margin-bottom: 0.625rem;
     }
 `;
 
@@ -110,8 +143,6 @@ const Table = styled.table`
 
 const Fieldset = styled.fieldset`
     display: block;
-    margin-inline-start: 2px;
-    margin-inline-end: 2px;
     padding-block-start: 0.35em;
     padding-inline-start: 0.75em;
     padding-inline-end: 0.75em;
@@ -179,7 +210,36 @@ const Fieldset = styled.fieldset`
 `;
 
 const NumberedList = styled.ol`
+    list-style: none;
+    counter-reset: item;
+    padding-left: 2.5rem;
+    margin-bottom: 0;
+
     > li {
+        margin: 0 0 0.75rem 0;
+        counter-increment: item;
+        position: relative;
+    }
+
+    > li:before {
+        content: counter(item);
+
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+
+        color: #576680;
+        background: #edf6ff;
+
+        top: -2px;
+        left: calc(-1 * 1.625rem - 0.875rem);
+        line-height: 1.625rem;
+        width: 1.625rem;
+        height: 1.625rem;
+
+        border: 1px solid #c6d0e2;
+        border-radius: 100%;
     }
 `;
 
@@ -209,9 +269,18 @@ const ResultsBulletList = styled.ul`
     }
 `;
 
-const Button = styled.button``;
+const Button = styled.button`
+    margin: 0 0 0 2.5rem;
+    padding: 8px 10px;
 
-const ResultsSection = styled.section``;
+    background: #ffffff;
+    border: 1px solid #d2d5d9;
+    border-radius: 2px;
+`;
+
+const ResultsSection = styled.section`
+    padding: 0 1.25rem 1rem 1.25rem;
+`;
 
 const ErrorComponent = ({ hasErrors = false }) => {
     return (
@@ -227,6 +296,8 @@ const TestRenderer = ({
     at,
     testResult = {},
     testPageUrl,
+    testIndex,
+    testsLength,
     testRunStateRef,
     recentTestRunStateRef,
     testRunResultRef,
@@ -708,22 +779,24 @@ const TestRenderer = ({
                             pageContent.errors && pageContent.errors.length
                         }
                     />
-                    <InstructionsSection>
+                    <HeadingSection>
+                        <Text className="large">
+                            Testing Task {testIndex} of {testsLength}
+                        </Text>
                         <HeadingText id="behavior-header" tabIndex="-1">
-                            {pageContent.instructions.header.header}
+                            {testIndex}.{' '}
+                            {pageContent.instructions.header.header.replace(
+                                'Testing Task: ',
+                                ''
+                            )}
                         </HeadingText>
                         <Text>{pageContent.instructions.description}</Text>
+                    </HeadingSection>
+                    <InstructionsSection>
                         <SubHeadingText id="instruction-list-heading">
-                            {pageContent.instructions.instructions.header}
+                            Instructions
                         </SubHeadingText>
                         <InstructionsContent labelIdRef="instruction-list-heading" />
-                        <SubHeadingText id="success-criteria-list-heading">
-                            {pageContent.instructions.assertions.header}
-                        </SubHeadingText>
-                        <Text>
-                            {pageContent.instructions.assertions.description}
-                        </Text>
-                        <AssertionsContent labelIdRef="success-criteria-list-heading" />
                         <Button
                             disabled={
                                 !pageContent.instructions.openTestPage.enabled
@@ -734,6 +807,13 @@ const TestRenderer = ({
                         >
                             {pageContent.instructions.openTestPage.button}
                         </Button>
+                        <SubHeadingText id="success-criteria-list-heading">
+                            {pageContent.instructions.assertions.header}
+                        </SubHeadingText>
+                        <Text>
+                            {pageContent.instructions.assertions.description}
+                        </Text>
+                        <AssertionsContent labelIdRef="success-criteria-list-heading" />
                     </InstructionsSection>
                     <ResultsSection>
                         <SubHeadingText>

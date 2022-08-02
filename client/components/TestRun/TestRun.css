@@ -199,6 +199,9 @@ main.container-fluid .test-iframe-container > .row {
 .test-run-toolbar li:first-of-type {
     flex-grow: 1;
 }
+.test-run-toolbar li:nth-last-of-type(2) {
+    padding-right: 0.5em;
+}
 .test-run-toolbar li:last-of-type {
     padding-right: 0;
 }
