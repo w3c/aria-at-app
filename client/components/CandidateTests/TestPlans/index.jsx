@@ -5,9 +5,7 @@ import styled from '@emotion/styled';
 import { Container, Table } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faFlag
-} from '@fortawesome/free-solid-svg-icons';
+import { faFlag, faCheck } from '@fortawesome/free-solid-svg-icons';
 import alphabetizeObjectBy from '@client/utils/alphabetizeObjectBy';
 import {
     getTestPlanTargetTitle,
@@ -25,21 +23,25 @@ const StatusText = styled.span`
     padding: 4px 10px;
     border-radius: 1.625rem;
 
-    &.ready {
+    &.ready-for-review {
         border: 2px solid #edbb1d;
     }
 
     &.issue {
         border: 2px solid #f87f1b;
 
-      svg {
-        color: #F87F1B;
-      }
+        svg {
+            color: #f87f1b;
+        }
     }
 
-  &.ok {
-    border: 2px solid #f87f1b;
-  }
+    &.ok {
+        border: 2px solid #309d08;
+
+        svg {
+            color: #309d08;
+        }
+    }
 
     &.dot {
         height: 10px;
@@ -194,7 +196,7 @@ const TestPlans = ({ testPlanReports }) => {
                                             }
                                         )}
                                         <td>
-                                            <StatusText className="ready">
+                                            <StatusText className="ready-for-review">
                                                 <StatusText
                                                     className="dot"
                                                     aria-hidden={true}
@@ -202,10 +204,17 @@ const TestPlans = ({ testPlanReports }) => {
                                                 Ready for Review
                                             </StatusText>
                                             <StatusText className="issue">
-                                              <FontAwesomeIcon icon={faFlag} />
+                                                <FontAwesomeIcon
+                                                    icon={faFlag}
+                                                />
                                                 2 open issues
                                             </StatusText>
-                                            Ok
+                                            <StatusText className="ok">
+                                                <FontAwesomeIcon
+                                                    icon={faCheck}
+                                                />
+                                                Ok
+                                            </StatusText>
                                         </td>
                                     </tr>
                                 );
