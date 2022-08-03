@@ -68,6 +68,7 @@ const InstructionsSection = styled.section`
 `;
 
 const Text = styled.p`
+    display: inline;
     font-size: 0.875rem;
 
     > textarea {
@@ -77,6 +78,14 @@ const Text = styled.p`
     &.large {
         font-size: 1.125rem;
         margin-bottom: 0.625rem;
+    }
+
+    &.command {
+        padding: 2px;
+        width: fit-content;
+        background: #f3f5f4;
+        font-size: inherit;
+        font-family: monospace;
     }
 `;
 
@@ -672,6 +681,36 @@ const TestRenderer = ({
         return string;
     };
 
+    const CommandTextContent = (text, type = 'instructions') => {
+        const instructionsCommands = ['Alt+Delete', 'Escape'];
+
+        const resultsCommands =
+            pageContent.instructions.instructions.commands.commands;
+
+        const foundCommand = resultsCommands.find(c => text.includes(c));
+
+        let content = text;
+        let ariaLabel = text;
+
+        if (foundCommand) {
+            switch (type) {
+                case 'instructions': {
+                    return text;
+                }
+                case 'results': {
+                    content = (
+                        <span>
+                            Required command{' '}
+                            <Text className="command">{foundCommand}</Text>
+                        </span>
+                    );
+                    ariaLabel = `Required command ${foundCommand}`;
+                }
+            }
+        }
+        return { content, ariaLabel };
+    };
+
     const SubmitResultsContent = () => {
         const { results } = submitResult;
         const { header, status, table } = results;
@@ -830,12 +869,19 @@ const TestRenderer = ({
                                     unexpectedBehaviors
                                 } = value;
 
+                                const {
+                                    content: headingContent,
+                                    ariaLabel: headingAriaLabel
+                                } = CommandTextContent(header, 'results');
+
                                 return (
                                     <Fragment
                                         key={`AtOutputKey_${commandIndex}`}
                                     >
-                                        <InnerSectionHeadingText>
-                                            {header}
+                                        <InnerSectionHeadingText
+                                            aria-label={headingAriaLabel}
+                                        >
+                                            {headingContent}
                                         </InnerSectionHeadingText>
                                         <Text>
                                             <label
