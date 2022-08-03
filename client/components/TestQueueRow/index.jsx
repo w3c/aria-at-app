@@ -48,7 +48,7 @@ const TestQueueRow = ({
         false
     );
 
-    const { id, isAdmin, isVendor, username } = user;
+    const { id, isAdmin, isTester, isVendor, username } = user;
     const {
         id: testPlanReportId,
         testPlanVersion,
@@ -60,7 +60,7 @@ const TestQueueRow = ({
 
     const checkIsTesterAssigned = username => {
         return draftTestPlanRuns.some(
-            testPlanRun => testPlanRun.tester.username === username && !isVendor
+            testPlanRun => testPlanRun.tester.username === username && isTester
         );
     };
 
