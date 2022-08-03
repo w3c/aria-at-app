@@ -1,0 +1,3 @@
+# Allow users with the following GitHub usernames to sign in as vendors.
+
+

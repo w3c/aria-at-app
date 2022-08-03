@@ -20,7 +20,7 @@ const App = () => {
     const [isNavbarExpanded, setIsNavbarExpanded] = useState(false);
 
     const auth = evaluateAuth(data && data.me ? data.me : {});
-    const { username, isSignedIn } = auth;
+    const { username, isSignedIn, isVendor } = auth;
 
     const signOut = async () => {
         await fetch('/api/auth/signout', { method: 'POST' });
@@ -82,18 +82,20 @@ const App = () => {
                             </li>
                             {isSignedIn && (
                                 <>
-                                    <li>
-                                        <Nav.Link
-                                            as={Link}
-                                            to="/account/settings"
-                                            aria-current={
-                                                location.pathname ===
-                                                '/account/settings'
-                                            }
-                                        >
-                                            Settings
-                                        </Nav.Link>
-                                    </li>
+                                    {!isVendor && (
+                                        <li>
+                                            <Nav.Link
+                                                as={Link}
+                                                to="/account/settings"
+                                                aria-current={
+                                                    location.pathname ===
+                                                    '/account/settings'
+                                                }
+                                            >
+                                                Settings
+                                            </Nav.Link>
+                                        </li>
+                                    )}
                                     <li className="signed-in-wrapper">
                                         <div
                                             className="signed-in"

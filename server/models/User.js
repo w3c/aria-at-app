@@ -26,6 +26,7 @@ module.exports = function(sequelize, DataTypes) {
 
     Model.TESTER = 'TESTER';
     Model.ADMIN = 'ADMIN';
+    Model.VENDOR = 'VENDOR';
 
     Model.ROLE_ASSOCIATION = { through: 'UserRoles', as: 'roles' };
     Model.ATS_ASSOCIATION = { through: 'UserAts', as: 'ats' };
