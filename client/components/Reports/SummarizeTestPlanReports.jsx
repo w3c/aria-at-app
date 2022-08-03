@@ -62,6 +62,10 @@ const SummarizeTestPlanReports = ({ testPlanReports }) => {
         tabularReports[testPlanVersion.id][testPlanTarget.id] = testPlanReport;
     });
 
+    console.log('testPlanReportsById', testPlanReportsById)
+    console.log('testPlanTargetsById', testPlanTargetsById)
+    console.log('testPlanVersionsById', testPlanVersionsById)
+
     return (
         <FullHeightContainer id="main" as="main" tabIndex="-1">
             <Helmet>

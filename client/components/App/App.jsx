@@ -80,6 +80,15 @@ const App = () => {
                                     Test Queue
                                 </Nav.Link>
                             </li>
+                            <li>
+                                <Nav.Link
+                                    as={Link}
+                                    to="/candidate-tests"
+                                    aria-current={location.pathname}
+                                >
+                                    Candidate Tests
+                                </Nav.Link>
+                            </li>
                             {isSignedIn && (
                                 <>
                                     {!isVendor && (

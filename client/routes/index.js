@@ -5,6 +5,7 @@ import Home from '@components/Home';
 import InvalidRequest from '@components/InvalidRequest';
 import NotFound from '@components/NotFound';
 import Reports from '@components/Reports';
+import CandidateTests from '@components/CandidateTests';
 import SignupInstructions from '@components/SignupInstructions';
 import TestQueue from '@components/TestQueue';
 import TestRun from '@components/TestRun';
@@ -55,6 +56,10 @@ export default [
         // Note that this component includes a nested router!
         path: '/reports',
         component: Reports
+    },
+    {
+        path: '/candidate-tests',
+        component: CandidateTests
     },
     {
         path: '/invalid-request',
