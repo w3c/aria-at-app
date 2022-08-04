@@ -37,7 +37,7 @@ import {
 import { evaluateAuth } from '../../utils/evaluateAuth';
 import './TestRun.css';
 import ReviewConflicts from '../ReviewConflicts';
-import ThankYouModal from '../Candidate/ThankYouModal';
+import ThankYouModal from '../common/CandidateModals/ThankYouModal';
 
 const createGitHubIssueWithTitleAndBody = ({
     test,
