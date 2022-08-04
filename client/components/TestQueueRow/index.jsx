@@ -392,7 +392,8 @@ const TestQueueRow = ({
                         status: status
                     }
                 });
-                await triggerTestPlanReportUpdate();
+                if (status === 'FINALIZED') await triggerPageUpdate();
+                else await triggerTestPlanReportUpdate();
             }, 'Updating Test Plan Status');
         } catch (e) {
             showThemedMessage(
