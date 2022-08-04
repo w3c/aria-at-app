@@ -1,0 +1,37 @@
+.thank-you .modal-content {
+    align-items: center;
+    width: 360px;
+}
+
+.thank-you-check {
+    font-size: 100px;
+    margin-right: 0 !important;
+    margin-bottom: 20px;
+}
+
+.thank-you-title {
+    text-align: center;
+}
+
+.thank-you-title h1 {
+    border-bottom: none;
+    font-size: 1.5em;
+}
+
+.thank-you p {
+    font-weight: bold;
+    text-align: center;
+}
+
+.thank-you .modal-header {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.thank-you .modal-footer {
+    border-top: none;
+}
+
+.thank-you .modal-footer .btn {
+    width: 100px;
+}
