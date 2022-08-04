@@ -69,6 +69,35 @@ const TestPlans = ({ testPlanReports }) => {
         );
     }
 
+    const getRowStatus = testPlanReport => {
+        // TODO: Use some attribute on testPlanReport to determine status
+        switch (testPlanReport?.magicAttribute) {
+            case 1: {
+                return (
+                    <StatusText className="ok">
+                        <FontAwesomeIcon icon={faCheck} />
+                        Ok
+                    </StatusText>
+                );
+            }
+            case 2: {
+                return (
+                    <StatusText className="issue">
+                        <FontAwesomeIcon icon={faFlag} />2 open issues
+                    </StatusText>
+                );
+            }
+            default: {
+                return (
+                    <StatusText className="ready-for-review">
+                        <StatusText className="dot" aria-hidden={true} />
+                        Ready for Review
+                    </StatusText>
+                );
+            }
+        }
+    };
+
     const constructTableForAtById = atId => {
         const testPlanReportsByAtId = testPlanReports.filter(
             t => t.at.id === atId
@@ -195,27 +224,7 @@ const TestPlans = ({ testPlanReports }) => {
                                                 );
                                             }
                                         )}
-                                        <td>
-                                            <StatusText className="ready-for-review">
-                                                <StatusText
-                                                    className="dot"
-                                                    aria-hidden={true}
-                                                />
-                                                Ready for Review
-                                            </StatusText>
-                                            <StatusText className="issue">
-                                                <FontAwesomeIcon
-                                                    icon={faFlag}
-                                                />
-                                                2 open issues
-                                            </StatusText>
-                                            <StatusText className="ok">
-                                                <FontAwesomeIcon
-                                                    icon={faCheck}
-                                                />
-                                                Ok
-                                            </StatusText>
-                                        </td>
+                                        <td>{getRowStatus({})}</td>
                                     </tr>
                                 );
                             }

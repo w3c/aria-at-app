@@ -59,7 +59,13 @@ export default [
     },
     {
         path: '/candidate-tests',
-        component: CandidateTests
+        component: () => {
+            return (
+                <ConfirmAuth requiredPermission="VENDOR">
+                    <Route component={CandidateTests} />
+                </ConfirmAuth>
+            );
+        }
     },
     {
         path: '/invalid-request',
