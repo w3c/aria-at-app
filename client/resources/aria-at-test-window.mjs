@@ -5,7 +5,7 @@ export class TestWindow {
    * @param {string} options.pageUri
    * @param {TestWindowHooks} [options.hooks]
    */
-  constructor({window = null, pageUri, hooks}) {
+  constructor({ window = null, pageUri, hooks }) {
     /** @type {Window | null} */
     this.window = window;
 
@@ -21,7 +21,11 @@ export class TestWindow {
   }
 
   open() {
-    this.window = window.open(this.pageUri, "_blank", "toolbar=0,location=0,menubar=0,width=800,height=800");
+    this.window = window.open(
+      this.pageUri,
+      '_blank',
+      'toolbar=0,location=0,menubar=0,width=800,height=800'
+    );
 
     this.hooks.windowOpened();
 
@@ -41,7 +45,7 @@ export class TestWindow {
 
     if (
       this.window.location.origin !== window.location.origin || // make sure the origin is the same, and prevent this from firing on an 'about' page
-      this.window.document.readyState !== "complete"
+      this.window.document.readyState !== 'complete'
     ) {
       window.setTimeout(() => {
         this.prepare();
