@@ -35,8 +35,7 @@ const ThankYouModal = ({ show = false, handleAction = () => {} }) => {
 
 ThankYouModal.propTypes = {
     show: PropTypes.bool,
-    handleAction: PropTypes.func,
-    username: PropTypes.string
+    handleAction: PropTypes.func
 };
 
 export default ThankYouModal;

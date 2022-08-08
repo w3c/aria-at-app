@@ -9,3 +9,10 @@ export default {
 const Template = args => <ProvideFeedbackModal {...args} />;
 
 export const Default = Template.bind({});
+Default.args = {
+    at: 'JAWS',
+    issues: ['Issue 1'],
+    show: true,
+    testPlan: 'Disclosure Navigation Example',
+    username: 'evmiguel'
+};
