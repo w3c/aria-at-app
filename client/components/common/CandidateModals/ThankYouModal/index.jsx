@@ -24,6 +24,7 @@ const ThankYouModal = ({ show = false, handleAction = () => {} }) => {
                     <FontAwesomeIcon
                         icon={faCheck}
                         className="thank-you-check"
+                        color="green"
                     />
                     <h1>Thank you!</h1>
                 </div>
