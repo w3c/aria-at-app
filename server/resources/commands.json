@@ -44,6 +44,10 @@
         "text": "Command+Up"
     },
     {
+        "id": "COMMA",
+        "text": "Comma"
+    },
+    {
         "id": "CTRL_ALT_DOWN",
         "text": "Control+Alt+Down"
     },
@@ -430,6 +434,10 @@
     {
         "id": "SHIFT_P",
         "text": "Shift+P"
+    },
+    {
+        "id": "SHIFT_PERIOD",
+        "text": "Shift+Period"
     },
     {
         "id": "SHIFT_R",
