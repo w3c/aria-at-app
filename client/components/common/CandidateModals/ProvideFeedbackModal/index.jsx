@@ -1,6 +1,12 @@
 import React from 'react';
 import BasicModal from '../../BasicModal';
 import PropTypes from 'prop-types';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+    faCheck,
+    faCommentAlt,
+    faTimes
+} from '@fortawesome/free-solid-svg-icons';
 import { Form } from 'react-bootstrap';
 
 const ProvideFeedbackModal = ({
@@ -30,20 +36,54 @@ const ProvideFeedbackModal = ({
                     <h2>Finish Your Review</h2>
                     <Form>
                         <Form.Group>
-                            <Form.Check type="radio" label="Approve" />
+                            <Form.Check
+                                type="radio"
+                                label={
+                                    <div>
+                                        <FontAwesomeIcon
+                                            icon={faCheck}
+                                            color="green"
+                                        />{' '}
+                                        Approve
+                                    </div>
+                                }
+                            />
                             <Form.Text>
+                                {' '}
                                 Approve without providing feedback or change
                                 requests
                             </Form.Text>
                         </Form.Group>
                         <Form.Group>
-                            <Form.Check type="radio" label="Provide Feedback" />
+                            <Form.Check
+                                type="radio"
+                                label={
+                                    <div>
+                                        <FontAwesomeIcon
+                                            icon={faCommentAlt}
+                                            color="#275CAA"
+                                        />{' '}
+                                        Provide Feedback
+                                    </div>
+                                }
+                            />
                             <Form.Text>
                                 Provide feedback without explicit approval
                             </Form.Text>
                         </Form.Group>
                         <Form.Group>
-                            <Form.Check type="radio" label="Request Changes" />
+                            <Form.Check
+                                type="radio"
+                                label={
+                                    <div>
+                                        <FontAwesomeIcon
+                                            icon={faTimes}
+                                            color="red"
+                                        />{' '}
+                                        Request Changes
+                                    </div>
+                                }
+                            />
                             <Form.Text>
                                 Request Changes that must be addressed before
                                 approving
