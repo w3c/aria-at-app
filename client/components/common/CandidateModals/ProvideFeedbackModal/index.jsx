@@ -8,6 +8,7 @@ import {
     faTimes
 } from '@fortawesome/free-solid-svg-icons';
 import { Form } from 'react-bootstrap';
+import './ProvideFeedbackModal.css';
 
 const ProvideFeedbackModal = ({
     at = '',
@@ -95,9 +96,10 @@ const ProvideFeedbackModal = ({
                     </Form>
                 </div>
             }
+            dialogClassName="feedback"
             handleAction={handleAction}
             title={
-                <h1>
+                <h1 className="feedback-h1">
                     Great, {username}! You have reviewed every test in the{' '}
                     {testPlan} with {at}
                 </h1>
