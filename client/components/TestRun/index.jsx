@@ -37,7 +37,6 @@ import {
 import { evaluateAuth } from '../../utils/evaluateAuth';
 import './TestRun.css';
 import ReviewConflicts from '../ReviewConflicts';
-import ThankYouModal from '../common/CandidateModals/ThankYouModal';
 
 const createGitHubIssueWithTitleAndBody = ({
     test,
@@ -162,12 +161,6 @@ const TestRun = () => {
         setIsEditAtBrowserDetailsClicked
     ] = useState(false);
     const [updateMessageComponent, setUpdateMessageComponent] = useState(null);
-
-    // DELETE THIS
-    const [
-        showCandidateFeedbackModal,
-        setShowCandidateFeedbackModal
-    ] = useState(true);
 
     useEffect(() => setup(), [currentTestIndex]);
 
@@ -1031,9 +1024,6 @@ const TestRun = () => {
                         issueLink={gitHubIssueLinkWithTitleAndBody}
                         handleClose={() => setShowReviewConflictsModal(false)}
                     />
-                )}
-                {showCandidateFeedbackModal && (
-                    <ThankYouModal show={showCandidateFeedbackModal} />
                 )}
             </>
         );
