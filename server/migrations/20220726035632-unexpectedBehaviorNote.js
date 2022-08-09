@@ -20,9 +20,7 @@ module.exports = {
                                     ...scenarioResult,
                                     unexpectedBehaviors: scenarioResult.unexpectedBehaviors?.map(
                                         unexpectedBehavior =>
-                                            omit(unexpectedBehavior, [
-                                                'otherUnexpectedBehaviorText'
-                                            ])
+                                            unexpectedBehavior.id
                                     ),
                                     unexpectedBehaviorNote: note
                                 };
@@ -49,10 +47,12 @@ module.exports = {
                                     {
                                         ...scenarioResult,
                                         unexpectedBehaviors: scenarioResult.unexpectedBehaviors?.map(
-                                            unexpectedBehavior => {
-                                                return unexpectedBehavior.id !==
+                                            unexpectedBehaviorId => {
+                                                return unexpectedBehaviorId !==
                                                     'OTHER'
-                                                    ? unexpectedBehavior
+                                                    ? {
+                                                          id: unexpectedBehaviorId
+                                                      }
                                                     : {
                                                           id: 'OTHER',
                                                           otherUnexpectedBehaviorText:

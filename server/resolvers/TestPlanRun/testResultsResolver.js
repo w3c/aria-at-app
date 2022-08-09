@@ -32,12 +32,14 @@ const testResultsResolver = testPlanRun => {
                     })
                 ),
                 unexpectedBehaviors: scenarioResult.unexpectedBehaviors?.map(
-                    unexpectedBehaviorId => ({
-                        id: unexpectedBehaviorId,
-                        text: unexpectedBehaviorsJson.find(
-                            each => each.id === unexpectedBehaviorId
-                        ).text
-                    })
+                    unexpectedBehaviorId => {
+                        return {
+                            id: unexpectedBehaviorId,
+                            text: unexpectedBehaviorsJson.find(
+                                each => each.id === unexpectedBehaviorId
+                            ).text
+                        };
+                    }
                 )
             }))
         };
