@@ -1,6 +1,7 @@
 import React from 'react';
 import BasicModal from '../../BasicModal';
 import PropTypes from 'prop-types';
+import { Form } from 'react-bootstrap';
 
 const ProvideFeedbackModal = ({
     at = '',
@@ -19,17 +20,39 @@ const ProvideFeedbackModal = ({
             content={
                 <div>
                     <p>
-                        You have raised {issues.length}{' '}
-                        {issues.length > 1 ? 'issue' : 'issues'} for this test
-                        plan.
+                        You have raised{' '}
+                        <a href="javascript:void(0)">
+                            {issues.length}{' '}
+                            {issues.length > 1 ? 'issue' : 'issues'}
+                        </a>{' '}
+                        for this test plan.
                     </p>
                     <h2>Finish Your Review</h2>
-                    <ul>
-                        <li>Approve</li>
-                        <li>Provide Feedback</li>
-                        <li>Request Changes</li>
-                    </ul>
-                    <textarea></textarea>
+                    <Form>
+                        <Form.Group>
+                            <Form.Check type="radio" label="Approve" />
+                            <Form.Text>
+                                Approve without providing feedback or change
+                                requests
+                            </Form.Text>
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Check type="radio" label="Provide Feedback" />
+                            <Form.Text>
+                                Provide feedback without explicit approval
+                            </Form.Text>
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Check type="radio" label="Request Changes" />
+                            <Form.Text>
+                                Request Changes that must be addressed before
+                                approving
+                            </Form.Text>
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Control type="textarea" />
+                        </Form.Group>
+                    </Form>
                 </div>
             }
             handleAction={handleAction}
