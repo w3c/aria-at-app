@@ -764,12 +764,14 @@ function isSomeFieldRequired(state) {
       command.unexpected.hasUnexpected === HasUnexpectedBehaviorMap.NOT_SET ||
       (command.unexpected.hasUnexpected === HasUnexpectedBehaviorMap.HAS_UNEXPECTED &&
         (command.unexpected.behaviors.every(({ checked }) => !checked) ||
-          command.unexpected.behaviors.some(
-            behavior =>
+          command.unexpected.behaviors.some(behavior => {
+            return (
               behavior.checked &&
+              behavior.requireExplanation &&
               command.unexpected.note &&
               command.unexpected.note.value.trim() === ''
-          )))
+            );
+          })))
   );
 }
 
@@ -931,7 +933,7 @@ export function userFocusCommandUnexpectedBehavior({ commandIndex, unexpectedInd
  */
 export function userValidateState() {
   return function(state) {
-    return {
+    const result = {
       ...state,
       currentUserAction: UserActionMap.VALIDATE_RESULTS,
       commands: state.commands.map(command => {
@@ -959,16 +961,17 @@ export function userValidateState() {
               ...command.unexpected.note,
               highlightRequired:
                 command.unexpected.note.value.trim() === '' &&
-                command.unexpected.hasUnexpected === HasUnexpectedBehaviorMap.HAS_UNEXPECTED &&
-                (command.unexpected.behaviors.every(({ checked }) => !checked) ||
-                  command.unexpected.behaviors.some(
-                    ({ checked, requireExplanation }) => requireExplanation && checked
-                  )),
+                command.unexpected.behaviors.some(
+                  ({ checked, requireExplanation }) => requireExplanation && checked
+                ),
             },
           },
         };
       }),
     };
+
+    console.log(result);
+    return result;
   };
 }
 
