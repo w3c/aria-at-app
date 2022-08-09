@@ -933,7 +933,7 @@ export function userFocusCommandUnexpectedBehavior({ commandIndex, unexpectedInd
  */
 export function userValidateState() {
   return function(state) {
-    const result = {
+    return {
       ...state,
       currentUserAction: UserActionMap.VALIDATE_RESULTS,
       commands: state.commands.map(command => {
@@ -969,9 +969,6 @@ export function userValidateState() {
         };
       }),
     };
-
-    console.log(result);
-    return result;
   };
 }
 
