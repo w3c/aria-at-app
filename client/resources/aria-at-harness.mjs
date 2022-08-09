@@ -590,15 +590,18 @@ function renderVirtualResultsTable(results) {
    * @param {object} list
    * @param {Description} list.description
    * @param {Description[]} list.items
+   * @param {String} [list.note]
    */
-  function commandDetailsList({ description, items, note }) {
+  function commandDetailsList({
+    description,
+    items,
+    note: { value: noteValue = '', description: noteDescription } = {},
+  }) {
     return div(
       description,
       ul(
-        ...items.map(
-          description => li(rich(description)),
-          note.length ? li(rich('Explanation:'), em(note)) : fragment()
-        )
+        ...items.map(description => li(rich(description))),
+        noteValue.length ? li(rich(noteDescription), ' ', em(noteValue)) : fragment()
       )
     );
   }

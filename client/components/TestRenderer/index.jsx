@@ -449,12 +449,6 @@ const TestRenderer = ({
                 const unexpectedError = item.unexpected.highlightRequired;
                 if (unexpectedError) return true;
 
-                const { behaviors } = item.unexpected;
-                const uncheckedBehaviorsMoreError = behaviors.some(item => {
-                    if (item.more) return item.more.highlightRequired;
-                    return false;
-                });
-                if (uncheckedBehaviorsMoreError) return true;
                 return false;
             });
         }
@@ -1129,10 +1123,10 @@ const TestRenderer = ({
                                                                         isSubmitted &&
                                                                         focus
                                                                     }
-                                                                    defaultChecked={
+                                                                    checked={
                                                                         checked
                                                                     }
-                                                                    onClick={e =>
+                                                                    onChange={e =>
                                                                         change(
                                                                             e
                                                                                 .target

@@ -321,15 +321,6 @@ export function instructionDocument(resultState, hooks) {
                 )
                   ? ' (required)'
                   : ' (not required)',
-                log: (() => {
-                  console.log(
-                    'highlight required',
-                    resultState.currentUserAction === 'validateResults' &&
-                      resultUnexpectedBehavior.behaviors.some(
-                        ({ checked, requireExplanation }) => requireExplanation && checked
-                      )
-                  );
-                })(),
               },
             ]),
             enabled:
@@ -618,6 +609,10 @@ export function userChangeCommandHasUnexpectedBehavior({ commandIndex, hasUnexpe
                   ...behavior,
                   checked: false,
                 })),
+                note: {
+                  ...command.unexpected.note,
+                  value: '',
+                },
               },
             }
       ),
@@ -844,15 +839,13 @@ function resultsTableDocument(state) {
               'output:',
               /** @type {DescriptionWhitespace} */ ({ whitespace: WhitespaceStyleMap.LINE_BREAK }),
               ' ',
-              ...command.atOutput.value
-                .split(/(\r\n|\r|\n)/g)
-                .map(output =>
-                  /\r\n|\r|\n/.test(output)
-                    ? /** @type {DescriptionWhitespace} */ ({
-                        whitespace: WhitespaceStyleMap.LINE_BREAK,
-                      })
-                    : output
-                ),
+              ...command.atOutput.value.split(/(\r\n|\r|\n)/g).map(output =>
+                /\r\n|\r|\n/.test(output)
+                  ? /** @type {DescriptionWhitespace} */ ({
+                      whitespace: WhitespaceStyleMap.LINE_BREAK,
+                    })
+                  : output
+              ),
             ],
             passingAssertions: {
               description: 'Passing Assertions:',
@@ -863,9 +856,12 @@ function resultsTableDocument(state) {
               items: failingAssertions,
             },
             unexpectedBehaviors: {
-              description: 'Unexpected Behavior',
+              description: 'Unexpected Behavior:',
               items: unexpectedBehaviors,
-              note: command.unexpected.note.value,
+              note: {
+                description: 'Explanation:',
+                value: command.unexpected.note.value,
+              },
             },
           },
         };
