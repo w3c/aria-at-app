@@ -22,7 +22,7 @@ const ProvideFeedbackModal = ({
     return (
         <BasicModal
             show={show}
-            actionLabel={'Submit'}
+            actionLabel={'Submit Review'}
             centered={true}
             content={
                 <div className="feedback-content">
@@ -98,7 +98,8 @@ const ProvideFeedbackModal = ({
                         <Form.Group>
                             <Form.Control
                                 className="feedback-text"
-                                type="textarea"
+                                as="textarea"
+                                rows={5}
                             />
                         </Form.Group>
                     </Form>

@@ -1,3 +1,7 @@
+.btn {
+    padding: 5px 15px;
+}
+
 .close {
     position: relative;
     bottom: 15px;
@@ -8,13 +12,17 @@
     min-width: 50%;
 }
 
-.feedback .modal-header {
+.modal-header {
     padding: 30px 30px 10px 40px;
     text-align: left;
 }
 
-.feedback .modal-body {
+.modal-body {
     padding: 0px 30px 0px 40px;
+}
+
+.modal-footer {
+    padding-right: 30px;
 }
 
 .feedback-h1 {
@@ -33,4 +41,5 @@
 
 .feedback-text {
     height: 150px;
+    background-color: #F7F7F7;
 }
