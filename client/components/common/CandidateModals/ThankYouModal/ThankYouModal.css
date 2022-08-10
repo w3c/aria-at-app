@@ -27,6 +27,10 @@
     padding-bottom: 0;
 }
 
+.thank-you .modal-footer {
+    padding-bottom: 30px;
+}
+
 .thank-you .modal-footer .btn {
     width: 100px;
 }

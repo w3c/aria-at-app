@@ -51,7 +51,7 @@ const ProvideFeedbackModal = ({
                                         Approve
                                     </div>
                                 </FormCheck.Label>
-                                <Form.Text>
+                                <Form.Text className="radio-text">
                                     {' '}
                                     Approve without providing feedback or change
                                     requests
@@ -71,7 +71,7 @@ const ProvideFeedbackModal = ({
                                         Provide Feedback
                                     </div>
                                 </FormCheck.Label>
-                                <Form.Text>
+                                <Form.Text className="radio-text">
                                     Provide feedback without explicit approval
                                 </Form.Text>
                             </FormCheck>
@@ -89,7 +89,7 @@ const ProvideFeedbackModal = ({
                                         Request Changes
                                     </div>
                                 </FormCheck.Label>
-                                <Form.Text>
+                                <Form.Text className="radio-text">
                                     Request Changes that must be addressed
                                     before approving
                                 </Form.Text>
@@ -109,8 +109,10 @@ const ProvideFeedbackModal = ({
             handleAction={handleAction}
             title={
                 <h1 className="feedback-h1">
-                    <b>Great, {username}!</b> You have reviewed every test in
-                    the <b>{testPlan}</b> with <b>{at}</b>
+                    <span className="feedback-bold">Great, {username}!</span>{' '}
+                    You have reviewed every test in the{' '}
+                    <span className="feedback-bold">{testPlan}</span> with{' '}
+                    <span className="feedback-bold">{at}</span>
                 </h1>
             }
         />

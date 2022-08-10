@@ -12,17 +12,22 @@
     min-width: 50%;
 }
 
-.modal-header {
+.feedback .modal-header {
     padding: 30px 30px 10px 40px;
     text-align: left;
 }
 
-.modal-body {
+.feedback .modal-body {
     padding: 0px 30px 0px 40px;
 }
 
-.modal-footer {
+.feedback .modal-footer {
     padding-right: 30px;
+}
+
+.feedback-bold {
+    font-weight: 600;
+    font-style: 'Roboto';
 }
 
 .feedback-h1 {
@@ -42,4 +47,8 @@
 .feedback-text {
     height: 150px;
     background-color: #F7F7F7;
+}
+
+.radio-text {
+    padding-bottom: 10px;
 }
