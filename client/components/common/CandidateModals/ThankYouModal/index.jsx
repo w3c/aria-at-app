@@ -3,6 +3,7 @@ import BasicModal from '../../BasicModal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import PropTypes from 'prop-types';
+import '../common.css';
 import './ThankYouModal.css';
 
 const ThankYouModal = ({ show = false, handleAction = () => {} }) => {
