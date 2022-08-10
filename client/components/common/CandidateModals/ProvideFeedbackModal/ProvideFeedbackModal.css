@@ -1,7 +1,36 @@
-.modal-90w {
-    min-width: 60%;
+.close {
+    position: relative;
+    bottom: 15px;
+    left: 10px;
+}
+
+.feedback{
+    min-width: 50%;
+}
+
+.feedback .modal-header {
+    padding: 30px 30px 10px 40px;
+    text-align: left;
+}
+
+.feedback .modal-body {
+    padding: 0px 30px 0px 40px;
 }
 
 .feedback-h1 {
+    font-size: 24px;
     font-weight: normal;
+}
+
+.feedback-content h2 {
+    font-size: 16px;
+    padding-bottom: 5px;
+}
+
+.feedback-content p {
+    padding-bottom: 10px;
+}
+
+.feedback-text {
+    height: 150px;
 }
