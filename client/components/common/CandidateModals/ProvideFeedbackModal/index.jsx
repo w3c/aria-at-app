@@ -1,13 +1,13 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import BasicModal from '../../BasicModal';
-import PropTypes from 'prop-types';
+import PropTypes, { element } from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faCheck,
     faCommentAlt,
     faTimes
 } from '@fortawesome/free-solid-svg-icons';
-import { Form } from 'react-bootstrap';
+import { Form, FormCheck } from 'react-bootstrap';
 import './ProvideFeedbackModal.css';
 
 const ProvideFeedbackModal = ({
@@ -18,6 +18,11 @@ const ProvideFeedbackModal = ({
     testPlan = '',
     username = ''
 }) => {
+    const radioRef = useRef();
+    const changeRadio = element => {
+        console.log(element.target.checked);
+    };
+
     return (
         <BasicModal
             show={show}
@@ -36,67 +41,70 @@ const ProvideFeedbackModal = ({
                     </p>
                     <h2>Finish Your Review</h2>
                     <Form>
-                        <Form.Group>
-                            <Form.Check
+                        <FormCheck>
+                            <FormCheck.Input
+                                name="radio-feedback"
                                 type="radio"
-                                label={
-                                    <div>
-                                        <FontAwesomeIcon
-                                            icon={faCheck}
-                                            color="green"
-                                        />{' '}
-                                        Approve
-                                    </div>
-                                }
                             />
+                            <FormCheck.Label>
+                                <div>
+                                    <FontAwesomeIcon
+                                        icon={faCheck}
+                                        color="green"
+                                    />{' '}
+                                    Approve
+                                </div>
+                            </FormCheck.Label>
                             <Form.Text>
                                 {' '}
                                 Approve without providing feedback or change
                                 requests
                             </Form.Text>
-                        </Form.Group>
-                        <Form.Group>
-                            <Form.Check
+                        </FormCheck>
+                        <FormCheck>
+                            <FormCheck.Input
+                                name="radio-feedback"
                                 type="radio"
-                                label={
-                                    <div>
-                                        <FontAwesomeIcon
-                                            icon={faCommentAlt}
-                                            color="#275CAA"
-                                        />{' '}
-                                        Provide Feedback
-                                    </div>
-                                }
                             />
+                            <FormCheck.Label>
+                                <div>
+                                    <FontAwesomeIcon
+                                        icon={faCommentAlt}
+                                        color="#275CAA"
+                                    />{' '}
+                                    Provide Feedback
+                                </div>
+                            </FormCheck.Label>
                             <Form.Text>
                                 Provide feedback without explicit approval
                             </Form.Text>
-                        </Form.Group>
-                        <Form.Group>
-                            <Form.Check
+                        </FormCheck>
+                        <FormCheck>
+                            <FormCheck.Input
+                                name="radio-feedback"
                                 type="radio"
-                                label={
-                                    <div>
-                                        <FontAwesomeIcon
-                                            icon={faTimes}
-                                            color="red"
-                                        />{' '}
-                                        Request Changes
-                                    </div>
-                                }
                             />
+                            <FormCheck.Label>
+                                <div>
+                                    <FontAwesomeIcon
+                                        icon={faTimes}
+                                        color="red"
+                                    />{' '}
+                                    Request Changes
+                                </div>
+                            </FormCheck.Label>
                             <Form.Text>
                                 Request Changes that must be addressed before
                                 approving
                             </Form.Text>
-                        </Form.Group>
+                        </FormCheck>
                         <Form.Group>
                             <Form.Control type="textarea" />
                         </Form.Group>
                     </Form>
                 </div>
             }
-            dialogClassName="feedback"
+            dialogClassName="modal-90w"
             handleAction={handleAction}
             title={
                 <h1 className="feedback-h1">
