@@ -19,6 +19,21 @@ const ProvideFeedbackModal = ({
     testPlan = '',
     username = ''
 }) => {
+    const radioChange = element => {
+        const radios = document.getElementsByClassName('form-check');
+        for (let i = 0; i < radios.length; i++) {
+            if (element.target.id !== radios[i].children[0].id) {
+                for (let j = 0; j < radios[i].children.length; j++) {
+                    radios[i].children[j].classList.add('disabled');
+                }
+            } else {
+                for (let j = 0; j < radios[i].children.length; j++) {
+                    radios[i].children[j].classList.remove('disabled');
+                }
+            }
+        }
+    };
+
     return (
         <BasicModal
             show={show}
@@ -40,7 +55,9 @@ const ProvideFeedbackModal = ({
                             <FormCheck>
                                 <FormCheck.Input
                                     name="radio-feedback"
+                                    id="approve-input"
                                     type="radio"
+                                    onClick={radioChange}
                                 />
                                 <FormCheck.Label>
                                     <div>
@@ -59,8 +76,10 @@ const ProvideFeedbackModal = ({
                             </FormCheck>
                             <FormCheck>
                                 <FormCheck.Input
+                                    id="feedback-input"
                                     name="radio-feedback"
                                     type="radio"
+                                    onClick={radioChange}
                                 />
                                 <FormCheck.Label>
                                     <div>
@@ -77,8 +96,10 @@ const ProvideFeedbackModal = ({
                             </FormCheck>
                             <FormCheck>
                                 <FormCheck.Input
+                                    id="changes-input"
                                     name="radio-feedback"
                                     type="radio"
+                                    onClick={radioChange}
                                 />
                                 <FormCheck.Label>
                                     <div>

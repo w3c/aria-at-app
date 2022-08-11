@@ -8,6 +8,10 @@
     left: 10px;
 }
 
+.disabled {
+    opacity: 0.3;
+}
+
 .feedback{
     min-width: 50%;
 }
