@@ -16,3 +16,9 @@ Default.args = {
     testPlan: 'Disclosure Navigation Example',
     username: 'evmiguel'
 };
+
+export const TwoIssues = Template.bind({});
+TwoIssues.args = {
+    ...Default.args,
+    issues: ['Issue 1', 'Issue 2']
+};

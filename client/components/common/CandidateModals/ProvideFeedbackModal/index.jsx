@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import BasicModal from '../../BasicModal';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -19,18 +19,27 @@ const ProvideFeedbackModal = ({
     testPlan = '',
     username = ''
 }) => {
+    const [approveInputDisabled, setApproveInputDisabled] = useState('');
+    const [feedbackInputDisabled, setFeedbackInputDisabled] = useState('');
+    const [changesInputDisabled, setChangesInputDisabled] = useState('');
+
     const radioChange = element => {
-        const radios = document.getElementsByClassName('form-check');
-        for (let i = 0; i < radios.length; i++) {
-            if (element.target.id !== radios[i].children[0].id) {
-                for (let j = 0; j < radios[i].children.length; j++) {
-                    radios[i].children[j].classList.add('disabled');
-                }
-            } else {
-                for (let j = 0; j < radios[i].children.length; j++) {
-                    radios[i].children[j].classList.remove('disabled');
-                }
-            }
+        switch (element.target.id) {
+            case 'approve-input':
+                setApproveInputDisabled('');
+                setFeedbackInputDisabled('disabled');
+                setChangesInputDisabled('disabled');
+                break;
+            case 'feedback-input':
+                setApproveInputDisabled('disabled');
+                setFeedbackInputDisabled('');
+                setChangesInputDisabled('disabled');
+                break;
+            case 'changes-input':
+                setApproveInputDisabled('disabled');
+                setFeedbackInputDisabled('disabled');
+                setChangesInputDisabled('');
+                break;
         }
     };
 
@@ -43,9 +52,9 @@ const ProvideFeedbackModal = ({
                 <div className="feedback-content">
                     <p>
                         You have raised{' '}
-                        <a href="javascript:void(0)">
+                        <a href="#">
                             {issues.length}{' '}
-                            {issues.length > 1 ? 'issue' : 'issues'}
+                            {issues.length > 1 ? 'issues' : 'issue'}
                         </a>{' '}
                         for this test plan.
                     </p>
@@ -58,8 +67,11 @@ const ProvideFeedbackModal = ({
                                     id="approve-input"
                                     type="radio"
                                     onClick={radioChange}
+                                    className={approveInputDisabled}
                                 />
-                                <FormCheck.Label>
+                                <FormCheck.Label
+                                    className={approveInputDisabled}
+                                >
                                     <div>
                                         <FontAwesomeIcon
                                             icon={faCheck}
@@ -68,7 +80,9 @@ const ProvideFeedbackModal = ({
                                         Approve
                                     </div>
                                 </FormCheck.Label>
-                                <Form.Text className="radio-text">
+                                <Form.Text
+                                    className={`radio-text ${approveInputDisabled}`}
+                                >
                                     {' '}
                                     Approve without providing feedback or change
                                     requests
@@ -80,8 +94,11 @@ const ProvideFeedbackModal = ({
                                     name="radio-feedback"
                                     type="radio"
                                     onClick={radioChange}
+                                    className={feedbackInputDisabled}
                                 />
-                                <FormCheck.Label>
+                                <FormCheck.Label
+                                    className={feedbackInputDisabled}
+                                >
                                     <div>
                                         <FontAwesomeIcon
                                             icon={faCommentAlt}
@@ -90,7 +107,9 @@ const ProvideFeedbackModal = ({
                                         Provide Feedback
                                     </div>
                                 </FormCheck.Label>
-                                <Form.Text className="radio-text">
+                                <Form.Text
+                                    className={`radio-text ${feedbackInputDisabled}`}
+                                >
                                     Provide feedback without explicit approval
                                 </Form.Text>
                             </FormCheck>
@@ -100,8 +119,11 @@ const ProvideFeedbackModal = ({
                                     name="radio-feedback"
                                     type="radio"
                                     onClick={radioChange}
+                                    className={changesInputDisabled}
                                 />
-                                <FormCheck.Label>
+                                <FormCheck.Label
+                                    className={changesInputDisabled}
+                                >
                                     <div>
                                         <FontAwesomeIcon
                                             icon={faTimes}
@@ -110,7 +132,9 @@ const ProvideFeedbackModal = ({
                                         Request Changes
                                     </div>
                                 </FormCheck.Label>
-                                <Form.Text className="radio-text">
+                                <Form.Text
+                                    className={`radio-text ${changesInputDisabled}`}
+                                >
                                     Request Changes that must be addressed
                                     before approving
                                 </Form.Text>
@@ -129,12 +153,12 @@ const ProvideFeedbackModal = ({
             dialogClassName="feedback"
             handleAction={handleAction}
             title={
-                <h1 className="feedback-h1">
+                <div className="feedback-title">
                     <span className="feedback-bold">Great, {username}!</span>{' '}
                     You have reviewed every test in the{' '}
                     <span className="feedback-bold">{testPlan}</span> with{' '}
                     <span className="feedback-bold">{at}</span>
-                </h1>
+                </div>
             }
         />
     );

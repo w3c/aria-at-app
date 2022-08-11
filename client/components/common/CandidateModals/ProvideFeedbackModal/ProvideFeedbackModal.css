@@ -34,7 +34,7 @@
     font-style: 'Roboto';
 }
 
-.feedback-h1 {
+.feedback-title {
     font-size: 24px;
     font-weight: normal;
 }
@@ -45,7 +45,7 @@
 }
 
 .feedback-content p {
-    padding-bottom: 10px;
+    padding: 10px 0px;
 }
 
 .feedback-text {
