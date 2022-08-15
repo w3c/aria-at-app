@@ -1,6 +1,8 @@
 .thank-you .modal-content {
     align-items: center;
     width: 360px;
+    padding-top: 2em;
+    padding-bottom: 2em;
 }
 
 .thank-you-check {
