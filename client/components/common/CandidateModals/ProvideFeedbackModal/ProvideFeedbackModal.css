@@ -12,8 +12,13 @@
     opacity: 0.3;
 }
 
-.feedback{
+.feedback {
     min-width: 50%;
+}
+
+.feedback .modal-content {
+    padding-left: 1em;
+    padding-bottom: 1em;
 }
 
 .feedback .modal-header {
