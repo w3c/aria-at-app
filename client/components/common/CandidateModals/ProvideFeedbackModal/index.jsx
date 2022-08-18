@@ -52,14 +52,15 @@ const ProvideFeedbackModal = ({
                 <div className="feedback-content">
                     {issues.length >= 1 && (
                         <p>
-                            You have raised{' '}
+                            You have{' '}
                             <a href="#">
-                                {issues.length}{' '}
+                                raised {issues.length}{' '}
                                 {issues.length > 1 ? 'issues' : 'issue'}
                             </a>{' '}
                             for this test plan.
                         </p>
                     )}
+
                     <h2 className="feedback-h2">Finish Your Review</h2>
                     <Form>
                         <Form.Group>
@@ -72,6 +73,7 @@ const ProvideFeedbackModal = ({
                                     className={approveInputDisabled}
                                 />
                                 <FormCheck.Label
+                                    htmlFor="approve-input"
                                     className={approveInputDisabled}
                                 >
                                     <div>
@@ -99,6 +101,7 @@ const ProvideFeedbackModal = ({
                                     className={feedbackInputDisabled}
                                 />
                                 <FormCheck.Label
+                                    htmlFor="feedback-input"
                                     className={feedbackInputDisabled}
                                 >
                                     <div>
@@ -124,6 +127,7 @@ const ProvideFeedbackModal = ({
                                     className={changesInputDisabled}
                                 />
                                 <FormCheck.Label
+                                    htmlFor="changes-input"
                                     className={changesInputDisabled}
                                 >
                                     <div>
