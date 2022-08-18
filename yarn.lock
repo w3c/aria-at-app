@@ -3106,6 +3106,28 @@
   dependencies:
     "@sinonjs/commons" "^1.7.0"
 
+"@storybook/addon-a11y@^6.5.10":
+  version "6.5.10"
+  resolved "https://registry.yarnpkg.com/@storybook/addon-a11y/-/addon-a11y-6.5.10.tgz#a907cbd3f1889ba367828435a58ecc9dac42f6ba"
+  integrity sha512-BnDbLg7YEAX1aEyiB+gDFYMXIbiSFH/M0CdwPCq7T7o8cqULKOHtQkndMja1soMxsqHAVH8AGvVVZ8VlaxaJ3Q==
+  dependencies:
+    "@storybook/addons" "6.5.10"
+    "@storybook/api" "6.5.10"
+    "@storybook/channels" "6.5.10"
+    "@storybook/client-logger" "6.5.10"
+    "@storybook/components" "6.5.10"
+    "@storybook/core-events" "6.5.10"
+    "@storybook/csf" "0.0.2--canary.4566f4d.1"
+    "@storybook/theming" "6.5.10"
+    axe-core "^4.2.0"
+    core-js "^3.8.2"
+    global "^4.4.0"
+    lodash "^4.17.21"
+    react-sizeme "^3.0.1"
+    regenerator-runtime "^0.13.7"
+    ts-dedent "^2.0.0"
+    util-deprecate "^1.0.2"
+
 "@storybook/addon-actions@^6.5.10":
   version "6.5.10"
   resolved "https://registry.yarnpkg.com/@storybook/addon-actions/-/addon-actions-6.5.10.tgz#83ec807a899e0412cf98037647f256c45cc32bf5"
@@ -3130,6 +3152,24 @@
     ts-dedent "^2.0.0"
     util-deprecate "^1.0.2"
     uuid-browser "^3.1.0"
+
+"@storybook/addon-controls@^6.5.10":
+  version "6.5.10"
+  resolved "https://registry.yarnpkg.com/@storybook/addon-controls/-/addon-controls-6.5.10.tgz#275ddcd0f4dc1a107777b425417a8f252f52a91e"
+  integrity sha512-lC2y3XcolmQAJwFurIyGrynAHPWmfNtTCdu3rQBTVGwyxCoNwdOOeC2jV0BRqX2+CW6OHzJr9frNWXPSaZ8c4w==
+  dependencies:
+    "@storybook/addons" "6.5.10"
+    "@storybook/api" "6.5.10"
+    "@storybook/client-logger" "6.5.10"
+    "@storybook/components" "6.5.10"
+    "@storybook/core-common" "6.5.10"
+    "@storybook/csf" "0.0.2--canary.4566f4d.1"
+    "@storybook/node-logger" "6.5.10"
+    "@storybook/store" "6.5.10"
+    "@storybook/theming" "6.5.10"
+    core-js "^3.8.2"
+    lodash "^4.17.21"
+    ts-dedent "^2.0.0"
 
 "@storybook/addon-links@^6.5.10":
   version "6.5.10"
@@ -5508,6 +5548,11 @@ axe-core@3.3.0:
   resolved "https://registry.yarnpkg.com/axe-core/-/axe-core-3.3.0.tgz#3b32d7e54390d89ff4891b20394d33ad7a192776"
   integrity sha512-54XaTd2VB7A6iBnXMUG2LnBOI7aRbnrVxC5Tz+rVUwYl9MX/cIJc/Ll32YUoFIE/e9UKWMZoQenQu9dFrQyZCg==
 
+axe-core@^4.2.0:
+  version "4.4.3"
+  resolved "https://registry.yarnpkg.com/axe-core/-/axe-core-4.4.3.tgz#11c74d23d5013c0fa5d183796729bc3482bd2f6f"
+  integrity sha512-32+ub6kkdhhWick/UjvEwRchgoetXqTK14INLqbGm5U2TzBkBNF3nQtLYm8ovxSkQWArjEQvftCKryjZaATu3w==
+
 axios@^0.21.1:
   version "0.21.1"
   resolved "https://registry.yarnpkg.com/axios/-/axios-0.21.1.tgz#22563481962f4d6bde9a76d516ef0e5d3c09b2b8"
@@ -5756,6 +5801,11 @@ base@^0.11.1:
     isobject "^3.0.1"
     mixin-deep "^1.2.0"
     pascalcase "^0.1.1"
+
+batch-processor@1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/batch-processor/-/batch-processor-1.0.0.tgz#75c95c32b748e0850d10c2b168f6bdbe9891ace8"
+  integrity sha512-xoLQD8gmmR32MeuBHgH0Tzd5PuSZx71ZsbhVxOCRbgktZEPe4SQy7s9Z50uPp0F/f7iw2XmkHN2xkgbMfckMDA==
 
 batch@0.6.1:
   version "0.6.1"
@@ -7962,6 +8012,13 @@ electron-to-chromium@^1.4.202:
   version "1.4.211"
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.211.tgz#afaa8b58313807501312d598d99b953568d60f91"
   integrity sha512-BZSbMpyFQU0KBJ1JG26XGeFI3i4op+qOYGxftmZXFZoHkhLgsSv4DHDJfl8ogII3hIuzGt51PaZ195OVu0yJ9A==
+
+element-resize-detector@^1.2.2:
+  version "1.2.4"
+  resolved "https://registry.yarnpkg.com/element-resize-detector/-/element-resize-detector-1.2.4.tgz#3e6c5982dd77508b5fa7e6d5c02170e26325c9b1"
+  integrity sha512-Fl5Ftk6WwXE0wqCgNoseKWndjzZlDCwuPTcoVZfCP9R3EHQF8qUtr3YUPNETegRBOKqQKPW3n4kiIWngGi8tKg==
+  dependencies:
+    batch-processor "1.0.0"
 
 elliptic@^6.0.0:
   version "6.5.2"
@@ -15543,6 +15600,16 @@ react-side-effect@^2.1.0:
   resolved "https://registry.yarnpkg.com/react-side-effect/-/react-side-effect-2.1.0.tgz#1ce4a8b4445168c487ed24dab886421f74d380d3"
   integrity sha512-IgmcegOSi5SNX+2Snh1vqmF0Vg/CbkycU9XZbOHJlZ6kMzTmi3yc254oB1WCkgA7OQtIAoLmcSFuHTc/tlcqXg==
 
+react-sizeme@^3.0.1:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/react-sizeme/-/react-sizeme-3.0.2.tgz#4a2f167905ba8f8b8d932a9e35164e459f9020e4"
+  integrity sha512-xOIAOqqSSmKlKFJLO3inBQBdymzDuXx4iuwkNcJmC96jeiOg5ojByvL+g3MW9LPEsojLbC6pf68zOfobK8IPlw==
+  dependencies:
+    element-resize-detector "^1.2.2"
+    invariant "^2.2.4"
+    shallowequal "^1.1.0"
+    throttle-debounce "^3.0.1"
+
 react-test-renderer@^16.0.0-0:
   version "16.13.1"
   resolved "https://registry.yarnpkg.com/react-test-renderer/-/react-test-renderer-16.13.1.tgz#de25ea358d9012606de51e012d9742e7f0deabc1"
@@ -16663,6 +16730,11 @@ shallow-clone@^3.0.0:
   dependencies:
     kind-of "^6.0.2"
 
+shallowequal@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/shallowequal/-/shallowequal-1.1.0.tgz#188d521de95b9087404fd4dcb68b13df0ae4e7f8"
+  integrity sha512-y0m1JoUZSlPAjXVtPPW70aZWfIL/dSP7AFkRnniLCrK/8MDKog3TySTBmckD+RObVxH0v4Tox67+F14PdED2oQ==
+
 shebang-command@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/shebang-command/-/shebang-command-1.2.0.tgz#44aac65b695b03398968c39f363fee5deafdf1ea"
@@ -17710,6 +17782,11 @@ throat@^5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/throat/-/throat-5.0.0.tgz#c5199235803aad18754a667d659b5e72ce16764b"
   integrity sha512-fcwX4mndzpLQKBS1DVYhGAcYaYt7vsHNIvQV+WXMvnow5cgjPphq5CaayLaGsjRdSCKZFNGt7/GYAuXaNOiYCA==
+
+throttle-debounce@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/throttle-debounce/-/throttle-debounce-3.0.1.tgz#32f94d84dfa894f786c9a1f290e7a645b6a19abb"
+  integrity sha512-dTEWWNu6JmeVXY0ZYoPuH5cRIwc0MeGbJwah9KUNYSJwommQpCzTySTpEe8Gs1J23aeWEuAobe4Ag7EHVt/LOg==
 
 through2@^2.0.0:
   version "2.0.5"
