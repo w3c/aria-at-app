@@ -50,14 +50,16 @@ const ProvideFeedbackModal = ({
             centered={true}
             content={
                 <div className="feedback-content">
-                    <p>
-                        You have raised{' '}
-                        <a href="#">
-                            {issues.length}{' '}
-                            {issues.length > 1 ? 'issues' : 'issue'}
-                        </a>{' '}
-                        for this test plan.
-                    </p>
+                    {issues.length >= 1 && (
+                        <p>
+                            You have raised{' '}
+                            <a href="#">
+                                {issues.length}{' '}
+                                {issues.length > 1 ? 'issues' : 'issue'}
+                            </a>{' '}
+                            for this test plan.
+                        </p>
+                    )}
                     <h2 className="feedback-h2">Finish Your Review</h2>
                     <Form>
                         <Form.Group>
