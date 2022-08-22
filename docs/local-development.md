@@ -103,6 +103,18 @@ yarn workspace client jest --watchAll
 yarn workspace server jest --watchAll
 ```
 
+### Previewing components with Storybook
+Storybook is a tool for building out UI components. To start the Storybook server, run:
+```
+yarn storybook
+```
+
+#### Writing stories
+- Make a new file in `client/stories` with the format `<component>.stories.jsx`. 
+- Run the Storybook server
+
+Any changes in the component will be picked up by the Storybook server.
+
 ### Accessibility testing
 
 #### Manual accessibilty testings
