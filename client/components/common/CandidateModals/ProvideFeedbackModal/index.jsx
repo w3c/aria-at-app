@@ -159,12 +159,20 @@ const ProvideFeedbackModal = ({
             dialogClassName="feedback"
             handleAction={handleAction}
             title={
-                <div className="feedback-title">
-                    <span className="feedback-bold">Great, {username}!</span>{' '}
-                    You have reviewed every test in the{' '}
-                    <span className="feedback-bold">{testPlan}</span> with{' '}
-                    <span className="feedback-bold">{at}</span>
-                </div>
+                <>
+                    <p className="sr-only">
+                        Great {username}! You have reviewed every test in the{' '}
+                        {testPlan} with {at}
+                    </p>
+                    <div className="feedback-title" aria-hidden="true">
+                        <span className="feedback-bold">
+                            Great, {username}!
+                        </span>{' '}
+                        You have reviewed every test in the{' '}
+                        <span className="feedback-bold">{testPlan}</span> with{' '}
+                        <span className="feedback-bold">{at}</span>
+                    </div>
+                </>
             }
         />
     );
