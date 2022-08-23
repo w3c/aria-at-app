@@ -608,6 +608,10 @@ const TestRenderer = ({
         return (
             <>
                 <HeadingText>{header}</HeadingText>
+                <SubHeadingText id="instruction-list-heading">
+                    {pageContent.instructions.instructions.header}
+                </SubHeadingText>
+                <InstructionsContent labelIdRef="instruction-list-heading" />
                 <SubHeadingText id="overallstatus">
                     {status.header.map(text => (
                         <Fragment key={nextId()}>{text}</Fragment>
