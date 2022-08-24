@@ -244,7 +244,9 @@ main.container-fluid .test-iframe-container > .row {
 
 .apg-example-name,
 .tests-completed,
-.test-version {
+.test-version,
+.review-status,
+.target-date {
     background: #f5f8fa;
     border: 1px solid #d2d5d9;
     width: 37%;
