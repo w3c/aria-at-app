@@ -23,59 +23,99 @@ const permissionScopes = [
 ];
 const permissionScopesURI = encodeURI(permissionScopes.join(' '));
 const graphQLEndpoint = `${GITHUB_GRAPHQL_SERVER}/graphql`;
-const nodeCache = new NodeCache();
-const CACHE_MINUTES = 2;
 
-const constructIssuesRequest = async ({
-    ats = ['jaws', 'nvda', 'vo'],
-    page = 1
-}) => {
-    const issuesEndpoint = `https://api.github.com/repos/w3c/aria-at-app/issues?labels=app,candidate-review&per_page=100`;
-    const url = `${issuesEndpoint}&page=${page}`;
-    const auth = {
-        username: GITHUB_CLIENT_ID,
-        password: GITHUB_CLIENT_SECRET
-    };
-    const response = await axios.get(url, { auth });
-    // https://docs.github.com/en/rest/issues/issues#list-repository-issues
-    // Filter out Pull Requests. GitHub's REST API v3 also considers every
-    // pull request an issue.
-    const issues = response.data.filter(data => !data.pull_request);
-    const headersLink = response.headers.link;
-
+const constructIssuesQuery = async ({ ats, after, githubAccessToken }) => {
     let resultsByAt = { jaws: [], nvda: [], vo: [] };
-    if (issues.length) {
+
+    const query = `
+        query {
+            repository(owner: "howard-e", name: "aria-at-app") {
+                id
+                issues(
+                  first: 100
+                  ${after ? `after: "${after}"` : ''}
+                  labels: ["app", "candidate-review"]
+                  orderBy: {field: CREATED_AT, direction: DESC}
+                ) {
+                    totalCount
+                    nodes {
+                        body
+                        author {
+                            login
+                        }
+                        closed
+                        title
+                        labels(first: 10) {
+                            totalCount
+                            nodes {
+                                name
+                            }
+                        }
+                        state
+                        number
+                    }
+                    pageInfo {
+                        hasNextPage
+                        endCursor
+                    }
+                }
+            }
+        }
+    `;
+
+    const response = await axios.post(
+        graphQLEndpoint,
+        { query },
+        { headers: { Authorization: `bearer ${githubAccessToken}` } }
+    );
+    const result = response?.data?.data;
+
+    const { repository } = result;
+    const { issues } = repository;
+    const { totalCount, nodes, pageInfo } = issues;
+    const { hasNextPage, endCursor } = pageInfo;
+
+    if (totalCount) {
         resultsByAt = {
             jaws: ats.includes('jaws')
                 ? [
-                      ...issues.filter(issue =>
-                          issue.labels.map(label => label.name).includes('jaws')
+                      ...resultsByAt.jaws,
+                      ...nodes.filter(issue =>
+                          issue.labels.nodes
+                              .map(label => label.name)
+                              .includes('jaws')
                       )
                   ]
                 : [],
             nvda: ats.includes('nvda')
                 ? [
-                      ...issues.filter(issue =>
-                          issue.labels.map(label => label.name).includes('nvda')
+                      ...resultsByAt.nvda,
+                      ...nodes.filter(issue =>
+                          issue.labels.nodes
+                              .map(label => label.name)
+                              .includes('nvda')
                       )
                   ]
                 : [],
             vo: ats.includes('vo')
                 ? [
-                      ...issues.filter(issue =>
-                          issue.labels.map(label => label.name).includes('vo')
+                      ...resultsByAt.vo,
+                      ...nodes.filter(issue =>
+                          issue.labels.nodes
+                              .map(label => label.name)
+                              .includes('vo')
                       )
                   ]
                 : []
         };
     }
 
-    // Check if additional pages exist
-    if (headersLink && headersLink.includes('rel="next"')) {
-        // Get result from other pages
-        const additionalResultsByAt = await constructIssuesRequest({
+    if (hasNextPage) {
+        // call next page and build the resultsByAt again
+        const additionalResultsByAt = await constructIssuesQuery({
             ats,
-            page: page + 1
+            after: endCursor,
+            githubAccessToken
         });
         resultsByAt = {
             jaws: ats.includes('jaws')
@@ -165,29 +205,10 @@ module.exports = {
 
         return isMember;
     },
-    async getCandidateReviewIssuesByAt({ cacheId, atName }) {
-        const cacheResult = nodeCache.get(cacheId);
-
-        let atKey = '';
-        switch (atName) {
-            case 'JAWS':
-                atKey = 'jaws';
-                break;
-            case 'NVDA':
-                atKey = 'nvda';
-                break;
-            case 'VoiceOver for macOS':
-                atKey = 'vo';
-                break;
-        }
-
-        if (!cacheResult) {
-            const result = await constructIssuesRequest({
-                ats: [atKey]
-            });
-            nodeCache.set(cacheId, result, CACHE_MINUTES * 60);
-            return result[atKey];
-        }
-        return cacheResult[atKey];
+    async getCandidateReviewIssues({
+        ats = ['jaws', 'nvda', 'vo'],
+        githubAccessToken
+    }) {
+        return await constructIssuesQuery({ ats, githubAccessToken });
     }
 };
