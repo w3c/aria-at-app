@@ -23,6 +23,7 @@ const permissionScopes = [
 ];
 const permissionScopesURI = encodeURI(permissionScopes.join(' '));
 const graphQLEndpoint = `${GITHUB_GRAPHQL_SERVER}/graphql`;
+const nodeCache = new NodeCache();
 
 const constructIssuesQuery = async ({ ats, after, githubAccessToken }) => {
     let resultsByAt = { jaws: [], nvda: [], vo: [] };
@@ -207,9 +208,19 @@ module.exports = {
         return isMember;
     },
     async getCandidateReviewIssues({
+        cacheId,
         ats = ['jaws', 'nvda', 'vo'],
         githubAccessToken
     }) {
-        return await constructIssuesQuery({ ats, githubAccessToken });
+        const cacheResult = nodeCache.get(cacheId);
+        if (!cacheResult) {
+            const result = await constructIssuesQuery({
+                ats,
+                githubAccessToken
+            });
+            nodeCache.set(cacheId, result, 300);
+            return result;
+        }
+        return cacheResult;
     }
 };
