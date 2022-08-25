@@ -18,11 +18,6 @@ module.exports = function(sequelize, DataTypes) {
             },
             status: {
                 type: DataTypes.TEXT,
-                // type: DataTypes.ENUM(
-                //     STATUS.DRAFT,
-                //     STATUS.IN_REVIEW,
-                //     STATUS.FINALIZED
-                // ),
                 allowNull: false,
                 defaultValue: STATUS.DRAFT
             },
@@ -30,6 +25,10 @@ module.exports = function(sequelize, DataTypes) {
             atId: { type: DataTypes.INTEGER },
             browserId: { type: DataTypes.INTEGER },
             createdAt: {
+                type: DataTypes.DATE,
+                defaultValue: DataTypes.NOW
+            },
+            phaseChangeUpdate: {
                 type: DataTypes.DATE,
                 defaultValue: DataTypes.NOW
             }

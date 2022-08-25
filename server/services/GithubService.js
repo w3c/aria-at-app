@@ -52,6 +52,7 @@ const constructIssuesQuery = async ({ ats, after, githubAccessToken }) => {
                         }
                         state
                         number
+                        bodyUrl
                     }
                     pageInfo {
                         hasNextPage

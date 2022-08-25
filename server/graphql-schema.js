@@ -740,6 +740,26 @@ const graphqlSchema = gql`
         conflictingResults: [PopulatedData]!
     }
 
+    type Issue {
+        """
+        GitHub username of the issue creator.
+        """
+        author: String!
+        """
+        Link to the GitHub issue's first comment.
+        """
+        link: String!
+        """
+        Indicates the type of issue. 'changes-requested' or 'feedback'.
+        'feedback' is the default type.
+        """
+        type: String!
+        """
+        Indicates if the issue is currently open on GitHub.
+        """
+        isOpen: Boolean!
+    }
+
     """
     A container for test results as captured by multiple testers. The tests to
     be run for a TestPlanReport originate in the TestPlanVersion.
@@ -753,6 +773,15 @@ const graphqlSchema = gql`
         See TestPlanReportStatus type for more information.
         """
         status: TestPlanReportStatus!
+        """
+        Date of when the status was last updated.
+        """
+        phaseChangeUpdate: Timestamp!
+        """
+        The intended target date for the final TestPlanReport phase promotion.
+        Based on the ARIA-AT Working Mode.
+        """
+        phaseTargetDate: Timestamp
         """
         The snapshot of a TestPlan to use.
         """
@@ -791,6 +820,11 @@ const graphqlSchema = gql`
         results, and is much more convenient to work with.
         """
         finalizedTestResults: [TestResult]
+        """
+        These are the different feedback and requested change items created for
+        the TestPlanReport and retrieved from GitHub.
+        """
+        issues: [Issue]
         """
         These are all the TestPlanRuns which were recorded during the
         TestPlanReport's DRAFT stage.
