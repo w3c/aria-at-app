@@ -11,6 +11,7 @@ import React from 'react';
 const TestNavigator = ({
     show = true,
     isSignedIn = false,
+    isVendor = false,
     tests = [],
     currentTestIndex = 0,
     toggleShowClick = () => {},
@@ -61,10 +62,15 @@ const TestNavigator = ({
                                     : 'In Progress';
                             } else if (
                                 !isSignedIn &&
+                                !isVendor &&
                                 test.index === currentTestIndex
                             ) {
                                 resultClassName = 'in-progress';
                                 resultStatus = 'In Progress:';
+                            } else if (isVendor) {
+                                // TODO: flesh this out
+                                resultClassName = 'complete';
+                                resultStatus = 'Complete';
                             }
                         }
                         return (
@@ -100,6 +106,7 @@ const TestNavigator = ({
 TestNavigator.propTypes = {
     show: PropTypes.bool,
     isSignedIn: PropTypes.bool,
+    isVendor: PropTypes.bool,
     tests: PropTypes.array,
     testResult: PropTypes.object,
     conflicts: PropTypes.object,

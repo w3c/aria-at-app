@@ -10,7 +10,11 @@ export default {
 export const DEFAULT = args => <CandidateTestPlanRun {...args} />;
 DEFAULT.args = {
     atId: '1',
-    testPlanVersionId: '1'
+    testPlanVersionId: '1',
+    githubIssues: {
+        changes: ['Change 1'],
+        feedback: ['Feedback 1', 'Feedback 2']
+    }
 };
 DEFAULT.parameters = {
     apolloClient: {

@@ -7,10 +7,15 @@ import OptionButton from '../TestRun/OptionButton';
 import { navigateTests } from '../../utils/navigateTests';
 import { CANDIDATE_REPORTS_QUERY } from './queries';
 import { Container, Row, Col, Button } from 'react-bootstrap';
+import nextId from 'react-id-generator';
 import '../TestRun/TestRun.css';
 import '../App/App.css';
 
-const CandidateTestPlanRun = ({ atId = null, testPlanVersionId = null }) => {
+const CandidateTestPlanRun = ({
+    atId = null,
+    testPlanVersionId = null,
+    githubIssues = null
+}) => {
     const { loading, data, error } = useQuery(CANDIDATE_REPORTS_QUERY);
     const testRunStateRef = useRef();
     const recentTestRunStateRef = useRef();
@@ -75,6 +80,7 @@ const CandidateTestPlanRun = ({ atId = null, testPlanVersionId = null }) => {
         <Container className="test-run-container">
             <Row>
                 <TestNavigator
+                    isVendor={true}
                     show={showTestNavigator}
                     tests={tests}
                     currentTestIndex={currentTestIndex}
@@ -112,10 +118,32 @@ const CandidateTestPlanRun = ({ atId = null, testPlanVersionId = null }) => {
                     </div>
                     <Row>
                         <Col>
+                            {githubIssues && (
+                                <Row>
+                                    <h2>Feedback from JAWS Representative</h2>
+                                    <ul>
+                                        <li key={nextId()}>
+                                            {githubIssues.changes?.length}{' '}
+                                            {githubIssues.changes?.length === 1
+                                                ? 'person'
+                                                : 'people'}{' '}
+                                            requested changes for this test
+                                        </li>
+                                        <li key={nextId()}>
+                                            {githubIssues.feedback?.length}{' '}
+                                            {githubIssues.feedback?.length === 1
+                                                ? 'person'
+                                                : 'people'}{' '}
+                                            left feedback for this test
+                                        </li>
+                                    </ul>
+                                </Row>
+                            )}
+
                             <Row>
                                 {testPlanReports.map(testPlanReport => {
                                     return (
-                                        <>
+                                        <div key={nextId()}>
                                             <h1>
                                                 {testPlanReport.browser.name}
                                             </h1>
@@ -144,7 +172,7 @@ const CandidateTestPlanRun = ({ atId = null, testPlanVersionId = null }) => {
                                                     testRunResultRef
                                                 }
                                             />
-                                        </>
+                                        </div>
                                     );
                                 })}
                             </Row>
@@ -210,7 +238,8 @@ const CandidateTestPlanRun = ({ atId = null, testPlanVersionId = null }) => {
 
 CandidateTestPlanRun.propTypes = {
     atId: PropTypes.string,
-    testPlanVersionId: PropTypes.string
+    testPlanVersionId: PropTypes.string,
+    githubIssues: PropTypes.object
 };
 
 export default CandidateTestPlanRun;
