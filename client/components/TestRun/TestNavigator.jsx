@@ -67,7 +67,6 @@ const TestNavigator = ({
                                 resultStatus = 'In Progress:';
                             }
                         }
-
                         return (
                             <li
                                 className={`test-name-wrapper ${resultClassName}`}

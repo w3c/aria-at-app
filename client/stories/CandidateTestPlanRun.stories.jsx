@@ -797,7 +797,7 @@ DEFAULT.parameters = {
                                     },
                                     {
                                         id: 'ZWY1OeyIxMiI6MTA0fQDc1MT',
-                                        completedAt: '2022-08-24T15:25:32.055Z',
+                                        completedAt: '2022-08-25T16:11:27.358Z',
                                         test: {
                                             id: 'MDllNeyIyIjoiMSJ9DY1NT',
                                             rowNumber: 2,
@@ -906,7 +906,7 @@ DEFAULT.parameters = {
                                                     ]
                                                 },
                                                 output:
-                                                    'JAWS output after Space',
+                                                    'JAWS output after Space - different',
                                                 assertionResults: [
                                                     {
                                                         id:
@@ -948,7 +948,25 @@ DEFAULT.parameters = {
                                                     }
                                                 ],
                                                 optionalAssertionResults: [],
-                                                unexpectedBehaviors: []
+                                                unexpectedBehaviors: [
+                                                    {
+                                                        id: 'SLUGGISH',
+                                                        text:
+                                                            'Screen reader became extremely sluggish',
+                                                        otherUnexpectedBehaviorText: null
+                                                    },
+                                                    {
+                                                        id: 'AT_CRASHED',
+                                                        text:
+                                                            'Screen reader crashed',
+                                                        otherUnexpectedBehaviorText: null
+                                                    },
+                                                    {
+                                                        id: 'BROWSER_CRASHED',
+                                                        text: 'Browser crashed',
+                                                        otherUnexpectedBehaviorText: null
+                                                    }
+                                                ]
                                             },
                                             {
                                                 id:
@@ -1047,7 +1065,7 @@ DEFAULT.parameters = {
                                                     name: '99.0.4844.84'
                                                 },
                                                 completedAt:
-                                                    '2022-08-24T15:25:32.055Z'
+                                                    '2022-08-25T16:11:27.358Z'
                                             }
                                         ]
                                     }

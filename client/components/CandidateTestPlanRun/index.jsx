@@ -4,32 +4,57 @@ import PropTypes from 'prop-types';
 import TestNavigator from '../TestRun/TestNavigator';
 import TestRenderer from '../TestRenderer';
 import OptionButton from '../TestRun/OptionButton';
+import { navigateTests } from '../../utils/navigateTests';
 import { CANDIDATE_REPORTS_QUERY } from './queries';
-import { Container, Row, Col } from 'react-bootstrap';
+import { Container, Row, Col, Button } from 'react-bootstrap';
 import '../TestRun/TestRun.css';
+import '../App/App.css';
 
 const CandidateTestPlanRun = ({ atId = null, testPlanVersionId = null }) => {
     const { loading, data, error } = useQuery(CANDIDATE_REPORTS_QUERY);
     const testRunStateRef = useRef();
     const recentTestRunStateRef = useRef();
     const testRunResultRef = useRef();
-    const [isRendererReady, setIsRendererReady] = useState(false);
     const [currentTestIndex, setCurrentTestIndex] = useState(0);
     const [showTestNavigator, setShowTestNavigator] = useState(true);
+    const [isFirstTest, setIsFirstTest] = useState(true);
+    const [isLastTest, setIsLastTest] = useState(false);
 
     const toggleTestNavigator = () => setShowTestNavigator(!showTestNavigator);
-    const handleTestClick = async index => setCurrentTestIndex(index);
+    const handleTestClick = index => {
+        setCurrentTestIndex(index);
+    };
+    const handleNextTestClick = () => {
+        navigateTests(
+            false,
+            currentTest,
+            tests,
+            setCurrentTestIndex,
+            setIsFirstTest,
+            setIsLastTest
+        );
+    };
+    const handlePreviousTestClick = () => {
+        navigateTests(
+            true,
+            currentTest,
+            tests,
+            setCurrentTestIndex,
+            setIsFirstTest,
+            setIsLastTest
+        );
+    };
 
     const setup = () => {
         testRunStateRef.current = null;
         recentTestRunStateRef.current = null;
         testRunResultRef.current = null;
-        setIsRendererReady(false);
     };
 
     useEffect(() => setup());
 
     if (loading) return <p>Loading...</p>;
+    if (error) return <p>Error</p>;
     if (!data) return null;
 
     const testPlanReports = data.testPlanReports.filter(
@@ -38,7 +63,12 @@ const CandidateTestPlanRun = ({ atId = null, testPlanVersionId = null }) => {
             report.testPlanVersion.id == testPlanVersionId
     );
 
-    const currentTest = testPlanReports[0].runnableTests[currentTestIndex];
+    const tests = testPlanReports[0].runnableTests.map((test, index) => ({
+        ...test,
+        index,
+        seq: index + 1
+    }));
+    const currentTest = tests[currentTestIndex];
     const testPlanVersion = testPlanReports[0].testPlanVersion;
 
     return (
@@ -46,7 +76,7 @@ const CandidateTestPlanRun = ({ atId = null, testPlanVersionId = null }) => {
             <Row>
                 <TestNavigator
                     show={showTestNavigator}
-                    tests={testPlanReports[0].runnableTests}
+                    tests={tests}
                     currentTestIndex={currentTestIndex}
                     toggleShowClick={toggleTestNavigator}
                     handleTestClick={handleTestClick}
@@ -54,10 +84,9 @@ const CandidateTestPlanRun = ({ atId = null, testPlanVersionId = null }) => {
                 <Col>
                     <h1>
                         <span className="task-label">
-                            Reviewing tests {currentTestIndex} of{' '}
-                            {testPlanReports[0].runnableTests.length}:
+                            Reviewing tests {currentTest.seq} of {tests.length}:
                         </span>
-                        {`${currentTestIndex + 1}.`} {currentTest.title}
+                        {`${currentTest.seq}.`} {currentTest.title}
                     </h1>
                     <div className="test-info-wrapper">
                         <div className="test-info-entity apg-example-name">
@@ -83,36 +112,70 @@ const CandidateTestPlanRun = ({ atId = null, testPlanVersionId = null }) => {
                     </div>
                     <Row>
                         <Col>
-                            {testPlanReports.map(testPlanReport => {
-                                return (
-                                    <>
-                                        <h1>{testPlanReport.browser.name}</h1>
-                                        <TestRenderer
-                                            key={testPlanReport.id}
-                                            at={testPlanReport.at}
-                                            testRunStateRef={testRunStateRef}
-                                            recentTestRunStateRef={
-                                                recentTestRunStateRef
-                                            }
-                                            setIsRendererReady={
-                                                setIsRendererReady
-                                            }
-                                            testResult={
-                                                testPlanReport
-                                                    .finalizedTestResults[0]
-                                            }
-                                            testPageUrl={
-                                                testPlanReport.testPlanVersion
-                                                    .testPageUrl
-                                            }
-                                            testRunResultRef={testRunResultRef}
-                                        />
-                                    </>
-                                );
-                            })}
+                            <Row>
+                                {testPlanReports.map(testPlanReport => {
+                                    return (
+                                        <>
+                                            <h1>
+                                                {testPlanReport.browser.name}
+                                            </h1>
+                                            <TestRenderer
+                                                key={`${testPlanReport.id} + ${testPlanReport.finalizedTestResults[currentTestIndex].id}`}
+                                                at={testPlanReport.at}
+                                                testRunStateRef={
+                                                    testRunStateRef
+                                                }
+                                                recentTestRunStateRef={
+                                                    recentTestRunStateRef
+                                                }
+                                                setIsRendererReady={() => {}}
+                                                testResult={
+                                                    testPlanReport
+                                                        .finalizedTestResults[
+                                                        currentTestIndex
+                                                    ]
+                                                }
+                                                testPageUrl={
+                                                    testPlanReport
+                                                        .testPlanVersion
+                                                        .testPageUrl
+                                                }
+                                                testRunResultRef={
+                                                    testRunResultRef
+                                                }
+                                            />
+                                        </>
+                                    );
+                                })}
+                            </Row>
+                            <Row>
+                                <ul
+                                    aria-labelledby="test-toolbar-heading"
+                                    className="test-run-toolbar mt-1"
+                                >
+                                    <li>
+                                        <Button
+                                            variant="secondary"
+                                            onClick={handlePreviousTestClick}
+                                            disabled={isFirstTest}
+                                        >
+                                            Previous Test
+                                        </Button>
+                                    </li>
+                                    <li>
+                                        <Button
+                                            variant="secondary"
+                                            onClick={handleNextTestClick}
+                                            disabled={isLastTest}
+                                        >
+                                            Next Test
+                                        </Button>
+                                    </li>
+                                </ul>
+                            </Row>
                         </Col>
                         <Col>
-                            <Col className="current-test-options" md={3}>
+                            <Col className="current-test-options" md={4}>
                                 <div role="complementary">
                                     <h2 id="test-options-heading">
                                         Test Review Options

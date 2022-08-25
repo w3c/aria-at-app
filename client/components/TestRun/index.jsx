@@ -25,6 +25,7 @@ import BasicThemedModal from '../common/BasicThemedModal';
 import AtAndBrowserDetailsModal from '../common/AtAndBrowserDetailsModal';
 import { useDetectUa } from '../../hooks/useDetectUa';
 import DisplayNone from '../../utils/DisplayNone';
+import { navigateTests } from '../../utils/navigateTests';
 import {
     TEST_RUN_PAGE_QUERY,
     TEST_RUN_PAGE_ANON_QUERY,
@@ -327,23 +328,6 @@ const TestRun = () => {
         conflictMarkdown: conflictMarkdownRef.current
     });
 
-    const navigateTests = (previous = false) => {
-        // assume navigation forward if previous is false
-        let newTestIndex = currentTest.seq;
-        if (!previous) {
-            // next
-            const newTestIndexToEval = currentTest.seq + 1;
-            if (newTestIndexToEval <= tests.length)
-                newTestIndex = newTestIndexToEval;
-        } else {
-            // previous
-            const newTestIndexToEval = currentTest.seq - 1;
-            if (newTestIndexToEval >= 1 && newTestIndexToEval <= tests.length)
-                newTestIndex = newTestIndexToEval;
-        }
-        setCurrentTestIndex(tests.find(t => t.seq === newTestIndex).index);
-    };
-
     const remapScenarioResults = (
         rendererState,
         scenarioResults,
@@ -515,13 +499,13 @@ const TestRun = () => {
             case 'goToNextTest': {
                 // Save renderer's form state
                 await saveForm(false, true);
-                navigateTests();
+                navigateTests(false, currentTest, tests, setCurrentTestIndex);
                 break;
             }
             case 'goToPreviousTest': {
                 // Save renderer's form state
                 await saveForm(false, true);
-                navigateTests(true);
+                navigateTests(true, currentTest, tests, setCurrentTestIndex);
                 break;
             }
             case 'editTest': {
