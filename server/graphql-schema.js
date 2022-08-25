@@ -771,15 +771,11 @@ const graphqlSchema = gql`
         Indicates the type of issue. 'CHANGES_REQUESTED' or 'FEEDBACK'.
         'FEEDBACK' is the default type.
         """
-        feedbackType: IssueFeedbackType!
+        type: String!
         """
         Indicates if the issue is currently open on GitHub.
         """
         isOpen: Boolean!
-        """
-        Test Number the issue was raised for.
-        """
-        testNumberFilteredByAt: Int!
     }
 
     """
@@ -796,21 +792,14 @@ const graphqlSchema = gql`
         """
         status: TestPlanReportStatus!
         """
-        Date of when the TestPlanReport was last updated to the 'Candidate'
-        status.
+        Date of when the status was last updated.
         """
-        candidateStatusReachedAt: Timestamp
+        phaseChangeUpdate: Timestamp!
         """
-        Date of when the TestPlanReport was last updated to the 'Recommended'
-        status.
-        """
-        recommendedStatusReachedAt: Timestamp
-        """
-        The intended target date for the final TestPlanReport status promotion.
+        The intended target date for the final TestPlanReport phase promotion.
         Based on the ARIA-AT Working Mode.
-        https://github.com/w3c/aria-at/wiki/Working-Mode
         """
-        recommendedStatusTargetDate: Timestamp
+        phaseTargetDate: Timestamp
         """
         The snapshot of a TestPlan to use.
         """
@@ -859,7 +848,7 @@ const graphqlSchema = gql`
         These are the different feedback and requested change items created for
         the TestPlanReport and retrieved from GitHub.
         """
-        issues: [Issue]!
+        issues: [Issue]
         """
         These are all the TestPlanRuns which were recorded during the
         TestPlanReport's DRAFT stage.
