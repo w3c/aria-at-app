@@ -758,6 +758,10 @@ const graphqlSchema = gql`
         Indicates if the issue is currently open on GitHub.
         """
         isOpen: Boolean!
+        """
+        Test Number the issue was raised for.
+        """
+        testNumber: Int!
     }
 
     """

@@ -1,4 +1,5 @@
 const { GithubService } = require('../../services');
+const { Base64 } = require('js-base64');
 
 const issuesResolver = async testPlanReport => {
     const dateOptions = { month: 'long', day: 'numeric', year: 'numeric' };
@@ -28,8 +29,10 @@ const issuesResolver = async testPlanReport => {
         return [];
     }
 
+    const cacheId = Base64.encode(`${testPlanReport.id}${searchTitle}`);
     const candidateReviewIssuesResult = await GithubService.getCandidateReviewIssues(
         {
+            cacheId,
             githubAccessToken,
             ats: [atKey]
         }
@@ -41,7 +44,10 @@ const issuesResolver = async testPlanReport => {
             i.title.includes(searchTitle)
         );
         return filteredIssues.map(i => {
-            const { author, bodyUrl, labels, state } = i;
+            const { title, author, bodyUrl, labels, state } = i;
+            const testNumberSubstring = title.match(/\[Test \d+]/g)[0];
+            const testNumber = testNumberSubstring.match(/\d+/g)[0];
+
             return {
                 author: author.login,
                 link: bodyUrl,
@@ -50,7 +56,8 @@ const issuesResolver = async testPlanReport => {
                     .includes('changes-requested')
                     ? 'changes-requested'
                     : 'feedback',
-                isOpen: state === 'OPEN'
+                isOpen: state === 'OPEN',
+                testNumber
             };
         });
     }

@@ -41,6 +41,7 @@
     "graphql": "^15.5.0",
     "js-base64": "^3.6.1",
     "lodash": "^4.17.21",
+    "node-cache": "^5.1.2",
     "node-fetch": "^2.6.1",
     "node-html-parser": "^3.1.5",
     "nodegit": "^0.27.0",
