@@ -22,41 +22,40 @@ const issuesResolver = async testPlanReport => {
             break;
     }
 
-    // TODO: Determine how to retrieve this at this point
-    const githubAccessToken = '';
-    if (!githubAccessToken) {
-        console.error('Unable to get GitHub Access Token');
-        return [];
-    }
-
     const cacheId = Base64.encode(`${testPlanReport.id}${searchTitle}`);
     const candidateReviewIssuesResult = await GithubService.getCandidateReviewIssues(
         {
             cacheId,
-            githubAccessToken,
             ats: [atKey]
         }
     );
 
     const issues = candidateReviewIssuesResult[atKey];
     if (issues.length) {
-        const filteredIssues = issues.filter(i =>
-            i.title.includes(searchTitle)
+        const filteredIssues = issues.filter(issue =>
+            issue.title.includes(searchTitle)
         );
-        return filteredIssues.map(i => {
-            const { title, author, bodyUrl, labels, state } = i;
+        return filteredIssues.map(issue => {
+            const {
+                title,
+                user,
+                labels,
+                state,
+                html_url,
+                id: topCommentIdUrl
+            } = issue;
             const testNumberSubstring = title.match(/\[Test \d+]/g)[0];
             const testNumber = testNumberSubstring.match(/\d+/g)[0];
 
             return {
-                author: author.login,
-                link: bodyUrl,
-                type: labels.nodes
-                    .map(l => l.name)
+                author: user.login,
+                link: `${html_url}#issue-${topCommentIdUrl}`,
+                type: labels
+                    .map(label => label.name)
                     .includes('changes-requested')
                     ? 'changes-requested'
                     : 'feedback',
-                isOpen: state === 'OPEN',
+                isOpen: state === 'open',
                 testNumber
             };
         });
