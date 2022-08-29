@@ -42,14 +42,14 @@ const issuesResolver = async testPlanReport => {
                 labels,
                 state,
                 html_url,
-                id: topCommentIdUrl
+                id: topCommentId
             } = issue;
             const testNumberSubstring = title.match(/\[Test \d+]/g)[0];
             const testNumber = testNumberSubstring.match(/\d+/g)[0];
 
             return {
                 author: user.login,
-                link: `${html_url}#issue-${topCommentIdUrl}`,
+                link: `${html_url}#issue-${topCommentId}`,
                 type: labels
                     .map(label => label.name)
                     .includes('changes-requested')
