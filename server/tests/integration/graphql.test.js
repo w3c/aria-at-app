@@ -137,12 +137,14 @@ describe('graphql', () => {
         const excludedTypeNames = [
             // Items formatted like this:
             // 'TestResult'
+            'Issue'
         ];
         const excludedTypeNameAndField = [
             // Items formatted like this:
             // ['TestResult', 'startedAt'],
             ['PopulatedData', 'atVersion'],
-            ['PopulatedData', 'browserVersion']
+            ['PopulatedData', 'browserVersion'],
+            ['TestPlanReport', 'issues']
         ];
         ({
             typeAwareQuery,
@@ -345,6 +347,11 @@ describe('graphql', () => {
                             conflictingResults {
                                 locationOfData
                             }
+                        }
+                        phaseChangeUpdate
+                        phaseTargetDate
+                        issues {
+                            __typename
                         }
                     }
                     testPlanReport(id: 3) {
