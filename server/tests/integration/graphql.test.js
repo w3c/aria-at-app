@@ -348,6 +348,8 @@ describe('graphql', () => {
                                 locationOfData
                             }
                         }
+                        phaseChangeUpdate
+                        phaseTargetDate
                         issues {
                             __typename
                         }
