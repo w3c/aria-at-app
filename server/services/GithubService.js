@@ -24,100 +24,53 @@ const permissionScopes = [
 const permissionScopesURI = encodeURI(permissionScopes.join(' '));
 const graphQLEndpoint = `${GITHUB_GRAPHQL_SERVER}/graphql`;
 const nodeCache = new NodeCache();
+const CACHE_MINUTES = 2;
 
-const constructIssuesQuery = async ({ ats, after, githubAccessToken }) => {
+const constructIssuesRequest = async ({ ats, page = 1 }) => {
+    const issuesEndpoint =
+        'https://api.github.com/repos/w3c/aria-at-app/issues?per_page=100';
+    const url = `${issuesEndpoint}&page=${page}`;
+    const auth = {
+        username: GITHUB_CLIENT_ID,
+        password: GITHUB_CLIENT_SECRET
+    };
+    const response = await axios.get(url, {}, { auth });
+    const issues = response.data;
+    const headersLink = response.headers.link;
+
     let resultsByAt = { jaws: [], nvda: [], vo: [] };
-
-    const query = `
-        query {
-            repository(owner: "howard-e", name: "aria-at-app") {
-                id
-                issues(
-                  first: 100
-                  ${after ? `after: "${after}"` : ''}
-                  labels: ["app", "candidate-review"]
-                  orderBy: {field: CREATED_AT, direction: DESC}
-                ) {
-                    totalCount
-                    nodes {
-                        body
-                        author {
-                            login
-                        }
-                        closed
-                        title
-                        labels(first: 10) {
-                            totalCount
-                            nodes {
-                                name
-                            }
-                        }
-                        state
-                        number
-                        bodyUrl
-                    }
-                    pageInfo {
-                        hasNextPage
-                        endCursor
-                    }
-                }
-            }
-        }
-    `;
-
-    const response = await axios.post(
-        graphQLEndpoint,
-        { query },
-        { headers: { Authorization: `bearer ${githubAccessToken}` } }
-    );
-    const result = response?.data?.data;
-
-    const { repository } = result;
-    const { issues } = repository;
-    const { totalCount, nodes, pageInfo } = issues;
-    const { hasNextPage, endCursor } = pageInfo;
-
-    if (totalCount) {
+    if (issues.length) {
         resultsByAt = {
             jaws: ats.includes('jaws')
                 ? [
-                      ...resultsByAt.jaws,
-                      ...nodes.filter(issue =>
-                          issue.labels.nodes
-                              .map(label => label.name)
-                              .includes('jaws')
+                      ...issues.filter(issue =>
+                          issue.labels.map(label => label.name).includes('jaws')
                       )
                   ]
                 : [],
             nvda: ats.includes('nvda')
                 ? [
-                      ...resultsByAt.nvda,
-                      ...nodes.filter(issue =>
-                          issue.labels.nodes
-                              .map(label => label.name)
-                              .includes('nvda')
+                      ...issues.filter(issue =>
+                          issue.labels.map(label => label.name).includes('nvda')
                       )
                   ]
                 : [],
             vo: ats.includes('vo')
                 ? [
-                      ...resultsByAt.vo,
-                      ...nodes.filter(issue =>
-                          issue.labels.nodes
-                              .map(label => label.name)
-                              .includes('vo')
+                      ...issues.filter(issue =>
+                          issue.labels.map(label => label.name).includes('vo')
                       )
                   ]
                 : []
         };
     }
 
-    if (hasNextPage) {
-        // call next page and build the resultsByAt again
-        const additionalResultsByAt = await constructIssuesQuery({
+    // Check if additional pages exist
+    if (headersLink && headersLink.includes('rel="next"')) {
+        // Get result from other pages
+        const additionalResultsByAt = await constructIssuesRequest({
             ats,
-            after: endCursor,
-            githubAccessToken
+            page: page + 1
         });
         resultsByAt = {
             jaws: ats.includes('jaws')
@@ -207,18 +160,13 @@ module.exports = {
 
         return isMember;
     },
-    async getCandidateReviewIssues({
-        cacheId,
-        ats = ['jaws', 'nvda', 'vo'],
-        githubAccessToken
-    }) {
+    async getCandidateReviewIssues({ cacheId, ats = ['jaws', 'nvda', 'vo'] }) {
         const cacheResult = nodeCache.get(cacheId);
         if (!cacheResult) {
-            const result = await constructIssuesQuery({
-                ats,
-                githubAccessToken
+            const result = await constructIssuesRequest({
+                ats
             });
-            nodeCache.set(cacheId, result, 300);
+            nodeCache.set(cacheId, result, CACHE_MINUTES * 60);
             return result;
         }
         return cacheResult;
