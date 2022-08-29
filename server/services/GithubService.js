@@ -27,15 +27,17 @@ const nodeCache = new NodeCache();
 const CACHE_MINUTES = 2;
 
 const constructIssuesRequest = async ({ ats, page = 1 }) => {
-    const issuesEndpoint =
-        'https://api.github.com/repos/w3c/aria-at-app/issues?per_page=100';
+    const issuesEndpoint = `https://api.github.com/repos/howard-e/aria-at-app/issues?labels=app,candidate-review&per_page=100`;
     const url = `${issuesEndpoint}&page=${page}`;
     const auth = {
         username: GITHUB_CLIENT_ID,
         password: GITHUB_CLIENT_SECRET
     };
     const response = await axios.get(url, {}, { auth });
-    const issues = response.data;
+    // https://docs.github.com/en/rest/issues/issues#list-repository-issues
+    // Filter out Pull Requests. GitHub's REST API v3 also considers every
+    // pull request an issue.
+    const issues = response.data.filter(data => !data.pull_request);
     const headersLink = response.headers.link;
 
     let resultsByAt = { jaws: [], nvda: [], vo: [] };
