@@ -37,6 +37,11 @@ const graphqlSchema = gql`
         VENDOR
     }
 
+    type Vendor {
+        at: String
+        vendorCompany: String
+    }
+
     type User {
         """
         Postgres-provided numeric ID.
@@ -55,6 +60,10 @@ const graphqlSchema = gql`
         The ATs the user has indicated they are able to test.
         """
         ats: [At]!
+        """
+        Vendor data for users who are vendors
+        """
+        vendor: Vendor
     }
 
     """

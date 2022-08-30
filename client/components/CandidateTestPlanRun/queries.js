@@ -2,6 +2,15 @@ import { gql } from '@apollo/client';
 
 export const CANDIDATE_REPORTS_QUERY = gql`
     query CandidateReportsQuery {
+        me {
+            id
+            roles
+            username
+            vendor {
+                at
+                vendorCompany
+            }
+        }
         testPlanReports(statuses: [FINALIZED]) {
             id
             at {

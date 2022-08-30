@@ -7,6 +7,7 @@ import OptionButton from '../TestRun/OptionButton';
 import { navigateTests } from '../../utils/navigateTests';
 import { CANDIDATE_REPORTS_QUERY } from './queries';
 import { Container, Row, Col, Button } from 'react-bootstrap';
+import { Redirect } from 'react-router-dom';
 import nextId from 'react-id-generator';
 import '../TestRun/TestRun.css';
 import '../App/App.css';
@@ -62,6 +63,18 @@ const CandidateTestPlanRun = ({
     if (error) return <p>Error</p>;
     if (!data) return null;
 
+    const vendorMap = {
+        vispero: 'JAWS',
+        nvaccess: 'NVDA',
+        apple: 'VoiceOver for MacOS'
+    };
+
+    const { at, vendorCompany } = data.me.vendor;
+
+    if (vendorMap[vendorCompany] !== at) {
+        return null;
+    }
+
     const testPlanReports = data.testPlanReports.filter(
         report =>
             report.at.id === atId &&
@@ -105,7 +118,7 @@ const CandidateTestPlanRun = ({
                         </div>
                         <div className="test-info-entity review-status">
                             <div className="info-label">
-                                <b>Review status by JAWS Representative:</b> In
+                                <b>Review status by {at} Representative:</b> In
                                 Progress
                             </div>
                         </div>
@@ -120,7 +133,7 @@ const CandidateTestPlanRun = ({
                         <Col>
                             {githubIssues && (
                                 <Row>
-                                    <h2>Feedback from JAWS Representative</h2>
+                                    <h2>Feedback from {at} Representative</h2>
                                     <ul>
                                         <li key={nextId()}>
                                             {githubIssues.changes?.length}{' '}

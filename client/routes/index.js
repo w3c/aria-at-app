@@ -10,6 +10,7 @@ import SignupInstructions from '@components/SignupInstructions';
 import TestQueue from '@components/TestQueue';
 import TestRun from '@components/TestRun';
 import UserSettings from '@components/UserSettings';
+import CandidateTestPlanRun from '../components/CandidateTestPlanRun';
 
 export default [
     {
@@ -29,6 +30,16 @@ export default [
             return (
                 <ConfirmAuth requiredPermission="TESTER">
                     <Route component={UserSettings} />
+                </ConfirmAuth>
+            );
+        }
+    },
+    {
+        path: '/candidate-test-plan/:testPlanReportId(\\d+)',
+        component: () => {
+            return (
+                <ConfirmAuth requiredPermission="VENDOR">
+                    <Route component={CandidateTestPlanRun} />
                 </ConfirmAuth>
             );
         }

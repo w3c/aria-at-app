@@ -95,7 +95,7 @@
     "moxios": "^0.4.0",
     "prettier": "^1.19.1",
     "storybook-addon-apollo-client": "^4.0.12",
-    "storybook-addon-react-router-v6": "^0.1.14",
+    "storybook-react-router": "^1.0.8",
     "webpack": "^4.42.0",
     "webpack-cli": "^3.3.11",
     "webpack-dev-server": "^3.10.3"

@@ -1,14 +1,23 @@
 import React from 'react';
 import CandidateTestPlanRun from '../components/CandidateTestPlanRun';
 import { CANDIDATE_REPORTS_QUERY } from '../components/CandidateTestPlanRun/queries';
+import { ME_QUERY } from '../components/App/queries';
+import ConfirmAuth from '../components/ConfirmAuth';
+import StoryRouter from 'storybook-react-router';
 
 export default {
     component: CandidateTestPlanRun,
-    title: 'CandidateTestPlanRun'
+    title: 'CandidateTestPlanRun',
+    decorators: [StoryRouter()]
 };
 
-export const DEFAULT = args => <CandidateTestPlanRun {...args} />;
-DEFAULT.args = {
+export const Default = args => (
+    <ConfirmAuth requiredPermission="VENDOR">
+        <CandidateTestPlanRun {...args} />
+    </ConfirmAuth>
+);
+
+Default.args = {
     atId: '1',
     testPlanVersionId: '1',
     githubIssues: {
@@ -16,16 +25,43 @@ DEFAULT.args = {
         feedback: ['Feedback 1', 'Feedback 2']
     }
 };
-DEFAULT.parameters = {
+Default.parameters = {
     apolloClient: {
         // do not put MockedProvider here, you can, but its preferred to do it in preview.js
         mocks: [
+            {
+                request: {
+                    query: ME_QUERY
+                },
+                result: {
+                    data: {
+                        me: {
+                            id: '1',
+                            username: 'evmiguel',
+                            roles: ['VENDOR'],
+                            vendor: {
+                                at: 'JAWS',
+                                vendorCompany: 'vispero'
+                            }
+                        }
+                    }
+                }
+            },
             {
                 request: {
                     query: CANDIDATE_REPORTS_QUERY
                 },
                 result: {
                     data: {
+                        me: {
+                            id: '101',
+                            roles: ['VENDOR'],
+                            username: 'evmiguel',
+                            vendor: {
+                                at: 'JAWS',
+                                vendorCompany: 'vispero'
+                            }
+                        },
                         testPlanReports: [
                             {
                                 id: '102',
