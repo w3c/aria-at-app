@@ -12,6 +12,7 @@ const TestNavigator = ({
     show = true,
     isSignedIn = false,
     isVendor = false,
+    githubIssues = [],
     tests = [],
     currentTestIndex = 0,
     toggleShowClick = () => {},
@@ -68,9 +69,14 @@ const TestNavigator = ({
                                 resultClassName = 'in-progress';
                                 resultStatus = 'In Progress:';
                             } else if (isVendor) {
-                                // TODO: flesh this out
-                                resultClassName = 'complete';
-                                resultStatus = 'Complete';
+                                resultClassName = githubIssues.length
+                                    ? 'changes-requested'
+                                    : 'complete';
+                                resultStatus = githubIssues.length
+                                    ? 'Changes Requested'
+                                    : 'Complete';
+
+                                console.log(resultClassName, resultStatus);
                             }
                         }
                         return (
@@ -107,6 +113,7 @@ TestNavigator.propTypes = {
     show: PropTypes.bool,
     isSignedIn: PropTypes.bool,
     isVendor: PropTypes.bool,
+    githubIssues: PropTypes.array,
     tests: PropTypes.array,
     testResult: PropTypes.object,
     conflicts: PropTypes.object,

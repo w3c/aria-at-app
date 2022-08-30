@@ -13,6 +13,10 @@ export const CANDIDATE_REPORTS_QUERY = gql`
         }
         testPlanReports(statuses: [FINALIZED]) {
             id
+            issues {
+                type
+                testNumber
+            }
             at {
                 id
                 name

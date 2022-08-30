@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import TestNavigator from '../TestRun/TestNavigator';
 import TestRenderer from '../TestRenderer';
 import OptionButton from '../TestRun/OptionButton';
-import NotFound from '../NotFound';
 import { navigateTests } from '../../utils/navigateTests';
 import { CANDIDATE_REPORTS_QUERY } from './queries';
 import { Container, Row, Col, Button } from 'react-bootstrap';
@@ -13,9 +12,8 @@ import nextId from 'react-id-generator';
 import '../TestRun/TestRun.css';
 import '../App/App.css';
 
-const CandidateTestPlanRun = ({ githubIssues = null }) => {
+const CandidateTestPlanRun = () => {
     const { testPlanVersionId } = useParams();
-    console.log(testPlanVersionId);
     const history = useHistory();
 
     const { loading, data, error } = useQuery(CANDIDATE_REPORTS_QUERY);
@@ -90,11 +88,19 @@ const CandidateTestPlanRun = ({ githubIssues = null }) => {
     const currentTest = tests[currentTestIndex];
     const testPlanVersion = testPlanReports[0].testPlanVersion;
 
+    const changesRequestedIssues = testPlanReports[
+        currentTestIndex
+    ].issues?.filter(issue => issue.type === 'changes-requested');
+    const feedbackIssues = testPlanReports[currentTestIndex].issues?.filter(
+        issue => issue.type === 'feedback'
+    );
+
     return (
         <Container className="test-run-container">
             <Row>
                 <TestNavigator
                     isVendor={true}
+                    githubIssues={[]}
                     show={showTestNavigator}
                     tests={tests}
                     currentTestIndex={currentTestIndex}
@@ -132,24 +138,23 @@ const CandidateTestPlanRun = ({ githubIssues = null }) => {
                     </div>
                     <Row>
                         <Col>
-                            {githubIssues && (
+                            {testPlanReports[currentTestIndex].issues.length >
+                                0 && (
                                 <Row>
                                     <h2>Feedback from {at} Representative</h2>
                                     <ul>
-                                        <li key={nextId()}>
-                                            {githubIssues.changes?.length}{' '}
-                                            {githubIssues.changes?.length === 1
-                                                ? 'person'
-                                                : 'people'}{' '}
-                                            requested changes for this test
-                                        </li>
-                                        <li key={nextId()}>
-                                            {githubIssues.feedback?.length}{' '}
-                                            {githubIssues.feedback?.length === 1
-                                                ? 'person'
-                                                : 'people'}{' '}
-                                            left feedback for this test
-                                        </li>
+                                        {[
+                                            changesRequestedIssues,
+                                            feedbackIssues
+                                        ].map(list => (
+                                            <li key={nextId()}>
+                                                {list.length}{' '}
+                                                {list.length === 1
+                                                    ? 'person'
+                                                    : 'people'}{' '}
+                                                requested changes for this test
+                                            </li>
+                                        ))}
                                     </ul>
                                 </Row>
                             )}
@@ -248,12 +253,6 @@ const CandidateTestPlanRun = ({ githubIssues = null }) => {
             </Row>
         </Container>
     );
-};
-
-CandidateTestPlanRun.propTypes = {
-    atId: PropTypes.string,
-    testPlanVersionId: PropTypes.string,
-    githubIssues: PropTypes.object
 };
 
 export default CandidateTestPlanRun;

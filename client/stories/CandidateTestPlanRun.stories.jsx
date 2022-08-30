@@ -23,10 +23,11 @@ export const Default = args => <CandidateTestPlanRun {...args} />;
 Default.args = {
     atId: '1',
     testPlanVersionId: '1',
-    githubIssues: {
-        changes: ['Change 1'],
-        feedback: ['Feedback 1', 'Feedback 2']
-    },
+    githubIssues: [
+        { title: 'Change 1', type: 'changes-requested' },
+        { title: 'Feedback 1', type: 'feedback' },
+        { title: 'Feedback 2', type: 'feedback' }
+    ],
     match: {
         url: '/candidate-test-plan/1',
         params: {
@@ -68,12 +69,26 @@ Default.parameters = {
                             username: 'evmiguel',
                             vendor: {
                                 at: 'JAWS',
-                                vendorCompany: 'apple'
+                                vendorCompany: 'vispero'
                             }
                         },
                         testPlanReports: [
                             {
                                 id: '102',
+                                issues: [
+                                    {
+                                        type: 'changes-requested',
+                                        testNumber: '1'
+                                    },
+                                    {
+                                        type: 'feedback',
+                                        testNumber: '2'
+                                    },
+                                    {
+                                        type: 'feedback',
+                                        testNumber: '1'
+                                    }
+                                ],
                                 at: {
                                     id: '1',
                                     name: 'JAWS'
@@ -589,6 +604,7 @@ Default.parameters = {
                             },
                             {
                                 id: '101',
+                                issues: [],
                                 at: {
                                     id: '1',
                                     name: 'JAWS'

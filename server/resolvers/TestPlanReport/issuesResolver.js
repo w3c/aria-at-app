@@ -3,7 +3,7 @@ const { Base64 } = require('js-base64');
 
 const issuesResolver = async testPlanReport => {
     const dateOptions = { month: 'long', day: 'numeric', year: 'numeric' };
-    const dateString = testPlanReport.phaseChangeUpdate.toLocaleDateString(
+    const dateString = testPlanReport.phaseChangeUpdate?.toLocaleDateString(
         'en-US',
         dateOptions
     );
