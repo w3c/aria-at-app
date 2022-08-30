@@ -4,19 +4,20 @@ import PropTypes from 'prop-types';
 import TestNavigator from '../TestRun/TestNavigator';
 import TestRenderer from '../TestRenderer';
 import OptionButton from '../TestRun/OptionButton';
+import NotFound from '../NotFound';
 import { navigateTests } from '../../utils/navigateTests';
 import { CANDIDATE_REPORTS_QUERY } from './queries';
 import { Container, Row, Col, Button } from 'react-bootstrap';
-import { Redirect } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router-dom';
 import nextId from 'react-id-generator';
 import '../TestRun/TestRun.css';
 import '../App/App.css';
 
-const CandidateTestPlanRun = ({
-    atId = null,
-    testPlanVersionId = null,
-    githubIssues = null
-}) => {
+const CandidateTestPlanRun = ({ githubIssues = null }) => {
+    const { testPlanVersionId } = useParams();
+    console.log(testPlanVersionId);
+    const history = useHistory();
+
     const { loading, data, error } = useQuery(CANDIDATE_REPORTS_QUERY);
     const testRunStateRef = useRef();
     const recentTestRunStateRef = useRef();
@@ -72,12 +73,12 @@ const CandidateTestPlanRun = ({
     const { at, vendorCompany } = data.me.vendor;
 
     if (vendorMap[vendorCompany] !== at) {
-        return null;
+        history.push('/404');
     }
 
     const testPlanReports = data.testPlanReports.filter(
         report =>
-            report.at.id === atId &&
+            report.at.name === at &&
             report.testPlanVersion.id == testPlanVersionId
     );
 

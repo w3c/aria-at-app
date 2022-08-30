@@ -2,20 +2,23 @@ import React from 'react';
 import CandidateTestPlanRun from '../components/CandidateTestPlanRun';
 import { CANDIDATE_REPORTS_QUERY } from '../components/CandidateTestPlanRun/queries';
 import { ME_QUERY } from '../components/App/queries';
-import ConfirmAuth from '../components/ConfirmAuth';
-import StoryRouter from 'storybook-react-router';
+import { MemoryRouter, Route } from 'react-router-dom';
 
 export default {
     component: CandidateTestPlanRun,
     title: 'CandidateTestPlanRun',
-    decorators: [StoryRouter()]
+    decorators: [
+        Story => (
+            <MemoryRouter initialEntries={['/candidate-test-plan/1']}>
+                <Route path="/candidate-test-plan/:testPlanVersionId">
+                    <Story />
+                </Route>
+            </MemoryRouter>
+        )
+    ]
 };
 
-export const Default = args => (
-    <ConfirmAuth requiredPermission="VENDOR">
-        <CandidateTestPlanRun {...args} />
-    </ConfirmAuth>
-);
+export const Default = args => <CandidateTestPlanRun {...args} />;
 
 Default.args = {
     atId: '1',
@@ -23,6 +26,12 @@ Default.args = {
     githubIssues: {
         changes: ['Change 1'],
         feedback: ['Feedback 1', 'Feedback 2']
+    },
+    match: {
+        url: '/candidate-test-plan/1',
+        params: {
+            testPlanVersionId: 1
+        }
     }
 };
 Default.parameters = {
@@ -59,7 +68,7 @@ Default.parameters = {
                             username: 'evmiguel',
                             vendor: {
                                 at: 'JAWS',
-                                vendorCompany: 'vispero'
+                                vendorCompany: 'apple'
                             }
                         },
                         testPlanReports: [
