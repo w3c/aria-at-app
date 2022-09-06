@@ -1,16 +1,17 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useQuery } from '@apollo/client';
-import PropTypes from 'prop-types';
 import TestNavigator from '../TestRun/TestNavigator';
 import TestRenderer from '../TestRenderer';
 import OptionButton from '../TestRun/OptionButton';
 import { navigateTests } from '../../utils/navigateTests';
 import { CANDIDATE_REPORTS_QUERY } from './queries';
-import { Container, Row, Col, Button } from 'react-bootstrap';
+import { Accordion, Container, Row, Col, Button } from 'react-bootstrap';
 import { useParams, useHistory } from 'react-router-dom';
 import nextId from 'react-id-generator';
+import './CandidateTestPlanRun.css';
 import '../TestRun/TestRun.css';
 import '../App/App.css';
+import SubmitResultsContent from '../SubmitResultsContent';
 
 const CandidateTestPlanRun = () => {
     const { testPlanVersionId } = useParams();
@@ -85,14 +86,20 @@ const CandidateTestPlanRun = () => {
         index,
         seq: index + 1
     }));
+
     const currentTest = tests[currentTestIndex];
     const testPlanVersion = testPlanReports[0].testPlanVersion;
 
     const changesRequestedIssues = testPlanReports[
         currentTestIndex
-    ].issues?.filter(issue => issue.type === 'changes-requested');
+    ].issues?.filter(
+        issue =>
+            issue.type === 'changes-requested' &&
+            issue.testNumber == currentTest.seq
+    );
     const feedbackIssues = testPlanReports[currentTestIndex].issues?.filter(
-        issue => issue.type === 'feedback'
+        issue =>
+            issue.type === 'feedback' && issue.testNumber == currentTest.seq
     );
 
     return (
@@ -100,7 +107,7 @@ const CandidateTestPlanRun = () => {
             <Row>
                 <TestNavigator
                     isVendor={true}
-                    githubIssues={[]}
+                    testPlanReports={testPlanReports}
                     show={showTestNavigator}
                     tests={tests}
                     currentTestIndex={currentTestIndex}
@@ -138,8 +145,9 @@ const CandidateTestPlanRun = () => {
                     </div>
                     <Row>
                         <Col>
-                            {testPlanReports[currentTestIndex].issues.length >
-                                0 && (
+                            {testPlanReports[currentTestIndex].issues.filter(
+                                issue => issue.testNumber == currentTest.seq
+                            ).length > 0 && (
                                 <Row>
                                     <h2>Feedback from {at} Representative</h2>
                                     <ul>
@@ -147,7 +155,10 @@ const CandidateTestPlanRun = () => {
                                             changesRequestedIssues,
                                             feedbackIssues
                                         ].map(list => (
-                                            <li key={nextId()}>
+                                            <li
+                                                className="feedback-list"
+                                                key={nextId()}
+                                            >
                                                 {list.length}{' '}
                                                 {list.length === 1
                                                     ? 'person'
@@ -159,11 +170,35 @@ const CandidateTestPlanRun = () => {
                                 </Row>
                             )}
 
-                            <Row>
+                            <Row className="results-col">
+                                <h1>{currentTest.title}</h1>
+                                <h1>Test Instructions</h1>
+                                <TestRenderer
+                                    at={testPlanReports[0].at}
+                                    testRunStateRef={testRunStateRef}
+                                    recentTestRunStateRef={
+                                        recentTestRunStateRef
+                                    }
+                                    setIsRendererReady={() => {}}
+                                    testResult={
+                                        testPlanReports[0].finalizedTestResults[
+                                            currentTestIndex
+                                        ]
+                                    }
+                                    testPageUrl={
+                                        testPlanReports[0].testPlanVersion
+                                            .testPageUrl
+                                    }
+                                    testRunResultRef={testRunResultRef}
+                                    showResultsHeader={false}
+                                    showResults={false}
+                                    showInstructions={true}
+                                />
                                 {testPlanReports.map(testPlanReport => {
                                     return (
                                         <div key={nextId()}>
-                                            <h1>
+                                            <h1 className="test-results-header">
+                                                Test Results for{' '}
                                                 {testPlanReport.browser.name}
                                             </h1>
                                             <TestRenderer
@@ -190,6 +225,7 @@ const CandidateTestPlanRun = () => {
                                                 testRunResultRef={
                                                     testRunResultRef
                                                 }
+                                                showResultsHeader={false}
                                             />
                                         </div>
                                     );

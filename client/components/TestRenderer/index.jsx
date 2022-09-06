@@ -233,7 +233,10 @@ const TestRenderer = ({
     submitButtonRef,
     isSubmitted = false,
     isEdit = false,
-    setIsRendererReady = false
+    setIsRendererReady = false,
+    showInstructions = false,
+    showResultsHeader = true,
+    showResults = true
 }) => {
     const { scenarioResults, test = {}, completedAt } = testResult;
     const { renderableContent } = test;
@@ -607,90 +610,108 @@ const TestRenderer = ({
 
         return (
             <>
-                <HeadingText>{header}</HeadingText>
-                <SubHeadingText id="instruction-list-heading">
-                    {pageContent.instructions.instructions.header}
-                </SubHeadingText>
-                <InstructionsContent labelIdRef="instruction-list-heading" />
-                <SubHeadingText id="overallstatus">
-                    {status.header.map(text => (
-                        <Fragment key={nextId()}>{text}</Fragment>
-                    ))}
-                </SubHeadingText>
-                <Table>
-                    <tbody>
-                        <tr>
-                            <th>{table.headers.description}</th>
-                            <th>{table.headers.support}</th>
-                            <th>{table.headers.details}</th>
-                        </tr>
-                        {table.commands.map(command => {
-                            const { description, support, details } = command;
-
-                            return (
-                                <tr key={nextId()}>
-                                    <td>{description}</td>
-                                    <td>{support}</td>
-                                    <td>
-                                        <p>
-                                            {at.name}{' '}
-                                            {parseLinebreakOutput(
-                                                details.output
-                                            )}
-                                        </p>
-                                        <div>
-                                            {
-                                                details.passingAssertions
-                                                    .description
-                                            }
-                                            <ResultsBulletList>
-                                                {details.passingAssertions.items.map(
-                                                    item => (
-                                                        <li key={nextId()}>
-                                                            {item}
-                                                        </li>
-                                                    )
-                                                )}
-                                            </ResultsBulletList>
-                                        </div>
-                                        <div>
-                                            {
-                                                details.failingAssertions
-                                                    .description
-                                            }
-                                            <ResultsBulletList>
-                                                {details.failingAssertions.items.map(
-                                                    item => (
-                                                        <li key={nextId()}>
-                                                            {item}
-                                                        </li>
-                                                    )
-                                                )}
-                                            </ResultsBulletList>
-                                        </div>
-                                        <div>
-                                            {handleRendererInvalidOutput(
-                                                details.unexpectedBehaviors
-                                                    .description
-                                            )}
-                                            <ResultsBulletList>
-                                                {details.unexpectedBehaviors.items.map(
-                                                    item => (
-                                                        <li key={nextId()}>
-                                                            {handleRendererInvalidOutput(
-                                                                item
-                                                            )}
-                                                        </li>
-                                                    )
-                                                )}
-                                            </ResultsBulletList>
-                                        </div>
-                                    </td>
+                {showResultsHeader && <HeadingText>{header}</HeadingText>}
+                {showInstructions && (
+                    <>
+                        <InstructionsContent labelIdRef="instruction-list-heading" />
+                    </>
+                )}
+                {showResults && (
+                    <>
+                        <SubHeadingText id="overallstatus">
+                            {status.header.map(text => (
+                                <Fragment key={nextId()}>{text}</Fragment>
+                            ))}
+                        </SubHeadingText>
+                        <Table>
+                            <tbody>
+                                <tr>
+                                    <th>{table.headers.description}</th>
+                                    <th>{table.headers.support}</th>
+                                    <th>{table.headers.details}</th>
                                 </tr>
-                            );
-                        })}
-                    </tbody>
-                </Table>
+                                {table.commands.map(command => {
+                                    const {
+                                        description,
+                                        support,
+                                        details
+                                    } = command;
+
+                                    return (
+                                        <tr key={nextId()}>
+                                            <td>{description}</td>
+                                            <td>{support}</td>
+                                            <td>
+                                                <p>
+                                                    {at.name}{' '}
+                                                    {parseLinebreakOutput(
+                                                        details.output
+                                                    )}
+                                                </p>
+                                                <div>
+                                                    {
+                                                        details
+                                                            .passingAssertions
+                                                            .description
+                                                    }
+                                                    <ResultsBulletList>
+                                                        {details.passingAssertions.items.map(
+                                                            item => (
+                                                                <li
+                                                                    key={nextId()}
+                                                                >
+                                                                    {item}
+                                                                </li>
+                                                            )
+                                                        )}
+                                                    </ResultsBulletList>
+                                                </div>
+                                                <div>
+                                                    {
+                                                        details
+                                                            .failingAssertions
+                                                            .description
+                                                    }
+                                                    <ResultsBulletList>
+                                                        {details.failingAssertions.items.map(
+                                                            item => (
+                                                                <li
+                                                                    key={nextId()}
+                                                                >
+                                                                    {item}
+                                                                </li>
+                                                            )
+                                                        )}
+                                                    </ResultsBulletList>
+                                                </div>
+                                                <div>
+                                                    {handleRendererInvalidOutput(
+                                                        details
+                                                            .unexpectedBehaviors
+                                                            .description
+                                                    )}
+                                                    <ResultsBulletList>
+                                                        {details.unexpectedBehaviors.items.map(
+                                                            item => (
+                                                                <li
+                                                                    key={nextId()}
+                                                                >
+                                                                    {handleRendererInvalidOutput(
+                                                                        item
+                                                                    )}
+                                                                </li>
+                                                            )
+                                                        )}
+                                                    </ResultsBulletList>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
+                            </tbody>
+                        </Table>
+                    </>
+                )}
             </>
         );
     };
@@ -1231,6 +1252,7 @@ ErrorComponent.propTypes = {
 
 TestRenderer.propTypes = {
     at: PropTypes.object,
+    browser: PropTypes.string,
     testResult: PropTypes.object,
     support: PropTypes.object,
     testPageUrl: PropTypes.string,
@@ -1240,7 +1262,10 @@ TestRenderer.propTypes = {
     submitButtonRef: PropTypes.any,
     isSubmitted: PropTypes.bool,
     isEdit: PropTypes.bool,
-    setIsRendererReady: PropTypes.func
+    setIsRendererReady: PropTypes.func,
+    showInstructions: PropTypes.bool,
+    showResultsHeader: PropTypes.bool,
+    showResults: PropTypes.bool
 };
 
 export default TestRenderer;

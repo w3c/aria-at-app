@@ -1,3 +1,5 @@
+@import url('https://use.fontawesome.com/releases/v5.0.1/css/all.css');
+
 .main-test-area {
     position: relative;
 }
@@ -115,6 +117,21 @@ button.test-navigator-toggle:focus {
         rgba(255, 255, 255, 1) 100%
     );
     border: 2px solid #1e8f37;
+}
+
+.test-name-wrapper.changes-requested .progress-indicator {
+    background: #F87F1C;
+}
+
+.test-name-wrapper.changes-requested .progress-indicator:before {
+    position: relative;
+    content: '\f024';
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    color: white;
+    font-size: 10px;
+    top: -3px;
+    left: 4px;
 }
 
 .test-name-wrapper.skipped .progress-indicator {

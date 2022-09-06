@@ -21,13 +21,6 @@ export default {
 export const Default = args => <CandidateTestPlanRun {...args} />;
 
 Default.args = {
-    atId: '1',
-    testPlanVersionId: '1',
-    githubIssues: [
-        { title: 'Change 1', type: 'changes-requested' },
-        { title: 'Feedback 1', type: 'feedback' },
-        { title: 'Feedback 2', type: 'feedback' }
-    ],
     match: {
         url: '/candidate-test-plan/1',
         params: {
@@ -79,10 +72,6 @@ Default.parameters = {
                                     {
                                         type: 'changes-requested',
                                         testNumber: '1'
-                                    },
-                                    {
-                                        type: 'feedback',
-                                        testNumber: '2'
                                     },
                                     {
                                         type: 'feedback',

@@ -7,12 +7,13 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { Col } from 'react-bootstrap';
 import React from 'react';
+import '@fortawesome/fontawesome-svg-core/styles.css';
 
 const TestNavigator = ({
     show = true,
     isSignedIn = false,
     isVendor = false,
-    githubIssues = [],
+    testPlanReports = [],
     tests = [],
     currentTestIndex = 0,
     toggleShowClick = () => {},
@@ -49,6 +50,10 @@ const TestNavigator = ({
                     {tests.map(test => {
                         let resultClassName = 'not-started';
                         let resultStatus = 'Not Started';
+                        const issuesExist = testPlanReports[
+                            test.index
+                        ]?.issues?.filter(issue => issue.testNumber == test.seq)
+                            .length;
 
                         if (test) {
                             if (test.hasConflicts) {
@@ -69,14 +74,12 @@ const TestNavigator = ({
                                 resultClassName = 'in-progress';
                                 resultStatus = 'In Progress:';
                             } else if (isVendor) {
-                                resultClassName = githubIssues.length
+                                resultClassName = issuesExist
                                     ? 'changes-requested'
-                                    : 'complete';
-                                resultStatus = githubIssues.length
+                                    : 'not-started';
+                                resultStatus = issuesExist
                                     ? 'Changes Requested'
-                                    : 'Complete';
-
-                                console.log(resultClassName, resultStatus);
+                                    : 'Not Started';
                             }
                         }
                         return (
@@ -113,7 +116,7 @@ TestNavigator.propTypes = {
     show: PropTypes.bool,
     isSignedIn: PropTypes.bool,
     isVendor: PropTypes.bool,
-    githubIssues: PropTypes.array,
+    testPlanReports: PropTypes.array,
     tests: PropTypes.array,
     testResult: PropTypes.object,
     conflicts: PropTypes.object,
