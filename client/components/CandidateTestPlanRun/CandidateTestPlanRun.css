@@ -1,5 +1,40 @@
 .feedback-list {
-    list-style-type: disc;
+    padding-left: 20px;
+}
+
+.feedback-list-item {
+    padding-right: 20px;
+    position: relative;
+    margin: 0 0 1em 0.25em;
+    list-style: none;
+}
+
+.feedback-list-item:before {
+    content: '';
+    height: 2.5em;
+    left: -1em;
+    position: absolute;
+    top: 1.2em;
+    background: #d2d5d9;
+    width: 2px;
+}
+
+.feedback-list-item:last-child:before {
+    height: 0%;
+}
+
+.feedback-indicator {
+    position: absolute;
+    left: -1.5em;
+    top: 0.3em;
+    width: 18px;
+    height: 18px;
+    border-radius: 50px;
+    border: 2px solid #d2d5d9;
+}
+
+.feedback-list-item .feedback-indicator {
+    background: white;
 }
 
 .test-results-header {

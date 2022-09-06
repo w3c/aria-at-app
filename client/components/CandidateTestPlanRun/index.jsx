@@ -5,13 +5,12 @@ import TestRenderer from '../TestRenderer';
 import OptionButton from '../TestRun/OptionButton';
 import { navigateTests } from '../../utils/navigateTests';
 import { CANDIDATE_REPORTS_QUERY } from './queries';
-import { Accordion, Container, Row, Col, Button } from 'react-bootstrap';
+import { Container, Row, Col, Button } from 'react-bootstrap';
 import { useParams, useHistory } from 'react-router-dom';
 import nextId from 'react-id-generator';
 import './CandidateTestPlanRun.css';
 import '../TestRun/TestRun.css';
 import '../App/App.css';
-import SubmitResultsContent from '../SubmitResultsContent';
 
 const CandidateTestPlanRun = () => {
     const { testPlanVersionId } = useParams();
@@ -150,13 +149,13 @@ const CandidateTestPlanRun = () => {
                             ).length > 0 && (
                                 <Row>
                                     <h2>Feedback from {at} Representative</h2>
-                                    <ul>
+                                    <ul className="feedback-list">
                                         {[
                                             changesRequestedIssues,
                                             feedbackIssues
                                         ].map(list => (
                                             <li
-                                                className="feedback-list"
+                                                className="feedback-list-item"
                                                 key={nextId()}
                                             >
                                                 {list.length}{' '}
@@ -164,6 +163,10 @@ const CandidateTestPlanRun = () => {
                                                     ? 'person'
                                                     : 'people'}{' '}
                                                 requested changes for this test
+                                                <span
+                                                    className="feedback-indicator"
+                                                    title="Title"
+                                                />
                                             </li>
                                         ))}
                                     </ul>
