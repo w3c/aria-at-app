@@ -1,3 +1,17 @@
+.feedback-accordion {
+    width: 100%;
+    
+}
+
+.feedback-accordion-header {
+    display: grid;
+    grid-template-columns: 50% 50%;
+}
+
+.feedback-accordion-header span {
+    text-align: right;
+}
+
 .feedback-list {
     padding-left: 20px;
 }
@@ -37,7 +51,7 @@
     background: white;
 }
 
-.test-results-header {
+.test-results-header, .test-instructions-header {
     border-bottom: none;
 }
 
