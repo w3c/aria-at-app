@@ -1,11 +1,6 @@
-import React, {
-    useEffect,
-    useRef,
-    useState,
-    useContext,
-    createContext
-} from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useQuery } from '@apollo/client';
+import PropTypes from 'prop-types';
 import TestNavigator from '../TestRun/TestNavigator';
 import TestRenderer from '../TestRenderer';
 import OptionButton from '../TestRun/OptionButton';
@@ -125,7 +120,6 @@ const CandidateTestPlanRun = () => {
         );
 
         const currentKey = activeMap.get(eventKey);
-        console.log(activeMap);
 
         return (
             <div
@@ -140,6 +134,12 @@ const CandidateTestPlanRun = () => {
                 </span>
             </div>
         );
+    };
+
+    ContextAwareToggle.propTypes = {
+        children: PropTypes.object,
+        eventKey: PropTypes.string,
+        callback: PropTypes.func
     };
 
     return (
@@ -221,6 +221,7 @@ const CandidateTestPlanRun = () => {
                                             <ContextAwareToggle
                                                 eventKey="0"
                                                 callback={e => {
+                                                    //TODO separate this
                                                     setActiveMap(map => {
                                                         if (!map.get(e)) {
                                                             return new Map(

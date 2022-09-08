@@ -371,6 +371,10 @@ const graphqlSchema = gql`
         info on the Assertion type.
         """
         assertions(priority: AssertionPriority): [Assertion]!
+        """
+        Vendors who viewed the tests
+        """
+        viewers: [User]
     }
 
     """
@@ -1185,6 +1189,10 @@ const graphqlSchema = gql`
         Update the currently-logged-in User.
         """
         updateMe(input: UserInput): User!
+        """
+        Add a viewer to a test
+        """
+        addViewer(testPlanVersionId: ID!, testId: ID!): Boolean!
     }
 `;
 
