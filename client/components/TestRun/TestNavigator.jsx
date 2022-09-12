@@ -12,6 +12,7 @@ import '@fortawesome/fontawesome-svg-core/styles.css';
 const TestNavigator = ({
     show = true,
     isSignedIn = false,
+    currentUser = {},
     isVendor = false,
     testPlanReports = [],
     tests = [],
@@ -52,8 +53,9 @@ const TestNavigator = ({
                         let resultStatus = 'Not Started';
                         const issuesExist = testPlanReports[
                             test.index
-                        ]?.issues?.filter(issue => issue.testNumber == test.seq)
-                            .length;
+                        ]?.issues?.filter(
+                            issue => issue.testNumberFilteredByAt == test.seq
+                        ).length;
 
                         if (test) {
                             if (test.hasConflicts) {
@@ -74,12 +76,19 @@ const TestNavigator = ({
                                 resultClassName = 'in-progress';
                                 resultStatus = 'In Progress:';
                             } else if (isVendor) {
-                                resultClassName = issuesExist
-                                    ? 'changes-requested'
-                                    : 'not-started';
-                                resultStatus = issuesExist
-                                    ? 'Changes Requested'
-                                    : 'Not Started';
+                                if (issuesExist) {
+                                    resultClassName = 'changes-requested';
+                                    resultStatus = 'Changes Requested';
+                                } else if (
+                                    test.viewers.find(
+                                        each =>
+                                            each.username ===
+                                            currentUser.username
+                                    )
+                                ) {
+                                    resultClassName = 'complete';
+                                    resultStatus = 'Test Viewed';
+                                }
                             }
                         }
                         return (
@@ -121,6 +130,8 @@ TestNavigator.propTypes = {
     testResult: PropTypes.object,
     conflicts: PropTypes.object,
     currentTestIndex: PropTypes.number,
+    currentUser: PropTypes.object,
+    viewed: PropTypes.bool,
     toggleShowClick: PropTypes.func,
     handleTestClick: PropTypes.func
 };

@@ -1199,7 +1199,7 @@ const graphqlSchema = gql`
         """
         Add a viewer to a test
         """
-        addViewer(testPlanVersionId: ID!, testId: ID!): Boolean!
+        addViewer(testPlanVersionId: ID!, testId: ID!): User!
     }
 `;
 

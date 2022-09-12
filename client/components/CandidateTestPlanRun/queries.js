@@ -1,5 +1,13 @@
 import { gql } from '@apollo/client';
 
+export const ADD_VIEWER_MUTATION = gql`
+    mutation AddViewerMutation($testPlanVersionId: ID!, $testId: ID!) {
+        addViewer(testPlanVersionId: $testPlanVersionId, testId: $testId) {
+            username
+        }
+    }
+`;
+
 export const CANDIDATE_REPORTS_QUERY = gql`
     query CandidateReportsQuery {
         me {
@@ -13,9 +21,10 @@ export const CANDIDATE_REPORTS_QUERY = gql`
         }
         testPlanReports(statuses: [FINALIZED]) {
             id
+            candidateStatusReachedAt
             issues {
-                type
-                testNumber
+                feedbackType
+                testNumberFilteredByAt
             }
             at {
                 id
@@ -39,6 +48,9 @@ export const CANDIDATE_REPORTS_QUERY = gql`
                 id
                 title
                 renderedUrl
+                viewers {
+                    username
+                }
             }
             finalizedTestResults {
                 id

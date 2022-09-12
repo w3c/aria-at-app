@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useQuery } from '@apollo/client';
+import { useQuery, useMutation } from '@apollo/client';
 import PropTypes from 'prop-types';
 import TestNavigator from '../TestRun/TestNavigator';
 import TestRenderer from '../TestRenderer';
 import OptionButton from '../TestRun/OptionButton';
 import { navigateTests } from '../../utils/navigateTests';
-import { CANDIDATE_REPORTS_QUERY } from './queries';
+import { ADD_VIEWER_MUTATION, CANDIDATE_REPORTS_QUERY } from './queries';
 import {
     Accordion,
     useAccordionToggle,
@@ -27,7 +27,8 @@ const CandidateTestPlanRun = () => {
     const { testPlanVersionId } = useParams();
     const history = useHistory();
 
-    const { loading, data, error } = useQuery(CANDIDATE_REPORTS_QUERY);
+    const { loading, data, error, refetch } = useQuery(CANDIDATE_REPORTS_QUERY);
+    const [addViewer] = useMutation(ADD_VIEWER_MUTATION);
     const testRunStateRef = useRef();
     const recentTestRunStateRef = useRef();
     const testRunResultRef = useRef();
@@ -36,10 +37,16 @@ const CandidateTestPlanRun = () => {
     const [isFirstTest, setIsFirstTest] = useState(true);
     const [isLastTest, setIsLastTest] = useState(false);
     const [activeMap, setActiveMap] = useState(new Map());
+    const [testCurrentlyViewed, setTestCurrentlyViewed] = useState(false);
 
+    const addViewerToTest = async testId => {
+        await addViewer({ variables: { testPlanVersionId, testId } });
+        setTestCurrentlyViewed(true);
+    };
     const toggleTestNavigator = () => setShowTestNavigator(!showTestNavigator);
-    const handleTestClick = index => {
+    const handleTestClick = async index => {
         setCurrentTestIndex(index);
+        if (testCurrentlyViewed) await refetch();
     };
     const handleNextTestClick = () => {
         navigateTests(
@@ -70,9 +77,27 @@ const CandidateTestPlanRun = () => {
 
     useEffect(() => setup());
 
+    const updateTestViewed = async () => {
+        setTestCurrentlyViewed(false);
+        if (!userPerviouslyViewedTest) {
+            addViewerToTest(currentTest.id);
+        } else {
+            setTestCurrentlyViewed(true);
+        }
+    };
+
+    useEffect(() => {
+        if (data) {
+            updateTestViewed();
+        }
+    }, [data]);
+
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error</p>;
-    if (!data) return null;
+    if (!data) {
+        console.log('data');
+        return null;
+    }
 
     const vendorMap = {
         vispero: 'JAWS',
@@ -100,17 +125,21 @@ const CandidateTestPlanRun = () => {
 
     const currentTest = tests[currentTestIndex];
     const testPlanVersion = testPlanReports[0].testPlanVersion;
+    const userPerviouslyViewedTest = !!currentTest.viewers.find(
+        each => each.username === data.me.username
+    );
 
     const changesRequestedIssues = testPlanReports[
         currentTestIndex
     ].issues?.filter(
         issue =>
-            issue.type === 'changes-requested' &&
-            issue.testNumber == currentTest.seq
+            issue.feedbackType === 'changes-requested' &&
+            issue.testNumberFilteredByAt === currentTest.seq
     );
     const feedbackIssues = testPlanReports[currentTestIndex].issues?.filter(
         issue =>
-            issue.type === 'feedback' && issue.testNumber == currentTest.seq
+            issue.feedbackType === 'feedback' &&
+            issue.testNumberFilteredByAt === currentTest.seq
     );
 
     const ContextAwareToggle = ({ children, eventKey, callback }) => {
@@ -137,7 +166,7 @@ const CandidateTestPlanRun = () => {
     };
 
     ContextAwareToggle.propTypes = {
-        children: PropTypes.object,
+        children: PropTypes.any,
         eventKey: PropTypes.string,
         callback: PropTypes.func
     };
@@ -153,6 +182,7 @@ const CandidateTestPlanRun = () => {
                     currentTestIndex={currentTestIndex}
                     toggleShowClick={toggleTestNavigator}
                     handleTestClick={handleTestClick}
+                    currentUser={data.me}
                 />
                 <Col>
                     <h1>
@@ -160,6 +190,9 @@ const CandidateTestPlanRun = () => {
                             Reviewing tests {currentTest.seq} of {tests.length}:
                         </span>
                         {`${currentTest.seq}.`} {currentTest.title}
+                        <span>
+                            {userPerviouslyViewedTest && ' (Previously viewed)'}
+                        </span>
                     </h1>
                     <div className="test-info-wrapper">
                         <div className="test-info-entity apg-example-name">
@@ -186,7 +219,9 @@ const CandidateTestPlanRun = () => {
                     <Row>
                         <Col>
                             {testPlanReports[currentTestIndex].issues.filter(
-                                issue => issue.testNumber == currentTest.seq
+                                issue =>
+                                    issue.testNumberFilteredByAt ==
+                                    currentTest.seq
                             ).length > 0 && (
                                 <Row>
                                     <h2>Feedback from {at} Representative</h2>
@@ -194,22 +229,26 @@ const CandidateTestPlanRun = () => {
                                         {[
                                             changesRequestedIssues,
                                             feedbackIssues
-                                        ].map(list => (
-                                            <li
-                                                className="feedback-list-item"
-                                                key={nextId()}
-                                            >
-                                                {list.length}{' '}
-                                                {list.length === 1
-                                                    ? 'person'
-                                                    : 'people'}{' '}
-                                                requested changes for this test
-                                                <span
-                                                    className="feedback-indicator"
-                                                    title="Title"
-                                                />
-                                            </li>
-                                        ))}
+                                        ].map(
+                                            list =>
+                                                list.length > 0 && (
+                                                    <li
+                                                        className="feedback-list-item"
+                                                        key={nextId()}
+                                                    >
+                                                        {list.length}{' '}
+                                                        {list.length === 1
+                                                            ? 'person'
+                                                            : 'people'}{' '}
+                                                        requested changes for
+                                                        this test
+                                                        <span
+                                                            className="feedback-indicator"
+                                                            title="Title"
+                                                        />
+                                                    </li>
+                                                )
+                                        )}
                                     </ul>
                                 </Row>
                             )}

@@ -1,6 +1,9 @@
 import React from 'react';
 import CandidateTestPlanRun from '../components/CandidateTestPlanRun';
-import { CANDIDATE_REPORTS_QUERY } from '../components/CandidateTestPlanRun/queries';
+import {
+    ADD_VIEWER_MUTATION,
+    CANDIDATE_REPORTS_QUERY
+} from '../components/CandidateTestPlanRun/queries';
 import { ME_QUERY } from '../components/App/queries';
 import { MemoryRouter, Route } from 'react-router-dom';
 
@@ -52,6 +55,16 @@ Default.parameters = {
             },
             {
                 request: {
+                    query: ADD_VIEWER_MUTATION,
+                    variables: {
+                        testPlanVersionId: 1,
+                        testId: 'MDllNeyIyIjoiMSJ9DY1NT'
+                    }
+                },
+                result: { data: { username: 'evmiguel' } }
+            },
+            {
+                request: {
                     query: CANDIDATE_REPORTS_QUERY
                 },
                 result: {
@@ -68,14 +81,16 @@ Default.parameters = {
                         testPlanReports: [
                             {
                                 id: '102',
+                                candidateStatusReachedAt:
+                                    '2022-07-07T00:00:00.000Z',
                                 issues: [
                                     {
-                                        type: 'changes-requested',
-                                        testNumber: '1'
+                                        feedbackType: 'feedback',
+                                        testNumberFilteredByAt: 1
                                     },
                                     {
-                                        type: 'feedback',
-                                        testNumber: '1'
+                                        feedbackType: 'changes-requested',
+                                        testNumberFilteredByAt: 1
                                     }
                                 ],
                                 at: {
@@ -109,20 +124,36 @@ Default.parameters = {
                                         title:
                                             'Trigger an alert in reading mode',
                                         renderedUrl:
-                                            '/aria-at/1aa3b74d24d340362e9f511eae33788d55487d12/build/tests/alert/test-01-trigger-alert-reading-jaws.collected.html'
+                                            '/aria-at/1aa3b74d24d340362e9f511eae33788d55487d12/build/tests/alert/test-01-trigger-alert-reading-jaws.collected.html',
+                                        viewers: [
+                                            {
+                                                username: 'evmiguel'
+                                            },
+                                            {
+                                                username: 'warp2nowere'
+                                            }
+                                        ]
                                     },
                                     {
                                         id: 'MDllNeyIyIjoiMSJ9DY1NT',
                                         title:
                                             'Trigger an alert in interaction mode',
                                         renderedUrl:
-                                            '/aria-at/1aa3b74d24d340362e9f511eae33788d55487d12/build/tests/alert/test-02-trigger-alert-interaction-jaws.collected.html'
+                                            '/aria-at/1aa3b74d24d340362e9f511eae33788d55487d12/build/tests/alert/test-02-trigger-alert-interaction-jaws.collected.html',
+                                        viewers: [
+                                            {
+                                                username: 'evmiguel'
+                                            },
+                                            {
+                                                username: 'warp2nowere'
+                                            }
+                                        ]
                                     }
                                 ],
                                 finalizedTestResults: [
                                     {
-                                        id: 'ODljZeyIxMiI6MTAzfQjVmNW',
-                                        completedAt: '2022-08-22T20:41:53.702Z',
+                                        id: 'NzUwYeyIxMiI6MTAxfQWRhM2',
+                                        completedAt: '2022-09-12T16:06:23.674Z',
                                         test: {
                                             id: 'NjgwYeyIyIjoiMSJ9zYxZT',
                                             rowNumber: 1,
@@ -221,7 +252,7 @@ Default.parameters = {
                                         scenarioResults: [
                                             {
                                                 id:
-                                                    'NDUwZeyIxMyI6Ik9EbGpaZXlJeE1pSTZNVEF6ZlFqVm1OVyJ9GZlZT',
+                                                    'Y2NiYeyIxMyI6Ik56VXdZZXlJeE1pSTZNVEF4ZlFXUmhNMiJ9zhjZm',
                                                 scenario: {
                                                     commands: [
                                                         {
@@ -235,7 +266,7 @@ Default.parameters = {
                                                 assertionResults: [
                                                     {
                                                         id:
-                                                            'NzJmZeyIxNCI6Ik5EVXdaZXlJeE15STZJazlFYkdwYVpYbEplRTFwU1RaTlZFRjZabEZxVm0xT1Z5SjlHWmxaVCJ9TYwZm',
+                                                            'ZDhkYeyIxNCI6IlkyTmlZZXlJeE15STZJazU2VlhkWlpYbEplRTFwU1RaTlZFRjRabEZYVW1oTk1pSjl6aGpabSJ9jcwYm',
                                                         assertion: {
                                                             text:
                                                                 "Role 'alert' is conveyed"
@@ -245,7 +276,7 @@ Default.parameters = {
                                                     },
                                                     {
                                                         id:
-                                                            'ZTIzNeyIxNCI6Ik5EVXdaZXlJeE15STZJazlFYkdwYVpYbEplRTFwU1RaTlZFRjZabEZxVm0xT1Z5SjlHWmxaVCJ9zE1YT',
+                                                            'Yjc0YeyIxNCI6IlkyTmlZZXlJeE15STZJazU2VlhkWlpYbEplRTFwU1RaTlZFRjRabEZYVW1oTk1pSjl6aGpabSJ9jhlN2',
                                                         assertion: {
                                                             text:
                                                                 "Text 'Hello' is conveyed"
@@ -277,7 +308,7 @@ Default.parameters = {
                                             },
                                             {
                                                 id:
-                                                    'ZGU2MeyIxMyI6Ik9EbGpaZXlJeE1pSTZNVEF6ZlFqVm1OVyJ9mJmNT',
+                                                    'MjdlZeyIxMyI6Ik56VXdZZXlJeE1pSTZNVEF4ZlFXUmhNMiJ9DA1NT',
                                                 scenario: {
                                                     commands: [
                                                         {
@@ -291,7 +322,7 @@ Default.parameters = {
                                                 assertionResults: [
                                                     {
                                                         id:
-                                                            'MTk2YeyIxNCI6IlpHVTJNZXlJeE15STZJazlFYkdwYVpYbEplRTFwU1RaTlZFRjZabEZxVm0xT1Z5SjltSm1OVCJ9jZjMW',
+                                                            'M2I2MeyIxNCI6Ik1qZGxaZXlJeE15STZJazU2VlhkWlpYbEplRTFwU1RaTlZFRjRabEZYVW1oTk1pSjlEQTFOVCJ9WI2Zj',
                                                         assertion: {
                                                             text:
                                                                 "Role 'alert' is conveyed"
@@ -301,7 +332,7 @@ Default.parameters = {
                                                     },
                                                     {
                                                         id:
-                                                            'ODgxZeyIxNCI6IlpHVTJNZXlJeE15STZJazlFYkdwYVpYbEplRTFwU1RaTlZFRjZabEZxVm0xT1Z5SjltSm1OVCJ9TY5MT',
+                                                            'NDVlYeyIxNCI6Ik1qZGxaZXlJeE15STZJazU2VlhkWlpYbEplRTFwU1RaTlZFRjRabEZYVW1oTk1pSjlEQTFOVCJ92ZkZW',
                                                         assertion: {
                                                             text:
                                                                 "Text 'Hello' is conveyed"
@@ -334,8 +365,8 @@ Default.parameters = {
                                         ]
                                     },
                                     {
-                                        id: 'N2UxMeyIxMiI6MTAzfQGE0YT',
-                                        completedAt: '2022-08-22T20:42:10.297Z',
+                                        id: 'ZWYwMeyIxMiI6MTAxfQjg4Y2',
+                                        completedAt: '2022-09-12T16:06:38.523Z',
                                         test: {
                                             id: 'MDllNeyIyIjoiMSJ9DY1NT',
                                             rowNumber: 2,
@@ -434,7 +465,7 @@ Default.parameters = {
                                         scenarioResults: [
                                             {
                                                 id:
-                                                    'N2VjYeyIxMyI6Ik4yVXhNZXlJeE1pSTZNVEF6ZlFHRTBZVCJ9zI4M2',
+                                                    'YjM4ZeyIxMyI6IlpXWXdNZXlJeE1pSTZNVEF4ZlFqZzRZMiJ9DU5NG',
                                                 scenario: {
                                                     commands: [
                                                         {
@@ -448,23 +479,25 @@ Default.parameters = {
                                                 assertionResults: [
                                                     {
                                                         id:
-                                                            'MmIwMeyIxNCI6Ik4yVmpZZXlJeE15STZJazR5VlhoTlpYbEplRTFwU1RaTlZFRjZabEZIUlRCWlZDSjl6STRNMiJ9WU1OD',
+                                                            'MjdlZeyIxNCI6IllqTTRaZXlJeE15STZJbHBYV1hkTlpYbEplRTFwU1RaTlZFRjRabEZxWnpSWk1pSjlEVTVORyJ9TVhND',
                                                         assertion: {
                                                             text:
                                                                 "Role 'alert' is conveyed"
                                                         },
-                                                        passed: true,
-                                                        failedReason: null
+                                                        passed: false,
+                                                        failedReason:
+                                                            'NO_OUTPUT'
                                                     },
                                                     {
                                                         id:
-                                                            'NGI2NeyIxNCI6Ik4yVmpZZXlJeE15STZJazR5VlhoTlpYbEplRTFwU1RaTlZFRjZabEZIUlRCWlZDSjl6STRNMiJ9mExZT',
+                                                            'OWVlOeyIxNCI6IllqTTRaZXlJeE15STZJbHBYV1hkTlpYbEplRTFwU1RaTlZFRjRabEZxWnpSWk1pSjlEVTVORyJ9WI5Yj',
                                                         assertion: {
                                                             text:
                                                                 "Text 'Hello' is conveyed"
                                                         },
-                                                        passed: true,
-                                                        failedReason: null
+                                                        passed: false,
+                                                        failedReason:
+                                                            'NO_OUTPUT'
                                                     }
                                                 ],
                                                 requiredAssertionResults: [
@@ -473,16 +506,18 @@ Default.parameters = {
                                                             text:
                                                                 "Role 'alert' is conveyed"
                                                         },
-                                                        passed: true,
-                                                        failedReason: null
+                                                        passed: false,
+                                                        failedReason:
+                                                            'NO_OUTPUT'
                                                     },
                                                     {
                                                         assertion: {
                                                             text:
                                                                 "Text 'Hello' is conveyed"
                                                         },
-                                                        passed: true,
-                                                        failedReason: null
+                                                        passed: false,
+                                                        failedReason:
+                                                            'NO_OUTPUT'
                                                     }
                                                 ],
                                                 optionalAssertionResults: [],
@@ -490,7 +525,7 @@ Default.parameters = {
                                             },
                                             {
                                                 id:
-                                                    'MDU5ZeyIxMyI6Ik4yVXhNZXlJeE1pSTZNVEF6ZlFHRTBZVCJ9DhhZj',
+                                                    'OWVmZeyIxMyI6IlpXWXdNZXlJeE1pSTZNVEF4ZlFqZzRZMiJ9GI0ZD',
                                                 scenario: {
                                                     commands: [
                                                         {
@@ -504,23 +539,25 @@ Default.parameters = {
                                                 assertionResults: [
                                                     {
                                                         id:
-                                                            'MDU3NeyIxNCI6Ik1EVTVaZXlJeE15STZJazR5VlhoTlpYbEplRTFwU1RaTlZFRjZabEZIUlRCWlZDSjlEaGhaaiJ9WVmZT',
+                                                            'ODRiZeyIxNCI6Ik9XVm1aZXlJeE15STZJbHBYV1hkTlpYbEplRTFwU1RaTlZFRjRabEZxWnpSWk1pSjlHSTBaRCJ9jc3MT',
                                                         assertion: {
                                                             text:
                                                                 "Role 'alert' is conveyed"
                                                         },
-                                                        passed: true,
-                                                        failedReason: null
+                                                        passed: false,
+                                                        failedReason:
+                                                            'NO_OUTPUT'
                                                     },
                                                     {
                                                         id:
-                                                            'NzJkOeyIxNCI6Ik1EVTVaZXlJeE15STZJazR5VlhoTlpYbEplRTFwU1RaTlZFRjZabEZIUlRCWlZDSjlEaGhaaiJ9WYwND',
+                                                            'ZDBmMeyIxNCI6Ik9XVm1aZXlJeE15STZJbHBYV1hkTlpYbEplRTFwU1RaTlZFRjRabEZxWnpSWk1pSjlHSTBaRCJ9GQ4OT',
                                                         assertion: {
                                                             text:
                                                                 "Text 'Hello' is conveyed"
                                                         },
-                                                        passed: true,
-                                                        failedReason: null
+                                                        passed: false,
+                                                        failedReason:
+                                                            'NO_OUTPUT'
                                                     }
                                                 ],
                                                 requiredAssertionResults: [
@@ -529,16 +566,18 @@ Default.parameters = {
                                                             text:
                                                                 "Role 'alert' is conveyed"
                                                         },
-                                                        passed: true,
-                                                        failedReason: null
+                                                        passed: false,
+                                                        failedReason:
+                                                            'NO_OUTPUT'
                                                     },
                                                     {
                                                         assertion: {
                                                             text:
                                                                 "Text 'Hello' is conveyed"
                                                         },
-                                                        passed: true,
-                                                        failedReason: null
+                                                        passed: false,
+                                                        failedReason:
+                                                            'NO_OUTPUT'
                                                     }
                                                 ],
                                                 optionalAssertionResults: [],
@@ -566,11 +605,11 @@ Default.parameters = {
                                                     name: '2021.2111.13'
                                                 },
                                                 browserVersion: {
-                                                    id: '6',
-                                                    name: '15.4.0'
+                                                    id: '4',
+                                                    name: '1'
                                                 },
                                                 completedAt:
-                                                    '2022-08-22T20:41:53.702Z'
+                                                    '2022-09-12T16:06:23.674Z'
                                             },
                                             {
                                                 test: {
@@ -581,11 +620,11 @@ Default.parameters = {
                                                     name: '2021.2111.13'
                                                 },
                                                 browserVersion: {
-                                                    id: '6',
-                                                    name: '15.4.0'
+                                                    id: '4',
+                                                    name: '1'
                                                 },
                                                 completedAt:
-                                                    '2022-08-22T20:42:10.297Z'
+                                                    '2022-09-12T16:06:38.523Z'
                                             }
                                         ]
                                     }
@@ -593,7 +632,18 @@ Default.parameters = {
                             },
                             {
                                 id: '101',
-                                issues: [],
+                                candidateStatusReachedAt:
+                                    '2022-07-07T00:00:00.000Z',
+                                issues: [
+                                    {
+                                        feedbackType: 'feedback',
+                                        testNumberFilteredByAt: 1
+                                    },
+                                    {
+                                        feedbackType: 'changes-requested',
+                                        testNumberFilteredByAt: 1
+                                    }
+                                ],
                                 at: {
                                     id: '1',
                                     name: 'JAWS'
@@ -625,20 +675,36 @@ Default.parameters = {
                                         title:
                                             'Trigger an alert in reading mode',
                                         renderedUrl:
-                                            '/aria-at/1aa3b74d24d340362e9f511eae33788d55487d12/build/tests/alert/test-01-trigger-alert-reading-jaws.collected.html'
+                                            '/aria-at/1aa3b74d24d340362e9f511eae33788d55487d12/build/tests/alert/test-01-trigger-alert-reading-jaws.collected.html',
+                                        viewers: [
+                                            {
+                                                username: 'evmiguel'
+                                            },
+                                            {
+                                                username: 'warp2nowere'
+                                            }
+                                        ]
                                     },
                                     {
                                         id: 'MDllNeyIyIjoiMSJ9DY1NT',
                                         title:
                                             'Trigger an alert in interaction mode',
                                         renderedUrl:
-                                            '/aria-at/1aa3b74d24d340362e9f511eae33788d55487d12/build/tests/alert/test-02-trigger-alert-interaction-jaws.collected.html'
+                                            '/aria-at/1aa3b74d24d340362e9f511eae33788d55487d12/build/tests/alert/test-02-trigger-alert-interaction-jaws.collected.html',
+                                        viewers: [
+                                            {
+                                                username: 'evmiguel'
+                                            },
+                                            {
+                                                username: 'warp2nowere'
+                                            }
+                                        ]
                                     }
                                 ],
                                 finalizedTestResults: [
                                     {
-                                        id: 'YTgxYeyIxMiI6MTA0fQzU4ZG',
-                                        completedAt: '2022-08-23T14:08:02.483Z',
+                                        id: 'NzlkYeyIxMiI6MTAyfQzllNj',
+                                        completedAt: '2022-09-12T16:07:07.524Z',
                                         test: {
                                             id: 'NjgwYeyIyIjoiMSJ9zYxZT',
                                             rowNumber: 1,
@@ -737,7 +803,7 @@ Default.parameters = {
                                         scenarioResults: [
                                             {
                                                 id:
-                                                    'MjllMeyIxMyI6IllUZ3hZZXlJeE1pSTZNVEEwZlF6VTRaRyJ9zFhYz',
+                                                    'ZjM0MeyIxMyI6Ik56bGtZZXlJeE1pSTZNVEF5ZlF6bGxOaiJ9TcyZj',
                                                 scenario: {
                                                     commands: [
                                                         {
@@ -747,11 +813,11 @@ Default.parameters = {
                                                     ]
                                                 },
                                                 output:
-                                                    'JAWS output after Space',
+                                                    'JAWS output after Space\n\n',
                                                 assertionResults: [
                                                     {
                                                         id:
-                                                            'ZDNjOeyIxNCI6Ik1qbGxNZXlJeE15STZJbGxVWjNoWlpYbEplRTFwU1RaTlZFRXdabEY2VlRSYVJ5Sjl6RmhZeiJ9WVjZm',
+                                                            'ZGYwOeyIxNCI6IlpqTTBNZXlJeE15STZJazU2Ykd0WlpYbEplRTFwU1RaTlZFRjVabEY2Ykd4T2FpSjlUY3laaiJ9TI4ZG',
                                                         assertion: {
                                                             text:
                                                                 "Role 'alert' is conveyed"
@@ -761,7 +827,7 @@ Default.parameters = {
                                                     },
                                                     {
                                                         id:
-                                                            'NGNiOeyIxNCI6Ik1qbGxNZXlJeE15STZJbGxVWjNoWlpYbEplRTFwU1RaTlZFRXdabEY2VlRSYVJ5Sjl6RmhZeiJ9ThkOW',
+                                                            'OGE5MeyIxNCI6IlpqTTBNZXlJeE15STZJazU2Ykd0WlpYbEplRTFwU1RaTlZFRjVabEY2Ykd4T2FpSjlUY3laaiJ9jQ3Yz',
                                                         assertion: {
                                                             text:
                                                                 "Text 'Hello' is conveyed"
@@ -793,7 +859,7 @@ Default.parameters = {
                                             },
                                             {
                                                 id:
-                                                    'MTA5NeyIxMyI6IllUZ3hZZXlJeE1pSTZNVEEwZlF6VTRaRyJ9GIyM2',
+                                                    'YjgzOeyIxMyI6Ik56bGtZZXlJeE1pSTZNVEF5ZlF6bGxOaiJ9DY2Mj',
                                                 scenario: {
                                                     commands: [
                                                         {
@@ -803,11 +869,11 @@ Default.parameters = {
                                                     ]
                                                 },
                                                 output:
-                                                    'JAWS output after Enter',
+                                                    'JAWS output after Enter\n\n',
                                                 assertionResults: [
                                                     {
                                                         id:
-                                                            'MGVhOeyIxNCI6Ik1UQTVOZXlJeE15STZJbGxVWjNoWlpYbEplRTFwU1RaTlZFRXdabEY2VlRSYVJ5SjlHSXlNMiJ9WQ5Zj',
+                                                            'YjQzNeyIxNCI6IllqZ3pPZXlJeE15STZJazU2Ykd0WlpYbEplRTFwU1RaTlZFRjVabEY2Ykd4T2FpSjlEWTJNaiJ9DJjNj',
                                                         assertion: {
                                                             text:
                                                                 "Role 'alert' is conveyed"
@@ -817,7 +883,7 @@ Default.parameters = {
                                                     },
                                                     {
                                                         id:
-                                                            'Y2FmNeyIxNCI6Ik1UQTVOZXlJeE15STZJbGxVWjNoWlpYbEplRTFwU1RaTlZFRXdabEY2VlRSYVJ5SjlHSXlNMiJ9mI0OD',
+                                                            'NzE1YeyIxNCI6IllqZ3pPZXlJeE15STZJazU2Ykd0WlpYbEplRTFwU1RaTlZFRjVabEY2Ykd4T2FpSjlEWTJNaiJ9jc4OG',
                                                         assertion: {
                                                             text:
                                                                 "Text 'Hello' is conveyed"
@@ -850,8 +916,8 @@ Default.parameters = {
                                         ]
                                     },
                                     {
-                                        id: 'ZWY1OeyIxMiI6MTA0fQDc1MT',
-                                        completedAt: '2022-08-25T16:11:27.358Z',
+                                        id: 'N2Q3NeyIxMiI6MTAyfQjkyNj',
+                                        completedAt: '2022-09-12T16:07:28.340Z',
                                         test: {
                                             id: 'MDllNeyIyIjoiMSJ9DY1NT',
                                             rowNumber: 2,
@@ -950,7 +1016,7 @@ Default.parameters = {
                                         scenarioResults: [
                                             {
                                                 id:
-                                                    'M2Y0YeyIxMyI6IlpXWTFPZXlJeE1pSTZNVEEwZlFEYzFNVCJ9zIyNm',
+                                                    'ZTc2MeyIxMyI6Ik4yUTNOZXlJeE1pSTZNVEF5ZlFqa3lOaiJ9zI2M2',
                                                 scenario: {
                                                     commands: [
                                                         {
@@ -960,11 +1026,11 @@ Default.parameters = {
                                                     ]
                                                 },
                                                 output:
-                                                    'JAWS output after Space - different',
+                                                    'JAWS output after Space\n\n',
                                                 assertionResults: [
                                                     {
                                                         id:
-                                                            'MzllZeyIxNCI6Ik0yWTBZZXlJeE15STZJbHBYV1RGUFpYbEplRTFwU1RaTlZFRXdabEZFWXpGTlZDSjl6SXlObSJ9WE2NG',
+                                                            'OTIyZeyIxNCI6IlpUYzJNZXlJeE15STZJazR5VVROT1pYbEplRTFwU1RaTlZFRjVabEZxYTNsT2FpSjl6STJNMiJ9jAwMT',
                                                         assertion: {
                                                             text:
                                                                 "Role 'alert' is conveyed"
@@ -974,7 +1040,7 @@ Default.parameters = {
                                                     },
                                                     {
                                                         id:
-                                                            'OTQyMeyIxNCI6Ik0yWTBZZXlJeE15STZJbHBYV1RGUFpYbEplRTFwU1RaTlZFRXdabEZFWXpGTlZDSjl6SXlObSJ9GZkNj',
+                                                            'OTdkNeyIxNCI6IlpUYzJNZXlJeE15STZJazR5VVROT1pYbEplRTFwU1RaTlZFRjVabEZxYTNsT2FpSjl6STJNMiJ9GM0OT',
                                                         assertion: {
                                                             text:
                                                                 "Text 'Hello' is conveyed"
@@ -1002,29 +1068,11 @@ Default.parameters = {
                                                     }
                                                 ],
                                                 optionalAssertionResults: [],
-                                                unexpectedBehaviors: [
-                                                    {
-                                                        id: 'SLUGGISH',
-                                                        text:
-                                                            'Screen reader became extremely sluggish',
-                                                        otherUnexpectedBehaviorText: null
-                                                    },
-                                                    {
-                                                        id: 'AT_CRASHED',
-                                                        text:
-                                                            'Screen reader crashed',
-                                                        otherUnexpectedBehaviorText: null
-                                                    },
-                                                    {
-                                                        id: 'BROWSER_CRASHED',
-                                                        text: 'Browser crashed',
-                                                        otherUnexpectedBehaviorText: null
-                                                    }
-                                                ]
+                                                unexpectedBehaviors: []
                                             },
                                             {
                                                 id:
-                                                    'MjQxZeyIxMyI6IlpXWTFPZXlJeE1pSTZNVEEwZlFEYzFNVCJ9DhjZT',
+                                                    'MmI3NeyIxMyI6Ik4yUTNOZXlJeE1pSTZNVEF5ZlFqa3lOaiJ9GZhYz',
                                                 scenario: {
                                                     commands: [
                                                         {
@@ -1034,11 +1082,11 @@ Default.parameters = {
                                                     ]
                                                 },
                                                 output:
-                                                    'JAWS output after Enter',
+                                                    'JAWS output after Enter\n\n',
                                                 assertionResults: [
                                                     {
                                                         id:
-                                                            'NjgyMeyIxNCI6Ik1qUXhaZXlJeE15STZJbHBYV1RGUFpYbEplRTFwU1RaTlZFRXdabEZFWXpGTlZDSjlEaGpaVCJ92E4Nz',
+                                                            'NDdjOeyIxNCI6Ik1tSTNOZXlJeE15STZJazR5VVROT1pYbEplRTFwU1RaTlZFRjVabEZxYTNsT2FpSjlHWmhZeiJ9Dc5YW',
                                                         assertion: {
                                                             text:
                                                                 "Role 'alert' is conveyed"
@@ -1048,7 +1096,7 @@ Default.parameters = {
                                                     },
                                                     {
                                                         id:
-                                                            'YTYwYeyIxNCI6Ik1qUXhaZXlJeE15STZJbHBYV1RGUFpYbEplRTFwU1RaTlZFRXdabEZFWXpGTlZDSjlEaGpaVCJ9jY3Mz',
+                                                            'ZTk5YeyIxNCI6Ik1tSTNOZXlJeE15STZJazR5VVROT1pYbEplRTFwU1RaTlZFRjVabEZxYTNsT2FpSjlHWmhZeiJ9jdhYm',
                                                         assertion: {
                                                             text:
                                                                 "Text 'Hello' is conveyed"
@@ -1101,10 +1149,10 @@ Default.parameters = {
                                                 },
                                                 browserVersion: {
                                                     id: '5',
-                                                    name: '104.0.0'
+                                                    name: '105.0.0'
                                                 },
                                                 completedAt:
-                                                    '2022-08-23T14:08:02.483Z'
+                                                    '2022-09-12T16:07:07.524Z'
                                             },
                                             {
                                                 test: {
@@ -1115,11 +1163,11 @@ Default.parameters = {
                                                     name: '2021.2111.13'
                                                 },
                                                 browserVersion: {
-                                                    id: '2',
-                                                    name: '99.0.4844.84'
+                                                    id: '5',
+                                                    name: '105.0.0'
                                                 },
                                                 completedAt:
-                                                    '2022-08-25T16:11:27.358Z'
+                                                    '2022-09-12T16:07:28.340Z'
                                             }
                                         ]
                                     }

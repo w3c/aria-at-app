@@ -83,7 +83,7 @@ const oauthRedirectFromGithubController = async (req, res) => {
 
     if (roles[0].name.includes(User.VENDOR)) {
         const vendorCompany = vendorIdString.split('|')[1];
-        user.vendor = {
+        user.dataValues.vendor = {
             vendorCompany,
             at: vendorMap[vendorCompany]
         };
