@@ -348,9 +348,6 @@ describe('graphql', () => {
                                 locationOfData
                             }
                         }
-                        candidateStatusReachedAt
-                        recommendedStatusTargetDate
-                        recommendedStatusReachedAt
                         issues {
                             __typename
                         }
