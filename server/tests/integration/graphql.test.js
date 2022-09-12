@@ -348,9 +348,6 @@ describe('graphql', () => {
                                 locationOfData
                             }
                         }
-                        candidateStatusReachedAt
-                        recommendedStatusTargetDate
-                        recommendedStatusReachedAt
                         issues {
                             __typename
                         }
@@ -363,6 +360,9 @@ describe('graphql', () => {
                             startedAt
                             completedAt
                         }
+                        candidateStatusReachedAt
+                        recommendedStatusTargetDate
+                        recommendedStatusReachedAt
                     }
                     testPlanReports {
                         id
@@ -475,6 +475,16 @@ describe('graphql', () => {
                         reportStatus: testPlanReport(id: 1) {
                             __typename
                             updateStatus(status: IN_REVIEW) {
+                                locationOfData
+                            }
+                        }
+                        reportRecommendedStatusTargetDate: testPlanReport(
+                            id: 3
+                        ) {
+                            __typename
+                            updateRecommendedStatusTargetDate(
+                                recommendedStatusTargetDate: "2023-12-25"
+                            ) {
                                 locationOfData
                             }
                         }
