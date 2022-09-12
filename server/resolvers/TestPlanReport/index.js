@@ -5,7 +5,7 @@ const finalizedTestResults = require('./finalizedTestResultsResolver');
 const conflicts = require('./conflictsResolver');
 const conflictsLength = require('./conflictsLengthResolver');
 const issues = require('./issuesResolver');
-const phaseTargetDate = require('./phaseTargetDateResolver');
+const recommendedStatusTargetDate = require('./recommendedStatusTargetDateResolver');
 
 module.exports = {
     runnableTests,
@@ -15,5 +15,5 @@ module.exports = {
     conflicts,
     conflictsLength,
     issues,
-    phaseTargetDate
+    recommendedStatusTargetDate
 };

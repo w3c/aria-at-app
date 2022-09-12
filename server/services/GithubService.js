@@ -26,7 +26,10 @@ const graphQLEndpoint = `${GITHUB_GRAPHQL_SERVER}/graphql`;
 const nodeCache = new NodeCache();
 const CACHE_MINUTES = 2;
 
-const constructIssuesRequest = async ({ ats, page = 1 }) => {
+const constructIssuesRequest = async ({
+    ats = ['jaws', 'nvda', 'vo'],
+    page = 1
+}) => {
     const issuesEndpoint = `https://api.github.com/repos/w3c/aria-at-app/issues?labels=app,candidate-review&per_page=100`;
     const url = `${issuesEndpoint}&page=${page}`;
     const auth = {
@@ -162,15 +165,29 @@ module.exports = {
 
         return isMember;
     },
-    async getCandidateReviewIssues({ cacheId, ats = ['jaws', 'nvda', 'vo'] }) {
+    async getCandidateReviewIssuesByAt({ cacheId, atName }) {
         const cacheResult = nodeCache.get(cacheId);
+
+        let atKey = '';
+        switch (atName) {
+            case 'JAWS':
+                atKey = 'jaws';
+                break;
+            case 'NVDA':
+                atKey = 'nvda';
+                break;
+            case 'VoiceOver for macOS':
+                atKey = 'vo';
+                break;
+        }
+
         if (!cacheResult) {
             const result = await constructIssuesRequest({
-                ats
+                ats: [atKey]
             });
             nodeCache.set(cacheId, result, CACHE_MINUTES * 60);
-            return result;
+            return result[atKey];
         }
-        return cacheResult;
+        return cacheResult[atKey];
     }
 };

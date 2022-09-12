@@ -348,8 +348,9 @@ describe('graphql', () => {
                                 locationOfData
                             }
                         }
-                        phaseChangeUpdate
-                        phaseTargetDate
+                        candidateStatusReachedAt
+                        recommendedStatusTargetDate
+                        recommendedStatusReachedAt
                         issues {
                             __typename
                         }
