@@ -281,7 +281,14 @@ const createTestPlanReport = async (
  */
 const updateTestPlanReport = async (
     id,
-    { status, testPlanTargetId, testPlanVersionId },
+    {
+        status,
+        testPlanTargetId,
+        testPlanVersionId,
+        candidateStatusReachedAt,
+        recommendedStatusReachedAt,
+        recommendedStatusTargetDate
+    },
     testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
@@ -295,7 +302,14 @@ const updateTestPlanReport = async (
     await ModelService.update(
         TestPlanReport,
         { id },
-        { status, testPlanTargetId, testPlanVersionId },
+        {
+            status,
+            testPlanTargetId,
+            testPlanVersionId,
+            candidateStatusReachedAt,
+            recommendedStatusReachedAt,
+            recommendedStatusTargetDate
+        },
         options
     );
 

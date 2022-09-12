@@ -5,11 +5,12 @@ const {
 } = require('../../models/services/TestPlanReportService');
 const conflictsResolver = require('../TestPlanReport/conflictsResolver');
 const finalizedTestResultsResolver = require('../TestPlanReport/finalizedTestResultsResolver');
+const recommendedStatusTargetDateResolver = require('../TestPlanReport/recommendedStatusTargetDateResolver');
 const populateData = require('../../services/PopulatedData/populateData');
 
 const updateStatusResolver = async (
     { parentContext: { id: testPlanReportId } },
-    { status: status },
+    { status },
     { user }
 ) => {
     if (!user?.roles.find(role => role.name === 'ADMIN')) {
@@ -18,7 +19,17 @@ const updateStatusResolver = async (
 
     const testPlanReport = await getTestPlanReportById(testPlanReportId);
 
-    if (status === 'FINALIZED') {
+    let updateParams = { status };
+    if (status === 'IN_REVIEW') {
+        const candidateStatusReachedAt = new Date();
+        updateParams = {
+            ...updateParams,
+            candidateStatusReachedAt,
+            recommendedStatusTargetDate: recommendedStatusTargetDateResolver({
+                candidateStatusReachedAt
+            })
+        };
+    } else if (status === 'FINALIZED') {
         const conflicts = await conflictsResolver(testPlanReport);
         if (conflicts.length > 0) {
             throw new Error(
@@ -36,9 +47,12 @@ const updateStatusResolver = async (
                     'completed test results'
             );
         }
+        updateParams = {
+            ...updateParams,
+            recommendedStatusReachedAt: new Date()
+        };
     }
-
-    await updateTestPlanReport(testPlanReportId, { status });
+    await updateTestPlanReport(testPlanReportId, updateParams);
 
     return populateData({ testPlanReportId });
 };

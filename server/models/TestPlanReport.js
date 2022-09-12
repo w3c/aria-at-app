@@ -28,9 +28,20 @@ module.exports = function(sequelize, DataTypes) {
                 type: DataTypes.DATE,
                 defaultValue: DataTypes.NOW
             },
-            phaseChangeUpdate: {
+            candidateStatusReachedAt: {
                 type: DataTypes.DATE,
-                defaultValue: DataTypes.NOW
+                defaultValue: null,
+                allowNull: true
+            },
+            recommendedStatusReachedAt: {
+                type: DataTypes.DATE,
+                defaultValue: null,
+                allowNull: true
+            },
+            recommendedStatusTargetDate: {
+                type: DataTypes.DATE,
+                defaultValue: null,
+                allowNull: true
             }
         },
         {

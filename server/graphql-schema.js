@@ -753,7 +753,7 @@ const graphqlSchema = gql`
         Indicates the type of issue. 'changes-requested' or 'feedback'.
         'feedback' is the default type.
         """
-        type: String!
+        feedbackType: String!
         """
         Indicates if the issue is currently open on GitHub.
         """
@@ -761,7 +761,7 @@ const graphqlSchema = gql`
         """
         Test Number the issue was raised for.
         """
-        testNumber: Int!
+        testNumberFilteredByAt: Int!
     }
 
     """
@@ -778,14 +778,21 @@ const graphqlSchema = gql`
         """
         status: TestPlanReportStatus!
         """
-        Date of when the status was last updated.
+        Date of when the TestPlanReport was last updated to the 'Candidate'
+        status.
         """
-        phaseChangeUpdate: Timestamp!
+        candidateStatusReachedAt: Timestamp
         """
-        The intended target date for the final TestPlanReport phase promotion.
+        Date of when the TestPlanReport was last updated to the 'Recommended'
+        status.
+        """
+        recommendedStatusReachedAt: Timestamp
+        """
+        The intended target date for the final TestPlanReport status promotion.
         Based on the ARIA-AT Working Mode.
+        https://github.com/w3c/aria-at/wiki/Working-Mode
         """
-        phaseTargetDate: Timestamp
+        recommendedStatusTargetDate: Timestamp
         """
         The snapshot of a TestPlan to use.
         """
@@ -828,7 +835,7 @@ const graphqlSchema = gql`
         These are the different feedback and requested change items created for
         the TestPlanReport and retrieved from GitHub.
         """
-        issues: [Issue]
+        issues: [Issue]!
         """
         These are all the TestPlanRuns which were recorded during the
         TestPlanReport's DRAFT stage.
@@ -1030,6 +1037,13 @@ const graphqlSchema = gql`
         when setting the status to FINALIZED. Only available to admins.
         """
         updateStatus(status: TestPlanReportStatus!): PopulatedData!
+        """
+        Update the report recommended status target date.
+        Only available to admins.
+        """
+        updateRecommendedStatusTargetDate(
+            recommendedStatusTargetDate: Timestamp!
+        ): PopulatedData!
         """
         Permanently deletes the TestPlanReport and all associated TestPlanRuns.
         Only available to admins.
