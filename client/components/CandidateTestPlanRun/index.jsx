@@ -8,6 +8,7 @@ import { navigateTests } from '../../utils/navigateTests';
 import { ADD_VIEWER_MUTATION, CANDIDATE_REPORTS_QUERY } from './queries';
 import {
     Accordion,
+    Badge,
     useAccordionToggle,
     Card,
     Container,
@@ -203,14 +204,21 @@ const CandidateTestPlanRun = () => {
                     currentUser={data.me}
                 />
                 <Col>
+                    <span className="task-label">
+                        Reviewing tests {currentTest.seq} of {tests.length}:
+                    </span>
                     <h1>
-                        <span className="task-label">
-                            Reviewing tests {currentTest.seq} of {tests.length}:
-                        </span>
-                        {`${currentTest.seq}.`} {currentTest.title}
-                        <span>
-                            {userPerviouslyViewedTest && ' (Previously viewed)'}
-                        </span>
+                        {`${currentTest.seq}.`} {currentTest.title}{' '}
+                        {userPerviouslyViewedTest && ' '}
+                        {userPerviouslyViewedTest && (
+                            <Badge
+                                className="viewed-badge"
+                                pill
+                                variant="secondary"
+                            >
+                                Previously Viewed
+                            </Badge>
+                        )}
                     </h1>
                     <div className="test-info-wrapper">
                         <div className="test-info-entity apg-example-name">

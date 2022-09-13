@@ -51,6 +51,10 @@
     background: white;
 }
 
+.task-label {
+    font-size: 18px !important;
+}
+
 .test-results-header, .test-instructions-header {
     border-bottom: none;
 }
@@ -62,4 +66,13 @@
 
 #overallstatus {
     margin-top: 5px;
+}
+
+.viewed-badge {
+    background-color: #E5E5E5;
+    color: black;
+    font-size: 15px;
+    font-weight: 400;
+    position: relative;
+    top: -5px;
 }
