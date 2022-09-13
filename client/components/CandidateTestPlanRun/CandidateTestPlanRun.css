@@ -1,3 +1,7 @@
+.candidate-test-area {
+    position: relative;
+}
+
 .feedback-accordion {
     width: 100%;
     
@@ -57,6 +61,14 @@
 
 .test-results-header, .test-instructions-header {
     border-bottom: none;
+}
+
+.review-status, .target-date, .apg-example-name {
+    width: 32% !important;
+}
+
+.results-container {
+    padding: 0px;
 }
 
 .results-col {

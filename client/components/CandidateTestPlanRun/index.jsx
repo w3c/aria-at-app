@@ -383,65 +383,69 @@ const CandidateTestPlanRun = () => {
                     tabIndex="-1"
                 >
                     <Row>
-                        {heading}
-                        {testInfo}
-                        {feedback}
-                    </Row>
-                    <Row xs={1} s={1} md={2}>
                         <Col>
-                            <Row className="results-col">{results}</Row>
-                            <Row>
-                                <ul
-                                    aria-labelledby="test-toolbar-heading"
-                                    className="test-run-toolbar mt-1"
-                                >
-                                    <li>
-                                        <Button
-                                            variant="secondary"
-                                            onClick={handlePreviousTestClick}
-                                            disabled={isFirstTest}
+                            {heading}
+                            {testInfo}
+                            {feedback}
+                            <Row xs={1} s={1} md={2}>
+                                <Col className="results-container" md={9}>
+                                    <Row className="results-col">{results}</Row>
+                                    <Row>
+                                        <ul
+                                            aria-labelledby="test-toolbar-heading"
+                                            className="test-run-toolbar mt-1"
                                         >
-                                            Previous Test
-                                        </Button>
-                                    </li>
-                                    <li>
-                                        <Button
-                                            variant="secondary"
-                                            onClick={handleNextTestClick}
-                                            disabled={isLastTest}
+                                            <li>
+                                                <Button
+                                                    variant="secondary"
+                                                    onClick={
+                                                        handlePreviousTestClick
+                                                    }
+                                                    disabled={isFirstTest}
+                                                >
+                                                    Previous Test
+                                                </Button>
+                                            </li>
+                                            <li>
+                                                <Button
+                                                    variant="secondary"
+                                                    onClick={
+                                                        handleNextTestClick
+                                                    }
+                                                    disabled={isLastTest}
+                                                >
+                                                    Next Test
+                                                </Button>
+                                            </li>
+                                        </ul>
+                                    </Row>
+                                </Col>
+                                <Col className="current-test-options" md={3}>
+                                    <div role="complementary">
+                                        <h2 id="test-options-heading">
+                                            Test Review Options
+                                        </h2>
+                                        <ul
+                                            className="options-wrapper"
+                                            aria-labelledby="test-options-heading"
                                         >
-                                            Next Test
-                                        </Button>
-                                    </li>
-                                </ul>
+                                            <li>
+                                                <OptionButton
+                                                    text="Request Changes"
+                                                    target="_blank"
+                                                    href="#"
+                                                />
+                                            </li>
+                                            <li>
+                                                <OptionButton text="Leave Feedback" />
+                                            </li>
+                                            <li>
+                                                <OptionButton text="File an AT bug" />
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </Col>
                             </Row>
-                        </Col>
-                        <Col>
-                            <Col className="current-test-options" md={4}>
-                                <div role="complementary">
-                                    <h2 id="test-options-heading">
-                                        Test Review Options
-                                    </h2>
-                                    <ul
-                                        className="options-wrapper"
-                                        aria-labelledby="test-options-heading"
-                                    >
-                                        <li>
-                                            <OptionButton
-                                                text="Request Changes"
-                                                target="_blank"
-                                                href="#"
-                                            />
-                                        </li>
-                                        <li>
-                                            <OptionButton text="Leave Feedback" />
-                                        </li>
-                                        <li>
-                                            <OptionButton text="File an AT bug" />
-                                        </li>
-                                    </ul>
-                                </div>
-                            </Col>
                         </Col>
                     </Row>
                 </Col>
