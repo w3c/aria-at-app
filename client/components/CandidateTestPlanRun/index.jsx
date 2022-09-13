@@ -190,6 +190,179 @@ const CandidateTestPlanRun = () => {
         callback: PropTypes.func
     };
 
+    const heading = (
+        <div className="test-info-heading">
+            <span className="task-label">
+                Reviewing Test {currentTest.seq} of {tests.length}:
+            </span>
+            <h1>
+                {`${currentTest.seq}. ${currentTest.title}`}{' '}
+                <span className="using">using</span> {`${at}`}
+                {userPerviouslyViewedTest && ' '}
+                {userPerviouslyViewedTest && (
+                    <Badge className="viewed-badge" pill variant="secondary">
+                        Previously Viewed
+                    </Badge>
+                )}
+            </h1>
+        </div>
+    );
+
+    const testInfo = (
+        <div className="test-info-wrapper">
+            <div className="test-info-entity apg-example-name">
+                <div className="info-label">
+                    <b>Candidate Test Plan:</b>{' '}
+                    {`${testPlanVersion.title ||
+                        testPlanVersion.testPlan?.directory ||
+                        ''}`}
+                </div>
+            </div>
+            <div className="test-info-entity review-status">
+                <div className="info-label">
+                    <b>Review status by {at} Representative:</b> In Progress
+                </div>
+            </div>
+            <div className="test-info-entity target-date">
+                <div className="info-label">
+                    <b>Target Completion Date: </b>
+                    {`${
+                        months[targetCompletionDate.getMonth()]
+                    } ${targetCompletionDate.getDate()}, ${targetCompletionDate.getFullYear()}`}
+                </div>
+            </div>
+        </div>
+    );
+
+    const feedback = testPlanReports[currentTestIndex].issues.filter(
+        issue => issue.testNumberFilteredByAt == currentTest.seq
+    ).length > 0 && (
+        <div>
+            <h2>Feedback from {at} Representative</h2>
+            <ul className="feedback-list">
+                {[changesRequestedIssues, feedbackIssues].map(
+                    (list, index) =>
+                        list.length > 0 && (
+                            <li className="feedback-list-item" key={nextId()}>
+                                {list.length}{' '}
+                                {list.length === 1 ? 'person' : 'people'}{' '}
+                                {index === 0
+                                    ? 'requested changes'
+                                    : 'left feedback'}{' '}
+                                for this test
+                                <span
+                                    className="feedback-indicator"
+                                    title="Title"
+                                />
+                            </li>
+                        )
+                )}
+            </ul>
+        </div>
+    );
+
+    const results = (
+        <>
+            <h1>{currentTest.title}</h1>
+            <Accordion className="feedback-accordion">
+                <Card>
+                    <Card.Header>
+                        <ContextAwareToggle
+                            eventKey="0"
+                            callback={e => {
+                                //TODO separate this
+                                setActiveMap(map => {
+                                    if (!map.get(e)) {
+                                        return new Map(map.set(e, true));
+                                    }
+                                    return new Map(map.set(e, false));
+                                });
+                            }}
+                        >
+                            Test Instructions
+                        </ContextAwareToggle>
+                    </Card.Header>
+                    <Accordion.Collapse eventKey="0">
+                        <Card.Body>
+                            <TestRenderer
+                                at={testPlanReports[0].at}
+                                testRunStateRef={testRunStateRef}
+                                recentTestRunStateRef={recentTestRunStateRef}
+                                setIsRendererReady={() => {}}
+                                testResult={
+                                    testPlanReports[0].finalizedTestResults[
+                                        currentTestIndex
+                                    ]
+                                }
+                                testPageUrl={
+                                    testPlanReports[0].testPlanVersion
+                                        .testPageUrl
+                                }
+                                testRunResultRef={testRunResultRef}
+                                showResultsHeader={false}
+                                showResults={false}
+                                showInstructions={true}
+                            />
+                        </Card.Body>
+                    </Accordion.Collapse>
+                </Card>
+            </Accordion>
+            {testPlanReports.map((testPlanReport, index) => {
+                return (
+                    <Accordion
+                        key={`feedback-accordion-${index + 1}`}
+                        className="feedback-accordion"
+                    >
+                        <Card>
+                            <Card.Header>
+                                <ContextAwareToggle
+                                    eventKey={`${index + 1}`}
+                                    callback={e => {
+                                        setActiveMap(map => {
+                                            if (!map.get(e)) {
+                                                return new Map(
+                                                    map.set(e, true)
+                                                );
+                                            }
+                                            return new Map(map.set(e, false));
+                                        });
+                                    }}
+                                >
+                                    Test Results for{' '}
+                                    {testPlanReport.browser.name}
+                                </ContextAwareToggle>
+                            </Card.Header>
+                            <Accordion.Collapse eventKey={`${index + 1}`}>
+                                <Card.Body>
+                                    <TestRenderer
+                                        key={`${testPlanReport.id} + ${testPlanReport.finalizedTestResults[currentTestIndex].id}`}
+                                        at={testPlanReport.at}
+                                        testRunStateRef={testRunStateRef}
+                                        recentTestRunStateRef={
+                                            recentTestRunStateRef
+                                        }
+                                        setIsRendererReady={() => {}}
+                                        testResult={
+                                            testPlanReport.finalizedTestResults[
+                                                currentTestIndex
+                                            ]
+                                        }
+                                        testPageUrl={
+                                            testPlanReport.testPlanVersion
+                                                .testPageUrl
+                                        }
+                                        testRunResultRef={testRunResultRef}
+                                        showResultsHeader={false}
+                                    />
+                                </Card.Body>
+                            </Accordion.Collapse>
+                        </Card>
+                    </Accordion>
+                );
+            })}
+        </>
+    );
+
     return (
         <Container className="test-run-container">
             <Row>
@@ -203,231 +376,20 @@ const CandidateTestPlanRun = () => {
                     handleTestClick={handleTestClick}
                     currentUser={data.me}
                 />
-                <Col>
-                    <span className="task-label">
-                        Reviewing tests {currentTest.seq} of {tests.length}:
-                    </span>
-                    <h1>
-                        {`${currentTest.seq}.`} {currentTest.title}{' '}
-                        {userPerviouslyViewedTest && ' '}
-                        {userPerviouslyViewedTest && (
-                            <Badge
-                                className="viewed-badge"
-                                pill
-                                variant="secondary"
-                            >
-                                Previously Viewed
-                            </Badge>
-                        )}
-                    </h1>
-                    <div className="test-info-wrapper">
-                        <div className="test-info-entity apg-example-name">
-                            <div className="info-label">
-                                <b>Candidate Test Plan:</b>{' '}
-                                {`${testPlanVersion.title ||
-                                    testPlanVersion.testPlan?.directory ||
-                                    ''}`}
-                            </div>
-                        </div>
-                        <div className="test-info-entity review-status">
-                            <div className="info-label">
-                                <b>Review status by {at} Representative:</b> In
-                                Progress
-                            </div>
-                        </div>
-                        <div className="test-info-entity target-date">
-                            <div className="info-label">
-                                <b>Target Completion Date: </b>
-                                {`${
-                                    months[targetCompletionDate.getMonth()]
-                                } ${targetCompletionDate.getDate()}, ${targetCompletionDate.getFullYear()}`}
-                            </div>
-                        </div>
-                    </div>
+                <Col
+                    className="candidate-test-area"
+                    id="candidate-test-run-main"
+                    as="main"
+                    tabIndex="-1"
+                >
                     <Row>
+                        {heading}
+                        {testInfo}
+                        {feedback}
+                    </Row>
+                    <Row xs={1} s={1} md={2}>
                         <Col>
-                            {testPlanReports[currentTestIndex].issues.filter(
-                                issue =>
-                                    issue.testNumberFilteredByAt ==
-                                    currentTest.seq
-                            ).length > 0 && (
-                                <Row>
-                                    <h2>Feedback from {at} Representative</h2>
-                                    <ul className="feedback-list">
-                                        {[
-                                            changesRequestedIssues,
-                                            feedbackIssues
-                                        ].map(
-                                            (list, index) =>
-                                                list.length > 0 && (
-                                                    <li
-                                                        className="feedback-list-item"
-                                                        key={nextId()}
-                                                    >
-                                                        {list.length}{' '}
-                                                        {list.length === 1
-                                                            ? 'person'
-                                                            : 'people'}{' '}
-                                                        {index === 0
-                                                            ? 'requested changes'
-                                                            : 'left feedback'}{' '}
-                                                        for this test
-                                                        <span
-                                                            className="feedback-indicator"
-                                                            title="Title"
-                                                        />
-                                                    </li>
-                                                )
-                                        )}
-                                    </ul>
-                                </Row>
-                            )}
-                            <Row className="results-col">
-                                <h1>{currentTest.title}</h1>
-                                <Accordion className="feedback-accordion">
-                                    <Card>
-                                        <Card.Header>
-                                            <ContextAwareToggle
-                                                eventKey="0"
-                                                callback={e => {
-                                                    //TODO separate this
-                                                    setActiveMap(map => {
-                                                        if (!map.get(e)) {
-                                                            return new Map(
-                                                                map.set(e, true)
-                                                            );
-                                                        }
-                                                        return new Map(
-                                                            map.set(e, false)
-                                                        );
-                                                    });
-                                                }}
-                                            >
-                                                Test Instructions
-                                            </ContextAwareToggle>
-                                        </Card.Header>
-                                        <Accordion.Collapse eventKey="0">
-                                            <Card.Body>
-                                                <TestRenderer
-                                                    at={testPlanReports[0].at}
-                                                    testRunStateRef={
-                                                        testRunStateRef
-                                                    }
-                                                    recentTestRunStateRef={
-                                                        recentTestRunStateRef
-                                                    }
-                                                    setIsRendererReady={() => {}}
-                                                    testResult={
-                                                        testPlanReports[0]
-                                                            .finalizedTestResults[
-                                                            currentTestIndex
-                                                        ]
-                                                    }
-                                                    testPageUrl={
-                                                        testPlanReports[0]
-                                                            .testPlanVersion
-                                                            .testPageUrl
-                                                    }
-                                                    testRunResultRef={
-                                                        testRunResultRef
-                                                    }
-                                                    showResultsHeader={false}
-                                                    showResults={false}
-                                                    showInstructions={true}
-                                                />
-                                            </Card.Body>
-                                        </Accordion.Collapse>
-                                    </Card>
-                                </Accordion>
-                                {testPlanReports.map(
-                                    (testPlanReport, index) => {
-                                        return (
-                                            <Accordion
-                                                key={`feedback-accordion-${index +
-                                                    1}`}
-                                                className="feedback-accordion"
-                                            >
-                                                <Card>
-                                                    <Card.Header>
-                                                        <ContextAwareToggle
-                                                            eventKey={`${index +
-                                                                1}`}
-                                                            callback={e => {
-                                                                setActiveMap(
-                                                                    map => {
-                                                                        if (
-                                                                            !map.get(
-                                                                                e
-                                                                            )
-                                                                        ) {
-                                                                            return new Map(
-                                                                                map.set(
-                                                                                    e,
-                                                                                    true
-                                                                                )
-                                                                            );
-                                                                        }
-                                                                        return new Map(
-                                                                            map.set(
-                                                                                e,
-                                                                                false
-                                                                            )
-                                                                        );
-                                                                    }
-                                                                );
-                                                            }}
-                                                        >
-                                                            Test Results for{' '}
-                                                            {
-                                                                testPlanReport
-                                                                    .browser
-                                                                    .name
-                                                            }
-                                                        </ContextAwareToggle>
-                                                    </Card.Header>
-                                                    <Accordion.Collapse
-                                                        eventKey={`${index +
-                                                            1}`}
-                                                    >
-                                                        <Card.Body>
-                                                            <TestRenderer
-                                                                key={`${testPlanReport.id} + ${testPlanReport.finalizedTestResults[currentTestIndex].id}`}
-                                                                at={
-                                                                    testPlanReport.at
-                                                                }
-                                                                testRunStateRef={
-                                                                    testRunStateRef
-                                                                }
-                                                                recentTestRunStateRef={
-                                                                    recentTestRunStateRef
-                                                                }
-                                                                setIsRendererReady={() => {}}
-                                                                testResult={
-                                                                    testPlanReport
-                                                                        .finalizedTestResults[
-                                                                        currentTestIndex
-                                                                    ]
-                                                                }
-                                                                testPageUrl={
-                                                                    testPlanReport
-                                                                        .testPlanVersion
-                                                                        .testPageUrl
-                                                                }
-                                                                testRunResultRef={
-                                                                    testRunResultRef
-                                                                }
-                                                                showResultsHeader={
-                                                                    false
-                                                                }
-                                                            />
-                                                        </Card.Body>
-                                                    </Accordion.Collapse>
-                                                </Card>
-                                            </Accordion>
-                                        );
-                                    }
-                                )}
-                            </Row>
+                            <Row className="results-col">{results}</Row>
                             <Row>
                                 <ul
                                     aria-labelledby="test-toolbar-heading"

@@ -68,6 +68,10 @@
     margin-top: 5px;
 }
 
+.using {
+    font-weight: 300;
+}
+
 .viewed-badge {
     background-color: #E5E5E5;
     color: black;
