@@ -22,6 +22,7 @@ export const CANDIDATE_REPORTS_QUERY = gql`
         testPlanReports(statuses: [FINALIZED]) {
             id
             candidateStatusReachedAt
+            recommendedStatusTargetDate
             issues {
                 feedbackType
                 testNumberFilteredByAt

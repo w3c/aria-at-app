@@ -23,6 +23,21 @@ import '../App/App.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleDown, faAngleUp } from '@fortawesome/free-solid-svg-icons';
 
+const months = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December'
+];
+
 const CandidateTestPlanRun = () => {
     const { testPlanVersionId } = useParams();
     const history = useHistory();
@@ -48,7 +63,7 @@ const CandidateTestPlanRun = () => {
         setCurrentTestIndex(index);
         if (testCurrentlyViewed) await refetch();
     };
-    const handleNextTestClick = () => {
+    const handleNextTestClick = async () => {
         navigateTests(
             false,
             currentTest,
@@ -57,8 +72,9 @@ const CandidateTestPlanRun = () => {
             setIsFirstTest,
             setIsLastTest
         );
+        if (testCurrentlyViewed) await refetch();
     };
-    const handlePreviousTestClick = () => {
+    const handlePreviousTestClick = async () => {
         navigateTests(
             true,
             currentTest,
@@ -67,6 +83,7 @@ const CandidateTestPlanRun = () => {
             setIsFirstTest,
             setIsLastTest
         );
+        if (testCurrentlyViewed) await refetch();
     };
 
     const setup = () => {
@@ -94,10 +111,7 @@ const CandidateTestPlanRun = () => {
 
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error</p>;
-    if (!data) {
-        console.log('data');
-        return null;
-    }
+    if (!data) return null;
 
     const vendorMap = {
         vispero: 'JAWS',
@@ -117,6 +131,7 @@ const CandidateTestPlanRun = () => {
             report.testPlanVersion.id == testPlanVersionId
     );
 
+    //TODO: figure out if this logic is right
     const tests = testPlanReports[0].runnableTests.map((test, index) => ({
         ...test,
         index,
@@ -127,6 +142,9 @@ const CandidateTestPlanRun = () => {
     const testPlanVersion = testPlanReports[0].testPlanVersion;
     const userPerviouslyViewedTest = !!currentTest.viewers.find(
         each => each.username === data.me.username
+    );
+    const targetCompletionDate = new Date(
+        testPlanReports[0].recommendedStatusTargetDate
     );
 
     const changesRequestedIssues = testPlanReports[
@@ -211,8 +229,10 @@ const CandidateTestPlanRun = () => {
                         </div>
                         <div className="test-info-entity target-date">
                             <div className="info-label">
-                                <b>Target Completion Date:</b>
-                                December 31, 2022
+                                <b>Target Completion Date: </b>
+                                {`${
+                                    months[targetCompletionDate.getMonth()]
+                                } ${targetCompletionDate.getDate()}, ${targetCompletionDate.getFullYear()}`}
                             </div>
                         </div>
                     </div>
@@ -230,7 +250,7 @@ const CandidateTestPlanRun = () => {
                                             changesRequestedIssues,
                                             feedbackIssues
                                         ].map(
-                                            list =>
+                                            (list, index) =>
                                                 list.length > 0 && (
                                                     <li
                                                         className="feedback-list-item"
@@ -240,8 +260,10 @@ const CandidateTestPlanRun = () => {
                                                         {list.length === 1
                                                             ? 'person'
                                                             : 'people'}{' '}
-                                                        requested changes for
-                                                        this test
+                                                        {index === 0
+                                                            ? 'requested changes'
+                                                            : 'left feedback'}{' '}
+                                                        for this test
                                                         <span
                                                             className="feedback-indicator"
                                                             title="Title"
