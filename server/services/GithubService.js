@@ -30,7 +30,7 @@ const constructIssuesRequest = async ({
     ats = ['jaws', 'nvda', 'vo'],
     page = 1
 }) => {
-    const issuesEndpoint = `https://api.github.com/repos/howard-e/aria-at-app/issues?labels=app,candidate-review&per_page=100`;
+    const issuesEndpoint = `https://api.github.com/repos/evmiguel/aria-at-app/issues?labels=app,candidate-review&per_page=100`;
     const url = `${issuesEndpoint}&page=${page}`;
     const auth = {
         username: GITHUB_CLIENT_ID,

@@ -22,9 +22,13 @@
 
 .feedback-list-item {
     padding-right: 20px;
+    padding-left: 10px;
     position: relative;
     margin: 0 0 1em 0.25em;
     list-style: none;
+    font-size: 14px;
+    border: solid 1px;
+    width: 100%;
 }
 
 .feedback-list-item:before {
@@ -53,6 +57,14 @@
 
 .feedback-list-item .feedback-indicator {
     background: white;
+
+}
+
+.issues-container > h2 {
+    margin: 0 0 0.5em;
+    font-size: 18px;
+    padding-bottom: 5px;
+    border-bottom: solid 1px;
 }
 
 .task-label {
@@ -74,6 +86,10 @@
 .results-col {
     border: 1px solid black;
     padding: 10px;
+}
+
+.options-feedback {
+    top: 50px;
 }
 
 #overallstatus {

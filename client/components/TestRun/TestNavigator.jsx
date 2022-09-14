@@ -51,9 +51,7 @@ const TestNavigator = ({
                     {tests.map(test => {
                         let resultClassName = 'not-started';
                         let resultStatus = 'Not Started';
-                        const issuesExist = testPlanReports[
-                            test.index
-                        ]?.issues?.filter(
+                        const issuesExist = testPlanReports[0]?.issues?.filter(
                             issue => issue.testNumberFilteredByAt == test.seq
                         ).length;
 

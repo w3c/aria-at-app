@@ -16,7 +16,7 @@ import {
     Col,
     Button
 } from 'react-bootstrap';
-import { useParams, useHistory } from 'react-router-dom';
+import { useParams, Redirect } from 'react-router-dom';
 import nextId from 'react-id-generator';
 import './CandidateTestPlanRun.css';
 import '../TestRun/TestRun.css';
@@ -41,7 +41,6 @@ const months = [
 
 const CandidateTestPlanRun = () => {
     const { testPlanVersionId } = useParams();
-    const history = useHistory();
 
     const { loading, data, error, refetch } = useQuery(CANDIDATE_REPORTS_QUERY);
     const [addViewer] = useMutation(ADD_VIEWER_MUTATION);
@@ -96,8 +95,7 @@ const CandidateTestPlanRun = () => {
     useEffect(() => setup());
 
     const updateTestViewed = async () => {
-        setTestCurrentlyViewed(false);
-        if (!userPerviouslyViewedTest) {
+        if (!userPreviouslyViewedTest) {
             addViewerToTest(currentTest.id);
         } else {
             setTestCurrentlyViewed(true);
@@ -108,7 +106,7 @@ const CandidateTestPlanRun = () => {
         if (data) {
             updateTestViewed();
         }
-    }, [data]);
+    }, [data, currentTestIndex]);
 
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error</p>;
@@ -117,20 +115,20 @@ const CandidateTestPlanRun = () => {
     const vendorMap = {
         vispero: 'JAWS',
         nvaccess: 'NVDA',
-        apple: 'VoiceOver for MacOS'
+        apple: 'VoiceOver for macOS'
     };
 
     const { at, vendorCompany } = data.me.vendor;
 
-    if (vendorMap[vendorCompany] !== at) {
-        history.push('/404');
-    }
+    if (vendorMap[vendorCompany] !== at) return <Redirect to="/404" />;
 
     const testPlanReports = data.testPlanReports.filter(
         report =>
             report.at.name === at &&
             report.testPlanVersion.id == testPlanVersionId
     );
+
+    if (testPlanReports.length === 0) return <Redirect to="/404" />;
 
     //TODO: figure out if this logic is right
     const tests = testPlanReports[0].runnableTests.map((test, index) => ({
@@ -141,21 +139,22 @@ const CandidateTestPlanRun = () => {
 
     const currentTest = tests[currentTestIndex];
     const testPlanVersion = testPlanReports[0].testPlanVersion;
-    const userPerviouslyViewedTest = !!currentTest.viewers.find(
+    const userPreviouslyViewedTest = !!currentTest.viewers.find(
         each => each.username === data.me.username
     );
+
     const targetCompletionDate = new Date(
         testPlanReports[0].recommendedStatusTargetDate
     );
 
-    const changesRequestedIssues = testPlanReports[
-        currentTestIndex
-    ].issues?.filter(
+    // Assumes that the issues are across the entire AT/Browser combination
+    const changesRequestedIssues = testPlanReports[0].issues?.filter(
         issue =>
             issue.feedbackType === 'changes-requested' &&
             issue.testNumberFilteredByAt === currentTest.seq
     );
-    const feedbackIssues = testPlanReports[currentTestIndex].issues?.filter(
+
+    const feedbackIssues = testPlanReports[0].issues?.filter(
         issue =>
             issue.feedbackType === 'feedback' &&
             issue.testNumberFilteredByAt === currentTest.seq
@@ -198,8 +197,8 @@ const CandidateTestPlanRun = () => {
             <h1>
                 {`${currentTest.seq}. ${currentTest.title}`}{' '}
                 <span className="using">using</span> {`${at}`}
-                {userPerviouslyViewedTest && ' '}
-                {userPerviouslyViewedTest && (
+                {userPreviouslyViewedTest && ' '}
+                {userPreviouslyViewedTest && (
                     <Badge className="viewed-badge" pill variant="secondary">
                         Previously Viewed
                     </Badge>
@@ -234,10 +233,10 @@ const CandidateTestPlanRun = () => {
         </div>
     );
 
-    const feedback = testPlanReports[currentTestIndex].issues.filter(
+    const feedback = testPlanReports[0].issues.filter(
         issue => issue.testNumberFilteredByAt == currentTest.seq
     ).length > 0 && (
-        <div>
+        <div className="issues-container">
             <h2>Feedback from {at} Representative</h2>
             <ul className="feedback-list">
                 {[changesRequestedIssues, feedbackIssues].map(
@@ -383,12 +382,12 @@ const CandidateTestPlanRun = () => {
                     tabIndex="-1"
                 >
                     <Row>
+                        {heading}
+                        {testInfo}
                         <Col>
-                            {heading}
-                            {testInfo}
-                            {feedback}
                             <Row xs={1} s={1} md={2}>
                                 <Col className="results-container" md={9}>
+                                    <Row>{feedback}</Row>
                                     <Row className="results-col">{results}</Row>
                                     <Row>
                                         <ul
@@ -420,7 +419,12 @@ const CandidateTestPlanRun = () => {
                                         </ul>
                                     </Row>
                                 </Col>
-                                <Col className="current-test-options" md={3}>
+                                <Col
+                                    className={`current-test-options ${
+                                        feedback ? 'options-feedback' : ''
+                                    }`}
+                                    md={3}
+                                >
                                     <div role="complementary">
                                         <h2 id="test-options-heading">
                                             Test Review Options
