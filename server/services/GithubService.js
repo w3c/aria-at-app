@@ -36,7 +36,7 @@ const constructIssuesRequest = async ({
         username: GITHUB_CLIENT_ID,
         password: GITHUB_CLIENT_SECRET
     };
-    const response = await axios.get(url, {}, { auth });
+    const response = await axios.get(url, { auth });
     // https://docs.github.com/en/rest/issues/issues#list-repository-issues
     // Filter out Pull Requests. GitHub's REST API v3 also considers every
     // pull request an issue.
