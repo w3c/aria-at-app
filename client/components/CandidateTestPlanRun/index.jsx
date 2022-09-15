@@ -22,7 +22,15 @@ import './CandidateTestPlanRun.css';
 import '../TestRun/TestRun.css';
 import '../App/App.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faAngleDown, faAngleUp } from '@fortawesome/free-solid-svg-icons';
+import {
+    faAngleDown,
+    faAngleUp,
+    faCommentAlt,
+    faCommentDollar,
+    faFlag
+} from '@fortawesome/free-solid-svg-icons';
+import useResizeObserver from '@react-hook/resize-observer';
+import { useMediaQuery } from 'react-responsive';
 
 const months = [
     'January',
@@ -39,6 +47,18 @@ const months = [
     'December'
 ];
 
+function useSize(target) {
+    const [size, setSize] = React.useState();
+
+    React.useLayoutEffect(() => {
+        target && setSize(target.getBoundingClientRect());
+    }, [target]);
+
+    // Where the magic happens
+    useResizeObserver(target, entry => setSize(entry.contentRect));
+    return size;
+}
+
 const CandidateTestPlanRun = () => {
     const { testPlanVersionId } = useParams();
 
@@ -53,6 +73,14 @@ const CandidateTestPlanRun = () => {
     const [isLastTest, setIsLastTest] = useState(false);
     const [activeMap, setActiveMap] = useState(new Map());
     const [testCurrentlyViewed, setTestCurrentlyViewed] = useState(false);
+
+    const [issuesHeading, setissuesHeading] = React.useState();
+    const issuesHeadingSize = useSize(issuesHeading);
+    const [issuesList, setissuesList] = React.useState();
+    const issuesListSize = useSize(issuesList);
+    const isLaptopOrLarger = useMediaQuery({
+        query: '(min-width: 792px)'
+    });
 
     const addViewerToTest = async testId => {
         await addViewer({ variables: { testPlanVersionId, testId } });
@@ -237,17 +265,47 @@ const CandidateTestPlanRun = () => {
         issue => issue.testNumberFilteredByAt == currentTest.seq
     ).length > 0 && (
         <div className="issues-container">
-            <h2>Feedback from {at} Representative</h2>
-            <ul className="feedback-list">
+            <h2
+                style={{
+                    width: isLaptopOrLarger
+                        ? issuesHeadingSize?.width
+                        : issuesListSize?.width,
+                    position: 'relative'
+                }}
+            >
+                Feedback from {at} Representative
+            </h2>
+            {console.log(issuesHeadingSize?.width, issuesListSize?.width)}
+            <ul
+                className="feedback-list"
+                style={{
+                    width: issuesListSize?.width,
+                    position: 'relative'
+                }}
+            >
                 {[changesRequestedIssues, feedbackIssues].map(
                     (list, index) =>
                         list.length > 0 && (
                             <li className="feedback-list-item" key={nextId()}>
-                                {list.length}{' '}
-                                {list.length === 1 ? 'person' : 'people'}{' '}
-                                {index === 0
-                                    ? 'requested changes'
-                                    : 'left feedback'}{' '}
+                                {index === 0 ? (
+                                    <FontAwesomeIcon
+                                        icon={faFlag}
+                                        color="#F87F1C"
+                                    />
+                                ) : (
+                                    <FontAwesomeIcon
+                                        icon={faCommentAlt}
+                                        color="#B254F8"
+                                    />
+                                )}
+                                {'  '}
+                                <a href="#">
+                                    {list.length}{' '}
+                                    {list.length === 1 ? 'person' : 'people'}{' '}
+                                    {index === 0
+                                        ? 'requested changes'
+                                        : 'left feedback'}{' '}
+                                </a>
                                 for this test
                                 <span
                                     className="feedback-indicator"
@@ -385,8 +443,12 @@ const CandidateTestPlanRun = () => {
                         {heading}
                         {testInfo}
                         <Col>
-                            <Row xs={1} s={1} md={2}>
-                                <Col className="results-container" md={9}>
+                            <Row xs={1} s={1} md={2} ref={setissuesHeading}>
+                                <Col
+                                    className="results-container"
+                                    md={isLaptopOrLarger ? 9 : 4}
+                                    ref={setissuesList}
+                                >
                                     <Row>{feedback}</Row>
                                     <Row className="results-col">{results}</Row>
                                     <Row>
@@ -423,7 +485,7 @@ const CandidateTestPlanRun = () => {
                                     className={`current-test-options ${
                                         feedback ? 'options-feedback' : ''
                                     }`}
-                                    md={3}
+                                    md={isLaptopOrLarger ? 3 : 8}
                                 >
                                     <div role="complementary">
                                         <h2 id="test-options-heading">

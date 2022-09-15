@@ -76,7 +76,7 @@ button.test-navigator-toggle:focus {
     height: 0%;
 }
 
-.complete.test-name-wrapper:before {
+.complete.test-name-wrapper:before, .changes-requested.test-name-wrapper:before {
     background: #1d8f37;
 }
 

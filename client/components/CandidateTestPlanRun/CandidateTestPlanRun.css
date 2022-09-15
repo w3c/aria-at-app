@@ -1,7 +1,3 @@
-.candidate-test-area {
-    position: relative;
-}
-
 .feedback-accordion {
     width: 100%;
     
@@ -21,38 +17,44 @@
 }
 
 .feedback-list-item {
-    padding-right: 20px;
+    padding: 1em 0 1em .5em;
     padding-left: 10px;
     position: relative;
-    margin: 0 0 1em 0.25em;
+    margin: 1em 0 1em 0.25em;
     list-style: none;
     font-size: 14px;
-    border: solid 1px;
+    border: solid 1px #e5e5e5;
     width: 100%;
-}
-
-.feedback-list-item:before {
-    content: '';
-    height: 2.5em;
-    left: -1em;
-    position: absolute;
-    top: 1.2em;
-    background: #d2d5d9;
-    width: 2px;
-}
-
-.feedback-list-item:last-child:before {
-    height: 0%;
 }
 
 .feedback-indicator {
     position: absolute;
-    left: -1.5em;
-    top: 0.3em;
-    width: 18px;
-    height: 18px;
+    left: -2em;
+    top: 1.3em;
+    width: 16px;
+    height: 16px;
     border-radius: 50px;
     border: 2px solid #d2d5d9;
+}
+
+.feedback-list-item:before {
+    content: '';
+    position: absolute;
+    height: 2.3em;
+    width: 2px;
+    top: -1.1em;
+    left: -1.5em;
+    background: #d2d5d9;
+}
+
+.feedback-list-item:after {
+    content: '';
+    position: absolute;
+    height: 2.2em;
+    width: 2px;
+    bottom: -1.2em;
+    left: -1.5em;
+    background: #d2d5d9;
 }
 
 .feedback-list-item .feedback-indicator {
@@ -60,11 +62,15 @@
 
 }
 
+.issues-container {
+    max-width: 800px;
+}
+
 .issues-container > h2 {
     margin: 0 0 0.5em;
     font-size: 18px;
     padding-bottom: 5px;
-    border-bottom: solid 1px;
+    border-bottom: solid 1px #e5e5e5;
 }
 
 .task-label {
@@ -89,7 +95,7 @@
 }
 
 .options-feedback {
-    top: 50px;
+    top: 35px;
 }
 
 #overallstatus {
