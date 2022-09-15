@@ -12,6 +12,10 @@
     text-align: right;
 }
 
+.feedback-from-text {
+    font-weight: 400;
+}
+
 .feedback-list {
     padding-left: 20px;
 }
@@ -34,7 +38,7 @@
     width: 16px;
     height: 16px;
     border-radius: 50px;
-    border: 2px solid #d2d5d9;
+    border: 2px solid #9a9a9a;
 }
 
 .feedback-list-item:before {

@@ -247,7 +247,8 @@ const CandidateTestPlanRun = () => {
             </div>
             <div className="test-info-entity review-status">
                 <div className="info-label">
-                    <b>Review status by {at} Representative:</b> In Progress
+                    <b>Review status by {at} Representative:</b> In Progress{' '}
+                    {/*TODO: figure out how to change the view status */}
                 </div>
             </div>
             <div className="test-info-entity target-date">
@@ -273,7 +274,8 @@ const CandidateTestPlanRun = () => {
                     position: 'relative'
                 }}
             >
-                Feedback from {at} Representative
+                <span className="feedback-from-text">Feedback from</span>{' '}
+                <b>{at} Representative</b>
             </h2>
             {console.log(issuesHeadingSize?.width, issuesListSize?.width)}
             <ul
@@ -321,7 +323,7 @@ const CandidateTestPlanRun = () => {
     const results = (
         <>
             <h1>{currentTest.title}</h1>
-            <Accordion className="feedback-accordion">
+            <Accordion className="feedback-accordion" defaultActiveKey="0">
                 <Card>
                     <Card.Header>
                         <ContextAwareToggle
@@ -369,6 +371,7 @@ const CandidateTestPlanRun = () => {
                     <Accordion
                         key={`feedback-accordion-${index + 1}`}
                         className="feedback-accordion"
+                        defaultActiveKey={`${index + 1}`}
                     >
                         <Card>
                             <Card.Header>
