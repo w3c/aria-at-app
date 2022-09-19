@@ -5,7 +5,11 @@ import TestNavigator from '../TestRun/TestNavigator';
 import TestRenderer from '../TestRenderer';
 import OptionButton from '../TestRun/OptionButton';
 import { navigateTests } from '../../utils/navigateTests';
-import { ADD_VIEWER_MUTATION, CANDIDATE_REPORTS_QUERY } from './queries';
+import {
+    ADD_VIEWER_MUTATION,
+    CANDIDATE_REPORTS_QUERY,
+    PROMOTE_VENDOR_REVIEW_STATUS_REPORT_MUTATION
+} from './queries';
 import {
     Accordion,
     Badge,
@@ -26,7 +30,6 @@ import {
     faAngleDown,
     faAngleUp,
     faCommentAlt,
-    faCommentDollar,
     faFlag
 } from '@fortawesome/free-solid-svg-icons';
 import useResizeObserver from '@react-hook/resize-observer';
@@ -64,6 +67,15 @@ const CandidateTestPlanRun = () => {
 
     const { loading, data, error, refetch } = useQuery(CANDIDATE_REPORTS_QUERY);
     const [addViewer] = useMutation(ADD_VIEWER_MUTATION);
+    const [promoteVendorReviewStatus] = useMutation(
+        PROMOTE_VENDOR_REVIEW_STATUS_REPORT_MUTATION,
+        {
+            refetchQueries: [
+                { query: CANDIDATE_REPORTS_QUERY },
+                'CandidateReportsQuery'
+            ]
+        }
+    );
     const testRunStateRef = useRef();
     const recentTestRunStateRef = useRef();
     const testRunResultRef = useRef();
@@ -130,9 +142,22 @@ const CandidateTestPlanRun = () => {
         }
     };
 
+    const updateVendorStatus = async () => {
+        if (vendorReviewStatus === 'READY') {
+            await Promise.all(
+                testPlanReports.map(report => {
+                    promoteVendorReviewStatus({
+                        variables: { testReportId: report.id }
+                    });
+                })
+            );
+        }
+    };
+
     useEffect(() => {
         if (data) {
             updateTestViewed();
+            updateVendorStatus();
         }
     }, [data, currentTestIndex]);
 
@@ -166,7 +191,15 @@ const CandidateTestPlanRun = () => {
     }));
 
     const currentTest = tests[currentTestIndex];
-    const testPlanVersion = testPlanReports[0].testPlanVersion;
+    const { testPlanVersion, vendorReviewStatus } = testPlanReports[0];
+    const vendorReviewStatusMap = {
+        READY: 'Ready',
+        IN_PROGRESS: 'In Progress',
+        APPROVED: 'Approved'
+    };
+
+    const reviewStatus = vendorReviewStatusMap[vendorReviewStatus];
+
     const userPreviouslyViewedTest = !!currentTest.viewers.find(
         each => each.username === data.me.username
     );
@@ -247,8 +280,8 @@ const CandidateTestPlanRun = () => {
             </div>
             <div className="test-info-entity review-status">
                 <div className="info-label">
-                    <b>Review status by {at} Representative:</b> In Progress{' '}
-                    {/*TODO: figure out how to change the view status */}
+                    <b>Review status by {at} Representative:</b>{' '}
+                    {`${reviewStatus} `}
                 </div>
             </div>
             <div className="test-info-entity target-date">

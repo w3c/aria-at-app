@@ -43,6 +43,11 @@ module.exports = function(sequelize, DataTypes) {
                 defaultValue: null,
                 allowNull: true
             },
+            vendorReviewStatus: {
+                type: DataTypes.TEXT, // 'READY', 'IN_PROGRESS', 'APPROVED'
+                defaultValue: null,
+                allowNull: true
+            },
             metrics: {
                 type: DataTypes.JSONB,
                 defaultValue: {},

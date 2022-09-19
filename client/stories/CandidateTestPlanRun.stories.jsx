@@ -2,7 +2,8 @@ import React from 'react';
 import CandidateTestPlanRun from '../components/CandidateTestPlanRun';
 import {
     ADD_VIEWER_MUTATION,
-    CANDIDATE_REPORTS_QUERY
+    CANDIDATE_REPORTS_QUERY,
+    PROMOTE_VENDOR_REVIEW_STATUS_REPORT_MUTATION
 } from '../components/CandidateTestPlanRun/queries';
 import { ME_QUERY } from '../components/App/queries';
 import { MemoryRouter, Route } from 'react-router-dom';
@@ -33,6 +34,7 @@ Default.args = {
 };
 
 let candidateReportsQueryCalled = false;
+let switchCount = 0;
 
 const viewers = [
     {
@@ -55,6 +57,7 @@ const candidateReportsDataFirstRun = {
             id: '102',
             candidateStatusReachedAt: '2022-07-07T00:00:00.000Z',
             recommendedStatusTargetDate: '2023-03-13T00:00:00.000Z',
+            vendorReviewStatus: 'READY',
             issues: [
                 {
                     feedbackType: 'feedback',
@@ -545,6 +548,7 @@ const candidateReportsDataFirstRun = {
             id: '101',
             candidateStatusReachedAt: '2022-07-07T00:00:00.000Z',
             recommendedStatusTargetDate: '2023-03-13T00:00:00.000Z',
+            vendorReviewStatus: 'READY',
             issues: [
                 {
                     feedbackType: 'feedback',
@@ -1070,6 +1074,7 @@ Default.parameters = {
                     }
                 },
                 newData: () => {
+                    switchCount++;
                     candidateReportsDataNewRun.testPlanReports[0].runnableTests[0].viewers = [
                         ...candidateReportsDataNewRun.testPlanReports[0]
                             .runnableTests[0].viewers,
@@ -1094,18 +1099,69 @@ Default.parameters = {
                     }
                 },
                 newData: () => {
-                    candidateReportsDataNewRun.testPlanReports[0].runnableTests[1].viewers = [
-                        ...candidateReportsDataNewRun.testPlanReports[0]
-                            .runnableTests[1].viewers,
-                        { username: 'evmiguel' }
-                    ];
-                    candidateReportsDataNewRun.testPlanReports[1].runnableTests[1].viewers = [
-                        ...candidateReportsDataNewRun.testPlanReports[1]
-                            .runnableTests[1].viewers,
-                        { username: 'evmiguel' }
-                    ];
+                    if (switchCount > 1) {
+                        candidateReportsDataNewRun.testPlanReports[0].runnableTests[1].viewers = [
+                            ...candidateReportsDataNewRun.testPlanReports[0]
+                                .runnableTests[1].viewers,
+                            { username: 'evmiguel' }
+                        ];
+                        candidateReportsDataNewRun.testPlanReports[1].runnableTests[1].viewers = [
+                            ...candidateReportsDataNewRun.testPlanReports[1]
+                                .runnableTests[1].viewers,
+                            { username: 'evmiguel' }
+                        ];
+                    }
+                    switchCount++;
                     return {
                         data: { addViewer: { username: 'evmiguel' } }
+                    };
+                }
+            },
+            {
+                request: {
+                    query: PROMOTE_VENDOR_REVIEW_STATUS_REPORT_MUTATION,
+                    variables: {
+                        testReportId: '102'
+                    }
+                },
+                newData: () => {
+                    candidateReportsDataNewRun.testPlanReports[0].vendorReviewStatus =
+                        'IN_PROGRESS';
+
+                    console.log(candidateReportsDataNewRun.testPlanReports[0]);
+                    return {
+                        data: {
+                            testPlanReport: {
+                                promoteVendorReviewStatus: {
+                                    testPlanReport: {
+                                        vendorReviewStatus: 'IN_PROGRESS'
+                                    }
+                                }
+                            }
+                        }
+                    };
+                }
+            },
+            {
+                request: {
+                    query: PROMOTE_VENDOR_REVIEW_STATUS_REPORT_MUTATION,
+                    variables: {
+                        testReportId: '101'
+                    }
+                },
+                newData: () => {
+                    candidateReportsDataNewRun.testPlanReports[1].vendorReviewStatus =
+                        'IN_PROGRESS';
+                    return {
+                        data: {
+                            testPlanReport: {
+                                promoteVendorReviewStatus: {
+                                    testPlanReport: {
+                                        vendorReviewStatus: 'IN_PROGRESS'
+                                    }
+                                }
+                            }
+                        }
                     };
                 }
             },

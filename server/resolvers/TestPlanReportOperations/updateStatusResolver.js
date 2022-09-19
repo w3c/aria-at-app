@@ -58,7 +58,8 @@ const updateStatusResolver = async (
             metrics: { ...testPlanReport.metrics, ...metrics },
             recommendedStatusTargetDate: recommendedStatusTargetDateResolver({
                 candidateStatusReachedAt
-            })
+            }),
+            vendorReviewStatus: 'READY'
         };
     } else if (status === 'FINALIZED') {
         const conflicts = await conflictsResolver(testPlanReport);
@@ -91,7 +92,8 @@ const updateStatusResolver = async (
         updateParams = {
             ...updateParams,
             metrics: { ...testPlanReport.metrics, ...metrics },
-            recommendedStatusReachedAt: new Date()
+            recommendedStatusReachedAt: new Date(),
+            vendorReviewStatus: 'APPROVED'
         };
     }
     await updateTestPlanReport(testPlanReportId, updateParams);

@@ -8,6 +8,19 @@ export const ADD_VIEWER_MUTATION = gql`
     }
 `;
 
+export const PROMOTE_VENDOR_REVIEW_STATUS_REPORT_MUTATION = gql`
+    mutation UpdateVendorReviewStatusReport($testReportId: ID!) {
+        testPlanReport(id: $testReportId) {
+            promoteVendorReviewStatus {
+                testPlanReport {
+                    id
+                    vendorReviewStatus
+                }
+            }
+        }
+    }
+`;
+
 export const CANDIDATE_REPORTS_QUERY = gql`
     query CandidateReportsQuery {
         me {
@@ -23,6 +36,7 @@ export const CANDIDATE_REPORTS_QUERY = gql`
             id
             candidateStatusReachedAt
             recommendedStatusTargetDate
+            vendorReviewStatus
             issues {
                 feedbackType
                 testNumberFilteredByAt

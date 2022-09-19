@@ -870,6 +870,10 @@ const graphqlSchema = gql`
         """
         draftTestPlanRuns: [TestPlanRun]!
         """
+        The state of the vendor review, which can be "READY", "IN_PROGRESS", and "APPROVED"
+        """
+        vendorReviewStatus: String
+        """
         Various metrics and calculations related to the TestPlanReport which
         may be used for reporting purposes.
         """
@@ -1081,6 +1085,11 @@ const graphqlSchema = gql`
         updateRecommendedStatusTargetDate(
             recommendedStatusTargetDate: Timestamp!
         ): PopulatedData!
+        """
+        Move the vendor review status from READY to IN PROGRESS
+        or IN PROGRESS to APPROVED
+        """
+        promoteVendorReviewStatus: PopulatedData!
         """
         Permanently deletes the TestPlanReport and all associated TestPlanRuns.
         Only available to admins.
