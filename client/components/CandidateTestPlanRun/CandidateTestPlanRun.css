@@ -1,5 +1,18 @@
+.card-body {
+    padding: 0;
+}
+
+.card-body > div {
+    border: none;
+}
+
+.current-test-title {
+    border: none;
+}
+
 .feedback-accordion {
     width: 100%;
+    margin-bottom: 1em;
     
 }
 
@@ -17,14 +30,13 @@
 }
 
 .feedback-list {
-    padding-left: 20px;
+    padding-left: 40px;
 }
 
 .feedback-list-item {
     padding: 1em 0 1em .5em;
-    padding-left: 10px;
     position: relative;
-    margin: 1em 0 1em 0.25em;
+    margin: 1em 0 1em 0em;
     list-style: none;
     font-size: 14px;
     border: solid 1px #e5e5e5;
@@ -54,7 +66,7 @@
 .feedback-list-item:after {
     content: '';
     position: absolute;
-    height: 2.2em;
+    height: calc(100% - 1.3em);
     width: 2px;
     bottom: -1.2em;
     left: -1.5em;
@@ -93,9 +105,13 @@
     padding: 0px;
 }
 
+.results-container-col {
+    padding: 0;
+}
+
 .results-col {
-    border: 1px solid black;
-    padding: 10px;
+    border: solid 1px #e5e5e5;
+    padding: 1em;
 }
 
 .options-feedback {

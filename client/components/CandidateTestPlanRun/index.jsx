@@ -277,7 +277,6 @@ const CandidateTestPlanRun = () => {
                 <span className="feedback-from-text">Feedback from</span>{' '}
                 <b>{at} Representative</b>
             </h2>
-            {console.log(issuesHeadingSize?.width, issuesListSize?.width)}
             <ul
                 className="feedback-list"
                 style={{
@@ -322,7 +321,7 @@ const CandidateTestPlanRun = () => {
 
     const results = (
         <>
-            <h1>{currentTest.title}</h1>
+            <h1 className="current-test-title">{currentTest.title}</h1>
             <Accordion className="feedback-accordion" defaultActiveKey="0">
                 <Card>
                     <Card.Header>
@@ -445,11 +444,11 @@ const CandidateTestPlanRun = () => {
                     <Row>
                         {heading}
                         {testInfo}
-                        <Col>
+                        <Col className="results-container-col">
                             <Row xs={1} s={1} md={2} ref={setissuesHeading}>
                                 <Col
                                     className="results-container"
-                                    md={isLaptopOrLarger ? 9 : 4}
+                                    md={isLaptopOrLarger ? 9 : 12}
                                     ref={setissuesList}
                                 >
                                     <Row>{feedback}</Row>
