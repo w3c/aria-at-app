@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useQuery, useMutation } from '@apollo/client';
+import { useQuery, useMutation, gql } from '@apollo/client';
 import PropTypes from 'prop-types';
 import TestNavigator from '../TestRun/TestNavigator';
 import TestRenderer from '../TestRenderer';
@@ -70,10 +70,38 @@ const CandidateTestPlanRun = () => {
     const [promoteVendorReviewStatus] = useMutation(
         PROMOTE_VENDOR_REVIEW_STATUS_REPORT_MUTATION,
         {
-            refetchQueries: [
-                { query: CANDIDATE_REPORTS_QUERY },
-                'CandidateReportsQuery'
-            ]
+            update(
+                cache,
+                {
+                    data: {
+                        testPlanReport: { promoteVendorReviewStatus }
+                    }
+                }
+            ) {
+                cache.modify({
+                    fields: {
+                        testPlanReports(existingTestPlanReports) {
+                            const newTestPlanReports = [
+                                ...existingTestPlanReports
+                            ];
+                            const modifiedTestPlanReportIndex = newTestPlanReports.findIndex(
+                                each =>
+                                    each.id ===
+                                    promoteVendorReviewStatus.testPlanReport.id
+                            );
+                            newTestPlanReports[modifiedTestPlanReportIndex] = {
+                                ...newTestPlanReports[
+                                    modifiedTestPlanReportIndex
+                                ],
+                                vendorReviewStatus:
+                                    promoteVendorReviewStatus.testPlanReport
+                                        .vendorReviewStatus
+                            };
+                            return newTestPlanReports;
+                        }
+                    }
+                });
+            }
         }
     );
     const testRunStateRef = useRef();
