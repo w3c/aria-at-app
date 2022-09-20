@@ -10,6 +10,18 @@
     border: none;
 }
 
+.current-test-options .options-wrapper {
+    text-align: center;
+}
+
+.current-test-options .options-wrapper li {
+    margin-bottom: 0.5em;
+}
+
+.current-test-options .options-wrapper li:last-child {
+    margin-bottom: 0;
+}
+
 .feedback-accordion {
     width: 100%;
     margin-bottom: 1em;

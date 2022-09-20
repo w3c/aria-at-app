@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useQuery, useMutation, gql } from '@apollo/client';
+import { useQuery, useMutation } from '@apollo/client';
 import PropTypes from 'prop-types';
 import TestNavigator from '../TestRun/TestNavigator';
 import TestRenderer from '../TestRenderer';
@@ -219,7 +219,12 @@ const CandidateTestPlanRun = () => {
     }));
 
     const currentTest = tests[currentTestIndex];
-    const { testPlanVersion, vendorReviewStatus } = testPlanReports[0];
+    const {
+        testPlanVersion,
+        vendorReviewStatus,
+        recommendedStatusTargetDate,
+        candidateStatusReachedAt
+    } = testPlanReports[0];
     const vendorReviewStatusMap = {
         READY: 'Ready',
         IN_PROGRESS: 'In Progress',
@@ -232,9 +237,13 @@ const CandidateTestPlanRun = () => {
         each => each.username === data.me.username
     );
 
-    const targetCompletionDate = new Date(
-        testPlanReports[0].recommendedStatusTargetDate
+    const formatDate = date =>
+        `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+
+    const targetCompletionDate = formatDate(
+        new Date(recommendedStatusTargetDate)
     );
+    const startedAtDate = formatDate(new Date(candidateStatusReachedAt));
 
     // Assumes that the issues are across the entire AT/Browser combination
     const changesRequestedIssues = testPlanReports[0].issues?.filter(
@@ -315,9 +324,7 @@ const CandidateTestPlanRun = () => {
             <div className="test-info-entity target-date">
                 <div className="info-label">
                     <b>Target Completion Date: </b>
-                    {`${
-                        months[targetCompletionDate.getMonth()]
-                    } ${targetCompletionDate.getDate()}, ${targetCompletionDate.getFullYear()}`}
+                    {targetCompletionDate}
                 </div>
             </div>
         </div>
@@ -483,6 +490,20 @@ const CandidateTestPlanRun = () => {
         </>
     );
 
+    const githubAtLabelMap = {
+        'VoiceOver for macOS': 'vo',
+        JAWS: 'jaws',
+        NVDA: 'nvda'
+    };
+    const githubIssueUrlTitle = `ARIA-AT-App Candidate Test Plan Review for ${at}/${testPlanVersion.title} started ${startedAtDate}`;
+    const defaultGithubLabels = 'app,candidate-review';
+    const githubUrl = `https://github.com/w3c/aria-at-app/issues/new?title=${encodeURI(
+        githubIssueUrlTitle
+    )}&labels=${defaultGithubLabels},${githubAtLabelMap[at]}`;
+    const requestChangesUrl = `${githubUrl},changes-requested`;
+    const feedbackUrl = `${githubUrl},feedback`;
+    const fileBugUrl = `${githubUrl},bug`;
+
     return (
         <Container className="test-run-container">
             <Row>
@@ -562,14 +583,27 @@ const CandidateTestPlanRun = () => {
                                                 <OptionButton
                                                     text="Request Changes"
                                                     target="_blank"
-                                                    href="#"
+                                                    href={requestChangesUrl}
                                                 />
                                             </li>
                                             <li>
-                                                <OptionButton text="Leave Feedback" />
+                                                <OptionButton
+                                                    text="Leave Feedback"
+                                                    target="_blank"
+                                                    href={feedbackUrl}
+                                                />
                                             </li>
                                             <li>
-                                                <OptionButton text="File an AT bug" />
+                                                <OptionButton
+                                                    text="File an AT bug"
+                                                    target="_blank"
+                                                    href={fileBugUrl}
+                                                />
+                                            </li>
+                                            <li>
+                                                <a href="mailto:public-aria-at@w3.org">
+                                                    Email us if you need help
+                                                </a>
                                             </li>
                                         </ul>
                                     </div>

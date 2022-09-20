@@ -1127,8 +1127,6 @@ Default.parameters = {
                 newData: () => {
                     candidateReportsDataNewRun.testPlanReports[0].vendorReviewStatus =
                         'IN_PROGRESS';
-
-                    console.log(candidateReportsDataNewRun.testPlanReports[0]);
                     return {
                         data: {
                             testPlanReport: {
