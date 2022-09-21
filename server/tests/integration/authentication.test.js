@@ -17,7 +17,7 @@ const followRedirects = async firstUrl => {
         RegExp(`^${process.env.GITHUB_OAUTH_SERVER}`)
     );
     expect(res1.headers.location).toMatch(
-        /\/login\/oauth\/authorize\?scope=[\w:%]+&client_id=\w+&state=[\w-]*$/
+        /\/login\/oauth\/authorize\?scope=[\w:%]+&client_id=\w+&state=[%\w-]*$/
     );
 
     const res2 = await fetch(res1.headers.location, { redirect: 'manual' });
@@ -27,7 +27,7 @@ const followRedirects = async firstUrl => {
         RegExp(`^${process.env.API_SERVER}`)
     );
     expect(res2.headers.get('location')).toMatch(
-        /\/api\/auth\/authorize\?code=\w+&state=[\w-]*$/
+        /\/api\/auth\/authorize\?code=\w+&state=[%\w-]*$/
     );
 
     const removeDomain = process.env.API_SERVER.length;

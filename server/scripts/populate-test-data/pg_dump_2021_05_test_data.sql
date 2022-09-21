@@ -74,6 +74,7 @@ INSERT INTO "TestPlanReport" (id, "status", "testPlanVersionId", "createdAt", "a
 INSERT INTO "TestPlanReport" (id, "status", "testPlanVersionId", "createdAt", "atId", "browserId", "candidateStatusReachedAt", "recommendedStatusReachedAt") VALUES (4, 'FINALIZED', get_test_plan_version_id(text 'Modal Dialog Example'), '2021-05-14 14:18:23.602-05', 2, 1, '2022-07-06', '2023-01-02');
 INSERT INTO "TestPlanReport" (id, "status", "testPlanVersionId", "createdAt", "atId", "browserId", "candidateStatusReachedAt", "recommendedStatusReachedAt") VALUES (5, 'FINALIZED', get_test_plan_version_id(text 'Modal Dialog Example'), '2021-05-14 14:18:23.602-05', 3, 3, '2022-07-06', '2023-01-02');
 INSERT INTO "TestPlanReport" (id, "status", "testPlanVersionId", "createdAt", "atId", "browserId", "candidateStatusReachedAt", "recommendedStatusReachedAt") VALUES (6, 'FINALIZED', get_test_plan_version_id(text 'Checkbox Example (Tri State)'), '2021-05-14 14:18:23.602-05', 3, 3, '2022-07-06', '2023-01-02');
+INSERT INTO "TestPlanReport" (id, "status", "testPlanVersionId", "createdAt", "atId", "browserId", "candidateStatusReachedAt", "recommendedStatusReachedAt", "vendorReviewStatus") VALUES (7, 'IN_REVIEW', get_test_plan_version_id(text 'Checkbox Example (Two State)'), '2021-05-14 14:18:23.602-05', 1, 1, '2022-07-06', '2023-01-02', 'READY');
 
 
 --

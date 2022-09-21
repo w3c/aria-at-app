@@ -25,7 +25,6 @@
 .feedback-accordion {
     width: 100%;
     margin-bottom: 1em;
-    
 }
 
 .feedback-accordion-header {
@@ -46,7 +45,7 @@
 }
 
 .feedback-list-item {
-    padding: 1em 0 1em .5em;
+    padding: 1em 0 1em 0.5em;
     position: relative;
     margin: 1em 0 1em 0em;
     list-style: none;
@@ -87,7 +86,6 @@
 
 .feedback-list-item .feedback-indicator {
     background: white;
-
 }
 
 .issues-container {
@@ -105,11 +103,14 @@
     font-size: 18px !important;
 }
 
-.test-results-header, .test-instructions-header {
+.test-results-header,
+.test-instructions-header {
     border-bottom: none;
 }
 
-.review-status, .target-date, .apg-example-name {
+.review-status,
+.target-date,
+.apg-example-name {
     width: 32% !important;
 }
 
@@ -139,7 +140,7 @@
 }
 
 .viewed-badge {
-    background-color: #E5E5E5;
+    background-color: #e5e5e5;
     color: black;
     font-size: 15px;
     font-weight: 400;

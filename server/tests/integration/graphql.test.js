@@ -137,14 +137,18 @@ describe('graphql', () => {
         const excludedTypeNames = [
             // Items formatted like this:
             // 'TestResult'
-            'Issue'
+            'Issue',
+            'Vendor'
         ];
         const excludedTypeNameAndField = [
             // Items formatted like this:
             // ['TestResult', 'startedAt'],
             ['PopulatedData', 'atVersion'],
             ['PopulatedData', 'browserVersion'],
-            ['TestPlanReport', 'issues']
+            ['TestPlanReport', 'issues'],
+            ['TestPlanReport', 'vendorReviewStatus'],
+            ['User', 'vendor'],
+            ['Test', 'viewers']
         ];
         ({
             typeAwareQuery,
@@ -272,6 +276,7 @@ describe('graphql', () => {
                         id
                         status
                         createdAt
+                        vendorReviewStatus
                         testPlanVersion {
                             id
                         }
@@ -500,6 +505,14 @@ describe('graphql', () => {
                             __typename
                             deleteTestPlanReport
                         }
+                        promoteVendorStatus: testPlanReport(id: 7) {
+                            __typename
+                            promoteVendorReviewStatus {
+                                testPlanReport {
+                                    id
+                                }
+                            }
+                        }
                         testPlanRun(id: 1) {
                             __typename
                             findOrCreateTestResult(
@@ -585,6 +598,12 @@ describe('graphql', () => {
                                 id
                                 name
                             }
+                        }
+                        addViewer(
+                            testPlanVersionId: 1
+                            testId: "NjgwYeyIyIjoiMSJ9zYxZT"
+                        ) {
+                            username
                         }
                     }
                 `,

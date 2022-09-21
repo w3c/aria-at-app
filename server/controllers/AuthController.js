@@ -107,7 +107,7 @@ const oauthRedirectFromGithubController = async (req, res) => {
                 user.roles.push({ name: User.TESTER }); // Admins are always testers
             }
 
-            if (user.roles[0].name === User.VENDOR) {
+            if (user.roles[0]?.name === User.VENDOR) {
                 if (!matchedFakeVendorCompany) {
                     throw Error(
                         'Fake role vendor must also have a company query parameter.'

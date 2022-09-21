@@ -76,7 +76,8 @@ button.test-navigator-toggle:focus {
     height: 0%;
 }
 
-.complete.test-name-wrapper:before, .changes-requested.test-name-wrapper:before {
+.complete.test-name-wrapper:before,
+.changes-requested.test-name-wrapper:before {
     background: #1d8f37;
 }
 
@@ -120,13 +121,13 @@ button.test-navigator-toggle:focus {
 }
 
 .test-name-wrapper.changes-requested .progress-indicator {
-    background: #F87F1C;
+    background: #f87f1c;
 }
 
 .test-name-wrapper.changes-requested .progress-indicator:before {
     position: relative;
     content: '\f024';
-    font-family: "Font Awesome 5 Free";
+    font-family: 'Font Awesome 5 Free';
     font-weight: 900;
     color: white;
     font-size: 10px;
