@@ -99,6 +99,7 @@ const populateTestDatabase = async () => {
         'completeAndFailingDueToIncorrectAssertions',
         'completeAndPassing',
         'completeAndFailingDueToNoOutputAssertions',
+        'completeAndPassing',
         'completeAndPassing'
     ]);
 
