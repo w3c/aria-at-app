@@ -103,6 +103,26 @@ const populateTestDatabase = async () => {
         'completeAndPassing'
     ]);
 
+    await populateFakeTestResults(8, [
+        'completeAndPassing',
+        'completeAndPassing',
+        'completeAndFailingDueToIncorrectAssertions',
+        'completeAndFailingDueToIncorrectAssertions',
+        'completeAndPassing',
+        'completeAndPassing',
+        'completeAndPassing',
+        'completeAndFailingDueToNoOutputAssertions',
+        'completeAndFailingDueToUnexpectedBehaviors',
+        'completeAndFailingDueToUnexpectedBehaviors',
+        'completeAndPassing',
+        'completeAndPassing',
+        'completeAndPassing',
+        'completeAndPassing',
+        'completeAndPassing',
+        'completeAndPassing',
+        'completeAndPassing'
+    ]);
+
     console.info(
         'Successfully populated. Please wait a moment for the process to close.'
     );

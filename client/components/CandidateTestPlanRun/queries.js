@@ -32,7 +32,7 @@ export const CANDIDATE_REPORTS_QUERY = gql`
                 vendorCompany
             }
         }
-        testPlanReports(statuses: [FINALIZED]) {
+        testPlanReports(statuses: [IN_REVIEW]) {
             id
             candidateStatusReachedAt
             recommendedStatusTargetDate

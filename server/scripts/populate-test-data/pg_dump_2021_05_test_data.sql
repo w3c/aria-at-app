@@ -102,6 +102,7 @@ INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults"
 INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults") VALUES (5, 1, 4, '[]');
 INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults") VALUES (6, 1, 5, '[]');
 INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults") VALUES (7, 2, 6, '[]');
+INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults") VALUES (8, 1, 7, '[]');
 
 --
 -- Name: At_id_seq; Type: SEQUENCE SET; Schema: public; Owner: atr

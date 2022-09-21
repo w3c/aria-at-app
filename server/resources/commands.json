@@ -44,10 +44,6 @@
         "text": "Command+Up"
     },
     {
-        "id": "COMMA",
-        "text": "Comma"
-    },
-    {
         "id": "CTRL_ALT_DOWN",
         "text": "Control+Alt+Down"
     },
@@ -88,14 +84,6 @@
         "text": "Control+Option+Command+C / Shift+Control+Option+Command+C"
     },
     {
-        "id": "CTRL_OPT_CMD_G",
-        "text": "Control+Option+Command+G"
-    },
-    {
-        "id": "CTRL_OPT_CMD_H",
-        "text": "Control+Option+Command+H"
-    },
-    {
         "id": "CTRL_OPT_CMD_J",
         "text": "Control+Option+Command+J"
     },
@@ -114,10 +102,6 @@
     {
         "id": "CTRL_OPT_CMD_T",
         "text": "Control+Option+Command+T"
-    },
-    {
-        "id": "CTRL_OPT_CMD_X",
-        "text": "Control+Option+Command+X"
     },
     {
         "id": "CTRL_OPT_CMD_Y",
@@ -316,10 +300,6 @@
         "text": "O"
     },
     {
-        "id": "ONE",
-        "text": "1"
-    },
-    {
         "id": "OPT_DOWN",
         "text": "Option+Down"
     },
@@ -368,14 +348,6 @@
         "text": "Shift+C"
     },
     {
-        "id": "SHIFT_CTRL_OPT_CMD_G",
-        "text": "Shift+Control+Option+Command+G"
-    },
-    {
-        "id": "SHIFT_CTRL_OPT_CMD_H",
-        "text": "Shift+Control+Option+Command+H"
-    },
-    {
         "id": "SHIFT_CTRL_OPT_CMD_J",
         "text": "Shift+Control+Option+Command+J"
     },
@@ -384,20 +356,8 @@
         "text": "Shift+Control+Option+Command+L"
     },
     {
-        "id": "SHIFT_CTRL_OPT_CMD_P",
-        "text": "Shift+Control+Option+Command+P"
-    },
-    {
-        "id": "SHIFT_CTRL_OPT_CMD_X",
-        "text": "Shift+Control+Option+Command+X"
-    },
-    {
         "id": "SHIFT_CTRL_OPT_CMD_Y",
         "text": "Shift+Control+Option+Command+Y"
-    },
-    {
-        "id": "SHIFT_D",
-        "text": "Shift+D"
     },
     {
         "id": "SHIFT_E",
@@ -406,14 +366,6 @@
     {
         "id": "SHIFT_F",
         "text": "Shift+F"
-    },
-    {
-        "id": "SHIFT_G",
-        "text": "Shift+G"
-    },
-    {
-        "id": "SHIFT_H",
-        "text": "Shift+H"
     },
     {
         "id": "SHIFT_I",
@@ -428,18 +380,6 @@
         "text": "Shift+L"
     },
     {
-        "id": "SHIFT_ONE",
-        "text": "Shift+1"
-    },
-    {
-        "id": "SHIFT_P",
-        "text": "Shift+P"
-    },
-    {
-        "id": "SHIFT_PERIOD",
-        "text": "Shift+Period"
-    },
-    {
         "id": "SHIFT_R",
         "text": "Shift+R"
     },
@@ -450,10 +390,6 @@
     {
         "id": "SHIFT_TAB",
         "text": "Shift+Tab"
-    },
-    {
-        "id": "SHIFT_TWO",
-        "text": "Shift+2"
     },
     {
         "id": "SHIFT_T_THEN_DOWN",
@@ -482,10 +418,6 @@
     {
         "id": "TAB_AND_SHIFT_TAB",
         "text": "Tab / Shift+Tab"
-    },
-    {
-        "id": "TWO",
-        "text": "2"
     },
     {
         "id": "T_THEN_DOWN",

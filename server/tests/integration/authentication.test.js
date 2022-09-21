@@ -317,4 +317,42 @@ describe('authentication', () => {
             );
         });
     });
+
+    it('allows faking vendor', async () => {
+        await dbCleaner(async () => {
+            // A1
+            const _dataFromFrontend =
+                'fakeRole-vendor&fakeVendorData=company-vispero';
+            const _knownUsername = 'esmeralda-baggins';
+            mockGithubServer.nextLogin({
+                githubUsername: _knownUsername,
+                isOnAdminTeam: true
+            });
+
+            // A2
+            const res = await followRedirects(
+                `/api/auth/oauth?dataFromFrontend=${_dataFromFrontend}`
+            );
+
+            // A3
+            expect(res.status).toBe(303);
+            expect(res.headers.location).toBe(
+                `${process.env.APP_SERVER}/test-queue`
+            );
+
+            const {
+                body: { data }
+            } = await sessionAgent.post('/api/graphql').send({
+                query: `
+                    query {
+                        me {
+                            roles
+                        }
+                    }
+                `
+            });
+
+            expect(data.me.roles).toEqual(['VENDOR']);
+        });
+    });
 });

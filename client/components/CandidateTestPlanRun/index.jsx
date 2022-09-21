@@ -238,7 +238,9 @@ const CandidateTestPlanRun = () => {
     );
 
     const formatDate = date =>
-        `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+        `${
+            months[date.getUTCMonth()]
+        } ${date.getUTCDate()}, ${date.getUTCFullYear()}`;
 
     const targetCompletionDate = formatDate(
         new Date(recommendedStatusTargetDate)
