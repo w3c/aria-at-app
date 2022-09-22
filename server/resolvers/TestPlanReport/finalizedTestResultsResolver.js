@@ -7,7 +7,8 @@ const deepCustomMerge = require('../../util/deepCustomMerge');
  */
 const finalizedTestResultsResolver = testPlanReport => {
     if (
-        testPlanReport.status !== 'FINALIZED' ||
+        // IN_REVIEW & FINALIZED status should be evaluated
+        testPlanReport.status === 'DRAFT' ||
         !testPlanReport.testPlanRuns.length
     ) {
         return null;

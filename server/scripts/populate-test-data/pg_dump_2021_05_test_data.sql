@@ -70,10 +70,10 @@ INSERT INTO "AtMode" ("atId", name) VALUES (3, 'INTERACTION');
 
 INSERT INTO "TestPlanReport" (id, "status", "testPlanVersionId", "createdAt", "atId", "browserId") VALUES (1, 'DRAFT', get_test_plan_version_id(text 'Toggle Button'), '2021-05-14 14:18:23.602-05', 1, 2);
 INSERT INTO "TestPlanReport" (id, "status", "testPlanVersionId", "createdAt", "atId", "browserId") VALUES (2, 'DRAFT', get_test_plan_version_id(text 'Select Only Combobox Example'), '2021-05-14 14:18:23.602-05', 2, 1);
-INSERT INTO "TestPlanReport" (id, "status", "testPlanVersionId", "createdAt", "atId", "browserId") VALUES (3, 'FINALIZED', get_test_plan_version_id(text 'Modal Dialog Example'), '2021-05-14 14:18:23.602-05', 1, 2);
-INSERT INTO "TestPlanReport" (id, "status", "testPlanVersionId", "createdAt", "atId", "browserId") VALUES (4, 'FINALIZED', get_test_plan_version_id(text 'Modal Dialog Example'), '2021-05-14 14:18:23.602-05', 2, 1);
-INSERT INTO "TestPlanReport" (id, "status", "testPlanVersionId", "createdAt", "atId", "browserId") VALUES (5, 'FINALIZED', get_test_plan_version_id(text 'Modal Dialog Example'), '2021-05-14 14:18:23.602-05', 3, 3);
-INSERT INTO "TestPlanReport" (id, "status", "testPlanVersionId", "createdAt", "atId", "browserId") VALUES (6, 'FINALIZED', get_test_plan_version_id(text 'Checkbox Example (Tri State)'), '2021-05-14 14:18:23.602-05', 3, 3);
+INSERT INTO "TestPlanReport" (id, "status", "testPlanVersionId", "createdAt", "atId", "browserId", "candidateStatusReachedAt", "recommendedStatusReachedAt") VALUES (3, 'FINALIZED', get_test_plan_version_id(text 'Modal Dialog Example'), '2021-05-14 14:18:23.602-05', 1, 2, '2022-07-06', '2023-01-02');
+INSERT INTO "TestPlanReport" (id, "status", "testPlanVersionId", "createdAt", "atId", "browserId", "candidateStatusReachedAt", "recommendedStatusReachedAt") VALUES (4, 'FINALIZED', get_test_plan_version_id(text 'Modal Dialog Example'), '2021-05-14 14:18:23.602-05', 2, 1, '2022-07-06', '2023-01-02');
+INSERT INTO "TestPlanReport" (id, "status", "testPlanVersionId", "createdAt", "atId", "browserId", "candidateStatusReachedAt", "recommendedStatusReachedAt") VALUES (5, 'FINALIZED', get_test_plan_version_id(text 'Modal Dialog Example'), '2021-05-14 14:18:23.602-05', 3, 3, '2022-07-06', '2023-01-02');
+INSERT INTO "TestPlanReport" (id, "status", "testPlanVersionId", "createdAt", "atId", "browserId", "candidateStatusReachedAt", "recommendedStatusReachedAt") VALUES (6, 'FINALIZED', get_test_plan_version_id(text 'Checkbox Example (Tri State)'), '2021-05-14 14:18:23.602-05', 3, 3, '2022-07-06', '2023-01-02');
 
 
 --

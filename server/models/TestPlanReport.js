@@ -18,11 +18,6 @@ module.exports = function(sequelize, DataTypes) {
             },
             status: {
                 type: DataTypes.TEXT,
-                // type: DataTypes.ENUM(
-                //     STATUS.DRAFT,
-                //     STATUS.IN_REVIEW,
-                //     STATUS.FINALIZED
-                // ),
                 allowNull: false,
                 defaultValue: STATUS.DRAFT
             },
@@ -32,6 +27,21 @@ module.exports = function(sequelize, DataTypes) {
             createdAt: {
                 type: DataTypes.DATE,
                 defaultValue: DataTypes.NOW
+            },
+            candidateStatusReachedAt: {
+                type: DataTypes.DATE,
+                defaultValue: null,
+                allowNull: true
+            },
+            recommendedStatusReachedAt: {
+                type: DataTypes.DATE,
+                defaultValue: null,
+                allowNull: true
+            },
+            recommendedStatusTargetDate: {
+                type: DataTypes.DATE,
+                defaultValue: null,
+                allowNull: true
             }
         },
         {

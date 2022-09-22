@@ -740,6 +740,30 @@ const graphqlSchema = gql`
         conflictingResults: [PopulatedData]!
     }
 
+    type Issue {
+        """
+        GitHub username of the issue creator.
+        """
+        author: String!
+        """
+        Link to the GitHub issue's first comment.
+        """
+        link: String!
+        """
+        Indicates the type of issue. 'changes-requested' or 'feedback'.
+        'feedback' is the default type.
+        """
+        feedbackType: String!
+        """
+        Indicates if the issue is currently open on GitHub.
+        """
+        isOpen: Boolean!
+        """
+        Test Number the issue was raised for.
+        """
+        testNumberFilteredByAt: Int!
+    }
+
     """
     A container for test results as captured by multiple testers. The tests to
     be run for a TestPlanReport originate in the TestPlanVersion.
@@ -753,6 +777,22 @@ const graphqlSchema = gql`
         See TestPlanReportStatus type for more information.
         """
         status: TestPlanReportStatus!
+        """
+        Date of when the TestPlanReport was last updated to the 'Candidate'
+        status.
+        """
+        candidateStatusReachedAt: Timestamp
+        """
+        Date of when the TestPlanReport was last updated to the 'Recommended'
+        status.
+        """
+        recommendedStatusReachedAt: Timestamp
+        """
+        The intended target date for the final TestPlanReport status promotion.
+        Based on the ARIA-AT Working Mode.
+        https://github.com/w3c/aria-at/wiki/Working-Mode
+        """
+        recommendedStatusTargetDate: Timestamp
         """
         The snapshot of a TestPlan to use.
         """
@@ -791,6 +831,11 @@ const graphqlSchema = gql`
         results, and is much more convenient to work with.
         """
         finalizedTestResults: [TestResult]
+        """
+        These are the different feedback and requested change items created for
+        the TestPlanReport and retrieved from GitHub.
+        """
+        issues: [Issue]!
         """
         These are all the TestPlanRuns which were recorded during the
         TestPlanReport's DRAFT stage.
@@ -992,6 +1037,13 @@ const graphqlSchema = gql`
         when setting the status to FINALIZED. Only available to admins.
         """
         updateStatus(status: TestPlanReportStatus!): PopulatedData!
+        """
+        Update the report recommended status target date.
+        Only available to admins.
+        """
+        updateRecommendedStatusTargetDate(
+            recommendedStatusTargetDate: Timestamp!
+        ): PopulatedData!
         """
         Permanently deletes the TestPlanReport and all associated TestPlanRuns.
         Only available to admins.

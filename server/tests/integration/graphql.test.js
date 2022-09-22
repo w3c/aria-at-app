@@ -137,12 +137,14 @@ describe('graphql', () => {
         const excludedTypeNames = [
             // Items formatted like this:
             // 'TestResult'
+            'Issue'
         ];
         const excludedTypeNameAndField = [
             // Items formatted like this:
             // ['TestResult', 'startedAt'],
             ['PopulatedData', 'atVersion'],
-            ['PopulatedData', 'browserVersion']
+            ['PopulatedData', 'browserVersion'],
+            ['TestPlanReport', 'issues']
         ];
         ({
             typeAwareQuery,
@@ -346,6 +348,9 @@ describe('graphql', () => {
                                 locationOfData
                             }
                         }
+                        issues {
+                            __typename
+                        }
                     }
                     testPlanReport(id: 3) {
                         __typename
@@ -355,6 +360,9 @@ describe('graphql', () => {
                             startedAt
                             completedAt
                         }
+                        candidateStatusReachedAt
+                        recommendedStatusTargetDate
+                        recommendedStatusReachedAt
                     }
                     testPlanReports {
                         id
@@ -467,6 +475,16 @@ describe('graphql', () => {
                         reportStatus: testPlanReport(id: 1) {
                             __typename
                             updateStatus(status: IN_REVIEW) {
+                                locationOfData
+                            }
+                        }
+                        reportRecommendedStatusTargetDate: testPlanReport(
+                            id: 3
+                        ) {
+                            __typename
+                            updateRecommendedStatusTargetDate(
+                                recommendedStatusTargetDate: "2023-12-25"
+                            ) {
                                 locationOfData
                             }
                         }
