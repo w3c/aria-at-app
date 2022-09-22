@@ -179,7 +179,10 @@ const None = styled.span`
     font-style: italic;
     color: #727272;
     padding: 12px;
-    border-top: 1px solid #d2d5d9;
+
+    &.bordered {
+        border-top: 1px solid #d2d5d9;
+    }
 `;
 
 const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
@@ -223,6 +226,7 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
     const [testPlanReportsToUpdate, setTestPlanReportsToUpdate] = useState([]);
 
     const none = <None>None</None>;
+    const borderedNone = <None className="bordered">None</None>;
 
     const onClickExpandAtTable = atId => {
         // { jaws/nvda/vo: boolean } ]
@@ -287,67 +291,73 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
             else issueFeedbackTypeCount++;
         }
 
-        let result = null;
-        if (issueChangesRequestedTypeCount)
-            result = (
-                <>
-                    <StatusText className="changes-requested">
-                        <FontAwesomeIcon icon={faFlag} />
-                        Changes requested for {
-                            issueChangesRequestedTypeCount
-                        }{' '}
-                        test
-                        {issueChangesRequestedTypeCount !== 1 ? 's' : ''}
-                    </StatusText>
-                    <br />
-                    <br />
-                </>
-            );
-        if (issueFeedbackTypeCount)
-            result = (
-                <>
-                    {result}
-                    <StatusText className="feedback">
-                        <FontAwesomeIcon icon={faCommentAlt} />
-                        Feedback left for {issueFeedbackTypeCount} test
-                        {issueFeedbackTypeCount !== 1 ? 's' : ''}
-                    </StatusText>
-                    <br />
-                    <br />
-                </>
-            );
+        const changesRequestedContent = (
+            <>
+                <StatusText className="changes-requested">
+                    <FontAwesomeIcon icon={faFlag} />
+                    Changes requested for {issueChangesRequestedTypeCount} test
+                    {issueChangesRequestedTypeCount !== 1 ? 's' : ''}
+                </StatusText>
+            </>
+        );
 
-        if (isApprovedStatusExists)
-            result = (
-                <>
-                    {result}
-                    <StatusText className="approved">
-                        <FontAwesomeIcon icon={faCheck} />
-                        Approved
-                    </StatusText>
-                </>
-            );
-        else if (isInProgressStatusExists)
-            result = (
-                <>
-                    {result}
-                    <StatusText className="in-progress">
-                        <span className="dot" aria-hidden={true} />
-                        Ready for Review
-                    </StatusText>
-                </>
-            );
-        // Default to 'Ready for Review'
-        else
-            result = (
-                <>
-                    {result}
-                    <StatusText className="ready-for-review">
-                        <span className="dot" aria-hidden={true} />
-                        Ready for Review
-                    </StatusText>
-                </>
-            );
+        const issueFeedbackContent = (
+            <>
+                <StatusText className="feedback">
+                    <FontAwesomeIcon icon={faCommentAlt} />
+                    Feedback left for {issueFeedbackTypeCount} test
+                    {issueFeedbackTypeCount !== 1 ? 's' : ''}
+                </StatusText>
+            </>
+        );
+
+        const approvedContent = (
+            <>
+                <StatusText className="approved">
+                    <FontAwesomeIcon icon={faCheck} />
+                    Approved
+                </StatusText>
+            </>
+        );
+
+        const inProgressContent = (
+            <>
+                <StatusText className="in-progress">
+                    <span className="dot" aria-hidden={true} />
+                    Ready for Review
+                </StatusText>
+            </>
+        );
+
+        const readyForReviewContent = (
+            <>
+                <StatusText className="ready-for-review">
+                    <span className="dot" aria-hidden={true} />
+                    Ready for Review
+                </StatusText>
+            </>
+        );
+
+        let result = null;
+        if (issueChangesRequestedTypeCount) result = changesRequestedContent;
+        else if (isInProgressStatusExists) result = inProgressContent;
+        else if (isApprovedStatusExists || issueFeedbackTypeCount) {
+            if (issueFeedbackTypeCount) result = issueFeedbackContent;
+            if (isApprovedStatusExists)
+                result = (
+                    <>
+                        {result && (
+                            <>
+                                {result}
+                                <br />
+                                <br />
+                            </>
+                        )}
+                        {approvedContent}
+                    </>
+                );
+        } else result = readyForReviewContent;
+
         return result;
     };
 
@@ -419,7 +429,7 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
                         aria-labelledby={`expand-at-${atId}-button`}
                         show={!!atExpandTableItems[atId]}
                     >
-                        {none}
+                        {borderedNone}
                     </DisclosureContainer>
                 </DisclosureParent>
             );
@@ -614,7 +624,6 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
                                         return (
                                             <tr key={testPlanVersion.id}>
                                                 <td>
-                                                    {/*TODO: Evaluate number of tests across ATs*/}
                                                     <Link
                                                         to={`/candidate-tests/${testPlanVersion.id}`}
                                                     >
@@ -780,6 +789,214 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
         );
     };
 
+    const constructTableForResultsSummary = () => {
+        if (!testPlanReports.length) return borderedNone;
+
+        const testPlanReportsById = {};
+        let testPlanTargetsById = {};
+        let testPlanVersionsById = {};
+        testPlanReports.forEach(testPlanReport => {
+            const { testPlanVersion, at, browser } = testPlanReport;
+
+            // Construct testPlanTarget
+            const testPlanTarget = { id: `${at.id}${browser.id}`, at, browser };
+            testPlanReportsById[testPlanReport.id] = testPlanReport;
+            testPlanTargetsById[testPlanTarget.id] = testPlanTarget;
+            testPlanVersionsById[testPlanVersion.id] = testPlanVersion;
+        });
+        testPlanTargetsById = alphabetizeObjectBy(
+            testPlanTargetsById,
+            keyValue => getTestPlanTargetTitle(keyValue[1])
+        );
+        testPlanVersionsById = alphabetizeObjectBy(
+            testPlanVersionsById,
+            keyValue => getTestPlanVersionTitle(keyValue[1])
+        );
+
+        const tabularReports = {};
+        Object.keys(testPlanVersionsById).forEach(testPlanVersionId => {
+            tabularReports[testPlanVersionId] = {};
+            Object.keys(testPlanTargetsById).forEach(testPlanTargetId => {
+                tabularReports[testPlanVersionId][testPlanTargetId] = null;
+            });
+        });
+        testPlanReports.forEach(testPlanReport => {
+            const { testPlanVersion, at, browser } = testPlanReport;
+
+            // Construct testPlanTarget
+            const testPlanTarget = { id: `${at.id}${browser.id}`, at, browser };
+            tabularReports[testPlanVersion.id][
+                testPlanTarget.id
+            ] = testPlanReport;
+        });
+
+        return (
+            <>
+                <StyledH3>Review Status Summary</StyledH3>
+                <Table bordered responsive>
+                    <thead>
+                        <tr>
+                            <th>Test Plan</th>
+                            <CenteredTh>JAWS</CenteredTh>
+                            <CenteredTh>NVDA</CenteredTh>
+                            <CenteredTh>VoiceOver for macOS</CenteredTh>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {Object.values(testPlanVersionsById).map(
+                            testPlanVersion => {
+                                const testPlanReports = [];
+                                let jawsDataExists = false;
+                                let nvdaDataExists = false;
+                                let voDataExists = false;
+
+                                Object.values(testPlanTargetsById).map(
+                                    testPlanTarget => {
+                                        const testPlanReport =
+                                            tabularReports[testPlanVersion.id][
+                                                testPlanTarget.id
+                                            ];
+
+                                        if (testPlanReport) {
+                                            testPlanReports.push(
+                                                testPlanReport
+                                            );
+                                            if (
+                                                !jawsDataExists &&
+                                                testPlanReport.at.id === '1'
+                                            ) {
+                                                jawsDataExists = true;
+                                            }
+                                            if (
+                                                !nvdaDataExists &&
+                                                testPlanReport.at.id === '2'
+                                            ) {
+                                                nvdaDataExists = true;
+                                            }
+                                            if (
+                                                !voDataExists &&
+                                                testPlanReport.at.id === '3'
+                                            ) {
+                                                voDataExists = true;
+                                            }
+                                        }
+                                    }
+                                );
+
+                                const allIssues = testPlanReports
+                                    .map(testPlanReport => [
+                                        ...testPlanReport.issues
+                                    ])
+                                    .flat();
+
+                                return (
+                                    <tr key={testPlanVersion.id}>
+                                        <td>
+                                            <Link
+                                                to={`/candidate-tests/${testPlanVersion.id}`}
+                                            >
+                                                {getTestPlanVersionTitle(
+                                                    testPlanVersion
+                                                )}
+                                            </Link>
+                                        </td>
+                                        <CenteredTd>
+                                            {jawsDataExists
+                                                ? getRowStatus({
+                                                      issues: allIssues,
+                                                      isInProgressStatusExists: testPlanReports
+                                                          .filter(
+                                                              t =>
+                                                                  t.at.id ===
+                                                                  '1'
+                                                          )
+                                                          .some(
+                                                              testPlanReport =>
+                                                                  testPlanReport.vendorReviewStatus ===
+                                                                  'IN_PROGRESS'
+                                                          ),
+                                                      isApprovedStatusExists: testPlanReports
+                                                          .filter(
+                                                              t =>
+                                                                  t.at.id ===
+                                                                  '1'
+                                                          )
+                                                          .some(
+                                                              testPlanReport =>
+                                                                  testPlanReport.vendorReviewStatus ===
+                                                                  'APPROVED'
+                                                          )
+                                                  })
+                                                : none}
+                                        </CenteredTd>
+                                        <CenteredTd>
+                                            {nvdaDataExists
+                                                ? getRowStatus({
+                                                      issues: allIssues,
+                                                      isInProgressStatusExists: testPlanReports
+                                                          .filter(
+                                                              t =>
+                                                                  t.at.id ===
+                                                                  '2'
+                                                          )
+                                                          .some(
+                                                              testPlanReport =>
+                                                                  testPlanReport.vendorReviewStatus ===
+                                                                  'IN_PROGRESS'
+                                                          ),
+                                                      isApprovedStatusExists: testPlanReports
+                                                          .filter(
+                                                              t =>
+                                                                  t.at.id ===
+                                                                  '2'
+                                                          )
+                                                          .some(
+                                                              testPlanReport =>
+                                                                  testPlanReport.vendorReviewStatus ===
+                                                                  'APPROVED'
+                                                          )
+                                                  })
+                                                : none}
+                                        </CenteredTd>
+                                        <CenteredTd>
+                                            {voDataExists
+                                                ? getRowStatus({
+                                                      issues: allIssues,
+                                                      isInProgressStatusExists: testPlanReports
+                                                          .filter(
+                                                              t =>
+                                                                  t.at.id ===
+                                                                  '3'
+                                                          )
+                                                          .some(
+                                                              testPlanReport =>
+                                                                  testPlanReport.vendorReviewStatus ===
+                                                                  'IN_PROGRESS'
+                                                          ),
+                                                      isApprovedStatusExists: testPlanReports
+                                                          .filter(
+                                                              t =>
+                                                                  t.at.id ===
+                                                                  '3'
+                                                          )
+                                                          .some(
+                                                              testPlanReport =>
+                                                                  testPlanReport.vendorReviewStatus ===
+                                                                  'APPROVED'
+                                                          )
+                                                  })
+                                                : none}
+                                        </CenteredTd>
+                                    </tr>
+                                );
+                            }
+                        )}
+                    </tbody>
+                </Table>
+            </>
+        );
+    };
+
     const onUpdateTargetDateAction = async ({ updatedDateText }) => {
         onUpdateTargetDateModalClose();
         try {
@@ -827,7 +1044,7 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
             {constructTableForAtById('1', 'JAWS')}
             {constructTableForAtById('2', 'NVDA')}
             {constructTableForAtById('3', 'VoiceOver for macOS')}
-            {/*{constructTableForResultsSummary()}*/}
+            {constructTableForResultsSummary()}
             {showThemedModal && themedModal}
             {showUpdateTargetDateModal && (
                 <UpdateTargetDateModal
