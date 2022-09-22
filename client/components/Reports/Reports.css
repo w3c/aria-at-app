@@ -139,6 +139,36 @@
     background-color: #0b60ab !important;
 }
 
+.progress.clipped {
+    position: relative;
+    display: flex;
+    overflow: hidden;
+}
+
+.progress.clipped .front {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background: #e9ecef;
+    color: black;
+    /*clip-path: inset(0 0 0 50%);*/
+    /*-webkit-clip-path: inset(0 0 0 50%);*/
+}
+
+.progress.clipped .back {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    background: #0b60ab;
+    color: white;
+}
+
 .test-details {
     display: block;
     font-size: 0.7em;

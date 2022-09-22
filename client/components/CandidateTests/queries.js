@@ -99,6 +99,13 @@ export const CANDIDATE_TESTS_PAGE_QUERY = gql`
                     completedAt
                 }
             }
+            # vendorReviewStatus
+            candidateStatusReachedAt
+            recommendedStatusTargetDate
+            issues {
+                feedbackType
+                isOpen
+            }
         }
     }
 `;

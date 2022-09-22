@@ -740,6 +740,15 @@ const graphqlSchema = gql`
         conflictingResults: [PopulatedData]!
     }
 
+    """
+    Indicates the type of issue. 'CHANGES_REQUESTED' or 'FEEDBACK'.
+    'FEEDBACK' is the default type.
+    """
+    enum IssueFeedbackType {
+        FEEDBACK
+        CHANGES_REQUESTED
+    }
+
     type Issue {
         """
         GitHub username of the issue creator.
@@ -750,10 +759,10 @@ const graphqlSchema = gql`
         """
         link: String!
         """
-        Indicates the type of issue. 'changes-requested' or 'feedback'.
-        'feedback' is the default type.
+        Indicates the type of issue. 'CHANGES_REQUESTED' or 'FEEDBACK'.
+        'FEEDBACK' is the default type.
         """
-        feedbackType: String!
+        feedbackType: IssueFeedbackType!
         """
         Indicates if the issue is currently open on GitHub.
         """

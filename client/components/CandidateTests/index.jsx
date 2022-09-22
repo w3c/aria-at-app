@@ -6,7 +6,9 @@ import TestPlans from './TestPlans';
 import { CANDIDATE_TESTS_PAGE_QUERY } from './queries';
 
 const CandidateTests = () => {
-    const { loading, data, error } = useQuery(CANDIDATE_TESTS_PAGE_QUERY);
+    const { loading, data, error, refetch } = useQuery(
+        CANDIDATE_TESTS_PAGE_QUERY
+    );
 
     if (error) {
         return (
@@ -36,7 +38,10 @@ const CandidateTests = () => {
                 exact
                 path="/candidate-tests"
                 render={() => (
-                    <TestPlans testPlanReports={data.testPlanReports} />
+                    <TestPlans
+                        testPlanReports={data.testPlanReports}
+                        triggerPageUpdate={refetch}
+                    />
                 )}
             />
             <Redirect to="/404" />
