@@ -27,6 +27,7 @@ import {
     UPDATE_TEST_PLAN_REPORT_RECOMMENDED_TARGET_DATE_MUTATION
 } from '@components/TestQueue/queries';
 import UpdateTargetDateModal from '@components/common/UpdateTargetDateModal';
+import ClippedProgressBar from '@components/common/ClippedProgressBar';
 import {
     convertDateToString,
     convertStringFormatToAnotherFormat
@@ -624,8 +625,9 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
                                         return (
                                             <tr key={testPlanVersion.id}>
                                                 <td>
+                                                    {/*TODO: Insert link when merged with Candidate Test Page branch*/}
                                                     <Link
-                                                        to={`/candidate-tests/${testPlanVersion.id}`}
+                                                        to={`/candidate-tests/some-id`}
                                                     >
                                                         {getTestPlanVersionTitle(
                                                             testPlanVersion
@@ -738,31 +740,17 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
                                                     })}
                                                 </CenteredTd>
                                                 <CenteredTd>
+                                                    {/*TODO: Insert link when merged with Candidate Test Page branch*/}
                                                     <Link
                                                         to={`/candidate-tests/some-id`}
                                                     >
-                                                        <div
-                                                            className="progress clipped"
-                                                            aria-label={`${metrics.totalSupportPercent}% completed`}
-                                                        >
-                                                            <div
-                                                                className="front"
-                                                                style={{
-                                                                    clipPath: `inset(0 0 0 ${metrics.totalSupportPercent}%)`
-                                                                }}
-                                                            >
-                                                                {
-                                                                    metrics.totalSupportPercent
-                                                                }
-                                                                %
-                                                            </div>
-                                                            <div className="back">
-                                                                {
-                                                                    metrics.totalSupportPercent
-                                                                }
-                                                                %
-                                                            </div>
-                                                        </div>
+                                                        <ClippedProgressBar
+                                                            progress={
+                                                                metrics.totalSupportPercent
+                                                            }
+                                                            label={`${metrics.totalSupportPercent}% completed`}
+                                                            clipped
+                                                        />
                                                     </Link>
                                                     <CellSubRow
                                                         style={{
@@ -892,8 +880,9 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
                                 return (
                                     <tr key={testPlanVersion.id}>
                                         <td>
+                                            {/*TODO: Insert link when merged with Candidate Test Page branch*/}
                                             <Link
-                                                to={`/candidate-tests/${testPlanVersion.id}`}
+                                                to={`/candidate-tests/some-id}`}
                                             >
                                                 {getTestPlanVersionTitle(
                                                     testPlanVersion
