@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import TestNavigator from '../TestRun/TestNavigator';
 import TestRenderer from '../TestRenderer';
 import OptionButton from '../TestRun/OptionButton';
+import PageStatus from '../common/PageStatus';
 import { navigateTests } from '../../utils/navigateTests';
 import {
     ADD_VIEWER_MUTATION,
@@ -175,8 +176,25 @@ const CandidateTestPlanRun = () => {
         }
     }, [data, currentTestIndex]);
 
-    if (loading) return <p>Loading...</p>;
-    if (error) return <p>Error</p>;
+    if (error)
+        return (
+            <PageStatus
+                title="Candidate Test Run Page | ARIA-AT"
+                heading="Candidate Test Run Page"
+                message={error.message}
+                isError
+            />
+        );
+
+    if (loading) {
+        return (
+            <PageStatus
+                title="Loading - Candidate Test Run Page | ARIA-AT"
+                heading="Candidate Test Run Page"
+            />
+        );
+    }
+
     if (!data) return null;
 
     const toggleAccordion = (accordionMap, index) => {
