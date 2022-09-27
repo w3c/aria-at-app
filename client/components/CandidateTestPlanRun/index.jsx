@@ -34,21 +34,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import useResizeObserver from '@react-hook/resize-observer';
 import { useMediaQuery } from 'react-responsive';
-
-const months = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December'
-];
+import { convertDateToString } from '../../utils/formatter';
 
 function useSize(target) {
     const [size, setSize] = React.useState();
@@ -111,7 +97,7 @@ const CandidateTestPlanRun = () => {
     const [showTestNavigator, setShowTestNavigator] = useState(true);
     const [isFirstTest, setIsFirstTest] = useState(true);
     const [isLastTest, setIsLastTest] = useState(false);
-    const [activeMap, setActiveMap] = useState(new Map());
+    const [accordionMap, setActiveAccordionMap] = useState(new Map());
     const [testCurrentlyViewed, setTestCurrentlyViewed] = useState(false);
 
     const [issuesHeading, setissuesHeading] = React.useState();
@@ -193,6 +179,13 @@ const CandidateTestPlanRun = () => {
     if (error) return <p>Error</p>;
     if (!data) return null;
 
+    const toggleAccordion = (accordionMap, index) => {
+        if (!accordionMap.get(index)) {
+            return new Map(accordionMap.set(index, true));
+        }
+        return new Map(accordionMap.set(index, false));
+    };
+
     const vendorMap = {
         vispero: 'JAWS',
         nvaccess: 'NVDA',
@@ -237,15 +230,14 @@ const CandidateTestPlanRun = () => {
         each => each.username === data.me.username
     );
 
-    const formatDate = date =>
-        `${
-            months[date.getUTCMonth()]
-        } ${date.getUTCDate()}, ${date.getUTCFullYear()}`;
-
-    const targetCompletionDate = formatDate(
-        new Date(recommendedStatusTargetDate)
+    const targetCompletionDate = convertDateToString(
+        new Date(recommendedStatusTargetDate),
+        'MMMM D, YYYY'
     );
-    const startedAtDate = formatDate(new Date(candidateStatusReachedAt));
+    const startedAtDate = convertDateToString(
+        new Date(candidateStatusReachedAt),
+        'MMMM D, YYYY'
+    );
 
     // Assumes that the issues are across the entire AT/Browser combination
     const changesRequestedIssues = testPlanReports[0].issues?.filter(
@@ -266,7 +258,7 @@ const CandidateTestPlanRun = () => {
             () => callback && callback(eventKey)
         );
 
-        const currentKey = activeMap.get(eventKey);
+        const currentKey = accordionMap.get(eventKey);
 
         return (
             <div
@@ -397,14 +389,11 @@ const CandidateTestPlanRun = () => {
                     <Card.Header>
                         <ContextAwareToggle
                             eventKey="0"
-                            callback={e => {
+                            callback={index => {
                                 //TODO separate this
-                                setActiveMap(map => {
-                                    if (!map.get(e)) {
-                                        return new Map(map.set(e, true));
-                                    }
-                                    return new Map(map.set(e, false));
-                                });
+                                setActiveAccordionMap(map =>
+                                    toggleAccordion(map, index)
+                                );
                             }}
                         >
                             Test Instructions
@@ -446,15 +435,10 @@ const CandidateTestPlanRun = () => {
                             <Card.Header>
                                 <ContextAwareToggle
                                     eventKey={`${index + 1}`}
-                                    callback={e => {
-                                        setActiveMap(map => {
-                                            if (!map.get(e)) {
-                                                return new Map(
-                                                    map.set(e, true)
-                                                );
-                                            }
-                                            return new Map(map.set(e, false));
-                                        });
+                                    callback={index => {
+                                        setActiveAccordionMap(map =>
+                                            toggleAccordion(map, index)
+                                        );
                                     }}
                                 >
                                     Test Results for{' '}
