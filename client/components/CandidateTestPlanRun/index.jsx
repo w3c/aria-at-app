@@ -22,6 +22,7 @@ import {
     Button
 } from 'react-bootstrap';
 import { useParams, Redirect } from 'react-router-dom';
+import { Helmet } from 'react-helmet';
 import nextId from 'react-id-generator';
 import './CandidateTestPlanRun.css';
 import '../TestRun/TestRun.css';
@@ -510,6 +511,9 @@ const CandidateTestPlanRun = () => {
 
     return (
         <Container className="test-run-container">
+            <Helmet>
+                <title>Candidate Test Run Page | ARIA-AT</title>
+            </Helmet>
             <Row>
                 <TestNavigator
                     isVendor={true}
