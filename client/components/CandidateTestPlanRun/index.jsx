@@ -179,7 +179,7 @@ const CandidateTestPlanRun = () => {
 
     useEffect(() => {
         if (data) {
-            setIsLastTest(tests.length === 1);
+            setIsLastTest(tests?.length === 1);
         }
     }, [data, tests]);
 
@@ -415,7 +415,6 @@ const CandidateTestPlanRun = () => {
                         <ContextAwareToggle
                             eventKey="0"
                             callback={index => {
-                                //TODO separate this
                                 setActiveAccordionMap(map =>
                                     toggleAccordion(map, index)
                                 );
@@ -427,23 +426,26 @@ const CandidateTestPlanRun = () => {
                     <Accordion.Collapse eventKey="0">
                         <Card.Body>
                             <TestRenderer
+                                key={`instructions-${currentTest.id}`}
                                 at={testPlanReports[0].at}
                                 testRunStateRef={testRunStateRef}
                                 recentTestRunStateRef={recentTestRunStateRef}
                                 setIsRendererReady={() => {}}
-                                testResult={
-                                    testPlanReports[0].finalizedTestResults[
-                                        currentTestIndex
-                                    ]
-                                }
+                                testResult={{
+                                    scenarioResults: {},
+                                    test: currentTest,
+                                    completedAt: new Date()
+                                }}
                                 testPageUrl={
                                     testPlanReports[0].testPlanVersion
                                         .testPageUrl
                                 }
+                                isSubmitted={true}
                                 testRunResultRef={testRunResultRef}
                                 showResultsHeader={false}
                                 showResults={false}
                                 showInstructions={true}
+                                showTestContent={false}
                             />
                         </Card.Body>
                     </Accordion.Collapse>
@@ -451,51 +453,54 @@ const CandidateTestPlanRun = () => {
             </Accordion>
             {testPlanReports.map((testPlanReport, index) => {
                 return (
-                    <Accordion
-                        key={`feedback-accordion-${index + 1}`}
-                        className="feedback-accordion"
-                        defaultActiveKey={`${index + 1}`}
-                    >
-                        <Card>
-                            <Card.Header>
-                                <ContextAwareToggle
-                                    eventKey={`${index + 1}`}
-                                    callback={index => {
-                                        setActiveAccordionMap(map =>
-                                            toggleAccordion(map, index)
-                                        );
-                                    }}
-                                >
-                                    Test Results for{' '}
-                                    {testPlanReport.browser.name}
-                                </ContextAwareToggle>
-                            </Card.Header>
-                            <Accordion.Collapse eventKey={`${index + 1}`}>
-                                <Card.Body>
-                                    <TestRenderer
-                                        key={`${testPlanReport.id} + ${testPlanReport.finalizedTestResults[currentTestIndex].id}`}
-                                        at={testPlanReport.at}
-                                        testRunStateRef={testRunStateRef}
-                                        recentTestRunStateRef={
-                                            recentTestRunStateRef
-                                        }
-                                        setIsRendererReady={() => {}}
-                                        testResult={
-                                            testPlanReport.finalizedTestResults[
-                                                currentTestIndex
-                                            ]
-                                        }
-                                        testPageUrl={
-                                            testPlanReport.testPlanVersion
-                                                .testPageUrl
-                                        }
-                                        testRunResultRef={testRunResultRef}
-                                        showResultsHeader={false}
-                                    />
-                                </Card.Body>
-                            </Accordion.Collapse>
-                        </Card>
-                    </Accordion>
+                    testPlanReport.finalizedTestResults[currentTestIndex] && (
+                        <Accordion
+                            key={`feedback-accordion-${index + 1}`}
+                            className="feedback-accordion"
+                            defaultActiveKey={`${index + 1}`}
+                        >
+                            <Card>
+                                <Card.Header>
+                                    <ContextAwareToggle
+                                        eventKey={`${index + 1}`}
+                                        callback={index => {
+                                            setActiveAccordionMap(map =>
+                                                toggleAccordion(map, index)
+                                            );
+                                        }}
+                                    >
+                                        Test Results for{' '}
+                                        {testPlanReport.browser.name}
+                                    </ContextAwareToggle>
+                                </Card.Header>
+                                <Accordion.Collapse eventKey={`${index + 1}`}>
+                                    <Card.Body>
+                                        <TestRenderer
+                                            key={`${testPlanReport.id} + ${testPlanReport.finalizedTestResults[currentTestIndex].id}`}
+                                            at={testPlanReport.at}
+                                            testRunStateRef={testRunStateRef}
+                                            recentTestRunStateRef={
+                                                recentTestRunStateRef
+                                            }
+                                            setIsRendererReady={() => {}}
+                                            testResult={
+                                                testPlanReport
+                                                    .finalizedTestResults[
+                                                    currentTestIndex
+                                                ]
+                                            }
+                                            testPageUrl={
+                                                testPlanReport.testPlanVersion
+                                                    .testPageUrl
+                                            }
+                                            testRunResultRef={testRunResultRef}
+                                            showResultsHeader={false}
+                                        />
+                                    </Card.Body>
+                                </Accordion.Collapse>
+                            </Card>
+                        </Accordion>
+                    )
                 );
             })}
         </>
