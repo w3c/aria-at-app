@@ -177,6 +177,12 @@ const CandidateTestPlanRun = () => {
         }
     }, [data, currentTestIndex]);
 
+    useEffect(() => {
+        if (data) {
+            setIsLastTest(tests.length === 1);
+        }
+    }, [data, tests]);
+
     if (error)
         return (
             <PageStatus
