@@ -324,7 +324,7 @@ export const UPDATE_TEST_PLAN_REPORT_STATUS_MUTATION = gql`
 `;
 
 export const UPDATE_TEST_PLAN_REPORT_RECOMMENDED_TARGET_DATE_MUTATION = gql`
-    mutation UpdateTestPlanReportStatus(
+    mutation UpdateTestPlanReportRecommendedTargetDate(
         $testReportId: ID!
         $recommendedStatusTargetDate: Timestamp!
     ) {

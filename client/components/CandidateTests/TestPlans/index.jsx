@@ -684,9 +684,11 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
                                                                             'FINALIZED'
                                                                         );
                                                                     }}
-                                                                    disabled={
-                                                                        true /*TODO: Enabled only if all existing TestPlanReports across browsers have been accepted*/
-                                                                    }
+                                                                    disabled={testPlanReports.some(
+                                                                        t =>
+                                                                            t.vendorReviewStatus !==
+                                                                            'APPROVED'
+                                                                    )}
                                                                 >
                                                                     Recommended
                                                                 </Dropdown.Item>
