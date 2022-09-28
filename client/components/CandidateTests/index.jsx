@@ -7,7 +7,10 @@ import { CANDIDATE_TESTS_PAGE_QUERY } from './queries';
 
 const CandidateTests = () => {
     const { loading, data, error, refetch } = useQuery(
-        CANDIDATE_TESTS_PAGE_QUERY
+        CANDIDATE_TESTS_PAGE_QUERY,
+        {
+            fetchPolicy: 'cache-and-network'
+        }
     );
 
     if (error) {

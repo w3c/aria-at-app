@@ -9,7 +9,9 @@ import { REPORTS_PAGE_QUERY } from './queries';
 import './Reports.css';
 
 const Reports = () => {
-    const { loading, data, error } = useQuery(REPORTS_PAGE_QUERY);
+    const { loading, data, error } = useQuery(REPORTS_PAGE_QUERY, {
+        fetchPolicy: 'cache-and-network'
+    });
 
     if (error) {
         return (
