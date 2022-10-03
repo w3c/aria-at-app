@@ -110,10 +110,6 @@ const CandidateTestPlanRun = () => {
         query: '(min-width: 792px)'
     });
 
-    const addViewerToTest = async testId => {
-        await addViewer({ variables: { testPlanVersionId, testId } });
-        setTestCurrentlyViewed(true);
-    };
     const toggleTestNavigator = () => setShowTestNavigator(!showTestNavigator);
     const handleTestClick = async index => {
         setCurrentTestIndex(index);
@@ -149,6 +145,11 @@ const CandidateTestPlanRun = () => {
     };
 
     useEffect(() => setup());
+
+    const addViewerToTest = async testId => {
+        await addViewer({ variables: { testPlanVersionId, testId } });
+        setTestCurrentlyViewed(true);
+    };
 
     const updateTestViewed = async () => {
         if (!userPreviouslyViewedTest) {
@@ -229,8 +230,11 @@ const CandidateTestPlanRun = () => {
 
     if (testPlanReports.length === 0) return <Redirect to="/404" />;
 
-    //TODO: figure out if this logic is right
-    const tests = testPlanReports[0].runnableTests.map((test, index) => ({
+    const testPlanReport = testPlanReports.find(
+        each => each.testPlanVersion.id === testPlanVersionId
+    );
+
+    const tests = testPlanReport.runnableTests.map((test, index) => ({
         ...test,
         index,
         seq: index + 1
@@ -242,7 +246,7 @@ const CandidateTestPlanRun = () => {
         vendorReviewStatus,
         recommendedStatusTargetDate,
         candidateStatusReachedAt
-    } = testPlanReports[0];
+    } = testPlanReport;
     const vendorReviewStatusMap = {
         READY: 'Ready',
         IN_PROGRESS: 'In Progress',
@@ -265,13 +269,13 @@ const CandidateTestPlanRun = () => {
     );
 
     // Assumes that the issues are across the entire AT/Browser combination
-    const changesRequestedIssues = testPlanReports[0].issues?.filter(
+    const changesRequestedIssues = testPlanReport.issues?.filter(
         issue =>
             issue.feedbackType === 'changes-requested' &&
             issue.testNumberFilteredByAt === currentTest.seq
     );
 
-    const feedbackIssues = testPlanReports[0].issues?.filter(
+    const feedbackIssues = testPlanReport.issues?.filter(
         issue =>
             issue.feedbackType === 'feedback' &&
             issue.testNumberFilteredByAt === currentTest.seq
@@ -349,7 +353,7 @@ const CandidateTestPlanRun = () => {
         </div>
     );
 
-    const feedback = testPlanReports[0].issues.filter(
+    const feedback = testPlanReport.issues.filter(
         issue => issue.testNumberFilteredByAt == currentTest.seq
     ).length > 0 && (
         <div className="issues-container">
@@ -427,7 +431,7 @@ const CandidateTestPlanRun = () => {
                         <Card.Body>
                             <TestRenderer
                                 key={`instructions-${currentTest.id}`}
-                                at={testPlanReports[0].at}
+                                at={testPlanReport.at}
                                 testRunStateRef={testRunStateRef}
                                 recentTestRunStateRef={recentTestRunStateRef}
                                 setIsRendererReady={() => {}}
@@ -437,8 +441,7 @@ const CandidateTestPlanRun = () => {
                                     completedAt: new Date()
                                 }}
                                 testPageUrl={
-                                    testPlanReports[0].testPlanVersion
-                                        .testPageUrl
+                                    testPlanReport.testPlanVersion.testPageUrl
                                 }
                                 isSubmitted={true}
                                 testRunResultRef={testRunResultRef}

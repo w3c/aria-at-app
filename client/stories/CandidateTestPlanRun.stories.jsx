@@ -36,12 +36,6 @@ Default.args = {
 let candidateReportsQueryCalled = false;
 let switchCount = 0;
 
-const viewers = [
-    {
-        username: 'warp2nowere'
-    }
-];
-
 const candidateReportsDataFirstRun = {
     me: {
         id: '101',
