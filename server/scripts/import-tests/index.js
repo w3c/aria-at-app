@@ -10,6 +10,7 @@ const {
     createTestPlanVersion,
     getTestPlanVersions
 } = require('../../models/services/TestPlanVersionService');
+const { createTest } = require('../../models/services/TestService');
 const {
     createTestId,
     createScenarioId,
@@ -113,7 +114,7 @@ const importTestPlanVersions = async () => {
             sourceDirectoryPath
         });
 
-        const tests = getTests({
+        const tests = await getTests({
             builtDirectoryPath,
             testPlanVersionId,
             ats,
@@ -248,9 +249,12 @@ const updateAtsJson = async ats => {
     );
 };
 
-const getTests = ({ builtDirectoryPath, testPlanVersionId, ats, gitSha }) => {
-    const tests = [];
-
+const getTests = async ({
+    builtDirectoryPath,
+    testPlanVersionId,
+    ats,
+    gitSha
+}) => {
     const renderedUrlsByNumber = {};
     const allCollectedByNumber = {};
     fse.readdirSync(builtDirectoryPath).forEach(filePath => {
@@ -267,74 +271,87 @@ const getTests = ({ builtDirectoryPath, testPlanVersionId, ats, gitSha }) => {
         renderedUrlsByNumber[collected.info.testId].push(renderedUrl);
     });
 
-    Object.entries(allCollectedByNumber).forEach(([number, allCollected]) => {
-        const renderedUrls = renderedUrlsByNumber[number];
+    return await Promise.all(
+        Object.entries(allCollectedByNumber).map(([number, allCollected]) => {
+            const renderedUrls = renderedUrlsByNumber[number];
 
-        if (
-            !deepPickEqual(allCollected, {
-                excludeKeys: ['at', 'mode', 'commands']
-            })
-        ) {
-            throw new Error(
-                'Difference found in a part of a .collected.json file which ' +
-                    'should be equivalent'
+            if (
+                !deepPickEqual(allCollected, {
+                    excludeKeys: ['at', 'mode', 'commands']
+                })
+            ) {
+                throw new Error(
+                    'Difference found in a part of a .collected.json file which ' +
+                        'should be equivalent'
+                );
+            }
+
+            const common = allCollected[0];
+
+            const testId = createTestId(testPlanVersionId, common.info.testId);
+
+            const atIds = allCollected.map(
+                collected =>
+                    ats.find(at => at.name === collected.target.at.name).id
             );
-        }
 
-        const common = allCollected[0];
-
-        const testId = createTestId(testPlanVersionId, common.info.testId);
-
-        const atIds = allCollected.map(
-            collected => ats.find(at => at.name === collected.target.at.name).id
-        );
-
-        tests.push({
-            id: testId,
-            rowNumber: number,
-            title: common.info.title,
-            atIds,
-            atMode: common.target.mode.toUpperCase(),
-            renderableContent: Object.fromEntries(
-                allCollected.map((collected, index) => {
-                    return [atIds[index], collected];
-                })
-            ),
-            renderedUrls: Object.fromEntries(
-                atIds.map((atId, index) => {
-                    return [
-                        atId,
-                        getAppUrl(renderedUrls[index], {
-                            gitSha,
-                            directoryPath: builtDirectoryPath
-                        })
-                    ];
-                })
-            ),
-            scenarios: (() => {
-                const scenarios = [];
-                allCollected.forEach(collected => {
-                    collected.commands.forEach(command => {
-                        scenarios.push({
-                            id: createScenarioId(testId, scenarios.length),
-                            atId: ats.find(
-                                at => at.name === collected.target.at.name
-                            ).id,
-                            commandIds: command.keypresses.map(({ id }) => id)
+            // TODO: Consider checking if the same test already exists and
+            //       UPDATE the test with latest metadata. Then reference can
+            //       be used when populating the TestPlanVersion.
+            //       This would mean `testId` potentially has to stop using
+            //       `testPlanVersion` when encoding. Not sure of the
+            //       implications as yet.
+            const test = {
+                id: testId,
+                rowNumber: number,
+                title: common.info.title,
+                atIds,
+                atMode: common.target.mode.toUpperCase(),
+                renderableContent: Object.fromEntries(
+                    allCollected.map((collected, index) => {
+                        return [atIds[index], collected];
+                    })
+                ),
+                renderedUrls: Object.fromEntries(
+                    atIds.map((atId, index) => {
+                        return [
+                            atId,
+                            getAppUrl(renderedUrls[index], {
+                                gitSha,
+                                directoryPath: builtDirectoryPath
+                            })
+                        ];
+                    })
+                ),
+                scenarios: (() => {
+                    const scenarios = [];
+                    allCollected.forEach(collected => {
+                        collected.commands.forEach(command => {
+                            scenarios.push({
+                                id: createScenarioId(testId, scenarios.length),
+                                atId: ats.find(
+                                    at => at.name === collected.target.at.name
+                                ).id,
+                                commandIds: command.keypresses.map(
+                                    ({ id }) => id
+                                )
+                            });
                         });
                     });
-                });
-                return scenarios;
-            })(),
-            assertions: common.assertions.map((assertion, index) => ({
-                id: createAssertionId(testId, index),
-                priority: assertion.priority === 1 ? 'REQUIRED' : 'OPTIONAL',
-                text: assertion.expectation
-            }))
-        });
-    });
+                    return scenarios;
+                })(),
+                assertions: common.assertions.map((assertion, index) => ({
+                    id: createAssertionId(testId, index),
+                    priority:
+                        assertion.priority === 1 ? 'REQUIRED' : 'OPTIONAL',
+                    text: assertion.expectation
+                }))
+            };
 
-    return tests;
+            // Create test
+            return createTest({ test }).then(result => result.id);
+        })
+    );
 };
 
 importTestPlanVersions()
