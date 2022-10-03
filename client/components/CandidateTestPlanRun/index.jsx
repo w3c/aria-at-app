@@ -556,7 +556,9 @@ const CandidateTestPlanRun = () => {
                                     ref={setissuesList}
                                 >
                                     <Row>{feedback}</Row>
-                                    <Row className="results-col">{results}</Row>
+                                    <Row className="results-container-row">
+                                        {results}
+                                    </Row>
                                     <Row>
                                         <ul
                                             aria-labelledby="test-toolbar-heading"
