@@ -36,26 +36,29 @@ const TestPlanUpdaterModal = ({
         setUpdaterData,
         testPlanReportId
     }) => {
-        const { data: testPlanIdData } = await client.query({
+        const { data: currentReportData } = await client.query({
             query: TEST_PLAN_ID_QUERY,
             variables: { testPlanReportId }
         });
         const testPlanId =
-            testPlanIdData?.testPlanReport?.testPlanVersion?.testPlan?.id;
+            currentReportData?.testPlanReport?.testPlanVersion?.testPlan?.id;
 
         if (!testPlanId)
             throw new Error(
                 `Could not find test plan report with id "${testPlanReportId}"`
             );
 
+        setCurrentReportData(currentReportData);
+
         const { data: updaterData } = await client.query({
             query: UPDATER_QUERY,
-            variables: { testPlanReportId, testPlanId }
+            variables: { testPlanId }
         });
+
         setUpdaterData(updaterData);
 
         const testPlanVersionId = updaterData.testPlan.latestTestPlanVersion.id;
-        const atId = updaterData.testPlanReport.at.id;
+        const atId = currentReportData.testPlanReport.at.id;
 
         const { data: versionData } = await client.query({
             query: VERSION_QUERY,
@@ -94,6 +97,7 @@ const TestPlanUpdaterModal = ({
     };
 
     const client = useApolloClient();
+    const [currentReportData, setCurrentReportData] = useState();
     const [updaterData, setUpdaterData] = useState();
     const [versionData, setVersionData] = useState();
     const [showModalData, setShowModalData] = useState(true);
@@ -115,7 +119,7 @@ const TestPlanUpdaterModal = ({
         loadInitialData({ client, setUpdaterData, testPlanReportId });
     }, []);
 
-    if (!updaterData) {
+    if (!currentReportData || !updaterData) {
         return (
             <Modal show={show} onHide={handleClose} dialogClassName="modal-50w">
                 <Modal.Header closeButton className="test-plan-updater-header">
@@ -132,7 +136,10 @@ const TestPlanUpdaterModal = ({
             at: { id: atId, name: atName },
             browser: { id: browserId, name: browserName },
             testPlanVersion: currentVersion
-        },
+        }
+    } = currentReportData;
+
+    const {
         testPlan: { latestTestPlanVersion }
     } = updaterData;
 
