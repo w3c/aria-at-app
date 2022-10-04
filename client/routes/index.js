@@ -4,7 +4,7 @@ import ConfirmAuth from '@components/ConfirmAuth';
 import Home from '@components/Home';
 import InvalidRequest from '@components/InvalidRequest';
 import NotFound from '@components/NotFound';
-import Reports from '@components/Reports';
+import { Reports, Report } from '@components/Reports';
 import CandidateTests from '@components/CandidateTests';
 import SignupInstructions from '@components/SignupInstructions';
 import TestQueue from '@components/TestQueue';
@@ -53,9 +53,13 @@ export default [
         }
     },
     {
-        // Note that this component includes a nested router!
         path: '/reports',
+        exact: true,
         component: Reports
+    },
+    {
+        path: '/report/:testPlanVersionId',
+        component: Report
     },
     {
         path: '/candidate-tests',

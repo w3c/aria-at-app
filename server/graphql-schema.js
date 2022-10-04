@@ -966,9 +966,13 @@ const graphqlSchema = gql`
         testPlanVersion(id: ID!): TestPlanVersion
         """
         Load multiple TestPlanReports, with the optional ability to filter by
-        status. See TestPlanReport type for more information.
+        status and testPlanVersionId.
+        See TestPlanReport type for more information.
         """
-        testPlanReports(statuses: [TestPlanReportStatus]): [TestPlanReport]!
+        testPlanReports(
+            statuses: [TestPlanReportStatus]
+            testPlanVersionId: ID
+        ): [TestPlanReport]!
         """
         Get a TestPlanReport by ID.
         """

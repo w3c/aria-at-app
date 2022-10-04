@@ -6,6 +6,9 @@ const allEqual = require('../../util/allEqual');
 const conflictsResolver = async testPlanReport => {
     let testPlanReportData = {};
 
+    // Used in cases where the testPlanRuns to evaluate the conflicts doesn't
+    // exist for `testPlanReport`, such as this function being called from
+    // `conflictsLengthResolver.js`
     if (testPlanReport.testPlanRuns.some(t => !t.testResults)) {
         const { testPlanReport: _testPlanReport } = await populateData({
             testPlanReportId: testPlanReport.id

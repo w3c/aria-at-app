@@ -1,117 +1,22 @@
-import React, { useEffect, useState } from 'react';
-import { useApolloClient, useQuery } from '@apollo/client';
-import { useLocation, useRouteMatch } from 'react-router-dom';
-import { Redirect, Route, Switch } from 'react-router';
-import SummarizeTestPlanReports from './SummarizeTestPlanReports';
+import React from 'react';
+import { useQuery } from '@apollo/client';
+import { Route, Switch } from 'react-router';
+import { Redirect, useRouteMatch } from 'react-router-dom';
 import SummarizeTestPlanVersion from './SummarizeTestPlanVersion';
 import SummarizeTestPlanReport from './SummarizeTestPlanReport';
 import PageStatus from '../common/PageStatus';
-import { REPORT_PAGE_QUERY, REPORTS_PAGE_QUERY } from './queries';
+import { REPORT_PAGE_QUERY } from './queries';
 import './Reports.css';
 
 const Reports = () => {
-    const client = useApolloClient();
-    const location = useLocation();
-    const match = useRouteMatch('/reports/:testPlanVersionId');
-    const testPlanVersionIdExists = !!match?.params?.testPlanVersionId;
+    const match = useRouteMatch('/report/:testPlanVersionId');
 
-    console.log('match', match, match?.params.testPlanVersionId);
+    const { loading, data, error } = useQuery(REPORT_PAGE_QUERY, {
+        variables: { testPlanVersionId: match?.params?.testPlanVersionId },
+        fetchPolicy: 'cache-and-network'
+    });
 
-    const [currentTestPlanVersionId, setCurrentTestPlanVersionId] = useState();
-
-    const [isReportsLoading, setIsReportsLoading] = useState(false);
-    const [reportsData, setReportsData] = useState();
-    const [reportsError, setReportsError] = useState();
-
-    const [isReportLoading, setIsReportLoading] = useState(false);
-    const [reportData, setReportData] = useState();
-    const [reportError, setReportError] = useState();
-
-    // const {
-    //     loading /*: reportsLoading*/,
-    //     data /*: reportsData*/,
-    //     error /*: reportsError*/
-    // } = useQuery(REPORTS_PAGE_QUERY);
-
-    useEffect(() => {
-      console.log('is this called?')
-        if (testPlanVersionIdExists) {
-            const testPlanVersionId = match?.params.testPlanVersionId;
-
-            if (!currentTestPlanVersionId) {
-                setCurrentTestPlanVersionId(testPlanVersionId);
-                (async () => {
-                    await updateReportData(testPlanVersionId);
-                })();
-            } else if (
-                currentTestPlanVersionId &&
-                testPlanVersionId !== currentTestPlanVersionId
-            ) {
-                (async () => {
-                    await updateReportData(testPlanVersionId);
-                })();
-            } else if (
-                currentTestPlanVersionId &&
-                testPlanVersionId === currentTestPlanVersionId
-            ) {
-                // Do nothing, continue using data
-            }
-        } else {
-            // On top level /reports
-            (async () => {
-                await updateReportsData();
-            })();
-        }
-    }, [location]);
-
-    const updateReportsData = async () => {
-        setIsReportsLoading(true);
-        try {
-            const { data } = await client.query({
-                query: REPORTS_PAGE_QUERY,
-                fetchPolicy: 'network-only'
-            });
-            setReportsData(data);
-        } catch (e) {
-            setReportsError(e);
-        }
-        setIsReportsLoading(false);
-    };
-
-    const updateReportData = async testPlanVersionId => {
-        setIsReportLoading(true);
-        try {
-            const { data } = await client.query({
-                query: REPORT_PAGE_QUERY,
-                variables: { testPlanVersionId },
-                fetchPolicy: 'network-only'
-            });
-            setReportData(data);
-        } catch (e) {
-            setReportError(e);
-        }
-        setIsReportLoading(false);
-    };
-
-    // console.log(
-    //     'isReportsLoading',
-    //     isReportsLoading,
-    //     'reportsData',
-    //     reportsData,
-    //     'reportsError',
-    //     reportsError
-    // );
-    // console.log(
-    //     'isReportLoading',
-    //     isReportLoading,
-    //     'reportData',
-    //     reportData,
-    //     'reportError',
-    //     reportError
-    // );
-
-    if (reportsError || reportsError) {
-        const error = reportsError || reportError;
+    if (error) {
         return (
             <PageStatus
                 title="Test Reports | ARIA-AT"
@@ -122,7 +27,7 @@ const Reports = () => {
         );
     }
 
-    if (isReportsLoading || isReportLoading) {
+    if (loading) {
         return (
             <PageStatus
                 title="Loading - Test Reports | ARIA-AT"
@@ -131,26 +36,17 @@ const Reports = () => {
         );
     }
 
-    if (!reportsData && !reportData) return null;
+    if (!data) return null;
 
     return (
         <Switch>
             <Route
                 exact
-                path="/reports"
-                render={() => (
-                    <SummarizeTestPlanReports
-                        testPlanReports={reportsData.testPlanReports}
-                    />
-                )}
-            />
-            <Route
-                exact
-                path="/reports/:testPlanVersionId"
+                path="/report/:testPlanVersionId"
                 render={({ match: { params } }) => {
                     const { testPlanVersionId } = params;
 
-                    const testPlanReports = reportData?.testPlanReports.filter(
+                    const testPlanReports = data.testPlanReports.filter(
                         each => each.testPlanVersion.id === testPlanVersionId
                     );
 
@@ -166,11 +62,11 @@ const Reports = () => {
             />
             <Route
                 exact
-                path="/reports/:testPlanVersionId/targets/:testPlanReportId"
+                path="/report/:testPlanVersionId/targets/:testPlanReportId"
                 render={({ match: { params } }) => {
                     const { testPlanVersionId, testPlanReportId } = params;
 
-                    const testPlanReport = reportData?.testPlanReports.find(
+                    const testPlanReport = data.testPlanReports.find(
                         each =>
                             each.testPlanVersion.id === testPlanVersionId &&
                             each.id == testPlanReportId

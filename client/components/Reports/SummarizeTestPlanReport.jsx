@@ -187,7 +187,7 @@ const SummarizeTestPlanReport = ({ testPlanReport }) => {
                         Test Reports
                     </Breadcrumb.Item>
                 </LinkContainer>
-                <LinkContainer to={`/reports/${testPlanVersion.id}`}>
+                <LinkContainer to={`/report/${testPlanVersion.id}`}>
                     <Breadcrumb.Item>
                         {getTestPlanVersionTitle(testPlanVersion)}
                     </Breadcrumb.Item>

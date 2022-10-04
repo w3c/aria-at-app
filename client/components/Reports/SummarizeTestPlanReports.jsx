@@ -102,7 +102,7 @@ const SummarizeTestPlanReports = ({ testPlanReports }) => {
                                 <tr key={testPlanVersion.id}>
                                     <td>
                                         <Link
-                                            to={`/reports/${testPlanVersion.id}`}
+                                            to={`/report/${testPlanVersion.id}`}
                                         >
                                             {getTestPlanVersionTitle(
                                                 testPlanVersion
@@ -133,7 +133,7 @@ const SummarizeTestPlanReports = ({ testPlanReports }) => {
                                                 <td key={testPlanReport.id}>
                                                     <Link
                                                         to={
-                                                            `/reports/${testPlanVersion.id}` +
+                                                            `/report/${testPlanVersion.id}` +
                                                             `/targets/${testPlanReport.id}`
                                                         }
                                                     >

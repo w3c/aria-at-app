@@ -8,9 +8,15 @@ const {
     TEST_PLAN_VERSION_ATTRIBUTES
 } = require('../models/services/helpers');
 
-const testPlanReportsResolver = async (_, { statuses }, context, info) => {
+const testPlanReportsResolver = async (
+    _,
+    { statuses, testPlanVersionId },
+    context,
+    info
+) => {
     const where = {};
     if (statuses) where.status = statuses;
+    if (testPlanVersionId) where.testPlanVersionId = testPlanVersionId;
 
     const {
         raw: testPlanReportRawAttributes,
