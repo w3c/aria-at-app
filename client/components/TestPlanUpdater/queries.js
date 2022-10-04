@@ -16,21 +16,14 @@ export const TEST_PLAN_ID_QUERY = gql`
                 id
                 testPlan {
                     id
+                    latestTestPlanVersion {
+                        id
+                        gitSha
+                        gitMessage
+                        updatedAt
+                    }
                 }
                 title
-                gitMessage
-                gitSha
-                updatedAt
-            }
-        }
-    }
-`;
-
-export const UPDATER_QUERY = gql`
-    query Updater($testPlanId: ID!) {
-        testPlan(id: $testPlanId) {
-            latestTestPlanVersion {
-                id
                 gitMessage
                 gitSha
                 updatedAt

@@ -13,7 +13,6 @@ import {
     SAVE_TEST_RESULT_MUTATION,
     SUBMIT_TEST_RESULT_MUTATION,
     TEST_PLAN_ID_QUERY,
-    UPDATER_QUERY,
     VERSION_QUERY
 } from './queries';
 import './TestPlanUpdaterModal.css';
@@ -31,11 +30,7 @@ const TestPlanUpdaterModal = ({
     testPlanReportId,
     triggerPageUpdate
 }) => {
-    const loadInitialData = async ({
-        client,
-        setUpdaterData,
-        testPlanReportId
-    }) => {
+    const loadInitialData = async ({ client, testPlanReportId }) => {
         const { data: currentReportData } = await client.query({
             query: TEST_PLAN_ID_QUERY,
             variables: { testPlanReportId }
@@ -50,21 +45,16 @@ const TestPlanUpdaterModal = ({
 
         setCurrentReportData(currentReportData);
 
-        const { data: updaterData } = await client.query({
-            query: UPDATER_QUERY,
-            variables: { testPlanId }
-        });
-
-        setUpdaterData(updaterData);
-
-        const testPlanVersionId = updaterData.testPlan.latestTestPlanVersion.id;
+        const latestTestPlanVersionId =
+            currentReportData.testPlanReport.testPlanVersion.testPlan
+                .latestTestPlanVersion.id;
         const atId = currentReportData.testPlanReport.at.id;
 
         const { data: versionData } = await client.query({
             query: VERSION_QUERY,
             variables: {
                 testPlanReportId,
-                testPlanVersionId,
+                testPlanVersionId: latestTestPlanVersionId,
                 atId
             }
         });
@@ -98,7 +88,6 @@ const TestPlanUpdaterModal = ({
 
     const client = useApolloClient();
     const [currentReportData, setCurrentReportData] = useState();
-    const [updaterData, setUpdaterData] = useState();
     const [versionData, setVersionData] = useState();
     const [showModalData, setShowModalData] = useState(true);
     const [loadingSpinnerProgress, setLoadingSpinnerProgress] = useState({
@@ -116,10 +105,10 @@ const TestPlanUpdaterModal = ({
     const [closeButton, setCloseButton] = useState(false);
 
     useEffect(() => {
-        loadInitialData({ client, setUpdaterData, testPlanReportId });
+        loadInitialData({ client, testPlanReportId });
     }, []);
 
-    if (!currentReportData || !updaterData) {
+    if (!currentReportData) {
         return (
             <Modal show={show} onHide={handleClose} dialogClassName="modal-50w">
                 <Modal.Header closeButton className="test-plan-updater-header">
@@ -135,13 +124,13 @@ const TestPlanUpdaterModal = ({
             id: currentReportId,
             at: { id: atId, name: atName },
             browser: { id: browserId, name: browserName },
-            testPlanVersion: currentVersion
+            testPlanVersion
         }
     } = currentReportData;
 
     const {
         testPlan: { latestTestPlanVersion }
-    } = updaterData;
+    } = testPlanVersion;
 
     const newTestPlanVersionId = versionData?.testPlanVersion.id;
     let runsWithResults;
@@ -150,7 +139,10 @@ const TestPlanUpdaterModal = ({
     let testsToDelete;
     let currentTestIdsToNewTestIds;
     if (versionData) {
-        const { testPlanReport, testPlanVersion } = versionData;
+        const {
+            testPlanReport,
+            testPlanVersion: newTestPlanVersion
+        } = versionData;
         runsWithResults = testPlanReport.draftTestPlanRuns.filter(
             testPlanRun => testPlanRun.testResults.length
         );
@@ -160,7 +152,7 @@ const TestPlanUpdaterModal = ({
 
         ({ testsToDelete, currentTestIdsToNewTestIds } = compareTestContent(
             allTestResults.map(testResult => testResult.test),
-            testPlanVersion.tests
+            newTestPlanVersion.tests
         ));
 
         copyableTestResults = allTestResults.filter(
@@ -347,7 +339,7 @@ const TestPlanUpdaterModal = ({
                     <Modal.Body>
                         <div className="version-info-wrapper">
                             <div className="version-info-label">
-                                <b>Test Plan:</b> {currentVersion.title}
+                                <b>Test Plan:</b> {testPlanVersion.title}
                             </div>
                             <div className="version-info-label">
                                 <b>AT and Browser:</b> {atName} with{' '}
@@ -356,10 +348,10 @@ const TestPlanUpdaterModal = ({
                             <div className="current-version version-info-label">
                                 <b>Current version:</b>{' '}
                                 {gitUpdatedDateToString(
-                                    currentVersion.updatedAt
+                                    testPlanVersion.updatedAt
                                 )}{' '}
-                                {currentVersion.gitMessage} (
-                                {currentVersion.gitSha.substring(0, 7)})
+                                {testPlanVersion.gitMessage} (
+                                {testPlanVersion.gitSha.substring(0, 7)})
                             </div>
                             <div className="new-version version-info-label">
                                 <b>Latest version: </b>
@@ -373,9 +365,12 @@ const TestPlanUpdaterModal = ({
                         <div>
                             {(() => {
                                 if (!runsWithResults?.length) {
-                                    return '';
+                                    return (
+                                        <div className="results-spinner-container">
+                                            <LoadingSpinner className="loading-spinner" />
+                                        </div>
+                                    );
                                 }
-
                                 const testers = runsWithResults.map(
                                     testPlanRun => testPlanRun.tester.username
                                 );
