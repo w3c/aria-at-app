@@ -36,8 +36,6 @@ import { useThemedModal, THEMES } from '@client/hooks/useThemedModal';
 import getMetrics from '@components/Reports/getMetrics';
 import './TestPlans.css';
 
-import './TestPlans.css';
-
 const FullHeightContainer = styled(Container)`
     min-height: calc(100vh - 64px);
 `;
