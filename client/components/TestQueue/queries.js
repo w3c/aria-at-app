@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
 
-export const TEST_QUEUE_PAGE_NO_CONFLICTS_QUERY = gql`
-    query TestQueuePageNoConflicts {
+export const TEST_QUEUE_PAGE_QUERY = gql`
+    query TestQueuePage {
         me {
             id
             username
@@ -38,7 +38,6 @@ export const TEST_QUEUE_PAGE_NO_CONFLICTS_QUERY = gql`
         testPlanReports(statuses: [DRAFT, IN_REVIEW]) {
             id
             status
-            metrics
             conflictsLength
             runnableTestsLength
             at {
@@ -80,52 +79,12 @@ export const TEST_QUEUE_PAGE_NO_CONFLICTS_QUERY = gql`
     }
 `;
 
-export const TEST_QUEUE_PAGE_CONFLICTS_QUERY = gql`
-    query TestQueuePageConflicts {
-        testPlanReports(statuses: [DRAFT, IN_REVIEW]) {
-            id
-            conflicts {
-                source {
-                    locationOfData
-                }
-                conflictingResults {
-                    locationOfData
-                }
-            }
-            runnableTests {
-                id
-            }
-            draftTestPlanRuns {
-                id
-                tester {
-                    id
-                    username
-                }
-                testResults {
-                    id
-                    test {
-                        id
-                    }
-                    completedAt
-                }
-            }
-        }
-    }
-`;
-
 export const TEST_PLAN_REPORT_QUERY = gql`
     query TestPlanReport($testPlanReportId: ID!) {
         testPlanReport(id: $testPlanReportId) {
             id
             status
-            conflicts {
-                source {
-                    locationOfData
-                }
-                conflictingResults {
-                    locationOfData
-                }
-            }
+            conflictsLength
             runnableTests {
                 id
             }

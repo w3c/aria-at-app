@@ -29,7 +29,6 @@ import { LoadingStatus, useTriggerLoad } from '../common/LoadingStatus';
 const TestQueueRow = ({
     user = {},
     testers = [],
-    isConflictsLoading,
     testPlanReportData = {},
     latestTestPlanVersions = [],
     triggerDeleteTestPlanReportModal = () => {},
@@ -68,9 +67,7 @@ const TestQueueRow = ({
         false
     );
     const [testPlanReport, setTestPlanReport] = useState(testPlanReportData);
-    const [isTestPlanReportLoading, setIsTestPlanReportLoading] = useState(
-        false
-    );
+    const [isLoading, setIsLoading] = useState(false);
 
     const { id, isAdmin, isTester, isVendor, username } = user;
     const {
@@ -81,8 +78,6 @@ const TestQueueRow = ({
     } = testPlanReport;
 
     const isSignedIn = !!id;
-
-    let isLoading = isTestPlanReportLoading || isConflictsLoading;
 
     useEffect(() => {
         setTestPlanReport(testPlanReportData);
@@ -108,14 +103,14 @@ const TestQueueRow = ({
     };
 
     const triggerTestPlanReportUpdate = async () => {
-        setIsTestPlanReportLoading(true);
+        setIsLoading(true);
         const { data } = await client.query({
             query: TEST_PLAN_REPORT_QUERY,
             variables: { testPlanReportId: testPlanReport.id },
             fetchPolicy: 'network-only'
         });
         setTestPlanReport(data.testPlanReport);
-        setIsTestPlanReportLoading(false);
+        setIsLoading(false);
     };
 
     const toggleTesterAssign = async username => {

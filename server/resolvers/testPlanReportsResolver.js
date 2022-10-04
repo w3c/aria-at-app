@@ -34,6 +34,9 @@ const testPlanReportsResolver = async (_, { statuses }, context, info) => {
     if (testPlanReportRawAttributes.includes('runnableTests'))
         testPlanVersionAttributes.push('tests');
 
+    if (testPlanReportRawAttributes.includes('conflictsLength'))
+        testPlanReportAttributes.push('metrics');
+
     return getTestPlanReports(
         null,
         where,
