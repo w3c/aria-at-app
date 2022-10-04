@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { Container, Table } from 'react-bootstrap';
 import styled from '@emotion/styled';
 import alphabetizeObjectBy from '../../utils/alphabetizeObjectBy';
-import getMetrics, { none } from './getMetrics';
+import { none } from './getMetrics';
 import { getTestPlanTargetTitle, getTestPlanVersionTitle } from './getTitles';
 import ClippedProgressBar from '@components/common/ClippedProgressBar';
 
@@ -124,11 +124,8 @@ const SummarizeTestPlanReports = ({ testPlanReports }) => {
                                                     </td>
                                                 );
                                             }
-                                            const metrics = testPlanReport.metrics
-                                                ? testPlanReport.metrics
-                                                : getMetrics({
-                                                      testPlanReport
-                                                  });
+                                            const metrics =
+                                                testPlanReport.metrics;
                                             return (
                                                 <td key={testPlanReport.id}>
                                                     <Link
