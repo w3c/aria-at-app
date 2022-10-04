@@ -63,7 +63,7 @@ const App = () => {
                                     as={Link}
                                     to="/reports"
                                     aria-current={location.pathname.startsWith(
-                                        '/reports'
+                                        '/report'
                                     )}
                                 >
                                     Test Reports
