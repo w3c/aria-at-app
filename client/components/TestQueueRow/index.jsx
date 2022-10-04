@@ -107,11 +107,11 @@ const TestQueueRow = ({
         return draftTestPlanRuns.find(({ tester }) => tester.id === userId).id;
     };
 
-    const triggerTestPlanReportUpdate = async () => {
+    const triggerTestPlanReportUpdate = async (id = testPlanReport.id) => {
         setIsTestPlanReportLoading(true);
         const { data } = await client.query({
             query: TEST_PLAN_REPORT_QUERY,
-            variables: { testPlanReportId: testPlanReport.id },
+            variables: { testPlanReportId: id },
             fetchPolicy: 'network-only'
         });
         setTestPlanReport(data.testPlanReport);
@@ -660,7 +660,7 @@ const TestQueueRow = ({
                     show={showTestPlanUpdaterModal}
                     handleClose={() => setShowTestPlanUpdaterModal(false)}
                     testPlanReportId={testPlanReportId}
-                    triggerPageUpdate={triggerPageUpdate}
+                    triggerTestPlanReportUpdate={triggerTestPlanReportUpdate}
                 />
             )}
             {showThemedModal && (
