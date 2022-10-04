@@ -95,7 +95,6 @@ const updateStatusResolver = async (
         };
     } else {
         // DRAFT state
-        // TODO: Revert to empty metrics (with at least conflictsCount) needs to be covered?
     }
     await updateTestPlanReport(testPlanReportId, updateParams);
 
