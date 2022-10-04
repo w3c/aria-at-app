@@ -28,7 +28,7 @@ const TestPlanUpdaterModal = ({
     show,
     handleClose,
     testPlanReportId,
-    triggerPageUpdate
+    triggerTestPlanReportUpdate
 }) => {
     const loadInitialData = async ({ client, testPlanReportId }) => {
         const { data: currentReportData } = await client.query({
@@ -101,7 +101,7 @@ const TestPlanUpdaterModal = ({
         visible: false
     });
     const [backupChecked, setBackupChecked] = useState(false);
-    const [newReport, setNewReport] = useState(false);
+    const [newReport, setNewReport] = useState();
     const [closeButton, setCloseButton] = useState(false);
 
     useEffect(() => {
@@ -221,7 +221,7 @@ const TestPlanUpdaterModal = ({
             return;
         }
 
-        setNewReport(true);
+        setNewReport(created.find(item => item.testPlanReport.id));
 
         for (const testPlanRun of runsWithResults) {
             const { data: runData } = await client.mutate({
@@ -324,13 +324,13 @@ const TestPlanUpdaterModal = ({
 
     const closeAndReload = async () => {
         if (newReport) {
-            await triggerPageUpdate();
+            await triggerTestPlanReportUpdate(newReport.testPlanReport.id);
         }
         handleClose();
     };
 
     return (
-        <Modal show={show} onHide={handleClose} dialogClassName="modal-50w">
+        <Modal show={show} onHide={closeAndReload} dialogClassName="modal-50w">
             <Modal.Header closeButton className="test-plan-updater-header">
                 <Modal.Title>Test Plan Updater</Modal.Title>
             </Modal.Header>
@@ -513,7 +513,7 @@ TestPlanUpdaterModal.propTypes = {
     handleClose: PropTypes.func,
     handleAction: PropTypes.func,
     testPlanReportId: PropTypes.string,
-    triggerPageUpdate: PropTypes.func
+    triggerTestPlanReportUpdate: PropTypes.func
 };
 
 export default TestPlanUpdaterModal;
