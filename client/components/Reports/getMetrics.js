@@ -10,6 +10,34 @@ const none = <StyledNone>None</StyledNone>;
 
 const sum = arr => arr.reduce((total, item) => total + item, 0);
 
+const countTests = ({
+    testPlanReport, // Choose one to provide
+    testResult, // Choose one to provide
+    scenarioResult, // Choose one to provide
+    passedOnly
+}) => {
+    const countScenarioResult = scenarioResult => {
+        return scenarioResult.assertionResults.every(
+            assertionResult => assertionResult.passed
+        );
+    };
+
+    const countTestResult = testResult => {
+        if (passedOnly)
+            return testResult.scenarioResults.every(countScenarioResult)
+                ? 1
+                : 0;
+        return testResult ? 1 : 0;
+    };
+    const countTestPlanReport = testPlanReport => {
+        return sum(testPlanReport.finalizedTestResults.map(countTestResult));
+    };
+
+    if (testPlanReport) return countTestPlanReport(testPlanReport);
+    if (testResult) return countTestResult(testResult);
+    return countScenarioResult(scenarioResult, testResult);
+};
+
 const countAssertions = ({
     testPlanReport, // Choose one to provide
     testResult, // Choose one to provide
@@ -84,6 +112,14 @@ const getMetrics = ({
     const optionalAssertionsFailedCount =
         optionalAssertionsCount - optionalAssertionsPassedCount;
 
+    const testsPassedCount = countTests({
+        ...result,
+        passedOnly: true
+    });
+    const testsCount =
+        testPlanReport?.runnableTests.length || countTests({ ...result });
+    const testsFailedCount = testsCount - testsPassedCount;
+
     const requiredFormatted = `${requiredAssertionsPassedCount} of ${requiredAssertionsCount} passed`;
     const optionalFormatted =
         optionalAssertionsCount === 0
@@ -116,6 +152,9 @@ const getMetrics = ({
         optionalAssertionsPassedCount,
         optionalAssertionsCount,
         optionalAssertionsFailedCount,
+        testsPassedCount,
+        testsCount,
+        testsFailedCount,
         unexpectedBehaviorCount,
         requiredFormatted,
         optionalFormatted,

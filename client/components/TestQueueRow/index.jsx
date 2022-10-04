@@ -16,7 +16,7 @@ import './TestQueueRow.css';
 import {
     TEST_PLAN_REPORT_QUERY,
     ASSIGN_TESTER_MUTATION,
-    UPDATE_TEST_PLAN_REPORT_MUTATION,
+    UPDATE_TEST_PLAN_REPORT_STATUS_MUTATION,
     REMOVE_TEST_PLAN_REPORT_MUTATION,
     REMOVE_TESTER_MUTATION,
     REMOVE_TESTER_RESULTS_MUTATION
@@ -56,7 +56,7 @@ const TestQueueRow = ({
 
     const [assignTester] = useMutation(ASSIGN_TESTER_MUTATION);
     const [updateTestPlanReportStatus] = useMutation(
-        UPDATE_TEST_PLAN_REPORT_MUTATION
+        UPDATE_TEST_PLAN_REPORT_STATUS_MUTATION
     );
     const [removeTestPlanReport] = useMutation(
         REMOVE_TEST_PLAN_REPORT_MUTATION

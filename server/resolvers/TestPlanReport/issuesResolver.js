@@ -39,8 +39,8 @@ const issuesResolver = async testPlanReport => {
                 feedbackType: labels
                     .map(label => label.name)
                     .includes('changes-requested')
-                    ? 'changes-requested'
-                    : 'feedback',
+                    ? 'CHANGES_REQUESTED'
+                    : 'FEEDBACK',
                 isOpen: state === 'open',
                 testNumberFilteredByAt
             };

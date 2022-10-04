@@ -18,7 +18,10 @@ import './TestQueue.css';
 
 const TestQueue = () => {
     const { loading, data, error, refetch } = useQuery(
-        TEST_QUEUE_PAGE_NO_CONFLICTS_QUERY
+        TEST_QUEUE_PAGE_NO_CONFLICTS_QUERY,
+        {
+            fetchPolicy: 'cache-and-network'
+        }
     );
     const { data: conflictsData } = useQuery(TEST_QUEUE_PAGE_CONFLICTS_QUERY, {
         skip: !data

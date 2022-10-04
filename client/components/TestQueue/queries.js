@@ -308,7 +308,7 @@ export const ASSIGN_TESTER_MUTATION = gql`
     }
 `;
 
-export const UPDATE_TEST_PLAN_REPORT_MUTATION = gql`
+export const UPDATE_TEST_PLAN_REPORT_STATUS_MUTATION = gql`
     mutation UpdateTestPlanReportStatus(
         $testReportId: ID!
         $status: TestPlanReportStatus!
@@ -317,6 +317,23 @@ export const UPDATE_TEST_PLAN_REPORT_MUTATION = gql`
             updateStatus(status: $status) {
                 testPlanReport {
                     status
+                }
+            }
+        }
+    }
+`;
+
+export const UPDATE_TEST_PLAN_REPORT_RECOMMENDED_TARGET_DATE_MUTATION = gql`
+    mutation UpdateTestPlanReportRecommendedTargetDate(
+        $testReportId: ID!
+        $recommendedStatusTargetDate: Timestamp!
+    ) {
+        testPlanReport(id: $testReportId) {
+            updateRecommendedStatusTargetDate(
+                recommendedStatusTargetDate: $recommendedStatusTargetDate
+            ) {
+                testPlanReport {
+                    recommendedStatusTargetDate
                 }
             }
         }

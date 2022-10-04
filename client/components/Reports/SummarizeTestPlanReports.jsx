@@ -7,6 +7,7 @@ import styled from '@emotion/styled';
 import alphabetizeObjectBy from '../../utils/alphabetizeObjectBy';
 import getMetrics, { none } from './getMetrics';
 import { getTestPlanTargetTitle, getTestPlanVersionTitle } from './getTitles';
+import ClippedProgressBar from '@components/common/ClippedProgressBar';
 
 const FullHeightContainer = styled(Container)`
     min-height: calc(100vh - 64px);
@@ -134,26 +135,16 @@ const SummarizeTestPlanReports = ({ testPlanReports }) => {
                                                             `/targets/${testPlanReport.id}`
                                                         }
                                                     >
-                                                        <div
-                                                            className="progress"
-                                                            aria-label={`${getTestPlanTargetTitle(
+                                                        <ClippedProgressBar
+                                                            progress={
+                                                                metrics.supportPercent
+                                                            }
+                                                            label={`${getTestPlanTargetTitle(
                                                                 testPlanTarget
                                                             )}, ${
                                                                 metrics.supportPercent
                                                             }% completed`}
-                                                        >
-                                                            <div
-                                                                className="progress-bar bg-info"
-                                                                style={{
-                                                                    width: `${metrics.supportPercent}%`
-                                                                }}
-                                                            >
-                                                                {
-                                                                    metrics.supportPercent
-                                                                }
-                                                                %
-                                                            </div>
-                                                        </div>
+                                                        />
                                                     </Link>
                                                 </td>
                                             );
