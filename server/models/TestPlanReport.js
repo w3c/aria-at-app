@@ -42,6 +42,11 @@ module.exports = function(sequelize, DataTypes) {
                 type: DataTypes.DATE,
                 defaultValue: null,
                 allowNull: true
+            },
+            metrics: {
+                type: DataTypes.JSONB,
+                defaultValue: {},
+                allowNull: false
             }
         },
         {

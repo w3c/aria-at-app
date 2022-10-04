@@ -38,6 +38,8 @@ export const TEST_QUEUE_PAGE_NO_CONFLICTS_QUERY = gql`
         testPlanReports(statuses: [DRAFT, IN_REVIEW]) {
             id
             status
+            metrics
+            conflictsLength
             runnableTestsLength
             at {
                 id
@@ -161,38 +163,6 @@ export const TEST_PLAN_REPORT_QUERY = gql`
                 }
                 testResultsLength
             }
-        }
-    }
-`;
-
-export const POPULATE_ADD_TEST_PLAN_TO_QUEUE_MODAL_QUERY = gql`
-    query TestQueueAddTestPlanModal {
-        ats {
-            id
-            name
-            atVersions {
-                id
-                name
-                releasedAt
-            }
-        }
-        browsers {
-            id
-            name
-            browserVersions {
-                id
-                name
-            }
-        }
-        testPlanVersions {
-            id
-            title
-            gitSha
-            gitMessage
-            testPlan {
-                directory
-            }
-            updatedAt
         }
     }
 `;

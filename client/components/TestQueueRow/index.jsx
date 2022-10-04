@@ -405,18 +405,18 @@ const TestQueueRow = ({
     };
 
     const evaluateStatusAndResults = () => {
-        const { status: runStatus, conflicts = [] } = testPlanReport;
+        const { status: runStatus, conflictsLength } = testPlanReport;
 
         let status, results;
-        const conflictCount = conflicts.length;
+        const conflictsCount = conflictsLength;
 
         if (isLoading) {
             status = (
                 <span className="status-label not-started">Loading ...</span>
             );
-        } else if (conflictCount > 0) {
-            let pluralizedStatus = `${conflictCount} Conflict${
-                conflictCount === 1 ? '' : 's'
+        } else if (conflictsCount > 0) {
+            let pluralizedStatus = `${conflictsCount} Conflict${
+                conflictsCount === 1 ? '' : 's'
             }`;
             status = (
                 <span className="status-label conflicts">
@@ -435,15 +435,15 @@ const TestQueueRow = ({
     };
 
     const evaluateNewReportStatus = () => {
-        const { status, conflicts = [] } = testPlanReport;
-        const conflictCount = conflicts.length;
+        const { status, conflictsLength } = testPlanReport;
+        const conflictsCount = conflictsLength;
 
         // If there are no conflicts OR the test has been marked as "final",
         // and admin can mark a test run as "draft"
         let newStatus;
         if (
             (status !== 'IN_REVIEW' &&
-                conflictCount === 0 &&
+                conflictsCount === 0 &&
                 testPlanRunsWithResults.length > 0) ||
             status === 'FINALIZED'
         ) {
@@ -453,7 +453,7 @@ const TestQueueRow = ({
         // they can be marked as "final"
         else if (
             status === 'IN_REVIEW' &&
-            conflictCount === 0 &&
+            conflictsCount === 0 &&
             testPlanRunsWithResults.length > 0
         ) {
             newStatus = 'FINALIZED';

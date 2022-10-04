@@ -835,6 +835,12 @@ const graphqlSchema = gql`
         """
         conflicts: [TestPlanReportConflict]!
         """
+        The number of conflicts for this TestPlanReport. Foregoes the need for
+        getting the length from conflicts which would require running expensive
+        time-consuming operations to calculate.
+        """
+        conflictsLength: Int!
+        """
         Finalizing a test plan report requires resolving any conflicts between
         runs. At this stage a single set of results is able to represent all
         results, and is much more convenient to work with.
@@ -850,6 +856,11 @@ const graphqlSchema = gql`
         TestPlanReport's DRAFT stage.
         """
         draftTestPlanRuns: [TestPlanRun]!
+        """
+        Various metrics and calculations related to the TestPlanReport which
+        may be used for reporting purposes.
+        """
+        metrics: Any!
         """
         The point at which an admin created the TestPlanReport.
         """

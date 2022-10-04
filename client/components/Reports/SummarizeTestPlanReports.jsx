@@ -124,9 +124,11 @@ const SummarizeTestPlanReports = ({ testPlanReports }) => {
                                                     </td>
                                                 );
                                             }
-                                            const metrics = getMetrics({
-                                                testPlanReport
-                                            });
+                                            const metrics = testPlanReport.metrics
+                                                ? testPlanReport.metrics
+                                                : getMetrics({
+                                                      testPlanReport
+                                                  });
                                             return (
                                                 <td key={testPlanReport.id}>
                                                     <Link

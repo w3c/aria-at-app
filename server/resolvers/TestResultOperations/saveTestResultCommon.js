@@ -7,6 +7,10 @@ const deepCustomMerge = require('../../util/deepCustomMerge');
 const deepPickEqual = require('../../util/deepPickEqual');
 const convertTestResultToInput = require('../TestPlanRunOperations/convertTestResultToInput');
 const createTestResultSkeleton = require('../TestPlanRunOperations/createTestResultSkeleton');
+const {
+    updateTestPlanReport
+} = require('../../models/services/TestPlanReportService');
+const conflictsResolver = require('../TestPlanReport/conflictsResolver');
 
 const saveTestResultCommon = async ({
     testResultId,
@@ -75,6 +79,18 @@ const saveTestResultCommon = async ({
     ];
 
     await updateTestPlanRun(testPlanRun.id, { testResults: newTestResults });
+
+    // Persist conflicts count
+    const { testPlanReport: updatedTestPlanReport } = await populateData({
+        testPlanRunId: testPlanRun.id
+    });
+    const conflicts = await conflictsResolver(updatedTestPlanReport);
+    await updateTestPlanReport(updatedTestPlanReport.id, {
+        metrics: {
+            ...updatedTestPlanReport.metrics,
+            conflictsCount: conflicts.length
+        }
+    });
 
     return populateData({ testResultId });
 };

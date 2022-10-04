@@ -283,6 +283,7 @@ const updateTestPlanReport = async (
     id,
     {
         status,
+        metrics,
         testPlanTargetId,
         testPlanVersionId,
         candidateStatusReachedAt,
@@ -304,6 +305,7 @@ const updateTestPlanReport = async (
         { id },
         {
             status,
+            metrics,
             testPlanTargetId,
             testPlanVersionId,
             candidateStatusReachedAt,

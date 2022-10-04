@@ -4,6 +4,7 @@ export const REPORTS_PAGE_QUERY = gql`
     query {
         testPlanReports(statuses: [FINALIZED]) {
             id
+            metrics
             at {
                 id
                 name
