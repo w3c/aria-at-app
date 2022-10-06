@@ -460,8 +460,14 @@ const getTestPlans = async ({
     return testPlans;
 };
 
-const getTestPlanById = async id => {
-    const result = await getTestPlans({ id });
+const getTestPlanById = async (id, options = {}) => {
+    let result;
+    try {
+        result = await getTestPlans({ id, ...options });
+    } catch (e) {
+        console.error(e);
+    }
+
     return result[0];
 };
 

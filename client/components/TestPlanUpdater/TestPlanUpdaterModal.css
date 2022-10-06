@@ -20,6 +20,11 @@
     height: 250px;
 }
 
+.results-spinner-container {
+    display: flex;
+    justify-content: center;
+}
+
 @media (min-width: 768px) {
     .modal-50w {
         min-width: 50%;
