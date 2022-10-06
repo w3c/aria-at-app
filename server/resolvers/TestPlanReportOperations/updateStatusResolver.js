@@ -93,8 +93,6 @@ const updateStatusResolver = async (
             metrics: { ...testPlanReport.metrics, ...metrics },
             recommendedStatusReachedAt: new Date()
         };
-    } else {
-        // DRAFT state
     }
     await updateTestPlanReport(testPlanReportId, updateParams);
 
