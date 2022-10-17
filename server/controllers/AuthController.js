@@ -54,6 +54,7 @@ const oauthRedirectFromGithubController = async (req, res) => {
     const roles = [];
     if (isAdmin) {
         roles.push({ name: User.ADMIN });
+        roles.push({ name: User.VENDOR });
     }
     if (isAdmin || testers.includes(githubUsername)) {
         roles.push({ name: User.TESTER }); // Admins are always testers
