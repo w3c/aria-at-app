@@ -51,7 +51,7 @@ function useSize(target) {
 }
 
 const CandidateTestPlanRun = () => {
-    const { testPlanVersionId } = useParams();
+    const { atId, testPlanVersionId } = useParams();
 
     const { loading, data, error, refetch } = useQuery(CANDIDATE_REPORTS_QUERY);
     const [addViewer] = useMutation(ADD_VIEWER_MUTATION);
@@ -212,15 +212,13 @@ const CandidateTestPlanRun = () => {
         return new Map(accordionMap.set(index, false));
     };
 
-    const vendorMap = {
-        vispero: 'JAWS',
-        nvaccess: 'NVDA',
-        apple: 'VoiceOver for macOS'
+    const atMap = {
+        1: 'JAWS',
+        2: 'NVDA',
+        3: 'VoiceOver for macOS'
     };
 
-    const { at, vendorCompany } = data.me.vendor;
-
-    if (vendorMap[vendorCompany] !== at) return <Redirect to="/404" />;
+    const at = atMap[atId];
 
     const testPlanReports = data.testPlanReports.filter(
         report =>
@@ -271,13 +269,13 @@ const CandidateTestPlanRun = () => {
     // Assumes that the issues are across the entire AT/Browser combination
     const changesRequestedIssues = testPlanReport.issues?.filter(
         issue =>
-            issue.feedbackType === 'changes-requested' &&
+            issue.feedbackType === 'CHANGES_REQUESTED' &&
             issue.testNumberFilteredByAt === currentTest.seq
     );
 
     const feedbackIssues = testPlanReport.issues?.filter(
         issue =>
-            issue.feedbackType === 'feedback' &&
+            issue.feedbackType === 'FEEDBACK' &&
             issue.testNumberFilteredByAt === currentTest.seq
     );
 

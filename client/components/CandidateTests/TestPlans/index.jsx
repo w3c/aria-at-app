@@ -624,7 +624,7 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
                                                 <td>
                                                     {/*TODO: Insert link when merged with Candidate Test Page branch*/}
                                                     <Link
-                                                        to={`/candidate-tests/some-id`}
+                                                        to={`/candidate-test-plan/${testPlanVersion.id}/${atId}`}
                                                     >
                                                         {getTestPlanVersionTitle(
                                                             testPlanVersion
@@ -741,7 +741,7 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
                                                 <CenteredTd>
                                                     {/*TODO: Insert link when merged with Candidate Test Page branch*/}
                                                     <Link
-                                                        to={`/candidate-tests/some-id`}
+                                                        to={`/candidate-test-plan/${testPlanVersion.id}/${atId}`}
                                                     >
                                                         <ClippedProgressBar
                                                             progress={
@@ -881,7 +881,7 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
                                         <td>
                                             {/*TODO: Insert link when merged with Candidate Test Page branch*/}
                                             <Link
-                                                to={`/candidate-tests/some-id}`}
+                                                to={`/candidate-test-plan/${testPlanVersion.id}`}
                                             >
                                                 {getTestPlanVersionTitle(
                                                     testPlanVersion

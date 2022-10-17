@@ -35,7 +35,7 @@ export default [
         }
     },
     {
-        path: '/candidate-test-plan/:testPlanVersionId(\\d+)',
+        path: '/candidate-test-plan/:testPlanVersionId(\\d+)/:atId',
         component: () => {
             return (
                 <ConfirmAuth requiredPermission="VENDOR">
