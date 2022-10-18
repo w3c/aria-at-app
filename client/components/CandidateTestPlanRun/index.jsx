@@ -512,7 +512,7 @@ const CandidateTestPlanRun = () => {
         JAWS: 'jaws',
         NVDA: 'nvda'
     };
-    const githubIssueUrlTitle = `ARIA-AT-App Candidate Test Plan Review for ${at}/${testPlanVersion.title} started ${startedAtDate}`;
+    const githubIssueUrlTitle = `ARIA-AT-App Candidate Test Plan Review for ${at}/${testPlanVersion.title} started ${startedAtDate} [Test ${currentTest.seq}]`;
     const defaultGithubLabels = 'app,candidate-review';
     const githubUrl = `https://github.com/w3c/aria-at-app/issues/new?title=${encodeURI(
         githubIssueUrlTitle
