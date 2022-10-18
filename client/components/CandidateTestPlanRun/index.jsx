@@ -339,7 +339,8 @@ const CandidateTestPlanRun = () => {
             <div className="test-info-entity review-status">
                 <div className="info-label">
                     <b>Review status by {at} Representative:</b>{' '}
-                    {`${reviewStatus} `}
+                    {/* TODO: fix promotion {`${reviewStatus} `} */}
+                    In Progress
                 </div>
             </div>
             <div className="test-info-entity target-date">
