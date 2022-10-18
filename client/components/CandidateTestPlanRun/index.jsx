@@ -53,8 +53,10 @@ function useSize(target) {
 const CandidateTestPlanRun = () => {
     const { atId, testPlanVersionId } = useParams();
 
-    const { loading, data, error, refetch } = useQuery(CANDIDATE_REPORTS_QUERY);
-    const [addViewer] = useMutation(ADD_VIEWER_MUTATION);
+    const { loading, data, error } = useQuery(CANDIDATE_REPORTS_QUERY);
+    const [addViewer] = useMutation(ADD_VIEWER_MUTATION, {
+        refetchQueries: [{ query: CANDIDATE_REPORTS_QUERY }]
+    });
     const [promoteVendorReviewStatus] = useMutation(
         PROMOTE_VENDOR_REVIEW_STATUS_REPORT_MUTATION,
         {
@@ -100,7 +102,6 @@ const CandidateTestPlanRun = () => {
     const [isFirstTest, setIsFirstTest] = useState(true);
     const [isLastTest, setIsLastTest] = useState(false);
     const [accordionMap, setActiveAccordionMap] = useState(new Map());
-    const [testCurrentlyViewed, setTestCurrentlyViewed] = useState(false);
 
     const [issuesHeading, setissuesHeading] = React.useState();
     const issuesHeadingSize = useSize(issuesHeading);
@@ -113,7 +114,6 @@ const CandidateTestPlanRun = () => {
     const toggleTestNavigator = () => setShowTestNavigator(!showTestNavigator);
     const handleTestClick = async index => {
         setCurrentTestIndex(index);
-        if (testCurrentlyViewed) await refetch();
     };
     const handleNextTestClick = async () => {
         navigateTests(
@@ -124,7 +124,6 @@ const CandidateTestPlanRun = () => {
             setIsFirstTest,
             setIsLastTest
         );
-        if (testCurrentlyViewed) await refetch();
     };
     const handlePreviousTestClick = async () => {
         navigateTests(
@@ -135,7 +134,6 @@ const CandidateTestPlanRun = () => {
             setIsFirstTest,
             setIsLastTest
         );
-        if (testCurrentlyViewed) await refetch();
     };
 
     const setup = () => {
@@ -148,14 +146,11 @@ const CandidateTestPlanRun = () => {
 
     const addViewerToTest = async testId => {
         await addViewer({ variables: { testPlanVersionId, testId } });
-        setTestCurrentlyViewed(true);
     };
 
     const updateTestViewed = async () => {
         if (!userPreviouslyViewedTest) {
             addViewerToTest(currentTest.id);
-        } else {
-            setTestCurrentlyViewed(true);
         }
     };
 
@@ -245,6 +240,9 @@ const CandidateTestPlanRun = () => {
         recommendedStatusTargetDate,
         candidateStatusReachedAt
     } = testPlanReport;
+
+    /**
+     * TODO: fix vendor promotion
     const vendorReviewStatusMap = {
         READY: 'Ready',
         IN_PROGRESS: 'In Progress',
@@ -252,6 +250,7 @@ const CandidateTestPlanRun = () => {
     };
 
     const reviewStatus = vendorReviewStatusMap[vendorReviewStatus];
+    */
 
     const userPreviouslyViewedTest = !!currentTest.viewers.find(
         each => each.username === data.me.username
