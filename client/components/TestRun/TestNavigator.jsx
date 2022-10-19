@@ -20,6 +20,7 @@ const TestNavigator = ({
     toggleShowClick = () => {},
     handleTestClick = () => {}
 }) => {
+    console.log(viewedTests);
     return (
         <Col className="test-navigator" md={show ? 3 : 12}>
             <div className="test-navigator-toggle-container">

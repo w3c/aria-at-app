@@ -55,9 +55,7 @@ const CandidateTestPlanRun = () => {
     const { atId, testPlanVersionId } = useParams();
 
     const { loading, data, error } = useQuery(CANDIDATE_REPORTS_QUERY);
-    const [addViewer] = useMutation(ADD_VIEWER_MUTATION, {
-        refetchQueries: [{ query: CANDIDATE_REPORTS_QUERY }]
-    });
+    const [addViewer] = useMutation(ADD_VIEWER_MUTATION);
     const [promoteVendorReviewStatus] = useMutation(
         PROMOTE_VENDOR_REVIEW_STATUS_REPORT_MUTATION,
         {
@@ -142,9 +140,7 @@ const CandidateTestPlanRun = () => {
     };
 
     const updateTestViewed = async () => {
-        const userPreviouslyViewedTest = !!currentTest.viewers.find(
-            each => each.username === data.me.username
-        );
+        const userPreviouslyViewedTest = viewedTests.includes(currentTest.id);
         if (!userPreviouslyViewedTest) {
             setFirstTimeViewing(true);
             setViewedTests(tests => [...tests, currentTest.id]);
@@ -165,8 +161,6 @@ const CandidateTestPlanRun = () => {
             );
         }
     };
-
-    console.log('rerender');
 
     useEffect(() => {
         if (data) {
@@ -190,13 +184,11 @@ const CandidateTestPlanRun = () => {
             ];
             setViewedTests(viewedTests);
         }
-        console.log('   rerender');
     }, [data]);
 
     useEffect(() => {
         if (data) {
             updateTestViewed();
-            console.log('       rerender');
         }
     }, [currentTestIndex]);
 
