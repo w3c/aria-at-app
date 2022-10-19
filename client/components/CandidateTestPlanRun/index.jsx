@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
 import PropTypes from 'prop-types';
 import TestNavigator from '../TestRun/TestNavigator';
@@ -38,6 +38,7 @@ import useResizeObserver from '@react-hook/resize-observer';
 import { useMediaQuery } from 'react-responsive';
 import { convertDateToString } from '../../utils/formatter';
 import TestPlanResultsTable from '../Reports/TestPlanResultsTable';
+import getMetrics from '../Reports/getMetrics';
 
 function useSize(target) {
     const [size, setSize] = React.useState();
@@ -432,6 +433,7 @@ const CandidateTestPlanRun = () => {
             {testPlanReports.map((testPlanReport, index) => {
                 const testResult =
                     testPlanReport.finalizedTestResults[currentTestIndex];
+                const { testsPassedCount } = getMetrics({ testResult });
                 return (
                     testResult && (
                         <Accordion
@@ -456,6 +458,7 @@ const CandidateTestPlanRun = () => {
                                 <Accordion.Collapse eventKey={`${index + 1}`}>
                                     <Card.Body>
                                         <TestPlanResultsTable
+                                            passed={!!testsPassedCount}
                                             key={`${testPlanReport.id} + ${testResult.id}`}
                                             test={currentTest}
                                             testResult={testResult}
