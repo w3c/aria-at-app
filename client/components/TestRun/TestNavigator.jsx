@@ -12,7 +12,7 @@ import '@fortawesome/fontawesome-svg-core/styles.css';
 const TestNavigator = ({
     show = true,
     isSignedIn = false,
-    currentUser = {},
+    viewedTests = [],
     isVendor = false,
     testPlanReports = [],
     tests = [],
@@ -77,13 +77,7 @@ const TestNavigator = ({
                                 if (issuesExist) {
                                     resultClassName = 'changes-requested';
                                     resultStatus = 'Changes Requested';
-                                } else if (
-                                    test.viewers.find(
-                                        each =>
-                                            each.username ===
-                                            currentUser.username
-                                    )
-                                ) {
+                                } else if (viewedTests.includes(test.id)) {
                                     resultClassName = 'complete';
                                     resultStatus = 'Test Viewed';
                                 }

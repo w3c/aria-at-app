@@ -3,9 +3,8 @@ import PropTypes from 'prop-types';
 import styled from '@emotion/styled';
 import { Helmet } from 'react-helmet';
 import { createGitHubIssueWithTitleAndBody } from '../TestRun';
-import getMetrics from './getMetrics';
 import { getTestPlanTargetTitle, getTestPlanVersionTitle } from './getTitles';
-import { Breadcrumb, Button, Container, Table } from 'react-bootstrap';
+import { Breadcrumb, Button, Container } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -18,6 +17,7 @@ import {
 import { differenceBy } from 'lodash';
 import { convertDateToString } from '../../utils/formatter';
 import DisclaimerInfo from '../DisclaimerInfo';
+import TestPlanResultsTable from './TestPlanResultsTable';
 
 const DisclosureParent = styled.div`
     border: 1px solid #d3d5da;
@@ -73,17 +73,6 @@ const DisclosureContainer = styled.div`
         margin-bottom: 0;
     }
 `;
-
-const getAssertionResultString = assertionResult => {
-    let output = 'Good output';
-    if (!assertionResult.passed) {
-        output =
-            assertionResult.failedReason === 'INCORRECT_OUTPUT'
-                ? 'Incorrect output'
-                : 'No output';
-    }
-    return `${output}: ${assertionResult.assertion.text}`;
-};
 
 const getTestersRunHistory = (
     testPlanReport,
@@ -251,130 +240,10 @@ const SummarizeTestPlanReport = ({ testPlanReport }) => {
                                 </Button>
                             </div>
                         </div>
-                        <Table
-                            bordered
-                            responsive
-                            aria-label={`Results for test ${test.title}`}
-                        >
-                            <thead>
-                                <tr>
-                                    <th>Command</th>
-                                    <th>Support</th>
-                                    <th>Details</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {testResult.scenarioResults.map(
-                                    scenarioResult => {
-                                        const passedAssertions = scenarioResult.assertionResults.filter(
-                                            assertionResult =>
-                                                assertionResult.passed
-                                        );
-                                        const failedAssertions = scenarioResult.assertionResults.filter(
-                                            assertionResult =>
-                                                !assertionResult.passed
-                                        );
-                                        const metrics = getMetrics({
-                                            scenarioResult
-                                        });
-                                        return (
-                                            <tr key={scenarioResult.id}>
-                                                <td>
-                                                    {scenarioResult.scenario.commands
-                                                        .map(({ text }) => text)
-                                                        .join(', then ')}
-                                                </td>
-                                                <td>{metrics.supportLevel}</td>
-                                                <td>
-                                                    <dl>
-                                                        <dt>Output:</dt>
-                                                        <dd>
-                                                            {
-                                                                scenarioResult.output
-                                                            }
-                                                        </dd>
-                                                        <dt>
-                                                            Passing Assertions:
-                                                        </dt>
-                                                        <dd>
-                                                            {passedAssertions.length ? (
-                                                                <ul>
-                                                                    {passedAssertions.map(
-                                                                        assertionResult => (
-                                                                            <li
-                                                                                key={
-                                                                                    assertionResult.id
-                                                                                }
-                                                                            >
-                                                                                {getAssertionResultString(
-                                                                                    assertionResult
-                                                                                )}
-                                                                            </li>
-                                                                        )
-                                                                    )}
-                                                                </ul>
-                                                            ) : (
-                                                                'None'
-                                                            )}
-                                                        </dd>
-                                                        <dt>
-                                                            Failing Assertions:
-                                                        </dt>
-                                                        <dd>
-                                                            {failedAssertions.length ? (
-                                                                <ul>
-                                                                    {failedAssertions.map(
-                                                                        assertionResult => (
-                                                                            <li
-                                                                                key={
-                                                                                    assertionResult.id
-                                                                                }
-                                                                            >
-                                                                                {getAssertionResultString(
-                                                                                    assertionResult
-                                                                                )}
-                                                                            </li>
-                                                                        )
-                                                                    )}
-                                                                </ul>
-                                                            ) : (
-                                                                'None'
-                                                            )}
-                                                        </dd>
-                                                        <dt>
-                                                            Unexpected
-                                                            Behaviors:
-                                                        </dt>
-                                                        <dd>
-                                                            {scenarioResult
-                                                                .unexpectedBehaviors
-                                                                .length ? (
-                                                                <ul>
-                                                                    {scenarioResult.unexpectedBehaviors.map(
-                                                                        unexpected => (
-                                                                            <li
-                                                                                key={
-                                                                                    unexpected.id
-                                                                                }
-                                                                            >
-                                                                                {unexpected.otherUnexpectedBehaviorText ??
-                                                                                    unexpected.text}
-                                                                            </li>
-                                                                        )
-                                                                    )}
-                                                                </ul>
-                                                            ) : (
-                                                                'None'
-                                                            )}
-                                                        </dd>
-                                                    </dl>
-                                                </td>
-                                            </tr>
-                                        );
-                                    }
-                                )}
-                            </tbody>
-                        </Table>
+                        <TestPlanResultsTable
+                            test={test}
+                            testResult={testResult}
+                        />
 
                         <DisclosureParent>
                             <h3>

@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
 import PropTypes from 'prop-types';
 import TestNavigator from '../TestRun/TestNavigator';
-import TestRenderer from '../TestRenderer';
+import InstructionsRenderer from './InstructionsRenderer';
 import OptionButton from '../TestRun/OptionButton';
 import PageStatus from '../common/PageStatus';
 import { navigateTests } from '../../utils/navigateTests';
@@ -37,6 +37,7 @@ import {
 import useResizeObserver from '@react-hook/resize-observer';
 import { useMediaQuery } from 'react-responsive';
 import { convertDateToString } from '../../utils/formatter';
+import TestPlanResultsTable from '../Reports/TestPlanResultsTable';
 
 function useSize(target) {
     const [size, setSize] = React.useState();
@@ -94,9 +95,9 @@ const CandidateTestPlanRun = () => {
             }
         }
     );
-    const testRunStateRef = useRef();
-    const recentTestRunStateRef = useRef();
-    const testRunResultRef = useRef();
+
+    const [firstTimeViewing, setFirstTimeViewing] = useState(false);
+    const [viewedTests, setViewedTests] = useState([]);
     const [currentTestIndex, setCurrentTestIndex] = useState(0);
     const [showTestNavigator, setShowTestNavigator] = useState(true);
     const [isFirstTest, setIsFirstTest] = useState(true);
@@ -136,21 +137,20 @@ const CandidateTestPlanRun = () => {
         );
     };
 
-    const setup = () => {
-        testRunStateRef.current = null;
-        recentTestRunStateRef.current = null;
-        testRunResultRef.current = null;
-    };
-
-    useEffect(() => setup());
-
     const addViewerToTest = async testId => {
         await addViewer({ variables: { testPlanVersionId, testId } });
     };
 
     const updateTestViewed = async () => {
+        const userPreviouslyViewedTest = !!currentTest.viewers.find(
+            each => each.username === data.me.username
+        );
         if (!userPreviouslyViewedTest) {
+            setFirstTimeViewing(true);
+            setViewedTests(tests => [...tests, currentTest.id]);
             addViewerToTest(currentTest.id);
+        } else {
+            setFirstTimeViewing(false);
         }
     };
 
@@ -166,12 +166,39 @@ const CandidateTestPlanRun = () => {
         }
     };
 
+    console.log('rerender');
+
+    useEffect(() => {
+        if (data) {
+            if (
+                !tests[0].viewers.find(
+                    viewer => viewer.username === data.me.username
+                )
+            ) {
+                addViewerToTest(tests[0].id);
+                setFirstTimeViewing(true);
+            }
+            const viewedTests = [
+                tests[0].id,
+                ...tests
+                    .filter(test =>
+                        test.viewers.find(
+                            viewer => viewer.username === data.me.username
+                        )
+                    )
+                    .map(test => test.id)
+            ];
+            setViewedTests(viewedTests);
+        }
+        console.log('   rerender');
+    }, [data]);
+
     useEffect(() => {
         if (data) {
             updateTestViewed();
-            updateVendorStatus();
+            console.log('       rerender');
         }
-    }, [data, currentTestIndex]);
+    }, [currentTestIndex]);
 
     useEffect(() => {
         if (data) {
@@ -252,10 +279,6 @@ const CandidateTestPlanRun = () => {
     const reviewStatus = vendorReviewStatusMap[vendorReviewStatus];
     */
 
-    const userPreviouslyViewedTest = !!currentTest.viewers.find(
-        each => each.username === data.me.username
-    );
-
     const targetCompletionDate = convertDateToString(
         new Date(recommendedStatusTargetDate),
         'MMMM D, YYYY'
@@ -315,8 +338,10 @@ const CandidateTestPlanRun = () => {
             <h1>
                 {`${currentTest.seq}. ${currentTest.title}`}{' '}
                 <span className="using">using</span> {`${at}`}
-                {userPreviouslyViewedTest && ' '}
-                {userPreviouslyViewedTest && (
+                {viewedTests.includes(currentTest.id) &&
+                    !firstTimeViewing &&
+                    ' '}
+                {viewedTests.includes(currentTest.id) && !firstTimeViewing && (
                     <Badge className="viewed-badge" pill variant="secondary">
                         Previously Viewed
                     </Badge>
@@ -427,12 +452,9 @@ const CandidateTestPlanRun = () => {
                     </Card.Header>
                     <Accordion.Collapse eventKey="0">
                         <Card.Body>
-                            <TestRenderer
+                            <InstructionsRenderer
                                 key={`instructions-${currentTest.id}`}
                                 at={testPlanReport.at}
-                                testRunStateRef={testRunStateRef}
-                                recentTestRunStateRef={recentTestRunStateRef}
-                                setIsRendererReady={() => {}}
                                 testResult={{
                                     scenarioResults: {},
                                     test: currentTest,
@@ -441,20 +463,16 @@ const CandidateTestPlanRun = () => {
                                 testPageUrl={
                                     testPlanReport.testPlanVersion.testPageUrl
                                 }
-                                isSubmitted={true}
-                                testRunResultRef={testRunResultRef}
-                                showResultsHeader={false}
-                                showResults={false}
-                                showInstructions={true}
-                                showTestContent={false}
                             />
                         </Card.Body>
                     </Accordion.Collapse>
                 </Card>
             </Accordion>
             {testPlanReports.map((testPlanReport, index) => {
+                const testResult =
+                    testPlanReport.finalizedTestResults[currentTestIndex];
                 return (
-                    testPlanReport.finalizedTestResults[currentTestIndex] && (
+                    testResult && (
                         <Accordion
                             key={`feedback-accordion-${index + 1}`}
                             className="feedback-accordion"
@@ -476,26 +494,10 @@ const CandidateTestPlanRun = () => {
                                 </Card.Header>
                                 <Accordion.Collapse eventKey={`${index + 1}`}>
                                     <Card.Body>
-                                        <TestRenderer
-                                            key={`${testPlanReport.id} + ${testPlanReport.finalizedTestResults[currentTestIndex].id}`}
-                                            at={testPlanReport.at}
-                                            testRunStateRef={testRunStateRef}
-                                            recentTestRunStateRef={
-                                                recentTestRunStateRef
-                                            }
-                                            setIsRendererReady={() => {}}
-                                            testResult={
-                                                testPlanReport
-                                                    .finalizedTestResults[
-                                                    currentTestIndex
-                                                ]
-                                            }
-                                            testPageUrl={
-                                                testPlanReport.testPlanVersion
-                                                    .testPageUrl
-                                            }
-                                            testRunResultRef={testRunResultRef}
-                                            showResultsHeader={false}
+                                        <TestPlanResultsTable
+                                            key={`${testPlanReport.id} + ${testResult.id}`}
+                                            test={currentTest}
+                                            testResult={testResult}
                                         />
                                     </Card.Body>
                                 </Accordion.Collapse>
@@ -535,7 +537,7 @@ const CandidateTestPlanRun = () => {
                     currentTestIndex={currentTestIndex}
                     toggleShowClick={toggleTestNavigator}
                     handleTestClick={handleTestClick}
-                    currentUser={data.me}
+                    viewedTests={viewedTests}
                 />
                 <Col
                     className="candidate-test-area"
