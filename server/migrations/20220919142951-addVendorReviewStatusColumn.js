@@ -14,10 +14,7 @@ module.exports = {
                 { transaction }
             );
             await queryInterface.sequelize.query(
-                `
-              update "TestPlanReport" set "vendorReviewStatus" = 'READY' where status = 'IN_REVIEW';
-              update "TestPlanReport" set "vendorReviewStatus" = 'APPROVED' where status = 'FINALIZED';
-          `,
+                `update "TestPlanReport" set "vendorReviewStatus" = 'READY' where status = 'FINALIZED';`,
                 { transaction }
             );
         });

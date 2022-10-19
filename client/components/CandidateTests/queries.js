@@ -22,7 +22,7 @@ export const CANDIDATE_TESTS_PAGE_QUERY = gql`
                 }
                 metadata
             }
-            # vendorReviewStatus
+            vendorReviewStatus
             candidateStatusReachedAt
             recommendedStatusTargetDate
             issues {

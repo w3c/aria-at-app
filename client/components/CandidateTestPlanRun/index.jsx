@@ -57,43 +57,10 @@ const CandidateTestPlanRun = () => {
     const { loading, data, error } = useQuery(CANDIDATE_REPORTS_QUERY);
     const [addViewer] = useMutation(ADD_VIEWER_MUTATION);
     const [promoteVendorReviewStatus] = useMutation(
-        PROMOTE_VENDOR_REVIEW_STATUS_REPORT_MUTATION,
-        {
-            update(
-                cache,
-                {
-                    data: {
-                        testPlanReport: { promoteVendorReviewStatus }
-                    }
-                }
-            ) {
-                cache.modify({
-                    fields: {
-                        testPlanReports(existingTestPlanReports) {
-                            const newTestPlanReports = [
-                                ...existingTestPlanReports
-                            ];
-                            const modifiedTestPlanReportIndex = newTestPlanReports.findIndex(
-                                each =>
-                                    each.id ===
-                                    promoteVendorReviewStatus.testPlanReport.id
-                            );
-                            newTestPlanReports[modifiedTestPlanReportIndex] = {
-                                ...newTestPlanReports[
-                                    modifiedTestPlanReportIndex
-                                ],
-                                vendorReviewStatus:
-                                    promoteVendorReviewStatus.testPlanReport
-                                        .vendorReviewStatus
-                            };
-                            return newTestPlanReports;
-                        }
-                    }
-                });
-            }
-        }
+        PROMOTE_VENDOR_REVIEW_STATUS_REPORT_MUTATION
     );
 
+    const [reviewStatus, setReviewStatus] = useState('');
     const [firstTimeViewing, setFirstTimeViewing] = useState(false);
     const [viewedTests, setViewedTests] = useState([]);
     const [currentTestIndex, setCurrentTestIndex] = useState(0);
@@ -143,15 +110,15 @@ const CandidateTestPlanRun = () => {
         const userPreviouslyViewedTest = viewedTests.includes(currentTest.id);
         if (!userPreviouslyViewedTest) {
             setFirstTimeViewing(true);
-            setViewedTests(tests => [...tests, currentTest.id]);
             addViewerToTest(currentTest.id);
+            setViewedTests(tests => [...tests, currentTest.id]);
         } else {
             setFirstTimeViewing(false);
         }
     };
 
     const updateVendorStatus = async () => {
-        if (vendorReviewStatus === 'READY') {
+        if (reviewStatus === 'READY') {
             await Promise.all(
                 testPlanReports.map(report => {
                     promoteVendorReviewStatus({
@@ -159,6 +126,7 @@ const CandidateTestPlanRun = () => {
                     });
                 })
             );
+            setReviewStatus('IN_PROGRESS');
         }
     };
 
@@ -183,8 +151,13 @@ const CandidateTestPlanRun = () => {
                     .map(test => test.id)
             ];
             setViewedTests(viewedTests);
+            setReviewStatus(vendorReviewStatus);
         }
     }, [data]);
+
+    useEffect(() => {
+        updateVendorStatus();
+    }, [reviewStatus]);
 
     useEffect(() => {
         if (data) {
@@ -260,16 +233,13 @@ const CandidateTestPlanRun = () => {
         candidateStatusReachedAt
     } = testPlanReport;
 
-    /**
-     * TODO: fix vendor promotion
     const vendorReviewStatusMap = {
         READY: 'Ready',
         IN_PROGRESS: 'In Progress',
         APPROVED: 'Approved'
     };
 
-    const reviewStatus = vendorReviewStatusMap[vendorReviewStatus];
-    */
+    const reviewStatusText = vendorReviewStatusMap[reviewStatus];
 
     const targetCompletionDate = convertDateToString(
         new Date(recommendedStatusTargetDate),
@@ -355,8 +325,7 @@ const CandidateTestPlanRun = () => {
             <div className="test-info-entity review-status">
                 <div className="info-label">
                     <b>Review status by {at} Representative:</b>{' '}
-                    {/* TODO: fix promotion {`${reviewStatus} `} */}
-                    In Progress
+                    {`${reviewStatusText} `}
                 </div>
             </div>
             <div className="test-info-entity target-date">

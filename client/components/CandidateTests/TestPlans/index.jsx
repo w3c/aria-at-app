@@ -619,6 +619,7 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
                                                 ...testPlanReport.issues
                                             ])
                                             .flat();
+
                                         return (
                                             <tr key={testPlanVersion.id}>
                                                 <td>
