@@ -3,6 +3,10 @@ const {
     removeTestPlanRunByQuery
 } = require('../../models/services/TestPlanRunService');
 const populateData = require('../../services/PopulatedData/populateData');
+const conflictsResolver = require('../TestPlanReport/conflictsResolver');
+const {
+    updateTestPlanReport
+} = require('../../models/services/TestPlanReportService');
 
 const deleteTestPlanRunResolver = async (
     { parentContext: { id: testPlanReportId } },
@@ -22,6 +26,17 @@ const deleteTestPlanRunResolver = async (
     await removeTestPlanRunByQuery({
         testPlanReportId,
         testerUserId
+    });
+
+    const { testPlanReport } = await populateData({
+        testPlanReportId
+    });
+    const conflicts = await conflictsResolver(testPlanReport);
+    await updateTestPlanReport(testPlanReport.id, {
+        metrics: {
+            ...testPlanReport.metrics,
+            conflictsCount: conflicts.length
+        }
     });
 
     return populateData({ testPlanReportId });

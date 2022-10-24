@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { Container, Table } from 'react-bootstrap';
 import styled from '@emotion/styled';
 import alphabetizeObjectBy from '../../utils/alphabetizeObjectBy';
-import getMetrics, { none } from './getMetrics';
+import { none } from './getMetrics';
 import { getTestPlanTargetTitle, getTestPlanVersionTitle } from './getTitles';
 import ClippedProgressBar from '@components/common/ClippedProgressBar';
 
@@ -102,7 +102,7 @@ const SummarizeTestPlanReports = ({ testPlanReports }) => {
                                 <tr key={testPlanVersion.id}>
                                     <td>
                                         <Link
-                                            to={`/reports/${testPlanVersion.id}`}
+                                            to={`/report/${testPlanVersion.id}`}
                                         >
                                             {getTestPlanVersionTitle(
                                                 testPlanVersion
@@ -124,14 +124,13 @@ const SummarizeTestPlanReports = ({ testPlanReports }) => {
                                                     </td>
                                                 );
                                             }
-                                            const metrics = getMetrics({
-                                                testPlanReport
-                                            });
+                                            const metrics =
+                                                testPlanReport.metrics;
                                             return (
                                                 <td key={testPlanReport.id}>
                                                     <Link
                                                         to={
-                                                            `/reports/${testPlanVersion.id}` +
+                                                            `/report/${testPlanVersion.id}` +
                                                             `/targets/${testPlanReport.id}`
                                                         }
                                                     >

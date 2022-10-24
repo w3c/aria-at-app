@@ -1,9 +1,39 @@
 import { gql } from '@apollo/client';
 
 export const REPORTS_PAGE_QUERY = gql`
-    query {
+    query ReportsPageQuery {
         testPlanReports(statuses: [FINALIZED]) {
             id
+            metrics
+            at {
+                id
+                name
+            }
+            browser {
+                id
+                name
+            }
+            testPlanVersion {
+                id
+                title
+                gitSha
+                testPlan {
+                    directory
+                }
+                metadata
+            }
+        }
+    }
+`;
+
+export const REPORT_PAGE_QUERY = gql`
+    query ReportPageQuery($testPlanVersionId: ID!) {
+        testPlanReports(
+            statuses: [FINALIZED]
+            testPlanVersionId: $testPlanVersionId
+        ) {
+            id
+            metrics
             at {
                 id
                 name

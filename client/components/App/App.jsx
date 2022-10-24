@@ -20,7 +20,7 @@ const App = () => {
     const [isNavbarExpanded, setIsNavbarExpanded] = useState(false);
 
     const auth = evaluateAuth(data && data.me ? data.me : {});
-    const { username, isSignedIn, isAdmin, isVendor } = auth;
+    const { username, isSignedIn, /*isAdmin,*/ isVendor } = auth;
 
     const signOut = async () => {
         await fetch('/api/auth/signout', { method: 'POST' });
@@ -63,7 +63,7 @@ const App = () => {
                                     as={Link}
                                     to="/reports"
                                     aria-current={location.pathname.startsWith(
-                                        '/reports'
+                                        '/report'
                                     )}
                                 >
                                     Test Reports
@@ -80,20 +80,20 @@ const App = () => {
                                     Test Queue
                                 </Nav.Link>
                             </li>
-                            {isSignedIn && (isAdmin || isVendor) && (
-                                <li>
-                                    <Nav.Link
-                                        as={Link}
-                                        to="/candidate-tests"
-                                        aria-current={
-                                            location.pathname ===
-                                            '/candidate-tests'
-                                        }
-                                    >
-                                        Candidate Tests
-                                    </Nav.Link>
-                                </li>
-                            )}
+                            {/*{isSignedIn && (isAdmin || isVendor) && (*/}
+                            {/*    <li>*/}
+                            {/*        <Nav.Link*/}
+                            {/*            as={Link}*/}
+                            {/*            to="/candidate-tests"*/}
+                            {/*            aria-current={*/}
+                            {/*                location.pathname ===*/}
+                            {/*                '/candidate-tests'*/}
+                            {/*            }*/}
+                            {/*        >*/}
+                            {/*            Candidate Tests*/}
+                            {/*        </Nav.Link>*/}
+                            {/*    </li>*/}
+                            {/*)}*/}
                             {isSignedIn && (
                                 <>
                                     {!isVendor && (

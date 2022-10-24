@@ -360,6 +360,8 @@ describe('graphql', () => {
                             startedAt
                             completedAt
                         }
+                        metrics
+                        conflictsLength
                         candidateStatusReachedAt
                         recommendedStatusTargetDate
                         recommendedStatusReachedAt

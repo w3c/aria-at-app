@@ -1,3 +1,4 @@
 import Reports from './Reports';
+import Report from './Report';
 
-export default Reports;
+export { Reports, Report };

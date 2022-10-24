@@ -4,11 +4,23 @@ const populateData = require('../../services/PopulatedData/populateData');
 const allEqual = require('../../util/allEqual');
 
 const conflictsResolver = async testPlanReport => {
+    let testPlanReportData = {};
+
+    // Used in cases where the testPlanRuns to evaluate the conflicts doesn't
+    // exist for `testPlanReport`, such as this function being called from
+    // `conflictsLengthResolver.js`
+    if (testPlanReport.testPlanRuns.some(t => !t.testResults)) {
+        const { testPlanReport: _testPlanReport } = await populateData({
+            testPlanReportId: testPlanReport.id
+        });
+        testPlanReportData = _testPlanReport;
+    } else testPlanReportData = testPlanReport;
+
     const conflicts = [];
 
     const testResultsByTestId = {};
-    testPlanReport.testPlanRuns.forEach(testPlanRun => {
-        testPlanRun.testPlanReport = testPlanReport; // TODO: remove hacky fix
+    testPlanReportData.testPlanRuns.forEach(testPlanRun => {
+        testPlanRun.testPlanReport = testPlanReportData; // TODO: remove hacky fix
         const testResults = testResultsResolver(testPlanRun);
         testResults
             .filter(testResult => testResult.completedAt)
@@ -77,7 +89,7 @@ const conflictsResolver = async testPlanReport => {
         }
     });
 
-    const preloaded = { testPlanReport };
+    const preloaded = { testPlanReport: testPlanReportData };
 
     return Promise.all(
         conflicts.map(async ({ source, conflictingResults }) => ({

@@ -33,7 +33,6 @@ import {
     convertStringFormatToAnotherFormat
 } from '@client/utils/formatter';
 import { useThemedModal, THEMES } from '@client/hooks/useThemedModal';
-import getMetrics from '@components/Reports/getMetrics';
 import './TestPlans.css';
 
 const FullHeightContainer = styled(Container)`
@@ -533,10 +532,8 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
                                                     ][testPlanTarget.id];
 
                                                 if (testPlanReport) {
-                                                    const metrics = getMetrics({
-                                                        testPlanReport
-                                                    });
-
+                                                    const metrics =
+                                                        testPlanReport.metrics;
                                                     testPlanReports.push(
                                                         testPlanReport
                                                     );
