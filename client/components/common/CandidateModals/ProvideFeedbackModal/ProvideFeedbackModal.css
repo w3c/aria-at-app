@@ -8,12 +8,8 @@
     left: 10px;
 }
 
-.disabled {
-    opacity: 0.3;
-}
-
 .feedback {
-    min-width: 50%;
+    min-width: 60%;
 }
 
 .feedback .modal-content {
@@ -41,6 +37,8 @@
 .feedback-title {
     font-size: 24px;
     font-weight: normal;
+    border-bottom: solid #e5e5e5 1px;
+    margin-bottom: 3px;
 }
 
 .feedback-content h2 {
@@ -59,6 +57,7 @@
 
 .radio-text {
     padding-bottom: 10px;
+    color: #656565;
 }
 
 .sr-only {

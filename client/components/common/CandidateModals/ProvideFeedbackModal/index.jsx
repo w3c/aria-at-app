@@ -1,48 +1,22 @@
-import React, { useState } from 'react';
+import React from 'react';
 import BasicModal from '../../BasicModal';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-    faCheck,
-    faCommentAlt,
-    faTimes
-} from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faCommentAlt } from '@fortawesome/free-solid-svg-icons';
 import { Form, FormCheck } from 'react-bootstrap';
 import '../common.css';
 import './ProvideFeedbackModal.css';
+import FeedbackListItem from '../../FeedbackListItem';
 
 const ProvideFeedbackModal = ({
     at = '',
     handleAction = () => {},
-    issues = [],
+    feedbackIssues = [],
+    changesRequestedIssues = [],
     show = false,
     testPlan = '',
     username = ''
 }) => {
-    const [approveInputDisabled, setApproveInputDisabled] = useState('');
-    const [feedbackInputDisabled, setFeedbackInputDisabled] = useState('');
-    const [changesInputDisabled, setChangesInputDisabled] = useState('');
-
-    const radioChange = element => {
-        switch (element.target.id) {
-            case 'approve-input':
-                setApproveInputDisabled('');
-                setFeedbackInputDisabled('disabled');
-                setChangesInputDisabled('disabled');
-                break;
-            case 'feedback-input':
-                setApproveInputDisabled('disabled');
-                setFeedbackInputDisabled('');
-                setChangesInputDisabled('disabled');
-                break;
-            case 'changes-input':
-                setApproveInputDisabled('disabled');
-                setFeedbackInputDisabled('disabled');
-                setChangesInputDisabled('');
-                break;
-        }
-    };
-
     return (
         <BasicModal
             show={show}
@@ -50,15 +24,19 @@ const ProvideFeedbackModal = ({
             centered={true}
             content={
                 <div className="feedback-content">
-                    {issues.length >= 1 && (
-                        <p>
-                            You have{' '}
-                            <a href="#">
-                                raised {issues.length}{' '}
-                                {issues.length > 1 ? 'issues' : 'issue'}
-                            </a>{' '}
-                            for this test plan.
-                        </p>
+                    {changesRequestedIssues.length > 0 && (
+                        <FeedbackListItem
+                            type="changes-requested"
+                            differentAuthors={false}
+                            issues={changesRequestedIssues}
+                        ></FeedbackListItem>
+                    )}
+                    {feedbackIssues.length > 0 && (
+                        <FeedbackListItem
+                            type="feedback"
+                            differentAuthors={false}
+                            issues={feedbackIssues}
+                        ></FeedbackListItem>
                     )}
 
                     <h2 className="feedback-h2">Finish Your Review</h2>
@@ -69,13 +47,8 @@ const ProvideFeedbackModal = ({
                                     name="radio-feedback"
                                     id="approve-input"
                                     type="radio"
-                                    onClick={radioChange}
-                                    className={approveInputDisabled}
                                 />
-                                <FormCheck.Label
-                                    htmlFor="approve-input"
-                                    className={approveInputDisabled}
-                                >
+                                <FormCheck.Label htmlFor="approve-input">
                                     <div>
                                         <FontAwesomeIcon
                                             icon={faCheck}
@@ -84,12 +57,9 @@ const ProvideFeedbackModal = ({
                                         Approve
                                     </div>
                                 </FormCheck.Label>
-                                <Form.Text
-                                    className={`radio-text ${approveInputDisabled}`}
-                                >
+                                <Form.Text className="radio-text">
                                     {' '}
-                                    Approve without providing feedback or change
-                                    requests
+                                    Submit feedback and approve this Test Plan
                                 </Form.Text>
                             </FormCheck>
                             <FormCheck>
@@ -97,52 +67,19 @@ const ProvideFeedbackModal = ({
                                     id="feedback-input"
                                     name="radio-feedback"
                                     type="radio"
-                                    onClick={radioChange}
-                                    className={feedbackInputDisabled}
                                 />
-                                <FormCheck.Label
-                                    htmlFor="feedback-input"
-                                    className={feedbackInputDisabled}
-                                >
+                                <FormCheck.Label htmlFor="feedback-input">
                                     <div>
                                         <FontAwesomeIcon
                                             icon={faCommentAlt}
-                                            color="#275CAA"
+                                            color="#B254F8"
                                         />{' '}
-                                        Provide Feedback
+                                        Leave More Feedback
                                     </div>
                                 </FormCheck.Label>
-                                <Form.Text
-                                    className={`radio-text ${feedbackInputDisabled}`}
-                                >
-                                    Provide feedback without explicit approval
-                                </Form.Text>
-                            </FormCheck>
-                            <FormCheck>
-                                <FormCheck.Input
-                                    id="changes-input"
-                                    name="radio-feedback"
-                                    type="radio"
-                                    onClick={radioChange}
-                                    className={changesInputDisabled}
-                                />
-                                <FormCheck.Label
-                                    htmlFor="changes-input"
-                                    className={changesInputDisabled}
-                                >
-                                    <div>
-                                        <FontAwesomeIcon
-                                            icon={faTimes}
-                                            color="red"
-                                        />{' '}
-                                        Request Changes
-                                    </div>
-                                </FormCheck.Label>
-                                <Form.Text
-                                    className={`radio-text ${changesInputDisabled}`}
-                                >
-                                    Request Changes that must be addressed
-                                    before approving
+                                <Form.Text className="radio-text">
+                                    Submit general feedback without explicit
+                                    approval of this Test Plan
                                 </Form.Text>
                             </FormCheck>
                         </Form.Group>
@@ -181,7 +118,8 @@ const ProvideFeedbackModal = ({
 ProvideFeedbackModal.propTypes = {
     at: PropTypes.string,
     handleAction: PropTypes.func,
-    issues: PropTypes.array,
+    changesRequestedIssues: PropTypes.array,
+    feedbackIssues: PropTypes.array,
     show: PropTypes.bool,
     testPlan: PropTypes.string,
     username: PropTypes.string
