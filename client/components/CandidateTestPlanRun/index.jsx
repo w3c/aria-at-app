@@ -21,7 +21,7 @@ import {
     Col,
     Button
 } from 'react-bootstrap';
-import { useParams, Redirect } from 'react-router-dom';
+import { useParams, Redirect, useHistory } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import nextId from 'react-id-generator';
 import './CandidateTestPlanRun.css';
@@ -38,6 +38,8 @@ import useResizeObserver from '@react-hook/resize-observer';
 import { useMediaQuery } from 'react-responsive';
 import { convertDateToString } from '../../utils/formatter';
 import TestPlanResultsTable from '../Reports/TestPlanResultsTable';
+import ProvideFeedbackModal from '../common/CandidateModals/ProvideFeedbackModal';
+import ThankYouModal from '../common/CandidateModals/ThankYouModal';
 import getMetrics from '../Reports/getMetrics';
 
 function useSize(target) {
@@ -54,6 +56,7 @@ function useSize(target) {
 
 const CandidateTestPlanRun = () => {
     const { atId, testPlanVersionId } = useParams();
+    const history = useHistory();
 
     const { loading, data, error } = useQuery(CANDIDATE_REPORTS_QUERY);
     const [addViewer] = useMutation(ADD_VIEWER_MUTATION);
@@ -69,6 +72,8 @@ const CandidateTestPlanRun = () => {
     const [isFirstTest, setIsFirstTest] = useState(true);
     const [isLastTest, setIsLastTest] = useState(false);
     const [accordionMap, setActiveAccordionMap] = useState(new Map());
+    const [feedbackModalShowing, setFeedbackModalShowing] = useState(false);
+    const [thankYouModalShowing, setThankYouModalShowing] = useState(false);
 
     const [issuesHeading, setissuesHeading] = React.useState();
     const issuesHeadingSize = useSize(issuesHeading);
@@ -119,16 +124,28 @@ const CandidateTestPlanRun = () => {
     };
 
     const updateVendorStatus = async () => {
+        const setReportsReviewStatus = async () => {
+            testPlanReports.map(report => {
+                promoteVendorReviewStatus({
+                    variables: { testReportId: report.id }
+                });
+            });
+        };
         if (reviewStatus === 'READY') {
-            await Promise.all(
-                testPlanReports.map(report => {
-                    promoteVendorReviewStatus({
-                        variables: { testReportId: report.id }
-                    });
-                })
-            );
+            await Promise.all(setReportsReviewStatus());
             setReviewStatus('IN_PROGRESS');
+        } else if (reviewStatus === 'IN_PROGRESS') {
+            await Promise.all(setReportsReviewStatus());
+            setReviewStatus('APPROVED');
         }
+    };
+
+    const submitApproval = status => {
+        if (status === 'APPROVED') {
+            updateVendorStatus();
+        }
+        setFeedbackModalShowing(false);
+        setThankYouModalShowing(true);
     };
 
     useEffect(() => {
@@ -540,15 +557,27 @@ const CandidateTestPlanRun = () => {
                                                 </Button>
                                             </li>
                                             <li>
-                                                <Button
-                                                    variant="secondary"
-                                                    onClick={
-                                                        handleNextTestClick
-                                                    }
-                                                    disabled={isLastTest}
-                                                >
-                                                    Next Test
-                                                </Button>
+                                                {!isLastTest ? (
+                                                    <Button
+                                                        variant="secondary"
+                                                        onClick={
+                                                            handleNextTestClick
+                                                        }
+                                                    >
+                                                        Next Test
+                                                    </Button>
+                                                ) : (
+                                                    <Button
+                                                        variant="primary"
+                                                        onClick={() =>
+                                                            setFeedbackModalShowing(
+                                                                true
+                                                            )
+                                                        }
+                                                    >
+                                                        Finish
+                                                    </Button>
+                                                )}
                                             </li>
                                         </ul>
                                     </Row>
@@ -601,6 +630,29 @@ const CandidateTestPlanRun = () => {
                     </Row>
                 </Col>
             </Row>
+            {feedbackModalShowing ? (
+                <ProvideFeedbackModal
+                    show={true}
+                    username={data.me.username}
+                    testPlan={testPlanVersion.title}
+                    feedbackIssues={feedbackIssues}
+                    changesRequestedIssues={changesRequestedIssues}
+                    handleAction={submitApproval}
+                />
+            ) : (
+                <></>
+            )}
+            {thankYouModalShowing ? (
+                <ThankYouModal
+                    show={true}
+                    handleAction={async () => {
+                        setThankYouModalShowing(false);
+                        history.push('/candidate-tests');
+                    }}
+                />
+            ) : (
+                <></>
+            )}
         </Container>
     );
 };

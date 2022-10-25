@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import BasicModal from '../../BasicModal';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -13,13 +13,14 @@ const ProvideFeedbackModal = ({
     handleAction = () => {},
     feedbackIssues = [],
     changesRequestedIssues = [],
-    show = false,
     testPlan = '',
     username = ''
 }) => {
+    const [selectedRadio, setSelectedRadio] = useState(null);
+
     return (
         <BasicModal
-            show={show}
+            show={true}
             actionLabel={'Submit Review'}
             centered={true}
             content={
@@ -41,7 +42,9 @@ const ProvideFeedbackModal = ({
 
                     <h2 className="feedback-h2">Finish Your Review</h2>
                     <Form>
-                        <Form.Group>
+                        <Form.Group
+                            onChange={e => setSelectedRadio(e.target.id)}
+                        >
                             <FormCheck>
                                 <FormCheck.Input
                                     name="radio-feedback"
@@ -94,7 +97,11 @@ const ProvideFeedbackModal = ({
                 </div>
             }
             dialogClassName="feedback"
-            handleAction={handleAction}
+            handleAction={() => {
+                handleAction(
+                    selectedRadio === 'approve-input' ? 'APPROVED' : 'FEEDBACK'
+                );
+            }}
             title={
                 <>
                     <p className="sr-only">

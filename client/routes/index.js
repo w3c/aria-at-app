@@ -5,7 +5,7 @@ import Home from '@components/Home';
 import InvalidRequest from '@components/InvalidRequest';
 import NotFound from '@components/NotFound';
 import { Reports, Report } from '@components/Reports';
-// import CandidateTests from '@components/CandidateTests';
+import CandidateTests from '@components/CandidateTests';
 import SignupInstructions from '@components/SignupInstructions';
 import TestQueue from '@components/TestQueue';
 import TestRun from '@components/TestRun';
@@ -72,16 +72,16 @@ export default [
         path: '/report/:testPlanVersionId',
         component: Report
     },
-    // {
-    //     path: '/candidate-tests',
-    //     component: () => {
-    //         return (
-    //             <ConfirmAuth requiredPermission="VENDOR">
-    //                 <Route component={CandidateTests} />
-    //             </ConfirmAuth>
-    //         );
-    //     }
-    // },
+    {
+        path: '/candidate-tests',
+        component: () => {
+            return (
+                <ConfirmAuth requiredPermission="VENDOR">
+                    <Route component={CandidateTests} />
+                </ConfirmAuth>
+            );
+        }
+    },
     {
         path: '/invalid-request',
         exact: true,

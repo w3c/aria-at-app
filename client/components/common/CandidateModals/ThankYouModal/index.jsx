@@ -6,10 +6,10 @@ import PropTypes from 'prop-types';
 import '../common.css';
 import './ThankYouModal.css';
 
-const ThankYouModal = ({ show = false, handleAction = () => {} }) => {
+const ThankYouModal = ({ handleAction = () => {} }) => {
     return (
         <BasicModal
-            show={show}
+            show={true}
             actionLabel={'Close'}
             centered={true}
             closeButton={false}
