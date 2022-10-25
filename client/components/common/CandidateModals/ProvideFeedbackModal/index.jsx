@@ -18,6 +18,7 @@ const ProvideFeedbackModal = ({
     username = ''
 }) => {
     const [selectedRadio, setSelectedRadio] = useState(null);
+    const [feedbackBody, setFeedbackBody] = useState('');
 
     return (
         <BasicModal
@@ -94,6 +95,7 @@ const ProvideFeedbackModal = ({
                                 className="feedback-text"
                                 as="textarea"
                                 rows={5}
+                                onChange={e => setFeedbackBody(e.target.value)}
                             />
                         </Form.Group>
                     </Form>
@@ -101,9 +103,13 @@ const ProvideFeedbackModal = ({
             }
             dialogClassName="feedback"
             handleAction={() => {
-                handleAction(
-                    selectedRadio === 'approve-input' ? 'APPROVED' : 'FEEDBACK'
-                );
+                handleAction({
+                    status:
+                        selectedRadio === 'approve-input'
+                            ? 'APPROVED'
+                            : 'FEEDBACK',
+                    body: feedbackBody
+                });
             }}
             title={
                 <>

@@ -149,9 +149,27 @@ const CandidateTestPlanRun = () => {
         }
     };
 
-    const submitApproval = status => {
+    const submitApproval = async ({ status = '', body }) => {
         if (status === 'APPROVED') {
             updateVendorStatus(true);
+        } else if (status === 'FEEDBACK') {
+            const data = {
+                title: `ARIA-AT-App Candidate Test Plan Review for ${at}/${testPlanVersion.title} started ${startedAtDate}`,
+                body,
+                labels: [
+                    'app',
+                    'candidate-review',
+                    'feedback',
+                    `${githubAtLabelMap[at]}`
+                ]
+            };
+            await fetch('/api/github/issue', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
         }
         setFeedbackModalShowing(false);
         setThankYouModalShowing(true);

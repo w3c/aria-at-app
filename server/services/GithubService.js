@@ -93,28 +93,24 @@ const constructIssuesRequest = async ({
     return resultsByAt;
 };
 
-const createFeedbackIssue = async ({
-    title,
-    repo,
-    labels,
-    body,
-    accessToken
-}) => {
-    const config = {
-        headers: { Authorization: `Bearer ${accessToken}` }
-    };
-
-    const issuesEndpoint = `https://api.github.com/repos/${repo}/issues`;
+const createFeedbackIssue = async ({ title, labels, body }) => {
+    const issuesEndpoint = `https://api.github.com/repos/evmiguel/aria-at-app/issues`;
     const requestBody = {
         title,
         body,
         labels
     };
 
+    const auth = {
+        // TODO: add real auth credentials
+        username: '',
+        password: ''
+    };
+
     const response = await axios.post(
         issuesEndpoint,
         { ...requestBody },
-        config
+        { auth }
     );
 
     return response;
