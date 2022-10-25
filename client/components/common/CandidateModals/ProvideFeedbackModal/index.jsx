@@ -11,6 +11,7 @@ import FeedbackListItem from '../../FeedbackListItem';
 const ProvideFeedbackModal = ({
     at = '',
     handleAction = () => {},
+    handleHide = () => {},
     feedbackIssues = [],
     changesRequestedIssues = [],
     testPlan = '',
@@ -23,6 +24,8 @@ const ProvideFeedbackModal = ({
             show={true}
             actionLabel={'Submit Review'}
             centered={true}
+            cancelButton={false}
+            handleHide={handleHide}
             content={
                 <div className="feedback-content">
                     {changesRequestedIssues.length > 0 && (
@@ -125,6 +128,7 @@ const ProvideFeedbackModal = ({
 ProvideFeedbackModal.propTypes = {
     at: PropTypes.string,
     handleAction: PropTypes.func,
+    handleHide: PropTypes.func,
     changesRequestedIssues: PropTypes.array,
     feedbackIssues: PropTypes.array,
     show: PropTypes.bool,

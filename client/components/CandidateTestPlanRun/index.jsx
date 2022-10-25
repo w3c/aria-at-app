@@ -123,18 +123,19 @@ const CandidateTestPlanRun = () => {
         }
     };
 
-    const updateVendorStatus = async () => {
+    const updateVendorStatus = async (reportApproved = false) => {
         const setReportsReviewStatus = async () => {
-            testPlanReports.map(report => {
+            return testPlanReports.map(report => {
                 promoteVendorReviewStatus({
                     variables: { testReportId: report.id }
                 });
             });
         };
+
         if (reviewStatus === 'READY') {
             await Promise.all(setReportsReviewStatus());
             setReviewStatus('IN_PROGRESS');
-        } else if (reviewStatus === 'IN_PROGRESS') {
+        } else if (reviewStatus === 'IN_PROGRESS' && reportApproved) {
             await Promise.all(setReportsReviewStatus());
             setReviewStatus('APPROVED');
         }
@@ -142,7 +143,7 @@ const CandidateTestPlanRun = () => {
 
     const submitApproval = status => {
         if (status === 'APPROVED') {
-            updateVendorStatus();
+            updateVendorStatus(true);
         }
         setFeedbackModalShowing(false);
         setThankYouModalShowing(true);
@@ -474,8 +475,12 @@ const CandidateTestPlanRun = () => {
                                 </Card.Header>
                                 <Accordion.Collapse eventKey={`${index + 1}`}>
                                     <Card.Body>
+                                        <h1 className="test-results-header">
+                                            Test Result:{' '}
+                                            {testsPassedCount ? 'PASS' : 'FAIL'}
+                                        </h1>
                                         <TestPlanResultsTable
-                                            passed={!!testsPassedCount}
+                                            tableClassName="test-results-table"
                                             key={`${testPlanReport.id} + ${testResult.id}`}
                                             test={currentTest}
                                             testResult={testResult}
@@ -522,7 +527,7 @@ const CandidateTestPlanRun = () => {
                 />
                 <Col
                     className="candidate-test-area"
-                    id="candidate-test-run-main"
+                    id="main"
                     as="main"
                     tabIndex="-1"
                 >
@@ -559,7 +564,7 @@ const CandidateTestPlanRun = () => {
                                             <li>
                                                 {!isLastTest ? (
                                                     <Button
-                                                        variant="secondary"
+                                                        variant="primary"
                                                         onClick={
                                                             handleNextTestClick
                                                         }
@@ -638,6 +643,7 @@ const CandidateTestPlanRun = () => {
                     feedbackIssues={feedbackIssues}
                     changesRequestedIssues={changesRequestedIssues}
                     handleAction={submitApproval}
+                    handleHide={() => setFeedbackModalShowing(false)}
                 />
             ) : (
                 <></>

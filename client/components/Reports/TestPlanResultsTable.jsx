@@ -14,14 +14,14 @@ const getAssertionResultString = assertionResult => {
     return `${output}: ${assertionResult.assertion.text}`;
 };
 
-const TestPlanResultsTable = ({ test, testResult, passed }) => {
+const TestPlanResultsTable = ({ test, testResult, tableClassName = '' }) => {
     return (
         <>
-            <h1>Test Result: {passed ? 'PASS' : 'FAIL'}</h1>
             <Table
                 bordered
                 responsive
                 aria-label={`Results for test ${test.title}`}
+                className={tableClassName}
             >
                 <thead>
                     <tr>
@@ -137,7 +137,7 @@ TestPlanResultsTable.propTypes = {
     testResult: PropTypes.shape({
         scenarioResults: PropTypes.array.isRequired
     }),
-    passed: PropTypes.bool
+    tableClassName: PropTypes.string
 };
 
 export default TestPlanResultsTable;

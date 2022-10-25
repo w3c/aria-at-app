@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import nextId from 'react-id-generator';
+import styled from '@emotion/styled';
+import { Button } from 'react-bootstrap';
 import {
     userCloseWindow,
     userOpenWindow
@@ -10,6 +13,51 @@ import {
 } from '../../resources/aria-at-test-io-format.mjs';
 import { TestWindow } from '../../resources/aria-at-test-window.mjs';
 import { evaluateAtNameKey } from '../../utils/aria.js';
+
+const Container = styled.div`
+    padding: 20px;
+`;
+
+const Heading = styled.h2`
+    margin: 0 0 0.5em 0;
+`;
+
+const NumberedList = styled.ol`
+    counter-reset: numbered-list;
+    list-style: none;
+    > li {
+        counter-increment: numbered-list;
+        position: relative;
+        margin-bottom: 10px;
+    }
+
+    > li::before {
+        content: counter(numbered-list);
+        position: absolute;
+        color: #78869c;
+        font-size: 1em;
+        --size: 25px;
+        left: calc(-1 * var(--size) - 10px);
+        line-height: var(--size);
+        width: var(--size);
+        height: var(--size);
+        top: 2px;
+        background: #edf6ff;
+        border-radius: 50%;
+        border: 1px solid #d5deec;
+        text-align: center;
+    }
+`;
+
+const BulletList = styled.ul`
+    padding-inline-start: 2.5rem;
+    list-style-type: circle;
+
+    > li {
+        display: list-item;
+        list-style: circle;
+    }
+`;
 
 const InstructionsRenderer = ({ testResult, testPageUrl, at }) => {
     const { test = {} } = testResult;
@@ -116,7 +164,7 @@ const InstructionsRenderer = ({ testResult, testPageUrl, at }) => {
                         {value}
                         {commandsContent &&
                             index === instructions.length - 1 && (
-                                <ul>{commandsContent}</ul>
+                                <BulletList>{commandsContent}</BulletList>
                             )}
                     </li>
                 );
@@ -126,7 +174,7 @@ const InstructionsRenderer = ({ testResult, testPageUrl, at }) => {
                         {parseRichContent(value)}
                         {commandsContent &&
                             index === instructions.length - 1 && (
-                                <ul>{commandsContent}</ul>
+                                <BulletList>{commandsContent}</BulletList>
                             )}
                     </li>
                 );
@@ -155,25 +203,37 @@ const InstructionsRenderer = ({ testResult, testPageUrl, at }) => {
     const assertionsContent = parseListContent(assertions);
 
     return (
-        <div>
+        <Container>
             <p>{instructionsContent.instructions.description}</p>
-            <h2 id="instruction-list-heading">
+            <Heading>
                 {instructionsContent.instructions.instructions.header}
-            </h2>
-            <ol>{allInstructionsContent}</ol>
-            <h2>{instructionsContent.instructions.assertions.header}</h2>
+            </Heading>
+            <NumberedList>{allInstructionsContent}</NumberedList>
+            <Heading>
+                {instructionsContent.instructions.assertions.header}
+            </Heading>
             {instructionsContent.instructions.assertions.description}
-            <ol>{assertionsContent}</ol>
-            <button
+            <NumberedList>{assertionsContent}</NumberedList>
+            <Button
                 disabled={
                     !instructionsContent.instructions.openTestPage.enabled
                 }
                 onClick={instructionsContent.instructions.openTestPage.click}
             >
                 {instructionsContent.instructions.openTestPage.button}
-            </button>
-        </div>
+            </Button>
+        </Container>
     );
+};
+
+InstructionsRenderer.propTypes = {
+    testResult: PropTypes.shape({
+        test: PropTypes.object.isRequired
+    }),
+    testPageUrl: PropTypes.string,
+    at: PropTypes.shape({
+        name: PropTypes.string.isRequired
+    })
 };
 
 export default InstructionsRenderer;
