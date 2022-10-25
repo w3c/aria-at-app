@@ -86,6 +86,14 @@ const CandidateTestPlanRun = () => {
     const toggleTestNavigator = () => setShowTestNavigator(!showTestNavigator);
     const handleTestClick = async index => {
         setCurrentTestIndex(index);
+        if (index === 0) {
+            setIsFirstTest(true);
+        } else if (index === tests.length - 1) {
+            setIsLastTest(true);
+        } else {
+            setIsFirstTest(false);
+            setIsLastTest(false);
+        }
     };
     const handleNextTestClick = async () => {
         navigateTests(

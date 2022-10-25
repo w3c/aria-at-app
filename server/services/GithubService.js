@@ -93,7 +93,35 @@ const constructIssuesRequest = async ({
     return resultsByAt;
 };
 
+const createFeedbackIssue = async ({
+    title,
+    repo,
+    labels,
+    body,
+    accessToken
+}) => {
+    const config = {
+        headers: { Authorization: `Bearer ${accessToken}` }
+    };
+
+    const issuesEndpoint = `https://api.github.com/repos/${repo}/issues`;
+    const requestBody = {
+        title,
+        body,
+        labels
+    };
+
+    const response = await axios.post(
+        issuesEndpoint,
+        { ...requestBody },
+        config
+    );
+
+    return response;
+};
+
 module.exports = {
+    createFeedbackIssue,
     graphQLEndpoint,
     getOauthUrl: ({ state = '' }) => {
         return (
