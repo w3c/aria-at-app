@@ -39,10 +39,6 @@
     font-weight: 400;
 }
 
-.feedback-list {
-    padding-left: 40px;
-}
-
 .feedback-list-item {
     padding: 1em 0 1em 0.5em;
     position: relative;
@@ -128,10 +124,6 @@
 
 .options-feedback {
     top: 35px;
-}
-
-#overallstatus {
-    margin-top: 5px;
 }
 
 .test-results-header {

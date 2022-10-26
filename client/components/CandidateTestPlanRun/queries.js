@@ -38,6 +38,7 @@ export const CANDIDATE_REPORTS_QUERY = gql`
             recommendedStatusTargetDate
             vendorReviewStatus
             issues {
+                author
                 feedbackType
                 testNumberFilteredByAt
             }

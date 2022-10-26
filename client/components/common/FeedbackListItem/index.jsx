@@ -8,8 +8,40 @@ import './FeedbackListItem.css';
 const FeedbackListItem = ({
     differentAuthors = false,
     type = 'feedback',
-    issues = []
+    issues = [],
+    individualTest = false
 }) => {
+    let content;
+
+    if (!differentAuthors && !individualTest) {
+        content = (
+            <span>
+                {`You ${
+                    type === 'feedback'
+                        ? 'left feedback for'
+                        : 'requested changes for'
+                }
+                    `}
+                <a href="#">
+                    {issues.length} {issues.length === 1 ? 'test' : 'tests'}
+                </a>{' '}
+                in this Test Plan
+            </span>
+        );
+    } else if (!differentAuthors && individualTest) {
+        content = `You have ${
+            type === 'feedback' ? 'left feedback' : 'requested changes'
+        } for this test`;
+    } else {
+        content = (
+            <a href="#">
+                {issues.length} {issues.length === 1 ? 'person' : 'people'}{' '}
+                {type === 'feedback' ? 'left feedback' : 'requested changes'}
+                {' for this test'}
+            </a>
+        );
+    }
+
     return (
         <li className="feedback-list-item" key={nextId()}>
             {type === 'feedback' ? (
@@ -18,25 +50,7 @@ const FeedbackListItem = ({
                 <FontAwesomeIcon icon={faFlag} color="#F87F1C" />
             )}
             {'  '}
-            {!differentAuthors ? (
-                <span>
-                    {`You ${
-                        type === 'feedback'
-                            ? 'left feedback for'
-                            : 'requested changes for'
-                    }
-                    `}
-                    <a href="#">{issues.length} tests</a> in this Test Plan
-                </span>
-            ) : (
-                <a href="#">
-                    {issues.length} {issues.length === 1 ? 'person' : 'people'}{' '}
-                    {type === 'feedback'
-                        ? 'left feedback'
-                        : 'requested changes'}
-                    {' for this test'}
-                </a>
-            )}
+            {content}
             <span className="feedback-indicator" title="Feedback Indicator" />
         </li>
     );
@@ -45,7 +59,8 @@ const FeedbackListItem = ({
 FeedbackListItem.propTypes = {
     differentAuthors: PropTypes.bool,
     issues: PropTypes.array,
-    type: PropTypes.string
+    type: PropTypes.string,
+    individualTest: PropTypes.bool
 };
 
 export default FeedbackListItem;

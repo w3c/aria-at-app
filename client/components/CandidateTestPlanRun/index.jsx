@@ -41,7 +41,9 @@ import TestPlanResultsTable from '../Reports/TestPlanResultsTable';
 import ProvideFeedbackModal from '../common/CandidateModals/ProvideFeedbackModal';
 import ThankYouModal from '../common/CandidateModals/ThankYouModal';
 import getMetrics from '../Reports/getMetrics';
+import FeedbackListItem from '../common/FeedbackListItem';
 
+// https://codesandbox.io/s/react-hookresize-observer-example-ft88x
 function useSize(target) {
     const [size, setSize] = React.useState();
 
@@ -84,6 +86,14 @@ const CandidateTestPlanRun = () => {
     });
 
     const toggleTestNavigator = () => setShowTestNavigator(!showTestNavigator);
+
+    const toggleAccordion = (accordionMap, index) => {
+        if (!accordionMap.get(index)) {
+            return new Map(accordionMap.set(index, true));
+        }
+        return new Map(accordionMap.set(index, false));
+    };
+
     const handleTestClick = async index => {
         setCurrentTestIndex(index);
         if (index === 0) {
@@ -237,13 +247,6 @@ const CandidateTestPlanRun = () => {
 
     if (!data) return null;
 
-    const toggleAccordion = (accordionMap, index) => {
-        if (!accordionMap.get(index)) {
-            return new Map(accordionMap.set(index, true));
-        }
-        return new Map(accordionMap.set(index, false));
-    };
-
     const atMap = {
         1: 'JAWS',
         2: 'NVDA',
@@ -308,6 +311,7 @@ const CandidateTestPlanRun = () => {
             issue.testNumberFilteredByAt === currentTest.seq
     );
 
+    // https://react-bootstrap-v4.netlify.app/components/accordion/#custom-toggle-with-expansion-awareness
     const ContextAwareToggle = ({ children, eventKey, callback }) => {
         const decoratedOnClick = useAccordionToggle(
             eventKey,
@@ -404,37 +408,31 @@ const CandidateTestPlanRun = () => {
                     position: 'relative'
                 }}
             >
-                {[changesRequestedIssues, feedbackIssues].map(
-                    (list, index) =>
-                        list.length > 0 && (
-                            <li className="feedback-list-item" key={nextId()}>
-                                {index === 0 ? (
-                                    <FontAwesomeIcon
-                                        icon={faFlag}
-                                        color="#F87F1C"
-                                    />
-                                ) : (
-                                    <FontAwesomeIcon
-                                        icon={faCommentAlt}
-                                        color="#B254F8"
-                                    />
-                                )}
-                                {'  '}
-                                <a href="#">
-                                    {list.length}{' '}
-                                    {list.length === 1 ? 'person' : 'people'}{' '}
-                                    {index === 0
-                                        ? 'requested changes'
-                                        : 'left feedback'}{' '}
-                                </a>
-                                for this test
-                                <span
-                                    className="feedback-indicator"
-                                    title="Title"
-                                />
-                            </li>
-                        )
-                )}
+                {[changesRequestedIssues, feedbackIssues].map((list, index) => {
+                    if (list.length > 0) {
+                        const uniqueAuthors = [
+                            ...new Set(list.map(issue => issue.author))
+                        ];
+                        return (
+                            <FeedbackListItem
+                                key={`${index}-issues`}
+                                differentAuthors={
+                                    !(
+                                        uniqueAuthors.length === 1 &&
+                                        uniqueAuthors[0] === data.me.username
+                                    )
+                                }
+                                type={
+                                    index === 0
+                                        ? 'changes-requested'
+                                        : 'feedback'
+                                }
+                                issues={list}
+                                individualTest={true}
+                            />
+                        );
+                    }
+                })}
             </ul>
         </div>
     );
@@ -666,8 +664,12 @@ const CandidateTestPlanRun = () => {
                     show={true}
                     username={data.me.username}
                     testPlan={testPlanVersion.title}
-                    feedbackIssues={feedbackIssues}
-                    changesRequestedIssues={changesRequestedIssues}
+                    feedbackIssues={testPlanReport.issues?.filter(
+                        issue => issue.feedbackType === 'FEEDBACK'
+                    )}
+                    changesRequestedIssues={testPlanReport.issues?.filter(
+                        issue => issue.feedbackType === 'CHANGES_REQUESTED'
+                    )}
                     handleAction={submitApproval}
                     handleHide={() => setFeedbackModalShowing(false)}
                 />
