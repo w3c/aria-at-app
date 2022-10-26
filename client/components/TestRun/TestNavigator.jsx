@@ -122,8 +122,7 @@ TestNavigator.propTypes = {
     testResult: PropTypes.object,
     conflicts: PropTypes.object,
     currentTestIndex: PropTypes.number,
-    currentUser: PropTypes.object,
-    viewed: PropTypes.bool,
+    viewedTests: PropTypes.array,
     toggleShowClick: PropTypes.func,
     handleTestClick: PropTypes.func
 };

@@ -89,7 +89,9 @@ describe('authentication', () => {
                 `${process.env.APP_SERVER}/test-queue`
             );
             expect(data.me.username).toBe(_knownUsername);
-            expect(data.me.roles.sort()).toEqual(['ADMIN', 'TESTER'].sort());
+            expect(data.me.roles.sort()).toEqual(
+                ['ADMIN', 'TESTER', 'VENDOR'].sort()
+            );
         });
     });
 
@@ -124,7 +126,9 @@ describe('authentication', () => {
                 `${process.env.APP_SERVER}/test-queue`
             );
             expect(data.me.username).toBe(_unknownUsername);
-            expect(data.me.roles.sort()).toEqual(['ADMIN', 'TESTER'].sort());
+            expect(data.me.roles.sort()).toEqual(
+                ['ADMIN', 'TESTER', 'VENDOR'].sort()
+            );
         });
     });
 
@@ -290,7 +294,7 @@ describe('authentication', () => {
             // A3
             expect(firstLogin.me.roles).toEqual(['TESTER']);
             expect(secondLogin.me.roles.sort()).toEqual(
-                ['ADMIN', 'TESTER'].sort()
+                ['ADMIN', 'TESTER', 'VENDOR'].sort()
             );
         });
     });
