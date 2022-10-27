@@ -30,8 +30,13 @@ const issuesResolver = async testPlanReport => {
                 html_url,
                 id: topCommentId
             } = issue;
-            const testNumberSubstring = title.match(/\[Test \d+]/g)[0];
-            const testNumberFilteredByAt = testNumberSubstring.match(/\d+/g)[0];
+            const testNumberMatch = title.match(/\[Test \d+]/g);
+            const testNumberSubstring = testNumberMatch
+                ? testNumberMatch[0]
+                : '';
+            const testNumberFilteredByAt = testNumberSubstring
+                ? testNumberSubstring.match(/\d+/g)[0]
+                : null;
 
             return {
                 author: user.login,

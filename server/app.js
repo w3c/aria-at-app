@@ -9,7 +9,6 @@ const {
 const { session } = require('./middleware/session');
 const authRoutes = require('./routes/auth');
 const testRoutes = require('./routes/tests');
-const githubRoutes = require('./routes/github');
 const path = require('path');
 const graphqlSchema = require('./graphql-schema');
 const getGraphQLContext = require('./graphql-context');
@@ -22,7 +21,6 @@ app.use(session);
 app.use(bodyParser.json());
 app.use('/auth', authRoutes);
 app.use('/test', testRoutes);
-app.use('/github', githubRoutes);
 
 const server = new ApolloServer({
     typeDefs: graphqlSchema,

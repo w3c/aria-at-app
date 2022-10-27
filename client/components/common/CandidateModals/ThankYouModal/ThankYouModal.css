@@ -24,9 +24,19 @@
     font-size: 1.5em;
 }
 
-.thank-you p {
+.thank-you-content {
     font-weight: bold;
     text-align: center;
+}
+
+.thank-you-share {
+    margin-bottom: 0;
+}
+
+.thank-you-issue  {
+    text-align: center;
+    font-size: 12px;
+    margin-bottom: 0;
 }
 
 .thank-you .modal-header {

@@ -23,17 +23,11 @@ import {
 } from 'react-bootstrap';
 import { useParams, Redirect, useHistory } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
-import nextId from 'react-id-generator';
 import './CandidateTestPlanRun.css';
 import '../TestRun/TestRun.css';
 import '../App/App.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-    faAngleDown,
-    faAngleUp,
-    faCommentAlt,
-    faFlag
-} from '@fortawesome/free-solid-svg-icons';
+import { faAngleDown, faAngleUp } from '@fortawesome/free-solid-svg-icons';
 import useResizeObserver from '@react-hook/resize-observer';
 import { useMediaQuery } from 'react-responsive';
 import { convertDateToString } from '../../utils/formatter';
@@ -60,9 +54,12 @@ const CandidateTestPlanRun = () => {
     const { atId, testPlanVersionId } = useParams();
     const history = useHistory();
 
-    const { loading, data, error } = useQuery(CANDIDATE_REPORTS_QUERY, {
-        variables: { testPlanVersionId, atId }
-    });
+    const { loading, data, error, refetch } = useQuery(
+        CANDIDATE_REPORTS_QUERY,
+        {
+            variables: { testPlanVersionId, atId }
+        }
+    );
     const [addViewer] = useMutation(ADD_VIEWER_MUTATION);
     const [promoteVendorReviewStatus] = useMutation(
         PROMOTE_VENDOR_REVIEW_STATUS_REPORT_MUTATION
@@ -165,27 +162,9 @@ const CandidateTestPlanRun = () => {
         }
     };
 
-    const submitApproval = async ({ status = '', body }) => {
+    const submitApproval = async (status = '') => {
         if (status === 'APPROVED') {
             updateVendorStatus(true);
-        } else if (status === 'FEEDBACK') {
-            const data = {
-                title: `ARIA-AT-App Candidate Test Plan Review for ${at}/${testPlanVersion.title} started ${startedAtDate}`,
-                body,
-                labels: [
-                    'app',
-                    'candidate-review',
-                    'feedback',
-                    `${githubAtLabelMap[at]}`
-                ]
-            };
-            await fetch('/api/github/issue', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            });
         }
         setFeedbackModalShowing(false);
         setThankYouModalShowing(true);
@@ -225,6 +204,7 @@ const CandidateTestPlanRun = () => {
     useEffect(() => {
         if (data) {
             updateTestViewed();
+            refetch();
         }
     }, [currentTestIndex]);
 
@@ -526,14 +506,28 @@ const CandidateTestPlanRun = () => {
         JAWS: 'jaws',
         NVDA: 'nvda'
     };
-    const githubIssueUrlTitle = `ARIA-AT-App Candidate Test Plan Review for ${at}/${testPlanVersion.title} started ${startedAtDate} [Test ${currentTest.seq}]`;
-    const defaultGithubLabels = 'app,candidate-review';
-    const githubUrl = `https://github.com/w3c/aria-at-app/issues/new?title=${encodeURI(
-        githubIssueUrlTitle
-    )}&labels=${defaultGithubLabels},${githubAtLabelMap[at]}`;
-    const requestChangesUrl = `${githubUrl},changes-requested`;
-    const feedbackUrl = `${githubUrl},feedback`;
-    const fileBugUrl = `${githubUrl},bug`;
+
+    const generateGithubUrl = (test = false, type = '', titleAddition = '') => {
+        const generateGithubTitle = () => {
+            return `ARIA-AT-App Candidate Test Plan Review for ${at}/${
+                testPlanVersion.title
+            } started ${startedAtDate}${
+                test ? ` [Test ${currentTest.seq}]` : ''
+            }${titleAddition ? ` - ${titleAddition}` : ''}`;
+        };
+
+        const githubIssueUrlTitle = generateGithubTitle(true);
+        const defaultGithubLabels = 'app,candidate-review';
+        const githubUrl = `https://github.com/w3c/aria-at-app/issues/new?title=${encodeURI(
+            githubIssueUrlTitle
+        )}&labels=${defaultGithubLabels},${githubAtLabelMap[at]}`;
+
+        return `${githubUrl},${type}`;
+    };
+
+    const requestChangesUrl = generateGithubUrl(true, 'changes-requested');
+    const feedbackUrl = generateGithubUrl(true, 'feedback');
+    const fileBugUrl = generateGithubUrl(true, 'bug');
 
     return (
         <Container className="test-run-container">
@@ -685,6 +679,11 @@ const CandidateTestPlanRun = () => {
                         setThankYouModalShowing(false);
                         history.push('/candidate-tests');
                     }}
+                    githubUrl={generateGithubUrl(
+                        false,
+                        'feedback',
+                        'General Feedback'
+                    )}
                 />
             ) : (
                 <></>

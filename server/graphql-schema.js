@@ -783,7 +783,7 @@ const graphqlSchema = gql`
         """
         Test Number the issue was raised for.
         """
-        testNumberFilteredByAt: Int!
+        testNumberFilteredByAt: Int
     }
 
     """

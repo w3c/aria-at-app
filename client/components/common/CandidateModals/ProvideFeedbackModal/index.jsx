@@ -69,65 +69,40 @@ const ProvideFeedbackModal = ({
                         >
                             <FormCheck>
                                 <FormCheck.Input
+                                    id="not-approved-input"
+                                    name="radio-feedback"
+                                    type="radio"
+                                />
+                                <FormCheck.Label htmlFor="not-approved-input">
+                                    Not Approved Yet
+                                </FormCheck.Label>
+                                <Form.Text className="radio-text">
+                                    Submit your Review without explicit approval
+                                </Form.Text>
+                            </FormCheck>
+                            <FormCheck>
+                                <FormCheck.Input
                                     name="radio-feedback"
                                     id="approve-input"
                                     type="radio"
                                 />
                                 <FormCheck.Label htmlFor="approve-input">
-                                    <div>
-                                        <FontAwesomeIcon
-                                            icon={faCheck}
-                                            color="green"
-                                        />{' '}
-                                        Approve
-                                    </div>
+                                    Approve
                                 </FormCheck.Label>
                                 <Form.Text className="radio-text">
                                     {' '}
                                     Submit feedback and approve this Test Plan
                                 </Form.Text>
                             </FormCheck>
-                            <FormCheck>
-                                <FormCheck.Input
-                                    id="feedback-input"
-                                    name="radio-feedback"
-                                    type="radio"
-                                />
-                                <FormCheck.Label htmlFor="feedback-input">
-                                    <div>
-                                        <FontAwesomeIcon
-                                            icon={faCommentAlt}
-                                            color="#B254F8"
-                                        />{' '}
-                                        Leave More Feedback
-                                    </div>
-                                </FormCheck.Label>
-                                <Form.Text className="radio-text">
-                                    Submit general feedback without explicit
-                                    approval of this Test Plan
-                                </Form.Text>
-                            </FormCheck>
-                        </Form.Group>
-                        <Form.Group>
-                            <Form.Control
-                                className="feedback-text"
-                                as="textarea"
-                                rows={5}
-                                onChange={e => setFeedbackBody(e.target.value)}
-                            />
                         </Form.Group>
                     </Form>
                 </div>
             }
             dialogClassName="feedback"
             handleAction={() => {
-                handleAction({
-                    status:
-                        selectedRadio === 'approve-input'
-                            ? 'APPROVED'
-                            : 'FEEDBACK',
-                    body: feedbackBody
-                });
+                handleAction(
+                    selectedRadio === 'approve-input' ? 'APPROVED' : ''
+                );
             }}
             title={
                 <>

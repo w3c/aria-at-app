@@ -24,7 +24,7 @@ const permissionScopes = [
 const permissionScopesURI = encodeURI(permissionScopes.join(' '));
 const graphQLEndpoint = `${GITHUB_GRAPHQL_SERVER}/graphql`;
 const nodeCache = new NodeCache();
-const CACHE_MINUTES = 2;
+const CACHE_MINUTES = 1;
 
 const constructIssuesRequest = async ({
     ats = ['jaws', 'nvda', 'vo'],
@@ -93,31 +93,7 @@ const constructIssuesRequest = async ({
     return resultsByAt;
 };
 
-const createFeedbackIssue = async ({ title, labels, body }) => {
-    const issuesEndpoint = `https://api.github.com/repos/evmiguel/aria-at-app/issues`;
-    const requestBody = {
-        title,
-        body,
-        labels
-    };
-
-    const auth = {
-        // TODO: add real auth credentials
-        username: '',
-        password: ''
-    };
-
-    const response = await axios.post(
-        issuesEndpoint,
-        { ...requestBody },
-        { auth }
-    );
-
-    return response;
-};
-
 module.exports = {
-    createFeedbackIssue,
     graphQLEndpoint,
     getOauthUrl: ({ state = '' }) => {
         return (
