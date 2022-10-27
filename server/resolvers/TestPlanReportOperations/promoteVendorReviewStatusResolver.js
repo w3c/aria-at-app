@@ -1,15 +1,12 @@
 const {
-    getTestPlanReportById,
     updateTestPlanReport
 } = require('../../models/services/TestPlanReportService');
 const populateData = require('../../services/PopulatedData/populateData');
 
-const promoteVendorReviewStatusResolver = async ({
-    parentContext: { id: testPlanReportId }
-}) => {
-    const testPlanReport = await getTestPlanReportById(testPlanReportId);
-    const { vendorReviewStatus } = testPlanReport;
-
+const promoteVendorReviewStatusResolver = async (
+    { parentContext: { id: testPlanReportId } },
+    { vendorReviewStatus }
+) => {
     let updateParams = { vendorReviewStatus };
 
     if (vendorReviewStatus === 'READY') {

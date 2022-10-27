@@ -142,19 +142,23 @@ const CandidateTestPlanRun = () => {
     };
 
     const updateVendorStatus = async (reportApproved = false) => {
-        const setReportsReviewStatus = async () => {
-            return testPlanReports.map(report => {
-                promoteVendorReviewStatus({
-                    variables: { testReportId: report.id }
-                });
-            });
-        };
-
         if (reviewStatus === 'READY') {
-            await Promise.all(setReportsReviewStatus());
+            await Promise.all(
+                testPlanReports?.map(report =>
+                    promoteVendorReviewStatus({
+                        variables: { testReportId: report.id, reviewStatus }
+                    })
+                )
+            );
             setReviewStatus('IN_PROGRESS');
         } else if (reviewStatus === 'IN_PROGRESS' && reportApproved) {
-            await Promise.all(setReportsReviewStatus());
+            await Promise.all(
+                testPlanReports?.map(report =>
+                    promoteVendorReviewStatus({
+                        variables: { testReportId: report.id, reviewStatus }
+                    })
+                )
+            );
             setReviewStatus('APPROVED');
         }
     };
@@ -211,7 +215,9 @@ const CandidateTestPlanRun = () => {
     }, [data]);
 
     useEffect(() => {
-        updateVendorStatus();
+        if (data) {
+            updateVendorStatus();
+        }
     }, [reviewStatus]);
 
     useEffect(() => {
@@ -541,7 +547,7 @@ const CandidateTestPlanRun = () => {
             <Row>
                 <TestNavigator
                     isVendor={true}
-                    testPlanReports={testPlanReports}
+                    testPlanReport={testPlanReports[0]}
                     show={showTestNavigator}
                     tests={tests}
                     currentTestIndex={currentTestIndex}
