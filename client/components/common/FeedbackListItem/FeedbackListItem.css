@@ -15,7 +15,8 @@
     position: absolute;
     height: 90%;
     width: 2px;
-    bottom: 1.8em;
+    margin-top: 7px;
+    bottom: 1.7em;
     left: -1.5em;
     background: #d2d5d9;
 }
@@ -25,7 +26,7 @@
     position: absolute;
     height: 60%;
     width: 2px;
-    top: 2.1em;
+    top: 1.8em;
     left: -1.5em;
     background: #d2d5d9;
 }

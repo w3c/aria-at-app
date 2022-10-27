@@ -14,7 +14,7 @@ const TestNavigator = ({
     isSignedIn = false,
     viewedTests = [],
     isVendor = false,
-    testPlanReports = [],
+    testPlanReport = {},
     tests = [],
     currentTestIndex = 0,
     toggleShowClick = () => {},
@@ -51,7 +51,7 @@ const TestNavigator = ({
                     {tests.map(test => {
                         let resultClassName = 'not-started';
                         let resultStatus = 'Not Started';
-                        const issuesExist = testPlanReports[0]?.issues?.filter(
+                        const issuesExist = testPlanReport.issues?.filter(
                             issue => issue.testNumberFilteredByAt == test.seq
                         ).length;
 
@@ -117,7 +117,7 @@ TestNavigator.propTypes = {
     show: PropTypes.bool,
     isSignedIn: PropTypes.bool,
     isVendor: PropTypes.bool,
-    testPlanReports: PropTypes.array,
+    testPlanReport: PropTypes.object,
     tests: PropTypes.array,
     testResult: PropTypes.object,
     conflicts: PropTypes.object,

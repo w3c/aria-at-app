@@ -20,6 +20,14 @@ const ProvideFeedbackModal = ({
     const [selectedRadio, setSelectedRadio] = useState(null);
     const [feedbackBody, setFeedbackBody] = useState('');
 
+    const uniqueFeedbackAuthors = [
+        ...new Set(feedbackIssues.map(issue => issue.author))
+    ];
+
+    const uniqueChangeRequestedAuthors = [
+        ...new Set(changesRequestedIssues.map(issue => issue.author))
+    ];
+
     return (
         <BasicModal
             show={true}
@@ -32,14 +40,24 @@ const ProvideFeedbackModal = ({
                     {changesRequestedIssues.length > 0 && (
                         <FeedbackListItem
                             type="changes-requested"
-                            differentAuthors={false}
+                            differentAuthors={
+                                !(
+                                    uniqueChangeRequestedAuthors.length === 1 &&
+                                    uniqueChangeRequestedAuthors[0] === username
+                                )
+                            }
                             issues={changesRequestedIssues}
                         ></FeedbackListItem>
                     )}
                     {feedbackIssues.length > 0 && (
                         <FeedbackListItem
                             type="feedback"
-                            differentAuthors={false}
+                            differentAuthors={
+                                !(
+                                    uniqueFeedbackAuthors.length === 1 &&
+                                    uniqueFeedbackAuthors[0] === username
+                                )
+                            }
                             issues={feedbackIssues}
                         ></FeedbackListItem>
                     )}
