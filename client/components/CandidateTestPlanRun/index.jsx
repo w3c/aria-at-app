@@ -58,7 +58,9 @@ const CandidateTestPlanRun = () => {
     const { atId, testPlanVersionId } = useParams();
     const history = useHistory();
 
-    const { loading, data, error } = useQuery(CANDIDATE_REPORTS_QUERY);
+    const { loading, data, error } = useQuery(CANDIDATE_REPORTS_QUERY, {
+        variables: { testPlanVersionId, atId }
+    });
     const [addViewer] = useMutation(ADD_VIEWER_MUTATION);
     const [promoteVendorReviewStatus] = useMutation(
         PROMOTE_VENDOR_REVIEW_STATUS_REPORT_MUTATION
@@ -249,15 +251,9 @@ const CandidateTestPlanRun = () => {
         2: 'NVDA',
         3: 'VoiceOver for macOS'
     };
-
     const at = atMap[atId];
 
-    const testPlanReports = data.testPlanReports.filter(
-        report =>
-            report.at.name === at &&
-            report.testPlanVersion.id == testPlanVersionId
-    );
-
+    const testPlanReports = data.testPlanReports;
     if (testPlanReports.length === 0) return <Redirect to="/404" />;
 
     const testPlanReport = testPlanReports.find(

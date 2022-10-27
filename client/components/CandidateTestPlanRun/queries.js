@@ -22,7 +22,7 @@ export const PROMOTE_VENDOR_REVIEW_STATUS_REPORT_MUTATION = gql`
 `;
 
 export const CANDIDATE_REPORTS_QUERY = gql`
-    query CandidateReportsQuery {
+    query CandidateReportsQuery($testPlanVersionId: ID!, $atId: ID!) {
         me {
             id
             roles
@@ -32,7 +32,11 @@ export const CANDIDATE_REPORTS_QUERY = gql`
                 vendorCompany
             }
         }
-        testPlanReports(statuses: [FINALIZED]) {
+        testPlanReports(
+            statuses: [FINALIZED]
+            testPlanVersionId: $testPlanVersionId
+            atId: $atId
+        ) {
             id
             candidateStatusReachedAt
             recommendedStatusTargetDate
