@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import BasicModal from '../../BasicModal';
 import PropTypes from 'prop-types';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck, faCommentAlt } from '@fortawesome/free-solid-svg-icons';
 import { Form, FormCheck } from 'react-bootstrap';
 import '../common.css';
 import './ProvideFeedbackModal.css';
@@ -18,7 +16,6 @@ const ProvideFeedbackModal = ({
     username = ''
 }) => {
     const [selectedRadio, setSelectedRadio] = useState(null);
-    const [feedbackBody, setFeedbackBody] = useState('');
 
     const uniqueFeedbackAuthors = [
         ...new Set(feedbackIssues.map(issue => issue.author))
