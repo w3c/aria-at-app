@@ -97,7 +97,9 @@ const CandidateTestPlanRun = () => {
         setCurrentTestIndex(index);
         if (index === 0) {
             setIsFirstTest(true);
+            setIsLastTest(false);
         } else if (index === tests.length - 1) {
+            setIsFirstTest(false);
             setIsLastTest(true);
         } else {
             setIsFirstTest(false);
@@ -133,8 +135,9 @@ const CandidateTestPlanRun = () => {
         const userPreviouslyViewedTest = viewedTests.includes(currentTest.id);
         if (!userPreviouslyViewedTest) {
             setFirstTimeViewing(true);
-            addViewerToTest(currentTest.id);
             setViewedTests(tests => [...tests, currentTest.id]);
+            await addViewerToTest(currentTest.id);
+            refetch();
         } else {
             setFirstTimeViewing(false);
         }
@@ -204,7 +207,6 @@ const CandidateTestPlanRun = () => {
     useEffect(() => {
         if (data) {
             updateTestViewed();
-            refetch();
         }
     }, [currentTestIndex]);
 
