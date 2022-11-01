@@ -30,10 +30,6 @@ export const CANDIDATE_REPORTS_QUERY = gql`
             id
             roles
             username
-            vendor {
-                at
-                vendorCompany
-            }
         }
         testPlanReports(
             statuses: [FINALIZED]

@@ -505,7 +505,7 @@ describe('graphql', () => {
                             __typename
                             deleteTestPlanReport
                         }
-                        promoteVendorStatus: testPlanReport(id: 7) {
+                        promoteVendorStatus: testPlanReport(id: 6) {
                             __typename
                             promoteVendorReviewStatus(
                                 vendorReviewStatus: "READY"

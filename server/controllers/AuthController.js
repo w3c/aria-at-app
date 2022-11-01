@@ -7,7 +7,7 @@ const ALLOW_FAKE_ROLE = process.env.ALLOW_FAKE_ROLE === 'true';
 const APP_SERVER = process.env.APP_SERVER;
 
 const oauthRedirectToGithubController = async (req, res) => {
-    const state = `${req.query.dataFromFrontend}|${req.query.fakeVendorData}`;
+    const { dataFromFrontend: state } = req.query;
     const oauthUrl = GithubService.getOauthUrl({ state });
     res.redirect(303, oauthUrl);
     res.end();
@@ -54,14 +54,12 @@ const oauthRedirectFromGithubController = async (req, res) => {
     const roles = [];
     if (isAdmin) {
         roles.push({ name: User.ADMIN });
-        roles.push({ name: User.VENDOR });
     }
     if (isAdmin || testers.includes(githubUsername)) {
         roles.push({ name: User.TESTER }); // Admins are always testers
     }
 
-    const vendorIdString = vendors.find(line => line.includes(githubUsername));
-    if (vendorIdString) {
+    if (vendors.includes(githubUsername)) {
         roles.push({ name: User.VENDOR });
     }
 
@@ -76,52 +74,22 @@ const oauthRedirectFromGithubController = async (req, res) => {
         []
     );
 
-    const vendorMap = {
-        vispero: 'JAWS',
-        apple: 'VoiceOver for macOS',
-        nvaccess: 'NVDA'
-    };
-
-    if (roles[0].name.includes(User.VENDOR)) {
-        const vendorCompany = vendorIdString.split('|')[1];
-        user.dataValues.vendor = {
-            vendorCompany,
-            at: vendorMap[vendorCompany]
-        };
-    }
-
     // Allows for quickly logging in with different roles - changing
     // roles would otherwise require leaving and joining GitHub teams.
     // Should not be saved to database.
-    if (dataFromFrontend) {
-        const [role, company] = dataFromFrontend.split('|');
-        const matchedFakeRole = role && role.match(/fakeRole-(\w*)/);
-        const matchedFakeVendorCompany =
-            company && company.match(/company-(\w*)/);
-        if (ALLOW_FAKE_ROLE && matchedFakeRole) {
-            user = user.get({ plain: true });
-            user.roles =
-                matchedFakeRole[1] === ''
-                    ? []
-                    : [{ name: matchedFakeRole[1].toUpperCase() }];
-            if (user.roles[0] && user.roles[0].name === User.ADMIN) {
-                user.roles.push({ name: User.TESTER }); // Admins are always testers
-            }
-
-            if (user.roles[0]?.name === User.VENDOR) {
-                if (!matchedFakeVendorCompany) {
-                    throw Error(
-                        'Fake role vendor must also have a company query parameter.'
-                    );
-                }
-                user.vendor = {
-                    vendorCompany: matchedFakeVendorCompany[1],
-                    at: vendorMap[matchedFakeVendorCompany[1]]
-                };
-            }
+    const matchedFakeRole =
+        dataFromFrontend && dataFromFrontend.match(/fakeRole-(\w*)/);
+    if (ALLOW_FAKE_ROLE && matchedFakeRole) {
+        user = user.get({ plain: true });
+        user.roles =
+            matchedFakeRole[1] === ''
+                ? []
+                : [{ name: matchedFakeRole[1].toUpperCase() }];
+        if (user.roles[0] && user.roles[0].name === User.ADMIN) {
+            user.roles.push({ name: User.TESTER }); // Admins are always testers
+            user.roles.push({ name: User.VENDOR });
         }
     }
-
     if (user.roles.length === 0) return loginFailedDueToRole();
 
     req.session.user = user;

@@ -89,9 +89,7 @@ describe('authentication', () => {
                 `${process.env.APP_SERVER}/test-queue`
             );
             expect(data.me.username).toBe(_knownUsername);
-            expect(data.me.roles.sort()).toEqual(
-                ['ADMIN', 'TESTER', 'VENDOR'].sort()
-            );
+            expect(data.me.roles.sort()).toEqual(['ADMIN', 'TESTER'].sort());
         });
     });
 
@@ -126,9 +124,7 @@ describe('authentication', () => {
                 `${process.env.APP_SERVER}/test-queue`
             );
             expect(data.me.username).toBe(_unknownUsername);
-            expect(data.me.roles.sort()).toEqual(
-                ['ADMIN', 'TESTER', 'VENDOR'].sort()
-            );
+            expect(data.me.roles.sort()).toEqual(['ADMIN', 'TESTER'].sort());
         });
     });
 
@@ -294,7 +290,7 @@ describe('authentication', () => {
             // A3
             expect(firstLogin.me.roles).toEqual(['TESTER']);
             expect(secondLogin.me.roles.sort()).toEqual(
-                ['ADMIN', 'TESTER', 'VENDOR'].sort()
+                ['ADMIN', 'TESTER'].sort()
             );
         });
     });
@@ -325,8 +321,7 @@ describe('authentication', () => {
     it('allows faking vendor', async () => {
         await dbCleaner(async () => {
             // A1
-            const _dataFromFrontend =
-                'fakeRole-vendor&fakeVendorData=company-vispero';
+            const _dataFromFrontend = 'fakeRole-vendor';
             const _knownUsername = 'esmeralda-baggins';
             mockGithubServer.nextLogin({
                 githubUsername: _knownUsername,
