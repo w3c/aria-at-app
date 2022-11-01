@@ -15,7 +15,7 @@ const ProvideFeedbackModal = ({
     testPlan = '',
     username = ''
 }) => {
-    const [selectedRadio, setSelectedRadio] = useState(null);
+    const [selectedRadio, setSelectedRadio] = useState('not-approved-input');
 
     const uniqueFeedbackAuthors = [
         ...new Set(feedbackIssues.map(issue => issue.author))
@@ -69,6 +69,9 @@ const ProvideFeedbackModal = ({
                                     id="not-approved-input"
                                     name="radio-feedback"
                                     type="radio"
+                                    checked={
+                                        selectedRadio === 'not-approved-input'
+                                    }
                                 />
                                 <FormCheck.Label htmlFor="not-approved-input">
                                     Not Approved Yet
