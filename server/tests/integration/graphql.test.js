@@ -147,7 +147,6 @@ describe('graphql', () => {
             ['PopulatedData', 'browserVersion'],
             ['TestPlanReport', 'issues'],
             ['TestPlanReport', 'vendorReviewStatus'],
-            ['User', 'vendor'],
             ['Test', 'viewers']
         ];
         ({
