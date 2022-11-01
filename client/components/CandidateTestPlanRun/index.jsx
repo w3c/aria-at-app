@@ -657,6 +657,7 @@ const CandidateTestPlanRun = () => {
             </Row>
             {feedbackModalShowing ? (
                 <ProvideFeedbackModal
+                    at={at}
                     show={true}
                     username={data.me.username}
                     testPlan={testPlanVersion.title}
