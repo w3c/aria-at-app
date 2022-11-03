@@ -11,6 +11,7 @@ import TestQueue from '@components/TestQueue';
 import TestRun from '@components/TestRun';
 import UserSettings from '@components/UserSettings';
 import CandidateTestPlanRun from '@components/CandidateTests/CandidateTestPlanRun';
+import TestManagement from '@components/TestManagement';
 
 export default [
     {
@@ -81,6 +82,11 @@ export default [
                 </ConfirmAuth>
             );
         }
+    },
+    {
+        path: '/test-management',
+        exact: true,
+        component: TestManagement
     },
     {
         path: '/invalid-request',

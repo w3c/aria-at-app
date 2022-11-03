@@ -982,6 +982,9 @@ const graphqlSchema = gql`
             testPlanVersionId: ID
             atId: ID
         ): [TestPlanReport]!
+#        testPlanReportsGrouped(statuses: [TestPlanReportStatus]
+#            testPlanVersionId: ID
+#            atId: ID):
         """
         Get a TestPlanReport by ID.
         """
