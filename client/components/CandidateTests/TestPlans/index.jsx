@@ -324,7 +324,7 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
             <>
                 <StatusText className="in-progress">
                     <span className="dot" aria-hidden={true} />
-                    Ready for Review
+                    Review in Progress
                 </StatusText>
             </>
         );
@@ -340,9 +340,8 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
 
         let result = null;
         if (issueChangesRequestedTypeCount) result = changesRequestedContent;
-        else if (isInProgressStatusExists) result = inProgressContent;
-        else if (isApprovedStatusExists || issueFeedbackTypeCount) {
-            if (issueFeedbackTypeCount) result = issueFeedbackContent;
+        else if (issueFeedbackTypeCount) {
+            result = issueFeedbackContent;
             if (isApprovedStatusExists)
                 result = (
                     <>
@@ -356,7 +355,9 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
                         {approvedContent}
                     </>
                 );
-        } else result = readyForReviewContent;
+        } else if (isInProgressStatusExists) result = inProgressContent;
+        else if (isApprovedStatusExists) result = approvedContent;
+        else result = readyForReviewContent;
 
         return result;
     };
