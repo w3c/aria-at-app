@@ -176,7 +176,7 @@ const CandidateTestPlanRun = () => {
     useEffect(() => {
         if (data) {
             if (
-                !tests[0].viewers.find(
+                !tests[0].viewers?.find(
                     viewer => viewer.username === data.me.username
                 )
             ) {
