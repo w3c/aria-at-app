@@ -766,7 +766,7 @@ const graphqlSchema = gql`
         Indicates the type of issue. 'CHANGES_REQUESTED' or 'FEEDBACK'.
         'FEEDBACK' is the default type.
         """
-        feedbackType: String!
+        feedbackType: IssueFeedbackType!
         """
         Indicates if the issue is currently open on GitHub.
         """
