@@ -20,8 +20,11 @@ const addViewerResolver = async (
 
     const testPlanVersion = await getTestPlanVersionById(testPlanVersionId);
     const currentTest = testPlanVersion.tests.find(each => each.id === testId);
-    const viewer = currentTest.viewers.find(each => each.id === user.id);
-    if (!viewer) currentTest.viewers.push(user);
+    if (!currentTest.viewers) currentTest.viewers = [user];
+    else {
+        const viewer = currentTest.viewers.find(each => each.id === user.id);
+        if (!viewer) currentTest.viewers.push(user);
+    }
 
     await updateTestPlanVersion(testPlanVersionId, {
         tests: testPlanVersion.tests
