@@ -624,7 +624,6 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
                                         return (
                                             <tr key={testPlanVersion.id}>
                                                 <td>
-                                                    {/*TODO: Insert link when merged with Candidate Test Page branch*/}
                                                     <Link
                                                         to={`/candidate-test-plan/${testPlanVersion.id}/${atId}`}
                                                     >
@@ -741,7 +740,6 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
                                                     })}
                                                 </CenteredTd>
                                                 <CenteredTd>
-                                                    {/*TODO: Insert link when merged with Candidate Test Page branch*/}
                                                     <Link
                                                         to={`/candidate-test-plan/${testPlanVersion.id}/${atId}`}
                                                     >
@@ -881,7 +879,6 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
                                 return (
                                     <tr key={testPlanVersion.id}>
                                         <td>
-                                            {/*TODO: Insert link when merged with Candidate Test Page branch*/}
                                             <Link to={`/candidate-tests/`}>
                                                 {getTestPlanVersionTitle(
                                                     testPlanVersion
