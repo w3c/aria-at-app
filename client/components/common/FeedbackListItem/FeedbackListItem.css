@@ -7,7 +7,7 @@
     list-style: none;
     font-size: 14px;
     border: solid 1px #e5e5e5;
-    width: calc(100% - 1.5em);
+    width: calc(100% - 2em);
 }
 
 .feedback-list-item:before {
