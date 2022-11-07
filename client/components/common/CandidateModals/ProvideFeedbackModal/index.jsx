@@ -29,6 +29,7 @@ const ProvideFeedbackModal = ({
         <BasicModal
             show={true}
             actionLabel={'Submit Review'}
+            actionButtonClassName={'submit-button'}
             centered={true}
             cancelButton={false}
             handleHide={handleHide}

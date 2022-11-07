@@ -13,6 +13,7 @@ const BasicModal = ({
     show = false,
     centered = false,
     animation = true,
+    actionButtonClassName = '',
     closeButton = true,
     cancelButton = true,
     headerSep = true,
@@ -68,7 +69,11 @@ const BasicModal = ({
                             </Button>
                         )}
                         {handleAction && (
-                            <Button variant="primary" onClick={handleAction}>
+                            <Button
+                                variant="primary"
+                                onClick={handleAction}
+                                className={actionButtonClassName}
+                            >
                                 {actionLabel}
                             </Button>
                         )}
@@ -83,6 +88,7 @@ BasicModal.propTypes = {
     show: PropTypes.bool,
     centered: PropTypes.bool,
     animation: PropTypes.bool,
+    actionButtonClassName: PropTypes.string,
     closeButton: PropTypes.bool,
     cancelButton: PropTypes.bool,
     headerSep: PropTypes.bool,

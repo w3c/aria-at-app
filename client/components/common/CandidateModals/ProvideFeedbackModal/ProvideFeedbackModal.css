@@ -1,5 +1,6 @@
-.btn {
-    padding: 5px 15px;
+.submit-button {
+    padding: 5px 25px;
+    width: auto;
 }
 
 .close {
