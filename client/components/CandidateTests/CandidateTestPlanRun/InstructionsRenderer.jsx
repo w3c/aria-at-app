@@ -6,13 +6,13 @@ import { Button } from 'react-bootstrap';
 import {
     userCloseWindow,
     userOpenWindow
-} from '../../resources/aria-at-test-run.mjs';
+} from '../../../resources/aria-at-test-run.mjs';
 import {
     TestRunExport,
     TestRunInputOutput
-} from '../../resources/aria-at-test-io-format.mjs';
-import { TestWindow } from '../../resources/aria-at-test-window.mjs';
-import { evaluateAtNameKey } from '../../utils/aria.js';
+} from '../../../resources/aria-at-test-io-format.mjs';
+import { TestWindow } from '../../../resources/aria-at-test-window.mjs';
+import { evaluateAtNameKey } from '../../../utils/aria.js';
 
 const Container = styled.div`
     padding: 20px;

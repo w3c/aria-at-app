@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
 import PropTypes from 'prop-types';
-import TestNavigator from '../TestRun/TestNavigator';
+import TestNavigator from '../../TestRun/TestNavigator';
 import InstructionsRenderer from './InstructionsRenderer';
-import OptionButton from '../TestRun/OptionButton';
-import PageStatus from '../common/PageStatus';
-import { navigateTests } from '../../utils/navigateTests';
+import OptionButton from '../../TestRun/OptionButton';
+import PageStatus from '../../common/PageStatus';
+import { navigateTests } from '../../../utils/navigateTests';
 import {
     ADD_VIEWER_MUTATION,
     CANDIDATE_REPORTS_QUERY,
@@ -24,18 +24,18 @@ import {
 import { useParams, Redirect, useHistory } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import './CandidateTestPlanRun.css';
-import '../TestRun/TestRun.css';
-import '../App/App.css';
+import '../../TestRun/TestRun.css';
+import '../../App/App.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleDown, faAngleUp } from '@fortawesome/free-solid-svg-icons';
 import useResizeObserver from '@react-hook/resize-observer';
 import { useMediaQuery } from 'react-responsive';
-import { convertDateToString } from '../../utils/formatter';
-import TestPlanResultsTable from '../Reports/TestPlanResultsTable';
-import ProvideFeedbackModal from '../common/CandidateModals/ProvideFeedbackModal';
-import ThankYouModal from '../common/CandidateModals/ThankYouModal';
-import getMetrics from '../Reports/getMetrics';
-import FeedbackListItem from '../common/FeedbackListItem';
+import { convertDateToString } from '../../../utils/formatter';
+import TestPlanResultsTable from '../../Reports/TestPlanResultsTable';
+import ProvideFeedbackModal from '../CandidateModals/ProvideFeedbackModal';
+import ThankYouModal from '../CandidateModals/ThankYouModal';
+import getMetrics from '../../Reports/getMetrics';
+import FeedbackListItem from '../FeedbackListItem';
 
 // https://codesandbox.io/s/react-hookresize-observer-example-ft88x
 function useSize(target) {

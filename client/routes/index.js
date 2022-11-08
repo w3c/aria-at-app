@@ -10,7 +10,7 @@ import SignupInstructions from '@components/SignupInstructions';
 import TestQueue from '@components/TestQueue';
 import TestRun from '@components/TestRun';
 import UserSettings from '@components/UserSettings';
-import CandidateTestPlanRun from '../components/CandidateTestPlanRun';
+import CandidateTestPlanRun from '@components/CandidateTests/CandidateTestPlanRun';
 
 export default [
     {

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import BasicModal from '../../BasicModal';
+import BasicModal from '../../../common/BasicModal';
 import PropTypes from 'prop-types';
 import { Form, FormCheck } from 'react-bootstrap';
 import '../common.css';

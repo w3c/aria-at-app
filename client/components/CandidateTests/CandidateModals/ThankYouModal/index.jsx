@@ -1,5 +1,5 @@
 import React from 'react';
-import BasicModal from '../../BasicModal';
+import BasicModal from '../../../common/BasicModal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import PropTypes from 'prop-types';
