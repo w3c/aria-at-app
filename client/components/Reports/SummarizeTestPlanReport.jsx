@@ -1,6 +1,5 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
-import styled from '@emotion/styled';
 import { Helmet } from 'react-helmet';
 import { createGitHubIssueWithTitleAndBody } from '../TestRun';
 import { getTestPlanTargetTitle, getTestPlanVersionTitle } from './getTitles';
@@ -10,69 +9,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faExclamationCircle,
     faExternalLinkAlt,
-    faHome,
-    faChevronDown,
-    faChevronUp
+    faHome
 } from '@fortawesome/free-solid-svg-icons';
 import { differenceBy } from 'lodash';
 import { convertDateToString } from '../../utils/formatter';
 import DisclaimerInfo from '../DisclaimerInfo';
 import TestPlanResultsTable from './TestPlanResultsTable';
-
-const DisclosureParent = styled.div`
-    border: 1px solid #d3d5da;
-    border-radius: 3px;
-
-    h3 {
-        margin: 0;
-        padding: 0;
-    }
-`;
-
-const DisclosureButton = styled.button`
-    position: relative;
-    width: 100%;
-    margin: 0;
-    padding: 1.25rem;
-    text-align: left;
-    font-size: 1rem;
-    font-weight: bold;
-    border: none;
-    border-radius: 3px;
-    background-color: transparent;
-
-    &:hover,
-    &:focus {
-        padding: 1.25rem;
-        border: 0 solid #005a9c;
-        background-color: #def;
-        cursor: pointer;
-    }
-
-    svg {
-        position: absolute;
-        margin: 0;
-        top: 50%;
-        right: 1.25rem;
-
-        color: #969696;
-        transform: translateY(-50%);
-    }
-`;
-
-const DisclosureContainer = styled.div`
-    display: ${({ show }) => (show ? 'flex' : 'none')};
-    flex-direction: column;
-    gap: 1.25rem;
-
-    background-color: #f8f9fa;
-    padding: 1.25rem;
-    border-top: 1px solid #d3d5da;
-
-    ul {
-        margin-bottom: 0;
-    }
-`;
+import DisclosureComponent from '../common/DisclosureComponent';
 
 const getTestersRunHistory = (
     testPlanReport,
@@ -126,8 +69,6 @@ const getTestersRunHistory = (
 const SummarizeTestPlanReport = ({ testPlanReport }) => {
     const { testPlanVersion, at, browser } = testPlanReport;
 
-    const [runHistoryItems, setRunHistoryItems] = useState({});
-
     // Construct testPlanTarget
     const testPlanTarget = {
         id: `${at.id}${browser.id}`,
@@ -140,17 +81,6 @@ const SummarizeTestPlanReport = ({ testPlanReport }) => {
         testPlanReport.finalizedTestResults,
         testOrTestResult => testOrTestResult.test?.id ?? testOrTestResult.id
     );
-
-    const onClickRunHistory = testResultId => {
-        // { testResultId: boolean } ]
-        if (!runHistoryItems[testResultId])
-            setRunHistoryItems({ ...runHistoryItems, [testResultId]: true });
-        else
-            setRunHistoryItems({
-                ...runHistoryItems,
-                [testResultId]: !runHistoryItems[testResultId]
-            });
-    };
 
     return (
         <Container id="main" as="main" tabIndex="-1">
@@ -245,42 +175,16 @@ const SummarizeTestPlanReport = ({ testPlanReport }) => {
                             testResult={testResult}
                         />
 
-                        <DisclosureParent>
-                            <h3>
-                                <DisclosureButton
-                                    id={`run-history-${testResult.id}-button`}
-                                    type="button"
-                                    aria-expanded={
-                                        !!runHistoryItems[testResult.id]
-                                    }
-                                    aria-controls={`run-history-${testResult.id}`}
-                                    onClick={() =>
-                                        onClickRunHistory(testResult.id)
-                                    }
-                                >
-                                    Run History
-                                    <FontAwesomeIcon
-                                        icon={
-                                            runHistoryItems[testResult.id]
-                                                ? faChevronUp
-                                                : faChevronDown
-                                        }
-                                    />
-                                </DisclosureButton>
-                            </h3>
-                            <DisclosureContainer
-                                role="region"
-                                id={`run-history-${testResult.id}`}
-                                aria-labelledby={`run-history-${testResult.id}-button`}
-                                show={!!runHistoryItems[testResult.id]}
-                            >
-                                {getTestersRunHistory(
-                                    testPlanReport,
-                                    testResult.test.id,
-                                    testPlanReport.draftTestPlanRuns
-                                )}
-                            </DisclosureContainer>
-                        </DisclosureParent>
+                        <DisclosureComponent
+                            componentId={`run-history-${testResult.id}`}
+                            expanded={false}
+                            title="Run History"
+                            disclosureContainerView={getTestersRunHistory(
+                                testPlanReport,
+                                testResult.test.id,
+                                testPlanReport.draftTestPlanRuns
+                            )}
+                        />
                     </Fragment>
                 );
             })}
