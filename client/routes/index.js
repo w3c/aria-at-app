@@ -86,7 +86,13 @@ export default [
     {
         path: '/test-management',
         exact: true,
-        component: TestManagement
+        component: () => {
+            return (
+                <ConfirmAuth requiredPermission="ADMIN">
+                    <Route component={TestManagement} />
+                </ConfirmAuth>
+            );
+        }
     },
     {
         path: '/invalid-request',

@@ -16,7 +16,7 @@ const DisclosureParent = styled.div`
     ${({ stacked }) =>
         stacked &&
         `
-    h3:not(:first-child) button {
+    h3:not(:first-of-type) button {
         border-top: 1px solid #d3d5da;
     }`}
 `;
@@ -65,90 +65,10 @@ const DisclosureContainer = styled.div`
     flex-direction: ${({ stacked }) => !stacked && 'column'};
     gap: ${({ stacked }) => !stacked && '1.25rem'};
 
-    ${({ stacked, show }) =>
-        stacked
-            ? `display: ${show ? 'block' : 'none'};`
-            : `
-    display: ${show => (show ? 'flex' : 'none')};
-    flex-direction: column;
-    gap: 1.25rem;`}
-
     background-color: #f8f9fa;
-    padding: 1.25rem;
+    padding: ${({ component }) =>
+        component === 'test-management' ? '0' : '1.25rem'};
     border-top: 1px solid #d3d5da;
-
-    // For Run History component
-    ul {
-        margin-bottom: 0;
-    }
-
-    // Following directives are related to the ManageTestQueue component
-    > span {
-        display: block;
-        margin-bottom: 1rem;
-    }
-
-    // Add Test Plan to Test Queue button
-    > button {
-        display: flex;
-        padding: 0.5rem 1rem;
-        margin-top: 1rem;
-        margin-left: auto;
-        margin-right: 0;
-    }
-
-    .disclosure-row-manage-ats {
-        display: grid;
-        grid-auto-flow: column;
-        grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-        grid-gap: 1rem;
-
-        .ats-container {
-            grid-column: 1 / span 2;
-        }
-
-        .at-versions-container {
-            display: flex;
-            flex-direction: column;
-            grid-column: 3 / span 3;
-        }
-
-        .disclosure-buttons-row {
-            display: flex;
-            flex-direction: row;
-            justify-content: flex-start;
-
-            > button {
-                margin: 0;
-                padding: 0;
-                color: #275caa;
-                border: none;
-                background-color: transparent;
-
-                &:nth-of-type(2) {
-                    margin-left: auto;
-                }
-
-                // remove button
-                &:nth-of-type(3) {
-                    margin-left: 1rem;
-                    color: #ce1b4c;
-                }
-            }
-        }
-    }
-
-    .disclosure-row-test-plans {
-        display: grid;
-        grid-auto-flow: column;
-        grid-template-columns: 1fr 1fr 1fr 1fr;
-        grid-gap: 1rem;
-    }
-
-    .disclosure-form-label {
-        font-weight: bold;
-        font-size: 1rem;
-    }
 `;
 
 const DisclosureComponent = ({
@@ -223,6 +143,7 @@ const DisclosureComponent = ({
                         </DisclosureButton>
                     </h3>
                     <DisclosureContainer
+                        component={componentId}
                         role="region"
                         id={`disclosure-container-${componentId}`}
                         aria-labelledby={`disclosure-btn-${componentId}`}

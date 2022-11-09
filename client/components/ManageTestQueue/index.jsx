@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useMutation } from '@apollo/client';
 import { Button, Form } from 'react-bootstrap';
+import styled from '@emotion/styled';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import PropTypes from 'prop-types';
@@ -17,6 +18,76 @@ import { gitUpdatedDateToString } from '../../utils/gitUtils';
 import { convertStringToDate } from '../../utils/formatter';
 import { LoadingStatus, useTriggerLoad } from '../common/LoadingStatus';
 import DisclosureComponent from '../common/DisclosureComponent';
+
+const DisclosureContainer = styled.div`
+    // Following directives are related to the ManageTestQueue component
+    > span {
+        display: block;
+        margin-bottom: 1rem;
+    }
+
+    // Add Test Plan to Test Queue button
+    > button {
+        display: flex;
+        padding: 0.5rem 1rem;
+        margin-top: 1rem;
+        margin-left: auto;
+        margin-right: 0;
+    }
+
+    .disclosure-row-manage-ats {
+        display: grid;
+        grid-auto-flow: column;
+        grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+        grid-gap: 1rem;
+
+        .ats-container {
+            grid-column: 1 / span 2;
+        }
+
+        .at-versions-container {
+            display: flex;
+            flex-direction: column;
+            grid-column: 3 / span 3;
+        }
+
+        .disclosure-buttons-row {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+
+            > button {
+                margin: 0;
+                padding: 0;
+                color: #275caa;
+                border: none;
+                background-color: transparent;
+
+                &:nth-of-type(2) {
+                    margin-left: auto;
+                }
+
+                // remove button
+                &:nth-of-type(3) {
+                    margin-left: 1rem;
+                    color: #ce1b4c;
+                }
+            }
+        }
+    }
+
+    .disclosure-row-test-plans {
+        display: grid;
+        grid-auto-flow: column;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        grid-gap: 1rem;
+    }
+
+    .disclosure-form-label {
+        font-weight: bold;
+        font-size: 1rem;
+    }
+`;
 
 const ManageTestQueue = ({
     ats = [],
@@ -425,12 +496,13 @@ const ManageTestQueue = ({
     return (
         <LoadingStatus message={loadingMessage}>
             <DisclosureComponent
+                componentId="manage-test-queue"
                 title={[
                     'Manage Assistive Technology Versions',
                     'Add Test Plans to the Test Queue'
                 ]}
                 disclosureContainerView={[
-                    <>
+                    <DisclosureContainer key={`manage-test-queue-at-section`}>
                         <span>
                             Select an Assistive Technology and manage its
                             versions in the ARIA-AT App
@@ -503,8 +575,10 @@ const ManageTestQueue = ({
                                 </div>
                             </div>
                         </div>
-                    </>,
-                    <>
+                    </DisclosureContainer>,
+                    <DisclosureContainer
+                        key={`manage-test-queue-add-test-plans-section`}
+                    >
                         <span>
                             Select a Test Plan and version and an Assistive
                             Technology and Browser to add it to the Test Queue
@@ -618,7 +692,7 @@ const ManageTestQueue = ({
                         >
                             Add Test Plan to Test Queue
                         </Button>
-                    </>
+                    </DisclosureContainer>
                 ]}
                 onClick={[onManageAtsClick, onAddTestPlansClick]}
                 expanded={[showManageATs, showAddTestPlans]}

@@ -63,7 +63,15 @@ const getTestersRunHistory = (
         }
     });
 
-    return <ul>{lines}</ul>;
+    return (
+        <ul
+            style={{
+                marginBottom: '0'
+            }}
+        >
+            {lines}
+        </ul>
+    );
 };
 
 const SummarizeTestPlanReport = ({ testPlanReport }) => {
@@ -177,7 +185,6 @@ const SummarizeTestPlanReport = ({ testPlanReport }) => {
 
                         <DisclosureComponent
                             componentId={`run-history-${testResult.id}`}
-                            expanded={false}
                             title="Run History"
                             disclosureContainerView={getTestersRunHistory(
                                 testPlanReport,

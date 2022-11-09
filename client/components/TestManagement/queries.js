@@ -2,16 +2,16 @@ import { gql } from '@apollo/client';
 
 export const TEST_MANAGEMENT_PAGE_QUERY = gql`
     query TestManagementPage {
-        me {
-            id
-            username
-            roles
-        }
-        users {
-            id
-            username
-            roles
-        }
+        #        me {
+        #            id
+        #            username
+        #            roles
+        #        }
+        #        users {
+        #            id
+        #            username
+        #            roles
+        #        }
         ats {
             id
             name
@@ -35,11 +35,10 @@ export const TEST_MANAGEMENT_PAGE_QUERY = gql`
             }
             updatedAt
         }
-        testPlanReports(statuses: [DRAFT, IN_REVIEW]) {
+        testPlanReports(statuses: [DRAFT, IN_REVIEW, FINALIZED]) {
             id
             status
-            conflictsLength
-            runnableTestsLength
+            #            runnableTestsLength
             at {
                 id
                 name
@@ -58,23 +57,23 @@ export const TEST_MANAGEMENT_PAGE_QUERY = gql`
                 }
                 updatedAt
             }
-            draftTestPlanRuns {
-                id
-                tester {
-                    id
-                    username
-                }
-                testResultsLength
-            }
+            #            draftTestPlanRuns {
+            #                id
+            #                tester {
+            #                    id
+            #                    username
+            #                }
+            #                testResultsLength
+            #            }
         }
-        testPlans {
-            latestTestPlanVersion {
-                id
-                gitSha
-                testPlan {
-                    id
-                }
-            }
-        }
+        #        testPlans {
+        #            latestTestPlanVersion {
+        #                id
+        #                gitSha
+        #                testPlan {
+        #                    id
+        #                }
+        #            }
+        #        }
     }
 `;
