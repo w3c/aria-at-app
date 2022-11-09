@@ -7,6 +7,10 @@
     padding: 20px;
 }
 
+.test-management.table th.phase {
+    width: 225px;
+}
+
 .change-phase {
     margin-left: 12px;
     margin-right: 12px;

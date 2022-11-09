@@ -2,16 +2,6 @@ import { gql } from '@apollo/client';
 
 export const TEST_MANAGEMENT_PAGE_QUERY = gql`
     query TestManagementPage {
-        #        me {
-        #            id
-        #            username
-        #            roles
-        #        }
-        #        users {
-        #            id
-        #            username
-        #            roles
-        #        }
         ats {
             id
             name
@@ -38,7 +28,6 @@ export const TEST_MANAGEMENT_PAGE_QUERY = gql`
         testPlanReports(statuses: [DRAFT, IN_REVIEW, FINALIZED]) {
             id
             status
-            #            runnableTestsLength
             at {
                 id
                 name
@@ -57,23 +46,22 @@ export const TEST_MANAGEMENT_PAGE_QUERY = gql`
                 }
                 updatedAt
             }
-            #            draftTestPlanRuns {
-            #                id
-            #                tester {
-            #                    id
-            #                    username
-            #                }
-            #                testResultsLength
-            #            }
         }
-        #        testPlans {
-        #            latestTestPlanVersion {
-        #                id
-        #                gitSha
-        #                testPlan {
-        #                    id
-        #                }
-        #            }
-        #        }
+    }
+`;
+
+export const BULK_UPDATE_TEST_PLAN_REPORT_STATUS_MUTATION = gql`
+    mutation BulkUpdateTestPlanReportStatus(
+        $testReportIds: [ID]!
+        $status: TestPlanReportStatus!
+    ) {
+        testPlanReport(ids: $testReportIds) {
+            bulkUpdateStatus(status: $status) {
+                testPlanReport {
+                    id
+                    status
+                }
+            }
+        }
     }
 `;

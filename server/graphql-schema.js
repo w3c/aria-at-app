@@ -1071,6 +1071,12 @@ const graphqlSchema = gql`
         """
         updateStatus(status: TestPlanReportStatus!): PopulatedData!
         """
+        Update the report status for multiple TestPlanReports. Remember that all
+        conflicts must be resolved when setting the status to FINALIZED. Only
+        available to admins.
+        """
+        bulkUpdateStatus(status: TestPlanReportStatus!): [PopulatedData]!
+        """
         Update the report recommended status target date.
         Only available to admins.
         """
@@ -1184,7 +1190,7 @@ const graphqlSchema = gql`
         """
         Get the available mutations for the given TestPlanReport.
         """
-        testPlanReport(id: ID!): TestPlanReportOperations!
+        testPlanReport(id: ID, ids: [ID]): TestPlanReportOperations!
         """
         Get the available mutations for the given TestPlanRun.
         """
