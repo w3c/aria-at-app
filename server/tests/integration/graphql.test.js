@@ -147,6 +147,7 @@ describe('graphql', () => {
             ['PopulatedData', 'browserVersion'],
             ['TestPlanReport', 'issues'],
             ['TestPlanReport', 'vendorReviewStatus'],
+            ['TestPlanReport', 'ids'],
             ['Test', 'viewers']
         ];
         ({
@@ -481,6 +482,12 @@ describe('graphql', () => {
                         reportStatus: testPlanReport(id: 1) {
                             __typename
                             updateStatus(status: IN_REVIEW) {
+                                locationOfData
+                            }
+                        }
+                        bulkReportStatus: testPlanReport(ids: [1]) {
+                            __typename
+                            bulkUpdateStatus(status: IN_REVIEW) {
                                 locationOfData
                             }
                         }

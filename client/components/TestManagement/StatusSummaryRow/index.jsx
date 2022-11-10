@@ -102,10 +102,10 @@ const StatusSummaryRow = ({ atItems }) => {
     };
 
     let phase = 'Draft';
-    // eslint-disable-next-line
-    if (testPlanReports.every(i => i.status === 'FINALIZED')) phase = 'Recommended';
-    // eslint-disable-next-line
-    else if (testPlanReports.every(i => i.status === 'IN_REVIEW')) phase = 'Candidate';
+    if (testPlanReports.every(i => i.status === 'FINALIZED'))
+        phase = 'Recommended';
+    else if (testPlanReports.every(i => i.status === 'IN_REVIEW'))
+        phase = 'Candidate';
 
     return (
         <LoadingStatus message={loadingMessage}>
