@@ -1,5 +1,9 @@
 const { AuthenticationError } = require('apollo-server');
 const updateStatusResolver = require('./updateStatusResolver');
+const conflictsResolver = require('../TestPlanReport/conflictsResolver');
+const {
+    getTestPlanReportById
+} = require('../../models/services/TestPlanReportService');
 
 const bulkUpdateStatusResolver = async (
     { parentContext: { ids } },
@@ -13,6 +17,15 @@ const bulkUpdateStatusResolver = async (
     let populateDataResultArray = [];
     for (let i = 0; i < ids.length; i++) {
         const id = ids[i];
+
+        const testPlanReport = await getTestPlanReportById(id);
+        const conflicts = await conflictsResolver(testPlanReport);
+        if (conflicts.length > 0) {
+            throw new Error(
+                `Cannot update test plan report due to conflicts with the ${testPlanReport.at.name} report.`
+            );
+        }
+
         const result = await updateStatusResolver(
             { parentContext: { id } },
             { status },

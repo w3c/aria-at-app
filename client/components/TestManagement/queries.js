@@ -60,6 +60,24 @@ export const BULK_UPDATE_TEST_PLAN_REPORT_STATUS_MUTATION = gql`
                 testPlanReport {
                     id
                     status
+                    at {
+                        id
+                        name
+                    }
+                    browser {
+                        id
+                        name
+                    }
+                    testPlanVersion {
+                        id
+                        title
+                        gitSha
+                        gitMessage
+                        testPlan {
+                            directory
+                        }
+                        updatedAt
+                    }
                 }
             }
         }

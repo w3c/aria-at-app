@@ -1,61 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import styled from '@emotion/styled';
 import { Helmet } from 'react-helmet';
-import { Container, Table, Alert, Dropdown } from 'react-bootstrap';
-import { useQuery, useMutation } from '@apollo/client';
-import nextId from 'react-id-generator';
-import {
-    TEST_MANAGEMENT_PAGE_QUERY,
-    BULK_UPDATE_TEST_PLAN_REPORT_STATUS_MUTATION
-} from './queries';
+import { Container, Table, Alert } from 'react-bootstrap';
+import { useQuery } from '@apollo/client';
+import { TEST_MANAGEMENT_PAGE_QUERY } from './queries';
+import StatusSummaryRow from './StatusSummaryRow';
 import PageStatus from '../common/PageStatus';
 import DisclosureComponent from '../common/DisclosureComponent';
-import { LoadingStatus, useTriggerLoad } from '../common/LoadingStatus';
 import ManageTestQueue from '../ManageTestQueue';
 import './TestManagement.css';
-
-const PhaseText = styled.span`
-    font-size: 14px;
-    margin-left: 8px;
-    padding: 4px 8px;
-    border-radius: 14px;
-    overflow: hidden;
-    white-space: nowrap;
-    color: white;
-
-    &.draft {
-        background: #838f97;
-    }
-
-    &.candidate {
-        background: #f87f1b;
-    }
-
-    &.recommended {
-        background: #b253f8;
-    }
-`;
-
-const PhaseDot = styled.span`
-    display: inline-block;
-    height: 10px;
-    width: 10px;
-    padding: 0;
-    margin-right: 8px;
-    border-radius: 50%;
-
-    &.draft {
-        background: #838f97;
-    }
-
-    &.candidate {
-        background: #f87f1b;
-    }
-
-    &.recommended {
-        background: #b253f8;
-    }
-`;
 
 const TestManagement = () => {
     const { loading, data, error, refetch } = useQuery(
@@ -64,11 +16,6 @@ const TestManagement = () => {
             fetchPolicy: 'cache-and-network'
         }
     );
-    const [bulkUpdateTestPlanReportStatus] = useMutation(
-        BULK_UPDATE_TEST_PLAN_REPORT_STATUS_MUTATION
-    );
-
-    const { triggerLoad, loadingMessage } = useTriggerLoad();
 
     const [pageReady, setPageReady] = useState(false);
     const [ats, setAts] = useState([]);
@@ -112,6 +59,10 @@ const TestManagement = () => {
                     allResultGroup[testPlanId] = [t];
                 else allResultGroup[testPlanId].push(t);
 
+                // Ensure the latest version is being used in the grouped data
+                // In the future, it can be assumed that the latest can be
+                // consistently retrieved from
+                // `query { testPlans { latestTestPlanVersion } }`
                 if (!summaryResultGroup[testPlanId])
                     summaryResultGroup[testPlanId] = t;
                 else if (
@@ -140,6 +91,8 @@ const TestManagement = () => {
             summaryResultGroup: summaryVoGroupedByTestPlan
         } = groupedData(voGroup);
 
+        // TODO: This dataset can be used in the future to complete the AT
+        //       separated sections
         // eslint-disable-next-line
         const allGroupedTestPlanReports = {
             jaws: allJawsGroupedByTestPlan,
@@ -176,28 +129,6 @@ const TestManagement = () => {
         );
     }
 
-    const bulkUpdateReportStatus = async (testPlanReportIds, status) => {
-        try {
-            await triggerLoad(async () => {
-                await bulkUpdateTestPlanReportStatus({
-                    variables: {
-                        testReportIds: testPlanReportIds,
-                        status
-                    }
-                });
-                if (status === 'FINALIZED') await refetch();
-                else await refetch();
-            }, 'Updating Test Plan Status');
-        } catch (e) {
-            console.error(e.message);
-            // showThemedMessage(
-            //     'Error Updating Test Plan Status',
-            //     <>{e.message}</>,
-            //     'warning'
-            // );
-        }
-    };
-
     const constructStatusSummaryData = () => {
         let result = {};
 
@@ -219,199 +150,90 @@ const TestManagement = () => {
     const summaryData = constructStatusSummaryData();
 
     return (
-        <LoadingStatus message={loadingMessage}>
-            <Container id="main" as="main" tabIndex="-1">
-                <Helmet>
-                    <title>Test Management | ARIA-AT</title>
-                </Helmet>
-                <h1>Test Management</h1>
+        <Container id="main" as="main" tabIndex="-1">
+            <Helmet>
+                <title>Test Management | ARIA-AT</title>
+            </Helmet>
+            <h1>Test Management</h1>
 
-                {emptyTestPlans && (
-                    <h2 data-testid="test-management-no-test-plans-h2">
-                        There are no test plans available
-                    </h2>
-                )}
+            {emptyTestPlans && (
+                <h2 data-testid="test-management-no-test-plans-h2">
+                    There are no test plans available
+                </h2>
+            )}
 
-                {emptyTestPlans && (
-                    <Alert
-                        key="alert-configure"
-                        variant="danger"
-                        data-testid="test-management-no-test-plans-p"
-                    >
-                        Add a Test Plan to the Queue
-                    </Alert>
-                )}
+            {emptyTestPlans && (
+                <Alert
+                    key="alert-configure"
+                    variant="danger"
+                    data-testid="test-management-no-test-plans-p"
+                >
+                    Add a Test Plan to the Queue
+                </Alert>
+            )}
 
-                <p data-testid="test-management-instructions">
-                    TODO: This text needs to be updated.
-                </p>
+            {/*<p data-testid="test-management-instructions">*/}
+            {/*    TODO: This text needs to be updated.*/}
+            {/*</p>*/}
 
-                <ManageTestQueue
-                    ats={ats}
-                    browsers={browsers}
-                    testPlanVersions={testPlanVersions}
-                    triggerUpdate={refetch}
-                />
+            <ManageTestQueue
+                ats={ats}
+                browsers={browsers}
+                testPlanVersions={testPlanVersions}
+                triggerUpdate={refetch}
+            />
 
-                <br />
-                <br />
-                <DisclosureComponent
-                    componentId="test-management"
-                    title="Status Summary"
-                    expanded
-                    disclosureContainerView={
-                        <>
-                            <Table
-                                className="test-management"
-                                aria-label="Status Summary Table"
-                                striped
-                                bordered
-                                hover
-                            >
-                                <thead>
-                                    <tr>
-                                        <th>Test Plans</th>
-                                        <th className="phase">Phase</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {Object.keys(summaryData)
-                                        .sort((a, b) =>
-                                            Object.values(summaryData[a])[0]
-                                                .testPlanVersion.title <
-                                            Object.values(summaryData[b])[0]
-                                                .testPlanVersion.title
-                                                ? -1
-                                                : 1
-                                        )
-                                        .map(k => {
-                                            const summaryItem = summaryData[k];
-                                            const atItems = Object.values(
-                                                summaryItem
-                                            );
-
-                                            let phase = 'Draft';
-                                            // eslint-disable-next-line
-                                    if (atItems.every(i => i.status === 'FINALIZED')) phase = 'Recommended';
-                                            // eslint-disable-next-line
-                                    else if (atItems.every(i => i.status === 'IN_REVIEW')) phase = 'Candidate';
-                                            // eslint-disable-next-line
-                                    else if (atItems.some(i => i.status === 'IN_REVIEW')) phase = 'Candidate';
-
-                                            const key = `summary-table-item-${k}`;
-                                            // TODO: Should the length of the tests be
-                                            //       relevant here since the count can
-                                            //       vary for each AT?
-                                            // TODO: What does clicking the Test Plan
-                                            //       link to?
-                                            // TODO: Will show the test plan phase which
-                                            //       is at the lowest
-                                            return (
-                                                <tr key={key}>
-                                                    <th>
-                                                        {
-                                                            atItems[0]
-                                                                .testPlanVersion
-                                                                .title
-                                                        }
-                                                        {/*{`${*/}
-                                                        {/*    atItems[0].testPlanVersion*/}
-                                                        {/*        .title*/}
-                                                        {/*} (${Math.max(*/}
-                                                        {/*    ...atItems.map(*/}
-                                                        {/*        i =>*/}
-                                                        {/*            i.runnableTestsLength*/}
-                                                        {/*    )*/}
-                                                        {/*)} Tests)`}*/}
-                                                        <PhaseText
-                                                            className={phase.toLowerCase()}
-                                                        >
-                                                            {phase}
-                                                        </PhaseText>
-                                                    </th>
-                                                    <td>
-                                                        <Dropdown className="change-phase">
-                                                            <Dropdown.Toggle
-                                                                id={nextId()}
-                                                                variant="secondary"
-                                                                aria-label="Change test plan phase"
-                                                            >
-                                                                <PhaseDot
-                                                                    className={phase.toLowerCase()}
-                                                                />
-                                                                {phase}
-                                                            </Dropdown.Toggle>
-                                                            <Dropdown.Menu role="menu">
-                                                                <Dropdown.Item
-                                                                    role="menuitem"
-                                                                    disabled={
-                                                                        phase ===
-                                                                        'Draft'
-                                                                    }
-                                                                    onClick={async () => {
-                                                                        await bulkUpdateReportStatus(
-                                                                            atItems.map(
-                                                                                i =>
-                                                                                    i.id
-                                                                            ),
-                                                                            'DRAFT'
-                                                                        );
-                                                                    }}
-                                                                >
-                                                                    <PhaseDot className="draft" />
-                                                                    Draft
-                                                                </Dropdown.Item>
-                                                                <Dropdown.Item
-                                                                    role="menuitem"
-                                                                    disabled={
-                                                                        phase ===
-                                                                        'Candidate'
-                                                                    }
-                                                                    onClick={async () => {
-                                                                        await bulkUpdateReportStatus(
-                                                                            atItems.map(
-                                                                                i =>
-                                                                                    i.id
-                                                                            ),
-                                                                            'IN_REVIEW'
-                                                                        );
-                                                                    }}
-                                                                >
-                                                                    <PhaseDot className="candidate" />
-                                                                    Candidate
-                                                                </Dropdown.Item>
-                                                                <Dropdown.Item
-                                                                    role="menuitem"
-                                                                    disabled={
-                                                                        phase ===
-                                                                        'Recommended'
-                                                                    }
-                                                                    onClick={async () => {
-                                                                        await bulkUpdateReportStatus(
-                                                                            atItems.map(
-                                                                                i =>
-                                                                                    i.id
-                                                                            ),
-                                                                            'FINALIZED'
-                                                                        );
-                                                                    }}
-                                                                >
-                                                                    <PhaseDot className="recommended" />
-                                                                    Recommended
-                                                                </Dropdown.Item>
-                                                            </Dropdown.Menu>
-                                                        </Dropdown>
-                                                    </td>
-                                                </tr>
-                                            );
-                                        })}
-                                </tbody>
-                            </Table>
-                        </>
-                    }
-                />
-            </Container>
-        </LoadingStatus>
+            <br />
+            <br />
+            <DisclosureComponent
+                componentId="test-management"
+                title="Status Summary"
+                expanded
+                disclosureContainerView={
+                    <>
+                        <Table
+                            className="test-management"
+                            aria-label="Status Summary Table"
+                            striped
+                            bordered
+                            hover
+                        >
+                            <thead>
+                                <tr>
+                                    <th>Test Plans</th>
+                                    <th className="phase">Phase</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {/* Sort the summary items by title */}
+                                {Object.keys(summaryData)
+                                    .sort((a, b) =>
+                                        Object.values(summaryData[a])[0]
+                                            .testPlanVersion.title <
+                                        Object.values(summaryData[b])[0]
+                                            .testPlanVersion.title
+                                            ? -1
+                                            : 1
+                                    )
+                                    .map(k => {
+                                        const summaryItem = summaryData[k];
+                                        const atItems = Object.values(
+                                            summaryItem
+                                        );
+                                        const key = `summary-table-item-${k}`;
+                                        return (
+                                            <StatusSummaryRow
+                                                key={key}
+                                                atItems={atItems}
+                                            />
+                                        );
+                                    })}
+                            </tbody>
+                        </Table>
+                    </>
+                }
+            />
+        </Container>
     );
 };
 
