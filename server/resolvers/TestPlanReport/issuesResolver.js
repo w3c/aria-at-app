@@ -1,13 +1,12 @@
 const { GithubService } = require('../../services');
 const { Base64 } = require('js-base64');
+const moment = require('moment');
 
 const issuesResolver = async testPlanReport => {
     if (!testPlanReport.candidateStatusReachedAt) return [];
 
-    const dateOptions = { month: 'long', day: 'numeric', year: 'numeric' };
-    const dateString = testPlanReport.candidateStatusReachedAt.toLocaleDateString(
-        'en-US',
-        dateOptions
+    const dateString = moment(testPlanReport.candidateStatusReachedAt).format(
+        'MMMM D, YYYY'
     );
     const searchTitle = `ARIA-AT-App Candidate Test Plan Review for ${testPlanReport.at.name}/${testPlanReport.testPlanVersion.dataValues.title} started ${dateString}`;
     const cacheId = Base64.encode(`${testPlanReport.id}${searchTitle}`);
