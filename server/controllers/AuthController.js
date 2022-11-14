@@ -60,7 +60,10 @@ const oauthRedirectFromGithubController = async (req, res) => {
         roles.push({ name: User.TESTER }); // Admins are always testers
     }
 
-    if (vendors.filter(vendor => vendor.includes(githubUsername))) {
+    if (
+        isAdmin ||
+        vendors.findIndex(vendor => vendor.includes(githubUsername)) > -1
+    ) {
         roles.push({ name: User.VENDOR });
     }
 

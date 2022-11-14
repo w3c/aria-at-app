@@ -19,24 +19,6 @@ const ProvideFeedbackModal = ({
 }) => {
     const [selectedRadio, setSelectedRadio] = useState('not-approved-input');
 
-    const uniqueFeedbackAuthors = [
-        ...new Set(feedbackIssues.map(issue => issue.author))
-    ];
-
-    const uniqueChangeRequestedAuthors = [
-        ...new Set(changesRequestedIssues.map(issue => issue.author))
-    ];
-
-    const differentChangeRequestedAuthors = !(
-        uniqueChangeRequestedAuthors.length === 1 &&
-        uniqueChangeRequestedAuthors[0] === username
-    );
-
-    const differentFeedbackAuthors = !(
-        uniqueFeedbackAuthors.length === 1 &&
-        uniqueFeedbackAuthors[0] === username
-    );
-
     return (
         <BasicModal
             show={true}
