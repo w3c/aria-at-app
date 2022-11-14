@@ -11,7 +11,9 @@ const ProvideFeedbackModal = ({
     handleAction = () => {},
     handleHide = () => {},
     feedbackIssues = [],
+    feedbackGithubUrl = '',
     changesRequestedIssues = [],
+    changesRequestedGithubUrl = '',
     testPlan = '',
     username = ''
 }) => {
@@ -24,6 +26,16 @@ const ProvideFeedbackModal = ({
     const uniqueChangeRequestedAuthors = [
         ...new Set(changesRequestedIssues.map(issue => issue.author))
     ];
+
+    const differentChangeRequestedAuthors = !(
+        uniqueChangeRequestedAuthors.length === 1 &&
+        uniqueChangeRequestedAuthors[0] === username
+    );
+
+    const differentFeedbackAuthors = !(
+        uniqueFeedbackAuthors.length === 1 &&
+        uniqueFeedbackAuthors[0] === username
+    );
 
     return (
         <BasicModal
@@ -38,25 +50,17 @@ const ProvideFeedbackModal = ({
                     {changesRequestedIssues.length > 0 && (
                         <FeedbackListItem
                             type="changes-requested"
-                            differentAuthors={
-                                !(
-                                    uniqueChangeRequestedAuthors.length === 1 &&
-                                    uniqueChangeRequestedAuthors[0] === username
-                                )
-                            }
+                            differentAuthors={false}
                             issues={changesRequestedIssues}
+                            githubUrl={changesRequestedGithubUrl}
                         ></FeedbackListItem>
                     )}
                     {feedbackIssues.length > 0 && (
                         <FeedbackListItem
                             type="feedback"
-                            differentAuthors={
-                                !(
-                                    uniqueFeedbackAuthors.length === 1 &&
-                                    uniqueFeedbackAuthors[0] === username
-                                )
-                            }
+                            differentAuthors={false}
                             issues={feedbackIssues}
+                            githubUrl={feedbackGithubUrl}
                         ></FeedbackListItem>
                     )}
 
@@ -70,7 +74,7 @@ const ProvideFeedbackModal = ({
                                     id="not-approved-input"
                                     name="radio-feedback"
                                     type="radio"
-                                    checked={
+                                    defaultChecked={
                                         selectedRadio === 'not-approved-input'
                                     }
                                 />
@@ -130,7 +134,9 @@ ProvideFeedbackModal.propTypes = {
     handleAction: PropTypes.func,
     handleHide: PropTypes.func,
     changesRequestedIssues: PropTypes.array,
+    changesRequestedGithubUrl: PropTypes.string,
     feedbackIssues: PropTypes.array,
+    feedbackGithubUrl: PropTypes.string,
     show: PropTypes.bool,
     testPlan: PropTypes.string,
     username: PropTypes.string

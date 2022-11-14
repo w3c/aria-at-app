@@ -9,7 +9,8 @@ const FeedbackListItem = ({
     differentAuthors = false,
     type = 'feedback',
     issues = [],
-    individualTest = false
+    individualTest = false,
+    githubUrl = '#'
 }) => {
     let content;
 
@@ -22,23 +23,36 @@ const FeedbackListItem = ({
                         : 'requested changes for'
                 }
                     `}
-                <a href="#">
+                <a href={githubUrl} target="_blank" rel="noreferrer">
                     {issues.length} {issues.length === 1 ? 'test' : 'tests'}
                 </a>{' '}
                 in this Test Plan
             </span>
         );
     } else if (!differentAuthors && individualTest) {
-        content = `You have ${
-            type === 'feedback' ? 'left feedback' : 'requested changes'
-        } for this test`;
+        githubUrl = issues[0].link;
+        content = (
+            <>
+                You{' '}
+                <a href={githubUrl} target="_blank" rel="noreferrer">
+                    {type === 'feedback'
+                        ? 'left feedback'
+                        : 'requested changes'}
+                </a>{' '}
+                for this test.
+            </>
+        );
     } else {
         content = (
-            <a href="#">
-                {issues.length} {issues.length === 1 ? 'person' : 'people'}{' '}
-                {type === 'feedback' ? 'left feedback' : 'requested changes'}
+            <>
+                <a href={githubUrl} target="_blank" rel="noreferrer">
+                    {issues.length} {issues.length === 1 ? 'person' : 'people'}{' '}
+                    {type === 'feedback'
+                        ? 'left feedback'
+                        : 'requested changes'}
+                </a>
                 {' for this test'}
-            </a>
+            </>
         );
     }
 
@@ -60,7 +74,8 @@ FeedbackListItem.propTypes = {
     differentAuthors: PropTypes.bool,
     issues: PropTypes.array,
     type: PropTypes.string,
-    individualTest: PropTypes.bool
+    individualTest: PropTypes.bool,
+    githubUrl: PropTypes.string
 };
 
 export default FeedbackListItem;

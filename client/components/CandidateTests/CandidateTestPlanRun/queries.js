@@ -44,6 +44,7 @@ export const CANDIDATE_REPORTS_QUERY = gql`
                 author
                 feedbackType
                 testNumberFilteredByAt
+                link
             }
             at {
                 id

@@ -295,6 +295,48 @@ const CandidateTestPlanRun = () => {
             issue.testNumberFilteredByAt === currentTest.seq
     );
 
+    const githubAtLabelMap = {
+        'VoiceOver for macOS': 'vo',
+        JAWS: 'jaws',
+        NVDA: 'nvda'
+    };
+
+    const generateGithubUrl = (
+        test = false,
+        type = '',
+        titleAddition = '',
+        search = false,
+        author = ''
+    ) => {
+        const generateGithubTitle = () => {
+            return `ARIA-AT-App Candidate Test Plan Review for ${at}/${
+                testPlanVersion.title
+            } started ${startedAtDate}${
+                test ? ` [Test ${currentTest.seq}]` : ''
+            }${titleAddition ? ` - ${titleAddition}` : ''}`;
+        };
+
+        const githubIssueUrlTitle = generateGithubTitle();
+        const defaultGithubLabels = 'app,candidate-review';
+        let githubUrl;
+
+        if (!search) {
+            githubUrl = `https://github.com/w3c/aria-at-app/issues/new?title=${encodeURI(
+                githubIssueUrlTitle
+            )}&labels=${defaultGithubLabels},${githubAtLabelMap[at]}`;
+            return `${githubUrl},${type}`;
+        } else {
+            let title = generateGithubTitle();
+            let query = encodeURI(
+                `label:app label:candidate-review label:${type} label:${
+                    githubAtLabelMap[at]
+                } ${author ? `author:${author}` : ''} ${title}`
+            );
+            githubUrl = `https://github.com/evmiguel/aria-at-app/issues?q=${query}`;
+            return githubUrl;
+        }
+    };
+
     // https://react-bootstrap-v4.netlify.app/components/accordion/#custom-toggle-with-expansion-awareness
     const ContextAwareToggle = ({ children, eventKey, callback }) => {
         const decoratedOnClick = useAccordionToggle(
@@ -397,15 +439,14 @@ const CandidateTestPlanRun = () => {
                         const uniqueAuthors = [
                             ...new Set(list.map(issue => issue.author))
                         ];
+                        const differentAuthors = !(
+                            uniqueAuthors.length === 1 &&
+                            uniqueAuthors[0] === data.me.username
+                        );
                         return (
                             <FeedbackListItem
                                 key={`${index}-issues`}
-                                differentAuthors={
-                                    !(
-                                        uniqueAuthors.length === 1 &&
-                                        uniqueAuthors[0] === data.me.username
-                                    )
-                                }
+                                differentAuthors={differentAuthors}
                                 type={
                                     index === 0
                                         ? 'changes-requested'
@@ -413,6 +454,15 @@ const CandidateTestPlanRun = () => {
                                 }
                                 issues={list}
                                 individualTest={true}
+                                githubUrl={generateGithubUrl(
+                                    true,
+                                    index === 0
+                                        ? 'changes-requested'
+                                        : 'feedback',
+                                    null,
+                                    true,
+                                    !differentAuthors ? data.me.username : null
+                                )}
                             />
                         );
                     }
@@ -502,30 +552,6 @@ const CandidateTestPlanRun = () => {
             })}
         </>
     );
-
-    const githubAtLabelMap = {
-        'VoiceOver for macOS': 'vo',
-        JAWS: 'jaws',
-        NVDA: 'nvda'
-    };
-
-    const generateGithubUrl = (test = false, type = '', titleAddition = '') => {
-        const generateGithubTitle = () => {
-            return `ARIA-AT-App Candidate Test Plan Review for ${at}/${
-                testPlanVersion.title
-            } started ${startedAtDate}${
-                test ? ` [Test ${currentTest.seq}]` : ''
-            }${titleAddition ? ` - ${titleAddition}` : ''}`;
-        };
-
-        const githubIssueUrlTitle = generateGithubTitle(true);
-        const defaultGithubLabels = 'app,candidate-review';
-        const githubUrl = `https://github.com/w3c/aria-at-app/issues/new?title=${encodeURI(
-            githubIssueUrlTitle
-        )}&labels=${defaultGithubLabels},${githubAtLabelMap[at]}`;
-
-        return `${githubUrl},${type}`;
-    };
 
     const requestChangesUrl = generateGithubUrl(true, 'changes-requested');
     const feedbackUrl = generateGithubUrl(true, 'feedback');
@@ -664,10 +690,28 @@ const CandidateTestPlanRun = () => {
                     username={data.me.username}
                     testPlan={testPlanVersion.title}
                     feedbackIssues={testPlanReport.issues?.filter(
-                        issue => issue.feedbackType === 'FEEDBACK'
+                        issue =>
+                            issue.feedbackType === 'FEEDBACK' &&
+                            issue.author == data.me.username
+                    )}
+                    feedbackGithubUrl={generateGithubUrl(
+                        false,
+                        'feedback',
+                        null,
+                        true,
+                        data.me.username
                     )}
                     changesRequestedIssues={testPlanReport.issues?.filter(
-                        issue => issue.feedbackType === 'CHANGES_REQUESTED'
+                        issue =>
+                            issue.feedbackType === 'CHANGES_REQUESTED' &&
+                            issue.author == data.me.username
+                    )}
+                    changesRequestedGithubUrl={generateGithubUrl(
+                        false,
+                        'changes-requested',
+                        null,
+                        true,
+                        data.me.username
                     )}
                     handleAction={submitApproval}
                     handleHide={() => setFeedbackModalShowing(false)}

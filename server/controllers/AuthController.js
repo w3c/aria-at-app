@@ -40,6 +40,7 @@ const oauthRedirectFromGithubController = async (req, res) => {
     const githubUsername = await GithubService.getGithubUsername(
         githubAccessToken
     );
+
     if (!githubUsername) return loginFailedDueToGitHub();
 
     const isAdmin = await GithubService.isMemberOfAdminTeam({
@@ -59,7 +60,7 @@ const oauthRedirectFromGithubController = async (req, res) => {
         roles.push({ name: User.TESTER }); // Admins are always testers
     }
 
-    if (vendors.includes(githubUsername)) {
+    if (vendors.filter(vendor => vendor.includes(githubUsername))) {
         roles.push({ name: User.VENDOR });
     }
 
