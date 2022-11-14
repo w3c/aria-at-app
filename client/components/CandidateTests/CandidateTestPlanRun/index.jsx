@@ -555,7 +555,17 @@ const CandidateTestPlanRun = () => {
 
     const requestChangesUrl = generateGithubUrl(true, 'changes-requested');
     const feedbackUrl = generateGithubUrl(true, 'feedback');
-    const fileBugUrl = generateGithubUrl(true, 'bug');
+    let fileBugUrl;
+
+    if (githubAtLabelMap[at] == 'vo') {
+        fileBugUrl =
+            'https://bugs.webkit.org/buglist.cgi?quicksearch=voiceover';
+    } else if (githubAtLabelMap[at] == 'nvda') {
+        fileBugUrl = 'https://github.com/nvaccess/nvda/issues';
+    } else {
+        fileBugUrl =
+            'https://github.com/FreedomScientific/VFO-standards-support/issues';
+    }
 
     return (
         <Container className="test-run-container">
