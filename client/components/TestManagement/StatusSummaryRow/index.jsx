@@ -101,10 +101,10 @@ const StatusSummaryRow = ({ atItems }) => {
         dropdownUpdateReportStatusButtonRef.current.focus();
     };
 
-    let phase = 'Draft';
-    if (testPlanReports.every(i => i.status === 'FINALIZED'))
+    let phase = 'Draft'; // also accounts for IN_REVIEW
+    if (testPlanReports.every(i => i.status === 'RECOMMENDED'))
         phase = 'Recommended';
-    else if (testPlanReports.every(i => i.status === 'IN_REVIEW'))
+    else if (testPlanReports.every(i => i.status === 'CANDIDATE'))
         phase = 'Candidate';
 
     return (
@@ -147,7 +147,7 @@ const StatusSummaryRow = ({ atItems }) => {
                                 onClick={async () => {
                                     await bulkUpdateReportStatus(
                                         testPlanReports.map(i => i.id),
-                                        'IN_REVIEW'
+                                        'CANDIDATE'
                                     );
                                 }}
                             >
@@ -160,7 +160,7 @@ const StatusSummaryRow = ({ atItems }) => {
                                 onClick={async () => {
                                     await bulkUpdateReportStatus(
                                         testPlanReports.map(i => i.id),
-                                        'FINALIZED'
+                                        'RECOMMENDED'
                                     );
                                 }}
                             >

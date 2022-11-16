@@ -31,7 +31,7 @@ const getTestersRunHistory = (
         const testResult = testResults.find(item => item.test.id === testId);
         if (
             testPlanReportId === testPlanReport.id &&
-            testPlanReport.status === 'FINALIZED' &&
+            testPlanReport.status === 'CANDIDATE' &&
             testResult?.completedAt
         ) {
             lines.push(
