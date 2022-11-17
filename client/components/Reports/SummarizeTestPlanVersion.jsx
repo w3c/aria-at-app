@@ -44,6 +44,8 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
                 </Breadcrumb.Item>
             </Breadcrumb>
             <h2>Introduction</h2>
+
+            {/* TODO: DisclaimerInfo's language must now also account for recommended reports being shown */}
             <DisclaimerInfo />
             <p>
                 This page summarizes the test results for each AT and Browser

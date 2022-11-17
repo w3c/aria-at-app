@@ -56,7 +56,7 @@ nav.navbar {
 .nav-link[aria-current='true']:after {
     background: #0b60ab;
 }
-@media all and (min-width: 1230px) {
+@media all and (min-width: 992px) {
     .navbar-expand-lg .navbar-collapse ul {
         display: flex;
         flex-basis: auto;

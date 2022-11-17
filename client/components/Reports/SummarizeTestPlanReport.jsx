@@ -153,6 +153,7 @@ const SummarizeTestPlanReport = ({ testPlanReport }) => {
                                     Details for test:
                                 </span>
                                 {test.title}
+                                {/* TODO: DisclaimerInfo's language must now also account for recommended reports being shown */}
                                 <DisclaimerInfo />
                             </h2>
                             <div className="test-result-buttons">

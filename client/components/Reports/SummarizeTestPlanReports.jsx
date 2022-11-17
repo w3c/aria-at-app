@@ -13,6 +13,24 @@ const FullHeightContainer = styled(Container)`
     min-height: calc(100vh - 64px);
 `;
 
+const PhaseText = styled.span`
+    font-size: 12px;
+    margin-left: 6px;
+    padding: 4px 6px;
+    border-radius: 12px;
+    overflow: hidden;
+    white-space: nowrap;
+    color: white;
+
+    &.candidate {
+        background: #f87f1b;
+    }
+
+    &.recommended {
+        background: #b253f8;
+    }
+`;
+
 const SummarizeTestPlanReports = ({ testPlanReports }) => {
     if (!testPlanReports.length) {
         return (
@@ -70,6 +88,7 @@ const SummarizeTestPlanReports = ({ testPlanReports }) => {
             </Helmet>
             <h1>Test Reports</h1>
             <h2>Introduction</h2>
+            {/* TODO: Change language to account for recommended reports now also being shown */}
             <p>
                 This page offers a high-level view of all results which have
                 been collected, reviewed and published by the ARIA-AT project.
@@ -98,6 +117,19 @@ const SummarizeTestPlanReports = ({ testPlanReports }) => {
                 <tbody>
                     {Object.values(testPlanVersionsById).map(
                         testPlanVersion => {
+                            let status = 'Recommended';
+                            Object.values(testPlanTargetsById).forEach(
+                                testPlanTarget => {
+                                    const testPlanReport =
+                                        tabularReports[testPlanVersion.id][
+                                            testPlanTarget.id
+                                        ];
+
+                                    if (testPlanReport?.status === 'CANDIDATE')
+                                        status = 'Candidate';
+                                }
+                            );
+
                             return (
                                 <tr key={testPlanVersion.id}>
                                     <td>
@@ -108,6 +140,11 @@ const SummarizeTestPlanReports = ({ testPlanReports }) => {
                                                 testPlanVersion
                                             )}
                                         </Link>
+                                        <PhaseText
+                                            className={status.toLowerCase()}
+                                        >
+                                            {status}
+                                        </PhaseText>
                                     </td>
                                     {Object.values(testPlanTargetsById).map(
                                         testPlanTarget => {
