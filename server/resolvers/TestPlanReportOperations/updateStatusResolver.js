@@ -72,14 +72,15 @@ const updateStatusResolver = async (
                     {
                         candidateStatusReachedAt
                     }
-                )
+                ),
+                vendorReviewStatus: 'READY'
             };
         } else if (status === 'RECOMMENDED') {
             updateParams = {
                 ...updateParams,
                 metrics: { ...testPlanReport.metrics, ...metrics },
                 recommendedStatusReachedAt: new Date(),
-                vendorReviewStatus: 'READY'
+                vendorReviewStatus: 'APPROVED'
             };
         }
     }
