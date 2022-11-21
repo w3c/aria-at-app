@@ -63,6 +63,7 @@ export const CANDIDATE_REPORTS_QUERY = gql`
                 }
                 metadata
                 testPageUrl
+                updatedAt
             }
             runnableTests {
                 id

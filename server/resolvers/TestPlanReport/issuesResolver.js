@@ -5,11 +5,15 @@ const moment = require('moment');
 const issuesResolver = async testPlanReport => {
     if (!testPlanReport.candidateStatusReachedAt) return [];
 
-    const dateString = moment(testPlanReport.candidateStatusReachedAt).format(
-        'MMMM D, YYYY'
+    const searchPrefix = `${testPlanReport.at.name} Feedback: "`;
+    const searchTestPlanVersionTitle =
+        testPlanReport.testPlanVersion.dataValues.title;
+    const searchTestPlanVersionDate = moment(
+        testPlanReport.testPlanVersion.updatedAt
+    ).format('DD-MM-YYYY');
+    const cacheId = Base64.encode(
+        `${testPlanReport.id}${searchPrefix}${searchTestPlanVersionTitle}${searchTestPlanVersionDate}`
     );
-    const searchTitle = `ARIA-AT-App Candidate Test Plan Review for ${testPlanReport.at.name}/${testPlanReport.testPlanVersion.dataValues.title} started ${dateString}`;
-    const cacheId = Base64.encode(`${testPlanReport.id}${searchTitle}`);
 
     const issues = await GithubService.getCandidateReviewIssuesByAt({
         cacheId,
@@ -17,8 +21,11 @@ const issuesResolver = async testPlanReport => {
     });
 
     if (issues.length) {
-        const filteredIssues = issues.filter(issue =>
-            issue.title.includes(searchTitle)
+        const filteredIssues = issues.filter(
+            ({ title }) =>
+                title.includes(searchPrefix) &&
+                title.includes(searchTestPlanVersionTitle) &&
+                title.includes(searchTestPlanVersionDate)
         );
         return filteredIssues.map(issue => {
             const {
@@ -29,7 +36,7 @@ const issuesResolver = async testPlanReport => {
                 html_url,
                 id: topCommentId
             } = issue;
-            const testNumberMatch = title.match(/\[Test \d+]/g);
+            const testNumberMatch = title.match(/\sTest \d+,/g);
             const testNumberSubstring = testNumberMatch
                 ? testNumberMatch[0]
                 : '';

@@ -21,13 +21,15 @@ export const CANDIDATE_TESTS_PAGE_QUERY = gql`
                     directory
                 }
                 metadata
+                updatedAt
             }
             vendorReviewStatus
             candidateStatusReachedAt
             recommendedStatusTargetDate
             issues {
-                feedbackType
+                link
                 isOpen
+                feedbackType
             }
         }
     }

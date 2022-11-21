@@ -261,8 +261,7 @@ const CandidateTestPlanRun = () => {
     const {
         testPlanVersion,
         vendorReviewStatus,
-        recommendedStatusTargetDate,
-        candidateStatusReachedAt
+        recommendedStatusTargetDate
     } = testPlanReport;
 
     const vendorReviewStatusMap = {
@@ -275,10 +274,6 @@ const CandidateTestPlanRun = () => {
 
     const targetCompletionDate = convertDateToString(
         new Date(recommendedStatusTargetDate),
-        'MMMM D, YYYY'
-    );
-    const startedAtDate = convertDateToString(
-        new Date(candidateStatusReachedAt),
         'MMMM D, YYYY'
     );
 
@@ -308,12 +303,19 @@ const CandidateTestPlanRun = () => {
         search = false,
         author = ''
     ) => {
+        const testPlanVersionDate = convertDateToString(
+            new Date(testPlanVersion.updatedAt),
+            'DD-MM-YYYY'
+        );
+
         const generateGithubTitle = () => {
-            return `ARIA-AT-App Candidate Test Plan Review for ${at}/${
+            return `${at} Feedback: "${currentTest.title}" (${
                 testPlanVersion.title
-            } started ${startedAtDate}${
-                test ? ` [Test ${currentTest.seq}]` : ''
-            }${titleAddition ? ` - ${titleAddition}` : ''}`;
+            }${
+                test ? `, Test ${currentTest.seq}` : ''
+            }, ${testPlanVersionDate})${
+                titleAddition ? ` - ${titleAddition}` : ''
+            }`;
         };
 
         const githubIssueUrlTitle = generateGithubTitle();
@@ -321,7 +323,7 @@ const CandidateTestPlanRun = () => {
         let githubUrl;
 
         if (!search) {
-            githubUrl = `https://github.com/w3c/aria-at-app/issues/new?title=${encodeURI(
+            githubUrl = `https://github.com/w3c/aria-at/issues/new?title=${encodeURI(
                 githubIssueUrlTitle
             )}&labels=${defaultGithubLabels},${githubAtLabelMap[at]}`;
             return `${githubUrl},${type}`;
@@ -332,7 +334,7 @@ const CandidateTestPlanRun = () => {
                     githubAtLabelMap[at]
                 } ${author ? `author:${author}` : ''} ${title}`
             );
-            githubUrl = `https://github.com/evmiguel/aria-at-app/issues?q=${query}`;
+            githubUrl = `https://github.com/w3c/aria-at/issues?q=${query}`;
             return githubUrl;
         }
     };
