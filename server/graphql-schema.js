@@ -717,9 +717,14 @@ const graphqlSchema = gql`
         IN_REVIEW
         """
         Testing is complete and consistent, and ready to be displayed in the
-        Reports section of the app.
+        Candidate Tests and Reports section of the app.
         """
-        FINALIZED
+        CANDIDATE
+        """
+        Testing is complete and consistent, and ready to be displayed in the
+        Reports section of the app as being recommended.
+        """
+        RECOMMENDED
     }
 
     """
@@ -835,7 +840,7 @@ const graphqlSchema = gql`
         the level of an Assertion, if the result of an assertion does not match.
 
         These conflicts must be resolved before the status can change from
-        DRAFT or IN_REVIEW to FINALIZED.
+        DRAFT to IN_REVIEW or CANDIDATE.
         """
         conflicts: [TestPlanReportConflict]!
         """
@@ -974,7 +979,7 @@ const graphqlSchema = gql`
         testPlanVersion(id: ID!): TestPlanVersion
         """
         Load multiple TestPlanReports, with the optional ability to filter by
-        status and testPlanVersionId.
+        status, atId and testPlanVersionId.
         See TestPlanReport type for more information.
         """
         testPlanReports(
@@ -1067,9 +1072,15 @@ const graphqlSchema = gql`
         deleteTestPlanRun(userId: ID!): PopulatedData!
         """
         Update the report status. Remember that all conflicts must be resolved
-        when setting the status to FINALIZED. Only available to admins.
+        when setting the status to IN_REVIEW. Only available to admins.
         """
         updateStatus(status: TestPlanReportStatus!): PopulatedData!
+        """
+        Update the report status for multiple TestPlanReports. Remember that all
+        conflicts must be resolved when setting the status to IN_REVIEW. Only
+        available to admins.
+        """
+        bulkUpdateStatus(status: TestPlanReportStatus!): [PopulatedData]!
         """
         Update the report recommended status target date.
         Only available to admins.
@@ -1171,7 +1182,7 @@ const graphqlSchema = gql`
         state of "DRAFT", resulting in the report appearing in the Test Queue.
         In the case an identical report already exists, it will be returned
         without changes and without affecting existing results. In the case an
-        identical report exists but with a status of "FINALIZED",
+        identical report exists but with a status of "CANDIDATE" or "RECOMMENDED",
         it will be given a status of "DRAFT" and will therefore be pulled back
         into the queue with its results unaffected.
         """
@@ -1184,7 +1195,7 @@ const graphqlSchema = gql`
         """
         Get the available mutations for the given TestPlanReport.
         """
-        testPlanReport(id: ID!): TestPlanReportOperations!
+        testPlanReport(id: ID, ids: [ID]): TestPlanReportOperations!
         """
         Get the available mutations for the given TestPlanRun.
         """

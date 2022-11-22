@@ -484,6 +484,12 @@ describe('graphql', () => {
                                 locationOfData
                             }
                         }
+                        bulkReportStatus: testPlanReport(ids: [1]) {
+                            __typename
+                            bulkUpdateStatus(status: IN_REVIEW) {
+                                locationOfData
+                            }
+                        }
                         reportRecommendedStatusTargetDate: testPlanReport(
                             id: 3
                         ) {

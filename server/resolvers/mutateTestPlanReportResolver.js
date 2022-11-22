@@ -1,5 +1,5 @@
-const mutateTestPlanReportResolver = (_, { id }) => {
-    return { parentContext: { id } };
+const mutateTestPlanReportResolver = (_, { id, ids }) => {
+    return { parentContext: { id, ids } };
 };
 
 module.exports = mutateTestPlanReportResolver;

@@ -387,7 +387,7 @@ const TestQueueRow = ({
                         status: status
                     }
                 });
-                if (status === 'FINALIZED') await triggerPageUpdate();
+                if (status === 'CANDIDATE') await triggerPageUpdate();
                 else await triggerTestPlanReportUpdate();
             }, 'Updating Test Plan Status');
         } catch (e) {
@@ -440,7 +440,7 @@ const TestQueueRow = ({
             (status !== 'IN_REVIEW' &&
                 conflictsCount === 0 &&
                 testPlanRunsWithResults.length > 0) ||
-            status === 'FINALIZED'
+            status === 'CANDIDATE'
         ) {
             newStatus = 'IN_REVIEW';
         }
@@ -451,7 +451,7 @@ const TestQueueRow = ({
             conflictsCount === 0 &&
             testPlanRunsWithResults.length > 0
         ) {
-            newStatus = 'FINALIZED';
+            newStatus = 'CANDIDATE';
         }
         return newStatus;
     };

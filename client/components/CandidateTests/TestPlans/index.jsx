@@ -698,7 +698,7 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
                                                                     onClick={async () => {
                                                                         await updateReportStatus(
                                                                             testPlanReports,
-                                                                            'FINALIZED'
+                                                                            'RECOMMENDED'
                                                                         );
                                                                     }}
                                                                     disabled={testPlanReports.some(

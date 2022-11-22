@@ -32,7 +32,7 @@ export const CANDIDATE_REPORTS_QUERY = gql`
             username
         }
         testPlanReports(
-            statuses: [FINALIZED]
+            statuses: [CANDIDATE]
             testPlanVersionId: $testPlanVersionId
             atId: $atId
         ) {

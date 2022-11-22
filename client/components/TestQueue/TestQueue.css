@@ -26,6 +26,10 @@ main.container-fluid table .col-md-3 {
     padding: 0.75em;
 }
 
+.test-queue.table .secondary-actions .btn {
+    padding: 0.375em;
+}
+
 .test-queue.table .test-cta-wrapper .btn-primary {
     margin-bottom: 1px;
 }

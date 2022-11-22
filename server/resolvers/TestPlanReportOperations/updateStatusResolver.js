@@ -25,12 +25,18 @@ const updateStatusResolver = async (
     // Params to be updated on TestPlanReport
     let updateParams = { status };
 
-    if (status === 'IN_REVIEW') {
+    if (status !== 'DRAFT') {
         const conflicts = await conflictsResolver(testPlanReport);
         if (conflicts.length > 0) {
             throw new Error('Cannot update test plan report due to conflicts');
         }
+    }
 
+    if (
+        status === 'IN_REVIEW' ||
+        status === 'CANDIDATE' ||
+        status === 'RECOMMENDED'
+    ) {
         const finalizedTestResults = finalizedTestResultsResolver({
             ...testPlanReport,
             status
@@ -51,49 +57,31 @@ const updateStatusResolver = async (
             }
         });
 
-        const candidateStatusReachedAt = new Date();
-        updateParams = {
-            ...updateParams,
-            candidateStatusReachedAt,
-            metrics: { ...testPlanReport.metrics, ...metrics },
-            recommendedStatusTargetDate: recommendedStatusTargetDateResolver({
-                candidateStatusReachedAt
-            })
-        };
-    } else if (status === 'FINALIZED') {
-        const conflicts = await conflictsResolver(testPlanReport);
-        if (conflicts.length > 0) {
-            throw new Error(
-                'Cannot finalize test plan report due to conflicts'
-            );
+        if (status === 'IN_REVIEW') {
+            updateParams = {
+                ...updateParams,
+                metrics: { ...testPlanReport.metrics, ...metrics }
+            };
+        } else if (status === 'CANDIDATE') {
+            const candidateStatusReachedAt = new Date();
+            updateParams = {
+                ...updateParams,
+                candidateStatusReachedAt,
+                metrics: { ...testPlanReport.metrics, ...metrics },
+                recommendedStatusTargetDate: recommendedStatusTargetDateResolver(
+                    {
+                        candidateStatusReachedAt
+                    }
+                ),
+                vendorReviewStatus: 'READY'
+            };
+        } else if (status === 'RECOMMENDED') {
+            updateParams = {
+                ...updateParams,
+                metrics: { ...testPlanReport.metrics, ...metrics },
+                recommendedStatusReachedAt: new Date()
+            };
         }
-
-        const finalizedTestResults = finalizedTestResultsResolver({
-            ...testPlanReport,
-            status
-        });
-
-        if (!finalizedTestResults || !finalizedTestResults.length) {
-            throw new Error(
-                'Cannot finalize test plan report because there are no ' +
-                    'completed test results'
-            );
-        }
-
-        const metrics = getMetrics({
-            testPlanReport: {
-                ...testPlanReport,
-                finalizedTestResults,
-                runnableTests
-            }
-        });
-
-        updateParams = {
-            ...updateParams,
-            metrics: { ...testPlanReport.metrics, ...metrics },
-            recommendedStatusReachedAt: new Date(),
-            vendorReviewStatus: 'READY'
-        };
     }
     await updateTestPlanReport(testPlanReportId, updateParams);
 

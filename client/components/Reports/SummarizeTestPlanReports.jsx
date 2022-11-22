@@ -13,6 +13,24 @@ const FullHeightContainer = styled(Container)`
     min-height: calc(100vh - 64px);
 `;
 
+const PhaseText = styled.span`
+    font-size: 12px;
+    margin-left: 6px;
+    padding: 4px 6px;
+    border-radius: 12px;
+    overflow: hidden;
+    white-space: nowrap;
+    color: white;
+
+    &.candidate {
+        background: #f87f1b;
+    }
+
+    &.recommended {
+        background: #b253f8;
+    }
+`;
+
 const SummarizeTestPlanReports = ({ testPlanReports }) => {
     if (!testPlanReports.length) {
         return (
@@ -73,9 +91,7 @@ const SummarizeTestPlanReports = ({ testPlanReports }) => {
             <p>
                 This page offers a high-level view of all results which have
                 been collected, reviewed and published by the ARIA-AT project.
-                Please note that the review process for tests has not yet been
-                formalized, so all tests are in a candidate state. Follow a link
-                in the table below to view detailed results.
+                Follow a link in the table below to view detailed results.
             </p>
             <h2>Support Levels</h2>
             <p id="support-levels-table-description">
@@ -98,16 +114,38 @@ const SummarizeTestPlanReports = ({ testPlanReports }) => {
                 <tbody>
                     {Object.values(testPlanVersionsById).map(
                         testPlanVersion => {
+                            let status = 'Recommended';
+                            Object.values(testPlanTargetsById).forEach(
+                                testPlanTarget => {
+                                    const testPlanReport =
+                                        tabularReports[testPlanVersion.id][
+                                            testPlanTarget.id
+                                        ];
+
+                                    if (testPlanReport?.status === 'CANDIDATE')
+                                        status = 'Candidate';
+                                }
+                            );
+
                             return (
                                 <tr key={testPlanVersion.id}>
                                     <td>
                                         <Link
                                             to={`/report/${testPlanVersion.id}`}
+                                            aria-label={`${getTestPlanVersionTitle(
+                                                testPlanVersion
+                                            )}, ${status} report`}
                                         >
                                             {getTestPlanVersionTitle(
                                                 testPlanVersion
                                             )}
                                         </Link>
+                                        <PhaseText
+                                            className={status.toLowerCase()}
+                                            aria-hidden
+                                        >
+                                            {status}
+                                        </PhaseText>
                                     </td>
                                     {Object.values(testPlanTargetsById).map(
                                         testPlanTarget => {

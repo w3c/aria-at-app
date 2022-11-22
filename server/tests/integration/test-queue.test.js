@@ -214,10 +214,10 @@ describe('test queue', () => {
             `);
             const previousStatus = previous.testPlanReport.status;
 
-            const result = await mutate(gql`
+            const candidateResult = await mutate(gql`
                 mutation {
                     testPlanReport(id: ${testPlanReportId}) {
-                        updateStatus(status: FINALIZED) {
+                        updateStatus(status: CANDIDATE) {
                             testPlanReport {
                                 status
                             }
@@ -225,11 +225,28 @@ describe('test queue', () => {
                     }
                 }
             `);
-            const resultStatus =
-                result.testPlanReport.updateStatus.testPlanReport.status;
+            const candidateResultStatus =
+                candidateResult.testPlanReport.updateStatus.testPlanReport
+                    .status;
 
-            expect(previousStatus).not.toBe('FINALIZED');
-            expect(resultStatus).toBe('FINALIZED');
+            const recommendedResult = await mutate(gql`
+                mutation {
+                    testPlanReport(id: ${testPlanReportId}) {
+                        updateStatus(status: RECOMMENDED) {
+                            testPlanReport {
+                                status
+                            }
+                        }
+                    }
+                }
+            `);
+            const recommendedResultStatus =
+                recommendedResult.testPlanReport.updateStatus.testPlanReport
+                    .status;
+
+            expect(previousStatus).not.toBe('CANDIDATE');
+            expect(candidateResultStatus).toBe('CANDIDATE');
+            expect(recommendedResultStatus).toBe('RECOMMENDED');
         });
     });
 
