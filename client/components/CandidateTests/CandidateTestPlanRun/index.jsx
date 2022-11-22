@@ -494,7 +494,7 @@ const CandidateTestPlanRun = () => {
                         );
                     })
                 ]}
-                stacked="true"
+                stacked
             ></DisclosureComponent>
         </>
     );
