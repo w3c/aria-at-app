@@ -83,17 +83,17 @@ export default [
             );
         }
     },
-    {
-        path: '/test-management',
-        exact: true,
-        component: () => {
-            return (
-                <ConfirmAuth requiredPermission="ADMIN">
-                    <Route component={TestManagement} />
-                </ConfirmAuth>
-            );
-        }
-    },
+    // {
+    //     path: '/test-management',
+    //     exact: true,
+    //     component: () => {
+    //         return (
+    //             <ConfirmAuth requiredPermission="ADMIN">
+    //                 <Route component={TestManagement} />
+    //             </ConfirmAuth>
+    //         );
+    //     }
+    // },
     {
         path: '/invalid-request',
         exact: true,
