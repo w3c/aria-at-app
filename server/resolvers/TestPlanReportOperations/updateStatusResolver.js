@@ -79,8 +79,7 @@ const updateStatusResolver = async (
             updateParams = {
                 ...updateParams,
                 metrics: { ...testPlanReport.metrics, ...metrics },
-                recommendedStatusReachedAt: new Date(),
-                vendorReviewStatus: 'APPROVED'
+                recommendedStatusReachedAt: new Date()
             };
         }
     }
