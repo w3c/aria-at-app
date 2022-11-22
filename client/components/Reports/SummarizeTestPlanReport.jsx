@@ -153,8 +153,9 @@ const SummarizeTestPlanReport = ({ testPlanReport }) => {
                                     Details for test:
                                 </span>
                                 {test.title}
-                                {/* TODO: DisclaimerInfo's language must now also account for recommended reports being shown */}
-                                <DisclaimerInfo />
+                                <DisclaimerInfo
+                                    reportStatus={testPlanReport.status}
+                                />
                             </h2>
                             <div className="test-result-buttons">
                                 <Button
@@ -223,6 +224,7 @@ const SummarizeTestPlanReport = ({ testPlanReport }) => {
 SummarizeTestPlanReport.propTypes = {
     testPlanReport: PropTypes.shape({
         id: PropTypes.string.isRequired,
+        status: PropTypes.string.isRequired,
         testPlanVersion: PropTypes.object.isRequired,
         runnableTests: PropTypes.arrayOf(PropTypes.object.isRequired)
             .isRequired,

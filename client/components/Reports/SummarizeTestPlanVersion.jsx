@@ -45,8 +45,7 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
             </Breadcrumb>
             <h2>Introduction</h2>
 
-            {/* TODO: DisclaimerInfo's language must now also account for recommended reports being shown */}
-            <DisclaimerInfo />
+            <DisclaimerInfo reportStatus={testPlanReports[0].status} />
             <p>
                 This page summarizes the test results for each AT and Browser
                 which executed the Test Plan.
@@ -94,7 +93,7 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
                 return (
                     <Fragment key={testPlanReport.id}>
                         <h2>{getTestPlanTargetTitle(testPlanTarget)}</h2>
-                        <DisclaimerInfo />
+                        <DisclaimerInfo reportStatus={testPlanReport.status} />
                         <LinkContainer
                             to={
                                 `/report/${testPlanVersion.id}` +
@@ -198,6 +197,7 @@ SummarizeTestPlanVersion.propTypes = {
     testPlanReports: PropTypes.arrayOf(
         PropTypes.shape({
             id: PropTypes.string.isRequired,
+            status: PropTypes.string.isRequired,
             runnableTests: PropTypes.arrayOf(PropTypes.object).isRequired,
             finalizedTestResults: PropTypes.arrayOf(PropTypes.object).isRequired
         }).isRequired

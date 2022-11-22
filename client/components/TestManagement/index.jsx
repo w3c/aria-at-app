@@ -172,9 +172,9 @@ const TestManagement = () => {
                 </Alert>
             )}
 
-            {/*<p data-testid="test-management-instructions">*/}
-            {/*    TODO: This text needs to be updated.*/}
-            {/*</p>*/}
+            <p data-testid="test-management-instructions">
+                Manage test plans in the Test Queue and test plan phases.
+            </p>
 
             <ManageTestQueue
                 ats={ats}

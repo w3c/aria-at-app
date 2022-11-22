@@ -88,13 +88,10 @@ const SummarizeTestPlanReports = ({ testPlanReports }) => {
             </Helmet>
             <h1>Test Reports</h1>
             <h2>Introduction</h2>
-            {/* TODO: Change language to account for recommended reports now also being shown */}
             <p>
                 This page offers a high-level view of all results which have
                 been collected, reviewed and published by the ARIA-AT project.
-                Please note that the review process for tests has not yet been
-                formalized, so all tests are in a candidate state. Follow a link
-                in the table below to view detailed results.
+                Follow a link in the table below to view detailed results.
             </p>
             <h2>Support Levels</h2>
             <p id="support-levels-table-description">
@@ -135,6 +132,9 @@ const SummarizeTestPlanReports = ({ testPlanReports }) => {
                                     <td>
                                         <Link
                                             to={`/report/${testPlanVersion.id}`}
+                                            aria-label={`${getTestPlanVersionTitle(
+                                                testPlanVersion
+                                            )}, ${status} report`}
                                         >
                                             {getTestPlanVersionTitle(
                                                 testPlanVersion
@@ -142,6 +142,7 @@ const SummarizeTestPlanReports = ({ testPlanReports }) => {
                                         </Link>
                                         <PhaseText
                                             className={status.toLowerCase()}
+                                            aria-hidden
                                         >
                                             {status}
                                         </PhaseText>

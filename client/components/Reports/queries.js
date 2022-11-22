@@ -34,6 +34,7 @@ export const REPORT_PAGE_QUERY = gql`
             testPlanVersionId: $testPlanVersionId
         ) {
             id
+            status
             metrics
             at {
                 id
