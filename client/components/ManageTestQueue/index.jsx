@@ -747,7 +747,6 @@ const ManageTestQueue = ({
                     }}
                 />
             )}
-            {/*</Container>*/}
         </LoadingStatus>
     );
 };
