@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
-import PropTypes from 'prop-types';
 import TestNavigator from '../../TestRun/TestNavigator';
 import InstructionsRenderer from './InstructionsRenderer';
 import OptionButton from '../../TestRun/OptionButton';
@@ -11,23 +10,12 @@ import {
     CANDIDATE_REPORTS_QUERY,
     PROMOTE_VENDOR_REVIEW_STATUS_REPORT_MUTATION
 } from './queries';
-import {
-    Accordion,
-    Badge,
-    useAccordionToggle,
-    Card,
-    Container,
-    Row,
-    Col,
-    Button
-} from 'react-bootstrap';
+import { Badge, Container, Row, Col, Button } from 'react-bootstrap';
 import { useParams, Redirect, useHistory } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import './CandidateTestPlanRun.css';
 import '../../TestRun/TestRun.css';
 import '../../App/App.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faAngleDown, faAngleUp } from '@fortawesome/free-solid-svg-icons';
 import useResizeObserver from '@react-hook/resize-observer';
 import { useMediaQuery } from 'react-responsive';
 import { convertDateToString } from '../../../utils/formatter';
@@ -36,6 +24,7 @@ import ProvideFeedbackModal from '../CandidateModals/ProvideFeedbackModal';
 import ThankYouModal from '../CandidateModals/ThankYouModal';
 import getMetrics from '../../Reports/getMetrics';
 import FeedbackListItem from '../FeedbackListItem';
+import DisclosureComponent from '../../common/DisclosureComponent';
 
 // https://codesandbox.io/s/react-hookresize-observer-example-ft88x
 function useSize(target) {
@@ -72,9 +61,11 @@ const CandidateTestPlanRun = () => {
     const [showTestNavigator, setShowTestNavigator] = useState(true);
     const [isFirstTest, setIsFirstTest] = useState(true);
     const [isLastTest, setIsLastTest] = useState(false);
-    const [accordionMap, setActiveAccordionMap] = useState(new Map());
     const [feedbackModalShowing, setFeedbackModalShowing] = useState(false);
     const [thankYouModalShowing, setThankYouModalShowing] = useState(false);
+    const [showInstructions, setShowInstructions] = useState(true);
+    const [showBrowserBools, setShowBrowserBools] = useState([]);
+    const [showBrowserClicks, setShowBrowserClicks] = useState([]);
 
     const [issuesHeading, setissuesHeading] = React.useState();
     const issuesHeadingSize = useSize(issuesHeading);
@@ -85,13 +76,6 @@ const CandidateTestPlanRun = () => {
     });
 
     const toggleTestNavigator = () => setShowTestNavigator(!showTestNavigator);
-
-    const toggleAccordion = (accordionMap, index) => {
-        if (!accordionMap.get(index)) {
-            return new Map(accordionMap.set(index, true));
-        }
-        return new Map(accordionMap.set(index, false));
-    };
 
     const handleTestClick = async index => {
         setCurrentTestIndex(index);
@@ -195,6 +179,19 @@ const CandidateTestPlanRun = () => {
             ];
             setViewedTests(viewedTests);
             setReviewStatus(vendorReviewStatus);
+
+            const bools = testPlanReports.map(() => true);
+            setShowBrowserBools(bools);
+
+            const browserClicks = testPlanReports.map((report, index) => () => {
+                setShowBrowserBools(browserBools => {
+                    let bools = [...browserBools];
+                    bools[index] = !bools[index];
+                    return bools;
+                });
+            });
+
+            setShowBrowserClicks(browserClicks);
         }
     }, [data]);
 
@@ -339,38 +336,11 @@ const CandidateTestPlanRun = () => {
         }
     };
 
-    // https://react-bootstrap-v4.netlify.app/components/accordion/#custom-toggle-with-expansion-awareness
-    const ContextAwareToggle = ({ children, eventKey, callback }) => {
-        const decoratedOnClick = useAccordionToggle(
-            eventKey,
-            () => callback && callback(eventKey)
-        );
-
-        const currentKey = accordionMap.get(eventKey);
-
-        return (
-            <div
-                onClick={decoratedOnClick}
-                className="feedback-accordion-header"
-            >
-                {children}
-                <span className="arrow">
-                    <FontAwesomeIcon
-                        icon={currentKey ? faAngleUp : faAngleDown}
-                    />
-                </span>
-            </div>
-        );
-    };
-
-    ContextAwareToggle.propTypes = {
-        children: PropTypes.any,
-        eventKey: PropTypes.string,
-        callback: PropTypes.func
-    };
-
     const heading = (
         <div className="test-info-heading">
+            <div className="sr-only" aria-live="polite" aria-atomic="true">
+                Viewing Test: {currentTest.title}
+            </div>
             <span className="task-label">
                 Reviewing Test {currentTest.seq} of {tests.length}:
             </span>
@@ -476,82 +446,56 @@ const CandidateTestPlanRun = () => {
     const results = (
         <>
             <h1 className="current-test-title">{currentTest.title}</h1>
-            <Accordion className="feedback-accordion" defaultActiveKey="0">
-                <Card>
-                    <Card.Header>
-                        <ContextAwareToggle
-                            eventKey="0"
-                            callback={index => {
-                                setActiveAccordionMap(map =>
-                                    toggleAccordion(map, index)
-                                );
-                            }}
-                        >
-                            Test Instructions
-                        </ContextAwareToggle>
-                    </Card.Header>
-                    <Accordion.Collapse eventKey="0">
-                        <Card.Body>
-                            <InstructionsRenderer
-                                key={`instructions-${currentTest.id}`}
-                                at={testPlanReport.at}
-                                testResult={{
-                                    scenarioResults: {},
-                                    test: currentTest,
-                                    completedAt: new Date()
-                                }}
-                                testPageUrl={
-                                    testPlanReport.testPlanVersion.testPageUrl
-                                }
-                            />
-                        </Card.Body>
-                    </Accordion.Collapse>
-                </Card>
-            </Accordion>
-            {testPlanReports.map((testPlanReport, index) => {
-                const testResult =
-                    testPlanReport.finalizedTestResults[currentTestIndex];
-                const { testsPassedCount } = getMetrics({ testResult });
-                return (
-                    testResult && (
-                        <Accordion
-                            key={`feedback-accordion-${index + 1}`}
-                            className="feedback-accordion"
-                            defaultActiveKey={`${index + 1}`}
-                        >
-                            <Card>
-                                <Card.Header>
-                                    <ContextAwareToggle
-                                        eventKey={`${index + 1}`}
-                                        callback={index => {
-                                            setActiveAccordionMap(map =>
-                                                toggleAccordion(map, index)
-                                            );
-                                        }}
-                                    >
-                                        Test Results for{' '}
-                                        {testPlanReport.browser.name}
-                                    </ContextAwareToggle>
-                                </Card.Header>
-                                <Accordion.Collapse eventKey={`${index + 1}`}>
-                                    <Card.Body>
-                                        <h1 className="test-results-header">
-                                            Test Result:{' '}
-                                            {testsPassedCount ? 'PASS' : 'FAIL'}
-                                        </h1>
-                                        <TestPlanResultsTable
-                                            tableClassName="test-results-table"
-                                            key={`${testPlanReport.id} + ${testResult.id}`}
-                                            test={currentTest}
-                                            testResult={testResult}
-                                        />
-                                    </Card.Body>
-                                </Accordion.Collapse>
-                            </Card>
-                        </Accordion>
+            <DisclosureComponent
+                componentId="test-instructions-and-results"
+                headingLevel="1"
+                title={[
+                    'Test Instructions',
+                    ...testPlanReports.map(
+                        testPlanReport =>
+                            `Test Results for ${testPlanReport.browser.name}`
                     )
-                );
-            })}
+                ]}
+                onClick={[
+                    () => setShowInstructions(!showInstructions),
+                    ...showBrowserClicks
+                ]}
+                expanded={[showInstructions, ...showBrowserBools]}
+                disclosureContainerView={[
+                    <InstructionsRenderer
+                        key={`instructions-${currentTest.id}`}
+                        at={testPlanReport.at}
+                        testResult={{
+                            scenarioResults: {},
+                            test: currentTest,
+                            completedAt: new Date()
+                        }}
+                        testPageUrl={testPlanReport.testPlanVersion.testPageUrl}
+                    />,
+                    ...testPlanReports.map(testPlanReport => {
+                        const testResult =
+                            testPlanReport.finalizedTestResults[
+                                currentTestIndex
+                            ];
+                        const { testsPassedCount } = getMetrics({ testResult });
+                        return (
+                            <>
+                                <h2 className="test-results-header">
+                                    Test Result:{' '}
+                                    {testsPassedCount ? 'PASS' : 'FAIL'}
+                                </h2>
+                                <TestPlanResultsTable
+                                    tableClassName="test-results-table"
+                                    key={`${testPlanReport.id} + ${testResult.id}`}
+                                    test={currentTest}
+                                    testResult={testResult}
+                                />
+                            </>
+                        );
+                    })
+                ]}
+                stacked="true"
+            ></DisclosureComponent>
         </>
     );
 
