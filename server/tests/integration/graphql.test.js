@@ -137,14 +137,17 @@ describe('graphql', () => {
         const excludedTypeNames = [
             // Items formatted like this:
             // 'TestResult'
-            'Issue'
+            'Issue',
+            'Vendor'
         ];
         const excludedTypeNameAndField = [
             // Items formatted like this:
             // ['TestResult', 'startedAt'],
             ['PopulatedData', 'atVersion'],
             ['PopulatedData', 'browserVersion'],
-            ['TestPlanReport', 'issues']
+            ['TestPlanReport', 'issues'],
+            ['TestPlanReport', 'vendorReviewStatus'],
+            ['Test', 'viewers']
         ];
         ({
             typeAwareQuery,
@@ -272,6 +275,7 @@ describe('graphql', () => {
                         id
                         status
                         createdAt
+                        vendorReviewStatus
                         testPlanVersion {
                             id
                         }
@@ -480,6 +484,12 @@ describe('graphql', () => {
                                 locationOfData
                             }
                         }
+                        bulkReportStatus: testPlanReport(ids: [1]) {
+                            __typename
+                            bulkUpdateStatus(status: IN_REVIEW) {
+                                locationOfData
+                            }
+                        }
                         reportRecommendedStatusTargetDate: testPlanReport(
                             id: 3
                         ) {
@@ -499,6 +509,16 @@ describe('graphql', () => {
                         deleteReport: testPlanReport(id: 3) {
                             __typename
                             deleteTestPlanReport
+                        }
+                        promoteVendorStatus: testPlanReport(id: 6) {
+                            __typename
+                            promoteVendorReviewStatus(
+                                vendorReviewStatus: "READY"
+                            ) {
+                                testPlanReport {
+                                    id
+                                }
+                            }
                         }
                         testPlanRun(id: 1) {
                             __typename
@@ -585,6 +605,12 @@ describe('graphql', () => {
                                 id
                                 name
                             }
+                        }
+                        addViewer(
+                            testPlanVersionId: 1
+                            testId: "NjgwYeyIyIjoiMSJ9zYxZT"
+                        ) {
+                            username
                         }
                     }
                 `,

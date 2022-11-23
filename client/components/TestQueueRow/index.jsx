@@ -209,7 +209,7 @@ const TestQueueRow = ({
                 </>
             );
 
-        if (!isSignedIn || isVendor)
+        if (!isSignedIn || (isVendor && !isAdmin))
             return (
                 <>
                     <Link to={`/test-plan-report/${testPlanReport.id}`}>
@@ -387,7 +387,7 @@ const TestQueueRow = ({
                         status: status
                     }
                 });
-                if (status === 'FINALIZED') await triggerPageUpdate();
+                if (status === 'CANDIDATE') await triggerPageUpdate();
                 else await triggerTestPlanReportUpdate();
             }, 'Updating Test Plan Status');
         } catch (e) {
@@ -440,7 +440,7 @@ const TestQueueRow = ({
             (status !== 'IN_REVIEW' &&
                 conflictsCount === 0 &&
                 testPlanRunsWithResults.length > 0) ||
-            status === 'FINALIZED'
+            status === 'CANDIDATE'
         ) {
             newStatus = 'IN_REVIEW';
         }
@@ -451,7 +451,7 @@ const TestQueueRow = ({
             conflictsCount === 0 &&
             testPlanRunsWithResults.length > 0
         ) {
-            newStatus = 'FINALIZED';
+            newStatus = 'CANDIDATE';
         }
         return newStatus;
     };
@@ -475,7 +475,7 @@ const TestQueueRow = ({
             <tr className="test-queue-run-row">
                 <th>{renderAssignedUserToTestPlan()}</th>
                 <td>
-                    {isSignedIn && !isVendor && (
+                    {isSignedIn && isTester && (
                         <div className="testers-wrapper">
                             {isAdmin && renderAssignMenu()}
                             <div className="assign-actions">
@@ -534,7 +534,7 @@ const TestQueueRow = ({
                 </td>
                 <td>
                     <div className="status-wrapper">{status}</div>
-                    {isSignedIn && !isVendor && (
+                    {isSignedIn && isTester && (
                         <div className="secondary-actions">
                             {isAdmin && !isLoading && nextReportStatus && (
                                 <>
@@ -597,7 +597,7 @@ const TestQueueRow = ({
                             </Button>
                         )}
 
-                        {(!isSignedIn || isVendor) && (
+                        {(!isSignedIn || (isVendor && !isAdmin)) && (
                             <Button
                                 variant="primary"
                                 href={`/test-plan-report/${testPlanReport.id}`}
@@ -606,7 +606,7 @@ const TestQueueRow = ({
                             </Button>
                         )}
                     </div>
-                    {isSignedIn && !isVendor && (
+                    {isSignedIn && isTester && (
                         <div className="secondary-actions">
                             {isAdmin && renderOpenAsDropdown()}
                             {isAdmin && renderDeleteMenu()}

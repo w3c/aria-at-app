@@ -5,11 +5,13 @@ import Home from '@components/Home';
 import InvalidRequest from '@components/InvalidRequest';
 import NotFound from '@components/NotFound';
 import { Reports, Report } from '@components/Reports';
-// import CandidateTests from '@components/CandidateTests';
+import CandidateTests from '@components/CandidateTests';
 import SignupInstructions from '@components/SignupInstructions';
 import TestQueue from '@components/TestQueue';
 import TestRun from '@components/TestRun';
 import UserSettings from '@components/UserSettings';
+import CandidateTestPlanRun from '@components/CandidateTests/CandidateTestPlanRun';
+// import TestManagement from '@components/TestManagement';
 
 export default [
     {
@@ -29,6 +31,16 @@ export default [
             return (
                 <ConfirmAuth requiredPermission="TESTER">
                     <Route component={UserSettings} />
+                </ConfirmAuth>
+            );
+        }
+    },
+    {
+        path: '/candidate-test-plan/:testPlanVersionId(\\d+)/:atId',
+        component: () => {
+            return (
+                <ConfirmAuth requiredPermission="VENDOR">
+                    <Route component={CandidateTestPlanRun} />
                 </ConfirmAuth>
             );
         }
@@ -61,12 +73,23 @@ export default [
         path: '/report/:testPlanVersionId',
         component: Report
     },
+    {
+        path: '/candidate-tests',
+        component: () => {
+            return (
+                <ConfirmAuth requiredPermission="VENDOR">
+                    <Route component={CandidateTests} />
+                </ConfirmAuth>
+            );
+        }
+    },
     // {
-    //     path: '/candidate-tests',
+    //     path: '/test-management',
+    //     exact: true,
     //     component: () => {
     //         return (
-    //             <ConfirmAuth requiredPermission="VENDOR">
-    //                 <Route component={CandidateTests} />
+    //             <ConfirmAuth requiredPermission="ADMIN">
+    //                 <Route component={TestManagement} />
     //             </ConfirmAuth>
     //         );
     //     }

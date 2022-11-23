@@ -24,13 +24,13 @@ const permissionScopes = [
 const permissionScopesURI = encodeURI(permissionScopes.join(' '));
 const graphQLEndpoint = `${GITHUB_GRAPHQL_SERVER}/graphql`;
 const nodeCache = new NodeCache();
-const CACHE_MINUTES = 2;
+const CACHE_MINUTES = 1;
 
 const constructIssuesRequest = async ({
     ats = ['jaws', 'nvda', 'vo'],
     page = 1
 }) => {
-    const issuesEndpoint = `https://api.github.com/repos/w3c/aria-at-app/issues?labels=app,candidate-review&per_page=100`;
+    const issuesEndpoint = `https://api.github.com/repos/w3c/aria-at/issues?labels=app,candidate-review&per_page=100`;
     const url = `${issuesEndpoint}&page=${page}`;
     const auth = {
         username: GITHUB_CLIENT_ID,

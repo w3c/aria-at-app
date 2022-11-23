@@ -1,89 +1,21 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
-import styled from '@emotion/styled';
 import { Helmet } from 'react-helmet';
 import { createGitHubIssueWithTitleAndBody } from '../TestRun';
-import getMetrics from './getMetrics';
 import { getTestPlanTargetTitle, getTestPlanVersionTitle } from './getTitles';
-import { Breadcrumb, Button, Container, Table } from 'react-bootstrap';
+import { Breadcrumb, Button, Container } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faExclamationCircle,
     faExternalLinkAlt,
-    faHome,
-    faChevronDown,
-    faChevronUp
+    faHome
 } from '@fortawesome/free-solid-svg-icons';
 import { differenceBy } from 'lodash';
 import { convertDateToString } from '../../utils/formatter';
 import DisclaimerInfo from '../DisclaimerInfo';
-
-const DisclosureParent = styled.div`
-    border: 1px solid #d3d5da;
-    border-radius: 3px;
-
-    h3 {
-        margin: 0;
-        padding: 0;
-    }
-`;
-
-const DisclosureButton = styled.button`
-    position: relative;
-    width: 100%;
-    margin: 0;
-    padding: 1.25rem;
-    text-align: left;
-    font-size: 1rem;
-    font-weight: bold;
-    border: none;
-    border-radius: 3px;
-    background-color: transparent;
-
-    &:hover,
-    &:focus {
-        padding: 1.25rem;
-        border: 0 solid #005a9c;
-        background-color: #def;
-        cursor: pointer;
-    }
-
-    svg {
-        position: absolute;
-        margin: 0;
-        top: 50%;
-        right: 1.25rem;
-
-        color: #969696;
-        transform: translateY(-50%);
-    }
-`;
-
-const DisclosureContainer = styled.div`
-    display: ${({ show }) => (show ? 'flex' : 'none')};
-    flex-direction: column;
-    gap: 1.25rem;
-
-    background-color: #f8f9fa;
-    padding: 1.25rem;
-    border-top: 1px solid #d3d5da;
-
-    ul {
-        margin-bottom: 0;
-    }
-`;
-
-const getAssertionResultString = assertionResult => {
-    let output = 'Good output';
-    if (!assertionResult.passed) {
-        output =
-            assertionResult.failedReason === 'INCORRECT_OUTPUT'
-                ? 'Incorrect output'
-                : 'No output';
-    }
-    return `${output}: ${assertionResult.assertion.text}`;
-};
+import TestPlanResultsTable from './TestPlanResultsTable';
+import DisclosureComponent from '../common/DisclosureComponent';
 
 const getTestersRunHistory = (
     testPlanReport,
@@ -99,7 +31,7 @@ const getTestersRunHistory = (
         const testResult = testResults.find(item => item.test.id === testId);
         if (
             testPlanReportId === testPlanReport.id &&
-            testPlanReport.status === 'FINALIZED' &&
+            testPlanReport.status === 'CANDIDATE' &&
             testResult?.completedAt
         ) {
             lines.push(
@@ -131,13 +63,19 @@ const getTestersRunHistory = (
         }
     });
 
-    return <ul>{lines}</ul>;
+    return (
+        <ul
+            style={{
+                marginBottom: '0'
+            }}
+        >
+            {lines}
+        </ul>
+    );
 };
 
 const SummarizeTestPlanReport = ({ testPlanReport }) => {
     const { testPlanVersion, at, browser } = testPlanReport;
-
-    const [runHistoryItems, setRunHistoryItems] = useState({});
 
     // Construct testPlanTarget
     const testPlanTarget = {
@@ -151,17 +89,6 @@ const SummarizeTestPlanReport = ({ testPlanReport }) => {
         testPlanReport.finalizedTestResults,
         testOrTestResult => testOrTestResult.test?.id ?? testOrTestResult.id
     );
-
-    const onClickRunHistory = testResultId => {
-        // { testResultId: boolean } ]
-        if (!runHistoryItems[testResultId])
-            setRunHistoryItems({ ...runHistoryItems, [testResultId]: true });
-        else
-            setRunHistoryItems({
-                ...runHistoryItems,
-                [testResultId]: !runHistoryItems[testResultId]
-            });
-    };
 
     return (
         <Container id="main" as="main" tabIndex="-1">
@@ -226,7 +153,9 @@ const SummarizeTestPlanReport = ({ testPlanReport }) => {
                                     Details for test:
                                 </span>
                                 {test.title}
-                                <DisclaimerInfo />
+                                <DisclaimerInfo
+                                    reportStatus={testPlanReport.status}
+                                />
                             </h2>
                             <div className="test-result-buttons">
                                 <Button
@@ -251,167 +180,20 @@ const SummarizeTestPlanReport = ({ testPlanReport }) => {
                                 </Button>
                             </div>
                         </div>
-                        <Table
-                            bordered
-                            responsive
-                            aria-label={`Results for test ${test.title}`}
-                        >
-                            <thead>
-                                <tr>
-                                    <th>Command</th>
-                                    <th>Support</th>
-                                    <th>Details</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {testResult.scenarioResults.map(
-                                    scenarioResult => {
-                                        const passedAssertions = scenarioResult.assertionResults.filter(
-                                            assertionResult =>
-                                                assertionResult.passed
-                                        );
-                                        const failedAssertions = scenarioResult.assertionResults.filter(
-                                            assertionResult =>
-                                                !assertionResult.passed
-                                        );
-                                        const metrics = getMetrics({
-                                            scenarioResult
-                                        });
-                                        return (
-                                            <tr key={scenarioResult.id}>
-                                                <td>
-                                                    {scenarioResult.scenario.commands
-                                                        .map(({ text }) => text)
-                                                        .join(', then ')}
-                                                </td>
-                                                <td>{metrics.supportLevel}</td>
-                                                <td>
-                                                    <dl>
-                                                        <dt>Output:</dt>
-                                                        <dd>
-                                                            {
-                                                                scenarioResult.output
-                                                            }
-                                                        </dd>
-                                                        <dt>
-                                                            Passing Assertions:
-                                                        </dt>
-                                                        <dd>
-                                                            {passedAssertions.length ? (
-                                                                <ul>
-                                                                    {passedAssertions.map(
-                                                                        assertionResult => (
-                                                                            <li
-                                                                                key={
-                                                                                    assertionResult.id
-                                                                                }
-                                                                            >
-                                                                                {getAssertionResultString(
-                                                                                    assertionResult
-                                                                                )}
-                                                                            </li>
-                                                                        )
-                                                                    )}
-                                                                </ul>
-                                                            ) : (
-                                                                'None'
-                                                            )}
-                                                        </dd>
-                                                        <dt>
-                                                            Failing Assertions:
-                                                        </dt>
-                                                        <dd>
-                                                            {failedAssertions.length ? (
-                                                                <ul>
-                                                                    {failedAssertions.map(
-                                                                        assertionResult => (
-                                                                            <li
-                                                                                key={
-                                                                                    assertionResult.id
-                                                                                }
-                                                                            >
-                                                                                {getAssertionResultString(
-                                                                                    assertionResult
-                                                                                )}
-                                                                            </li>
-                                                                        )
-                                                                    )}
-                                                                </ul>
-                                                            ) : (
-                                                                'None'
-                                                            )}
-                                                        </dd>
-                                                        <dt>
-                                                            Unexpected
-                                                            Behaviors:
-                                                        </dt>
-                                                        <dd>
-                                                            {scenarioResult
-                                                                .unexpectedBehaviors
-                                                                .length ? (
-                                                                <ul>
-                                                                    {scenarioResult.unexpectedBehaviors.map(
-                                                                        unexpected => (
-                                                                            <li
-                                                                                key={
-                                                                                    unexpected.id
-                                                                                }
-                                                                            >
-                                                                                {unexpected.otherUnexpectedBehaviorText ??
-                                                                                    unexpected.text}
-                                                                            </li>
-                                                                        )
-                                                                    )}
-                                                                </ul>
-                                                            ) : (
-                                                                'None'
-                                                            )}
-                                                        </dd>
-                                                    </dl>
-                                                </td>
-                                            </tr>
-                                        );
-                                    }
-                                )}
-                            </tbody>
-                        </Table>
+                        <TestPlanResultsTable
+                            test={test}
+                            testResult={testResult}
+                        />
 
-                        <DisclosureParent>
-                            <h3>
-                                <DisclosureButton
-                                    id={`run-history-${testResult.id}-button`}
-                                    type="button"
-                                    aria-expanded={
-                                        !!runHistoryItems[testResult.id]
-                                    }
-                                    aria-controls={`run-history-${testResult.id}`}
-                                    onClick={() =>
-                                        onClickRunHistory(testResult.id)
-                                    }
-                                >
-                                    Run History
-                                    <FontAwesomeIcon
-                                        icon={
-                                            runHistoryItems[testResult.id]
-                                                ? faChevronUp
-                                                : faChevronDown
-                                        }
-                                    />
-                                </DisclosureButton>
-                            </h3>
-                            <DisclosureContainer
-                                role="region"
-                                id={`run-history-${testResult.id}`}
-                                aria-labelledby={`run-history-${testResult.id}-button`}
-                                show={!!runHistoryItems[testResult.id]}
-                            >
-                                {getTestersRunHistory(
-                                    testPlanReport,
-                                    testResult.test.id,
-                                    testPlanReport.draftTestPlanRuns
-                                )}
-                            </DisclosureContainer>
-                        </DisclosureParent>
+                        <DisclosureComponent
+                            componentId={`run-history-${testResult.id}`}
+                            title="Run History"
+                            disclosureContainerView={getTestersRunHistory(
+                                testPlanReport,
+                                testResult.test.id,
+                                testPlanReport.draftTestPlanRuns
+                            )}
+                        />
                     </Fragment>
                 );
             })}
@@ -442,6 +224,7 @@ const SummarizeTestPlanReport = ({ testPlanReport }) => {
 SummarizeTestPlanReport.propTypes = {
     testPlanReport: PropTypes.shape({
         id: PropTypes.string.isRequired,
+        status: PropTypes.string.isRequired,
         testPlanVersion: PropTypes.object.isRequired,
         runnableTests: PropTypes.arrayOf(PropTypes.object.isRequired)
             .isRequired,

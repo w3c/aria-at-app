@@ -330,7 +330,8 @@ const getTests = ({ builtDirectoryPath, testPlanVersionId, ats, gitSha }) => {
                 id: createAssertionId(testId, index),
                 priority: assertion.priority === 1 ? 'REQUIRED' : 'OPTIONAL',
                 text: assertion.expectation
-            }))
+            })),
+            viewers: []
         });
     });
 

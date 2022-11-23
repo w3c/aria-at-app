@@ -1,0 +1,11 @@
+.btn-primary {
+    background: #0b60ab;
+}
+
+.modal-footer {
+    border-top: none;
+}
+
+.modal-header {
+    border-bottom: none;
+}

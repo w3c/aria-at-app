@@ -16,7 +16,7 @@ describe('TestPlanReportModel Data Checks', () => {
         const { id, status, testPlanVersionId, createdAt } = testPlanReport;
 
         expect(id).toEqual(_id);
-        expect(status).toMatch(/^(DRAFT|IN_REVIEW|FINALIZED|REMOVED)$/);
+        expect(status).toMatch(/^(DRAFT|IN_REVIEW|CANDIDATE|RECOMMENDED)$/);
         expect(testPlanVersionId).toBeTruthy();
         expect(createdAt).toBeTruthy();
         expect(testPlanReport).toHaveProperty('testPlanRuns');
@@ -49,7 +49,7 @@ describe('TestPlanReportModel Data Checks', () => {
         } = testPlanReport;
 
         expect(id).toEqual(_id);
-        expect(status).toMatch(/^(DRAFT|IN_REVIEW|FINALIZED)$/);
+        expect(status).toMatch(/^(DRAFT|IN_REVIEW|CANDIDATE|RECOMMENDED)$/);
         expect(testPlanVersionId).toBeTruthy();
         expect(createdAt).toBeTruthy();
         expect(atId).toBeTruthy();

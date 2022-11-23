@@ -324,7 +324,7 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
             <>
                 <StatusText className="in-progress">
                     <span className="dot" aria-hidden={true} />
-                    Ready for Review
+                    Review in Progress
                 </StatusText>
             </>
         );
@@ -340,9 +340,8 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
 
         let result = null;
         if (issueChangesRequestedTypeCount) result = changesRequestedContent;
-        else if (isInProgressStatusExists) result = inProgressContent;
-        else if (isApprovedStatusExists || issueFeedbackTypeCount) {
-            if (issueFeedbackTypeCount) result = issueFeedbackContent;
+        else if (issueFeedbackTypeCount) {
+            result = issueFeedbackContent;
             if (isApprovedStatusExists)
                 result = (
                     <>
@@ -356,7 +355,9 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
                         {approvedContent}
                     </>
                 );
-        } else result = readyForReviewContent;
+        } else if (isInProgressStatusExists) result = inProgressContent;
+        else if (isApprovedStatusExists) result = approvedContent;
+        else result = readyForReviewContent;
 
         return result;
     };
@@ -393,6 +394,15 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
                 </>
             );
         }
+    };
+
+    const uniqueFilter = (element, unique, key) => {
+        const isDuplicate = unique.includes(element[key]);
+        if (!isDuplicate) {
+            unique.push(element[key]);
+            return true;
+        }
+        return false;
     };
 
     const constructTableForAtById = (atId, atName) => {
@@ -614,17 +624,27 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
                                                     ) / allMetrics.length
                                                 ) || 0
                                         };
+
+                                        // Make sure issues are unique
+                                        const uniqueLinks = [];
                                         const allIssues = testPlanReports
                                             .map(testPlanReport => [
                                                 ...testPlanReport.issues
                                             ])
-                                            .flat();
+                                            .flat()
+                                            .filter(t =>
+                                                uniqueFilter(
+                                                    t,
+                                                    uniqueLinks,
+                                                    'link'
+                                                )
+                                            );
+
                                         return (
                                             <tr key={testPlanVersion.id}>
                                                 <td>
-                                                    {/*TODO: Insert link when merged with Candidate Test Page branch*/}
                                                     <Link
-                                                        to={`/candidate-tests/some-id`}
+                                                        to={`/candidate-test-plan/${testPlanVersion.id}/${atId}`}
                                                     >
                                                         {getTestPlanVersionTitle(
                                                             testPlanVersion
@@ -678,7 +698,7 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
                                                                     onClick={async () => {
                                                                         await updateReportStatus(
                                                                             testPlanReports,
-                                                                            'FINALIZED'
+                                                                            'RECOMMENDED'
                                                                         );
                                                                     }}
                                                                     disabled={testPlanReports.some(
@@ -739,9 +759,8 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
                                                     })}
                                                 </CenteredTd>
                                                 <CenteredTd>
-                                                    {/*TODO: Insert link when merged with Candidate Test Page branch*/}
                                                     <Link
-                                                        to={`/candidate-tests/some-id`}
+                                                        to={`/candidate-test-plan/${testPlanVersion.id}/${atId}`}
                                                     >
                                                         <ClippedProgressBar
                                                             progress={
@@ -870,19 +889,50 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
                                     }
                                 );
 
-                                const allIssues = testPlanReports
-                                    .map(testPlanReport => [
-                                        ...testPlanReport.issues
-                                    ])
-                                    .flat();
+                                const allJawsIssues = [];
+                                const allNvdaIssues = [];
+                                const allVoIssues = [];
+
+                                const jawsTestPlanReports = testPlanReports.filter(
+                                    t => {
+                                        if (t.at.id === '1') {
+                                            allJawsIssues.push(...t.issues);
+                                            return true;
+                                        } else return false;
+                                    }
+                                );
+                                const nvdaTestPlanReports = testPlanReports.filter(
+                                    t => {
+                                        if (t.at.id === '2') {
+                                            allNvdaIssues.push(...t.issues);
+                                            return true;
+                                        } else return false;
+                                    }
+                                );
+                                const voTestPlanReports = testPlanReports.filter(
+                                    t => {
+                                        if (t.at.id === '3') {
+                                            allVoIssues.push(...t.issues);
+                                            return true;
+                                        } else return false;
+                                    }
+                                );
+
+                                const uniqueLinks = [];
+                                const jawsIssues = allJawsIssues.filter(t =>
+                                    uniqueFilter(t, uniqueLinks, 'link')
+                                );
+                                const nvdaIssues = allNvdaIssues.filter(t =>
+                                    uniqueFilter(t, uniqueLinks, 'link')
+                                );
+                                const voIssues = allVoIssues.filter(t =>
+                                    uniqueFilter(t, uniqueLinks, 'link')
+                                );
 
                                 return (
                                     <tr key={testPlanVersion.id}>
                                         <td>
-                                            {/*TODO: Insert link when merged with Candidate Test Page branch*/}
-                                            <Link
-                                                to={`/candidate-tests/some-id}`}
-                                            >
+                                            <Link to={`/candidate-tests/`}>
                                                 {getTestPlanVersionTitle(
                                                     testPlanVersion
                                                 )}
@@ -891,87 +941,51 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
                                         <CenteredTd>
                                             {jawsDataExists
                                                 ? getRowStatus({
-                                                      issues: allIssues,
-                                                      isInProgressStatusExists: testPlanReports
-                                                          .filter(
-                                                              t =>
-                                                                  t.at.id ===
-                                                                  '1'
-                                                          )
-                                                          .some(
-                                                              testPlanReport =>
-                                                                  testPlanReport.vendorReviewStatus ===
-                                                                  'IN_PROGRESS'
-                                                          ),
-                                                      isApprovedStatusExists: testPlanReports
-                                                          .filter(
-                                                              t =>
-                                                                  t.at.id ===
-                                                                  '1'
-                                                          )
-                                                          .some(
-                                                              testPlanReport =>
-                                                                  testPlanReport.vendorReviewStatus ===
-                                                                  'APPROVED'
-                                                          )
+                                                      issues: jawsIssues,
+                                                      isInProgressStatusExists: jawsTestPlanReports.some(
+                                                          testPlanReport =>
+                                                              testPlanReport.vendorReviewStatus ===
+                                                              'IN_PROGRESS'
+                                                      ),
+                                                      isApprovedStatusExists: jawsTestPlanReports.some(
+                                                          testPlanReport =>
+                                                              testPlanReport.vendorReviewStatus ===
+                                                              'APPROVED'
+                                                      )
                                                   })
                                                 : none}
                                         </CenteredTd>
                                         <CenteredTd>
                                             {nvdaDataExists
                                                 ? getRowStatus({
-                                                      issues: allIssues,
-                                                      isInProgressStatusExists: testPlanReports
-                                                          .filter(
-                                                              t =>
-                                                                  t.at.id ===
-                                                                  '2'
-                                                          )
-                                                          .some(
-                                                              testPlanReport =>
-                                                                  testPlanReport.vendorReviewStatus ===
-                                                                  'IN_PROGRESS'
-                                                          ),
-                                                      isApprovedStatusExists: testPlanReports
-                                                          .filter(
-                                                              t =>
-                                                                  t.at.id ===
-                                                                  '2'
-                                                          )
-                                                          .some(
-                                                              testPlanReport =>
-                                                                  testPlanReport.vendorReviewStatus ===
-                                                                  'APPROVED'
-                                                          )
+                                                      issues: nvdaIssues,
+                                                      isInProgressStatusExists: nvdaTestPlanReports.some(
+                                                          testPlanReport =>
+                                                              testPlanReport.vendorReviewStatus ===
+                                                              'IN_PROGRESS'
+                                                      ),
+                                                      isApprovedStatusExists: nvdaTestPlanReports.some(
+                                                          testPlanReport =>
+                                                              testPlanReport.vendorReviewStatus ===
+                                                              'APPROVED'
+                                                      )
                                                   })
                                                 : none}
                                         </CenteredTd>
                                         <CenteredTd>
                                             {voDataExists
                                                 ? getRowStatus({
-                                                      issues: allIssues,
-                                                      isInProgressStatusExists: testPlanReports
-                                                          .filter(
-                                                              t =>
-                                                                  t.at.id ===
-                                                                  '3'
-                                                          )
-                                                          .some(
-                                                              testPlanReport =>
-                                                                  testPlanReport.vendorReviewStatus ===
-                                                                  'IN_PROGRESS'
-                                                          ),
-                                                      isApprovedStatusExists: testPlanReports
-                                                          .filter(
-                                                              t =>
-                                                                  t.at.id ===
-                                                                  '3'
-                                                          )
-                                                          .some(
-                                                              testPlanReport =>
-                                                                  testPlanReport.vendorReviewStatus ===
-                                                                  'APPROVED'
-                                                          )
+                                                      issues: voIssues,
+                                                      isInProgressStatusExists: voTestPlanReports.some(
+                                                          testPlanReport =>
+                                                              testPlanReport.vendorReviewStatus ===
+                                                              'IN_PROGRESS'
+                                                      ),
+                                                      isApprovedStatusExists: voTestPlanReports.some(
+                                                          testPlanReport =>
+                                                              testPlanReport.vendorReviewStatus ===
+                                                              'APPROVED'
+                                                      )
                                                   })
                                                 : none}
                                         </CenteredTd>

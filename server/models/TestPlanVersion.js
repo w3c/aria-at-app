@@ -1,11 +1,5 @@
 const MODEL_NAME = 'TestPlanVersion';
 
-const STATUS = {
-    DRAFT: 'DRAFT',
-    IN_REVIEW: 'IN_REVIEW',
-    FINALIZED: 'FINALIZED'
-};
-
 module.exports = function(sequelize, DataTypes) {
     const Model = sequelize.define(
         MODEL_NAME,
@@ -33,10 +27,6 @@ module.exports = function(sequelize, DataTypes) {
             tableName: MODEL_NAME
         }
     );
-
-    Model.DRAFT = STATUS.DRAFT;
-    Model.IN_REVIEW = STATUS.IN_REVIEW;
-    Model.FINALIZED = STATUS.FINALIZED;
 
     Model.TEST_PLAN_REPORT_ASSOCIATION = { as: 'testPlanReports' };
 

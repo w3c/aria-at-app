@@ -10,13 +10,14 @@ const {
 
 const testPlanReportsResolver = async (
     _,
-    { statuses, testPlanVersionId },
+    { statuses, testPlanVersionId, atId },
     context,
     info
 ) => {
     const where = {};
     if (statuses) where.status = statuses;
     if (testPlanVersionId) where.testPlanVersionId = testPlanVersionId;
+    if (atId) where.atId = atId;
 
     const {
         raw: testPlanReportRawAttributes,

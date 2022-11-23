@@ -10,6 +10,7 @@ const testPlanVersion = require('./testPlanVersionResolver');
 const testPlanVersions = require('./testPlanVersionsResolver');
 const testPlanRun = require('./testPlanRunResolver');
 const findOrCreateTestPlanReport = require('./findOrCreateTestPlanReportResolver');
+const addViewer = require('./addViewerResolver');
 const mutateAt = require('./mutateAtResolver');
 const mutateAtVersion = require('./mutateAtVersionResolver');
 const mutateBrowser = require('./mutateBrowserResolver');
@@ -54,7 +55,8 @@ const resolvers = {
         testPlanRun: mutateTestPlanRun,
         testResult: mutateTestResult,
         findOrCreateTestPlanReport,
-        updateMe
+        updateMe,
+        addViewer
     },
     AtOperations,
     AtVersionOperations,

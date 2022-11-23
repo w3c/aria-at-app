@@ -44,7 +44,12 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
                 </Breadcrumb.Item>
             </Breadcrumb>
             <h2>Introduction</h2>
-            <DisclaimerInfo />
+
+            {testPlanReports.some(t => t.status === 'CANDIDATE') ? (
+                <DisclaimerInfo reportStatus="CANDIDATE" />
+            ) : (
+                <DisclaimerInfo reportStatus="RECOMMENDED" />
+            )}
             <p>
                 This page summarizes the test results for each AT and Browser
                 which executed the Test Plan.
@@ -92,7 +97,7 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
                 return (
                     <Fragment key={testPlanReport.id}>
                         <h2>{getTestPlanTargetTitle(testPlanTarget)}</h2>
-                        <DisclaimerInfo />
+                        <DisclaimerInfo reportStatus={testPlanReport.status} />
                         <LinkContainer
                             to={
                                 `/report/${testPlanVersion.id}` +
@@ -196,6 +201,7 @@ SummarizeTestPlanVersion.propTypes = {
     testPlanReports: PropTypes.arrayOf(
         PropTypes.shape({
             id: PropTypes.string.isRequired,
+            status: PropTypes.string.isRequired,
             runnableTests: PropTypes.arrayOf(PropTypes.object).isRequired,
             finalizedTestResults: PropTypes.arrayOf(PropTypes.object).isRequired
         }).isRequired

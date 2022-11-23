@@ -2,7 +2,7 @@ import { gql } from '@apollo/client';
 
 export const CANDIDATE_TESTS_PAGE_QUERY = gql`
     query {
-        testPlanReports(statuses: [IN_REVIEW]) {
+        testPlanReports(statuses: [CANDIDATE]) {
             id
             metrics
             at {
@@ -21,13 +21,15 @@ export const CANDIDATE_TESTS_PAGE_QUERY = gql`
                     directory
                 }
                 metadata
+                updatedAt
             }
-            # vendorReviewStatus
+            vendorReviewStatus
             candidateStatusReachedAt
             recommendedStatusTargetDate
             issues {
-                feedbackType
+                link
                 isOpen
+                feedbackType
             }
         }
     }

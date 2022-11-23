@@ -40,6 +40,7 @@ const oauthRedirectFromGithubController = async (req, res) => {
     const githubUsername = await GithubService.getGithubUsername(
         githubAccessToken
     );
+
     if (!githubUsername) return loginFailedDueToGitHub();
 
     const isAdmin = await GithubService.isMemberOfAdminTeam({
@@ -59,7 +60,10 @@ const oauthRedirectFromGithubController = async (req, res) => {
         roles.push({ name: User.TESTER }); // Admins are always testers
     }
 
-    if (vendors.includes(githubUsername)) {
+    if (
+        isAdmin ||
+        vendors.findIndex(vendor => vendor.includes(githubUsername)) > -1
+    ) {
         roles.push({ name: User.VENDOR });
     }
 
@@ -87,6 +91,7 @@ const oauthRedirectFromGithubController = async (req, res) => {
                 : [{ name: matchedFakeRole[1].toUpperCase() }];
         if (user.roles[0] && user.roles[0].name === User.ADMIN) {
             user.roles.push({ name: User.TESTER }); // Admins are always testers
+            user.roles.push({ name: User.VENDOR });
         }
     }
     if (user.roles.length === 0) return loginFailedDueToRole();
