@@ -45,7 +45,11 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
             </Breadcrumb>
             <h2>Introduction</h2>
 
-            <DisclaimerInfo reportStatus={testPlanReports[0].status} />
+            {testPlanReports.some(t => t.status === 'CANDIDATE') ? (
+                <DisclaimerInfo reportStatus="CANDIDATE" />
+            ) : (
+                <DisclaimerInfo reportStatus="RECOMMENDED" />
+            )}
             <p>
                 This page summarizes the test results for each AT and Browser
                 which executed the Test Plan.
