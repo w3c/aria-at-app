@@ -7,6 +7,12 @@ import PropTypes from 'prop-types';
 const DisclosureParent = styled.div`
     border: 1px solid #d3d5da;
     border-radius: 3px;
+    width: 100%;
+
+    h1 {
+        margin: 0;
+        padding: 0;
+    }
 
     h3 {
         margin: 0;
@@ -16,6 +22,10 @@ const DisclosureParent = styled.div`
     ${({ stacked }) =>
         stacked &&
         `
+    h1:not(:first-of-type) button {
+        border-top: 1px solid #d3d5da;
+    }
+
     h3:not(:first-of-type) button {
         border-top: 1px solid #d3d5da;
     }`}
@@ -77,9 +87,11 @@ const DisclosureComponent = ({
     disclosureContainerView = null,
     onClick = null,
     expanded = false,
-    stacked = false
+    stacked = false,
+    headingLevel = '3'
 }) => {
     const [isExpanded, setIsExpanded] = useState(expanded);
+    const Tag = `h${headingLevel}`;
 
     return (
         <>
@@ -94,7 +106,7 @@ const DisclosureComponent = ({
 
                         return (
                             <Fragment key={`disclosure-${buttonTitle}-key`}>
-                                <h3>
+                                <Tag>
                                     <DisclosureButton
                                         id={`disclosure-btn-${componentId}-${buttonTitle}`}
                                         type="button"
@@ -112,7 +124,7 @@ const DisclosureComponent = ({
                                             }
                                         />
                                     </DisclosureButton>
-                                </h3>
+                                </Tag>
                                 <DisclosureContainer
                                     role="region"
                                     id={`disclosure-container-${componentId}-${buttonTitle}`}
@@ -128,7 +140,7 @@ const DisclosureComponent = ({
                 </DisclosureParent>
             ) : (
                 <DisclosureParent>
-                    <h3>
+                    <Tag>
                         <DisclosureButton
                             id={`disclosure-btn-${componentId}`}
                             type="button"
@@ -141,7 +153,7 @@ const DisclosureComponent = ({
                                 icon={isExpanded ? faChevronUp : faChevronDown}
                             />
                         </DisclosureButton>
-                    </h3>
+                    </Tag>
                     <DisclosureContainer
                         component={componentId}
                         role="region"
@@ -175,7 +187,8 @@ DisclosureComponent.propTypes = {
         PropTypes.bool,
         PropTypes.arrayOf(PropTypes.bool)
     ]),
-    stacked: PropTypes.bool
+    stacked: PropTypes.bool,
+    headingLevel: PropTypes.string
 };
 
 export default DisclosureComponent;
