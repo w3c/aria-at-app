@@ -339,7 +339,8 @@ const CandidateTestPlanRun = () => {
     const heading = (
         <div className="test-info-heading">
             <div className="sr-only" aria-live="polite" aria-atomic="true">
-                Viewing Test: {currentTest.title}
+                Viewing Test: {currentTest.title}, Test {currentTest.seq} of{' '}
+                {tests.length}
             </div>
             <span className="task-label">
                 Reviewing Test {currentTest.seq} of {tests.length}:
