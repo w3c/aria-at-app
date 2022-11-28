@@ -39,7 +39,7 @@ const App = () => {
                 <Navbar
                     bg="light"
                     expand="lg"
-                    aria-label="Main Menu"
+                    aria-label="Menu"
                     expanded={isNavbarExpanded}
                     onToggle={() => setIsNavbarExpanded(previous => !previous)}
                 >
