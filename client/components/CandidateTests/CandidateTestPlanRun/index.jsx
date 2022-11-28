@@ -63,7 +63,7 @@ const CandidateTestPlanRun = () => {
     const [isLastTest, setIsLastTest] = useState(false);
     const [feedbackModalShowing, setFeedbackModalShowing] = useState(false);
     const [thankYouModalShowing, setThankYouModalShowing] = useState(false);
-    const [showInstructions, setShowInstructions] = useState(true);
+    const [showInstructions, setShowInstructions] = useState(false);
     const [showBrowserBools, setShowBrowserBools] = useState([]);
     const [showBrowserClicks, setShowBrowserClicks] = useState([]);
 
@@ -180,7 +180,7 @@ const CandidateTestPlanRun = () => {
             setViewedTests(viewedTests);
             setReviewStatus(vendorReviewStatus);
 
-            const bools = testPlanReports.map(() => true);
+            const bools = testPlanReports.map(() => false);
             setShowBrowserBools(bools);
 
             const browserClicks = testPlanReports.map((report, index) => () => {
@@ -339,8 +339,11 @@ const CandidateTestPlanRun = () => {
     const heading = (
         <div className="test-info-heading">
             <div className="sr-only" aria-live="polite" aria-atomic="true">
-                Viewing Test: {currentTest.title}, Test {currentTest.seq} of{' '}
+                Reviewing Test {currentTest.title}, Test {currentTest.seq} of{' '}
                 {tests.length}
+                {currentTest.seq === tests.length
+                    ? 'You are on the last test.'
+                    : ''}
             </div>
             <span className="task-label">
                 Reviewing Test {currentTest.seq} of {tests.length}:
@@ -567,27 +570,28 @@ const CandidateTestPlanRun = () => {
                                                 </Button>
                                             </li>
                                             <li>
-                                                {!isLastTest ? (
-                                                    <Button
-                                                        variant="primary"
-                                                        onClick={
-                                                            handleNextTestClick
-                                                        }
-                                                    >
-                                                        Next Test
-                                                    </Button>
-                                                ) : (
-                                                    <Button
-                                                        variant="primary"
-                                                        onClick={() =>
-                                                            setFeedbackModalShowing(
-                                                                true
-                                                            )
-                                                        }
-                                                    >
-                                                        Finish
-                                                    </Button>
-                                                )}
+                                                <Button
+                                                    variant="primary"
+                                                    onClick={
+                                                        handleNextTestClick
+                                                    }
+                                                    disabled={isLastTest}
+                                                >
+                                                    Next Test
+                                                </Button>
+                                            </li>
+                                            <li>
+                                                <Button
+                                                    variant="primary"
+                                                    onClick={() =>
+                                                        setFeedbackModalShowing(
+                                                            true
+                                                        )
+                                                    }
+                                                    disabled={!isLastTest}
+                                                >
+                                                    Finish
+                                                </Button>
                                             </li>
                                         </ul>
                                     </Row>
