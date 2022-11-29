@@ -80,7 +80,13 @@ const saveTestResultCommon = async ({
 
     await updateTestPlanRun(testPlanRun.id, { testResults: newTestResults });
 
-    // Persist conflicts count
+    // Perform in background
+    if (isSubmit) persistConflictsCount(testPlanRun);
+
+    return populateData({ testResultId });
+};
+
+const persistConflictsCount = async testPlanRun => {
     const { testPlanReport: updatedTestPlanReport } = await populateData({
         testPlanRunId: testPlanRun.id
     });
@@ -91,8 +97,6 @@ const saveTestResultCommon = async ({
             conflictsCount: conflicts.length
         }
     });
-
-    return populateData({ testResultId });
 };
 
 const assertTestResultIsValid = newTestResult => {
