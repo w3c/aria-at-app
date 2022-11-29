@@ -339,7 +339,7 @@ const CandidateTestPlanRun = () => {
     const heading = (
         <div className="test-info-heading">
             <div className="sr-only" aria-live="polite" aria-atomic="true">
-                Reviewing Test {currentTest.title}, Test {currentTest.seq} of{' '}
+                Viewing Test {currentTest.title}, Test {currentTest.seq} of{' '}
                 {tests.length}
                 {currentTest.seq === tests.length
                     ? 'You are on the last test.'
@@ -564,7 +564,7 @@ const CandidateTestPlanRun = () => {
                                                     onClick={
                                                         handlePreviousTestClick
                                                     }
-                                                    disabled={isFirstTest}
+                                                    aria-disabled={isFirstTest}
                                                 >
                                                     Previous Test
                                                 </Button>
@@ -575,7 +575,7 @@ const CandidateTestPlanRun = () => {
                                                     onClick={
                                                         handleNextTestClick
                                                     }
-                                                    disabled={isLastTest}
+                                                    aria-disabled={isLastTest}
                                                 >
                                                     Next Test
                                                 </Button>
@@ -583,12 +583,19 @@ const CandidateTestPlanRun = () => {
                                             <li>
                                                 <Button
                                                     variant="primary"
-                                                    onClick={() =>
+                                                    onClick={event => {
+                                                        if (
+                                                            event.target.getAttribute(
+                                                                'aria-disabled'
+                                                            ) === 'true'
+                                                        ) {
+                                                            return;
+                                                        }
                                                         setFeedbackModalShowing(
                                                             true
-                                                        )
-                                                    }
-                                                    disabled={!isLastTest}
+                                                        );
+                                                    }}
+                                                    aria-disabled={!isLastTest}
                                                 >
                                                     Finish
                                                 </Button>
