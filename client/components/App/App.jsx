@@ -39,25 +39,28 @@ const App = () => {
                 <Navbar
                     bg="light"
                     expand="lg"
-                    aria-label="Main Menu"
+                    aria-label="Main"
                     expanded={isNavbarExpanded}
                     onToggle={() => setIsNavbarExpanded(previous => !previous)}
                 >
+                    <SkipLink />
                     <Navbar.Brand
                         className="logo"
                         as={Link}
                         to="/"
                         aria-current={location.pathname === '/'}
                     >
-                        ARIA-AT
+                        Home
                     </Navbar.Brand>
-                    <SkipLink />
+                    <h2 id="main-menu-heading" className="sr-only">
+                        Main Navigation
+                    </h2>
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Navbar.Collapse
                         id="basic-navbar-nav"
                         className="justify-content-end"
                     >
-                        <ul>
+                        <ul aria-labelledby="main-menu-heading">
                             <li>
                                 <Nav.Link
                                     as={Link}
