@@ -81,7 +81,7 @@ const saveTestResultCommon = async ({
     await updateTestPlanRun(testPlanRun.id, { testResults: newTestResults });
 
     // Perform in background
-    if (isSubmit) persistConflictsCount(testPlanRun);
+    if (isSubmit) await persistConflictsCount(testPlanRun);
 
     return populateData({ testResultId });
 };
