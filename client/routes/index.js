@@ -11,7 +11,7 @@ import TestQueue from '@components/TestQueue';
 import TestRun from '@components/TestRun';
 import UserSettings from '@components/UserSettings';
 import CandidateTestPlanRun from '@components/CandidateTests/CandidateTestPlanRun';
-// import TestManagement from '@components/TestManagement';
+import TestManagement from '@components/TestManagement';
 
 export default [
     {
@@ -83,17 +83,17 @@ export default [
             );
         }
     },
-    // {
-    //     path: '/test-management',
-    //     exact: true,
-    //     component: () => {
-    //         return (
-    //             <ConfirmAuth requiredPermission="ADMIN">
-    //                 <Route component={TestManagement} />
-    //             </ConfirmAuth>
-    //         );
-    //     }
-    // },
+    {
+        path: '/test-management',
+        exact: true,
+        component: () => {
+            return (
+                <ConfirmAuth requiredPermission="ADMIN">
+                    <Route component={TestManagement} />
+                </ConfirmAuth>
+            );
+        }
+    },
     {
         path: '/invalid-request',
         exact: true,
