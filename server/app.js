@@ -6,6 +6,7 @@ const { ApolloServer } = require('apollo-server-express');
 const {
     ApolloServerPluginLandingPageGraphQLPlayground
 } = require('apollo-server-core');
+const { create } = require('express-handlebars');
 const { session } = require('./middleware/session');
 const authRoutes = require('./routes/auth');
 const testRoutes = require('./routes/tests');
@@ -21,6 +22,51 @@ app.use(session);
 app.use(bodyParser.json());
 app.use('/auth', authRoutes);
 app.use('/test', testRoutes);
+
+// handlebars
+const hbs = create({
+    layoutsDir: __dirname + '/handlebars/views/layouts',
+    partialsDir: __dirname + '/handlebars/views/partials',
+    extname: 'hbs',
+    defaultLayout: 'planB'
+});
+app.engine('hbs', hbs.engine);
+app.set('view engine', 'hbs');
+app.set('views', __dirname + '/handlebars/views');
+
+const fakeApi = () => {
+    return [
+        {
+            name: 'Katarina',
+            lane: 'midlaner'
+        },
+        {
+            name: 'Jayce',
+            lane: 'toplaner'
+        },
+        {
+            name: 'Heimerdinger',
+            lane: 'toplaner'
+        },
+        {
+            name: 'Zed',
+            lane: 'midlaner'
+        },
+        {
+            name: 'Azir',
+            lane: 'midlaner'
+        }
+    ];
+};
+app.get('/embed', (req, res) => {
+    res.render('main', {
+        layout: 'index',
+        suggestedChamps: fakeApi(),
+        listExists: true
+    });
+});
+
+app.use(express.static(__dirname + '/handlebars/public'));
 
 const server = new ApolloServer({
     typeDefs: graphqlSchema,

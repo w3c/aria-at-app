@@ -1,0 +1,9 @@
+{{> lovedChamps}}
+{{> hatedChamps}}
+{{#if listExists}} 
+  <ul>
+    {{#each suggestedChamps}}
+      <li class={{this.lane}}>{{this.name}}</li>
+    {{/each}}
+  </ul>
+{{/if}}
