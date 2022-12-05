@@ -112,8 +112,9 @@ const SummarizeTestPlanReports = ({ testPlanReports }) => {
                     </tr>
                 </thead>
                 <tbody>
-                    {Object.values(testPlanVersionsById).map(
-                        testPlanVersion => {
+                    {Object.values(testPlanVersionsById)
+                        .sort((a, b) => (a.title < b.title ? -1 : 1))
+                        .map(testPlanVersion => {
                             let status = 'Recommended';
                             Object.values(testPlanTargetsById).forEach(
                                 testPlanTarget => {
