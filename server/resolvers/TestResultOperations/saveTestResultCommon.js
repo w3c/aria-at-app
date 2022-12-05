@@ -80,9 +80,11 @@ const saveTestResultCommon = async ({
 
     await updateTestPlanRun(testPlanRun.id, { testResults: newTestResults });
 
-    // Perform in background
-    persistConflictsCount(testPlanRun);
-
+    // Ignore result to avoid blocking loads in test runs with a larger amount
+    // of tests and/or test results
+    persistConflictsCount(testPlanRun).then(() => {
+        // Do nothing
+    });
     return populateData({ testResultId });
 };
 
