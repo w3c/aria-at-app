@@ -489,7 +489,12 @@ const TestRun = () => {
                     },
                     forceSave ? false : !!testRunResultRef.current
                 );
-                if (withResult && !forceSave) return !!testRunResultRef.current;
+
+                if (withResult && !forceSave) {
+                    setIsSavingForm(false);
+                    return !!testRunResultRef.current;
+                }
+
                 setIsSavingForm(false);
                 return true;
             } catch (e) {
