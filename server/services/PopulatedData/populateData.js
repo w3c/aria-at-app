@@ -92,6 +92,7 @@ const populateData = async (locationOfData, { preloaded } = {}) => {
             testPlanVersion = preloaded.testPlanVersion;
         } else {
             testPlanVersion = await getTestPlanVersionById(testPlanVersionId);
+            console.log(testPlanVersion.testPlanReports);
         }
     } else if (testPlanId) {
         if (preloaded?.testPlan) {
