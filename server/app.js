@@ -81,7 +81,7 @@ const getLatestReportsForPattern = async pattern => {
         (a, b) =>
             new Date(a.testPlanVersion.updatedAt) -
             new Date(b.testPlanVersion.updatedAt)
-    )[0].testPlanVersion.id;
+    )[0]?.testPlanVersion.id;
 
     const latestReports = testPlanReports.filter(
         report => report.testPlanVersion.id === latestTestPlanVersionId
@@ -105,14 +105,15 @@ const getLatestReportsForPattern = async pattern => {
             ))
     );
 
-    return { allBrowsers, status, reportsByBrowser };
+    return { allBrowsers, latestTestPlanVersionId, status, reportsByBrowser };
 };
 
 // Expects a query variable of test plan id
-app.get('/embed', async (req, res) => {
-    const pattern = req.query.pattern;
+app.get('/embed/reports/:pattern', async (req, res) => {
+    const pattern = req.params.pattern;
     const {
         allBrowsers,
+        latestTestPlanVersionId,
         status,
         reportsByBrowser
     } = await getLatestReportsForPattern(pattern);
@@ -121,6 +122,11 @@ app.get('/embed', async (req, res) => {
         status,
         allBrowsers,
         reportsByBrowser,
+        completeReportLink: req.secure
+            ? 'https://'
+            : 'http://' +
+              req.headers.host +
+              `/report/${latestTestPlanVersionId}`,
         listExists: true
     });
 });
