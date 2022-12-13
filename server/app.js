@@ -6,15 +6,8 @@ const { ApolloServer } = require('apollo-server-express');
 const {
     ApolloServerPluginLandingPageGraphQLPlayground
 } = require('apollo-server-core');
-const { create } = require('express-handlebars');
-const {
-    ApolloClient,
-    gql,
-    HttpLink,
-    InMemoryCache
-} = require('@apollo/client');
-const fetch = require('cross-fetch');
 const { session } = require('./middleware/session');
+const embedApp = require('./apps/embed');
 const authRoutes = require('./routes/auth');
 const testRoutes = require('./routes/tests');
 const path = require('path');
@@ -30,109 +23,6 @@ app.use(bodyParser.json());
 app.use('/auth', authRoutes);
 app.use('/test', testRoutes);
 
-// handlebars
-const hbs = create({
-    layoutsDir: __dirname + '/handlebars/views/layouts',
-    partialsDir: __dirname + '/handlebars/views/partials',
-    extname: 'hbs',
-    defaultLayout: 'index',
-    helpers: require(__dirname + '/handlebars/helpers')
-});
-
-app.engine('hbs', hbs.engine);
-app.set('view engine', 'hbs');
-app.set('views', __dirname + '/handlebars/views');
-
-const client = new ApolloClient({
-    link: new HttpLink({ uri: 'http://localhost:5000/api/graphql', fetch }),
-    cache: new InMemoryCache()
-});
-
-const getLatestReportsForPattern = async pattern => {
-    const { data } = await client.query({
-        query: gql`
-            query {
-                testPlanReports(statuses: [CANDIDATE, RECOMMENDED]) {
-                    at {
-                        name
-                    }
-                    browser {
-                        name
-                    }
-                    status
-                    testPlanVersion {
-                        id
-                        updatedAt
-                        testPlan {
-                            id
-                        }
-                    }
-                    metrics
-                }
-            }
-        `
-    });
-
-    const testPlanReports = data.testPlanReports.filter(
-        report => report.testPlanVersion.testPlan.id === pattern
-    );
-
-    const latestTestPlanVersionId = testPlanReports.sort(
-        (a, b) =>
-            new Date(a.testPlanVersion.updatedAt) -
-            new Date(b.testPlanVersion.updatedAt)
-    )[0]?.testPlanVersion.id;
-
-    const latestReports = testPlanReports.filter(
-        report => report.testPlanVersion.id === latestTestPlanVersionId
-    );
-
-    const allBrowsers = new Set();
-    let status = 'RECOMMENDED';
-    const reportsByBrowser = {};
-
-    latestReports.forEach(report => {
-        allBrowsers.add(report.browser.name);
-        if (report.status === 'CANDIDATE') {
-            status = report.status;
-        }
-    });
-
-    allBrowsers.forEach(
-        browser =>
-            (reportsByBrowser[browser] = latestReports.filter(
-                report => report.browser.name === browser
-            ))
-    );
-
-    return { allBrowsers, latestTestPlanVersionId, status, reportsByBrowser };
-};
-
-// Expects a query variable of test plan id
-app.get('/embed/reports/:pattern', async (req, res) => {
-    const pattern = req.params.pattern;
-    const {
-        allBrowsers,
-        latestTestPlanVersionId,
-        status,
-        reportsByBrowser
-    } = await getLatestReportsForPattern(pattern);
-    res.render('main', {
-        layout: 'index',
-        status,
-        allBrowsers,
-        reportsByBrowser,
-        completeReportLink: req.secure
-            ? 'https://'
-            : 'http://' +
-              req.headers.host +
-              `/report/${latestTestPlanVersionId}`,
-        listExists: true
-    });
-});
-
-app.use(express.static(__dirname + '/handlebars/public'));
-
 const server = new ApolloServer({
     typeDefs: graphqlSchema,
     context: getGraphQLContext,
@@ -145,7 +35,7 @@ server.start().then(() => {
 });
 
 const listener = express();
-listener.use('/api', app);
+listener.use('/api', app).use('/embed', embedApp);
 
 const baseUrl = 'https://raw.githubusercontent.com';
 const onlyStatus200 = (req, res) => res.statusCode === 200;

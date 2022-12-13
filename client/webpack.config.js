@@ -68,7 +68,7 @@ module.exports = {
         hotOnly: true,
         proxy: [
             {
-                context: ['/aria-at', '/api'],
+                context: ['/aria-at', '/api', '/embed'],
                 target: 'http://localhost:5000'
             }
         ],

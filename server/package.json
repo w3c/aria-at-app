@@ -54,7 +54,8 @@
     "pg-hstore": "^2.3.3",
     "rawgit": "https://github.com/rgrove/rawgit.git#eaa9b36aa2143041894866ba9db72e51d05c2a52",
     "sequelize": "5.22.4",
-    "supertest-session": "^4.1.0"
+    "supertest-session": "^4.1.0",
+    "vhost": "^3.0.2"
   },
   "devDependencies": {
     "eslint": "^7.26.0",
