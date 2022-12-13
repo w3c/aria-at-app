@@ -141,6 +141,7 @@ const TestRun = () => {
         true
     );
     const [isRendererReady, setIsRendererReady] = useState(false);
+    const [isSavingForm, setIsSavingForm] = useState(false);
     const [isTestSubmitClicked, setIsTestSubmitClicked] = useState(false);
     const [isTestEditClicked, setIsTestEditClicked] = useState(false);
     const [showTestNavigator, setShowTestNavigator] = useState(true);
@@ -189,7 +190,7 @@ const TestRun = () => {
         );
     }
 
-    if (!data || loading || createTestResultLoading) {
+    if (!data || loading || createTestResultLoading || isSavingForm) {
         return (
             <PageStatus
                 title="Loading - Test Results | ARIA-AT"
@@ -465,28 +466,41 @@ const TestRun = () => {
             forceSave = false,
             forceEdit = false
         ) => {
-            if (forceEdit) setIsTestEditClicked(true);
-            else setIsTestEditClicked(false);
+            try {
+                if (forceEdit) setIsTestEditClicked(true);
+                else setIsTestEditClicked(false);
 
-            if (!isSignedIn) return true;
-            if (!forceEdit && currentTest.testResult?.completedAt) return true;
+                if (!isSignedIn) return true;
+                if (!forceEdit && currentTest.testResult?.completedAt)
+                    return true;
 
-            const scenarioResults = remapScenarioResults(
-                testRunStateRef.current || recentTestRunStateRef.current,
-                currentTest.testResult?.scenarioResults,
-                false
-            );
+                setIsSavingForm(true);
+                const scenarioResults = remapScenarioResults(
+                    testRunStateRef.current || recentTestRunStateRef.current,
+                    currentTest.testResult?.scenarioResults,
+                    false
+                );
 
-            await handleSaveOrSubmitTestResultAction(
-                {
-                    atVersionId: currentTestAtVersionId,
-                    browserVersionId: currentTestBrowserVersionId,
-                    scenarioResults
-                },
-                forceSave ? false : !!testRunResultRef.current
-            );
-            if (withResult && !forceSave) return !!testRunResultRef.current;
-            return true;
+                await handleSaveOrSubmitTestResultAction(
+                    {
+                        atVersionId: currentTestAtVersionId,
+                        browserVersionId: currentTestBrowserVersionId,
+                        scenarioResults
+                    },
+                    forceSave ? false : !!testRunResultRef.current
+                );
+
+                if (withResult && !forceSave) {
+                    setIsSavingForm(false);
+                    return !!testRunResultRef.current;
+                }
+
+                setIsSavingForm(false);
+                return true;
+            } catch (e) {
+                console.error('save.error', e);
+                setIsSavingForm(false);
+            }
         };
 
         switch (action) {
