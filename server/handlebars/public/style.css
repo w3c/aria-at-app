@@ -1,5 +1,5 @@
 #main {
-    width: 700px;
+    width: 100%;
 }
 
 #candidate-title {
@@ -74,13 +74,13 @@ table tbody tr td {
 }
 
 .meter {
-  box-sizing: content-box;
-  height: 15px; /* Can be anything */
-  position: relative;
-  background: #D5D8DD;
-  border-radius: 25px;
-  margin-bottom: 10px;
-  overflow: hidden;
+    box-sizing: content-box;
+    height: 15px; /* Can be anything */
+    position: relative;
+    background: #D5D8DD;
+    border-radius: 25px;
+    margin-bottom: 10px;
+    overflow: hidden;
 }
 
 .meter > span {
@@ -91,3 +91,25 @@ table tbody tr td {
     border-radius: 25px;
     position: relative;
   }
+
+.button {
+    border: none;
+    padding: 10px 20px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 3px;
+    border: 3px solid #175A6A;
+}
+
+#view-report-button {
+    color: white;
+    background-color: #175A6A;
+}
+
+#embed-button {
+    color: #175A6A;
+    background-color: white;
+    padding: 10px 20px;
+}
