@@ -10,18 +10,20 @@ const {
 const fetch = require('cross-fetch');
 
 const app = express();
+const handlebarsPath =
+    process.env.ENVIRONMENT === 'dev' ? 'handlebars' : 'server/handlebars';
 
 // handlebars
 const hbs = create({
-    layoutsDir: resolve('server/handlebars/views/layouts'),
+    layoutsDir: resolve(`${handlebarsPath}/views/layouts`),
     extname: 'hbs',
     defaultLayout: 'index',
-    helpers: require(resolve('server/handlebars/helpers'))
+    helpers: require(resolve(`${handlebarsPath}/helpers`))
 });
 
 app.engine('hbs', hbs.engine);
 app.set('view engine', 'hbs');
-app.set('views', resolve('server/handlebars/views'));
+app.set('views', resolve(`${handlebarsPath}/views`));
 
 const client = new ApolloClient({
     link: new HttpLink({ uri: 'http://localhost:5000/api/graphql', fetch }),
@@ -91,6 +93,7 @@ const getLatestReportsForPattern = async pattern => {
 // Expects a query variable of test plan id
 app.get('/reports/:pattern', async (req, res) => {
     const pattern = req.params.pattern;
+    const protocol = process.env.ENVIRONMENT === 'dev' ? 'http://' : 'https://';
     const {
         allBrowsers,
         latestTestPlanVersionId,
@@ -102,17 +105,11 @@ app.get('/reports/:pattern', async (req, res) => {
         status,
         allBrowsers,
         reportsByBrowser,
-        completeReportLink: req.secure
-            ? 'https://'
-            : 'http://' +
-              req.headers.host +
-              `/report/${latestTestPlanVersionId}`,
-        embedLink: req.secure
-            ? 'https://'
-            : 'http://' + req.headers.host + `/embed/reports/${pattern}`
+        completeReportLink: `${protocol}${req.headers.host}/report/${latestTestPlanVersionId}`,
+        embedLink: `${protocol}${req.headers.host}/embed/reports/${pattern}`
     });
 });
 
-app.use(express.static(resolve('server/handlebars/public')));
+app.use(express.static(resolve(`${handlebarsPath}/public`)));
 
 module.exports = app;
