@@ -13,15 +13,15 @@ const app = express();
 
 // handlebars
 const hbs = create({
-    layoutsDir: resolve('handlebars/views/layouts'),
+    layoutsDir: resolve('server/handlebars/views/layouts'),
     extname: 'hbs',
     defaultLayout: 'index',
-    helpers: require(resolve('handlebars/helpers'))
+    helpers: require(resolve('server/handlebars/helpers'))
 });
 
 app.engine('hbs', hbs.engine);
 app.set('view engine', 'hbs');
-app.set('views', resolve('handlebars/views'));
+app.set('views', resolve('server/handlebars/views'));
 
 const client = new ApolloClient({
     link: new HttpLink({ uri: 'http://localhost:5000/api/graphql', fetch }),
@@ -113,6 +113,6 @@ app.get('/reports/:pattern', async (req, res) => {
     });
 });
 
-app.use(express.static(resolve('handlebars/public')));
+app.use(express.static(resolve('server/handlebars/public')));
 
 module.exports = app;
