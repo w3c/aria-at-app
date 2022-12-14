@@ -107,7 +107,9 @@ app.get('/reports/:pattern', async (req, res) => {
             : 'http://' +
               req.headers.host +
               `/report/${latestTestPlanVersionId}`,
-        listExists: true
+        embedLink: req.secure
+            ? 'https://'
+            : 'http://' + req.headers.host + `/embed/reports/${pattern}`
     });
 });
 
