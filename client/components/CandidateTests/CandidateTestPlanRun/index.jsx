@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
 import TestNavigator from '../../TestRun/TestNavigator';
 import InstructionsRenderer from './InstructionsRenderer';
@@ -54,6 +54,9 @@ const CandidateTestPlanRun = () => {
         PROMOTE_VENDOR_REVIEW_STATUS_REPORT_MUTATION
     );
 
+    const nextButtonRef = useRef();
+    const finishButtonRef = useRef();
+
     const [reviewStatus, setReviewStatus] = useState('');
     const [firstTimeViewing, setFirstTimeViewing] = useState(false);
     const [viewedTests, setViewedTests] = useState([]);
@@ -67,9 +70,9 @@ const CandidateTestPlanRun = () => {
     const [showBrowserBools, setShowBrowserBools] = useState([]);
     const [showBrowserClicks, setShowBrowserClicks] = useState([]);
 
-    const [issuesHeading, setissuesHeading] = React.useState();
+    const [issuesHeading, setIssuesHeading] = React.useState();
     const issuesHeadingSize = useSize(issuesHeading);
-    const [issuesList, setissuesList] = React.useState();
+    const [issuesList, setIssuesList] = React.useState();
     const issuesListSize = useSize(issuesList);
     const isLaptopOrLarger = useMediaQuery({
         query: '(min-width: 792px)'
@@ -101,7 +104,7 @@ const CandidateTestPlanRun = () => {
         );
     };
     const handlePreviousTestClick = async () => {
-        navigateTests(
+        const { isFirstTest } = navigateTests(
             true,
             currentTest,
             tests,
@@ -109,6 +112,7 @@ const CandidateTestPlanRun = () => {
             setIsFirstTest,
             setIsLastTest
         );
+        if (isFirstTest) nextButtonRef.current.focus();
     };
 
     const addViewerToTest = async testId => {
@@ -212,6 +216,10 @@ const CandidateTestPlanRun = () => {
             setIsLastTest(tests?.length === 1);
         }
     }, [data, tests]);
+
+    useEffect(() => {
+        if (isLastTest) finishButtonRef.current.focus();
+    }, [isLastTest]);
 
     if (error)
         return (
@@ -543,11 +551,11 @@ const CandidateTestPlanRun = () => {
                         {heading}
                         {testInfo}
                         <Col className="results-container-col">
-                            <Row xs={1} s={1} md={2} ref={setissuesHeading}>
+                            <Row xs={1} s={1} md={2} ref={setIssuesHeading}>
                                 <Col
                                     className="results-container"
                                     md={isLaptopOrLarger ? 9 : 12}
-                                    ref={setissuesList}
+                                    ref={setIssuesList}
                                 >
                                     <Row>{feedback}</Row>
                                     <Row className="results-container-row">
@@ -564,38 +572,33 @@ const CandidateTestPlanRun = () => {
                                                     onClick={
                                                         handlePreviousTestClick
                                                     }
-                                                    aria-disabled={isFirstTest}
+                                                    disabled={isFirstTest}
                                                 >
                                                     Previous Test
                                                 </Button>
                                             </li>
                                             <li>
                                                 <Button
+                                                    ref={nextButtonRef}
                                                     variant="primary"
                                                     onClick={
                                                         handleNextTestClick
                                                     }
-                                                    aria-disabled={isLastTest}
+                                                    disabled={isLastTest}
                                                 >
                                                     Next Test
                                                 </Button>
                                             </li>
                                             <li>
                                                 <Button
+                                                    ref={finishButtonRef}
                                                     variant="primary"
-                                                    onClick={event => {
-                                                        if (
-                                                            event.target.getAttribute(
-                                                                'aria-disabled'
-                                                            ) === 'true'
-                                                        ) {
-                                                            return;
-                                                        }
+                                                    onClick={() => {
                                                         setFeedbackModalShowing(
                                                             true
                                                         );
                                                     }}
-                                                    aria-disabled={!isLastTest}
+                                                    disabled={!isLastTest}
                                                 >
                                                     Finish
                                                 </Button>
