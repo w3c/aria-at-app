@@ -6,6 +6,8 @@ export const REPORTS_PAGE_QUERY = gql`
             id
             status
             metrics
+            candidateStatusReachedAt
+            recommendedStatusReachedAt
             at {
                 id
                 name
@@ -28,14 +30,17 @@ export const REPORTS_PAGE_QUERY = gql`
 `;
 
 export const REPORT_PAGE_QUERY = gql`
-    query ReportPageQuery($testPlanVersionId: ID!) {
+    query ReportPageQuery($testPlanVersionId: ID, $testPlanVersionIds: [ID]) {
         testPlanReports(
             statuses: [CANDIDATE, RECOMMENDED]
             testPlanVersionId: $testPlanVersionId
+            testPlanVersionIds: $testPlanVersionIds
         ) {
             id
             status
             metrics
+            candidateStatusReachedAt
+            recommendedStatusReachedAt
             at {
                 id
                 name

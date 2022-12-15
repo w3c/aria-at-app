@@ -11,8 +11,15 @@ import './Reports.css';
 const Reports = () => {
     const match = useRouteMatch('/report/:testPlanVersionId');
 
+    let testPlanVersionIds = [];
+    let testPlanVersionId = match?.params?.testPlanVersionId;
+    if (testPlanVersionId.includes(','))
+        testPlanVersionIds = testPlanVersionId.split(',');
+
     const { loading, data, error } = useQuery(REPORT_PAGE_QUERY, {
-        variables: { testPlanVersionId: match?.params?.testPlanVersionId },
+        variables: testPlanVersionIds.length
+            ? { testPlanVersionIds }
+            : { testPlanVersionId },
         fetchPolicy: 'cache-and-network'
     });
 
@@ -38,6 +45,41 @@ const Reports = () => {
 
     if (!data) return null;
 
+    const combineArray = testPlanReports => {
+        let testPlanTargetsById = {};
+        testPlanReports.forEach(testPlanReport => {
+            const { at, browser } = testPlanReport;
+
+            // Construct testPlanTarget
+            const testPlanTargetId = `${at.id}${browser.id}`;
+
+            if (!testPlanTargetsById[testPlanTargetId]) {
+                testPlanTargetsById[testPlanTargetId] = [{ ...testPlanReport }];
+            } else
+                testPlanTargetsById[testPlanTargetId].push({
+                    ...testPlanReport
+                });
+        });
+
+        return Object.values(testPlanTargetsById).map(testPlanReports => {
+            return testPlanReports.reduce((prev, curr) => {
+                const latestPrevDate =
+                    new Date(prev.recommendedStatusReachedAt) >
+                    new Date(prev.candidateStatusReachedAt)
+                        ? new Date(prev.recommendedStatusReachedAt)
+                        : new Date(prev.candidateStatusReachedAt);
+
+                const latestCurrDate =
+                    new Date(curr.recommendedStatusReachedAt) >
+                    new Date(curr.candidateStatusReachedAt)
+                        ? new Date(curr.recommendedStatusReachedAt)
+                        : new Date(curr.candidateStatusReachedAt);
+
+                return latestPrevDate > latestCurrDate ? prev : curr;
+            });
+        });
+    };
+
     return (
         <Switch>
             <Route
@@ -46,8 +88,14 @@ const Reports = () => {
                 render={({ match: { params } }) => {
                     const { testPlanVersionId } = params;
 
+                    let testPlanVersionIds = [];
+                    if (testPlanVersionId.includes(','))
+                        testPlanVersionIds = testPlanVersionId.split(',');
+
                     const testPlanReports = data.testPlanReports.filter(
-                        each => each.testPlanVersion.id === testPlanVersionId
+                        each =>
+                            each.testPlanVersion.id === testPlanVersionId ||
+                            testPlanVersionIds.includes(each.testPlanVersion.id)
                     );
 
                     if (!testPlanReports.length) return <Redirect to="/404" />;
@@ -55,7 +103,7 @@ const Reports = () => {
                     return (
                         <SummarizeTestPlanVersion
                             testPlanVersion={testPlanReports[0].testPlanVersion}
-                            testPlanReports={testPlanReports}
+                            testPlanReports={combineArray(testPlanReports)}
                         />
                     );
                 }}

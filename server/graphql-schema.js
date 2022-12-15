@@ -985,6 +985,7 @@ const graphqlSchema = gql`
         testPlanReports(
             statuses: [TestPlanReportStatus]
             testPlanVersionId: ID
+            testPlanVersionIds: [ID]
             atId: ID
         ): [TestPlanReport]!
         """
