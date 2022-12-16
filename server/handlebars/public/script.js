@@ -19,7 +19,9 @@ const announceCopied = link => {
     const innerText = document.createTextNode('Embed link copied.');
     innerDiv.appendChild(innerText);
     innerDiv.setAttribute('role', 'alert');
-    parentDiv.appendChild(innerDiv);
+    if (!parentDiv.firstChild) {
+        parentDiv.appendChild(innerDiv);
+    }
     setTimeout(() => {
         document.getElementById('copied-message').removeChild(innerDiv);
     }, 5000);

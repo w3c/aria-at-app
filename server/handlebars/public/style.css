@@ -6,6 +6,18 @@ body {
     width: 100%;
 }
 
+#no-data-content-container {
+    border-left: 1.5px solid #D5D8DD;
+    border-right: 1.5px solid #D5D8DD;
+    border-bottom: 1.5px solid #D5D8DD;
+    background-color: #D5D8DD;
+    padding: 1em .5em .5em 1em;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    margin-bottom: 1em;
+    text-align: center;
+}
+
 #candidate-title {
     border: 1.5px solid #FFC4A2;
     border-top-left-radius: 3px;
