@@ -25,6 +25,10 @@ app.engine('hbs', hbs.engine);
 app.set('view engine', 'hbs');
 app.set('views', resolve(`${handlebarsPath}/views`));
 
+if (process.env.ENVIRONMENT !== 'dev') {
+    app.enable('view cache');
+}
+
 const client = new ApolloClient({
     link: new HttpLink({ uri: 'http://localhost:5000/api/graphql', fetch }),
     cache: new InMemoryCache()
