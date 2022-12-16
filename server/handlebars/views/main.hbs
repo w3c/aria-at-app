@@ -1,7 +1,7 @@
 <div id="main">
     {{#if (isCandidate status)}}
     <div id="embded-report-status-container">
-        <div id="candidate-title"><span>Candidate Report</span></div>
+        <div id="candidate-title"><h3>Candidate Report</h3></div>
         <div id="candidate-content-container">
             The information in this report generated from candidate tests.
             Candidate aria-at tests are in review by assistive technology
@@ -30,7 +30,7 @@
                     {{#if (isInAllBrowsers "Chrome" @../../this)}}
                         {{#if (isBrowser this.browser.name "Chrome") }}
                         <td>
-                            <div class="meter">
+                            <div class="meter" aria-hidden="true">
                                 <span style="width: {{this.metrics.supportPercent}}%;"></span>
                             </div>
                             <b>{{this.metrics.supportPercent}}%</b> of passing assertions</b>
@@ -42,7 +42,7 @@
                     {{#if (isInAllBrowsers "Safari" @../../this)}}
                         {{#if (isBrowser this.browser.name "Safari") }}
                         <td>
-                            <div class="meter">
+                            <div class="meter" aria-hidden="true">
                                 <span style="width: {{this.metrics.supportPercent}}%;"></span>
                             </div>
                             <b>{{this.metrics.supportPercent}}%</b> of passing assertions</b>
@@ -54,7 +54,7 @@
                     {{#if (isInAllBrowsers "Firefox" @../../this)}}
                         {{#if (isBrowser this.browser.name "Firefox") }}
                         <td>
-                            <div class="meter">
+                            <div class="meter" aria-hidden="true">
                                 <span style="width: {{this.metrics.supportPercent}}%;"></span>
                             </div>
                             <b>{{this.metrics.supportPercent}}%</b> of passing assertions</b>
@@ -71,7 +71,7 @@
 
     <div classname="embed-button-row">
         <button id="view-report-button" class="button" onclick="window.open('{{completeReportLink}}', '_blank')">View Complete Report</button>
-        <button id="embed-button" class="button" onclick="announceCopied('{{embedLink}}')">&#60;&#62; Embed</button>
+        <button id="embed-button" class="button" onclick="announceCopied('{{embedLink}}')"><span aria-hidden="true">&#60;&#62;</span> Embed</button>
         <div id="copied-message"></div>
     </div>
 </div>

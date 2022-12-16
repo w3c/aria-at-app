@@ -102,6 +102,7 @@ app.get('/reports/:pattern', async (req, res) => {
     } = await getLatestReportsForPattern(pattern);
     res.render('main', {
         layout: 'index',
+        pattern,
         status,
         allBrowsers,
         reportsByBrowser,
