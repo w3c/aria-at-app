@@ -73,25 +73,29 @@ const getLatestReportsForPattern = async pattern => {
         report => report.testPlanVersion.id === latestTestPlanVersionId
     );
 
-    const allBrowsers = new Set();
+    let allAts = new Set();
+    let allBrowsers = new Set();
     let status = 'RECOMMENDED';
-    const reportsByBrowser = {};
+    let reportsByAt = {};
 
     latestReports.forEach(report => {
+        allAts.add(report.at.name);
         allBrowsers.add(report.browser.name);
         if (report.status === 'CANDIDATE') {
             status = report.status;
         }
     });
 
-    allBrowsers.forEach(
-        browser =>
-            (reportsByBrowser[browser] = latestReports.filter(
-                report => report.browser.name === browser
-            ))
+    allBrowsers = Array.from(allBrowsers).sort();
+
+    allAts.forEach(
+        at =>
+            (reportsByAt[at] = latestReports
+                .filter(report => report.at.name === at)
+                .sort((a, b) => a.browser.name.localeCompare(b.browser.name)))
     );
 
-    return { allBrowsers, latestTestPlanVersionId, status, reportsByBrowser };
+    return { allBrowsers, latestTestPlanVersionId, status, reportsByAt };
 };
 
 // Expects a query variable of test plan id
@@ -102,15 +106,15 @@ app.get('/reports/:pattern', async (req, res) => {
         allBrowsers,
         latestTestPlanVersionId,
         status,
-        reportsByBrowser
+        reportsByAt
     } = await getLatestReportsForPattern(pattern);
     res.render('main', {
         layout: 'index',
-        dataEmpty: Object.keys(reportsByBrowser).length === 0,
+        dataEmpty: Object.keys(reportsByAt).length === 0,
         pattern,
         status,
         allBrowsers,
-        reportsByBrowser,
+        reportsByAt,
         completeReportLink: `${protocol}${req.headers.host}/report/${latestTestPlanVersionId}`,
         embedLink: `${protocol}${req.headers.host}/embed/reports/${pattern}`
     });

@@ -25,54 +25,67 @@
             <thead>
                 <tr>
                     <td></td>
-                    {{#each reportsByBrowser}}
-                    <th>{{@key}}</th>
+                    {{#each allBrowsers}}
+                    <th>{{this}}</th>
                     {{/each}}
                 </tr>
             </thead>
             <tbody>
-                {{#each reportsByBrowser}}
-                    {{#each this}}
+                {{#each reportsByAt}}
                     <tr>
-                        <th><b>{{this.at.name}}</b></th>
-                        {{#if (isInAllBrowsers "Chrome" @../../this)}}
-                            {{#if (isBrowser this.browser.name "Chrome") }}
-                            <td>
-                                <div class="meter" aria-hidden="true">
-                                    <span style="width: {{this.metrics.supportPercent}}%;"></span>
-                                </div>
-                                <b>{{this.metrics.supportPercent}}%</b> of passing assertions</b>
-                            </td>
+                        <th><b>{{@key}}</b></th>
+                        {{#each this}}
+                            {{#if (isBrowser "Chrome" this.browser.name)}}
+                                {{#if (isInAllBrowsers "Chrome" @../../this) }}
+                                        <td>
+                                            <div class="meter" aria-hidden="true">
+                                                <span style="width: {{this.metrics.supportPercent}}%;"></span>
+                                            </div>
+                                            <b>{{this.metrics.supportPercent}}%</b> of passing assertions</b>
+                                        </td>
+                                {{/if}}
                             {{else}}
-                            <td><span class="none">None</span></td>
-                            {{/if}} 
-                        {{/if}} 
-                        {{#if (isInAllBrowsers "Safari" @../../this)}}
-                            {{#if (isBrowser this.browser.name "Safari") }}
-                            <td>
-                                <div class="meter" aria-hidden="true">
-                                    <span style="width: {{this.metrics.supportPercent}}%;"></span>
-                                </div>
-                                <b>{{this.metrics.supportPercent}}%</b> of passing assertions</b>
-                            </td>
+                                {{#if (isInAllBrowsers "Chrome" @../../this) }}
+                                    {{#unless (elementExists @../../this @../this this.at.name "Chrome" @last)}}
+                                        <td><span class="none">None</span></td>
+                                    {{/unless}}
+                                {{/if}}
+                            {{/if}}
+                            {{#if (isBrowser "Firefox" this.browser.name)}}
+                                {{#if (isInAllBrowsers "Firefox" @../../this) }}
+                                        <td>
+                                            <div class="meter" aria-hidden="true">
+                                                <span style="width: {{this.metrics.supportPercent}}%;"></span>
+                                            </div>
+                                            <b>{{this.metrics.supportPercent}}%</b> of passing assertions</b>
+                                        </td>
+                                {{/if}}
                             {{else}}
-                            <td><span class="none">None</span></td>
-                            {{/if}} 
-                        {{/if}} 
-                        {{#if (isInAllBrowsers "Firefox" @../../this)}}
-                            {{#if (isBrowser this.browser.name "Firefox") }}
-                            <td>
-                                <div class="meter" aria-hidden="true">
-                                    <span style="width: {{this.metrics.supportPercent}}%;"></span>
-                                </div>
-                                <b>{{this.metrics.supportPercent}}%</b> of passing assertions</b>
-                            </td>
+                                {{#if (isInAllBrowsers "Firefox" @../../this) }}
+                                    {{#unless (elementExists @../../this @../this this.at.name "Firefox" @last)}}
+                                        <td><span class="none">None</span></td>
+                                    {{/unless}}
+                                {{/if}}
+                            {{/if}}
+                            {{#if (isBrowser "Safari" this.browser.name)}}
+                                {{#if (isInAllBrowsers "Safari" @../../this) }}
+                                        <td>
+                                            <div class="meter" aria-hidden="true">
+                                                <span style="width: {{this.metrics.supportPercent}}%;"></span>
+                                            </div>
+                                            <b>{{this.metrics.supportPercent}}%</b> of passing assertions</b>
+                                        </td>
+                                {{/if}}
                             {{else}}
-                            <td><span class="none">None</span></td>
-                            {{/if}} 
-                        {{/if}}          
+                                {{#if (isInAllBrowsers "Safari" @../../this) }}
+                                    {{#unless (elementExists @../../this @../this this.at.name "Safari" @last)}}
+                                        <td><span class="none">None</span></td>
+                                    {{/unless}}
+                                {{/if}}
+                            {{/if}}
+                        {{/each}}
+                        {{resetMap}}
                     </tr>
-                    {{/each}}
                 {{/each}}
             </tbody>
         </table>
