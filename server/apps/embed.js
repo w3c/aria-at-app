@@ -98,7 +98,6 @@ const getLatestReportsForPattern = async pattern => {
     return { allBrowsers, latestTestPlanVersionId, status, reportsByAt };
 };
 
-// Expects a query variable of test plan id
 app.get('/reports/:pattern', async (req, res) => {
     const pattern = req.params.pattern;
     const protocol = process.env.ENVIRONMENT === 'dev' ? 'http://' : 'https://';
