@@ -24,8 +24,8 @@
         <div id="embded-report-status-container">
             <div id="candidate-title" class="recommended"><h3>Recommended Report</h3></div>
             <div id="candidate-content-container">
-                The information in this report is generated from recommended tests. 
-                Recommended ARIA-AT tests have been reviewed by assistive technology 
+                The information in this report is generated from recommended tests.
+                Recommended ARIA-AT tests have been reviewed by assistive technology
                 developers and represent consensus regarding
                 <ol>
                     <li>applicability and validity of the tests, and</li>
@@ -34,79 +34,83 @@
             </div>
         </div>
         {{/if}}
-        <table id="embed-report-table">
-            <thead>
-                <tr>
-                    <td></td>
-                    {{#each allBrowsers}}
-                    <th>{{this}}</th>
-                    {{/each}}
-                </tr>
-            </thead>
-            <tbody>
-                {{#each reportsByAt}}
+        <div class="responsive-table">
+            <table id="embed-report-table">
+                <thead>
                     <tr>
-                        <th><b>{{@key}}</b></th>
-                        {{#each this}}
-                            {{#if (isBrowser "Chrome" this.browser.name)}}
-                                {{#if (isInAllBrowsers "Chrome" @../../this) }}
-                                        <td>
-                                            <div class="meter" aria-hidden="true">
-                                                <span style="width: {{this.metrics.supportPercent}}%;"></span>
-                                            </div>
-                                            <b>{{this.metrics.supportPercent}}%</b> of passing assertions</b>
-                                        </td>
-                                {{/if}}
-                            {{else}}
-                                {{#if (isInAllBrowsers "Chrome" @../../this) }}
-                                    {{#unless (elementExists @../../this @../this this.at.name "Chrome" @last)}}
-                                        <td><span class="none">None</span></td>
-                                    {{/unless}}
-                                {{/if}}
-                            {{/if}}
-                            {{#if (isBrowser "Firefox" this.browser.name)}}
-                                {{#if (isInAllBrowsers "Firefox" @../../this) }}
-                                        <td>
-                                            <div class="meter" aria-hidden="true">
-                                                <span style="width: {{this.metrics.supportPercent}}%;"></span>
-                                            </div>
-                                            <b>{{this.metrics.supportPercent}}%</b> of passing assertions</b>
-                                        </td>
-                                {{/if}}
-                            {{else}}
-                                {{#if (isInAllBrowsers "Firefox" @../../this) }}
-                                    {{#unless (elementExists @../../this @../this this.at.name "Firefox" @last)}}
-                                        <td><span class="none">None</span></td>
-                                    {{/unless}}
-                                {{/if}}
-                            {{/if}}
-                            {{#if (isBrowser "Safari" this.browser.name)}}
-                                {{#if (isInAllBrowsers "Safari" @../../this) }}
-                                        <td>
-                                            <div class="meter" aria-hidden="true">
-                                                <span style="width: {{this.metrics.supportPercent}}%;"></span>
-                                            </div>
-                                            <b>{{this.metrics.supportPercent}}%</b> of passing assertions</b>
-                                        </td>
-                                {{/if}}
-                            {{else}}
-                                {{#if (isInAllBrowsers "Safari" @../../this) }}
-                                    {{#unless (elementExists @../../this @../this this.at.name "Safari" @last)}}
-                                        <td><span class="none">None</span></td>
-                                    {{/unless}}
-                                {{/if}}
-                            {{/if}}
+                        <td></td>
+                        {{#each allBrowsers}}
+                        <th>{{this}}</th>
                         {{/each}}
-                        {{resetMap}}
                     </tr>
-                {{/each}}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    {{#each reportsByAt}}
+                        <tr>
+                            <th><b>{{@key}}</b></th>
+                            {{#each this}}
+                                {{#if (isBrowser "Chrome" this.browser.name)}}
+                                    {{#if (isInAllBrowsers "Chrome" @../../this) }}
+                                            <td>
+                                                <div class="meter" aria-hidden="true">
+                                                    <span style="width: {{this.metrics.supportPercent}}%;"></span>
+                                                </div>
+                                                <b>{{this.metrics.supportPercent}}%</b> of passing assertions</b>
+                                            </td>
+                                    {{/if}}
+                                {{else}}
+                                    {{#if (isInAllBrowsers "Chrome" @../../this) }}
+                                        {{#unless (elementExists @../../this @../this this.at.name "Chrome" @last)}}
+                                            <td><span class="none">None</span></td>
+                                        {{/unless}}
+                                    {{/if}}
+                                {{/if}}
+                                {{#if (isBrowser "Firefox" this.browser.name)}}
+                                    {{#if (isInAllBrowsers "Firefox" @../../this) }}
+                                            <td>
+                                                <div class="meter" aria-hidden="true">
+                                                    <span style="width: {{this.metrics.supportPercent}}%;"></span>
+                                                </div>
+                                                <b>{{this.metrics.supportPercent}}%</b> of passing assertions</b>
+                                            </td>
+                                    {{/if}}
+                                {{else}}
+                                    {{#if (isInAllBrowsers "Firefox" @../../this) }}
+                                        {{#unless (elementExists @../../this @../this this.at.name "Firefox" @last)}}
+                                            <td><span class="none">None</span></td>
+                                        {{/unless}}
+                                    {{/if}}
+                                {{/if}}
+                                {{#if (isBrowser "Safari" this.browser.name)}}
+                                    {{#if (isInAllBrowsers "Safari" @../../this) }}
+                                            <td>
+                                                <div class="meter" aria-hidden="true">
+                                                    <span style="width: {{this.metrics.supportPercent}}%;"></span>
+                                                </div>
+                                                <b>{{this.metrics.supportPercent}}%</b> of passing assertions</b>
+                                            </td>
+                                    {{/if}}
+                                {{else}}
+                                    {{#if (isInAllBrowsers "Safari" @../../this) }}
+                                        {{#unless (elementExists @../../this @../this this.at.name "Safari" @last)}}
+                                            <td><span class="none">None</span></td>
+                                        {{/unless}}
+                                    {{/if}}
+                                {{/if}}
+                            {{/each}}
+                            {{resetMap}}
+                        </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
 
-        <div id="embed-button-row">
+        <div id="button-row">
             <button id="view-report-button" class="button" onclick="window.open('{{completeReportLink}}', '_blank')">View Complete Report</button>
-            <button id="embed-button" class="button" onclick="announceCopied('{{embedLink}}')"><span aria-hidden="true">&#60;&#62;</span> Embed</button>
-            <div id="copied-message"></div>
+            <div id="embed-button-wrap">
+                <button id="embed-button" class="button" onclick="announceCopied('{{embedLink}}')"><span aria-hidden="true">&#60;&#62;</span> Embed</button>
+                <div id="copied-message"></div>
+            </div>
         </div>
     {{/unless}}
 </div>
