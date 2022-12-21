@@ -45,6 +45,10 @@ body {
     width: 100px;
 }
 
+#candidate-title.recommended h3 {
+    width: 130px;
+}
+
 #candidate-content-container {
     border-left: 1.5px solid #d5d8dd;
     border-right: 1.5px solid #d5d8dd;
