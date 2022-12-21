@@ -28,6 +28,6 @@ const announceCopied = link => {
 };
 
 window.parent.postMessage(
-    `{ height: ${document.body.scrollHeight}, iframe: ${iframeClass} }`,
+    { height: document.body.scrollHeight, iframe: iframeClass },
     '*'
 );
