@@ -6,6 +6,14 @@ body {
     width: 100%;
 }
 
+#embed-button-row {
+    display: flex;
+}
+
+#copied-message {
+    align-self: center;
+}
+
 #no-data-content-container {
     border-left: 1.5px solid #d5d8dd;
     border-right: 1.5px solid #d5d8dd;

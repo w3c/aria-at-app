@@ -3,12 +3,12 @@ const iframeClass = `support-levels-${document.currentScript.getAttribute(
 )}`;
 
 const iframeCode = link =>
-    `<iframe
-        class="${iframeClass}"
-        src="${link}"
-        height="500"
-        allow="clipboard-write"
-        style="border-style: none; width: 100%;">
+    `  <iframe
+    class="${iframeClass}"
+    src="${link}"
+    height="500"
+    allow="clipboard-write"
+    style="border-style: none; width: 100%;">
     </iframe>`;
 
 // eslint-disable-next-line no-unused-vars
@@ -27,7 +27,11 @@ const announceCopied = link => {
     }, 5000);
 };
 
-window.parent.postMessage(
-    { height: document.body.scrollHeight, iframe: iframeClass },
-    '*'
-);
+const postHeightAndClass = () =>
+    window.parent.postMessage(
+        { height: document.body.scrollHeight, iframe: iframeClass },
+        '*'
+    );
+
+window.onresize = postHeightAndClass;
+postHeightAndClass();
