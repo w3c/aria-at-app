@@ -56,7 +56,8 @@ const getLatestReportsForPattern = async pattern => {
                     metrics
                 }
             }
-        `
+        `,
+        fetchPolicy: 'no-cache'
     });
 
     const testPlanReports = data.testPlanReports.filter(
