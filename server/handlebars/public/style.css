@@ -6,10 +6,6 @@ body {
     width: 100%;
 }
 
-#embed-button-row {
-    display: flex;
-}
-
 #copied-message {
     align-self: center;
 }
@@ -70,6 +66,11 @@ body {
     color: #d5d8dd;
     font-style: italic;
     text-align: center;
+}
+
+.responsive-table {
+    overflow: scroll;
+    width: 100%;
 }
 
 table {
@@ -138,15 +139,23 @@ table tbody tr td {
 #view-report-button {
     color: white;
     background-color: #175a6a;
+    margin-right: 10px;
+    margin-bottom: 1em;
+}
+
+#embed-button-wrap {
+    display: inline-block;
 }
 
 #embed-button {
     color: #175a6a;
     background-color: white;
     padding: 10px 20px;
+    display: inline-block;
 }
 
 #copied-message {
     font-family: Arial, Helvetica, sans-serif;
     margin: 5px;
+    display: inline-block;
 }
