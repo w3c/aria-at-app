@@ -77,8 +77,7 @@ const getLatestReportsForPattern = async pattern => {
                     }
                 }
             }
-        `,
-        fetchPolicy: 'no-cache'
+        `
     });
 
     const testPlanReports = data.testPlanReports.filter(
