@@ -10,6 +10,10 @@ body {
     align-self: center;
 }
 
+#at-version {
+    font-weight: lighter;
+}
+
 #no-data-content-container {
     border-left: 1.5px solid #d5d8dd;
     border-right: 1.5px solid #d5d8dd;

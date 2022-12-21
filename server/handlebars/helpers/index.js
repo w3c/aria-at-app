@@ -10,6 +10,9 @@ module.exports = {
     isCandidate: function(value) {
         return value === 'CANDIDATE';
     },
+    getAtVersion: function(object, key) {
+        return object.allAtVersionsByAt[key].name;
+    },
     elementExists: function(parentObject, childObject, at, key, last) {
         const atBrowsers = childObject.map(o => o.browser.name);
 

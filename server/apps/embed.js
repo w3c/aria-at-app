@@ -39,13 +39,35 @@ const getLatestReportsForPattern = async pattern => {
         query: gql`
             query {
                 testPlanReports(statuses: [CANDIDATE, RECOMMENDED]) {
+                    id
+                    metrics
+                    status
                     at {
+                        id
                         name
                     }
                     browser {
+                        id
                         name
                     }
-                    status
+                    finalizedTestResults {
+                        id
+                        atVersion {
+                            id
+                            name
+                            releasedAt
+                        }
+                    }
+                    runnableTests {
+                        id
+                    }
+                    draftTestPlanRuns {
+                        testResults {
+                            test {
+                                id
+                            }
+                        }
+                    }
                     testPlanVersion {
                         id
                         updatedAt
@@ -53,7 +75,6 @@ const getLatestReportsForPattern = async pattern => {
                             id
                         }
                     }
-                    metrics
                 }
             }
         `,
@@ -76,6 +97,7 @@ const getLatestReportsForPattern = async pattern => {
 
     let allAts = new Set();
     let allBrowsers = new Set();
+    let allAtVersionsByAt = {};
     let status = 'RECOMMENDED';
     let reportsByAt = {};
 
@@ -85,18 +107,31 @@ const getLatestReportsForPattern = async pattern => {
         if (report.status === 'CANDIDATE') {
             status = report.status;
         }
+
+        allAtVersionsByAt[report.at.name] = report.finalizedTestResults
+            .map(result => result.atVersion)
+            .reduce((prev, current) =>
+                new Date(prev.releasedAt) > new Date(current.releasedAt)
+                    ? prev
+                    : current
+            );
     });
 
     allBrowsers = Array.from(allBrowsers).sort();
 
-    allAts.forEach(
-        at =>
-            (reportsByAt[at] = latestReports
-                .filter(report => report.at.name === at)
-                .sort((a, b) => a.browser.name.localeCompare(b.browser.name)))
-    );
+    allAts.forEach(at => {
+        reportsByAt[at] = latestReports
+            .filter(report => report.at.name === at)
+            .sort((a, b) => a.browser.name.localeCompare(b.browser.name));
+    });
 
-    return { allBrowsers, latestTestPlanVersionId, status, reportsByAt };
+    return {
+        allBrowsers,
+        allAtVersionsByAt,
+        latestTestPlanVersionId,
+        status,
+        reportsByAt
+    };
 };
 
 app.get('/reports/:pattern', async (req, res) => {
@@ -104,6 +139,7 @@ app.get('/reports/:pattern', async (req, res) => {
     const protocol = process.env.ENVIRONMENT === 'dev' ? 'http://' : 'https://';
     const {
         allBrowsers,
+        allAtVersionsByAt,
         latestTestPlanVersionId,
         status,
         reportsByAt
@@ -114,6 +150,7 @@ app.get('/reports/:pattern', async (req, res) => {
         pattern,
         status,
         allBrowsers,
+        allAtVersionsByAt,
         reportsByAt,
         completeReportLink: `${protocol}${req.headers.host}/report/${latestTestPlanVersionId}`,
         embedLink: `${protocol}${req.headers.host}/embed/reports/${pattern}`

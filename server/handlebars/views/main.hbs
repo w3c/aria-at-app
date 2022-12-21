@@ -47,7 +47,7 @@
                 <tbody>
                     {{#each reportsByAt}}
                         <tr>
-                            <th><b>{{@key}}</b></th>
+                            <th><b>{{@key}}</b> <span id="at-version">{{getAtVersion @../this @key}}</span></th>
                             {{#each this}}
                                 {{#if (isBrowser "Chrome" this.browser.name)}}
                                     {{#if (isInAllBrowsers "Chrome" @../../this) }}
