@@ -7,6 +7,7 @@ const {
     ApolloServerPluginLandingPageGraphQLPlayground
 } = require('apollo-server-core');
 const { session } = require('./middleware/session');
+const embedApp = require('./apps/embed');
 const authRoutes = require('./routes/auth');
 const testRoutes = require('./routes/tests');
 const path = require('path');
@@ -34,7 +35,7 @@ server.start().then(() => {
 });
 
 const listener = express();
-listener.use('/api', app);
+listener.use('/api', app).use('/embed', embedApp);
 
 const baseUrl = 'https://raw.githubusercontent.com';
 const onlyStatus200 = (req, res) => res.statusCode === 200;

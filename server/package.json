@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/bocoup/aria-at-report#readme",
   "dependencies": {
+    "@apollo/client": "^3.7.2",
     "@moebius/http-graceful-shutdown": "^1.1.0",
     "apicache": "^1.6.2",
     "apollo-server": "^3.4.0",
@@ -32,10 +33,12 @@
     "axios": "^0.21.1",
     "body-parser": "^1.20.0",
     "connect-pg-simple": "^6.2.1",
+    "cross-fetch": "^3.1.5",
     "cross-spawn": "^7.0.3",
     "dotenv": "^8.2.0",
     "dotenv-cli": "^4.0.0",
     "express": "^5.0.0-alpha.8",
+    "express-handlebars": "^6.0.6",
     "express-session": "^1.17.2",
     "fs-extra": "^10.0.1",
     "graphql": "^15.5.0",
@@ -43,7 +46,6 @@
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
     "node-cache": "^5.1.2",
-    "node-fetch": "^2.6.1",
     "node-html-parser": "^3.1.5",
     "nodegit": "^0.27.0",
     "nodemon": "^2.0.7",
@@ -52,7 +54,8 @@
     "pg-hstore": "^2.3.3",
     "rawgit": "https://github.com/rgrove/rawgit.git#eaa9b36aa2143041894866ba9db72e51d05c2a52",
     "sequelize": "5.22.4",
-    "supertest-session": "^4.1.0"
+    "supertest-session": "^4.1.0",
+    "vhost": "^3.0.2"
   },
   "devDependencies": {
     "eslint": "^7.26.0",
