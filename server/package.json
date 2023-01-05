@@ -1,7 +1,7 @@
 {
   "name": "server",
   "version": "1.0.0",
-  "description": "Server for ARIA-AT report",
+  "description": "Server for ARIA-AT App",
   "main": "index.js",
   "scripts": {
     "dev": "DOTENV_CONFIG_PATH=../config/dev.env nodemon --ignore './scripts/' --ignore './resources/' -r dotenv/config server.js --watch",
@@ -16,17 +16,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bocoup/aria-at-report.git"
+    "url": "git+https://github.com/bocoup/aria-at-app.git"
   },
   "license": "SEE LICENSE IN LICENSE.md",
   "bugs": {
-    "url": "https://github.com/bocoup/aria-at-report/issues"
+    "url": "https://github.com/bocoup/aria-at-app/issues"
   },
-  "homepage": "https://github.com/bocoup/aria-at-report#readme",
+  "homepage": "https://github.com/bocoup/aria-at-app#readme",
   "dependencies": {
     "@apollo/client": "^3.7.2",
     "@moebius/http-graceful-shutdown": "^1.1.0",
-    "apicache": "^1.6.2",
+    "apicache": "^1.6.3",
     "apollo-server": "^3.4.0",
     "apollo-server-core": "^3.6.7",
     "apollo-server-express": "^3.4.0",
@@ -35,8 +35,8 @@
     "connect-pg-simple": "^6.2.1",
     "cross-fetch": "^3.1.5",
     "cross-spawn": "^7.0.3",
-    "dotenv": "^8.2.0",
-    "dotenv-cli": "^4.0.0",
+    "dotenv": "^16.0.3",
+    "dotenv-cli": "^6.0.0",
     "express": "^5.0.0-alpha.8",
     "express-handlebars": "^6.0.6",
     "express-session": "^1.17.2",
@@ -44,10 +44,11 @@
     "graphql": "^15.5.0",
     "js-base64": "^3.6.1",
     "lodash": "^4.17.21",
+    "minimist": "^1.2.7",
     "moment": "^2.29.4",
     "node-cache": "^5.1.2",
     "node-html-parser": "^3.1.5",
-    "nodegit": "^0.27.0",
+    "nodegit": "^0.28.0-alpha.20",
     "nodemon": "^2.0.7",
     "object-hash": "^2.2.0",
     "pg": "^8.6.0",
