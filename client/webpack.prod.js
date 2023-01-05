@@ -54,11 +54,13 @@ module.exports = {
         extensions: ['*', '.js', '.jsx']
     },
     plugins: [
-        new CopyWebpackPlugin([
-            {
-                from: 'static'
-            }
-        ]),
+        new CopyWebpackPlugin({
+            patterns: [
+                {
+                    from: 'static'
+                }
+            ]
+        }),
         new webpack.DefinePlugin({
             'process.env.API_SERVER': JSON.stringify(process.env.API_SERVER),
             'process.env.ENVIRONMENT': JSON.stringify(process.env.ENVIRONMENT)

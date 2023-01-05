@@ -1,7 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-const Dotenv = require('dotenv-webpack');
 
 module.exports = {
     entry: ['babel-polyfill', './index.js'],
@@ -56,34 +55,40 @@ module.exports = {
         extensions: ['*', '.js', '.jsx']
     },
     devServer: {
-        contentBase: path.join(__dirname, 'static'),
+        static: {
+            directory: path.join(__dirname, 'static'),
+            watch: true
+        },
         port: process.env.CLIENT_PORT || 3000,
         // Allows access to the dev server over your local network. Note that
         // you will need to use your computer's address, e.g. 192.168.0.20:3000,
         // and that logging in will require you to manually change the URL from
         // localhost:3000 to 192.168.0.20:3000 each time a redirect occurs.
         host: '0.0.0.0',
-        publicPath: '/',
+        devMiddleware: {
+            publicPath: '/'
+        },
         historyApiFallback: true,
-        hotOnly: true,
+        hot: 'only',
         proxy: [
             {
                 context: ['/aria-at', '/api', '/embed'],
                 target: 'http://localhost:5000'
             }
-        ],
-        watchOptions: {
-            aggregateTimeout: 300,
-            poll: 1000
-        }
+        ]
+    },
+    watchOptions: {
+        aggregateTimeout: 300,
+        poll: 1000
     },
     plugins: [
-        new Dotenv({ path: '../config/dev.env' }),
-        new CopyWebpackPlugin([
-            {
-                from: 'static'
-            }
-        ]),
+        new CopyWebpackPlugin({
+            patterns: [
+                {
+                    from: 'static'
+                }
+            ]
+        }),
         new webpack.DefinePlugin({
             'process.env.API_SERVER': JSON.stringify(process.env.API_SERVER),
             'process.env.ENVIRONMENT': JSON.stringify(process.env.ENVIRONMENT)
