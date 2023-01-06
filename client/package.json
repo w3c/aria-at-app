@@ -31,7 +31,6 @@
     "@fortawesome/free-solid-svg-icons": "^6.2.1",
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@react-hook/resize-observer": "^1.2.6",
-    "axios": "^0.21.4",
     "bootstrap": "^4.4.1",
     "core-js": "^3.8.0",
     "graphql": "^15.5.0",

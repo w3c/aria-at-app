@@ -1,6 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+require('dotenv').config({ path: '../config/dev.env' });
 
 module.exports = {
     entry: ['babel-polyfill', './index.js'],
@@ -56,8 +57,7 @@ module.exports = {
     },
     devServer: {
         static: {
-            directory: path.join(__dirname, 'static'),
-            watch: true
+            directory: path.join(__dirname, 'static')
         },
         port: process.env.CLIENT_PORT || 3000,
         // Allows access to the dev server over your local network. Note that
