@@ -45,6 +45,10 @@ nav.navbar {
     color: #000;
 }
 
+a.nav-link/*[aria-current='false']*/ {
+    color: #0b60ab;
+}
+
 .nav-link[aria-current='true'] {
     color: #000;
 }
@@ -107,6 +111,7 @@ nav .logo.navbar-brand {
 
 a {
     color: #0b60ab;
+    text-decoration: none;
 }
 
 a:hover {
@@ -148,9 +153,6 @@ button {
 
 .table thead th {
     border-bottom: 0;
-}
-
-table thead th {
     background: #e9ebee;
 }
 
@@ -170,6 +172,10 @@ table tbody tr:nth-of-type(odd),
 .table-bordered th,
 .table-bordered td {
     border: 1px solid #d2d5d9;
+}
+
+.table td {
+    padding: 0.75rem;
 }
 
 table.table-hover tbody tr:hover,
@@ -296,6 +302,10 @@ ul li {
 /* Button Danger */
 .btn-danger {
     color: #d52a49;
+}
+
+.form-group {
+    margin-bottom: 1rem;
 }
 
 /* STATUS LABELS */
@@ -442,6 +452,10 @@ img {
 .get-involved .container {
     max-width: 660px;
     padding-bottom: 2em;
+}
+
+ol.breadcrumb {
+    padding: 0.75rem 1rem;
 }
 
 @media (min-width: 700px) {

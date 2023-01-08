@@ -38,6 +38,10 @@ main.container-fluid table .col-md-3 {
     margin-top: 0.75em;
 }
 
+.test-queue.table th {
+    padding: 0.75rem;
+}
+
 .test-queue.table th.testers {
     width: 225px;
 }

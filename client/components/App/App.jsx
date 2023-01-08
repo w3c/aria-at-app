@@ -2,7 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useQuery } from '@apollo/client';
 import { renderRoutes } from 'react-router-config';
 import { Link, useLocation } from 'react-router-dom';
-import { Container, Navbar, Nav } from 'react-bootstrap';
+// import { Container, Navbar, Nav } from 'react-bootstrap';
+import Container from 'react-bootstrap/Container';
+import Navbar from 'react-bootstrap/Navbar';
+import Nav from 'react-bootstrap/Nav';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
 import { evaluateAuth } from '../../utils/evaluateAuth';
@@ -57,7 +60,7 @@ const App = () => {
                         id="basic-navbar-nav"
                         className="justify-content-end"
                     >
-                        <ul>
+                        <Nav>
                             <li>
                                 <Nav.Link
                                     as={Link}
@@ -157,7 +160,7 @@ const App = () => {
                                     </Nav.Link>
                                 </li>
                             )}
-                        </ul>
+                        </Nav>
                     </Navbar.Collapse>
                 </Navbar>
             </Container>

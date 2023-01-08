@@ -308,9 +308,8 @@ const AtAndBrowserDetailsModal = ({
                                         Assistive Technology Version
                                         <Required aria-hidden />
                                     </Form.Label>
-                                    <Form.Control
+                                    <Form.Select
                                         ref={updatedAtVersionDropdownRef}
-                                        as="select"
                                         value={updatedAtVersion}
                                         onChange={handleAtVersionChange}
                                         isInvalid={isAtVersionError}
@@ -330,7 +329,7 @@ const AtAndBrowserDetailsModal = ({
                                                 {item}
                                             </option>
                                         ))}
-                                    </Form.Control>
+                                    </Form.Select>
                                     {isAtVersionError && (
                                         <Form.Control.Feedback
                                             style={{ display: 'block' }}
