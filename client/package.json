@@ -51,7 +51,6 @@
     "react-router-config": "^5.1.1",
     "react-router-dom": "^5.1.2",
     "sass": "^1.57.1",
-    "showdown": "^1.9.1",
     "turndown": "^7.1.1",
     "ua-parser-js": "^1.0.2"
   },
