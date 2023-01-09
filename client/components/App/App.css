@@ -43,9 +43,10 @@ nav.navbar {
 
 .nav-link:hover {
     color: #000;
+    text-decoration: none;
 }
 
-a.nav-link/*[aria-current='false']*/ {
+a.nav-link {
     color: #0b60ab;
 }
 
@@ -116,6 +117,7 @@ a {
 
 a:hover {
     color: #214e86;
+    text-decoration: underline;
 }
 
 h1 {

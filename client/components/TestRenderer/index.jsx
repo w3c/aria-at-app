@@ -127,6 +127,7 @@ const Fieldset = styled.fieldset`
     > legend {
         display: block;
 
+        float: inherit;
         width: auto;
         margin: 0;
         font-size: initial;

@@ -213,6 +213,9 @@ main.container-fluid .test-iframe-container > .row {
 .test-run-toolbar {
     display: flex;
     width: 100%;
+
+    padding-left: 0;
+    padding-right: 0;
 }
 .test-run-toolbar li:first-of-type {
     flex-grow: 1;
@@ -376,6 +379,14 @@ main.container-fluid .test-iframe-container > .row {
 
 fieldset .at-browser-details-modal-alert {
     margin-bottom: 0;
+}
+
+.btn-options {
+    width: 100%;
+}
+
+a.btn-options:hover {
+    text-decoration: none;
 }
 
 .at-browser-details-modal-alert span {
