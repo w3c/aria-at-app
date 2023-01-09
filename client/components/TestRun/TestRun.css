@@ -255,6 +255,8 @@ main.container-fluid .test-iframe-container > .row {
     flex-direction: row;
     justify-content: space-between;
     flex-wrap: wrap;
+
+    padding: 0;
 }
 
 .test-info-entity {
