@@ -1,6 +1,6 @@
 # Local Database
 
-The database migrations are managed by [Sequelize](https://sequelize.org/). To read and understand the schema, see the sequelize models that represent the data in `server/models`. Each model represents a table in the database.
+The database migrations are managed by [Sequelize](https://sequelize.org/). To read and understand the schema, see the Sequelize models that represent the data in `server/models`. Each model represents a table in the database.
 
 ## Setting up a local database for development
 
@@ -71,11 +71,11 @@ To connect to the Postgres table locally:
 
 ## Application development: modifications to the schema
 
-1. Write a migration. Migrations files should be saved to `server/migrations/`. To make a migration file with the appropraite file name, run:
+1. Write a migration. Migrations files should be saved to `server/migrations/`. To make a migration file with the appropriate file name, run:
     ```
     yarn sequelize-cli migration:generate --name <name>
     ```
-2. Write a seed file to add data to a table if appropriate. Seed files should be saved to `server/seeder/`. To make a seeder file with the appropraite file name, run:
+2. Write a seed file to add data to a table if appropriate. Seed files should be saved to `server/seeder/`. To make a seeder file with the appropriate file name, run:
     ```
     yarn sequelize-cli seed:generate --name <name>
     ```

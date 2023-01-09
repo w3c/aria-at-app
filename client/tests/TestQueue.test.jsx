@@ -1,3 +1,7 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import React from 'react';
 import {
     render,
@@ -63,7 +67,7 @@ describe('Render TestQueue/index.jsx', () => {
                 expect(loadingElement).not.toBeInTheDocument();
                 expect(element).toBeTruthy();
                 expect(element).toHaveTextContent(
-                    /Please configure your preferred Assistive Technologies in/gi
+                    /Please configure your preferred Assistive Technologies in/i
                 );
             });
         });
@@ -75,9 +79,9 @@ describe('Render TestQueue/index.jsx', () => {
             });
 
             const { queryAllByText } = wrapper;
-            const nvdaElements = queryAllByText(/nvda/gi);
-            const jawsElements = queryAllByText(/jaws/gi);
-            const voiceOverElements = queryAllByText(/voiceover/gi);
+            const nvdaElements = queryAllByText(/nvda/i);
+            const jawsElements = queryAllByText(/jaws/i);
+            const voiceOverElements = queryAllByText(/voiceover/i);
 
             expect(nvdaElements.length).toEqual(0);
             expect(jawsElements.length).toEqual(0);
@@ -136,9 +140,9 @@ describe('Render TestQueue/index.jsx', () => {
             });
 
             const { queryAllByText } = wrapper;
-            const nvdaElements = queryAllByText(/nvda/gi);
-            const jawsElements = queryAllByText(/jaws/gi);
-            const voiceOverElements = queryAllByText(/voiceover/gi);
+            const nvdaElements = queryAllByText(/nvda/i);
+            const jawsElements = queryAllByText(/jaws/i);
+            const voiceOverElements = queryAllByText(/voiceover/i);
 
             expect(nvdaElements.length).toBeGreaterThanOrEqual(1);
             expect(jawsElements.length).toBeGreaterThanOrEqual(1);
@@ -152,11 +156,11 @@ describe('Render TestQueue/index.jsx', () => {
             });
 
             const { queryAllByText } = wrapper;
-            const userAAssignedElements = queryAllByText(/foo-bar/gi);
-            const userBAssignedElements = queryAllByText(/bar-foo/gi);
-            const userCAssignedElements = queryAllByText(/boo-far/gi);
+            const userAAssignedElements = queryAllByText(/foo-bar/i);
+            const userBAssignedElements = queryAllByText(/bar-foo/i);
+            const userCAssignedElements = queryAllByText(/boo-far/i);
             const assignedTestsElements = queryAllByText(
-                /\d+ of \d+ tests complete/gi
+                /\d+ of \d+ tests complete/i
             );
 
             expect(userAAssignedElements.length).toBeGreaterThanOrEqual(1);
@@ -205,7 +209,7 @@ describe('Render TestQueue/index.jsx', () => {
 
             expect(loadingElement).not.toBeInTheDocument();
             expect(element).toBeTruthy();
-            expect(element).toHaveTextContent(/Add a Test Plan to the Queue/gi);
+            expect(element).toHaveTextContent(/Add a Test Plan to the Queue/i);
         });
 
         it('renders no AT-specific sections', async () => {
@@ -215,9 +219,9 @@ describe('Render TestQueue/index.jsx', () => {
             });
 
             const { queryAllByText } = wrapper;
-            const nvdaElements = queryAllByText(/nvda/gi);
-            const jawsElements = queryAllByText(/jaws/gi);
-            const voiceOverElements = queryAllByText(/voiceover/gi);
+            const nvdaElements = queryAllByText(/nvda/i);
+            const jawsElements = queryAllByText(/jaws/i);
+            const voiceOverElements = queryAllByText(/voiceover/i);
 
             expect(nvdaElements.length).toEqual(0);
             expect(jawsElements.length).toEqual(0);
@@ -289,9 +293,9 @@ describe('Render TestQueue/index.jsx', () => {
             });
 
             const { queryAllByText } = wrapper;
-            const nvdaElements = queryAllByText(/nvda/gi);
-            const jawsElements = queryAllByText(/jaws/gi);
-            const voiceOverElements = queryAllByText(/voiceover/gi);
+            const nvdaElements = queryAllByText(/nvda/i);
+            const jawsElements = queryAllByText(/jaws/i);
+            const voiceOverElements = queryAllByText(/voiceover/i);
 
             expect(nvdaElements.length).toBeGreaterThanOrEqual(1);
             expect(jawsElements.length).toBeGreaterThanOrEqual(1);
@@ -305,10 +309,10 @@ describe('Render TestQueue/index.jsx', () => {
             });
 
             const { queryAllByText } = wrapper;
-            const userAAssignedElements = queryAllByText(/esmeralda-baggins/gi);
-            const userBAssignedElements = queryAllByText(/tom-proudfeet/gi);
+            const userAAssignedElements = queryAllByText(/esmeralda-baggins/i);
+            const userBAssignedElements = queryAllByText(/tom-proudfeet/i);
             const assignedTestsElements = queryAllByText(
-                /\d+ of \d+ tests complete/gi
+                /\d+ of \d+ tests complete/i
             );
 
             expect(userAAssignedElements.length).toBeGreaterThanOrEqual(1);
