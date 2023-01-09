@@ -863,7 +863,10 @@ const TestRun = () => {
                         <OptionButton
                             text="Raise An Issue"
                             icon={
-                                <FontAwesomeIcon icon={faExclamationCircle} />
+                                <FontAwesomeIcon
+                                    icon={faExclamationCircle}
+                                    color="#94979b"
+                                />
                             }
                             target="_blank"
                             href={gitHubIssueLinkWithTitleAndBody}
@@ -872,7 +875,12 @@ const TestRun = () => {
                     <li>
                         <OptionButton
                             text="Start Over"
-                            icon={<FontAwesomeIcon icon={faRedo} />}
+                            icon={
+                                <FontAwesomeIcon
+                                    icon={faRedo}
+                                    color="#94979b"
+                                />
+                            }
                             onClick={handleStartOverButtonClick}
                             disabled={!isSignedIn}
                         />

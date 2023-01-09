@@ -113,7 +113,7 @@ const UpdateVersionModal = ({
             title={title}
             content={
                 <ModalInnerSectionContainer>
-                    <Form.Group>
+                    <Form.Group className="form-group">
                         <Form.Label>Version Number</Form.Label>
                         <Form.Control
                             ref={versionTextRef}
@@ -133,7 +133,7 @@ const UpdateVersionModal = ({
                         )}
                     </Form.Group>
 
-                    <Form.Group>
+                    <Form.Group className="form-group">
                         <Form.Label>
                             Approximate date of availability
                         </Form.Label>

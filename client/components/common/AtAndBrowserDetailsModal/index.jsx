@@ -20,6 +20,10 @@ const FieldsetRow = styled.fieldset`
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-gap: 1rem;
+
+    legend {
+        float: inherit;
+    }
 `;
 
 const ModalSubtitleStyle = styled.h2`
@@ -292,7 +296,7 @@ const AtAndBrowserDetailsModal = ({
                                             </span>
                                         </Alert>
                                     )}
-                                <Form.Group>
+                                <Form.Group className="form-group">
                                     <Form.Label>
                                         Assistive Technology Name
                                     </Form.Label>
@@ -303,7 +307,7 @@ const AtAndBrowserDetailsModal = ({
                                     />
                                 </Form.Group>
 
-                                <Form.Group>
+                                <Form.Group className="form-group">
                                     <Form.Label>
                                         Assistive Technology Version
                                         <Required aria-hidden />
@@ -546,7 +550,7 @@ const AtAndBrowserDetailsModal = ({
                                             </span>
                                         </Alert>
                                     )}
-                                <Form.Group>
+                                <Form.Group className="form-group">
                                     <Form.Label>Browser Name</Form.Label>
                                     <Form.Control
                                         disabled
@@ -555,7 +559,7 @@ const AtAndBrowserDetailsModal = ({
                                     />
                                 </Form.Group>
 
-                                <Form.Group>
+                                <Form.Group className="form-group">
                                     <Form.Label>
                                         Browser Version
                                         <Required aria-hidden />

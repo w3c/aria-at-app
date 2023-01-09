@@ -91,7 +91,7 @@ const UpdateTargetDateModal = ({
             title={title}
             content={
                 <ModalInnerSectionContainer>
-                    <Form.Group>
+                    <Form.Group className="form-group">
                         <Form.Label>Target Date</Form.Label>
                         <Form.Control
                             ref={dateTextRef}
