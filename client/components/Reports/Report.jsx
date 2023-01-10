@@ -1,18 +1,25 @@
 import React from 'react';
 import { useQuery } from '@apollo/client';
-import { Route, Switch } from 'react-router';
-import { Redirect, useRouteMatch } from 'react-router-dom';
+import { Route, Routes, Navigate, useMatch } from 'react-router-dom';
 import SummarizeTestPlanVersion from './SummarizeTestPlanVersion';
 import SummarizeTestPlanReport from './SummarizeTestPlanReport';
+import NotFound from '../NotFound';
 import PageStatus from '../common/PageStatus';
 import { REPORT_PAGE_QUERY } from './queries';
 import './Reports.css';
 
 const Reports = () => {
-    const match = useRouteMatch('/report/:testPlanVersionId');
+    const parentMatch = useMatch('/report/:testPlanVersionId');
+    const childMatch = useMatch(
+        '/report/:testPlanVersionId/targets/:testPlanReportId'
+    );
 
     const { loading, data, error } = useQuery(REPORT_PAGE_QUERY, {
-        variables: { testPlanVersionId: match?.params?.testPlanVersionId },
+        variables: {
+            testPlanVersionId:
+                parentMatch?.params?.testPlanVersionId ||
+                childMatch?.params?.testPlanVersionId
+        },
         fetchPolicy: 'cache-and-network'
     });
 
@@ -38,51 +45,66 @@ const Reports = () => {
 
     if (!data) return null;
 
+    let testPlanVersionId;
+    let testPlanReports;
+    let testPlanReport;
+
+    if (parentMatch) {
+        const { testPlanVersionId: _testPlanVersionId } = parentMatch.params;
+        const _testPlanReports = data.testPlanReports.filter(
+            each => each.testPlanVersion.id === _testPlanVersionId
+        );
+
+        testPlanVersionId = _testPlanVersionId;
+        testPlanReports = _testPlanReports;
+    }
+
+    if (childMatch) {
+        const {
+            testPlanVersionId: _testPlanVersionId,
+            testPlanReportId
+        } = childMatch.params;
+        const _testPlanReport = data.testPlanReports.find(
+            each =>
+                each.testPlanVersion.id === _testPlanVersionId &&
+                each.id == testPlanReportId
+        );
+
+        testPlanVersionId = _testPlanVersionId;
+        testPlanReport = _testPlanReport;
+    }
+
+    // For /report/:testPlanVersionId
+    if (parentMatch && !testPlanVersionId) return <Navigate to="/404" />;
+
+    // For /report/:testPlanVersionId/targets/:testPlanReportId
+    if (childMatch && !testPlanReport) return <Navigate to="/404" />;
+
     return (
-        <Switch>
-            <Route
-                exact
-                path="/report/:testPlanVersionId"
-                render={({ match: { params } }) => {
-                    const { testPlanVersionId } = params;
-
-                    const testPlanReports = data.testPlanReports.filter(
-                        each => each.testPlanVersion.id === testPlanVersionId
-                    );
-
-                    if (!testPlanReports.length) return <Redirect to="/404" />;
-
-                    return (
+        <Routes>
+            {parentMatch && (
+                <Route
+                    path="/"
+                    element={
                         <SummarizeTestPlanVersion
                             testPlanVersion={testPlanReports[0].testPlanVersion}
                             testPlanReports={testPlanReports}
                         />
-                    );
-                }}
-            />
-            <Route
-                exact
-                path="/report/:testPlanVersionId/targets/:testPlanReportId"
-                render={({ match: { params } }) => {
-                    const { testPlanVersionId, testPlanReportId } = params;
-
-                    const testPlanReport = data.testPlanReports.find(
-                        each =>
-                            each.testPlanVersion.id === testPlanVersionId &&
-                            each.id == testPlanReportId
-                    );
-
-                    if (!testPlanReport) return <Redirect to="/404" />;
-
-                    return (
+                    }
+                />
+            )}
+            {childMatch && (
+                <Route
+                    path="/targets/:testPlanReportId"
+                    element={
                         <SummarizeTestPlanReport
                             testPlanReport={testPlanReport}
                         />
-                    );
-                }}
-            />
-            <Redirect to="/404" />
-        </Switch>
+                    }
+                />
+            )}
+            <Route path="*" element={<NotFound />} />
+        </Routes>
     );
 };
 
