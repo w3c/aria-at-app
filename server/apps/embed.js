@@ -159,7 +159,7 @@ app.get('/reports/:pattern', async (req, res) => {
     res.render('main', {
         layout: 'index',
         dataEmpty: Object.keys(reportsByAt).length === 0,
-        title: queryTitle || title,
+        title: queryTitle || title || 'Pattern Not Found',
         pattern,
         status,
         allBrowsers,
