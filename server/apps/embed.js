@@ -70,6 +70,7 @@ const getLatestReportsForPattern = async pattern => {
                     }
                     testPlanVersion {
                         id
+                        title
                         updatedAt
                         testPlan {
                             id
@@ -80,9 +81,14 @@ const getLatestReportsForPattern = async pattern => {
         `
     });
 
-    const testPlanReports = data.testPlanReports.filter(
-        report => report.testPlanVersion.testPlan.id === pattern
-    );
+    let title;
+
+    const testPlanReports = data.testPlanReports.filter(report => {
+        if (report.testPlanVersion.testPlan.id === pattern) {
+            title = report.testPlanVersion.title;
+            return true;
+        }
+    });
 
     const latestTestPlanVersionId = testPlanReports.sort(
         (a, b) =>
@@ -125,6 +131,7 @@ const getLatestReportsForPattern = async pattern => {
     });
 
     return {
+        title,
         allBrowsers,
         allAtVersionsByAt,
         latestTestPlanVersionId,
@@ -134,9 +141,15 @@ const getLatestReportsForPattern = async pattern => {
 };
 
 app.get('/reports/:pattern', async (req, res) => {
+    // In the instance where an editor doesn't want to display a certain title
+    // as it has defined when importing into the ARIA-AT database for being too
+    // verbose, etc. eg. `Link Example 1 (span element with text content)`
+    // Usage: https://aria-at.w3.org/embed/reports/command-button?title=Link+Example+(span+element+with+text+content)
+    const queryTitle = req.query.title;
     const pattern = req.params.pattern;
     const protocol = process.env.ENVIRONMENT === 'dev' ? 'http://' : 'https://';
     const {
+        title,
         allBrowsers,
         allAtVersionsByAt,
         latestTestPlanVersionId,
@@ -146,6 +159,7 @@ app.get('/reports/:pattern', async (req, res) => {
     res.render('main', {
         layout: 'index',
         dataEmpty: Object.keys(reportsByAt).length === 0,
+        title: queryTitle || title,
         pattern,
         status,
         allBrowsers,

@@ -8,7 +8,8 @@
     {{/if}}
     {{#unless dataEmpty}}
         {{#if (isCandidate status)}}
-        <div id="embded-report-status-container">
+        <h3 id="report-title">{{title}}</h3>
+        <div id="embed-report-status-container">
             <div id="candidate-title"><h3>Candidate Report</h3></div>
             <div id="candidate-content-container">
                 The information in this report generated from candidate tests.
@@ -21,7 +22,7 @@
             </div>
         </div>
         {{else}}
-        <div id="embded-report-status-container">
+        <div id="embed-report-status-container">
             <div id="candidate-title" class="recommended"><h3>Recommended Report</h3></div>
             <div id="candidate-content-container">
                 The information in this report is generated from recommended tests.
