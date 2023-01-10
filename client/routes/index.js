@@ -1,5 +1,4 @@
 import React from 'react';
-import { Route, Redirect } from 'react-router-dom';
 import ConfirmAuth from '@components/ConfirmAuth';
 import Home from '@components/Home';
 import InvalidRequest from '@components/InvalidRequest';
@@ -16,97 +15,78 @@ import CandidateTestPlanRun from '@components/CandidateTests/CandidateTestPlanRu
 export default [
     {
         path: '/',
-        exact: true,
-        component: Home
+        element: <Home />
     },
     {
         path: '/signup-instructions',
-        exact: true,
-        component: SignupInstructions
+        element: <SignupInstructions />
     },
     {
         path: '/account/settings',
-        exact: true,
-        component: () => {
-            return (
-                <ConfirmAuth requiredPermission="TESTER">
-                    <Route component={UserSettings} />
-                </ConfirmAuth>
-            );
-        }
-    },
-    {
-        path: '/candidate-test-plan/:testPlanVersionId(\\d+)/:atId',
-        component: () => {
-            return (
-                <ConfirmAuth requiredPermission="VENDOR">
-                    <Route component={CandidateTestPlanRun} />
-                </ConfirmAuth>
-            );
-        }
+        element: (
+            <ConfirmAuth requiredPermission="TESTER">
+                <UserSettings />
+            </ConfirmAuth>
+        )
     },
     {
         path: '/test-queue',
-        exact: true,
-        component: TestQueue
+        element: <TestQueue />
     },
     {
-        path: '/test-plan-report/:testPlanReportId(\\d+)',
-        component: TestRun
+        path: '/run/:runId',
+        element: (
+            <ConfirmAuth requiredPermission="TESTER">
+                <TestRun />
+            </ConfirmAuth>
+        )
     },
     {
-        path: '/run/:runId(\\d+)',
-        component: () => {
-            return (
-                <ConfirmAuth requiredPermission="TESTER">
-                    <Route component={TestRun} />
-                </ConfirmAuth>
-            );
-        }
+        path: '/test-plan-report/:testPlanReportId',
+        element: <TestRun />
     },
     {
         path: '/reports',
-        exact: true,
-        component: Reports
+        element: <Reports />
     },
     {
-        path: '/report/:testPlanVersionId',
-        component: Report
+        path: '/report/:testPlanVersionId/*',
+        element: <Report />
     },
     {
         path: '/candidate-tests',
-        component: () => {
-            return (
-                <ConfirmAuth requiredPermission="VENDOR">
-                    <Route component={CandidateTests} />
-                </ConfirmAuth>
-            );
-        }
+        element: (
+            <ConfirmAuth requiredPermission="VENDOR">
+                <CandidateTests />
+            </ConfirmAuth>
+        )
+    },
+    {
+        path: '/candidate-test-plan/:testPlanVersionId/:atId',
+        element: (
+            <ConfirmAuth requiredPermission="VENDOR">
+                <CandidateTestPlanRun />
+            </ConfirmAuth>
+        )
     },
     // {
     //     path: '/test-management',
-    //     exact: true,
-    //     component: () => {
-    //         return (
-    //             <ConfirmAuth requiredPermission="ADMIN">
-    //                 <Route component={TestManagement} />
-    //             </ConfirmAuth>
-    //         );
-    //     }
+    //     element: (
+    //         <ConfirmAuth requiredPermission="ADMIN">
+    //             <TestManagement />
+    //         </ConfirmAuth>
+    //     )
     // },
     {
         path: '/invalid-request',
-        exact: true,
-        component: InvalidRequest
+        element: <InvalidRequest />
     },
     {
         path: '/404',
-        exact: true,
-        component: NotFound
+        element: <NotFound />
     },
     {
-        component: () => {
-            return <Redirect to={{ pathname: '/404' }} />;
-        }
+        path: '*',
+        element: <NotFound />
     }
 ];
