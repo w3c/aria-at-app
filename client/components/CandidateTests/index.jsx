@@ -1,9 +1,10 @@
 import React from 'react';
 import { useQuery } from '@apollo/client';
-import { Redirect, Route, Switch } from 'react-router';
+import { Route, Routes } from 'react-router-dom';
 import PageStatus from '../common/PageStatus';
 import TestPlans from './TestPlans';
 import { CANDIDATE_TESTS_PAGE_QUERY } from './queries';
+import NotFound from '../NotFound';
 
 const CandidateTests = () => {
     const { loading, data, error, refetch } = useQuery(
@@ -36,19 +37,18 @@ const CandidateTests = () => {
     if (!data) return null;
 
     return (
-        <Switch>
+        <Routes>
             <Route
-                exact
-                path="/candidate-tests"
-                render={() => (
+                path="/"
+                element={
                     <TestPlans
                         testPlanReports={data.testPlanReports}
                         triggerPageUpdate={refetch}
                     />
-                )}
+                }
             />
-            <Redirect to="/404" />
-        </Switch>
+            <Route path="*" element={<NotFound />} />
+        </Routes>
     );
 };
 
