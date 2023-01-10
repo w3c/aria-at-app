@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Helmet } from 'react-helmet';
-import { Link, useParams, useHistory } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import useRouterQuery from '../../hooks/useRouterQuery';
 import { useQuery, useMutation } from '@apollo/client';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -83,7 +83,7 @@ const createGitHubIssueWithTitleAndBody = ({
 
 const TestRun = () => {
     const params = useParams();
-    const history = useHistory();
+    const history = useNavigate();
     const routerQuery = useRouterQuery();
 
     // Detect UA information
