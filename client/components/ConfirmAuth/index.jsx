@@ -1,34 +1,25 @@
 import React from 'react';
-import { Route, Redirect } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { useQuery } from '@apollo/client';
 import { ME_QUERY } from '../App/queries';
 import { evaluateAuth } from '../../utils/evaluateAuth';
 
-const ConfirmAuth = ({ children, requiredPermission, ...rest }) => {
+const ConfirmAuth = ({ children, requiredPermission }) => {
     const { data } = useQuery(ME_QUERY);
 
     const auth = evaluateAuth(data && data.me ? data.me : {});
     const { roles, username, isAdmin, isSignedIn } = auth;
 
-    if (!username) return <Redirect to={{ pathname: '/invalid-request' }} />;
+    if (!username) return <Navigate to="/invalid-request" />;
 
     // If you are an admin, you can access all other role actions by default
     const authConfirmed =
         isSignedIn && (roles.includes(requiredPermission) || isAdmin);
 
-    return (
-        <Route
-            {...rest}
-            render={() => {
-                return authConfirmed ? (
-                    children
-                ) : (
-                    <Redirect to={{ pathname: '/404' }} />
-                );
-            }}
-        />
-    );
+    if (!authConfirmed) return <Navigate to="/404" />;
+
+    return children;
 };
 
 ConfirmAuth.propTypes = {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Form, Alert } from 'react-bootstrap';
 import styled from '@emotion/styled';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -57,7 +57,7 @@ const AtAndBrowserDetailsModal = ({
     // Detect UA information
     const { uaBrowser, uaMajor, uaMinor, uaPatch } = useDetectUa();
 
-    const history = useHistory();
+    const history = useNavigate();
 
     const updatedAtVersionDropdownRef = useRef();
     const updatedBrowserVersionTextRef = useRef();
