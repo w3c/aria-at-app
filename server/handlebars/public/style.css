@@ -6,6 +6,14 @@ body {
     width: 100%;
 }
 
+h3#report-title {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 18px;
+}
+
 #copied-message {
     align-self: center;
 }
