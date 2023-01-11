@@ -180,14 +180,20 @@ const ManageTestQueue = ({
 
     useEffect(() => {
         if (ats.length) {
-            if (!loadedAts.current) setSelectedManageAtId(ats[0].id);
+            let _selectedManageAtId = ats[0].id;
+            if (!loadedAts.current || !selectedManageAtId)
+                setSelectedManageAtId(ats[0].id);
 
             // Required during refetch logic around managing AT Versions
             if (!loadedAts.current)
                 setSelectedManageAtVersions(ats[0].atVersions);
             else
                 setSelectedManageAtVersions(
-                    ats.find(item => item.id === selectedManageAtId).atVersions
+                    ats.find(
+                        item =>
+                            item.id ===
+                            (selectedManageAtId || _selectedManageAtId)
+                    ).atVersions
                 );
 
             if (!loadedAts.current)
