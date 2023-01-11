@@ -1,4 +1,4 @@
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 /**
  * Transforms the provided string by capitalizing the first letter of each word.
@@ -24,11 +24,11 @@ export const capitalizeEachWord = (
 
 export const convertDateToString = (date, format = 'DD-MM-YYYY') => {
     if (!date) return '';
-    return moment(date).format(format);
+    return dayjs(date).format(format);
 };
 
 export const convertStringToDate = (date, format = 'DD-MM-YYYY') => {
-    return moment(date, format).toDate();
+    return dayjs(date, format).toDate();
 };
 
 export const convertStringFormatToAnotherFormat = (
@@ -36,9 +36,9 @@ export const convertStringFormatToAnotherFormat = (
     fromFormat = 'DD-MM-YYYY',
     toFormat = 'MM-DD-YYYY'
 ) => {
-    return moment(date, fromFormat).format(toFormat);
+    return dayjs(date, fromFormat).format(toFormat);
 };
 
 export const isValidDate = (date, format = 'DD-MM-YYYY') => {
-    return moment(date, format).isValid();
+    return dayjs(date, format).isValid();
 };

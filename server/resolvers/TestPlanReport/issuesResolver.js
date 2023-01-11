@@ -1,6 +1,6 @@
 const { GithubService } = require('../../services');
 const { Base64 } = require('js-base64');
-const moment = require('moment');
+const dayjs = require('dayjs');
 
 const issuesResolver = async testPlanReport => {
     if (!testPlanReport.candidateStatusReachedAt) return [];
@@ -8,7 +8,7 @@ const issuesResolver = async testPlanReport => {
     const searchPrefix = `${testPlanReport.at.name} Feedback: "`;
     const searchTestPlanVersionTitle =
         testPlanReport.testPlanVersion.dataValues.title;
-    const searchTestPlanVersionDate = moment(
+    const searchTestPlanVersionDate = dayjs(
         testPlanReport.testPlanVersion.updatedAt
     ).format('DD-MM-YYYY');
     const cacheId = Base64.encode(
