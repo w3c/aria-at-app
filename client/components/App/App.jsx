@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useQuery } from '@apollo/client';
-import { Route, Routes, Link, useLocation } from 'react-router-dom';
+import { renderRoutes } from 'react-router-config';
+import { Link, useLocation } from 'react-router-dom';
 import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
@@ -89,11 +90,7 @@ const App = () => {
                                     as={Link}
                                     to="/test-queue"
                                     aria-current={
-                                        location.pathname === '/test-queue' ||
-                                        location.pathname.startsWith('/run') ||
-                                        location.pathname.startsWith(
-                                            '/test-plan-report'
-                                        )
+                                        location.pathname === '/test-queue'
                                     }
                                 >
                                     Test Queue
@@ -167,17 +164,7 @@ const App = () => {
                 </Navbar>
             </Container>
             <Container fluid>
-                <Routes>
-                    {routes.map((route, i) => {
-                        return (
-                            <Route
-                                key={i}
-                                path={route.path}
-                                element={route.element}
-                            />
-                        );
-                    })}
-                </Routes>
+                <div>{renderRoutes(routes)}</div>
             </Container>
         </ScrollFixer>
     );
