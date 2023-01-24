@@ -1,18 +1,18 @@
-/**
- * @jest-environment jsdom
- */
-
 import React from 'react';
-import { render } from '@testing-library/react';
+import Enzyme, { shallow } from 'enzyme';
+import EnzymeAdapter from 'enzyme-adapter-react-16';
 import App from '../components/App';
 import GraphQLProvider from '../components/GraphQLProvider';
 
+Enzyme.configure({ adapter: new EnzymeAdapter() });
+
 const setup = () => {
-    return render(
+    const wrapper = shallow(
         <GraphQLProvider>
             <App />
         </GraphQLProvider>
-    );
+    ).dive();
+    return wrapper;
 };
 
 test('renders without crashing', () => {
