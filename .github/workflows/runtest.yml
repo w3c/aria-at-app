@@ -8,10 +8,10 @@ jobs:
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v2
-      - name: Install NodeJS 14
+      - name: Install NodeJS 18
         uses: actions/setup-node@v2
         with:
-          node-version: '14'
+          node-version: '18'
       - run: yarn --version
       - name: Install PostgreSQL 12
         run: |
