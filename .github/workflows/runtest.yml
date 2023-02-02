@@ -8,6 +8,11 @@ jobs:
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v2
+      - name: Get packages for building node git
+        uses: awalsh128/cache-apt-pkgs-action@v1
+        with:
+          packages: libssl-dev libkrb5-dev
+          version: 1.0
       - name: Install NodeJS 18
         uses: actions/setup-node@v3
         with:
