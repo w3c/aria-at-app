@@ -1,5 +1,5 @@
 const fetch = require('node-fetch');
-const ResizeObserver = require('resize-observer-polyfill');
+const textEncoder = require('util').TextEncoder;
 
 global.fetch = fetch;
-global.ResizeObserver = require('resize-observer-polyfill')
+global.TextEncoder = textEncoder;
