@@ -7,8 +7,7 @@ import {
     render,
     screen,
     waitFor,
-    fireEvent,
-    act
+    fireEvent
 } from '@testing-library/react';
 import { InMemoryCache } from '@apollo/client';
 import { MockedProvider } from '@apollo/client/testing';
