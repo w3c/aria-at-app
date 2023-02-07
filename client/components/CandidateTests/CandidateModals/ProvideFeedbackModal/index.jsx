@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import BasicModal from '../../../common/BasicModal';
 import PropTypes from 'prop-types';
-import { Form, FormCheck } from 'react-bootstrap';
+import Form from 'react-bootstrap/Form';
+import FormCheck from 'react-bootstrap/FormCheck';
 import '../common.css';
 import './ProvideFeedbackModal.css';
 import FeedbackListItem from '../../FeedbackListItem';
