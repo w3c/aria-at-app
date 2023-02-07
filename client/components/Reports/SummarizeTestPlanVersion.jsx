@@ -11,6 +11,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome } from '@fortawesome/free-solid-svg-icons';
 import styled from '@emotion/styled';
 import DisclaimerInfo from '../DisclaimerInfo';
+import { useParams } from 'react-router-dom';
 
 const FullHeightContainer = styled(Container)`
     min-height: calc(100vh - 64px);
@@ -18,14 +19,18 @@ const FullHeightContainer = styled(Container)`
 
 const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
     const { exampleUrl, designPatternUrl } = testPlanVersion.metadata;
+    let params = useParams();
+
+    if (!params.testPlanReports.length) return <Navigate to="/404" />;
+
     return (
         <FullHeightContainer id="main" as="main" tabIndex="-1">
             <Helmet>
                 <title>
-                    {getTestPlanVersionTitle(testPlanVersion)} | ARIA-AT Reports
+                    {getTestPlanVersionTitle(params.testPlanVersion)} | ARIA-AT Reports
                 </title>
             </Helmet>
-            <h1>{getTestPlanVersionTitle(testPlanVersion)}</h1>
+            <h1>{getTestPlanVersionTitle(params.testPlanVersion)}</h1>
 
             <Breadcrumb
                 label="Breadcrumb"
@@ -40,7 +45,7 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
                     </Breadcrumb.Item>
                 </LinkContainer>
                 <Breadcrumb.Item active>
-                    {getTestPlanVersionTitle(testPlanVersion)}
+                    {getTestPlanVersionTitle(params.testPlanVersion)}
                 </Breadcrumb.Item>
             </Breadcrumb>
             <h2>Introduction</h2>
@@ -100,7 +105,7 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
                         <DisclaimerInfo reportStatus={testPlanReport.status} />
                         <LinkContainer
                             to={
-                                `/report/${testPlanReport.testPlanVersion.id}` +
+                                `/report/${params.testPlanVersion.id}` +
                                 `/targets/${testPlanReport.id}`
                             }
                         >
@@ -111,7 +116,7 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
                         {skippedTests.length ? (
                             <Link
                                 to={
-                                    `/report/${testPlanReport.testPlanVersion.id}` +
+                                    `/report/${params.testPlanVersion.id}` +
                                     `/targets/${testPlanReport.id}` +
                                     `#skipped-tests`
                                 }
@@ -151,7 +156,7 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
                                                 <td>
                                                     <Link
                                                         to={
-                                                            `/report/${testPlanReport.testPlanVersion.id}` +
+                                                            `/report/${params.testPlanVersion.id}` +
                                                             `/targets/${testPlanReport.id}` +
                                                             `#result-${testResult.id}`
                                                         }
