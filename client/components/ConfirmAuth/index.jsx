@@ -22,7 +22,9 @@ const ConfirmAuth = ({ children, requiredPermission, ...rest }) => {
             {...rest}
             children={() => {
                 return authConfirmed ? (
-                    children
+                    <>
+                    {children}
+                    </>
                 ) : (
                     <Navigate to={{ pathname: '/404' }} />
                 );

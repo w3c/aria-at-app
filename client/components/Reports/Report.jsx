@@ -1,6 +1,6 @@
 import React from 'react';
 import { useQuery } from '@apollo/client';
-import { Route } from 'react-router';
+import { Route, Routes } from 'react-router';
 import { useMatch } from 'react-router-dom';
 import SummarizeTestPlanVersion from './SummarizeTestPlanVersion';
 import SummarizeTestPlanReport from './SummarizeTestPlanReport';
