@@ -1,7 +1,7 @@
 import React from 'react';
 import { useQuery } from '@apollo/client';
-import { Route, Switch } from 'react-router';
-import { Redirect, useRouteMatch } from 'react-router-dom';
+import { Route } from 'react-router';
+import { useMatch } from 'react-router-dom';
 import SummarizeTestPlanVersion from './SummarizeTestPlanVersion';
 import SummarizeTestPlanReport from './SummarizeTestPlanReport';
 import PageStatus from '../common/PageStatus';
@@ -9,7 +9,7 @@ import { REPORT_PAGE_QUERY } from './queries';
 import './Reports.css';
 
 const Reports = () => {
-    const match = useRouteMatch('/report/:testPlanVersionId');
+    const match = useMatch('/report/:testPlanVersionId');
 
     let testPlanVersionIds = [];
     let testPlanVersionId = match?.params?.testPlanVersionId;
@@ -77,11 +77,11 @@ const Reports = () => {
     };
 
     return (
-        <Switch>
+        <Routes>
             <Route
                 exact
                 path="/report/:testPlanVersionId"
-                render={({ match: { params } }) => {
+                children={({ match: { params } }) => {
                     const { testPlanVersionId } = params;
 
                     let testPlanVersionIds = [];
@@ -94,7 +94,7 @@ const Reports = () => {
                             testPlanVersionIds.includes(each.testPlanVersion.id)
                     );
 
-                    if (!testPlanReports.length) return <Redirect to="/404" />;
+                    if (!testPlanReports.length) return <Navigate to="/404" />;
 
                     return (
                         <SummarizeTestPlanVersion
@@ -107,7 +107,7 @@ const Reports = () => {
             <Route
                 exact
                 path="/report/:testPlanVersionId/targets/:testPlanReportId"
-                render={({ match: { params } }) => {
+                children={({ match: { params } }) => {
                     const { testPlanVersionId, testPlanReportId } = params;
 
                     const testPlanReport = data.testPlanReports.find(
@@ -116,7 +116,7 @@ const Reports = () => {
                             each.id == testPlanReportId
                     );
 
-                    if (!testPlanReport) return <Redirect to="/404" />;
+                    if (!testPlanReport) return <Navigate to="/404" />;
 
                     return (
                         <SummarizeTestPlanReport
@@ -125,8 +125,8 @@ const Reports = () => {
                     );
                 }}
             />
-            <Redirect to="/404" />
-        </Switch>
+            <Navigate to="/404" />
+        </Routes>
     );
 };
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, Redirect } from 'react-router-dom';
+import { Route, Navigate } from 'react-router-dom';
 import ConfirmAuth from '@components/ConfirmAuth';
 import Home from '@components/Home';
 import InvalidRequest from '@components/InvalidRequest';
@@ -30,7 +30,7 @@ export default [
         component: () => {
             return (
                 <ConfirmAuth requiredPermission="TESTER">
-                    <Route component={UserSettings} />
+                    <Route element={<UserSettings/>} />
                 </ConfirmAuth>
             );
         }
@@ -40,7 +40,7 @@ export default [
         component: () => {
             return (
                 <ConfirmAuth requiredPermission="VENDOR">
-                    <Route component={CandidateTestPlanRun} />
+                    <Route element={<CandidateTestPlanRun/>} />
                 </ConfirmAuth>
             );
         }
@@ -59,7 +59,7 @@ export default [
         component: () => {
             return (
                 <ConfirmAuth requiredPermission="TESTER">
-                    <Route component={TestRun} />
+                    <Route element={<TestRun/>} />
                 </ConfirmAuth>
             );
         }
@@ -78,7 +78,7 @@ export default [
         component: () => {
             return (
                 <ConfirmAuth requiredPermission="VENDOR">
-                    <Route component={CandidateTests} />
+                    <Route element={<CandidateTests/>} />
                 </ConfirmAuth>
             );
         }
@@ -106,7 +106,7 @@ export default [
     },
     {
         component: () => {
-            return <Redirect to={{ pathname: '/404' }} />;
+            return <Navigate to={{ pathname: '/404' }} />;
         }
     }
 ];
