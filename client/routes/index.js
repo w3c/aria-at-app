@@ -65,6 +65,15 @@ export default () => (
                 </ConfirmAuth>
             }
         />
+        {/*<Route*/}
+        {/*    exact*/}
+        {/*    path="/test-management"*/}
+        {/*    element={*/}
+        {/*        <ConfirmAuth requiredPermission="ADMIN">*/}
+        {/*            <TestManagement />*/}
+        {/*        </ConfirmAuth>*/}
+        {/*    }*/}
+        {/*/>*/}
         <Route exact path="/invalid-request" element={<InvalidRequest />} />
         <Route exact path="/404" element={<NotFound />} />
         <Route exact path="*" element={<Navigate to="/404" replace />} />

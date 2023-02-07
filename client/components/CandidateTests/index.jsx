@@ -1,5 +1,6 @@
 import React from 'react';
 import { useQuery } from '@apollo/client';
+import { Route, Routes, Navigate } from 'react-router';
 import PageStatus from '../common/PageStatus';
 import TestPlans from './TestPlans';
 import { CANDIDATE_TESTS_PAGE_QUERY } from './queries';
@@ -32,14 +33,22 @@ const CandidateTests = () => {
         );
     }
 
-
     if (!data) return null;
 
     return (
-        <TestPlans
-            testPlanReports={data.testPlanReports}
-            triggerPageUpdate={refetch}
-        />
+        <Routes>
+            <Route
+                exact
+                path="/candidate-tests"
+                children={
+                    <TestPlans
+                        testPlanReports={data.testPlanReports}
+                        triggerPageUpdate={refetch}
+                    />
+                }
+            />
+            <Navigate to="/404" />
+        </Routes>
     );
 };
 
