@@ -17,17 +17,17 @@ export default [
     {
         path: '/',
         exact: true,
-        component: Home
+        element: <Home/>
     },
     {
         path: '/signup-instructions',
         exact: true,
-        component: SignupInstructions
+        element: <SignupInstructions/>
     },
     {
         path: '/account/settings',
         exact: true,
-        component: () => {
+        element: () => {
             return (
                 <ConfirmAuth requiredPermission="TESTER">
                     <Route element={<UserSettings/>} />
@@ -37,7 +37,7 @@ export default [
     },
     {
         path: '/candidate-test-plan/:testPlanVersionId(\\d+)/:atId',
-        component: () => {
+        element: () => {
             return (
                 <ConfirmAuth requiredPermission="VENDOR">
                     <Route element={<CandidateTestPlanRun/>} />
@@ -48,15 +48,15 @@ export default [
     {
         path: '/test-queue',
         exact: true,
-        component: TestQueue
+        element: <TestQueue/>
     },
     {
         path: '/test-plan-report/:testPlanReportId(\\d+)',
-        component: TestRun
+        element: <TestRun/>
     },
     {
         path: '/run/:runId(\\d+)',
-        component: () => {
+        element: () => {
             return (
                 <ConfirmAuth requiredPermission="TESTER">
                     <Route element={<TestRun/>} />
@@ -67,15 +67,15 @@ export default [
     {
         path: '/reports',
         exact: true,
-        component: Reports
+        component: <Reports/>
     },
     {
         path: '/report/:testPlanVersionId',
-        component: Report
+        component: <Report/>
     },
     {
         path: '/candidate-tests',
-        component: () => {
+        element: () => {
             return (
                 <ConfirmAuth requiredPermission="VENDOR">
                     <Route element={<CandidateTests/>} />
@@ -97,15 +97,15 @@ export default [
     {
         path: '/invalid-request',
         exact: true,
-        component: InvalidRequest
+        component: <InvalidRequest/>
     },
     {
         path: '/404',
         exact: true,
-        component: NotFound
+        component: <NotFound/>
     },
     {
-        component: () => {
+        element: () => {
             return <Navigate to={{ pathname: '/404' }} />;
         }
     }
