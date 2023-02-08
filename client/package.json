@@ -60,7 +60,7 @@
     "@babel/plugin-transform-runtime": "^7.9.0",
     "@babel/preset-env": "^7.8.7",
     "@babel/preset-react": "^7.8.3",
-    "@lhci/cli": "^0.3.12",
+    "@lhci/cli": "^0.10.0",
     "@storybook/addon-a11y": "^6.5.10",
     "@storybook/addon-actions": "^6.5.10",
     "@storybook/addon-controls": "^6.5.10",
@@ -113,7 +113,9 @@
     "setupFilesAfterEnv": [
       "./jest.setup.js"
     ],
-    "transformIgnorePatterns": ["<rootDir>/node_modules/(?!(@juggle/resize-observer|@react-hook/resize-observer)/)"],
+    "transformIgnorePatterns": [
+      "<rootDir>/node_modules/(?!(@juggle/resize-observer|@react-hook/resize-observer)/)"
+    ],
     "transform": {
       "^.+\\.(js|jsx|mjs)$": "babel-jest"
     },

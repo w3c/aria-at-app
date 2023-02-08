@@ -8,10 +8,19 @@ jobs:
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v2
+      # https://github.com/web-platform-tests/results-analysis/pull/139
+      # Currently, nodegit doesn't have support for Node 18. Have to
+      # build the package from scratch.
+      - name: Get packages for building node git
+        uses: awalsh128/cache-apt-pkgs-action@v1
+        with:
+          packages: libssl-dev libkrb5-dev
+          version: 1.0
       - name: Install NodeJS 18
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: '18'
+          cache: 'npm'
       - run: yarn --version
       - name: Install PostgreSQL 12
         run: |
@@ -42,5 +51,5 @@ jobs:
         run: yarn test
       - name: lighthouseci
         run: |
-          npm install -g @lhci/cli@0.8.x
+          npm install -g @lhci/cli@0.10.0
           yarn workspace client lighthouse
