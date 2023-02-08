@@ -45,7 +45,7 @@ function useSize(target) {
 
 const CandidateTestPlanRun = () => {
     const { atId, testPlanVersionId } = useParams();
-    const history = useNavigate();
+    const navigate = useNavigate();
 
     const { loading, data, error, refetch } = useQuery(
         CANDIDATE_REPORTS_QUERY,
@@ -254,7 +254,7 @@ const CandidateTestPlanRun = () => {
     const at = atMap[atId];
 
     const testPlanReports = data.testPlanReports;
-    if (testPlanReports.length === 0) return <Route path="/404" render={() => <Navigate to="/404" />}/> ;
+    if (testPlanReports.length === 0) return <Route path="*" render={() => <Navigate to="/404" replace/>}/> ;
 
     const testPlanReport = testPlanReports.find(
         each => each.testPlanVersion.id === testPlanVersionId
@@ -699,7 +699,7 @@ const CandidateTestPlanRun = () => {
                     show={true}
                     handleAction={async () => {
                         setThankYouModalShowing(false);
-                        history.push('/candidate-tests');
+                        navigate('/candidate-tests');
                     }}
                     githubUrl={generateGithubUrl(
                         false,

@@ -8,7 +8,7 @@ import PageStatus from '../common/PageStatus';
 import { REPORT_PAGE_QUERY } from './queries';
 import './Reports.css';
 
-const Reports = () => {
+const Report = () => {
     const match = useMatch('/report/:testPlanVersionId');
 
     let testPlanVersionIds = [];
@@ -125,9 +125,10 @@ const Reports = () => {
                     );
                 }}
             />
-            <Navigate to="/404" />
+
+            <Route path="*" element={<Navigate to="/404" replace />} />
         </Routes>
     );
 };
 
-export default Reports;
+export default Report;

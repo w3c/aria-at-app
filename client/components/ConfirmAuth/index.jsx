@@ -26,7 +26,7 @@ const ConfirmAuth = ({ children, requiredPermission, ...rest }) => {
                     {children}
                     </>
                 ) : (
-                    <Navigate to={{ pathname: '/404' }} />
+                    <Route path="*" element={<Navigate to="/404" replace />} />
                 );
             }}
         />

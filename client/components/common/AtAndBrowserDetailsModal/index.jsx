@@ -57,7 +57,7 @@ const AtAndBrowserDetailsModal = ({
     // Detect UA information
     const { uaBrowser, uaMajor, uaMinor, uaPatch } = useDetectUa();
 
-    const history = useNavigate();
+    const navigate = useNavigate();
 
     const updatedAtVersionDropdownRef = useRef();
     const updatedBrowserVersionTextRef = useRef();
@@ -220,7 +220,7 @@ const AtAndBrowserDetailsModal = ({
                 }
                 actionLabel="Ok"
                 closeLabel="Cancel"
-                handleAction={() => history.push('/test-queue')}
+                handleAction={() => navigate('/test-queue')}
                 handleClose={() => setShowExitModal(false)}
                 staticBackdrop={true}
             />

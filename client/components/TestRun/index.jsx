@@ -83,7 +83,7 @@ const createGitHubIssueWithTitleAndBody = ({
 
 const TestRun = () => {
     const params = useParams();
-    const history = useNavigate();
+    const navigate = useNavigate();
     const routerQuery = useRouterQuery();
 
     // Detect UA information
@@ -547,7 +547,7 @@ const TestRun = () => {
             case 'closeTest': {
                 // Save renderer's form state
                 await saveForm();
-                history.push('/test-queue');
+                navigate('/test-queue');
                 break;
             }
         }

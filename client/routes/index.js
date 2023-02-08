@@ -67,11 +67,11 @@ export default [
     {
         path: '/reports',
         exact: true,
-        component: <Reports/>
+        element: <Reports/>
     },
     {
         path: '/report/:testPlanVersionId',
-        component: <Report/>
+        element: <Report/>
     },
     {
         path: '/candidate-tests',
@@ -102,11 +102,10 @@ export default [
     {
         path: '/404',
         exact: true,
-        component: <NotFound/>
+        element: <NotFound/>
     },
     {
-        element: () => {
-            return <Navigate to={{ pathname: '/404' }} />;
-        }
+        path: '*',
+        element: <Navigate to="/404" replace />
     }
 ];
