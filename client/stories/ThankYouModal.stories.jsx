@@ -1,5 +1,5 @@
 import React from 'react';
-import ThankYouModal from '../components/common/CandidateModals/ThankYouModal';
+import ThankYouModal from '../components/CandidateTests/CandidateModals/ThankYouModal/index.jsx';
 
 export default {
     component: ThankYouModal,
