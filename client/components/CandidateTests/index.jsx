@@ -33,22 +33,14 @@ const CandidateTests = () => {
         );
     }
 
+
     if (!data) return null;
 
     return (
-        <Routes>
-            <Route
-                exact
-                path="/candidate-tests"
-                children={
-                    <TestPlans
-                        testPlanReports={data.testPlanReports}
-                        triggerPageUpdate={refetch}
-                    />
-                }
-            />
-            <Route path="*" element={<Navigate to="/404" replace />} />
-        </Routes>
+        <TestPlans
+            testPlanReports={data.testPlanReports}
+            triggerPageUpdate={refetch}
+        />
     );
 };
 
