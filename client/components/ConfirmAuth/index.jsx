@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, Navigate } from 'react-router-dom';
+import { Route, Navigate, Routes } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { useQuery } from '@apollo/client';
 import { ME_QUERY } from '../App/queries';
@@ -17,20 +17,11 @@ const ConfirmAuth = ({ children, requiredPermission, ...rest }) => {
     const authConfirmed =
         isSignedIn && (roles.includes(requiredPermission) || isAdmin);
 
-    return (
-        <Route
-            {...rest}
-            children={() => {
-                return authConfirmed ? (
-                    <>
-                    {children}
-                    </>
-                ) : (
-                    <Route path="*" element={<Navigate to="/404" replace />} />
-                );
-            }}
-        />
-    );
+    if (!authConfirmed) {
+        return <Navigate to="/404" replace />
+    }
+
+    return children;
 };
 
 ConfirmAuth.propTypes = {

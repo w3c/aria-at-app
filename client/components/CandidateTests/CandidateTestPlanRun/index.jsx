@@ -254,7 +254,7 @@ const CandidateTestPlanRun = () => {
     const at = atMap[atId];
 
     const testPlanReports = data.testPlanReports;
-    if (testPlanReports.length === 0) return <Route path="*" render={() => <Navigate to="/404" replace/>}/> ;
+    if (testPlanReports.length === 0) return <Navigate to="/404" replace/>;
 
     const testPlanReport = testPlanReports.find(
         each => each.testPlanVersion.id === testPlanVersionId

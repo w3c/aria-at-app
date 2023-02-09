@@ -17,71 +17,63 @@ export default [
     {
         path: '/',
         exact: true,
-        element: <Home/>
+        element: <Home />
     },
     {
         path: '/signup-instructions',
         exact: true,
-        element: <SignupInstructions/>
+        element: <SignupInstructions />
     },
     {
         path: '/account/settings',
         exact: true,
-        element: () => {
-            return (
-                <ConfirmAuth requiredPermission="TESTER">
-                    <Route element={<UserSettings/>} />
-                </ConfirmAuth>
-            );
-        }
+        element: (
+            <ConfirmAuth requiredPermission="TESTER">
+                <UserSettings />
+            </ConfirmAuth>
+        )
     },
     {
         path: '/candidate-test-plan/:testPlanVersionId(\\d+)/:atId',
-        element: () => {
-            return (
-                <ConfirmAuth requiredPermission="VENDOR">
-                    <Route element={<CandidateTestPlanRun/>} />
-                </ConfirmAuth>
-            );
-        }
+        element: (
+            <ConfirmAuth requiredPermission="VENDOR">
+                <CandidateTestPlanRun />
+            </ConfirmAuth>
+        )
     },
     {
         path: '/test-queue',
         exact: true,
-        element: <TestQueue/>
+        element: <TestQueue />
     },
     {
         path: '/test-plan-report/:testPlanReportId(\\d+)',
-        element: <TestRun/>
+        element: <TestRun />
     },
     {
         path: '/run/:runId(\\d+)',
-        element: () => {
-            return (
-                <ConfirmAuth requiredPermission="TESTER">
-                    <Route element={<TestRun/>} />
-                </ConfirmAuth>
-            );
-        }
+        element: (
+            <ConfirmAuth requiredPermission="TESTER">
+                <TestRun />
+            </ConfirmAuth>
+        )
     },
     {
         path: '/reports',
         exact: true,
-        element: <Reports/>
+        element: <Reports />
     },
     {
         path: '/report/:testPlanVersionId',
-        element: <Report/>
+        element: <Report />
     },
     {
         path: '/candidate-tests',
-        element: () => {
-            return (
-                <ConfirmAuth requiredPermission="VENDOR">
-                    <Route element={<CandidateTests/>} />
-                </ConfirmAuth>
-            );
-        }
+        element: (
+            <ConfirmAuth requiredPermission="VENDOR">
+                <CandidateTests />
+            </ConfirmAuth>
+        )
     },
     // {
     //     path: '/test-management',
@@ -97,12 +89,12 @@ export default [
     {
         path: '/invalid-request',
         exact: true,
-        component: <InvalidRequest/>
+        element: <InvalidRequest />
     },
     {
         path: '/404',
         exact: true,
-        element: <NotFound/>
+        element: <NotFound />
     },
     {
         path: '*',
