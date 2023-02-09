@@ -369,9 +369,29 @@ describe('graphql', () => {
                         candidateStatusReachedAt
                         recommendedStatusTargetDate
                         recommendedStatusReachedAt
+                        atVersions {
+                            id
+                            name
+                            releasedAt
+                        }
+                        latestAtVersionReleasedAt {
+                            id
+                            name
+                            releasedAt
+                        }
                     }
                     testPlanReports {
                         id
+                        atVersions {
+                            id
+                            name
+                            releasedAt
+                        }
+                        latestAtVersionReleasedAt {
+                            id
+                            name
+                            releasedAt
+                        }
                     }
                     testPlanRun(id: 3) {
                         __typename

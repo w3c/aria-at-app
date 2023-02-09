@@ -510,6 +510,26 @@ const removeAtModeByQuery = async (
     );
 };
 
+const getUniqueAtVersionsForReport = async testPlanReportId => {
+    const results = await ModelService.rawQuery(`
+        select "atVersionId", name, "releasedAt", "testPlanReportId", "testerUserId", "testPlanRunId"
+        from ( select distinct "TestPlanReport".id                                              as "testPlanReportId",
+                               "TestPlanRun".id                                                 as "testPlanRunId",
+                               "TestPlanRun"."testerUserId",
+                               (jsonb_array_elements("testResults") ->> 'atVersionId')::integer as "atVersionId"
+               from "TestPlanReport"
+                        left outer join "TestPlanRun" on "TestPlanRun"."testPlanReportId" = "TestPlanReport".id
+               where "testPlanReportId" = ${testPlanReportId}
+               group by "TestPlanReport".id, "TestPlanRun".id ) as atVersionResults
+                 join "AtVersion" on "AtVersion".id = atVersionResults."atVersionId";
+    `);
+
+    // Sort in descending order of releasedAt date
+    results.sort((a, b) => new Date(b.releasedAt) - new Date(a.releasedAt));
+
+    return results;
+};
+
 module.exports = {
     // Basic CRUD [At]
     getAtById,
@@ -533,5 +553,8 @@ module.exports = {
     getAtModes,
     createAtMode,
     updateAtModeByQuery,
-    removeAtModeByQuery
+    removeAtModeByQuery,
+
+    // Custom Methods
+    getUniqueAtVersionsForReport
 };

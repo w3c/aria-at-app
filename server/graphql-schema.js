@@ -820,6 +820,14 @@ const graphqlSchema = gql`
         """
         at: At!
         """
+        The unique AT Versions used when collecting results for this report.
+        """
+        atVersions: [AtVersion]!
+        """
+        The latest AT Version used collecting results for this report.
+        """
+        latestAtVersionReleasedAt: AtVersion!
+        """
         The browser used when collecting results.
         """
         browser: Browser!
