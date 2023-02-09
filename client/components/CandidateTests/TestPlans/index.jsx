@@ -788,8 +788,7 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
                                                 </CenteredTd>
                                             </tr>
                                         );
-                                    }
-                                )}
+                                    })}
                             </tbody>
                         </Table>
                     </DisclosureContainer>
@@ -995,8 +994,7 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
                                         </CenteredTd>
                                     </tr>
                                 );
-                            }
-                        )}
+                            })}
                     </tbody>
                 </Table>
             </>
