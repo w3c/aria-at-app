@@ -524,8 +524,11 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {Object.values(testPlanVersionsById).map(
-                                    testPlanVersion => {
+                                {Object.values(testPlanVersionsById)
+                                    .sort((a, b) =>
+                                        a.title < b.title ? -1 : 1
+                                    )
+                                    .map(testPlanVersion => {
                                         // All testPlanReports across browsers per AT
                                         const testPlanReports = [];
                                         const allMetrics = [];
@@ -785,8 +788,7 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
                                                 </CenteredTd>
                                             </tr>
                                         );
-                                    }
-                                )}
+                                    })}
                             </tbody>
                         </Table>
                     </DisclosureContainer>
@@ -849,8 +851,9 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
                         </tr>
                     </thead>
                     <tbody>
-                        {Object.values(testPlanVersionsById).map(
-                            testPlanVersion => {
+                        {Object.values(testPlanVersionsById)
+                            .sort((a, b) => (a.title < b.title ? -1 : 1))
+                            .map(testPlanVersion => {
                                 const testPlanReports = [];
                                 let jawsDataExists = false;
                                 let nvdaDataExists = false;
@@ -991,8 +994,7 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
                                         </CenteredTd>
                                     </tr>
                                 );
-                            }
-                        )}
+                            })}
                     </tbody>
                 </Table>
             </>

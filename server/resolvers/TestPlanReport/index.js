@@ -6,6 +6,8 @@ const conflicts = require('./conflictsResolver');
 const conflictsLength = require('./conflictsLengthResolver');
 const issues = require('./issuesResolver');
 const recommendedStatusTargetDate = require('./recommendedStatusTargetDateResolver');
+const atVersions = require('./atVersionsResolver');
+const latestAtVersionReleasedAt = require('./latestAtVersionReleasedAtResolver');
 
 module.exports = {
     runnableTests,
@@ -15,5 +17,7 @@ module.exports = {
     conflicts,
     conflictsLength,
     issues,
-    recommendedStatusTargetDate
+    recommendedStatusTargetDate,
+    atVersions,
+    latestAtVersionReleasedAt
 };

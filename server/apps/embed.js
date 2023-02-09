@@ -90,39 +90,76 @@ const getLatestReportsForPattern = async pattern => {
         }
     });
 
-    const latestTestPlanVersionId = testPlanReports.sort(
-        (a, b) =>
-            new Date(a.testPlanVersion.updatedAt) -
-            new Date(b.testPlanVersion.updatedAt)
-    )[0]?.testPlanVersion.id;
-
-    const latestReports = testPlanReports.filter(
-        report => report.testPlanVersion.id === latestTestPlanVersionId
-    );
-
     let allAts = new Set();
     let allBrowsers = new Set();
     let allAtVersionsByAt = {};
     let status = 'RECOMMENDED';
     let reportsByAt = {};
+    let testPlanVersionIds = new Set();
+    const uniqueReports = [];
+    let latestReports = [];
 
-    latestReports.forEach(report => {
+    testPlanReports.forEach(report => {
         allAts.add(report.at.name);
         allBrowsers.add(report.browser.name);
         if (report.status === 'CANDIDATE') {
             status = report.status;
         }
 
-        allAtVersionsByAt[report.at.name] = report.finalizedTestResults
-            .map(result => result.atVersion)
-            .reduce((prev, current) =>
-                new Date(prev.releasedAt) > new Date(current.releasedAt)
-                    ? prev
-                    : current
-            );
+        // Get the latest AT version used for testing per AT
+        report.finalizedTestResults.forEach(result => {
+            if (report.at.name in allAtVersionsByAt) {
+                allAtVersionsByAt[report.at.name] =
+                    new Date(result.atVersion.releasedAt) >
+                    new Date(allAtVersionsByAt[report.at.name].releasedAt)
+                        ? result.atVersion
+                        : allAtVersionsByAt[report.at.name];
+            } else {
+                allAtVersionsByAt[report.at.name] = result.atVersion;
+            }
+        });
+
+        const sameAtAndBrowserReports = testPlanReports.filter(
+            r =>
+                r.at.name === report.at.name &&
+                r.browser.name === report.browser.name
+        );
+
+        // Only add a group of reports with same
+        // AT and browser once
+        if (
+            !uniqueReports.find(group =>
+                group.some(
+                    g =>
+                        g.at.name === report.at.name &&
+                        g.browser.name === report.browser.name
+                )
+            )
+        ) {
+            uniqueReports.push(sameAtAndBrowserReports);
+        }
+
+        testPlanVersionIds.add(report.testPlanVersion.id);
+    });
+
+    uniqueReports.forEach(group => {
+        if (group.length <= 1) {
+            latestReports.push(group.pop());
+        } else {
+            const latestReport = group
+                .sort(
+                    (a, b) =>
+                        new Date(a.testPlanVersion.updatedAt) -
+                        new Date(b.testPlanVersion.updatedAt)
+                )
+                .pop();
+
+            latestReports.push(latestReport);
+        }
     });
 
     allBrowsers = Array.from(allBrowsers).sort();
+    testPlanVersionIds = Array.from(testPlanVersionIds);
 
     allAts.forEach(at => {
         reportsByAt[at] = latestReports
@@ -134,7 +171,7 @@ const getLatestReportsForPattern = async pattern => {
         title,
         allBrowsers,
         allAtVersionsByAt,
-        latestTestPlanVersionId,
+        testPlanVersionIds,
         status,
         reportsByAt
     };
@@ -152,7 +189,7 @@ app.get('/reports/:pattern', async (req, res) => {
         title,
         allBrowsers,
         allAtVersionsByAt,
-        latestTestPlanVersionId,
+        testPlanVersionIds,
         status,
         reportsByAt
     } = await getLatestReportsForPattern(pattern);
@@ -165,7 +202,9 @@ app.get('/reports/:pattern', async (req, res) => {
         allBrowsers,
         allAtVersionsByAt,
         reportsByAt,
-        completeReportLink: `${protocol}${req.headers.host}/report/${latestTestPlanVersionId}`,
+        completeReportLink: `${protocol}${
+            req.headers.host
+        }/report/${testPlanVersionIds.join(',')}`,
         embedLink: `${protocol}${req.headers.host}/embed/reports/${pattern}`
     });
 });
