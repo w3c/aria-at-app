@@ -20,8 +20,13 @@ export const navigateTests = (
             newTestIndex = newTestIndexToEval;
     }
 
-    setCurrentTestIndex &&
-        setCurrentTestIndex(tests.find(t => t.seq === newTestIndex).index);
-    setIsFirstTest && setIsFirstTest(newTestIndex - 1 === 0);
-    setIsLastTest && setIsLastTest(newTestIndex === tests.length);
+    const currentIndex = tests.find(t => t.seq === newTestIndex).index;
+    const isFirstTest = newTestIndex - 1 === 0;
+    const isLastTest = newTestIndex === tests.length;
+
+    setCurrentTestIndex && setCurrentTestIndex(currentIndex);
+    setIsFirstTest && setIsFirstTest(isFirstTest);
+    setIsLastTest && setIsLastTest(isLastTest);
+
+    return { currentIndex, isFirstTest, isLastTest };
 };

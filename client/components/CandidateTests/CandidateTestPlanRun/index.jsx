@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
 import TestNavigator from '../../TestRun/TestNavigator';
 import InstructionsRenderer from './InstructionsRenderer';
@@ -54,6 +54,9 @@ const CandidateTestPlanRun = () => {
         PROMOTE_VENDOR_REVIEW_STATUS_REPORT_MUTATION
     );
 
+    const nextButtonRef = useRef();
+    const finishButtonRef = useRef();
+
     const [reviewStatus, setReviewStatus] = useState('');
     const [firstTimeViewing, setFirstTimeViewing] = useState(false);
     const [viewedTests, setViewedTests] = useState([]);
@@ -63,13 +66,13 @@ const CandidateTestPlanRun = () => {
     const [isLastTest, setIsLastTest] = useState(false);
     const [feedbackModalShowing, setFeedbackModalShowing] = useState(false);
     const [thankYouModalShowing, setThankYouModalShowing] = useState(false);
-    const [showInstructions, setShowInstructions] = useState(true);
+    const [showInstructions, setShowInstructions] = useState(false);
     const [showBrowserBools, setShowBrowserBools] = useState([]);
     const [showBrowserClicks, setShowBrowserClicks] = useState([]);
 
-    const [issuesHeading, setissuesHeading] = React.useState();
+    const [issuesHeading, setIssuesHeading] = React.useState();
     const issuesHeadingSize = useSize(issuesHeading);
-    const [issuesList, setissuesList] = React.useState();
+    const [issuesList, setIssuesList] = React.useState();
     const issuesListSize = useSize(issuesList);
     const isLaptopOrLarger = useMediaQuery({
         query: '(min-width: 792px)'
@@ -101,7 +104,7 @@ const CandidateTestPlanRun = () => {
         );
     };
     const handlePreviousTestClick = async () => {
-        navigateTests(
+        const { isFirstTest } = navigateTests(
             true,
             currentTest,
             tests,
@@ -109,6 +112,7 @@ const CandidateTestPlanRun = () => {
             setIsFirstTest,
             setIsLastTest
         );
+        if (isFirstTest) nextButtonRef.current.focus();
     };
 
     const addViewerToTest = async testId => {
@@ -180,7 +184,7 @@ const CandidateTestPlanRun = () => {
             setViewedTests(viewedTests);
             setReviewStatus(vendorReviewStatus);
 
-            const bools = testPlanReports.map(() => true);
+            const bools = testPlanReports.map(() => false);
             setShowBrowserBools(bools);
 
             const browserClicks = testPlanReports.map((report, index) => () => {
@@ -212,6 +216,10 @@ const CandidateTestPlanRun = () => {
             setIsLastTest(tests?.length === 1);
         }
     }, [data, tests]);
+
+    useEffect(() => {
+        if (isLastTest) finishButtonRef.current.focus();
+    }, [isLastTest]);
 
     if (error)
         return (
@@ -339,8 +347,11 @@ const CandidateTestPlanRun = () => {
     const heading = (
         <div className="test-info-heading">
             <div className="sr-only" aria-live="polite" aria-atomic="true">
-                Viewing Test: {currentTest.title}, Test {currentTest.seq} of{' '}
+                Viewing Test {currentTest.title}, Test {currentTest.seq} of{' '}
                 {tests.length}
+                {currentTest.seq === tests.length
+                    ? 'You are on the last test.'
+                    : ''}
             </div>
             <span className="task-label">
                 Reviewing Test {currentTest.seq} of {tests.length}:
@@ -540,11 +551,11 @@ const CandidateTestPlanRun = () => {
                         {heading}
                         {testInfo}
                         <Col className="results-container-col">
-                            <Row xs={1} s={1} md={2} ref={setissuesHeading}>
+                            <Row xs={1} s={1} md={2} ref={setIssuesHeading}>
                                 <Col
                                     className="results-container"
                                     md={isLaptopOrLarger ? 9 : 12}
-                                    ref={setissuesList}
+                                    ref={setIssuesList}
                                 >
                                     <Row>{feedback}</Row>
                                     <Row className="results-container-row">
@@ -567,27 +578,30 @@ const CandidateTestPlanRun = () => {
                                                 </Button>
                                             </li>
                                             <li>
-                                                {!isLastTest ? (
-                                                    <Button
-                                                        variant="primary"
-                                                        onClick={
-                                                            handleNextTestClick
-                                                        }
-                                                    >
-                                                        Next Test
-                                                    </Button>
-                                                ) : (
-                                                    <Button
-                                                        variant="primary"
-                                                        onClick={() =>
-                                                            setFeedbackModalShowing(
-                                                                true
-                                                            )
-                                                        }
-                                                    >
-                                                        Finish
-                                                    </Button>
-                                                )}
+                                                <Button
+                                                    ref={nextButtonRef}
+                                                    variant="primary"
+                                                    onClick={
+                                                        handleNextTestClick
+                                                    }
+                                                    disabled={isLastTest}
+                                                >
+                                                    Next Test
+                                                </Button>
+                                            </li>
+                                            <li>
+                                                <Button
+                                                    ref={finishButtonRef}
+                                                    variant="primary"
+                                                    onClick={() => {
+                                                        setFeedbackModalShowing(
+                                                            true
+                                                        );
+                                                    }}
+                                                    disabled={!isLastTest}
+                                                >
+                                                    Finish
+                                                </Button>
                                             </li>
                                         </ul>
                                     </Row>
