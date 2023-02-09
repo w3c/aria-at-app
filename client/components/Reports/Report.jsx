@@ -63,17 +63,13 @@ const Reports = () => {
 
         return Object.values(testPlanTargetsById).map(testPlanReports => {
             return testPlanReports.reduce((prev, curr) => {
-                const latestPrevDate =
-                    new Date(prev.recommendedStatusReachedAt) >
-                    new Date(prev.candidateStatusReachedAt)
-                        ? new Date(prev.recommendedStatusReachedAt)
-                        : new Date(prev.candidateStatusReachedAt);
+                const latestPrevDate = new Date(
+                    prev.latestAtVersionReleasedAt.releasedAt
+                );
 
-                const latestCurrDate =
-                    new Date(curr.recommendedStatusReachedAt) >
-                    new Date(curr.candidateStatusReachedAt)
-                        ? new Date(curr.recommendedStatusReachedAt)
-                        : new Date(curr.candidateStatusReachedAt);
+                const latestCurrDate = new Date(
+                    curr.latestAtVersionReleasedAt.releasedAt
+                );
 
                 return latestPrevDate > latestCurrDate ? prev : curr;
             });

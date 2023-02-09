@@ -124,6 +124,26 @@ const SummarizeTestPlanReports = ({ testPlanReports }) => {
                     resultTestPlanTargets[testPlanTargetKey] =
                         testPlanTargets[testPlanTargetKey];
                 else {
+                    const latestPrevDate = new Date(
+                        testPlanTargets[
+                            testPlanTargetKey
+                        ]?.latestAtVersionReleasedAt.releasedAt
+                    );
+
+                    const latestCurrDate = new Date(
+                        resultTestPlanTargets[
+                            testPlanTargetKey
+                        ]?.latestAtVersionReleasedAt.releasedAt
+                    );
+
+                    if (latestPrevDate > latestCurrDate)
+                        resultTestPlanTargets[testPlanTargetKey] =
+                            testPlanTargets[testPlanTargetKey];
+
+                    /*
+                    // TODO: Determine if still required for evaluating by
+                        candidateStatusReachedAt and recommendedStatusReachedAt
+                        dates
                     // Compare if latest version
                     const latestPrevDate =
                         new Date(
@@ -170,7 +190,7 @@ const SummarizeTestPlanReports = ({ testPlanReports }) => {
 
                     if (latestPrevDate > latestCurrDate)
                         resultTestPlanTargets[testPlanTargetKey] =
-                            testPlanTargets[testPlanTargetKey];
+                            testPlanTargets[testPlanTargetKey];*/
                 }
             });
         }
@@ -312,85 +332,6 @@ const SummarizeTestPlanReports = ({ testPlanReports }) => {
                                 </tr>
                             );
                         })}
-                    {/*{Object.values(testPlanVersionsById)
-                        .sort((a, b) => (a.title < b.title ? -1 : 1))
-                        .map(testPlanVersion => {
-                            let status = 'Recommended';
-                            Object.values(testPlanTargetsById).forEach(
-                                testPlanTarget => {
-                                    const testPlanReport =
-                                        tabularReports[testPlanVersion.id][
-                                            testPlanTarget.id
-                                        ];
-
-                                    if (testPlanReport?.status === 'CANDIDATE')
-                                        status = 'Candidate';
-                                }
-                            );
-
-                            return (
-                                <tr key={testPlanVersion.id}>
-                                    <td>
-                                        <Link
-                                            to={`/report/${testPlanVersion.id}`}
-                                            aria-label={`${getTestPlanVersionTitle(
-                                                testPlanVersion
-                                            )}, ${status} report`}
-                                        >
-                                            {getTestPlanVersionTitle(
-                                                testPlanVersion
-                                            )}
-                                        </Link>
-                                        <PhaseText
-                                            className={status.toLowerCase()}
-                                            aria-hidden
-                                        >
-                                            {status}
-                                        </PhaseText>
-                                    </td>
-                                    {Object.values(testPlanTargetsById).map(
-                                        testPlanTarget => {
-                                            const testPlanReport =
-                                                tabularReports[
-                                                    testPlanVersion.id
-                                                ][testPlanTarget.id];
-                                            if (!testPlanReport) {
-                                                return (
-                                                    <td
-                                                        key={`${testPlanVersion.id}-${testPlanTarget.id}`}
-                                                    >
-                                                        {none}
-                                                    </td>
-                                                );
-                                            }
-                                            const metrics =
-                                                testPlanReport.metrics;
-                                            return (
-                                                <td key={testPlanReport.id}>
-                                                    <Link
-                                                        to={
-                                                            `/report/${testPlanVersion.id}` +
-                                                            `/targets/${testPlanReport.id}`
-                                                        }
-                                                    >
-                                                        <ClippedProgressBar
-                                                            progress={
-                                                                metrics.supportPercent
-                                                            }
-                                                            label={`${getTestPlanTargetTitle(
-                                                                testPlanTarget
-                                                            )}, ${
-                                                                metrics.supportPercent
-                                                            }% completed`}
-                                                        />
-                                                    </Link>
-                                                </td>
-                                            );
-                                        }
-                                    )}
-                                </tr>
-                            );
-                        })}*/}
                 </tbody>
             </Table>
         </FullHeightContainer>
