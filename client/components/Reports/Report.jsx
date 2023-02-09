@@ -7,6 +7,7 @@ import SummarizeTestPlanReport from './SummarizeTestPlanReport';
 import PageStatus from '../common/PageStatus';
 import { REPORT_PAGE_QUERY } from './queries';
 import './Reports.css';
+import { useParams } from 'react-router-dom';
 
 const Report = () => {
     const match = useMatch('/report/:testPlanVersionId');
@@ -81,8 +82,10 @@ const Report = () => {
             <Route
                 exact
                 path="/report/:testPlanVersionId"
-                children={({ match: { params } }) => {
-                    const { testPlanVersionId } = params;
+                children={() => {
+                    const match = useMatch('/report/:testPlanVersionId');
+                    const params = useParams();
+                    testPlanVersionId = params.testPlanVersionId;
 
                     let testPlanVersionIds = [];
                     if (testPlanVersionId.includes(','))
@@ -126,7 +129,7 @@ const Report = () => {
                 }}
             />
 
-            <Route path="*" element={<Navigate to="/404" replace />} />
+            {/* <Route path="*" element={<Navigate to="/404" replace />} /> */}
         </Routes>
     );
 };
