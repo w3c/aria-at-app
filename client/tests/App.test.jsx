@@ -1,3 +1,7 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import React from 'react';
 import Enzyme, { shallow } from 'enzyme';
 import EnzymeAdapter from 'enzyme-adapter-react-16';
@@ -15,7 +19,7 @@ const setup = () => {
     return wrapper;
 };
 
-test.skip('renders without crashing', () => {
+test('renders without crashing', () => {
     const wrapper = setup();
     expect(wrapper).toBeTruthy();
 });
