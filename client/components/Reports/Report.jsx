@@ -10,6 +10,8 @@ import './Reports.css';
 import { useParams } from 'react-router-dom';
 
 const Report = () => {
+    const {testPlanVersionId, testPlanReportId} = useParams();
+
     const match = useMatch('/report/:testPlanVersionId');
 
     let testPlanVersionIds = [];
@@ -80,6 +82,7 @@ const Report = () => {
     return (
         <Routes>
             <Route
+              index
                 exact
                 path="/report/:testPlanVersionId"
                 children={() => {
@@ -97,7 +100,7 @@ const Report = () => {
                             testPlanVersionIds.includes(each.testPlanVersion.id)
                     );
 
-                    if (!testPlanReports.length) return <Navigate to="/404" />;
+    if (!testPlanReports.length) return <Navigate to="/404" />;
 
                     return (
                         <SummarizeTestPlanVersion
@@ -108,28 +111,12 @@ const Report = () => {
                 }}
             />
             <Route
-                exact
-                path="/report/:testPlanVersionId/targets/:testPlanReportId"
-                children={({ match: { params } }) => {
-                    const { testPlanVersionId, testPlanReportId } = params;
-
-                    const testPlanReport = data.testPlanReports.find(
-                        each =>
-                            each.testPlanVersion.id === testPlanVersionId &&
-                            each.id == testPlanReportId
-                    );
-
-                    if (!testPlanReport) return <Navigate to="/404" />;
-
-                    return (
-                        <SummarizeTestPlanReport
-                            testPlanReport={testPlanReport}
-                        />
-                    );
-                }}
+                path="targets/:testPlanReportId"
+                element={
+                    <SummarizeTestPlanReport testPlanReports={testPlanReports} testPlanReportId={testPlanReportId} />
+                }
             />
-
-            {/* <Route path="*" element={<Navigate to="/404" replace />} /> */}
+            <Route path="*" element={<Navigate to="/404" replace />} />
         </Routes>
     );
 };
