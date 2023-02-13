@@ -5,3 +5,11 @@
     name: "import latest aria-at tests"
     minute: "15"
     job: "curl -X POST https://{{fqdn}}/api/test/import"
+  when: deployment_mode != 'development' 
+
+- name: Set a cron job to build test results in development
+  cron:
+    name: "import latest aria-at tests"
+    minute: "15"
+    job: "curl -X POST http://{{fqdn}}/api/test/import"
+  when: deployment_mode == 'development'
