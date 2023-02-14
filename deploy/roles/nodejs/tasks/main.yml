@@ -8,6 +8,32 @@
     - https://dl.yarnpkg.com/debian/pubkey.gpg
     - https://deb.nodesource.com/gpgkey/nodesource.gpg.key
 
+- name: Check if Node exists
+  shell: |
+    if ! node --version; then
+      echo "Node.js is not installed"
+    fi
+  register: node_version
+  ignore_errors: true
+
+- name: Show status of nodejs installation
+  debug: msg="{{ node_version.stdout }}"
+
+- name: Remove Node.js repo if not version 18
+  apt_repository:
+    state: absent
+    repo: deb https://deb.nodesource.com/node_14.x buster main
+    update_cache: True
+  become: yes
+  when: '"18" not in node_version.stdout'
+
+- name: Remove Node.js if not version 18
+  apt:
+    name: nodejs
+    state: absent
+  become: yes
+  when: '"18" not in node_version.stdout'
+
 - name: Add software repositories
   apt_repository:
     state: present
@@ -16,7 +42,7 @@
   become: yes
   with_items:
     - deb https://dl.yarnpkg.com/debian/ stable main
-    - deb https://deb.nodesource.com/node_14.x buster main
+    - deb https://deb.nodesource.com/node_18.x buster main
 
 - name: Install packages
   apt:
@@ -25,3 +51,10 @@
       - yarn
     state: present
   become: yes
+
+- name: Check if Node exists
+  command: node --version
+  register: new_node_version
+
+- name: Show status of new nodejs installation
+  debug: msg="{{ new_node_version.stdout }}"
