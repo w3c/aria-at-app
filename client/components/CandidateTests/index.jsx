@@ -1,6 +1,5 @@
 import React from 'react';
 import { useQuery } from '@apollo/client';
-import { Route, Routes, Navigate } from 'react-router';
 import PageStatus from '../common/PageStatus';
 import TestPlans from './TestPlans';
 import { CANDIDATE_TESTS_PAGE_QUERY } from './queries';
