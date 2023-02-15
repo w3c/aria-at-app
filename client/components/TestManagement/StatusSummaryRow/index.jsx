@@ -51,7 +51,7 @@ const PhaseDot = styled.span`
     }
 `;
 
-const StatusSummaryRow = ({ atItems }) => {
+const StatusSummaryRow = ({ reportResult, testPlanVersion }) => {
     const [bulkUpdateTestPlanReportStatusMutation] = useMutation(
         BULK_UPDATE_TEST_PLAN_REPORT_STATUS_MUTATION
     );
@@ -59,7 +59,9 @@ const StatusSummaryRow = ({ atItems }) => {
     const dropdownUpdateReportStatusButtonRef = useRef();
     const { triggerLoad, loadingMessage } = useTriggerLoad();
 
-    const [testPlanReports, setTestPlanReports] = useState(atItems);
+    const [testPlanReports, setTestPlanReports] = useState(
+        Object.values(reportResult).filter(i => i !== null)
+    );
     const [showThemedModal, setShowThemedModal] = useState(false);
     const [themedModalType, setThemedModalType] = useState('warning');
     const [themedModalTitle, setThemedModalTitle] = useState('');
@@ -111,7 +113,7 @@ const StatusSummaryRow = ({ atItems }) => {
         <LoadingStatus message={loadingMessage}>
             <tr>
                 <th>
-                    {testPlanReports[0].testPlanVersion?.title}
+                    {testPlanVersion.title}
                     <PhaseText className={phase.toLowerCase()}>
                         {phase}
                     </PhaseText>
@@ -122,15 +124,17 @@ const StatusSummaryRow = ({ atItems }) => {
                             id={nextId()}
                             ref={dropdownUpdateReportStatusButtonRef}
                             variant="secondary"
-                            aria-label={`Change test plan phase for ${testPlanReports[0].testPlanVersion.title}`}
+                            aria-label={`Change test plan phase for ${testPlanVersion.title}`}
                         >
                             <PhaseDot className={phase.toLowerCase()} />
                             {phase}
                         </Dropdown.Toggle>
                         <Dropdown.Menu role="menu">
+                            {/* TODO: Don't allow reverting to DRAFT until
+                                    data model restructure */}
                             <Dropdown.Item
                                 role="menuitem"
-                                disabled={phase === 'Draft'}
+                                disabled={true}
                                 onClick={async () => {
                                     await bulkUpdateReportStatus(
                                         testPlanReports.map(i => i.id),
@@ -194,7 +198,8 @@ const StatusSummaryRow = ({ atItems }) => {
 };
 
 StatusSummaryRow.propTypes = {
-    atItems: PropTypes.array
+    reportResult: PropTypes.object,
+    testPlanVersion: PropTypes.object
 };
 
 export default StatusSummaryRow;

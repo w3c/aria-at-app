@@ -8,6 +8,11 @@ import PageStatus from '../common/PageStatus';
 import DisclosureComponent from '../common/DisclosureComponent';
 import ManageTestQueue from '../ManageTestQueue';
 import './TestManagement.css';
+import alphabetizeObjectBy from '@client/utils/alphabetizeObjectBy';
+import {
+    getTestPlanTargetTitle,
+    getTestPlanVersionTitle
+} from '@components/Reports/getTitles';
 
 const TestManagement = () => {
     const { loading, data, error, refetch } = useQuery(
@@ -22,11 +27,6 @@ const TestManagement = () => {
     const [browsers, setBrowsers] = useState([]);
     const [testPlanVersions, setTestPlanVersions] = useState([]);
     const [testPlanReports, setTestPlanReports] = useState([]);
-
-    const [
-        summaryGroupedTestPlanReports,
-        setSummaryGroupedTestPlanReports
-    ] = useState({});
 
     useEffect(() => {
         if (data) {
@@ -43,71 +43,6 @@ const TestManagement = () => {
             setPageReady(true);
         }
     }, [data]);
-
-    useEffect(() => {
-        const jawsGroup = testPlanReports.filter(t => t.at.id == 1);
-        const nvdaGroup = testPlanReports.filter(t => t.at.id == 2);
-        const voGroup = testPlanReports.filter(t => t.at.id == 3);
-
-        const groupedData = atGroup => {
-            let allResultGroup = {};
-            let summaryResultGroup = {};
-
-            atGroup.forEach(t => {
-                const testPlanId = t.testPlanVersion.testPlan.directory;
-                if (!allResultGroup[testPlanId])
-                    allResultGroup[testPlanId] = [t];
-                else allResultGroup[testPlanId].push(t);
-
-                // Ensure the latest version is being used in the grouped data
-                // In the future, it can be assumed that the latest can be
-                // consistently retrieved from
-                // `query { testPlans { latestTestPlanVersion } }`
-                if (!summaryResultGroup[testPlanId])
-                    summaryResultGroup[testPlanId] = t;
-                else if (
-                    new Date(t.testPlanVersion.updatedAt) >
-                    new Date(
-                        summaryResultGroup[testPlanId].testPlanVersion.updatedAt
-                    )
-                ) {
-                    summaryResultGroup[testPlanId] = t;
-                }
-            });
-
-            return { allResultGroup, summaryResultGroup };
-        };
-
-        const {
-            allResultGroup: allJawsGroupedByTestPlan,
-            summaryResultGroup: summaryJawsGroupedByTestPlan
-        } = groupedData(jawsGroup);
-        const {
-            allResultGroup: allNvdaGroupedByTestPlan,
-            summaryResultGroup: summaryNvdaGroupedByTestPlan
-        } = groupedData(nvdaGroup);
-        const {
-            allResultGroup: allVoGroupedByTestPlan,
-            summaryResultGroup: summaryVoGroupedByTestPlan
-        } = groupedData(voGroup);
-
-        // TODO: This dataset can be used in the future to complete the AT
-        //       separated sections
-        // eslint-disable-next-line
-        const allGroupedTestPlanReports = {
-            jaws: allJawsGroupedByTestPlan,
-            nvda: allNvdaGroupedByTestPlan,
-            vo: allVoGroupedByTestPlan
-        };
-
-        const summaryGroupedTestPlanReports = {
-            jaws: summaryJawsGroupedByTestPlan,
-            nvda: summaryNvdaGroupedByTestPlan,
-            vo: summaryVoGroupedByTestPlan
-        };
-
-        setSummaryGroupedTestPlanReports(summaryGroupedTestPlanReports);
-    }, [testPlanReports]);
 
     if (error) {
         return (
@@ -129,25 +64,105 @@ const TestManagement = () => {
         );
     }
 
-    const constructStatusSummaryData = () => {
-        let result = {};
-
-        // Arrange the summary data by example
-        Object.keys(summaryGroupedTestPlanReports).forEach(atKey => {
-            Object.keys(summaryGroupedTestPlanReports[atKey]).forEach(
-                exampleKey => {
-                    if (!result[exampleKey]) result[exampleKey] = {};
-                    result[exampleKey][atKey] =
-                        summaryGroupedTestPlanReports[atKey][exampleKey];
-                }
-            );
-        });
-
-        return result;
-    };
-
     const emptyTestPlans = !testPlanReports.length;
-    const summaryData = constructStatusSummaryData();
+
+    const testPlanReportsById = {};
+    let testPlanTargetsById = {};
+    let testPlanVersionsById = {};
+    testPlanReports.forEach(testPlanReport => {
+        const { testPlanVersion, at, browser } = testPlanReport;
+
+        // Construct testPlanTarget
+        const testPlanTarget = { id: `${at.id}${browser.id}`, at, browser };
+        testPlanReportsById[testPlanReport.id] = testPlanReport;
+        testPlanTargetsById[testPlanTarget.id] = testPlanTarget;
+        testPlanVersionsById[testPlanVersion.id] = testPlanVersion;
+    });
+    testPlanTargetsById = alphabetizeObjectBy(testPlanTargetsById, keyValue =>
+        getTestPlanTargetTitle(keyValue[1])
+    );
+    testPlanVersionsById = alphabetizeObjectBy(testPlanVersionsById, keyValue =>
+        getTestPlanVersionTitle(keyValue[1])
+    );
+
+    const tabularReports = {};
+    const tabularReportsByDirectory = {};
+    Object.keys(testPlanVersionsById).forEach(testPlanVersionId => {
+        const directory =
+            testPlanVersionsById[testPlanVersionId].testPlan.directory;
+
+        tabularReports[testPlanVersionId] = {};
+        if (!tabularReportsByDirectory[directory])
+            tabularReportsByDirectory[directory] = {};
+        tabularReportsByDirectory[directory][testPlanVersionId] = {};
+        Object.keys(testPlanTargetsById).forEach(testPlanTargetId => {
+            tabularReports[testPlanVersionId][testPlanTargetId] = null;
+            tabularReportsByDirectory[directory][testPlanVersionId][
+                testPlanTargetId
+            ] = null;
+        });
+    });
+    testPlanReports.forEach(testPlanReport => {
+        const { testPlanVersion, at, browser } = testPlanReport;
+        const directory = testPlanVersion.testPlan.directory;
+
+        // Construct testPlanTarget
+        const testPlanTarget = { id: `${at.id}${browser.id}`, at, browser };
+        tabularReports[testPlanVersion.id][testPlanTarget.id] = testPlanReport;
+        tabularReportsByDirectory[directory][testPlanVersion.id][
+            testPlanTarget.id
+        ] = testPlanReport;
+        tabularReportsByDirectory[directory][
+            testPlanVersion.id
+        ].testPlanVersion = testPlanVersion;
+    });
+
+    const combineObject = originalObject => {
+        let combinedTestPlanVersionIdArray = [];
+        let resultTestPlanTargets = Object.values(originalObject)[0];
+        combinedTestPlanVersionIdArray.push(
+            resultTestPlanTargets.testPlanVersion.id
+        );
+
+        for (let i = 1; i < Object.values(originalObject).length; i++) {
+            let testPlanTargets = Object.values(originalObject)[i];
+            if (
+                !combinedTestPlanVersionIdArray.includes(
+                    testPlanTargets.testPlanVersion.id
+                )
+            )
+                combinedTestPlanVersionIdArray.push(
+                    testPlanTargets.testPlanVersion.id
+                );
+
+            delete testPlanTargets.testPlanVersion;
+
+            // Check if exists in newObject and add/update newObject based on criteria
+            Object.keys(testPlanTargets).forEach(testPlanTargetKey => {
+                if (!resultTestPlanTargets[testPlanTargetKey])
+                    resultTestPlanTargets[testPlanTargetKey] =
+                        testPlanTargets[testPlanTargetKey];
+                else {
+                    const latestPrevDate = new Date(
+                        testPlanTargets[
+                            testPlanTargetKey
+                        ]?.latestAtVersionReleasedAt?.releasedAt
+                    );
+
+                    const latestCurrDate = new Date(
+                        resultTestPlanTargets[
+                            testPlanTargetKey
+                        ]?.latestAtVersionReleasedAt?.releasedAt
+                    );
+
+                    if (latestPrevDate > latestCurrDate)
+                        resultTestPlanTargets[testPlanTargetKey] =
+                            testPlanTargets[testPlanTargetKey];
+                }
+            });
+        }
+        return { resultTestPlanTargets, combinedTestPlanVersionIdArray };
+    };
 
     return (
         <Container id="main" as="main" tabIndex="-1">
@@ -206,25 +221,52 @@ const TestManagement = () => {
                             </thead>
                             <tbody>
                                 {/* Sort the summary items by title */}
-                                {Object.keys(summaryData)
+                                {Object.values(tabularReportsByDirectory)
                                     .sort((a, b) =>
-                                        Object.values(summaryData[a])[0]
-                                            .testPlanVersion.title <
-                                        Object.values(summaryData[b])[0]
-                                            .testPlanVersion.title
+                                        Object.values(a)[0].testPlanVersion
+                                            .title <
+                                        Object.values(b)[0].testPlanVersion
+                                            .title
                                             ? -1
                                             : 1
                                     )
-                                    .map(k => {
-                                        const summaryItem = summaryData[k];
-                                        const atItems = Object.values(
-                                            summaryItem
-                                        );
-                                        const key = `summary-table-item-${k}`;
+                                    .map(tabularReport => {
+                                        let reportResult = null;
+                                        let testPlanVersionId = null;
+
+                                        // Evaluate what is prioritised across the
+                                        // collection of testPlanVersions
+                                        if (
+                                            Object.values(tabularReport)
+                                                .length > 1
+                                        ) {
+                                            const {
+                                                resultTestPlanTargets,
+                                                combinedTestPlanVersionIdArray
+                                            } = combineObject(tabularReport);
+                                            reportResult = resultTestPlanTargets;
+                                            testPlanVersionId = combinedTestPlanVersionIdArray.join(
+                                                ','
+                                            );
+                                        } else {
+                                            reportResult = Object.values(
+                                                tabularReport
+                                            )[0];
+                                            testPlanVersionId =
+                                                reportResult.testPlanVersion.id;
+                                        }
+
+                                        const testPlanVersion =
+                                            reportResult.testPlanVersion;
+                                        delete reportResult.testPlanVersion;
+
                                         return (
                                             <StatusSummaryRow
-                                                key={key}
-                                                atItems={atItems}
+                                                key={testPlanVersionId}
+                                                testPlanVersion={
+                                                    testPlanVersion
+                                                }
+                                                reportResult={reportResult}
                                             />
                                         );
                                     })}

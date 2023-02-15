@@ -826,7 +826,7 @@ const graphqlSchema = gql`
         """
         The latest AT Version used collecting results for this report.
         """
-        latestAtVersionReleasedAt: AtVersion!
+        latestAtVersionReleasedAt: AtVersion
         """
         The browser used when collecting results.
         """
