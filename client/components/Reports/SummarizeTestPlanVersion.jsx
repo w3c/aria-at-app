@@ -11,7 +11,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome } from '@fortawesome/free-solid-svg-icons';
 import styled from '@emotion/styled';
 import DisclaimerInfo from '../DisclaimerInfo';
-import { useParams } from 'react-router-dom';
 
 const FullHeightContainer = styled(Container)`
     min-height: calc(100vh - 64px);
@@ -19,7 +18,6 @@ const FullHeightContainer = styled(Container)`
 
 const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
     const { exampleUrl, designPatternUrl } = testPlanVersion.metadata;
-
     return (
         <FullHeightContainer id="main" as="main" tabIndex="-1">
             <Helmet>
