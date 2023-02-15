@@ -3,11 +3,11 @@
  */
 
 import React from 'react';
-import { 
-    render, 
-    screen, 
-    waitFor, 
-    fireEvent 
+import {
+    render,
+    screen,
+    waitFor,
+    fireEvent
 } from '@testing-library/react';
 import { InMemoryCache } from '@apollo/client';
 import { MockedProvider } from '@apollo/client/testing';
