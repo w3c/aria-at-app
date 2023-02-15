@@ -23,5 +23,6 @@
     name:
       - nodejs
       - yarn
+      - build-essential
     state: present
   become: yes
