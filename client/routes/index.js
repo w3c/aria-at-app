@@ -11,7 +11,7 @@ import TestQueue from '@components/TestQueue';
 import TestRun from '@components/TestRun';
 import UserSettings from '@components/UserSettings';
 import CandidateTestPlanRun from '@components/CandidateTests/CandidateTestPlanRun';
-// import TestManagement from '@components/TestManagement';
+import TestManagement from '@components/TestManagement';
 
 export default () => (
     <Routes>
@@ -65,15 +65,15 @@ export default () => (
                 </ConfirmAuth>
             }
         />
-        {/*<Route*/}
-        {/*    exact*/}
-        {/*    path="/test-management"*/}
-        {/*    element={*/}
-        {/*        <ConfirmAuth requiredPermission="ADMIN">*/}
-        {/*            <TestManagement />*/}
-        {/*        </ConfirmAuth>*/}
-        {/*    }*/}
-        {/*/>*/}
+        <Route
+            exact
+            path="/test-management"
+            element={
+                <ConfirmAuth requiredPermission="ADMIN">
+                    <TestManagement />
+                </ConfirmAuth>
+            }
+        />
         <Route exact path="/invalid-request" element={<InvalidRequest />} />
         <Route exact path="/404" element={<NotFound />} />
         <Route exact path="*" element={<Navigate to="/404" replace />} />
