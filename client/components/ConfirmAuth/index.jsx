@@ -1,11 +1,11 @@
 import React from 'react';
-import { Route, Navigate, Routes } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { useQuery } from '@apollo/client';
 import { ME_QUERY } from '../App/queries';
 import { evaluateAuth } from '../../utils/evaluateAuth';
 
-const ConfirmAuth = ({ children, requiredPermission, ...rest }) => {
+const ConfirmAuth = ({ children, requiredPermission }) => {
     const { data } = useQuery(ME_QUERY);
 
     const auth = evaluateAuth(data && data.me ? data.me : {});

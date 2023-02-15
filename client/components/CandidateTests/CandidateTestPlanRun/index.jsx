@@ -15,7 +15,7 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
-import { useParams, useNavigate, Navigate, Route } from 'react-router-dom';
+import { useParams, useNavigate, Navigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import './CandidateTestPlanRun.css';
 import '../../TestRun/TestRun.css';
