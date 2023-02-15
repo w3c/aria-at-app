@@ -30,7 +30,7 @@
 
 - name: Make vagrant folder writable
   file:
-    path: /vagrant/server/scripts
+    path: /vagrant/server
     mode: '0777'
     recurse: yes
   when: deployment_mode == 'development'
