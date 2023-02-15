@@ -13,5 +13,5 @@
   cron:
     name: "import latest aria-at tests"
     minute: "15"
-    job: "chmod -R 777 /vagrant/server; curl -X POST http://localhost:5000/api/test/import; chmod -R 755 /vagrant/server;"
+    job: "curl -X POST http://localhost:5000/api/test/import"
   when: deployment_mode == 'development'
