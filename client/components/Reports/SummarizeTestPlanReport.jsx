@@ -236,7 +236,7 @@ const SummarizeTestPlanReport = ({ testPlanReports }) => {
 };
 
 SummarizeTestPlanReport.propTypes = {
-    testPlanReports: PropoTypes.arrayOf(
+    testPlanReports: PropTypes.arrayOf(
         PropTypes.shape({
             id: PropTypes.string.isRequired,
             status: PropTypes.string.isRequired,
