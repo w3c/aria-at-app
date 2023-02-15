@@ -130,9 +130,11 @@ const StatusSummaryRow = ({ reportResult, testPlanVersion }) => {
                             {phase}
                         </Dropdown.Toggle>
                         <Dropdown.Menu role="menu">
+                            {/* TODO: Don't allow reverting to DRAFT until
+                                    data model restructure */}
                             <Dropdown.Item
                                 role="menuitem"
-                                disabled={phase === 'Draft'}
+                                disabled={true}
                                 onClick={async () => {
                                     await bulkUpdateReportStatus(
                                         testPlanReports.map(i => i.id),
