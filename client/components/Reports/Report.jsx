@@ -9,7 +9,7 @@ import './Reports.css';
 import { useParams } from 'react-router-dom';
 
 const Report = () => {
-    const { testPlanVersionId, testPlanReportId } = useParams();
+    const { testPlanVersionId } = useParams();
 
     // const match = useMatch('/report/:testPlanVersionId');
 
