@@ -47,6 +47,12 @@ const Report = () => {
 
     if (!data) return null;
 
+    const testPlanReports = data.testPlanReports.filter(
+        each =>
+            each.testPlanVersion.id === testPlanVersionId ||
+            testPlanVersionIds.includes(each.testPlanVersion.id)
+    );
+
     const combineArray = testPlanReports => {
         let testPlanTargetsById = {};
         testPlanReports.forEach(testPlanReport => {
@@ -80,44 +86,23 @@ const Report = () => {
 
     return (
         <Routes>
-            {/*<Route*/}
-            {/*    index*/}
-            {/*    exact*/}
-            {/*    path="/report/:testPlanVersionId"*/}
-            {/*    children={() => {*/}
-            {/*        const match = useMatch('/report/:testPlanVersionId');*/}
-            {/*        const params = useParams();*/}
-            {/*        testPlanVersionId = params.testPlanVersionId;*/}
-
-            {/*        let testPlanVersionIds = [];*/}
-            {/*        if (testPlanVersionId.includes(','))*/}
-            {/*            testPlanVersionIds = testPlanVersionId.split(',');*/}
-
-            {/*        const testPlanReports = data.testPlanReports.filter(*/}
-            {/*            each =>*/}
-            {/*                each.testPlanVersion.id === testPlanVersionId ||*/}
-            {/*                testPlanVersionIds.includes(each.testPlanVersion.id)*/}
-            {/*        );*/}
-
-            {/*        if (!testPlanReports.length) return <Navigate to="/404" />;*/}
-
-            {/*        return (*/}
-            {/*            <SummarizeTestPlanVersion*/}
-            {/*                testPlanVersion={testPlanReports[0].testPlanVersion}*/}
-            {/*                testPlanReports={combineArray(testPlanReports)}*/}
-            {/*            />*/}
-            {/*        );*/}
-            {/*    }}*/}
-            {/*/>*/}
-            {/*<Route*/}
-            {/*    path="targets/:testPlanReportId"*/}
-            {/*    element={*/}
-            {/*        <SummarizeTestPlanReport*/}
-            {/*            testPlanReports={testPlanReports}*/}
-            {/*            testPlanReportId={testPlanReportId}*/}
-            {/*        />*/}
-            {/*    }*/}
-            {/*/>*/}
+            <Route
+                index
+                element={
+                        <SummarizeTestPlanVersion
+                            testPlanVersion={testPlanReports[0].testPlanVersion}
+                            testPlanReports={combineArray(testPlanReports)}
+                        />
+                }
+            />
+            <Route
+                path="targets/:testPlanReportId"
+                element={
+                    <SummarizeTestPlanReport
+                        testPlanReports={testPlanReports}
+                    />
+                }
+            />
             <Route path="*" element={<Navigate to="/404" replace />} />
         </Routes>
     );
