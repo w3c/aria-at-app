@@ -9,12 +9,12 @@ import './Reports.css';
 import { useParams } from 'react-router-dom';
 
 const Report = () => {
-    const {testPlanVersionId, testPlanReportId} = useParams();
+    const { testPlanVersionId, testPlanReportId } = useParams();
 
-    const match = useMatch('/report/:testPlanVersionId');
+    // const match = useMatch('/report/:testPlanVersionId');
 
     let testPlanVersionIds = [];
-    let testPlanVersionId = match?.params?.testPlanVersionId;
+    // let testPlanVersionId = match?.params?.testPlanVersionId;
     if (testPlanVersionId.includes(','))
         testPlanVersionIds = testPlanVersionId.split(',');
 
@@ -80,41 +80,44 @@ const Report = () => {
 
     return (
         <Routes>
-            <Route
-              index
-                exact
-                path="/report/:testPlanVersionId"
-                children={() => {
-                    const match = useMatch('/report/:testPlanVersionId');
-                    const params = useParams();
-                    testPlanVersionId = params.testPlanVersionId;
+            {/*<Route*/}
+            {/*    index*/}
+            {/*    exact*/}
+            {/*    path="/report/:testPlanVersionId"*/}
+            {/*    children={() => {*/}
+            {/*        const match = useMatch('/report/:testPlanVersionId');*/}
+            {/*        const params = useParams();*/}
+            {/*        testPlanVersionId = params.testPlanVersionId;*/}
 
-                    let testPlanVersionIds = [];
-                    if (testPlanVersionId.includes(','))
-                        testPlanVersionIds = testPlanVersionId.split(',');
+            {/*        let testPlanVersionIds = [];*/}
+            {/*        if (testPlanVersionId.includes(','))*/}
+            {/*            testPlanVersionIds = testPlanVersionId.split(',');*/}
 
-                    const testPlanReports = data.testPlanReports.filter(
-                        each =>
-                            each.testPlanVersion.id === testPlanVersionId ||
-                            testPlanVersionIds.includes(each.testPlanVersion.id)
-                    );
+            {/*        const testPlanReports = data.testPlanReports.filter(*/}
+            {/*            each =>*/}
+            {/*                each.testPlanVersion.id === testPlanVersionId ||*/}
+            {/*                testPlanVersionIds.includes(each.testPlanVersion.id)*/}
+            {/*        );*/}
 
-    if (!testPlanReports.length) return <Navigate to="/404" />;
+            {/*        if (!testPlanReports.length) return <Navigate to="/404" />;*/}
 
-                    return (
-                        <SummarizeTestPlanVersion
-                            testPlanVersion={testPlanReports[0].testPlanVersion}
-                            testPlanReports={combineArray(testPlanReports)}
-                        />
-                    );
-                }}
-            />
-            <Route
-                path="targets/:testPlanReportId"
-                element={
-                    <SummarizeTestPlanReport testPlanReports={testPlanReports} testPlanReportId={testPlanReportId} />
-                }
-            />
+            {/*        return (*/}
+            {/*            <SummarizeTestPlanVersion*/}
+            {/*                testPlanVersion={testPlanReports[0].testPlanVersion}*/}
+            {/*                testPlanReports={combineArray(testPlanReports)}*/}
+            {/*            />*/}
+            {/*        );*/}
+            {/*    }}*/}
+            {/*/>*/}
+            {/*<Route*/}
+            {/*    path="targets/:testPlanReportId"*/}
+            {/*    element={*/}
+            {/*        <SummarizeTestPlanReport*/}
+            {/*            testPlanReports={testPlanReports}*/}
+            {/*            testPlanReportId={testPlanReportId}*/}
+            {/*        />*/}
+            {/*    }*/}
+            {/*/>*/}
             <Route path="*" element={<Navigate to="/404" replace />} />
         </Routes>
     );
