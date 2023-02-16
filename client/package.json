@@ -110,9 +110,6 @@
     "setupFilesAfterEnv": [
       "./jest.setup.js"
     ],
-    "transformIgnorePatterns": [
-      "<rootDir>/node_modules/(?!(@juggle/resize-observer|@react-hook/resize-observer)/)"
-    ],
     "transform": {
       "^.+\\.(js|jsx|mjs)$": "babel-jest"
     },
