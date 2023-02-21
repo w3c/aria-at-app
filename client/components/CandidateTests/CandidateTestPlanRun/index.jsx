@@ -43,10 +43,16 @@ const CandidateTestPlanRun = () => {
     const { atId, testPlanVersionId } = useParams();
     const history = useHistory();
 
+    let testPlanVersionIds = [];
+    if (testPlanVersionId.includes(','))
+        testPlanVersionIds = testPlanVersionId.split(',');
+
     const { loading, data, error, refetch } = useQuery(
         CANDIDATE_REPORTS_QUERY,
         {
-            variables: { testPlanVersionId, atId }
+            variables: testPlanVersionIds.length
+                ? { testPlanVersionIds, atId }
+                : { testPlanVersionId, atId }
         }
     );
     const [addViewer] = useMutation(ADD_VIEWER_MUTATION);
@@ -175,7 +181,7 @@ const CandidateTestPlanRun = () => {
                 tests[0].id,
                 ...tests
                     .filter(test =>
-                        test.viewers.find(
+                        test.viewers?.find(
                             viewer => viewer.username === data.me.username
                         )
                     )
@@ -249,11 +255,31 @@ const CandidateTestPlanRun = () => {
     };
     const at = atMap[atId];
 
-    const testPlanReports = data.testPlanReports;
-    if (testPlanReports.length === 0) return <Redirect to="/404" />;
+    const testPlanReports = [];
+    const _testPlanReports = data.testPlanReports;
+    if (_testPlanReports.length === 0) return <Redirect to="/404" />;
+
+    const getLatestReleasedAtVersionReport = arr => {
+        return arr.reduce((o1, o2) => {
+            return new Date(o1.latestAtVersionReleasedAt.releasedAt) >
+                new Date(o2.latestAtVersionReleasedAt.releasedAt)
+                ? o1
+                : o2;
+        });
+    };
+
+    Object.keys(atMap).forEach(k => {
+        const group = _testPlanReports.filter(t => t.browser.id == k);
+        if (group.length) {
+            const latestReport = getLatestReleasedAtVersionReport(group);
+            testPlanReports.push(latestReport);
+        }
+    });
 
     const testPlanReport = testPlanReports.find(
-        each => each.testPlanVersion.id === testPlanVersionId
+        each =>
+            each.testPlanVersion.id === testPlanVersionId ||
+            testPlanVersionIds.includes(each.testPlanVersion.id)
     );
 
     const tests = testPlanReport.runnableTests.map((test, index) => ({
