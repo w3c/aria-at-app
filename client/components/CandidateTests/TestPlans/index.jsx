@@ -697,9 +697,6 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
                                         return (
                                             <tr key={testPlanVersionId}>
                                                 <td>
-                                                    {/*{testPlanReports.map(*/}
-                                                    {/*    t => `${t.id}, `*/}
-                                                    {/*)}*/}
                                                     <Link
                                                         to={`/candidate-test-plan/${testPlanVersionId}/${atId}`}
                                                     >
@@ -1087,9 +1084,6 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
                                 return (
                                     <tr key={testPlanVersionId}>
                                         <td>
-                                            {/*{testPlanReports.map(*/}
-                                            {/*    t => `${t.id}, `*/}
-                                            {/*)}*/}
                                             {getTestPlanVersionTitle(
                                                 testPlanVersion
                                             )}
