@@ -45,15 +45,12 @@ module.exports = {
                 'browserVersion',
                 { transaction }
             );
-            await queryInterface.addConstraint(
-                'BrowserVersion',
-                {
-                    type: 'primary key',
-                    name: 'BrowserVersion_pkey',
-                    fields: ['browserId', 'browserVersion'],
-                    transaction
-                }
-            );
+            await queryInterface.addConstraint('BrowserVersion', {
+                type: 'primary key',
+                name: 'BrowserVersion_pkey',
+                fields: ['browserId', 'browserVersion'],
+                transaction
+            });
         });
     }
 };
