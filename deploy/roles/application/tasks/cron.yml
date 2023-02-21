@@ -7,8 +7,6 @@
     job: "curl -X POST https://{{fqdn}}/api/test/import"
   when: deployment_mode != 'development' 
 
-# The job is written to change the permissions of the /vagrant/server
-# directory because the POST request does not have permission to it
 - name: Set a cron job to build test results in development
   cron:
     name: "import latest aria-at tests"
