@@ -15,10 +15,10 @@ module.exports = {
         return queryInterface.sequelize.transaction(async transaction => {
             await queryInterface.addConstraint(
                 'AtVersion',
-                ['atId', 'atVersion'],
                 {
                     type: 'primary key',
                     name: 'AtVersion_pkey',
+                    fields: ['atId', 'atVersion'],
                     transaction
                 }
             );

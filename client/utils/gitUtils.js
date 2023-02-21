@@ -2,7 +2,7 @@ const lc = (pattern, string) => string.replace(pattern, pattern.toLowerCase());
 const timeZone = 'UTC';
 const options = { month: 'short' };
 
-export const gitUpdatedDateToString = (dateString, locale = 'default') => {
+export const gitUpdatedDateToString = (dateString, locale = 'en-US') => {
     const date = new Date(dateString);
     const month = date.toLocaleString(locale, options);
     const day = date.getDate();
