@@ -9,6 +9,11 @@ export const CANDIDATE_TESTS_PAGE_QUERY = gql`
                 id
                 name
             }
+            latestAtVersionReleasedAt {
+                id
+                name
+                releasedAt
+            }
             browser {
                 id
                 name
