@@ -32,7 +32,6 @@ const CandidateTests = () => {
         );
     }
 
-
     if (!data) return null;
 
     return (

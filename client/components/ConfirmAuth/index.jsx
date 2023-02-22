@@ -18,7 +18,7 @@ const ConfirmAuth = ({ children, requiredPermission }) => {
         isSignedIn && (roles.includes(requiredPermission) || isAdmin);
 
     if (!authConfirmed) {
-        return <Navigate to="/404" replace />
+        return <Navigate to="/404" replace />;
     }
 
     return children;

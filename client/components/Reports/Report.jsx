@@ -82,8 +82,8 @@ const Report = () => {
         });
     };
 
-    if(!testPlanReports || testPlanReports.length < 1) {
-        return <Navigate to="/404" replace />
+    if (!testPlanReports || testPlanReports.length < 1) {
+        return <Navigate to="/404" replace />;
     }
 
     return (
@@ -91,10 +91,10 @@ const Report = () => {
             <Route
                 index
                 element={
-                        <SummarizeTestPlanVersion
-                            testPlanVersion={testPlanReports[0].testPlanVersion}
-                            testPlanReports={combineArray(testPlanReports)}
-                        />
+                    <SummarizeTestPlanVersion
+                        testPlanVersion={testPlanReports[0].testPlanVersion}
+                        testPlanReports={combineArray(testPlanReports)}
+                    />
                 }
             />
             <Route
