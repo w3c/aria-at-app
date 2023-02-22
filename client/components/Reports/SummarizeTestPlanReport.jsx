@@ -16,6 +16,8 @@ import { convertDateToString } from '../../utils/formatter';
 import DisclaimerInfo from '../DisclaimerInfo';
 import TestPlanResultsTable from './TestPlanResultsTable';
 import DisclosureComponent from '../common/DisclosureComponent';
+import { Navigate } from 'react-router';
+import { useParams } from 'react-router-dom';
 
 const getTestersRunHistory = (
     testPlanReport,
@@ -74,7 +76,15 @@ const getTestersRunHistory = (
     );
 };
 
-const SummarizeTestPlanReport = ({ testPlanReport }) => {
+const SummarizeTestPlanReport = ({ testPlanReports }) => {
+    const { testPlanReportId } = useParams();
+
+    const testPlanReport = testPlanReports.find(
+        each => each.id == testPlanReportId
+    );
+
+    if (!testPlanReport) return <Navigate to="/404" />;
+
     const { testPlanVersion, at, browser } = testPlanReport;
 
     // Construct testPlanTarget
@@ -226,60 +236,63 @@ const SummarizeTestPlanReport = ({ testPlanReport }) => {
 };
 
 SummarizeTestPlanReport.propTypes = {
-    testPlanReport: PropTypes.shape({
-        id: PropTypes.string.isRequired,
-        status: PropTypes.string.isRequired,
-        testPlanVersion: PropTypes.object.isRequired,
-        runnableTests: PropTypes.arrayOf(PropTypes.object.isRequired)
-            .isRequired,
-        at: PropTypes.shape({
+    testPlanReports: PropTypes.arrayOf(
+        PropTypes.shape({
             id: PropTypes.string.isRequired,
-            name: PropTypes.string.isRequired
-        }).isRequired,
-        browser: PropTypes.shape({
-            id: PropTypes.string.isRequired,
-            name: PropTypes.string.isRequired
-        }).isRequired,
-        finalizedTestResults: PropTypes.arrayOf(
-            PropTypes.shape({
+            status: PropTypes.string.isRequired,
+            testPlanVersion: PropTypes.object.isRequired,
+            runnableTests: PropTypes.arrayOf(PropTypes.object.isRequired)
+                .isRequired,
+            at: PropTypes.shape({
                 id: PropTypes.string.isRequired,
-                test: PropTypes.shape({
-                    title: PropTypes.string.isRequired,
-                    renderedUrl: PropTypes.string.isRequired
-                }).isRequired,
-                scenarioResults: PropTypes.arrayOf(
-                    PropTypes.shape({
-                        id: PropTypes.string.isRequired,
-                        output: PropTypes.string.isRequired,
-                        assertionResults: PropTypes.arrayOf(
-                            PropTypes.shape({
-                                id: PropTypes.string.isRequired,
-                                passed: PropTypes.bool.isRequired,
-                                failedReason: PropTypes.string,
-                                assertion: PropTypes.shape({
-                                    text: PropTypes.string.isRequired
+                name: PropTypes.string.isRequired
+            }).isRequired,
+            browser: PropTypes.shape({
+                id: PropTypes.string.isRequired,
+                name: PropTypes.string.isRequired
+            }).isRequired,
+            finalizedTestResults: PropTypes.arrayOf(
+                PropTypes.shape({
+                    id: PropTypes.string.isRequired,
+                    test: PropTypes.shape({
+                        title: PropTypes.string.isRequired,
+                        renderedUrl: PropTypes.string.isRequired
+                    }).isRequired,
+                    scenarioResults: PropTypes.arrayOf(
+                        PropTypes.shape({
+                            id: PropTypes.string.isRequired,
+                            output: PropTypes.string.isRequired,
+                            assertionResults: PropTypes.arrayOf(
+                                PropTypes.shape({
+                                    id: PropTypes.string.isRequired,
+                                    passed: PropTypes.bool.isRequired,
+                                    failedReason: PropTypes.string,
+                                    assertion: PropTypes.shape({
+                                        text: PropTypes.string.isRequired
+                                    }).isRequired
                                 }).isRequired
-                            }).isRequired
-                        ).isRequired,
-                        unexpectedBehaviors: PropTypes.arrayOf(
-                            PropTypes.shape({
-                                id: PropTypes.string.isRequired,
-                                text: PropTypes.string.isRequired,
-                                otherUnexpectedBehaviorText: PropTypes.string
-                            }).isRequired
-                        ).isRequired
-                    }).isRequired
-                ).isRequired
-            }).isRequired
-        ).isRequired,
-        draftTestPlanRuns: PropTypes.arrayOf(
-            PropTypes.shape({
-                tester: PropTypes.shape({
-                    username: PropTypes.string.isRequired
+                            ).isRequired,
+                            unexpectedBehaviors: PropTypes.arrayOf(
+                                PropTypes.shape({
+                                    id: PropTypes.string.isRequired,
+                                    text: PropTypes.string.isRequired,
+                                    otherUnexpectedBehaviorText:
+                                        PropTypes.string
+                                }).isRequired
+                            ).isRequired
+                        }).isRequired
+                    ).isRequired
+                }).isRequired
+            ).isRequired,
+            draftTestPlanRuns: PropTypes.arrayOf(
+                PropTypes.shape({
+                    tester: PropTypes.shape({
+                        username: PropTypes.string.isRequired
+                    })
                 })
-            })
-        )
-    }).isRequired
+            )
+        }).isRequired
+    )
 };
 
 export default SummarizeTestPlanReport;

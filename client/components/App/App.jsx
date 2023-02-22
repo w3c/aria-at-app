@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useQuery } from '@apollo/client';
-import { renderRoutes } from 'react-router-config';
-import { Link, useLocation } from 'react-router-dom';
+import {
+    Link,
+    useLocation
+} from 'react-router-dom';
 import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
@@ -164,7 +166,7 @@ const App = () => {
                 </Navbar>
             </Container>
             <Container fluid>
-                <div>{renderRoutes(routes)}</div>
+                {routes()}
             </Container>
         </ScrollFixer>
     );

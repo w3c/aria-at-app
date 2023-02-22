@@ -15,7 +15,7 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
-import { useParams, Redirect, useHistory } from 'react-router-dom';
+import { useParams, useNavigate, Navigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import './CandidateTestPlanRun.css';
 import '../../TestRun/TestRun.css';
@@ -45,7 +45,7 @@ function useSize(target) {
 
 const CandidateTestPlanRun = () => {
     const { atId, testPlanVersionId } = useParams();
-    const history = useHistory();
+    const navigate = useNavigate();
 
     const { loading, data, error, refetch } = useQuery(
         CANDIDATE_REPORTS_QUERY,
@@ -254,7 +254,7 @@ const CandidateTestPlanRun = () => {
     const at = atMap[atId];
 
     const testPlanReports = data.testPlanReports;
-    if (testPlanReports.length === 0) return <Redirect to="/404" />;
+    if (testPlanReports.length === 0) return <Navigate to="/404" replace/>;
 
     const testPlanReport = testPlanReports.find(
         each => each.testPlanVersion.id === testPlanVersionId
@@ -699,7 +699,7 @@ const CandidateTestPlanRun = () => {
                     show={true}
                     handleAction={async () => {
                         setThankYouModalShowing(false);
-                        history.push('/candidate-tests');
+                        navigate('/candidate-tests');
                     }}
                     githubUrl={generateGithubUrl(
                         false,
