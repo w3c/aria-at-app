@@ -8,10 +8,11 @@ jobs:
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v2
-      - name: Install NodeJS 14
-        uses: actions/setup-node@v2
+      - name: Install NodeJS 18
+        uses: actions/setup-node@v3
         with:
-          node-version: '14'
+          node-version: '18'
+          cache: 'npm'
       - run: yarn --version
       - name: Install PostgreSQL 12
         run: |
@@ -42,5 +43,5 @@ jobs:
         run: yarn test
       - name: lighthouseci
         run: |
-          npm install -g @lhci/cli@0.8.x
+          npm install -g @lhci/cli@0.10.0
           yarn workspace client lighthouse

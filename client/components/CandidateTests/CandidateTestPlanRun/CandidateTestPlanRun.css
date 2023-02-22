@@ -123,6 +123,10 @@
     padding: 1em;
 }
 
+.results-container {
+    padding: 0;
+}
+
 .options-feedback {
     top: 35px;
 }
@@ -146,7 +150,7 @@
 }
 
 .viewed-badge {
-    background-color: #e5e5e5;
+    background-color: #e5e5e5 !important;
     color: black;
     font-size: 15px;
     font-weight: 400;

@@ -40,7 +40,7 @@ listener.use('/api', app).use('/embed', embedApp);
 const baseUrl = 'https://raw.githubusercontent.com';
 const onlyStatus200 = (req, res) => res.statusCode === 200;
 
-listener.route('/aria-at/:branch/*').get(
+listener.route('/aria-at/:branch*').get(
     cacheMiddleware('7 days', onlyStatus200),
     (req, res, next) => {
         req.url = path.join('w3c', req.url);

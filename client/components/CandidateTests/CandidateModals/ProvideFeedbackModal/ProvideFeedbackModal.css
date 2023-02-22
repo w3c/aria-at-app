@@ -59,6 +59,7 @@
 .radio-text {
     padding-bottom: 10px;
     color: #656565;
+    display: block;
 }
 
 .sr-only {

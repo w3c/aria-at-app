@@ -166,6 +166,7 @@ const SummarizeTestPlanReport = ({ testPlanReport }) => {
                                 >
                                     <FontAwesomeIcon
                                         icon={faExclamationCircle}
+                                        color="#94979b"
                                     />
                                     Raise an Issue
                                 </Button>
@@ -175,7 +176,10 @@ const SummarizeTestPlanReport = ({ testPlanReport }) => {
                                     href={modifiedRenderedUrl}
                                     variant="secondary"
                                 >
-                                    <FontAwesomeIcon icon={faExternalLinkAlt} />
+                                    <FontAwesomeIcon
+                                        icon={faExternalLinkAlt}
+                                        color="#94979b"
+                                    />
                                     Open Test
                                 </Button>
                             </div>

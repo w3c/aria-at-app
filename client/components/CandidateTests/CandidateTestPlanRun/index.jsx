@@ -10,7 +10,11 @@ import {
     CANDIDATE_REPORTS_QUERY,
     PROMOTE_VENDOR_REVIEW_STATUS_REPORT_MUTATION
 } from './queries';
-import { Badge, Container, Row, Col, Button } from 'react-bootstrap';
+import Badge from 'react-bootstrap/Badge';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import Button from 'react-bootstrap/Button';
 import { useParams, Redirect, useHistory } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import './CandidateTestPlanRun.css';
@@ -482,7 +486,7 @@ const CandidateTestPlanRun = () => {
     );
 
     const results = (
-        <>
+        <div className="results-container">
             <h1 className="current-test-title">{currentTest.title}</h1>
             <DisclosureComponent
                 componentId="test-instructions-and-results"
@@ -534,7 +538,7 @@ const CandidateTestPlanRun = () => {
                 ]}
                 stacked
             ></DisclosureComponent>
-        </>
+        </div>
     );
 
     const requestChangesUrl = generateGithubUrl(true, 'changes-requested');

@@ -12,7 +12,7 @@ const OptionButton = ({
 }) => {
     return (
         <Button
-            className="btn-block"
+            className="btn-options"
             variant="secondary"
             onClick={onClick}
             disabled={disabled}

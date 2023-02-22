@@ -12,7 +12,6 @@ import { Button, Dropdown } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import ATAlert from '../ATAlert';
 import { capitalizeEachWord } from '../../utils/formatter';
-import './TestQueueRow.css';
 import {
     TEST_PLAN_REPORT_QUERY,
     ASSIGN_TESTER_MUTATION,
@@ -25,7 +24,7 @@ import { gitUpdatedDateToString } from '../../utils/gitUtils';
 import TestPlanUpdaterModal from '../TestPlanUpdater/TestPlanUpdaterModal';
 import BasicThemedModal from '../common/BasicThemedModal';
 import { LoadingStatus, useTriggerLoad } from '../common/LoadingStatus';
-
+import './TestQueueRow.css';
 const TestQueueRow = ({
     user = {},
     testers = [],
