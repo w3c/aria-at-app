@@ -21,7 +21,7 @@
     "storybook": "yarn workspaces run storybook",
     "sequelize": "dotenv -e config/dev.env npx sequelize-cli",
     "sequelize:test": "dotenv -e config/test.env npx sequelize-cli",
-    "postinstall": "npx patch-package"
+    "postinstall": "patch-package"
   },
   "repository": {
     "type": "git",
@@ -33,7 +33,10 @@
     "url": "https://github.com/bocoup/aria-at-report/issues"
   },
   "homepage": "https://github.com/bocoup/aria-at-report#readme",
-  "dependencies": {},
+  "dependencies": {
+    "patch-package": "^6.5.1",
+    "postinstall-postinstall": "^2.1.0"
+  },
   "workspaces": [
     "client",
     "server"

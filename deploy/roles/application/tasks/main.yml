@@ -30,7 +30,7 @@
 
 - name: Make vagrant folder writable
   file:
-    path: /vagrant/server/scripts
+    path: /vagrant/server
     mode: '0777'
     recurse: yes
   when: deployment_mode == 'development'
@@ -66,12 +66,12 @@
     ansible_ssh_pipelining: yes
 
 - name: Migrate database
-  shell: DOTENV_CONFIG_PATH={{environment_config.dest}} node -r ./node_modules/dotenv/config $(npm bin)/sequelize-cli db:migrate --config ./config/config.js --migrations-path ./server/migrations/
+  shell: DOTENV_CONFIG_PATH={{environment_config.dest}} node -r ./node_modules/dotenv/config ./node_modules/.bin/sequelize-cli db:migrate --config ./config/config.js --migrations-path ./server/migrations/
   args:
     chdir: '{{source_dir}}'
 
 - name: Seed database
-  shell: DOTENV_CONFIG_PATH={{environment_config.dest}} node -r ./node_modules/dotenv/config $(npm bin)/sequelize-cli db:seed:all --config ./config/config.js --seeders-path ./server/seeders/
+  shell: DOTENV_CONFIG_PATH={{environment_config.dest}} node -r ./node_modules/dotenv/config ./node_modules/.bin/sequelize-cli db:seed:all --config ./config/config.js --seeders-path ./server/seeders/
   args:
     chdir: '{{source_dir}}'
 
