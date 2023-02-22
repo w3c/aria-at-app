@@ -19,7 +19,7 @@ const setup = () => {
     return wrapper;
 };
 
-test.skip('renders without crashing', () => {
+test('renders without crashing', () => {
     const wrapper = setup();
     expect(wrapper).toBeTruthy();
 });
