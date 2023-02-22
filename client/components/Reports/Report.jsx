@@ -11,10 +11,8 @@ import { useParams } from 'react-router-dom';
 const Report = () => {
     const { testPlanVersionId } = useParams();
 
-    // const match = useMatch('/report/:testPlanVersionId');
-
     let testPlanVersionIds = [];
-    // let testPlanVersionId = match?.params?.testPlanVersionId;
+
     if (testPlanVersionId.includes(','))
         testPlanVersionIds = testPlanVersionId.split(',');
 
@@ -83,6 +81,10 @@ const Report = () => {
             });
         });
     };
+
+    if(!testPlanReports || testPlanReports.length < 1) {
+        return <Navigate to="/404" replace />
+    }
 
     return (
         <Routes>
