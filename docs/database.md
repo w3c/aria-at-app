@@ -3,6 +3,12 @@
 The database migrations are managed by [Sequelize](https://sequelize.org/). To read and understand the schema, see the sequelize models that represent the data in `server/models`. Each model represents a table in the database.
 
 ## Setting up a local database for development
+0. Install PostgreSQL
+    - Mac 
+    ```
+    brew install postgresql@14
+    brew services start postgresql@14
+    ```
 
 1. Initialize the database
     - Mac
