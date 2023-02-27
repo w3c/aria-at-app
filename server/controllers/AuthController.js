@@ -67,7 +67,7 @@ const oauthRedirectFromGithubController = async (req, res) => {
         roles.push({ name: User.VENDOR });
     }
 
-    if (roles.length === 0) return loginFailedDueToRole();
+    // if (roles.length === 0) return loginFailedDueToRole();
 
     let [user] = await getOrCreateUser(
         { username: githubUsername },
@@ -94,11 +94,12 @@ const oauthRedirectFromGithubController = async (req, res) => {
             user.roles.push({ name: User.VENDOR });
         }
     }
-    if (user.roles.length === 0) return loginFailedDueToRole();
+    // if (user.roles.length === 0) return loginFailedDueToRole();
 
     req.session.user = user;
 
-    return loginSucceeded();
+    // return loginSucceeded();
+    roles.length !== 0 ? loginSucceeded() : user.roles.length !== 0 ? loginSucceeded(): loginFailedDueToRole();
 };
 
 const signoutController = (req, res) => {
