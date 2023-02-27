@@ -10,9 +10,8 @@ describe('TestPlanReportModel Data Checks', () => {
     it('should return valid testPlanReport for id query with all associations', async () => {
         const _id = 1;
 
-        const testPlanReport = await TestPlanReportService.getTestPlanReportById(
-            _id
-        );
+        const testPlanReport =
+            await TestPlanReportService.getTestPlanReportById(_id);
         const { id, status, testPlanVersionId, createdAt } = testPlanReport;
 
         expect(id).toEqual(_id);
@@ -28,25 +27,20 @@ describe('TestPlanReportModel Data Checks', () => {
     it('should return valid testPlanReport for id query with no associations', async () => {
         const _id = 1;
 
-        const testPlanReport = await TestPlanReportService.getTestPlanReportById(
-            _id,
-            null,
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            []
-        );
-        const {
-            id,
-            status,
-            testPlanVersionId,
-            createdAt,
-            atId,
-            browserId
-        } = testPlanReport;
+        const testPlanReport =
+            await TestPlanReportService.getTestPlanReportById(
+                _id,
+                null,
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+                []
+            );
+        const { id, status, testPlanVersionId, createdAt, atId, browserId } =
+            testPlanReport;
 
         expect(id).toEqual(_id);
         expect(status).toMatch(/^(DRAFT|IN_REVIEW|CANDIDATE|RECOMMENDED)$/);
@@ -63,9 +57,8 @@ describe('TestPlanReportModel Data Checks', () => {
     it('should not be valid testPlanReport query', async () => {
         const _id = 53935;
 
-        const testPlanReport = await TestPlanReportService.getTestPlanReportById(
-            _id
-        );
+        const testPlanReport =
+            await TestPlanReportService.getTestPlanReportById(_id);
 
         expect(testPlanReport).toBeNull();
     });
@@ -114,14 +107,13 @@ describe('TestPlanReportModel Data Checks', () => {
             const _testPlanVersionId = 3;
             const _status = 'DRAFT';
 
-            const testPlanReport = await TestPlanReportService.createTestPlanReport(
-                {
+            const testPlanReport =
+                await TestPlanReportService.createTestPlanReport({
                     status: _status,
                     testPlanVersionId: _testPlanVersionId,
                     atId: _atId,
                     browserId: _browserId
-                }
-            );
+                });
 
             expect(testPlanReport).toEqual(
                 expect.objectContaining({
@@ -150,15 +142,13 @@ describe('TestPlanReportModel Data Checks', () => {
             const _browserId = 1;
 
             // A2
-            const [
-                testPlanReport,
-                created
-            ] = await TestPlanReportService.getOrCreateTestPlanReport({
-                status: _status,
-                testPlanVersionId: _testPlanVersionId,
-                atId: _atId,
-                browserId: _browserId
-            });
+            const [testPlanReport, created] =
+                await TestPlanReportService.getOrCreateTestPlanReport({
+                    status: _status,
+                    testPlanVersionId: _testPlanVersionId,
+                    atId: _atId,
+                    browserId: _browserId
+                });
 
             // A3
             expect(testPlanReport).toEqual(

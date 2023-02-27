@@ -23,10 +23,8 @@ const TestManagement = () => {
     const [testPlanVersions, setTestPlanVersions] = useState([]);
     const [testPlanReports, setTestPlanReports] = useState([]);
 
-    const [
-        summaryGroupedTestPlanReports,
-        setSummaryGroupedTestPlanReports
-    ] = useState({});
+    const [summaryGroupedTestPlanReports, setSummaryGroupedTestPlanReports] =
+        useState({});
 
     useEffect(() => {
         if (data) {
@@ -217,9 +215,8 @@ const TestManagement = () => {
                                     )
                                     .map(k => {
                                         const summaryItem = summaryData[k];
-                                        const atItems = Object.values(
-                                            summaryItem
-                                        );
+                                        const atItems =
+                                            Object.values(summaryItem);
                                         const key = `summary-table-item-${k}`;
                                         return (
                                             <StatusSummaryRow

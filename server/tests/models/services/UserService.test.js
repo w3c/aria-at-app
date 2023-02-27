@@ -209,23 +209,19 @@ describe('UserModel Data Checks', () => {
             const adminUserId = 1;
 
             // A2
-            const [
-                originalUserRoles,
-                isUpdated1
-            ] = await UserService.bulkGetOrReplaceUserRoles(
-                { userId: adminUserId },
-                [{ roleName: 'TESTER' }, { roleName: 'ADMIN' }],
-                ['roleName']
-            );
+            const [originalUserRoles, isUpdated1] =
+                await UserService.bulkGetOrReplaceUserRoles(
+                    { userId: adminUserId },
+                    [{ roleName: 'TESTER' }, { roleName: 'ADMIN' }],
+                    ['roleName']
+                );
 
-            const [
-                updatedUserRoles,
-                isUpdated2
-            ] = await UserService.bulkGetOrReplaceUserRoles(
-                { userId: adminUserId },
-                [{ roleName: 'TESTER' }],
-                ['roleName']
-            );
+            const [updatedUserRoles, isUpdated2] =
+                await UserService.bulkGetOrReplaceUserRoles(
+                    { userId: adminUserId },
+                    [{ roleName: 'TESTER' }],
+                    ['roleName']
+                );
 
             // A3
             expect(isUpdated1).toBe(false);

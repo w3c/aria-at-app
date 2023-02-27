@@ -267,11 +267,8 @@ const CandidateTestPlanRun = () => {
     }));
 
     const currentTest = tests[currentTestIndex];
-    const {
-        testPlanVersion,
-        vendorReviewStatus,
-        recommendedStatusTargetDate
-    } = testPlanReport;
+    const { testPlanVersion, vendorReviewStatus, recommendedStatusTargetDate } =
+        testPlanReport;
 
     const vendorReviewStatusMap = {
         READY: 'Ready',
@@ -380,9 +377,11 @@ const CandidateTestPlanRun = () => {
             <div className="test-info-entity apg-example-name">
                 <div className="info-label">
                     <b>Candidate Test Plan:</b>{' '}
-                    {`${testPlanVersion.title ||
+                    {`${
+                        testPlanVersion.title ||
                         testPlanVersion.testPlan?.directory ||
-                        ''}`}
+                        ''
+                    }`}
                 </div>
             </div>
             <div className="test-info-entity review-status">

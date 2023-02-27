@@ -62,9 +62,8 @@ const TestQueueRow = ({
     const [removeTester] = useMutation(REMOVE_TESTER_MUTATION);
     const [removeTesterResults] = useMutation(REMOVE_TESTER_RESULTS_MUTATION);
 
-    const [showTestPlanUpdaterModal, setShowTestPlanUpdaterModal] = useState(
-        false
-    );
+    const [showTestPlanUpdaterModal, setShowTestPlanUpdaterModal] =
+        useState(false);
     const [testPlanReport, setTestPlanReport] = useState(testPlanReportData);
     const [isLoading, setIsLoading] = useState(false);
 
@@ -244,9 +243,8 @@ const TestQueueRow = ({
                     <Dropdown.Menu role="menu">
                         {testers.length ? (
                             testers.map(({ username }) => {
-                                const isTesterAssigned = checkIsTesterAssigned(
-                                    username
-                                );
+                                const isTesterAssigned =
+                                    checkIsTesterAssigned(username);
                                 let classname = isTesterAssigned
                                     ? 'assigned'
                                     : 'not-assigned';

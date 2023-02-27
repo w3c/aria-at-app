@@ -47,9 +47,8 @@ module.exports = {
                             status
                         }) || [];
                     if (finalizedTestResults.length) {
-                        const runnableTests = runnableTestsResolver(
-                            testPlanReport
-                        );
+                        const runnableTests =
+                            runnableTestsResolver(testPlanReport);
                         const metrics = getMetrics({
                             testPlanReport: {
                                 ...testPlanReport,

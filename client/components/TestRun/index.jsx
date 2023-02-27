@@ -114,14 +114,12 @@ const TestRun = () => {
             variables: { testPlanRunId, testPlanReportId }
         }
     );
-    const [
-        createTestResult,
-        { loading: createTestResultLoading }
-    ] = useMutation(FIND_OR_CREATE_TEST_RESULT_MUTATION, {
-        refetchQueries: [
-            { query: TEST_RUN_PAGE_QUERY, variables: { testPlanRunId } }
-        ]
-    });
+    const [createTestResult, { loading: createTestResultLoading }] =
+        useMutation(FIND_OR_CREATE_TEST_RESULT_MUTATION, {
+            refetchQueries: [
+                { query: TEST_RUN_PAGE_QUERY, variables: { testPlanRunId } }
+            ]
+        });
     const [saveTestResult] = useMutation(SAVE_TEST_RESULT_MUTATION, {
         refetchQueries: [
             { query: TEST_RUN_PAGE_QUERY, variables: { testPlanRunId } }
@@ -137,9 +135,8 @@ const TestRun = () => {
         FIND_OR_CREATE_BROWSER_VERSION_MUTATION
     );
 
-    const [isShowingAtBrowserModal, setIsShowingAtBrowserModal] = useState(
-        true
-    );
+    const [isShowingAtBrowserModal, setIsShowingAtBrowserModal] =
+        useState(true);
     const [isRendererReady, setIsRendererReady] = useState(false);
     const [isSavingForm, setIsSavingForm] = useState(false);
     const [isTestSubmitClicked, setIsTestSubmitClicked] = useState(false);
@@ -149,19 +146,16 @@ const TestRun = () => {
     const [atVersionId, setAtVersionId] = useState();
     const [browserVersionId, setBrowserVersionId] = useState();
     const [showStartOverModal, setShowStartOverModal] = useState(false);
-    const [showReviewConflictsModal, setShowReviewConflictsModal] = useState(
-        false
-    );
+    const [showReviewConflictsModal, setShowReviewConflictsModal] =
+        useState(false);
     const [showGetInvolvedModal, setShowGetInvolvedModal] = useState(false);
 
     const [showThemedModal, setShowThemedModal] = useState(false);
     const [themedModalTitle, setThemedModalTitle] = useState('');
     const [themedModalContent, setThemedModalContent] = useState(<></>);
     const [themedModalOtherButton, setThemedModalOtherButton] = useState(null);
-    const [
-        isEditAtBrowserDetailsModalClick,
-        setIsEditAtBrowserDetailsClicked
-    ] = useState(false);
+    const [isEditAtBrowserDetailsModalClick, setIsEditAtBrowserDetailsClicked] =
+        useState(false);
     const [updateMessageComponent, setUpdateMessageComponent] = useState(null);
 
     useEffect(() => setup(), [currentTestIndex]);
@@ -211,8 +205,11 @@ const TestRun = () => {
     if (testPlanReportId) isSignedIn = false;
     if (!isSignedIn) testPlanReport = data.testPlanReport;
 
-    const { testPlanVersion, runnableTests = [], conflicts = [] } =
-        testPlanReport || {};
+    const {
+        testPlanVersion,
+        runnableTests = [],
+        conflicts = []
+    } = testPlanReport || {};
 
     // check to ensure an admin that manually went to a test run url doesn't
     // run the test as themselves
@@ -344,8 +341,9 @@ const TestRun = () => {
         const { commands } = rendererState;
         if (!commands || commands.length !== scenarioResults.length) {
             throw new Error(
-                `Unable to merge invalid results:commands:${commands} | commands.length !== scenarioResults.length:${commands.length !==
-                    scenarioResults.length}`
+                `Unable to merge invalid results:commands:${commands} | commands.length !== scenarioResults.length:${
+                    commands.length !== scenarioResults.length
+                }`
             );
         }
 
@@ -435,7 +433,8 @@ const TestRun = () => {
                 ? [...unexpectedBehaviors]
                 : null;
             if (captureHighlightRequired)
-                scenarioResult.unexpectedBehaviorHighlightRequired = highlightRequired;
+                scenarioResult.unexpectedBehaviorHighlightRequired =
+                    highlightRequired;
 
             newScenarioResults.push(scenarioResult);
         }
@@ -1060,9 +1059,11 @@ const TestRun = () => {
                 >
                     <div className="info-label">
                         <b>Test Plan:</b>{' '}
-                        {`${testPlanVersion.title ||
+                        {`${
+                            testPlanVersion.title ||
                             testPlanVersion.testPlan?.directory ||
-                            ''}`}
+                            ''
+                        }`}
                     </div>
                 </div>
                 <div
