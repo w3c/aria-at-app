@@ -64,9 +64,8 @@ const AtAndBrowserDetailsModal = ({
 
     const [showExitModal, setShowExitModal] = useState(false);
     const [isFirstLoad, setIsFirstLoad] = useState(true);
-    const [updatedAtVersion, setUpdatedAtVersion] = useState(
-        'Select a Version'
-    );
+    const [updatedAtVersion, setUpdatedAtVersion] =
+        useState('Select a Version');
     const [updatedBrowserVersion, setUpdatedBrowserVersion] = useState('');
 
     const [isAtVersionError, setIsAtVersionError] = useState(false);
@@ -76,10 +75,8 @@ const AtAndBrowserDetailsModal = ({
         forceBrowserVersionUpdateMessage,
         setForceBrowserVersionUpdateMessage
     ] = useState(false);
-    const [
-        browserVersionMismatchMessage,
-        setBrowserVersionMismatchMessage
-    ] = useState(false);
+    const [browserVersionMismatchMessage, setBrowserVersionMismatchMessage] =
+        useState(false);
 
     useEffect(() => {
         setIsFirstLoad(firstLoad);
@@ -352,18 +349,22 @@ const AtAndBrowserDetailsModal = ({
                                     </ModalSubtitleStyle>
                                 </legend>
                                 {/* Tester Scenario 1 */}
-                                {isFirstLoad && uaBrowser && uaMajor !== '0' && (
-                                    <Alert
-                                        variant="primary"
-                                        className="at-browser-details-modal-alert"
-                                    >
-                                        <FontAwesomeIcon icon={faInfoCircle} />
-                                        <span>
-                                            We have automatically detected your
-                                            version of {uaBrowser}
-                                        </span>
-                                    </Alert>
-                                )}
+                                {isFirstLoad &&
+                                    uaBrowser &&
+                                    uaMajor !== '0' && (
+                                        <Alert
+                                            variant="primary"
+                                            className="at-browser-details-modal-alert"
+                                        >
+                                            <FontAwesomeIcon
+                                                icon={faInfoCircle}
+                                            />
+                                            <span>
+                                                We have automatically detected
+                                                your version of {uaBrowser}
+                                            </span>
+                                        </Alert>
+                                    )}
                                 {/* Tester Scenario 3 */}
                                 {!isFirstLoad &&
                                     !isAdmin &&

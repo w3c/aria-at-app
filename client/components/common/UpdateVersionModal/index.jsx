@@ -23,10 +23,8 @@ const UpdateVersionModal = ({
     const dateAvailabilityTextRef = useRef();
 
     const [updatedVersionText, setUpdatedVersionText] = useState(versionText);
-    const [
-        updatedDateAvailabilityText,
-        setUpdatedDateAvailabilityText
-    ] = useState(convertDateToString(dateAvailabilityText));
+    const [updatedDateAvailabilityText, setUpdatedDateAvailabilityText] =
+        useState(convertDateToString(dateAvailabilityText));
     const [isVersionError, setIsVersionError] = useState(false);
     const [isDateError, setIsDateError] = useState(false);
 

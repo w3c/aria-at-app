@@ -212,17 +212,12 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
         2: true,
         3: true
     });
-    const [showUpdateTargetDateModal, setShowUpdateTargetDateModal] = useState(
-        false
-    );
-    const [
-        updateTargetDateModalTitle,
-        setUpdateTargetDateModalTitle
-    ] = useState('');
-    const [
-        updateTargetDateModalDateText,
-        setUpdateTargetDateModalDateText
-    ] = useState('');
+    const [showUpdateTargetDateModal, setShowUpdateTargetDateModal] =
+        useState(false);
+    const [updateTargetDateModalTitle, setUpdateTargetDateModalTitle] =
+        useState('');
+    const [updateTargetDateModalDateText, setUpdateTargetDateModalDateText] =
+        useState('');
     const [testPlanReportsToUpdate, setTestPlanReportsToUpdate] = useState([]);
 
     const none = <None>None</None>;
@@ -478,9 +473,8 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
 
             // Construct testPlanTarget
             const testPlanTarget = { id: `${at.id}${browser.id}`, at, browser };
-            tabularReports[testPlanVersion.id][
-                testPlanTarget.id
-            ] = testPlanReport;
+            tabularReports[testPlanVersion.id][testPlanTarget.id] =
+                testPlanReport;
         });
 
         return (
@@ -553,14 +547,17 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
                                                     allMetrics.push(metrics);
 
                                                     const {
-                                                        candidateStatusReachedAt: testPlanReportCandidateStatusReachedAt,
-                                                        recommendedStatusTargetDate: testPlanReportRecommendedStatusTargetDate
+                                                        candidateStatusReachedAt:
+                                                            testPlanReportCandidateStatusReachedAt,
+                                                        recommendedStatusTargetDate:
+                                                            testPlanReportRecommendedStatusTargetDate
                                                     } = testPlanReport;
 
                                                     if (
                                                         !candidateStatusReachedAt
                                                     ) {
-                                                        candidateStatusReachedAt = testPlanReportCandidateStatusReachedAt;
+                                                        candidateStatusReachedAt =
+                                                            testPlanReportCandidateStatusReachedAt;
                                                     }
                                                     // Use earliest candidateStatusReachedAt across browser results for AT
                                                     else {
@@ -578,7 +575,8 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
                                                     if (
                                                         !recommendedStatusTargetDate
                                                     ) {
-                                                        recommendedStatusTargetDate = testPlanReportRecommendedStatusTargetDate;
+                                                        recommendedStatusTargetDate =
+                                                            testPlanReportRecommendedStatusTargetDate;
                                                     }
                                                     // Use latest recommendStatusTargetDate across browser results for AT
                                                     else {
@@ -605,18 +603,21 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
                                         const metrics = {
                                             testsCount,
                                             browsersLength: allMetrics.length,
-                                            totalTestsFailedCount: allMetrics.reduce(
-                                                (acc, obj) =>
-                                                    acc + obj.testsFailedCount,
-                                                0
-                                            ),
-                                            totalAssertionsFailedCount: allMetrics.reduce(
-                                                (acc, obj) =>
-                                                    acc +
-                                                    obj.optionalAssertionsFailedCount +
-                                                    obj.requiredAssertionsFailedCount,
-                                                0
-                                            ),
+                                            totalTestsFailedCount:
+                                                allMetrics.reduce(
+                                                    (acc, obj) =>
+                                                        acc +
+                                                        obj.testsFailedCount,
+                                                    0
+                                                ),
+                                            totalAssertionsFailedCount:
+                                                allMetrics.reduce(
+                                                    (acc, obj) =>
+                                                        acc +
+                                                        obj.optionalAssertionsFailedCount +
+                                                        obj.requiredAssertionsFailedCount,
+                                                    0
+                                                ),
                                             totalSupportPercent:
                                                 Math.round(
                                                     allMetrics.reduce(
@@ -716,10 +717,12 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
                                                         </Dropdown>
                                                         <Button
                                                             ref={changeTargetDateButtonRef =>
-                                                                (changeTargetDateButtonRefs.current = {
-                                                                    ...changeTargetDateButtonRefs.current,
-                                                                    [`${testPlanVersion.id}-${atId}`]: changeTargetDateButtonRef
-                                                                })
+                                                                (changeTargetDateButtonRefs.current =
+                                                                    {
+                                                                        ...changeTargetDateButtonRefs.current,
+                                                                        [`${testPlanVersion.id}-${atId}`]:
+                                                                            changeTargetDateButtonRef
+                                                                    })
                                                             }
                                                             variant="secondary"
                                                             className="dropdown-btn-mark-as"
@@ -749,16 +752,18 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
                                                 <CenteredTd>
                                                     {getRowStatus({
                                                         issues: allIssues,
-                                                        isInProgressStatusExists: testPlanReports.some(
-                                                            testPlanReport =>
-                                                                testPlanReport.vendorReviewStatus ===
-                                                                'IN_PROGRESS'
-                                                        ),
-                                                        isApprovedStatusExists: testPlanReports.some(
-                                                            testPlanReport =>
-                                                                testPlanReport.vendorReviewStatus ===
-                                                                'APPROVED'
-                                                        )
+                                                        isInProgressStatusExists:
+                                                            testPlanReports.some(
+                                                                testPlanReport =>
+                                                                    testPlanReport.vendorReviewStatus ===
+                                                                    'IN_PROGRESS'
+                                                            ),
+                                                        isApprovedStatusExists:
+                                                            testPlanReports.some(
+                                                                testPlanReport =>
+                                                                    testPlanReport.vendorReviewStatus ===
+                                                                    'APPROVED'
+                                                            )
                                                     })}
                                                 </CenteredTd>
                                                 <CenteredTd>
@@ -833,9 +838,8 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
 
             // Construct testPlanTarget
             const testPlanTarget = { id: `${at.id}${browser.id}`, at, browser };
-            tabularReports[testPlanVersion.id][
-                testPlanTarget.id
-            ] = testPlanReport;
+            tabularReports[testPlanVersion.id][testPlanTarget.id] =
+                testPlanReport;
         });
 
         return (
@@ -896,30 +900,27 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
                                 const allNvdaIssues = [];
                                 const allVoIssues = [];
 
-                                const jawsTestPlanReports = testPlanReports.filter(
-                                    t => {
+                                const jawsTestPlanReports =
+                                    testPlanReports.filter(t => {
                                         if (t.at.id === '1') {
                                             allJawsIssues.push(...t.issues);
                                             return true;
                                         } else return false;
-                                    }
-                                );
-                                const nvdaTestPlanReports = testPlanReports.filter(
-                                    t => {
+                                    });
+                                const nvdaTestPlanReports =
+                                    testPlanReports.filter(t => {
                                         if (t.at.id === '2') {
                                             allNvdaIssues.push(...t.issues);
                                             return true;
                                         } else return false;
-                                    }
-                                );
-                                const voTestPlanReports = testPlanReports.filter(
-                                    t => {
+                                    });
+                                const voTestPlanReports =
+                                    testPlanReports.filter(t => {
                                         if (t.at.id === '3') {
                                             allVoIssues.push(...t.issues);
                                             return true;
                                         } else return false;
-                                    }
-                                );
+                                    });
 
                                 const uniqueLinks = [];
                                 const jawsIssues = allJawsIssues.filter(t =>
@@ -945,16 +946,18 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
                                             {jawsDataExists
                                                 ? getRowStatus({
                                                       issues: jawsIssues,
-                                                      isInProgressStatusExists: jawsTestPlanReports.some(
-                                                          testPlanReport =>
-                                                              testPlanReport.vendorReviewStatus ===
-                                                              'IN_PROGRESS'
-                                                      ),
-                                                      isApprovedStatusExists: jawsTestPlanReports.some(
-                                                          testPlanReport =>
-                                                              testPlanReport.vendorReviewStatus ===
-                                                              'APPROVED'
-                                                      )
+                                                      isInProgressStatusExists:
+                                                          jawsTestPlanReports.some(
+                                                              testPlanReport =>
+                                                                  testPlanReport.vendorReviewStatus ===
+                                                                  'IN_PROGRESS'
+                                                          ),
+                                                      isApprovedStatusExists:
+                                                          jawsTestPlanReports.some(
+                                                              testPlanReport =>
+                                                                  testPlanReport.vendorReviewStatus ===
+                                                                  'APPROVED'
+                                                          )
                                                   })
                                                 : none}
                                         </CenteredTd>
@@ -962,16 +965,18 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
                                             {nvdaDataExists
                                                 ? getRowStatus({
                                                       issues: nvdaIssues,
-                                                      isInProgressStatusExists: nvdaTestPlanReports.some(
-                                                          testPlanReport =>
-                                                              testPlanReport.vendorReviewStatus ===
-                                                              'IN_PROGRESS'
-                                                      ),
-                                                      isApprovedStatusExists: nvdaTestPlanReports.some(
-                                                          testPlanReport =>
-                                                              testPlanReport.vendorReviewStatus ===
-                                                              'APPROVED'
-                                                      )
+                                                      isInProgressStatusExists:
+                                                          nvdaTestPlanReports.some(
+                                                              testPlanReport =>
+                                                                  testPlanReport.vendorReviewStatus ===
+                                                                  'IN_PROGRESS'
+                                                          ),
+                                                      isApprovedStatusExists:
+                                                          nvdaTestPlanReports.some(
+                                                              testPlanReport =>
+                                                                  testPlanReport.vendorReviewStatus ===
+                                                                  'APPROVED'
+                                                          )
                                                   })
                                                 : none}
                                         </CenteredTd>
@@ -979,16 +984,18 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
                                             {voDataExists
                                                 ? getRowStatus({
                                                       issues: voIssues,
-                                                      isInProgressStatusExists: voTestPlanReports.some(
-                                                          testPlanReport =>
-                                                              testPlanReport.vendorReviewStatus ===
-                                                              'IN_PROGRESS'
-                                                      ),
-                                                      isApprovedStatusExists: voTestPlanReports.some(
-                                                          testPlanReport =>
-                                                              testPlanReport.vendorReviewStatus ===
-                                                              'APPROVED'
-                                                      )
+                                                      isInProgressStatusExists:
+                                                          voTestPlanReports.some(
+                                                              testPlanReport =>
+                                                                  testPlanReport.vendorReviewStatus ===
+                                                                  'IN_PROGRESS'
+                                                          ),
+                                                      isApprovedStatusExists:
+                                                          voTestPlanReports.some(
+                                                              testPlanReport =>
+                                                                  testPlanReport.vendorReviewStatus ===
+                                                                  'APPROVED'
+                                                          )
                                                   })
                                                 : none}
                                         </CenteredTd>
@@ -1009,9 +1016,10 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
                     return updateTestPlanReportRecommendedTargetDate({
                         variables: {
                             testReportId: testPlanReport.id,
-                            recommendedStatusTargetDate: convertStringFormatToAnotherFormat(
-                                updatedDateText
-                            )
+                            recommendedStatusTargetDate:
+                                convertStringFormatToAnotherFormat(
+                                    updatedDateText
+                                )
                         }
                     });
                 }

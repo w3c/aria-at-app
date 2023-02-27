@@ -139,10 +139,8 @@ const TestPlanUpdaterModal = ({
     let testsToDelete;
     let currentTestIdsToNewTestIds;
     if (versionData) {
-        const {
-            testPlanReport,
-            testPlanVersion: newTestPlanVersion
-        } = versionData;
+        const { testPlanReport, testPlanVersion: newTestPlanVersion } =
+            versionData;
         runsWithResults = testPlanReport.draftTestPlanRuns.filter(
             testPlanRun => testPlanRun.testResults.length
         );
@@ -171,19 +169,24 @@ const TestPlanUpdaterModal = ({
                     return {
                         id: scenarioResultSkeleton.id,
                         output: scenarioResult.output,
-                        assertionResults: scenarioResultSkeleton.assertionResults.map(
-                            (assertionResultSkeleton, assertionResultIndex) => {
-                                const assertionResult =
-                                    scenarioResult.assertionResults[
-                                        assertionResultIndex
-                                    ];
-                                return {
-                                    id: assertionResultSkeleton.id,
-                                    passed: assertionResult.passed,
-                                    failedReason: assertionResult.failedReason
-                                };
-                            }
-                        ),
+                        assertionResults:
+                            scenarioResultSkeleton.assertionResults.map(
+                                (
+                                    assertionResultSkeleton,
+                                    assertionResultIndex
+                                ) => {
+                                    const assertionResult =
+                                        scenarioResult.assertionResults[
+                                            assertionResultIndex
+                                        ];
+                                    return {
+                                        id: assertionResultSkeleton.id,
+                                        passed: assertionResult.passed,
+                                        failedReason:
+                                            assertionResult.failedReason
+                                    };
+                                }
+                            ),
                         unexpectedBehaviors: scenarioResult.unexpectedBehaviors
                     };
                 }

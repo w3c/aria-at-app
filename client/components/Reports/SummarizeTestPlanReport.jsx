@@ -145,9 +145,8 @@ const SummarizeTestPlanReport = ({ testPlanReports }) => {
             {testPlanReport.finalizedTestResults.map(testResult => {
                 const test = testResult.test;
 
-                const gitHubIssueLinkWithTitleAndBody = createGitHubIssueWithTitleAndBody(
-                    { test, testPlanReport }
-                );
+                const gitHubIssueLinkWithTitleAndBody =
+                    createGitHubIssueWithTitleAndBody({ test, testPlanReport });
 
                 // TODO: fix renderedUrl
                 let modifiedRenderedUrl = test.renderedUrl.replace(

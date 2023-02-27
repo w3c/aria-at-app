@@ -32,12 +32,14 @@ const TestPlanResultsTable = ({ test, testResult, tableClassName = '' }) => {
                 </thead>
                 <tbody>
                     {testResult.scenarioResults.map(scenarioResult => {
-                        const passedAssertions = scenarioResult.assertionResults.filter(
-                            assertionResult => assertionResult.passed
-                        );
-                        const failedAssertions = scenarioResult.assertionResults.filter(
-                            assertionResult => !assertionResult.passed
-                        );
+                        const passedAssertions =
+                            scenarioResult.assertionResults.filter(
+                                assertionResult => assertionResult.passed
+                            );
+                        const failedAssertions =
+                            scenarioResult.assertionResults.filter(
+                                assertionResult => !assertionResult.passed
+                            );
                         const metrics = getMetrics({
                             scenarioResult
                         });

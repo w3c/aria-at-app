@@ -208,9 +208,9 @@ const readCsv = ({ sourceDirectoryPath }) => {
 const updateCommandsJson = async () => {
     const keysMjsPath = path.join(testsDirectory, 'resources', 'keys.mjs');
 
-    const commands = Object.entries(
-        await import(keysMjsPath)
-    ).map(([id, text]) => ({ id, text }));
+    const commands = Object.entries(await import(keysMjsPath)).map(
+        ([id, text]) => ({ id, text })
+    );
 
     await fse.writeFile(
         path.resolve(__dirname, '../../resources/commands.json'),
