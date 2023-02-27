@@ -203,12 +203,11 @@ describe('BrowserVersionModel Data Checks', () => {
         const _name = '99.0.1';
 
         // A2
-        const browserVersionInstance = await BrowserService.getBrowserVersionByQuery(
-            {
+        const browserVersionInstance =
+            await BrowserService.getBrowserVersionByQuery({
                 browserId: _browserId,
                 name: _name
-            }
-        );
+            });
         const { id, browserId, name, browser } = browserVersionInstance;
 
         // A3
@@ -236,14 +235,15 @@ describe('BrowserVersionModel Data Checks', () => {
         const _name = '99.0.1';
 
         // A2
-        const browserVersionInstance = await BrowserService.getBrowserVersionByQuery(
-            {
-                browserId: _browserId,
-                name: _name
-            },
-            null,
-            []
-        );
+        const browserVersionInstance =
+            await BrowserService.getBrowserVersionByQuery(
+                {
+                    browserId: _browserId,
+                    name: _name
+                },
+                null,
+                []
+            );
         const { id, browserId, name } = browserVersionInstance;
 
         // A3
@@ -266,12 +266,11 @@ describe('BrowserVersionModel Data Checks', () => {
         const _name = randomStringGenerator();
 
         // A2
-        const browserVersionInstance = await BrowserService.getBrowserVersionByQuery(
-            {
+        const browserVersionInstance =
+            await BrowserService.getBrowserVersionByQuery({
                 browserId: _browserId,
                 name: _name
-            }
-        );
+            });
 
         // A3
         expect(browserVersionInstance).toBeNull();
@@ -284,23 +283,21 @@ describe('BrowserVersionModel Data Checks', () => {
             const _name = randomStringGenerator();
 
             // A2
-            const browserVersionInstance = await BrowserService.createBrowserVersion(
-                {
+            const browserVersionInstance =
+                await BrowserService.createBrowserVersion({
                     browserId: _browserId,
                     name: _name
-                }
-            );
+                });
             const { id, browserId, name, browser } = browserVersionInstance;
 
             // A2
             await BrowserService.removeBrowserVersionById(id);
 
-            const deletedBrowserVersion = await BrowserService.getBrowserVersionByQuery(
-                {
+            const deletedBrowserVersion =
+                await BrowserService.getBrowserVersionByQuery({
                     browserId,
                     name
-                }
-            );
+                });
 
             // after BrowserVersion created
             expect(id).toBeTruthy();
@@ -322,19 +319,18 @@ describe('BrowserVersionModel Data Checks', () => {
             const _updatedName = randomStringGenerator();
 
             // A2
-            const browserVersionInstance = await BrowserService.createBrowserVersion(
-                {
+            const browserVersionInstance =
+                await BrowserService.createBrowserVersion({
                     browserId: _browserId,
                     name: _name
-                }
-            );
+                });
             const { id, browserId, name, browser } = browserVersionInstance;
 
             // A2
-            const updatedBrowserVersion = await BrowserService.updateBrowserVersionById(
-                id,
-                { name: _updatedName }
-            );
+            const updatedBrowserVersion =
+                await BrowserService.updateBrowserVersionById(id, {
+                    name: _updatedName
+                });
             const { name: updatedName } = updatedBrowserVersion;
 
             // after BrowserVersion created
@@ -358,18 +354,16 @@ describe('BrowserVersionModel Data Checks', () => {
             const _name = '99.0.1';
 
             // A2
-            const originalBrowserVersion = await BrowserService.getBrowserVersionByQuery(
-                {
+            const originalBrowserVersion =
+                await BrowserService.getBrowserVersionByQuery({
                     browserId: _browserId,
                     name: _name
-                }
-            );
-            const updatedBrowserVersion = await BrowserService.updateBrowserVersionByQuery(
-                {
+                });
+            const updatedBrowserVersion =
+                await BrowserService.updateBrowserVersionByQuery({
                     browserId: _browserId,
                     name: _name
-                }
-            );
+                });
 
             // A3
             expect(originalBrowserVersion).toMatchObject(updatedBrowserVersion);

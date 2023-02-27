@@ -110,16 +110,14 @@ const ManageTestQueue = ({
     const [selectedManageAtVersions, setSelectedManageAtVersions] = useState(
         []
     );
-    const [selectedManageAtVersionId, setSelectedManageAtVersionId] = useState(
-        ''
-    );
+    const [selectedManageAtVersionId, setSelectedManageAtVersionId] =
+        useState('');
 
     const [showAtVersionModal, setShowAtVersionModal] = useState(false);
     const [atVersionModalTitle, setAtVersionModalTitle] = useState('');
     const [atVersionModalType, setAtVersionModalType] = useState('add');
-    const [atVersionModalVersionText, setAtVersionModalVersionText] = useState(
-        ''
-    );
+    const [atVersionModalVersionText, setAtVersionModalVersionText] =
+        useState('');
     const [atVersionModalDateText, setAtVersionModalDateText] = useState('');
 
     const [showThemedModal, setShowThemedModal] = useState(false);
@@ -135,9 +133,8 @@ const ManageTestQueue = ({
     const [filteredTestPlanVersions, setFilteredTestPlanVersions] = useState(
         []
     );
-    const [selectedTestPlanVersionId, setSelectedTestPlanVersionId] = useState(
-        ''
-    );
+    const [selectedTestPlanVersionId, setSelectedTestPlanVersionId] =
+        useState('');
     const [matchingTestPlanVersions, setMatchingTestPlanVersions] = useState(
         []
     );
@@ -597,10 +594,10 @@ const ManageTestQueue = ({
                                 >
                                     {filteredTestPlanVersions.map(item => (
                                         <option
-                                            key={`${item.title ||
-                                                item.testPlan.directory}-${
-                                                item.id
-                                            }`}
+                                            key={`${
+                                                item.title ||
+                                                item.testPlan.directory
+                                            }-${item.id}`}
                                             value={item.id}
                                         >
                                             {item.title ||

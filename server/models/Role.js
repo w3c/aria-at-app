@@ -1,6 +1,6 @@
 const MODEL_NAME = 'Role';
 
-module.exports = function(sequelize, DataTypes) {
+module.exports = function (sequelize, DataTypes) {
     const Model = sequelize.define(
         MODEL_NAME,
         {
@@ -22,7 +22,7 @@ module.exports = function(sequelize, DataTypes) {
         as: 'users'
     };
 
-    Model.associate = function(models) {
+    Model.associate = function (models) {
         Model.belongsToMany(models.User, {
             ...Model.USER_ASSOCIATION,
             foreignKey: 'roleName',
