@@ -15,7 +15,7 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
-import { useParams, Redirect, useHistory } from 'react-router-dom';
+import { useParams, useNavigate, Navigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import './CandidateTestPlanRun.css';
 import '../../TestRun/TestRun.css';
@@ -45,7 +45,7 @@ function useSize(target) {
 
 const CandidateTestPlanRun = () => {
     const { atId, testPlanVersionId } = useParams();
-    const history = useHistory();
+    const navigate = useNavigate();
 
     let testPlanVersionIds = [];
     if (testPlanVersionId.includes(','))
@@ -261,7 +261,7 @@ const CandidateTestPlanRun = () => {
 
     const testPlanReports = [];
     const _testPlanReports = data.testPlanReports;
-    if (_testPlanReports.length === 0) return <Redirect to="/404" />;
+    if (_testPlanReports.length === 0) return <Navigate to="/404" replace />;
 
     const getLatestReleasedAtVersionReport = arr => {
         return arr.reduce((o1, o2) => {
@@ -293,11 +293,8 @@ const CandidateTestPlanRun = () => {
     }));
 
     const currentTest = tests[currentTestIndex];
-    const {
-        testPlanVersion,
-        vendorReviewStatus,
-        recommendedStatusTargetDate
-    } = testPlanReport;
+    const { testPlanVersion, vendorReviewStatus, recommendedStatusTargetDate } =
+        testPlanReport;
 
     const vendorReviewStatusMap = {
         READY: 'Ready',
@@ -406,9 +403,11 @@ const CandidateTestPlanRun = () => {
             <div className="test-info-entity apg-example-name">
                 <div className="info-label">
                     <b>Candidate Test Plan:</b>{' '}
-                    {`${testPlanVersion.title ||
+                    {`${
+                        testPlanVersion.title ||
                         testPlanVersion.testPlan?.directory ||
-                        ''}`}
+                        ''
+                    }`}
                 </div>
             </div>
             <div className="test-info-entity review-status">
@@ -725,7 +724,7 @@ const CandidateTestPlanRun = () => {
                     show={true}
                     handleAction={async () => {
                         setThankYouModalShowing(false);
-                        history.push('/candidate-tests');
+                        navigate('/candidate-tests');
                     }}
                     githubUrl={generateGithubUrl(
                         false,

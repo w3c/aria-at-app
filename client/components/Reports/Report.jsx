@@ -1,18 +1,18 @@
 import React from 'react';
 import { useQuery } from '@apollo/client';
-import { Route, Switch } from 'react-router';
-import { Redirect, useRouteMatch } from 'react-router-dom';
+import { Route, Routes, Navigate } from 'react-router';
 import SummarizeTestPlanVersion from './SummarizeTestPlanVersion';
 import SummarizeTestPlanReport from './SummarizeTestPlanReport';
 import PageStatus from '../common/PageStatus';
 import { REPORT_PAGE_QUERY } from './queries';
 import './Reports.css';
+import { useParams } from 'react-router-dom';
 
-const Reports = () => {
-    const match = useRouteMatch('/report/:testPlanVersionId');
+const Report = () => {
+    const { testPlanVersionId } = useParams();
 
     let testPlanVersionIds = [];
-    let testPlanVersionId = match?.params?.testPlanVersionId;
+
     if (testPlanVersionId.includes(','))
         testPlanVersionIds = testPlanVersionId.split(',');
 
@@ -45,6 +45,12 @@ const Reports = () => {
 
     if (!data) return null;
 
+    const testPlanReports = data.testPlanReports.filter(
+        each =>
+            each.testPlanVersion.id === testPlanVersionId ||
+            testPlanVersionIds.includes(each.testPlanVersion.id)
+    );
+
     const combineArray = testPlanReports => {
         let testPlanTargetsById = {};
         testPlanReports.forEach(testPlanReport => {
@@ -76,58 +82,32 @@ const Reports = () => {
         });
     };
 
+    if (!testPlanReports || testPlanReports.length < 1) {
+        return <Navigate to="/404" replace />;
+    }
+
     return (
-        <Switch>
+        <Routes>
             <Route
-                exact
-                path="/report/:testPlanVersionId"
-                render={({ match: { params } }) => {
-                    const { testPlanVersionId } = params;
-
-                    let testPlanVersionIds = [];
-                    if (testPlanVersionId.includes(','))
-                        testPlanVersionIds = testPlanVersionId.split(',');
-
-                    const testPlanReports = data.testPlanReports.filter(
-                        each =>
-                            each.testPlanVersion.id === testPlanVersionId ||
-                            testPlanVersionIds.includes(each.testPlanVersion.id)
-                    );
-
-                    if (!testPlanReports.length) return <Redirect to="/404" />;
-
-                    return (
-                        <SummarizeTestPlanVersion
-                            testPlanVersion={testPlanReports[0].testPlanVersion}
-                            testPlanReports={combineArray(testPlanReports)}
-                        />
-                    );
-                }}
+                index
+                element={
+                    <SummarizeTestPlanVersion
+                        testPlanVersion={testPlanReports[0].testPlanVersion}
+                        testPlanReports={combineArray(testPlanReports)}
+                    />
+                }
             />
             <Route
-                exact
-                path="/report/:testPlanVersionId/targets/:testPlanReportId"
-                render={({ match: { params } }) => {
-                    const { testPlanVersionId, testPlanReportId } = params;
-
-                    const testPlanReport = data.testPlanReports.find(
-                        each =>
-                            each.testPlanVersion.id === testPlanVersionId &&
-                            each.id == testPlanReportId
-                    );
-
-                    if (!testPlanReport) return <Redirect to="/404" />;
-
-                    return (
-                        <SummarizeTestPlanReport
-                            testPlanReport={testPlanReport}
-                        />
-                    );
-                }}
+                path="targets/:testPlanReportId"
+                element={
+                    <SummarizeTestPlanReport
+                        testPlanReports={testPlanReports}
+                    />
+                }
             />
-            <Redirect to="/404" />
-        </Switch>
+            <Route path="*" element={<Navigate to="/404" replace />} />
+        </Routes>
     );
 };
 
-export default Reports;
+export default Report;

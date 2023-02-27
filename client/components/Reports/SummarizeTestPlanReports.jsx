@@ -196,9 +196,8 @@ const SummarizeTestPlanReports = ({ testPlanReports }) => {
                                     combinedTestPlanVersionIdArray
                                 } = combineObject(tabularReport);
                                 reportResult = resultTestPlanTargets;
-                                testPlanVersionId = combinedTestPlanVersionIdArray.join(
-                                    ','
-                                );
+                                testPlanVersionId =
+                                    combinedTestPlanVersionIdArray.join(',');
                             } else {
                                 reportResult = Object.values(tabularReport)[0];
                                 testPlanVersionId =

@@ -369,9 +369,8 @@ const TestRenderer = ({
                 commands[i].unexpected.hasUnexpected = 'doesNotHaveUnexpected';
             else commands[i].unexpected.hasUnexpected = 'notSet';
 
-            commands[
-                i
-            ].unexpected.highlightRequired = unexpectedBehaviorHighlightRequired;
+            commands[i].unexpected.highlightRequired =
+                unexpectedBehaviorHighlightRequired;
         }
 
         return { ...state, commands, currentUserAction: 'validateResults' };
@@ -482,13 +481,12 @@ const TestRenderer = ({
                 if (unexpectedBehaviorError) return true;
 
                 const { failChoice } = item.unexpectedBehaviors;
-                const failChoiceOptionsMoreError = failChoice.options.options.some(
-                    item => {
+                const failChoiceOptionsMoreError =
+                    failChoice.options.options.some(item => {
                         if (item.more)
                             return item.more.description[1].highlightRequired;
                         else return false;
-                    }
-                );
+                    });
                 if (failChoiceOptionsMoreError) return true;
                 return false;
             });
@@ -765,13 +763,17 @@ const TestRenderer = ({
                                                 {atOutput.description[0]}
                                                 {isSubmitted && (
                                                     <Feedback
-                                                        className={`${atOutput
-                                                            .description[1]
-                                                            .required &&
-                                                            'required'} ${atOutput
-                                                            .description[1]
-                                                            .highlightRequired &&
-                                                            'highlight-required'}`}
+                                                        className={`${
+                                                            atOutput
+                                                                .description[1]
+                                                                .required &&
+                                                            'required'
+                                                        } ${
+                                                            atOutput
+                                                                .description[1]
+                                                                .highlightRequired &&
+                                                            'highlight-required'
+                                                        }`}
                                                     >
                                                         {
                                                             atOutput
@@ -848,11 +850,15 @@ const TestRenderer = ({
                                                                     }
                                                                     {isSubmitted && (
                                                                         <Feedback
-                                                                            className={`${description[1]
-                                                                                .required &&
-                                                                                'required'} ${description[1]
-                                                                                .highlightRequired &&
-                                                                                'highlight-required'}`}
+                                                                            className={`${
+                                                                                description[1]
+                                                                                    .required &&
+                                                                                'required'
+                                                                            } ${
+                                                                                description[1]
+                                                                                    .highlightRequired &&
+                                                                                'highlight-required'
+                                                                            }`}
                                                                         >
                                                                             {
                                                                                 description[1]
@@ -889,10 +895,12 @@ const TestRenderer = ({
                                                                                 .label[0]
                                                                         }
                                                                         <Feedback
-                                                                            className={`${passChoice
-                                                                                .label[1]
-                                                                                .offScreen &&
-                                                                                'off-screen'}`}
+                                                                            className={`${
+                                                                                passChoice
+                                                                                    .label[1]
+                                                                                    .offScreen &&
+                                                                                'off-screen'
+                                                                            }`}
                                                                         >
                                                                             {
                                                                                 passChoice
@@ -930,10 +938,12 @@ const TestRenderer = ({
                                                                                 .label[0]
                                                                         }
                                                                         <Feedback
-                                                                            className={`${missingChoice
-                                                                                .label[1]
-                                                                                .offScreen &&
-                                                                                'off-screen'}`}
+                                                                            className={`${
+                                                                                missingChoice
+                                                                                    .label[1]
+                                                                                    .offScreen &&
+                                                                                'off-screen'
+                                                                            }`}
                                                                         >
                                                                             {
                                                                                 missingChoice
@@ -969,10 +979,12 @@ const TestRenderer = ({
                                                                                 .label[0]
                                                                         }
                                                                         <Feedback
-                                                                            className={`${failureChoice
-                                                                                .label[1]
-                                                                                .offScreen &&
-                                                                                'off-screen'}`}
+                                                                            className={`${
+                                                                                failureChoice
+                                                                                    .label[1]
+                                                                                    .offScreen &&
+                                                                                'off-screen'
+                                                                            }`}
                                                                         >
                                                                             {
                                                                                 failureChoice
@@ -1000,13 +1012,17 @@ const TestRenderer = ({
                                             </legend>
                                             {isSubmitted && (
                                                 <Feedback
-                                                    className={`${unexpectedBehaviors
-                                                        .description[1]
-                                                        .required &&
-                                                        'required'} ${unexpectedBehaviors
-                                                        .description[1]
-                                                        .highlightRequired &&
-                                                        'highlight-required'}`}
+                                                    className={`${
+                                                        unexpectedBehaviors
+                                                            .description[1]
+                                                            .required &&
+                                                        'required'
+                                                    } ${
+                                                        unexpectedBehaviors
+                                                            .description[1]
+                                                            .highlightRequired &&
+                                                        'highlight-required'
+                                                    }`}
                                                 >
                                                     {
                                                         unexpectedBehaviors
@@ -1151,13 +1167,17 @@ const TestRenderer = ({
                                                                             }
                                                                             {isSubmitted && (
                                                                                 <Feedback
-                                                                                    className={`${more
-                                                                                        .description[1]
-                                                                                        .required &&
-                                                                                        'required'} ${more
-                                                                                        .description[1]
-                                                                                        .highlightRequired &&
-                                                                                        'highlight-required'}`}
+                                                                                    className={`${
+                                                                                        more
+                                                                                            .description[1]
+                                                                                            .required &&
+                                                                                        'required'
+                                                                                    } ${
+                                                                                        more
+                                                                                            .description[1]
+                                                                                            .highlightRequired &&
+                                                                                        'highlight-required'
+                                                                                    }`}
                                                                                 >
                                                                                     {
                                                                                         more

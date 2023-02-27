@@ -6,7 +6,7 @@ const MODE = {
     MODELESS: 'modeless'
 };
 
-module.exports = function(sequelize, DataTypes) {
+module.exports = function (sequelize, DataTypes) {
     const Model = sequelize.define(
         MODEL_NAME,
         {
@@ -43,7 +43,7 @@ module.exports = function(sequelize, DataTypes) {
 
     Model.AT_ASSOCIATION = { foreignKey: 'atId' };
 
-    Model.associate = function(models) {
+    Model.associate = function (models) {
         Model.belongsTo(models.At, {
             ...Model.AT_ASSOCIATION,
             targetKey: 'id',

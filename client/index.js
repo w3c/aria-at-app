@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
 // Order matters for the following two imports
@@ -27,11 +27,12 @@ const client = new ApolloClient({
     })
 });
 
-ReactDOM.render(
+const container = document.getElementById('root');
+const root = createRoot(container);
+root.render(
     <ApolloProvider client={client}>
         <BrowserRouter>
             <App />
         </BrowserRouter>
-    </ApolloProvider>,
-    document.getElementById('root')
+    </ApolloProvider>
 );

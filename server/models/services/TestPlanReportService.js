@@ -384,9 +384,8 @@ const getOrCreateTestPlanReport = async (
         { transaction: options.transaction }
     );
 
-    const [
-        [{ id: testPlanReportId }, isNewTestPlanReport]
-    ] = accumulatedResults;
+    const [[{ id: testPlanReportId }, isNewTestPlanReport]] =
+        accumulatedResults;
 
     const testPlanReport = await getTestPlanReportById(
         testPlanReportId,
