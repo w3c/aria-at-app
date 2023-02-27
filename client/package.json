@@ -31,6 +31,8 @@
     "@fortawesome/free-solid-svg-icons": "^6.2.1",
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@react-hook/resize-observer": "^1.2.6",
+    "@storybook/builder-webpack5": "^6.5.16",
+    "@storybook/manager-webpack5": "^6.5.16",
     "bootstrap": "^5.2.3",
     "core-js": "^3.8.0",
     "graphql": "^16.6.0",
