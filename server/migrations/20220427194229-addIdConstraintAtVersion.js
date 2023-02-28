@@ -3,9 +3,10 @@
 module.exports = {
     up: queryInterface => {
         return queryInterface.sequelize.transaction(async transaction => {
-            await queryInterface.addConstraint('AtVersion', ['id'], {
+            await queryInterface.addConstraint('AtVersion', {
                 type: 'primary key',
                 name: 'AtVersion_pkey',
+                fields: ['id'],
                 transaction
             });
         });
