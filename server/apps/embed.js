@@ -184,8 +184,9 @@ app.get('/reports/:pattern', async (req, res) => {
     // Usage: https://aria-at.w3.org/embed/reports/command-button?title=Link+Example+(span+element+with+text+content)
     const queryTitle = req.query.title;
     const pattern = req.params.pattern;
-    const protocol =
-        process.env.DEPLOY_ENVIRONMENT === 'dev' ? 'http://' : 'https://';
+    const protocol = /dev|vagrant/.test(process.env.ENVIRONMENT)
+        ? 'http://'
+        : 'https://';
     const {
         title,
         allBrowsers,
