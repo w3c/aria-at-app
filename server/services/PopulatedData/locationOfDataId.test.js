@@ -29,12 +29,10 @@ describe('locationOfDataId', () => {
         const decodedScenarioId = decodeLocationOfDataId(scenarioId);
         const decodedAssertionId = decodeLocationOfDataId(assertionId);
         const decodedTestResultId = decodeLocationOfDataId(testResultId);
-        const decodedScenarioResultId = decodeLocationOfDataId(
-            scenarioResultId
-        );
-        const decodedAssertionResultId = decodeLocationOfDataId(
-            assertionResultId
-        );
+        const decodedScenarioResultId =
+            decodeLocationOfDataId(scenarioResultId);
+        const decodedAssertionResultId =
+            decodeLocationOfDataId(assertionResultId);
 
         expect(decodedTestId).toMatchObject({
             testPlanVersionId: _testPlanVersionId

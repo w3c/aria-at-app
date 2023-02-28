@@ -7,7 +7,7 @@ const STATUS = {
     RECOMMENDED: 'RECOMMENDED'
 };
 
-module.exports = function(sequelize, DataTypes) {
+module.exports = function (sequelize, DataTypes) {
     const Model = sequelize.define(
         MODEL_NAME,
         {
@@ -74,7 +74,7 @@ module.exports = function(sequelize, DataTypes) {
 
     Model.TEST_PLAN_RUN_ASSOCIATION = { as: 'testPlanRuns' };
 
-    Model.associate = function(models) {
+    Model.associate = function (models) {
         Model.belongsTo(models.TestPlanVersion, {
             ...Model.TEST_PLAN_VERSION_ASSOCIATION,
             targetKey: 'id',

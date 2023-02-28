@@ -95,10 +95,8 @@ describe('RoleModel Data Checks', () => {
             await UserService.addUserToRole(_user, updatedName);
 
             const addedUserRole = await RoleService.getRoleByName(updatedName);
-            const {
-                name: addedUserRoleName,
-                users: addedUserRoleUsers
-            } = addedUserRole;
+            const { name: addedUserRoleName, users: addedUserRoleUsers } =
+                addedUserRole;
 
             // after role created
             expect(name).toEqual(_name);

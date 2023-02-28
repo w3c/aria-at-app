@@ -43,5 +43,5 @@ jobs:
         run: yarn test
       - name: lighthouseci
         run: |
-          npm install -g @lhci/cli@0.10.0
+          npm install -g @lhci/cli@0.11.0
           yarn workspace client lighthouse
