@@ -30,7 +30,7 @@ if (process.env.ENVIRONMENT !== 'dev') {
 }
 
 const client = new ApolloClient({
-    link: new HttpLink({ uri: 'http://localhost:5000/api/graphql', fetch }),
+    link: new HttpLink({ uri: 'http://localhost:8000/api/graphql', fetch }),
     cache: new InMemoryCache()
 });
 
