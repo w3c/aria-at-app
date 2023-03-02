@@ -431,7 +431,7 @@ const TestQueueRow = ({
             testPlanReport;
         const conflictsCount = conflictsLength;
 
-        const hasIncompleteTests = runnableTestsLength != finalizedTests.length;
+        const hasIncompleteTests = runnableTestsLength != finalizedTests?.length;
 
         // If there are no conflicts OR the test has been marked as "final",
         // and admin can mark a test run as "draft"
