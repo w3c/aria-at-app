@@ -107,6 +107,14 @@ button.more-actions:active {
     width: initial;
 }
 
+.next-report-status-information-text {
+    font-size: small;
+    text-align: center;
+    display: block;
+    margin: 5%;
+    color:gray;
+}
+
 /* tr.test-queue-run-row td:first-child {
     padding: 0.75rem;
 } */

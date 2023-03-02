@@ -492,21 +492,30 @@ const CandidateTestPlanRun = () => {
                             testPlanReport.finalizedTestResults[
                                 currentTestIndex
                             ];
-                        const { testsPassedCount } = getMetrics({ testResult });
-                        return (
-                            <>
-                                <h2 className="test-results-header">
-                                    Test Result:{' '}
-                                    {testsPassedCount ? 'PASS' : 'FAIL'}
-                                </h2>
-                                <TestPlanResultsTable
-                                    tableClassName="test-results-table"
-                                    key={`${testPlanReport.id} + ${testResult.id}`}
-                                    test={currentTest}
-                                    testResult={testResult}
-                                />
-                            </>
-                        );
+
+                        if (testResult) {
+                            const { testsPassedCount } = getMetrics({
+                                testResult
+                            });
+                            return (
+                                <>
+                                    <h2 className="test-results-header">
+                                        Test Result:{' '}
+                                        {testsPassedCount ? 'PASS' : 'FAIL'}
+                                    </h2>
+                                    <TestPlanResultsTable
+                                        tableClassName="test-results-table"
+                                        key={`${testPlanReport.id} + ${testResult.id}`}
+                                        test={currentTest}
+                                        testResult={testResult}
+                                    />
+                                </>
+                            );
+                        } else {
+                            <h2 className="test-results-header">
+                                Test Result: INCOMPLETE
+                            </h2>;
+                        }
                     })
                 ]}
                 stacked

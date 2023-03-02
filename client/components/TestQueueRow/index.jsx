@@ -427,29 +427,48 @@ const TestQueueRow = ({
     };
 
     const evaluateNewReportStatus = () => {
-        const { status, conflictsLength } = testPlanReport;
+        const {
+            status,
+            conflictsLength,
+            draftTestPlanRuns,
+            runnableTestsLength
+        } = testPlanReport;
         const conflictsCount = conflictsLength;
+        const incompleteTestRuns = draftTestPlanRuns.filter(draft => draft.testResultsLength != runnableTestsLength)
 
         // If there are no conflicts OR the test has been marked as "final",
         // and admin can mark a test run as "draft"
-        let newStatus;
+        let newStatus = {
+            status: status
+        };
         if (
             (status !== 'IN_REVIEW' &&
                 conflictsCount === 0 &&
                 testPlanRunsWithResults.length > 0) ||
             status === 'CANDIDATE'
         ) {
-            newStatus = 'IN_REVIEW';
+            newStatus.status = 'IN_REVIEW';
         }
         // If the results have been marked as draft and there is no conflict,
+        // and they don't have any incomplete tests,
         // they can be marked as "final"
         else if (
             status === 'IN_REVIEW' &&
             conflictsCount === 0 &&
-            testPlanRunsWithResults.length > 0
+            testPlanRunsWithResults.length > 0 
         ) {
-            newStatus = 'CANDIDATE';
+            newStatus.status = 'CANDIDATE';
         }
+
+        if (newStatus.status === 'CANDIDATE' &&
+        incompleteTestRuns.length > 0) {
+            newStatus.canContinue = false;
+            newStatus.informationText = "Incomplete test plans cannot transition to the candidate report status."
+        }
+        else {
+            newStatus.canContinue = true;
+        }
+
         return newStatus;
     };
 
@@ -542,16 +561,21 @@ const TestQueueRow = ({
                                             focusButtonRef.current =
                                                 updateTestPlanStatusButtonRef.current;
                                             await updateReportStatus(
-                                                nextReportStatus
+                                                nextReportStatus.status
                                             );
                                         }}
+                                        disabled = {!nextReportStatus.canContinue}
                                     >
                                         Mark as{' '}
-                                        {capitalizeEachWord(nextReportStatus, {
+                                        {capitalizeEachWord(nextReportStatus.status, {
                                             splitChar: '_'
                                         })}
                                     </Button>
                                 </>
+                            )}
+
+                            {nextReportStatus.informationText && (
+                                <span className='next-report-status-information-text'>{nextReportStatus.informationText}</span>
                             )}
                             {results}
                         </div>
