@@ -427,17 +427,11 @@ const TestQueueRow = ({
     };
 
     const evaluateNewReportStatus = () => {
-        const {
-            status,
-            conflictsLength,
-            draftTestPlanRuns,
-            runnableTestsLength
-        } = testPlanReport;
+        const { status, conflictsLength, runnableTestsLength, finalizedTests } =
+            testPlanReport;
         const conflictsCount = conflictsLength;
 
-        const incompleteTestRuns = draftTestPlanRuns.filter(
-            draft => draft.testResultsLength != runnableTestsLength
-        );
+        const hasIncompleteTests = runnableTestsLength != finalizedTests.length;
 
         // If there are no conflicts OR the test has been marked as "final",
         // and admin can mark a test run as "draft"
@@ -463,7 +457,7 @@ const TestQueueRow = ({
             newStatus = 'CANDIDATE';
         }
 
-        if (newStatus === 'CANDIDATE' && incompleteTestRuns.length > 0) {
+        if (newStatus === 'CANDIDATE' && hasIncompleteTests) {
             newStatusCanContinue = false;
             newStatusInformationText =
                 'Incomplete test plans cannot transition to the candidate report status.';

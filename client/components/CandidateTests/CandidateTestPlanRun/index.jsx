@@ -165,6 +165,21 @@ const CandidateTestPlanRun = () => {
         setThankYouModalShowing(true);
     };
 
+    const handleIncompleteTestPlans = () => {
+        const runnableTests = testPlanReport.runnableTests;
+        const finalizedTests = testPlanReport.finalizedTestResults;
+        const finalizedTestIds = finalizedTests.map(x => x.test.id);
+
+        const hasIncompleteTests =
+            runnableTests.length != finalizedTests.length;
+
+        const viewedCompleteTests = viewedTests.filter(viewedTest =>
+            finalizedTestIds.includes(viewedTest)
+        );
+
+        return { hasIncompleteTests, viewedCompleteTests };
+    };
+
     useEffect(() => {
         if (data) {
             if (
@@ -344,6 +359,9 @@ const CandidateTestPlanRun = () => {
             return githubUrl;
         }
     };
+
+    const { hasIncompleteTests, viewedCompleteTests } =
+        handleIncompleteTestPlans();
 
     const heading = (
         <div className="test-info-heading">
@@ -546,11 +564,6 @@ const CandidateTestPlanRun = () => {
             'https://github.com/FreedomScientific/VFO-standards-support/issues';
     }
 
-    const runnableTestsLength = testPlanReport.runnableTests.length;
-    const incompleteTestRuns = testPlanReport.draftTestPlanRuns.filter(
-        draft => draft.testResultsLength != runnableTestsLength
-    );
-
     return (
         <Container className="test-run-container">
             <Helmet>
@@ -565,7 +578,7 @@ const CandidateTestPlanRun = () => {
                     currentTestIndex={currentTestIndex}
                     toggleShowClick={toggleTestNavigator}
                     handleTestClick={handleTestClick}
-                    viewedTests={viewedTests}
+                    viewedTests={viewedCompleteTests}
                 />
                 <Col
                     className="candidate-test-area"
@@ -626,8 +639,7 @@ const CandidateTestPlanRun = () => {
                                                     }}
                                                     disabled={
                                                         !isLastTest ||
-                                                        incompleteTestRuns.length >
-                                                            0
+                                                        hasIncompleteTests
                                                     }
                                                 >
                                                     Finish
