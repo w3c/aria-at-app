@@ -565,7 +565,6 @@ const TestQueueRow = ({
                                                 nextReportStatus
                                             );
                                         }}
-                                        disabled = {!nextReportStatusCanContinue}
                                     >
                                         Mark as{' '}
                                         {capitalizeEachWord(nextReportStatus, {
