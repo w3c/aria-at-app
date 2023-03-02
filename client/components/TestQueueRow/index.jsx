@@ -434,46 +434,47 @@ const TestQueueRow = ({
             runnableTestsLength
         } = testPlanReport;
         const conflictsCount = conflictsLength;
+        
         const incompleteTestRuns = draftTestPlanRuns.filter(draft => draft.testResultsLength != runnableTestsLength)
 
         // If there are no conflicts OR the test has been marked as "final",
         // and admin can mark a test run as "draft"
-        let newStatus = {
-            status: status
-        };
+        let newStatus;
+        let newStatusCanContinue;
+        let newStatusInformationText;
+
         if (
             (status !== 'IN_REVIEW' &&
                 conflictsCount === 0 &&
                 testPlanRunsWithResults.length > 0) ||
             status === 'CANDIDATE'
         ) {
-            newStatus.status = 'IN_REVIEW';
+            newStatus = 'IN_REVIEW';
         }
         // If the results have been marked as draft and there is no conflict,
-        // and they don't have any incomplete tests,
         // they can be marked as "final"
         else if (
             status === 'IN_REVIEW' &&
             conflictsCount === 0 &&
             testPlanRunsWithResults.length > 0 
         ) {
-            newStatus.status = 'CANDIDATE';
+            newStatus = 'CANDIDATE';
         }
 
-        if (newStatus.status === 'CANDIDATE' &&
+        if (newStatus === 'CANDIDATE' &&
         incompleteTestRuns.length > 0) {
-            newStatus.canContinue = false;
-            newStatus.informationText = "Incomplete test plans cannot transition to the candidate report status."
+            newStatusCanContinue = false;
+            newStatusInformationText = "Incomplete test plans cannot transition to the candidate report status."
         }
         else {
-            newStatus.canContinue = true;
+            newStatusCanContinue = true;
         }
 
-        return newStatus;
+        return {newStatus, newStatusCanContinue, newStatusInformationText};
     };
 
     const { status, results } = evaluateStatusAndResults();
-    const nextReportStatus = evaluateNewReportStatus();
+    const {newStatus:nextReportStatus, newStatusCanContinue:nextReportStatusCanContinue, newStatusInformationText:nextReportStatusInformationText} = evaluateNewReportStatus();
 
     const getRowId = tester =>
         [
@@ -552,7 +553,7 @@ const TestQueueRow = ({
                     <div className="status-wrapper">{status}</div>
                     {isSignedIn && isTester && (
                         <div className="secondary-actions">
-                            {isAdmin && !isLoading && nextReportStatus && (
+                            {isAdmin && !isLoading && nextReportStatus && nextReportStatusCanContinue && (
                                 <>
                                     <Button
                                         ref={updateTestPlanStatusButtonRef}
@@ -561,21 +562,21 @@ const TestQueueRow = ({
                                             focusButtonRef.current =
                                                 updateTestPlanStatusButtonRef.current;
                                             await updateReportStatus(
-                                                nextReportStatus.status
+                                                nextReportStatus
                                             );
                                         }}
-                                        disabled = {!nextReportStatus.canContinue}
+                                        disabled = {!nextReportStatusCanContinue}
                                     >
                                         Mark as{' '}
-                                        {capitalizeEachWord(nextReportStatus.status, {
+                                        {capitalizeEachWord(nextReportStatus, {
                                             splitChar: '_'
                                         })}
                                     </Button>
                                 </>
                             )}
 
-                            {nextReportStatus.informationText && (
-                                <span className='next-report-status-information-text'>{nextReportStatus.informationText}</span>
+                            {nextReportStatusInformationText && (
+                                <span className='next-report-status-information-text'>{nextReportStatusInformationText}</span>
                             )}
                             {results}
                         </div>
