@@ -512,9 +512,11 @@ const CandidateTestPlanRun = () => {
                                 </>
                             );
                         } else {
+                            return (
                             <h2 className="test-results-header">
                                 Test Result: INCOMPLETE
-                            </h2>;
+                            </h2>
+                            )
                         }
                     })
                 ]}
