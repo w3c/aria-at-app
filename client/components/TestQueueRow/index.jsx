@@ -434,8 +434,10 @@ const TestQueueRow = ({
             runnableTestsLength
         } = testPlanReport;
         const conflictsCount = conflictsLength;
-        
-        const incompleteTestRuns = draftTestPlanRuns.filter(draft => draft.testResultsLength != runnableTestsLength)
+
+        const incompleteTestRuns = draftTestPlanRuns.filter(
+            draft => draft.testResultsLength != runnableTestsLength
+        );
 
         // If there are no conflicts OR the test has been marked as "final",
         // and admin can mark a test run as "draft"
@@ -456,25 +458,28 @@ const TestQueueRow = ({
         else if (
             status === 'IN_REVIEW' &&
             conflictsCount === 0 &&
-            testPlanRunsWithResults.length > 0 
+            testPlanRunsWithResults.length > 0
         ) {
             newStatus = 'CANDIDATE';
         }
 
-        if (newStatus === 'CANDIDATE' &&
-        incompleteTestRuns.length > 0) {
+        if (newStatus === 'CANDIDATE' && incompleteTestRuns.length > 0) {
             newStatusCanContinue = false;
-            newStatusInformationText = "Incomplete test plans cannot transition to the candidate report status."
-        }
-        else {
+            newStatusInformationText =
+                'Incomplete test plans cannot transition to the candidate report status.';
+        } else {
             newStatusCanContinue = true;
         }
 
-        return {newStatus, newStatusCanContinue, newStatusInformationText};
+        return { newStatus, newStatusCanContinue, newStatusInformationText };
     };
 
     const { status, results } = evaluateStatusAndResults();
-    const {newStatus:nextReportStatus, newStatusCanContinue:nextReportStatusCanContinue, newStatusInformationText:nextReportStatusInformationText} = evaluateNewReportStatus();
+    const {
+        newStatus: nextReportStatus,
+        newStatusCanContinue: nextReportStatusCanContinue,
+        newStatusInformationText: nextReportStatusInformationText
+    } = evaluateNewReportStatus();
 
     const getRowId = tester =>
         [
@@ -553,29 +558,37 @@ const TestQueueRow = ({
                     <div className="status-wrapper">{status}</div>
                     {isSignedIn && isTester && (
                         <div className="secondary-actions">
-                            {isAdmin && !isLoading && nextReportStatus && nextReportStatusCanContinue && (
-                                <>
-                                    <Button
-                                        ref={updateTestPlanStatusButtonRef}
-                                        variant="secondary"
-                                        onClick={async () => {
-                                            focusButtonRef.current =
-                                                updateTestPlanStatusButtonRef.current;
-                                            await updateReportStatus(
-                                                nextReportStatus
-                                            );
-                                        }}
-                                    >
-                                        Mark as{' '}
-                                        {capitalizeEachWord(nextReportStatus, {
-                                            splitChar: '_'
-                                        })}
-                                    </Button>
-                                </>
-                            )}
+                            {isAdmin &&
+                                !isLoading &&
+                                nextReportStatus &&
+                                nextReportStatusCanContinue && (
+                                    <>
+                                        <Button
+                                            ref={updateTestPlanStatusButtonRef}
+                                            variant="secondary"
+                                            onClick={async () => {
+                                                focusButtonRef.current =
+                                                    updateTestPlanStatusButtonRef.current;
+                                                await updateReportStatus(
+                                                    nextReportStatus
+                                                );
+                                            }}
+                                        >
+                                            Mark as{' '}
+                                            {capitalizeEachWord(
+                                                nextReportStatus,
+                                                {
+                                                    splitChar: '_'
+                                                }
+                                            )}
+                                        </Button>
+                                    </>
+                                )}
 
                             {nextReportStatusInformationText && (
-                                <span className='next-report-status-information-text'>{nextReportStatusInformationText}</span>
+                                <span className="next-report-status-information-text">
+                                    {nextReportStatusInformationText}
+                                </span>
                             )}
                             {results}
                         </div>

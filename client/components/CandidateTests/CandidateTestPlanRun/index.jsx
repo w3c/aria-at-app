@@ -513,10 +513,17 @@ const CandidateTestPlanRun = () => {
                             );
                         } else {
                             return (
-                            <h2 className="test-results-header">
-                                Test Result: INCOMPLETE
-                            </h2>
-                            )
+                                <>
+                                    <h2 className="test-results-header">
+                                        Test Result: INCOMPLETE
+                                    </h2>
+                                    <p className="incomplete-test-plan-information-text">
+                                        Test plans with incomplete tests cannot
+                                        be finished. These tests should have
+                                        their candidate status removed.
+                                    </p>
+                                </>
+                            );
                         }
                     })
                 ]}
@@ -538,6 +545,11 @@ const CandidateTestPlanRun = () => {
         fileBugUrl =
             'https://github.com/FreedomScientific/VFO-standards-support/issues';
     }
+
+    const runnableTestsLength = testPlanReport.runnableTests.length;
+    const incompleteTestRuns = testPlanReport.draftTestPlanRuns.filter(
+        draft => draft.testResultsLength != runnableTestsLength
+    );
 
     return (
         <Container className="test-run-container">
@@ -612,7 +624,11 @@ const CandidateTestPlanRun = () => {
                                                             true
                                                         );
                                                     }}
-                                                    disabled={!isLastTest}
+                                                    disabled={
+                                                        !isLastTest ||
+                                                        incompleteTestRuns.length >
+                                                            0
+                                                    }
                                                 >
                                                     Finish
                                                 </Button>

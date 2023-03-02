@@ -157,3 +157,7 @@
     position: relative;
     top: -5px;
 }
+
+.incomplete-test-plan-information-text {
+    margin-top: 5%;
+}
