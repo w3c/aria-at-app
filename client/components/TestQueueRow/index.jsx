@@ -427,11 +427,13 @@ const TestQueueRow = ({
     };
 
     const evaluateNewReportStatus = () => {
-        const { status, conflictsLength, runnableTestsLength, finalizedTests } =
+        const { status, conflictsLength, runnableTestsLength, draftTestPlanRuns } =
             testPlanReport;
-        const conflictsCount = conflictsLength;
 
-        const hasIncompleteTests = runnableTestsLength != finalizedTests?.length;
+        const conflictsCount = conflictsLength;
+        const draftTestPlansTestResultsLengths = draftTestPlanRuns.map(x => x.testResultsLength);
+
+        const hasIncompleteTests = draftTestPlansTestResultsLengths.filter(x => x != runnableTestsLength).length > 0
 
         // If there are no conflicts OR the test has been marked as "final",
         // and admin can mark a test run as "draft"
