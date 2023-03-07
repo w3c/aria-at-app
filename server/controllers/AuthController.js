@@ -59,7 +59,6 @@ const oauthRedirectFromGithubController = async (req, res) => {
     if (isAdmin || testers.includes(githubUsername)) {
         roles.push({ name: User.TESTER }); // Admins are always testers
     }
-
     if (
         isAdmin ||
         vendors.findIndex(vendor => vendor.includes(githubUsername)) > -1
@@ -67,8 +66,33 @@ const oauthRedirectFromGithubController = async (req, res) => {
         roles.push({ name: User.VENDOR });
     }
 
-    if (roles.length === 0) return loginFailedDueToRole();
+    console.log(roles);
+    if (roles.length !== 0){
+        //  return loginFailedDueToRole();
+        let [user] = await getOrCreateUser(
+            { username: githubUsername },
+            { roles },
+            undefined,
+            undefined,
+            [],
+            []
+        );
 
+        req.session.user = user;
+
+        return loginSucceeded();
+    }
+
+    // Allows for quickly logging in with different roles - changing
+    // roles would otherwise require leaving and joining GitHub teams.
+    // Should not be saved to database.
+    const matchedFakeRole =
+        dataFromFrontend && dataFromFrontend.match(/fakeRole-(\w*)/);
+       
+    if (!(ALLOW_FAKE_ROLE && matchedFakeRole)) {
+        return loginFailedDueToRole();
+    }
+    
     let [user] = await getOrCreateUser(
         { username: githubUsername },
         { roles },
@@ -78,22 +102,17 @@ const oauthRedirectFromGithubController = async (req, res) => {
         []
     );
 
-    // Allows for quickly logging in with different roles - changing
-    // roles would otherwise require leaving and joining GitHub teams.
-    // Should not be saved to database.
-    const matchedFakeRole =
-        dataFromFrontend && dataFromFrontend.match(/fakeRole-(\w*)/);
-    if (ALLOW_FAKE_ROLE && matchedFakeRole) {
-        user = user.get({ plain: true });
-        user.roles =
-            matchedFakeRole[1] === ''
-                ? []
-                : [{ name: matchedFakeRole[1].toUpperCase() }];
-        if (user.roles[0] && user.roles[0].name === User.ADMIN) {
-            user.roles.push({ name: User.TESTER }); // Admins are always testers
-            user.roles.push({ name: User.VENDOR });
-        }
+    user = user.get({ plain: true });
+    user.roles =
+        matchedFakeRole[1] === ''
+            ? []
+            : [{ name: matchedFakeRole[1].toUpperCase() }];
+    if (user.roles[0] && user.roles[0].name === User.ADMIN) {
+        user.roles.push({ name: User.TESTER }); // Admins are always testers
+        user.roles.push({ name: User.VENDOR });
+        console.log(roles);
     }
+    
     if (user.roles.length === 0) return loginFailedDueToRole();
 
     req.session.user = user;
