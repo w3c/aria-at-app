@@ -114,6 +114,7 @@ const TestQueueRow = ({
     const toggleTesterAssign = async username => {
         const isTesterAssigned = checkIsTesterAssigned(username);
         const tester = testers.find(tester => tester.username === username);
+
         if (isTesterAssigned) {
             await triggerLoad(async () => {
                 await removeTester({

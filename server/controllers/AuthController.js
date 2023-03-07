@@ -66,7 +66,6 @@ const oauthRedirectFromGithubController = async (req, res) => {
         roles.push({ name: User.VENDOR });
     }
 
-    console.log(roles);
     if (roles.length !== 0){
         //  return loginFailedDueToRole();
         let [user] = await getOrCreateUser(
