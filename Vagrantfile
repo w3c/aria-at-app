@@ -12,7 +12,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end
 
   config.vm.synced_folder '.', '/vagrant', type: 'rsync',
-    rsync__exclude: ['node_modules/', 'client/dist/']
+    rsync__exclude: ['node_modules/', 'client/dist/'],
+    rsync__args: ['-r', '--perms', '--chmod=Du=rwx,Dg=rwx,Do=rwx,Fu=rwx,Fg=rwx,Fo=rwx', './server']
 
   # Ideally, this IP will be unique, so the entry added to /etc/hosts won't
   # conflict with that of another project.
