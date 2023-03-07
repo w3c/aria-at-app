@@ -28,13 +28,6 @@
   when: deployment_mode != 'development'
   notify: "restart server"
 
-- name: Make vagrant folder writable
-  file:
-    path: /vagrant/server
-    mode: '0777'
-    recurse: yes
-  when: deployment_mode == 'development'
-
 - name: Link application code
   file:
     dest: '{{source_dir}}'

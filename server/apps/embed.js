@@ -161,7 +161,10 @@ const getLatestReportsForPattern = async pattern => {
     allBrowsers = Array.from(allBrowsers).sort();
     testPlanVersionIds = Array.from(testPlanVersionIds);
 
-    allAts.forEach(at => {
+    const allAtsAlphabetical = Array.from(allAts).sort((a, b) =>
+        a.localeCompare(b)
+    );
+    allAtsAlphabetical.forEach(at => {
         reportsByAt[at] = latestReports
             .filter(report => report.at.name === at)
             .sort((a, b) => a.browser.name.localeCompare(b.browser.name));
@@ -184,8 +187,9 @@ app.get('/reports/:pattern', async (req, res) => {
     // Usage: https://aria-at.w3.org/embed/reports/command-button?title=Link+Example+(span+element+with+text+content)
     const queryTitle = req.query.title;
     const pattern = req.params.pattern;
-    const protocol =
-        process.env.DEPLOY_ENVIRONMENT === 'dev' ? 'http://' : 'https://';
+    const protocol = /dev|vagrant/.test(process.env.ENVIRONMENT)
+        ? 'http://'
+        : 'https://';
     const {
         title,
         allBrowsers,
