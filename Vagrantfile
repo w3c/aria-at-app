@@ -13,6 +13,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.synced_folder '.', '/vagrant', type: 'rsync',
     rsync__exclude: ['node_modules/', 'client/dist/'],
+    # Because Vagrant sets the owner of the synced folders to be the `vagrant`
+    # user, the `aria-bot` user (which runs the server process) will not be
+    # able to write to the `server` directory by default. The following
+    # configuration makes the directory world-writable to enable this.
     rsync__args: ['-r', '--perms', '--chmod=Du=rwx,Dg=rwx,Do=rwx,Fu=rwx,Fg=rwx,Fo=rwx', './server']
 
   # Ideally, this IP will be unique, so the entry added to /etc/hosts won't
