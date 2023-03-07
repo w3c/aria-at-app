@@ -8,6 +8,10 @@ const deepPickEqual = require('../../util/deepPickEqual');
 const convertTestResultToInput = require('../TestPlanRunOperations/convertTestResultToInput');
 const createTestResultSkeleton = require('../TestPlanRunOperations/createTestResultSkeleton');
 const persistConflictsCount = require('../helpers/persistConflictsCount');
+const {
+    updateTestPlanReport
+} = require('../../models/services/TestPlanReportService');
+const getMetrics = require('../../util/getMetrics');
 
 const saveTestResultCommon = async ({
     testResultId,
@@ -76,6 +80,13 @@ const saveTestResultCommon = async ({
     ];
 
     await updateTestPlanRun(testPlanRun.id, { testResults: newTestResults });
+
+    if (isSubmit) {
+        const metrics = getMetrics({
+            testResult: newTestResult
+        });
+        await updateTestPlanReport(testPlanReport.id, { metrics });
+    }
 
     // TODO: Avoid blocking loads in test runs with a larger amount of tests
     //       and/or test results

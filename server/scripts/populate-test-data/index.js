@@ -109,24 +109,6 @@ const populateTestDatabase = async () => {
         { user: { roles: [{ name: 'ADMIN' }] } }
     );
 
-    await updateStatusResolver(
-        { parentContext: { id: 4 } },
-        { status: 'CANDIDATE' },
-        { user: { roles: [{ name: 'ADMIN' }] } }
-    );
-
-    await updateStatusResolver(
-        { parentContext: { id: 5 } },
-        { status: 'CANDIDATE' },
-        { user: { roles: [{ name: 'ADMIN' }] } }
-    );
-
-    await updateStatusResolver(
-        { parentContext: { id: 6 } },
-        { status: 'CANDIDATE' },
-        { user: { roles: [{ name: 'ADMIN' }] } }
-    );
-
     console.info(
         'Successfully populated. Please wait a moment for the process to close.'
     );

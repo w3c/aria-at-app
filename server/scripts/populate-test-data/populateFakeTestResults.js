@@ -177,6 +177,10 @@ const getFake = async ({
                                 id
                                 passed
                                 failedReason
+                                assertion {
+                                    id
+                                    priority
+                                }
                             }
                         }
                     }
@@ -195,6 +199,7 @@ const getFake = async ({
             assertionResults: scenarioResult.assertionResults.map(
                 assertionResult => ({
                     ...assertionResult,
+                    assertion: { ...assertionResult.assertion },
                     passed: true
                 })
             ),

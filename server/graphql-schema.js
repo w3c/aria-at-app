@@ -620,6 +620,14 @@ const graphqlSchema = gql`
         """
         See Assertion for more information.
         """
+        assertion: AssertionResultInput
+        """
+        See Assertion for more information.
+        """
+        priority: AssertionPriority
+        """
+        See Assertion for more information.
+        """
         passed: Boolean
         """
         See Assertion for more information.
