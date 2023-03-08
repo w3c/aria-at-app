@@ -109,7 +109,6 @@ const oauthRedirectFromGithubController = async (req, res) => {
     if (user.roles[0] && user.roles[0].name === User.ADMIN) {
         user.roles.push({ name: User.TESTER }); // Admins are always testers
         user.roles.push({ name: User.VENDOR });
-        console.log(roles);
     }
     
     if (user.roles.length === 0) return loginFailedDueToRole();
