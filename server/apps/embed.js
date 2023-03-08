@@ -50,24 +50,29 @@ const getLatestReportsForPattern = async pattern => {
                         id
                         name
                     }
-                    finalizedTestResults {
+                    latestAtVersionReleasedAt {
                         id
-                        atVersion {
-                            id
-                            name
-                            releasedAt
-                        }
+                        name
+                        releasedAt
                     }
-                    runnableTests {
-                        id
-                    }
-                    draftTestPlanRuns {
-                        testResults {
-                            test {
-                                id
-                            }
-                        }
-                    }
+                    # finalizedTestResults {
+                    #     id
+                    #     atVersion {
+                    #         id
+                    #         name
+                    #         releasedAt
+                    #     }
+                    # }
+                    # runnableTests {
+                    #     id
+                    # }
+                    # draftTestPlanRuns {
+                    #     testResults {
+                    #         test {
+                    #             id
+                    #         }
+                    #     }
+                    # }
                     testPlanVersion {
                         id
                         title
@@ -92,7 +97,8 @@ const getLatestReportsForPattern = async pattern => {
 
     let allAts = new Set();
     let allBrowsers = new Set();
-    let allAtVersionsByAt = {};
+    // let allAtVersionsByAt = {};
+    let allAtVersionsByAtDupe = {};
     let status = 'RECOMMENDED';
     let reportsByAt = {};
     let testPlanVersionIds = new Set();
@@ -106,18 +112,23 @@ const getLatestReportsForPattern = async pattern => {
             status = report.status;
         }
 
+        // console.log('latestAtVersionReleasedAt', report.latestAtVersionReleasedAt);
+
         // Get the latest AT version used for testing per AT
-        report.finalizedTestResults.forEach(result => {
-            if (report.at.name in allAtVersionsByAt) {
-                allAtVersionsByAt[report.at.name] =
-                    new Date(result.atVersion.releasedAt) >
-                    new Date(allAtVersionsByAt[report.at.name].releasedAt)
-                        ? result.atVersion
-                        : allAtVersionsByAt[report.at.name];
-            } else {
-                allAtVersionsByAt[report.at.name] = result.atVersion;
-            }
-        });
+        // report.finalizedTestResults.forEach(result => {
+        //     if (report.at.name in allAtVersionsByAt) {
+        //         allAtVersionsByAt[report.at.name] =
+        //             new Date(result.atVersion.releasedAt) >
+        //             new Date(allAtVersionsByAt[report.at.name].releasedAt)
+        //                 ? result.atVersion
+        //                 : allAtVersionsByAt[report.at.name];
+        //     } else {
+        //         allAtVersionsByAt[report.at.name] = result.atVersion;
+        //     }
+        // });
+
+        allAtVersionsByAtDupe[report.at.name] =
+            report.latestAtVersionReleasedAt;
 
         const sameAtAndBrowserReports = testPlanReports.filter(
             r =>
@@ -170,10 +181,13 @@ const getLatestReportsForPattern = async pattern => {
             .sort((a, b) => a.browser.name.localeCompare(b.browser.name));
     });
 
+    // console.log('allAtVersionsByAt', allAtVersionsByAt);
+    // console.log('allAtVersionsByAtDupe', allAtVersionsByAtDupe);
+
     return {
         title,
         allBrowsers,
-        allAtVersionsByAt,
+        allAtVersionsByAt: allAtVersionsByAtDupe,
         testPlanVersionIds,
         status,
         reportsByAt
