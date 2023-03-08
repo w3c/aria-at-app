@@ -244,14 +244,15 @@ const TestManagement = () => {
                                                 resultTestPlanTargets,
                                                 combinedTestPlanVersionIdArray
                                             } = combineObject(tabularReport);
-                                            reportResult = resultTestPlanTargets;
-                                            testPlanVersionId = combinedTestPlanVersionIdArray.join(
-                                                ','
-                                            );
+                                            reportResult =
+                                                resultTestPlanTargets;
+                                            testPlanVersionId =
+                                                combinedTestPlanVersionIdArray.join(
+                                                    ','
+                                                );
                                         } else {
-                                            reportResult = Object.values(
-                                                tabularReport
-                                            )[0];
+                                            reportResult =
+                                                Object.values(tabularReport)[0];
                                             testPlanVersionId =
                                                 reportResult.testPlanVersion.id;
                                         }
