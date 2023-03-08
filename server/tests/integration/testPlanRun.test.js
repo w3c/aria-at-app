@@ -51,9 +51,8 @@ const prepopulateTestPlanReport = async () => {
             }
         }
     `);
-    const {
-        testPlanReport
-    } = mutationResult.findOrCreateTestPlanReport.populatedData;
+    const { testPlanReport } =
+        mutationResult.findOrCreateTestPlanReport.populatedData;
     testPlanReportId = testPlanReport.id;
     testId = testPlanReport.runnableTests[1].id;
 };
@@ -160,9 +159,8 @@ describe('testPlanRun', () => {
                     }
                 }
             `);
-            const {
-                testResult
-            } = mutationResult.testPlanRun.findOrCreateTestResult;
+            const { testResult } =
+                mutationResult.testPlanRun.findOrCreateTestResult;
 
             expect(testResult.id).toBeTruthy();
             expect(testResult.test.id).toBe(testId);

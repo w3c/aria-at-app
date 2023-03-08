@@ -1,5 +1,5 @@
 import React from 'react';
-import ProvideFeedbackModal from '../components/common/CandidateModals/ProvideFeedbackModal';
+import ProvideFeedbackModal from '../components/CandidateTests/CandidateModals/ProvideFeedbackModal';
 
 export default {
     component: ProvideFeedbackModal,

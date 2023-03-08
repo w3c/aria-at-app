@@ -1,6 +1,6 @@
 const MODEL_NAME = 'UserAts';
 
-module.exports = function(sequelize, DataTypes) {
+module.exports = function (sequelize, DataTypes) {
     return sequelize.define(
         MODEL_NAME,
         {

@@ -9,10 +9,8 @@ const findOrCreateTestPlanReportResolver = async (_, { input }, { user }) => {
         throw new AuthenticationError();
     }
 
-    const [
-        testPlanReport,
-        createdLocationsOfData
-    ] = await getOrCreateTestPlanReport(input, { status: 'DRAFT' });
+    const [testPlanReport, createdLocationsOfData] =
+        await getOrCreateTestPlanReport(input, { status: 'DRAFT' });
 
     const locationOfData = { testPlanReportId: testPlanReport.id };
     const preloaded = { testPlanReport };

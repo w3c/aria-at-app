@@ -68,11 +68,10 @@ const updateStatusResolver = async (
                 ...updateParams,
                 candidateStatusReachedAt,
                 metrics: { ...testPlanReport.metrics, ...metrics },
-                recommendedStatusTargetDate: recommendedStatusTargetDateResolver(
-                    {
+                recommendedStatusTargetDate:
+                    recommendedStatusTargetDateResolver({
                         candidateStatusReachedAt
-                    }
-                ),
+                    }),
                 vendorReviewStatus: 'READY'
             };
         } else if (status === 'RECOMMENDED') {

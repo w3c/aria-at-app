@@ -1,6 +1,6 @@
 const envConfig = require('dotenv').config().parsed || {};
 
-exports.getDbConfig = function() {
+exports.getDbConfig = function () {
     return {
         driver: 'pg',
         user: envConfig.PGUSER,

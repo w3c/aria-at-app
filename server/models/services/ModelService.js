@@ -315,10 +315,7 @@ const nestedGetOrCreate = async (getOptionsArray, options = {}) => {
                             'others work with a single record'
                     );
                 }
-                const [
-                    records,
-                    isUpdated
-                ] = await bulkGetOrReplace(
+                const [records, isUpdated] = await bulkGetOrReplace(
                     bulkGetOrReplaceWhere,
                     values,
                     ...returnAttributes,
@@ -446,10 +443,8 @@ const bulkGetOrReplace = async (Model, where, expectedValues, options = {}) => {
  */
 const removeById = async (model, id, options = {}) => {
     if (!model) throw new Error('Model not defined');
-    const {
-        truncate = false,
-        transaction = global.globalTestTransaction
-    } = options;
+    const { truncate = false, transaction = global.globalTestTransaction } =
+        options;
 
     await model.destroy({
         where: { id },
@@ -469,10 +464,8 @@ const removeById = async (model, id, options = {}) => {
  */
 const removeByQuery = async (model, queryParams, options = {}) => {
     if (!model) throw new Error('Model not defined');
-    const {
-        truncate = false,
-        transaction = global.globalTestTransaction
-    } = options;
+    const { truncate = false, transaction = global.globalTestTransaction } =
+        options;
 
     await model.destroy({
         where: { ...queryParams },

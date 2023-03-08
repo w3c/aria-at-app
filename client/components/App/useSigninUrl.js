@@ -6,10 +6,7 @@ const useSigninUrl = () => {
     if (matchedFakeRole) {
         dataFromFrontend += `fakeRole-${matchedFakeRole[1]}`;
     }
-    return (
-        `${process.env.API_SERVER}/api/auth/oauth?dataFromFrontend=` +
-        dataFromFrontend
-    );
+    return `/api/auth/oauth?dataFromFrontend=` + dataFromFrontend;
 };
 
 export default useSigninUrl;

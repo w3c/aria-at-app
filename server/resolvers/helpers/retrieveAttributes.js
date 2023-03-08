@@ -5,9 +5,10 @@ const getAttributesFromSelections = (
     modelName = null,
     useSubpath = false
 ) => {
-    return (useSubpath
-        ? selections.filter(item => item.name.value === modelName)
-        : selections
+    return (
+        useSubpath
+            ? selections.filter(item => item.name.value === modelName)
+            : selections
     ).map(({ name: { value }, selectionSet }) => {
         return {
             value,

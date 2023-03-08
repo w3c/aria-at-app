@@ -1,6 +1,6 @@
 const MODEL_NAME = 'At';
 
-module.exports = function(sequelize, DataTypes) {
+module.exports = function (sequelize, DataTypes) {
     const Model = sequelize.define(
         MODEL_NAME,
         {
@@ -25,7 +25,7 @@ module.exports = function(sequelize, DataTypes) {
 
     Model.AT_MODE_ASSOCIATION = { as: 'modes' };
 
-    Model.associate = function(models) {
+    Model.associate = function (models) {
         Model.hasMany(models.AtVersion, {
             ...Model.AT_VERSION_ASSOCIATION,
             foreignKey: 'atId',
