@@ -1,6 +1,6 @@
 const MODEL_NAME = 'TestPlanVersion';
 
-module.exports = function(sequelize, DataTypes) {
+module.exports = function (sequelize, DataTypes) {
     const Model = sequelize.define(
         MODEL_NAME,
         {
@@ -30,7 +30,7 @@ module.exports = function(sequelize, DataTypes) {
 
     Model.TEST_PLAN_REPORT_ASSOCIATION = { as: 'testPlanReports' };
 
-    Model.associate = function(models) {
+    Model.associate = function (models) {
         Model.hasMany(models.TestPlanReport, {
             ...Model.TEST_PLAN_REPORT_ASSOCIATION,
             foreignKey: 'testPlanVersionId',

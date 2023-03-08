@@ -1,6 +1,6 @@
 const MODEL_NAME = 'User';
 
-module.exports = function(sequelize, DataTypes) {
+module.exports = function (sequelize, DataTypes) {
     const Model = sequelize.define(
         MODEL_NAME,
         {
@@ -32,7 +32,7 @@ module.exports = function(sequelize, DataTypes) {
     Model.ATS_ASSOCIATION = { through: 'UserAts', as: 'ats' };
     Model.TEST_PLAN_RUN_ASSOCIATION = { as: 'testPlanRuns' };
 
-    Model.associate = function(models) {
+    Model.associate = function (models) {
         Model.belongsToMany(models.Role, {
             ...Model.ROLE_ASSOCIATION,
             foreignKey: 'userId',

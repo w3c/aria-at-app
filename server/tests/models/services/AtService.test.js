@@ -362,10 +362,10 @@ describe('AtVersionModel Data Checks', () => {
             const { id, atId, name, at } = atVersionInstance;
 
             // A2
-            const updatedAtVersionInstance = await AtService.updateAtVersionById(
-                id,
-                { name: _updatedAtVersion }
-            );
+            const updatedAtVersionInstance =
+                await AtService.updateAtVersionById(id, {
+                    name: _updatedAtVersion
+                });
             const { name: updatedAtVersion } = updatedAtVersionInstance;
 
             // after atVersion created

@@ -1,7 +1,6 @@
 /* eslint no-console: 0 */
 
 const path = require('path');
-const nodegit = require('nodegit');
 const { Client } = require('pg');
 const fse = require('fs-extra');
 const spawn = require('cross-spawn');
@@ -42,7 +41,7 @@ Default use:
 const client = new Client();
 
 const ariaAtRepo = 'https://github.com/w3c/aria-at.git';
-const DEFAULT_BRANCH = 'master';
+const ariaAtDefaultBranch = 'master';
 const gitCloneDirectory = path.resolve(__dirname, 'tmp');
 const builtTestsDirectory = path.resolve(gitCloneDirectory, 'build', 'tests');
 const testsDirectory = path.resolve(gitCloneDirectory, 'tests');
@@ -143,44 +142,26 @@ const importTestPlanVersions = async () => {
 };
 
 const readRepo = async () => {
-    fse.ensureDirSync(gitCloneDirectory);
-    let repo = await nodegit.Clone(ariaAtRepo, gitCloneDirectory, {});
-    console.log(`Cloned ${path.basename(ariaAtRepo)} to ${repo.workdir()}`);
-
-    let commit;
-    if (args.commit) {
-        try {
-            commit = await nodegit.Commit.lookup(repo, args.commit);
-        } catch (error) {
-            console.log(
-                `IMPORT FAILED! Cannot checkout repo at commit: ${args.commit}`
-            );
-            throw error;
-        }
-
-        await nodegit.Checkout.tree(repo, commit);
-        await repo.setHeadDetached(commit);
-    } else {
-        let latestCommit = fse
-            .readFileSync(
-                path.join(
-                    gitCloneDirectory,
-                    '.git',
-                    'refs',
-                    'heads',
-                    DEFAULT_BRANCH
-                ),
-                'utf8'
-            )
-            .trim();
-        commit = await nodegit.Commit.lookup(repo, latestCommit);
-    }
-
-    return {
-        gitCommitDate: commit.date(),
-        gitMessage: commit.message(),
-        gitSha: commit.id().tostrS()
+    const gitRun = args => {
+        return spawn
+            .sync('git', args.split(' '), { cwd: gitCloneDirectory })
+            .stdout.toString()
+            .trimEnd();
     };
+
+    fse.ensureDirSync(gitCloneDirectory);
+
+    console.info('Cloning aria-at repo ...');
+    spawn.sync('git', ['clone', ariaAtRepo, gitCloneDirectory]);
+    console.info('Cloning aria-at repo complete.');
+
+    gitRun(`checkout ${args.commit ?? ariaAtDefaultBranch}`);
+
+    const gitSha = gitRun(`log --format=%H -n 1`);
+    const gitMessage = gitRun(`log --format=%B -n 1`);
+    const gitCommitDate = new Date(gitRun(`log --format=%aI -n 1`));
+
+    return { gitSha, gitCommitDate, gitMessage };
 };
 
 const getAppUrl = (directoryRelativePath, { gitSha, directoryPath }) => {
@@ -227,9 +208,9 @@ const readCsv = ({ sourceDirectoryPath }) => {
 const updateCommandsJson = async () => {
     const keysMjsPath = path.join(testsDirectory, 'resources', 'keys.mjs');
 
-    const commands = Object.entries(
-        await import(keysMjsPath)
-    ).map(([id, text]) => ({ id, text }));
+    const commands = Object.entries(await import(keysMjsPath)).map(
+        ([id, text]) => ({ id, text })
+    );
 
     await fse.writeFile(
         path.resolve(__dirname, '../../resources/commands.json'),

@@ -12,7 +12,6 @@ import { Button, Dropdown } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import ATAlert from '../ATAlert';
 import { capitalizeEachWord } from '../../utils/formatter';
-import './TestQueueRow.css';
 import {
     TEST_PLAN_REPORT_QUERY,
     ASSIGN_TESTER_MUTATION,
@@ -25,7 +24,7 @@ import { gitUpdatedDateToString } from '../../utils/gitUtils';
 import TestPlanUpdaterModal from '../TestPlanUpdater/TestPlanUpdaterModal';
 import BasicThemedModal from '../common/BasicThemedModal';
 import { LoadingStatus, useTriggerLoad } from '../common/LoadingStatus';
-
+import './TestQueueRow.css';
 const TestQueueRow = ({
     user = {},
     testers = [],
@@ -63,9 +62,8 @@ const TestQueueRow = ({
     const [removeTester] = useMutation(REMOVE_TESTER_MUTATION);
     const [removeTesterResults] = useMutation(REMOVE_TESTER_RESULTS_MUTATION);
 
-    const [showTestPlanUpdaterModal, setShowTestPlanUpdaterModal] = useState(
-        false
-    );
+    const [showTestPlanUpdaterModal, setShowTestPlanUpdaterModal] =
+        useState(false);
     const [testPlanReport, setTestPlanReport] = useState(testPlanReportData);
     const [isLoading, setIsLoading] = useState(false);
 
@@ -245,9 +243,8 @@ const TestQueueRow = ({
                     <Dropdown.Menu role="menu">
                         {testers.length ? (
                             testers.map(({ username }) => {
-                                const isTesterAssigned = checkIsTesterAssigned(
-                                    username
-                                );
+                                const isTesterAssigned =
+                                    checkIsTesterAssigned(username);
                                 let classname = isTesterAssigned
                                     ? 'assigned'
                                     : 'not-assigned';

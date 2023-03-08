@@ -10,8 +10,12 @@ import {
     CANDIDATE_REPORTS_QUERY,
     PROMOTE_VENDOR_REVIEW_STATUS_REPORT_MUTATION
 } from './queries';
-import { Badge, Container, Row, Col, Button } from 'react-bootstrap';
-import { useParams, Redirect, useHistory } from 'react-router-dom';
+import Badge from 'react-bootstrap/Badge';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import Button from 'react-bootstrap/Button';
+import { useParams, useNavigate, Navigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import './CandidateTestPlanRun.css';
 import '../../TestRun/TestRun.css';
@@ -41,7 +45,7 @@ function useSize(target) {
 
 const CandidateTestPlanRun = () => {
     const { atId, testPlanVersionId } = useParams();
-    const history = useHistory();
+    const navigate = useNavigate();
 
     const { loading, data, error, refetch } = useQuery(
         CANDIDATE_REPORTS_QUERY,
@@ -250,7 +254,7 @@ const CandidateTestPlanRun = () => {
     const at = atMap[atId];
 
     const testPlanReports = data.testPlanReports;
-    if (testPlanReports.length === 0) return <Redirect to="/404" />;
+    if (testPlanReports.length === 0) return <Navigate to="/404" replace />;
 
     const testPlanReport = testPlanReports.find(
         each => each.testPlanVersion.id === testPlanVersionId
@@ -263,11 +267,8 @@ const CandidateTestPlanRun = () => {
     }));
 
     const currentTest = tests[currentTestIndex];
-    const {
-        testPlanVersion,
-        vendorReviewStatus,
-        recommendedStatusTargetDate
-    } = testPlanReport;
+    const { testPlanVersion, vendorReviewStatus, recommendedStatusTargetDate } =
+        testPlanReport;
 
     const vendorReviewStatusMap = {
         READY: 'Ready',
@@ -376,9 +377,11 @@ const CandidateTestPlanRun = () => {
             <div className="test-info-entity apg-example-name">
                 <div className="info-label">
                     <b>Candidate Test Plan:</b>{' '}
-                    {`${testPlanVersion.title ||
+                    {`${
+                        testPlanVersion.title ||
                         testPlanVersion.testPlan?.directory ||
-                        ''}`}
+                        ''
+                    }`}
                 </div>
             </div>
             <div className="test-info-entity review-status">
@@ -456,7 +459,7 @@ const CandidateTestPlanRun = () => {
     );
 
     const results = (
-        <>
+        <div className="results-container">
             <h1 className="current-test-title">{currentTest.title}</h1>
             <DisclosureComponent
                 componentId="test-instructions-and-results"
@@ -508,7 +511,7 @@ const CandidateTestPlanRun = () => {
                 ]}
                 stacked
             ></DisclosureComponent>
-        </>
+        </div>
     );
 
     const requestChangesUrl = generateGithubUrl(true, 'changes-requested');
@@ -695,7 +698,7 @@ const CandidateTestPlanRun = () => {
                     show={true}
                     handleAction={async () => {
                         setThankYouModalShowing(false);
-                        history.push('/candidate-tests');
+                        navigate('/candidate-tests');
                     }}
                     githubUrl={generateGithubUrl(
                         false,

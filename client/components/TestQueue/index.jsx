@@ -28,18 +28,13 @@ const TestQueue = () => {
     const [structuredTestPlanTargets, setStructuredTestPlanTargets] = useState(
         {}
     );
-    const [
-        deleteTestPlanReportDetails,
-        setDeleteTestPlanReportDetails
-    ] = useState({});
-    const [
-        isShowingDeleteTestPlanReportModal,
-        setDeleteTestPlanReportModal
-    ] = useState(false);
+    const [deleteTestPlanReportDetails, setDeleteTestPlanReportDetails] =
+        useState({});
+    const [isShowingDeleteTestPlanReportModal, setDeleteTestPlanReportModal] =
+        useState(false);
     const [deleteResultsDetails, setDeleteResultsDetails] = useState({});
-    const [isShowingDeleteResultsModal, setDeleteResultsModal] = useState(
-        false
-    );
+    const [isShowingDeleteResultsModal, setDeleteResultsModal] =
+        useState(false);
 
     const auth = evaluateAuth(data && data.me ? data.me : {});
     const { id, isAdmin } = auth;
@@ -72,9 +67,8 @@ const TestQueue = () => {
     }, [data]);
 
     useEffect(() => {
-        const structuredTestPlanTargets = generateStructuredTestPlanVersions(
-            testPlanReports
-        );
+        const structuredTestPlanTargets =
+            generateStructuredTestPlanVersions(testPlanReports);
         setStructuredTestPlanTargets(structuredTestPlanTargets);
     }, [testPlanReports]);
 
@@ -106,9 +100,8 @@ const TestQueue = () => {
                 <Table
                     className="test-queue"
                     aria-labelledby={tableId}
-                    striped
                     bordered
-                    hover
+                    responsive
                 >
                     <thead>
                         <tr>

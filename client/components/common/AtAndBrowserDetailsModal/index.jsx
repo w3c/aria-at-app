@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Form, Alert } from 'react-bootstrap';
 import styled from '@emotion/styled';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -20,6 +20,10 @@ const FieldsetRow = styled.fieldset`
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-gap: 1rem;
+
+    legend {
+        float: inherit;
+    }
 `;
 
 const ModalSubtitleStyle = styled.h2`
@@ -53,16 +57,15 @@ const AtAndBrowserDetailsModal = ({
     // Detect UA information
     const { uaBrowser, uaMajor, uaMinor, uaPatch } = useDetectUa();
 
-    const history = useHistory();
+    const navigate = useNavigate();
 
     const updatedAtVersionDropdownRef = useRef();
     const updatedBrowserVersionTextRef = useRef();
 
     const [showExitModal, setShowExitModal] = useState(false);
     const [isFirstLoad, setIsFirstLoad] = useState(true);
-    const [updatedAtVersion, setUpdatedAtVersion] = useState(
-        'Select a Version'
-    );
+    const [updatedAtVersion, setUpdatedAtVersion] =
+        useState('Select a Version');
     const [updatedBrowserVersion, setUpdatedBrowserVersion] = useState('');
 
     const [isAtVersionError, setIsAtVersionError] = useState(false);
@@ -72,10 +75,8 @@ const AtAndBrowserDetailsModal = ({
         forceBrowserVersionUpdateMessage,
         setForceBrowserVersionUpdateMessage
     ] = useState(false);
-    const [
-        browserVersionMismatchMessage,
-        setBrowserVersionMismatchMessage
-    ] = useState(false);
+    const [browserVersionMismatchMessage, setBrowserVersionMismatchMessage] =
+        useState(false);
 
     useEffect(() => {
         setIsFirstLoad(firstLoad);
@@ -216,7 +217,7 @@ const AtAndBrowserDetailsModal = ({
                 }
                 actionLabel="Ok"
                 closeLabel="Cancel"
-                handleAction={() => history.push('/test-queue')}
+                handleAction={() => navigate('/test-queue')}
                 handleClose={() => setShowExitModal(false)}
                 staticBackdrop={true}
             />
@@ -292,7 +293,7 @@ const AtAndBrowserDetailsModal = ({
                                             </span>
                                         </Alert>
                                     )}
-                                <Form.Group>
+                                <Form.Group className="form-group">
                                     <Form.Label>
                                         Assistive Technology Name
                                     </Form.Label>
@@ -303,14 +304,13 @@ const AtAndBrowserDetailsModal = ({
                                     />
                                 </Form.Group>
 
-                                <Form.Group>
+                                <Form.Group className="form-group">
                                     <Form.Label>
                                         Assistive Technology Version
                                         <Required aria-hidden />
                                     </Form.Label>
-                                    <Form.Control
+                                    <Form.Select
                                         ref={updatedAtVersionDropdownRef}
-                                        as="select"
                                         value={updatedAtVersion}
                                         onChange={handleAtVersionChange}
                                         isInvalid={isAtVersionError}
@@ -330,7 +330,7 @@ const AtAndBrowserDetailsModal = ({
                                                 {item}
                                             </option>
                                         ))}
-                                    </Form.Control>
+                                    </Form.Select>
                                     {isAtVersionError && (
                                         <Form.Control.Feedback
                                             style={{ display: 'block' }}
@@ -349,18 +349,22 @@ const AtAndBrowserDetailsModal = ({
                                     </ModalSubtitleStyle>
                                 </legend>
                                 {/* Tester Scenario 1 */}
-                                {isFirstLoad && uaBrowser && uaMajor !== '0' && (
-                                    <Alert
-                                        variant="primary"
-                                        className="at-browser-details-modal-alert"
-                                    >
-                                        <FontAwesomeIcon icon={faInfoCircle} />
-                                        <span>
-                                            We have automatically detected your
-                                            version of {uaBrowser}
-                                        </span>
-                                    </Alert>
-                                )}
+                                {isFirstLoad &&
+                                    uaBrowser &&
+                                    uaMajor !== '0' && (
+                                        <Alert
+                                            variant="primary"
+                                            className="at-browser-details-modal-alert"
+                                        >
+                                            <FontAwesomeIcon
+                                                icon={faInfoCircle}
+                                            />
+                                            <span>
+                                                We have automatically detected
+                                                your version of {uaBrowser}
+                                            </span>
+                                        </Alert>
+                                    )}
                                 {/* Tester Scenario 3 */}
                                 {!isFirstLoad &&
                                     !isAdmin &&
@@ -547,7 +551,7 @@ const AtAndBrowserDetailsModal = ({
                                             </span>
                                         </Alert>
                                     )}
-                                <Form.Group>
+                                <Form.Group className="form-group">
                                     <Form.Label>Browser Name</Form.Label>
                                     <Form.Control
                                         disabled
@@ -556,7 +560,7 @@ const AtAndBrowserDetailsModal = ({
                                     />
                                 </Form.Group>
 
-                                <Form.Group>
+                                <Form.Group className="form-group">
                                     <Form.Label>
                                         Browser Version
                                         <Required aria-hidden />

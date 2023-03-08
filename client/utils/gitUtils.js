@@ -7,7 +7,9 @@ export const gitUpdatedDateToString = (dateString, locale = 'default') => {
     const month = date.toLocaleString(locale, options);
     const day = date.getDate();
     const year = date.getFullYear();
-    const time = date.toLocaleTimeString(locale, { timeZone: timeZone });
+    const time = date
+        .toLocaleTimeString(locale, { timeZone: timeZone })
+        .replace(/\s/g, ' ');
 
     const timeStamp = `${month} ${day}, ${year} at ${time} ${timeZone}`;
 

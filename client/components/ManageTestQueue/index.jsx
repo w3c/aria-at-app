@@ -110,16 +110,14 @@ const ManageTestQueue = ({
     const [selectedManageAtVersions, setSelectedManageAtVersions] = useState(
         []
     );
-    const [selectedManageAtVersionId, setSelectedManageAtVersionId] = useState(
-        ''
-    );
+    const [selectedManageAtVersionId, setSelectedManageAtVersionId] =
+        useState('');
 
     const [showAtVersionModal, setShowAtVersionModal] = useState(false);
     const [atVersionModalTitle, setAtVersionModalTitle] = useState('');
     const [atVersionModalType, setAtVersionModalType] = useState('add');
-    const [atVersionModalVersionText, setAtVersionModalVersionText] = useState(
-        ''
-    );
+    const [atVersionModalVersionText, setAtVersionModalVersionText] =
+        useState('');
     const [atVersionModalDateText, setAtVersionModalDateText] = useState('');
 
     const [showThemedModal, setShowThemedModal] = useState(false);
@@ -135,9 +133,8 @@ const ManageTestQueue = ({
     const [filteredTestPlanVersions, setFilteredTestPlanVersions] = useState(
         []
     );
-    const [selectedTestPlanVersionId, setSelectedTestPlanVersionId] = useState(
-        ''
-    );
+    const [selectedTestPlanVersionId, setSelectedTestPlanVersionId] =
+        useState('');
     const [matchingTestPlanVersions, setMatchingTestPlanVersions] = useState(
         []
     );
@@ -508,12 +505,11 @@ const ManageTestQueue = ({
                             versions in the ARIA-AT App
                         </span>
                         <div className="disclosure-row-manage-ats">
-                            <Form.Group className="ats-container">
+                            <Form.Group className="ats-container form-group">
                                 <Form.Label className="disclosure-form-label">
                                     Assistive Technology
                                 </Form.Label>
-                                <Form.Control
-                                    as="select"
+                                <Form.Select
                                     value={selectedManageAtId}
                                     onChange={onManageAtChange}
                                 >
@@ -525,15 +521,14 @@ const ManageTestQueue = ({
                                             {item.name}
                                         </option>
                                     ))}
-                                </Form.Control>
+                                </Form.Select>
                             </Form.Group>
                             <div className="at-versions-container">
-                                <Form.Group>
+                                <Form.Group className="form-group">
                                     <Form.Label className="disclosure-form-label">
                                         Available Versions
                                     </Form.Label>
-                                    <Form.Control
-                                        as="select"
+                                    <Form.Select
                                         value={selectedManageAtVersionId}
                                         onChange={onManageAtVersionChange}
                                     >
@@ -545,7 +540,7 @@ const ManageTestQueue = ({
                                                 {item.name}
                                             </option>
                                         ))}
-                                    </Form.Control>
+                                    </Form.Select>
                                 </Form.Group>
                                 <div className="disclosure-buttons-row">
                                     <button
@@ -584,12 +579,11 @@ const ManageTestQueue = ({
                             Technology and Browser to add it to the Test Queue
                         </span>
                         <div className="disclosure-row-test-plans">
-                            <Form.Group>
+                            <Form.Group className="form-group">
                                 <Form.Label className="disclosure-form-label">
                                     Test Plan
                                 </Form.Label>
-                                <Form.Control
-                                    as="select"
+                                <Form.Select
                                     onChange={e => {
                                         const { value } = e.target;
                                         updateMatchingTestPlanVersions(
@@ -600,24 +594,23 @@ const ManageTestQueue = ({
                                 >
                                     {filteredTestPlanVersions.map(item => (
                                         <option
-                                            key={`${item.title ||
-                                                item.testPlan.directory}-${
-                                                item.id
-                                            }`}
+                                            key={`${
+                                                item.title ||
+                                                item.testPlan.directory
+                                            }-${item.id}`}
                                             value={item.id}
                                         >
                                             {item.title ||
                                                 `"${item.testPlan.directory}"`}
                                         </option>
                                     ))}
-                                </Form.Control>
+                                </Form.Select>
                             </Form.Group>
-                            <Form.Group>
+                            <Form.Group className="form-group">
                                 <Form.Label className="disclosure-form-label">
                                     Test Plan Version
                                 </Form.Label>
-                                <Form.Control
-                                    as="select"
+                                <Form.Select
                                     value={selectedTestPlanVersionId}
                                     onChange={onTestPlanVersionChange}
                                 >
@@ -633,14 +626,13 @@ const ManageTestQueue = ({
                                             {item.gitSha.substring(0, 7)})
                                         </option>
                                     ))}
-                                </Form.Control>
+                                </Form.Select>
                             </Form.Group>
-                            <Form.Group>
+                            <Form.Group className="form-group">
                                 <Form.Label className="disclosure-form-label">
                                     Assistive Technology
                                 </Form.Label>
-                                <Form.Control
-                                    as="select"
+                                <Form.Select
                                     value={selectedAtId}
                                     onChange={onAtChange}
                                 >
@@ -655,14 +647,13 @@ const ManageTestQueue = ({
                                             {item.name}
                                         </option>
                                     ))}
-                                </Form.Control>
+                                </Form.Select>
                             </Form.Group>
-                            <Form.Group>
+                            <Form.Group className="form-group">
                                 <Form.Label className="disclosure-form-label">
                                     Browser
                                 </Form.Label>
-                                <Form.Control
-                                    as="select"
+                                <Form.Select
                                     value={selectedBrowserId}
                                     onChange={onBrowserChange}
                                 >
@@ -677,7 +668,7 @@ const ManageTestQueue = ({
                                             {item.name}
                                         </option>
                                     ))}
-                                </Form.Control>
+                                </Form.Select>
                             </Form.Group>
                         </div>
                         <Button
