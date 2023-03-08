@@ -87,6 +87,10 @@ const prepopulateTestResult = async () => {
                             id
                             assertionResults {
                                 id
+                                assertion {
+                                    id
+                                    priority
+                                }
                             }
                             unexpectedBehaviors {
                                 id
@@ -302,16 +306,28 @@ describe('testPlanRun', () => {
                                                     id: "${assertionResultId1}"
                                                     passed: true
                                                     failedReason: null
+                                                    assertion: {
+                                                        id: 1
+                                                        priority: REQUIRED
+                                                    }
                                                 }
                                                 {
                                                     id: "${assertionResultId2}"
                                                     passed: false
                                                     failedReason: NO_OUTPUT
+                                                    assertion: {
+                                                        id: 2
+                                                        priority: REQUIRED
+                                                    }
                                                 }
                                                 {
                                                     id: "${assertionResultId3}"
                                                     passed: false
                                                     failedReason: INCORRECT_OUTPUT
+                                                    assertion: {
+                                                        id: 3
+                                                        priority: REQUIRED
+                                                    }
                                                 }
                                             ]
                                             unexpectedBehaviors: []
