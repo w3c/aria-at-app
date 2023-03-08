@@ -139,58 +139,6 @@ const SummarizeTestPlanReports = ({ testPlanReports }) => {
                     if (latestPrevDate > latestCurrDate)
                         resultTestPlanTargets[testPlanTargetKey] =
                             testPlanTargets[testPlanTargetKey];
-
-                    /*
-                    // TODO: Determine if still required for evaluating by
-                        candidateStatusReachedAt and recommendedStatusReachedAt
-                        dates
-                    // Compare if latest version
-                    const latestPrevDate =
-                        new Date(
-                            testPlanTargets[
-                                testPlanTargetKey
-                            ]?.recommendedStatusReachedAt
-                        ) >
-                        new Date(
-                            testPlanTargets[
-                                testPlanTargetKey
-                            ]?.candidateStatusReachedAt
-                        )
-                            ? new Date(
-                                  testPlanTargets[
-                                      testPlanTargetKey
-                                  ]?.recommendedStatusReachedAt
-                              )
-                            : new Date(
-                                  testPlanTargets[
-                                      testPlanTargetKey
-                                  ]?.candidateStatusReachedAt
-                              );
-                    const latestCurrDate =
-                        new Date(
-                            resultTestPlanTargets[
-                                testPlanTargetKey
-                            ]?.recommendedStatusReachedAt
-                        ) >
-                        new Date(
-                            resultTestPlanTargets[
-                                testPlanTargetKey
-                            ]?.candidateStatusReachedAt
-                        )
-                            ? new Date(
-                                  resultTestPlanTargets[
-                                      testPlanTargetKey
-                                  ]?.recommendedStatusReachedAt
-                              )
-                            : new Date(
-                                  resultTestPlanTargets[
-                                      testPlanTargetKey
-                                  ]?.candidateStatusReachedAt
-                              );
-
-                    if (latestPrevDate > latestCurrDate)
-                        resultTestPlanTargets[testPlanTargetKey] =
-                            testPlanTargets[testPlanTargetKey];*/
                 }
             });
         }

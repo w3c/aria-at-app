@@ -188,7 +188,8 @@ const TestManagement = () => {
             )}
 
             <p data-testid="test-management-instructions">
-                Manage test plans in the Test Queue and test plan phases.
+                Manage test plans in the Test Queue (which are using the latest
+                Assistive Technology versions), and their test plan phases.
             </p>
 
             <ManageTestQueue
