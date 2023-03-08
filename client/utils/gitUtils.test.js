@@ -17,7 +17,7 @@ describe('gitUpdatedDateToString', () => {
         const date = '2021-11-30T14:51:28.000Z';
         const formattedDate = gitUpdatedDateToString(date, 'fr-FR');
         // French time uses a lowercase month notation
-        expect(formattedDate).toBe('nov 30, 2021 at 14:51:28 UTC');
+        expect(formattedDate).toBe('nov. 30, 2021 at 14:51:28 UTC');
     });
 
     it('returns a formatted string when using a different locale (Korean)', () => {
