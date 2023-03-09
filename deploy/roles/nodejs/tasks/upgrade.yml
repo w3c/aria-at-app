@@ -15,11 +15,11 @@
     repo: deb https://deb.nodesource.com/node_14.x buster main
     update_cache: True
   become: yes
-  when: '"18" not in node_version.stdout'
+  when: 'node_version.stdout is not match("v18.*")'
 
 - name: Remove Node.js if not version 18
   apt:
     name: nodejs
     state: absent
   become: yes
-  when: '"18" not in node_version.stdout'
+  when: 'node_version.stdout is not match("v18.*")'
