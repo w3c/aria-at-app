@@ -50,23 +50,10 @@ const getLatestReportsForPattern = async pattern => {
                         id
                         name
                     }
-                    finalizedTestResults {
+                    latestAtVersionReleasedAt {
                         id
-                        atVersion {
-                            id
-                            name
-                            releasedAt
-                        }
-                    }
-                    runnableTests {
-                        id
-                    }
-                    draftTestPlanRuns {
-                        testResults {
-                            test {
-                                id
-                            }
-                        }
+                        name
+                        releasedAt
                     }
                     testPlanVersion {
                         id
@@ -106,18 +93,16 @@ const getLatestReportsForPattern = async pattern => {
             status = report.status;
         }
 
-        // Get the latest AT version used for testing per AT
-        report.finalizedTestResults.forEach(result => {
-            if (report.at.name in allAtVersionsByAt) {
-                allAtVersionsByAt[report.at.name] =
-                    new Date(result.atVersion.releasedAt) >
-                    new Date(allAtVersionsByAt[report.at.name].releasedAt)
-                        ? result.atVersion
-                        : allAtVersionsByAt[report.at.name];
-            } else {
-                allAtVersionsByAt[report.at.name] = result.atVersion;
-            }
-        });
+        if (!allAtVersionsByAt[report.at.name])
+            allAtVersionsByAt[report.at.name] =
+                report.latestAtVersionReleasedAt;
+        else if (
+            new Date(report.latestAtVersionReleasedAt.releasedAt) >
+            new Date(allAtVersionsByAt[report.at.name].releasedAt)
+        ) {
+            allAtVersionsByAt[report.at.name] =
+                report.latestAtVersionReleasedAt;
+        }
 
         const sameAtAndBrowserReports = testPlanReports.filter(
             r =>
