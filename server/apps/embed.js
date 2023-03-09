@@ -55,24 +55,29 @@ const getLatestReportsForPattern = async pattern => {
                         name
                         releasedAt
                     }
-                    # finalizedTestResults {
-                    #     id
-                    #     atVersion {
-                    #         id
-                    #         name
-                    #         releasedAt
-                    #     }
-                    # }
-                    # runnableTests {
-                    #     id
-                    # }
-                    # draftTestPlanRuns {
-                    #     testResults {
-                    #         test {
-                    #             id
-                    #         }
-                    #     }
-                    # }
+                    #                    atVersions {
+                    #                        id
+                    #                        name
+                    #                        releasedAt
+                    #                    }
+                    #                    finalizedTestResults {
+                    #                        id
+                    #                        atVersion {
+                    #                            id
+                    #                            name
+                    #                            releasedAt
+                    #                        }
+                    #                    }
+                    #                    runnableTests {
+                    #                        id
+                    #                    }
+                    #                    draftTestPlanRuns {
+                    #                        testResults {
+                    #                            test {
+                    #                                id
+                    #                            }
+                    #                        }
+                    #                    }
                     testPlanVersion {
                         id
                         title
@@ -112,7 +117,15 @@ const getLatestReportsForPattern = async pattern => {
             status = report.status;
         }
 
-        // console.log('latestAtVersionReleasedAt', report.latestAtVersionReleasedAt);
+        // console.log(`======== ${report.id} START ========`);
+        // console.log(
+        //     `latestAtVersionReleasedAt:${JSON.stringify(
+        //         report.latestAtVersionReleasedAt,
+        //         null,
+        //         2
+        //     )}`
+        // );
+        // console.log(`atVersions:${JSON.stringify(report.atVersions, null, 2)}`);
 
         // Get the latest AT version used for testing per AT
         // report.finalizedTestResults.forEach(result => {
@@ -127,8 +140,25 @@ const getLatestReportsForPattern = async pattern => {
         //     }
         // });
 
-        allAtVersionsByAtDupe[report.at.name] =
-            report.latestAtVersionReleasedAt;
+        // console.log(
+        //     `allAtVersionsByAt:${JSON.stringify(
+        //         allAtVersionsByAt[report.at.name],
+        //         null,
+        //         2
+        //     )}`
+        // );
+        // console.log(`======== ${report.id}  END  ========\n\n`);
+
+        if (!allAtVersionsByAtDupe[report.at.name])
+            allAtVersionsByAtDupe[report.at.name] =
+                report.latestAtVersionReleasedAt;
+        else if (
+            new Date(report.latestAtVersionReleasedAt.releasedAt) >
+            new Date(allAtVersionsByAtDupe[report.at.name].releasedAt)
+        ) {
+            allAtVersionsByAtDupe[report.at.name] =
+                report.latestAtVersionReleasedAt;
+        }
 
         const sameAtAndBrowserReports = testPlanReports.filter(
             r =>
@@ -187,6 +217,7 @@ const getLatestReportsForPattern = async pattern => {
     return {
         title,
         allBrowsers,
+        // allAtVersionsByAt,
         allAtVersionsByAt: allAtVersionsByAtDupe,
         testPlanVersionIds,
         status,
