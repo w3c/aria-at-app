@@ -29,7 +29,7 @@ import ThankYouModal from '../CandidateModals/ThankYouModal';
 import getMetrics from '../../Reports/getMetrics';
 import FeedbackListItem from '../FeedbackListItem';
 import DisclosureComponent from '../../common/DisclosureComponent';
-import nextId from 'react-id-generator';
+import StatusBar from '../../TestRun/StatusBar';
 
 // https://codesandbox.io/s/react-hookresize-observer-example-ft88x
 function useSize(target) {
@@ -388,6 +388,10 @@ const CandidateTestPlanRun = () => {
                     </Badge>
                 )}
             </h1>
+            {hasIncompleteTests &&
+            (
+                <StatusBar isCandidateTestRun={true} hasIncompleteTestRuns={true} />
+            )}
         </div>
     );
 
@@ -480,19 +484,6 @@ const CandidateTestPlanRun = () => {
     const results = (
         <div className="results-container">
             <h1 className="current-test-title">{currentTest.title}</h1>
-            {hasIncompleteTests &
-            (
-                <Alert
-                    key={nextId()}
-                    variant={'warning'}
-                    className="status-bar"
-                >
-                    <Octicon icon={Octicons[icon]} className="mr-2" /> This
-                    Candidate Test Plan has incomplete test results and cannot
-                    be finished. Please move this Test Plan back to Draft and
-                    complete recording all test results.
-                </Alert>
-            )}
             <DisclosureComponent
                 componentId="test-instructions-and-results"
                 headingLevel="1"

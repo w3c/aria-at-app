@@ -161,3 +161,8 @@
 .incomplete-test-plan-information-text {
     margin-top: 5%;
 }
+
+.status-bar {
+    display: flex;
+    align-items: center;
+}

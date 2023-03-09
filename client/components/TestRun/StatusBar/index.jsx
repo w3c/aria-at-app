@@ -6,6 +6,8 @@ import nextId from 'react-id-generator';
 
 const StatusBar = ({
     hasConflicts = false,
+    hasIncompleteTestRuns = false,
+    isCandidateTestRun = false,
     handleReviewConflictsButtonClick = () => {}
 }) => {
     const [statuses, setStatuses] = useState([]);
@@ -28,6 +30,17 @@ const StatusBar = ({
             const message = 'This test has conflicting results';
             statuses.push({
                 action,
+                icon,
+                message,
+                variant
+            });
+        }
+
+        if(hasIncompleteTestRuns && isCandidateTestRun) {
+            const variant = 'warning';
+            const icon = 'alert';
+            const message = 'This Candidate Test Plan has incomplete test results and cannot be finished. Please move this Test Plan back to Draft and complete recording all test results.';
+            statuses.push({
                 icon,
                 message,
                 variant
@@ -59,6 +72,8 @@ const StatusBar = ({
 StatusBar.propTypes = {
     issues: PropTypes.array,
     hasConflicts: PropTypes.bool,
+    hasIncompleteTestRuns: PropTypes.bool,
+    isCandidateTestRun: PropTypes.bool,
     handleReviewConflictsButtonClick: PropTypes.func
 };
 
