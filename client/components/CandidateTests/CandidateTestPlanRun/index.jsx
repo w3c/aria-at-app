@@ -29,6 +29,7 @@ import ThankYouModal from '../CandidateModals/ThankYouModal';
 import getMetrics from '../../Reports/getMetrics';
 import FeedbackListItem from '../FeedbackListItem';
 import DisclosureComponent from '../../common/DisclosureComponent';
+import StatusBar from '../../TestRun/StatusBar';
 
 // https://codesandbox.io/s/react-hookresize-observer-example-ft88x
 function useSize(target) {
@@ -163,6 +164,21 @@ const CandidateTestPlanRun = () => {
         }
         setFeedbackModalShowing(false);
         setThankYouModalShowing(true);
+    };
+
+    const handleIncompleteTestPlans = () => {
+        const runnableTests = testPlanReport.runnableTests;
+        const finalizedTests = testPlanReport.finalizedTestResults;
+        const finalizedTestIds = finalizedTests.map(x => x.test.id);
+
+        const hasIncompleteTests =
+            runnableTests.length != finalizedTests.length;
+
+        const viewedCompleteTests = viewedTests.filter(viewedTest =>
+            finalizedTestIds.includes(viewedTest)
+        );
+
+        return { hasIncompleteTests, viewedCompleteTests };
     };
 
     useEffect(() => {
@@ -345,6 +361,9 @@ const CandidateTestPlanRun = () => {
         }
     };
 
+    const { hasIncompleteTests, viewedCompleteTests } =
+        handleIncompleteTestPlans();
+
     const heading = (
         <div className="test-info-heading">
             <div className="sr-only" aria-live="polite" aria-atomic="true">
@@ -369,6 +388,10 @@ const CandidateTestPlanRun = () => {
                     </Badge>
                 )}
             </h1>
+            {hasIncompleteTests &&
+            (
+                <StatusBar isCandidateTestRun={true} hasIncompleteTestRuns={true} />
+            )}
         </div>
     );
 
@@ -492,21 +515,34 @@ const CandidateTestPlanRun = () => {
                             testPlanReport.finalizedTestResults[
                                 currentTestIndex
                             ];
-                        const { testsPassedCount } = getMetrics({ testResult });
-                        return (
-                            <>
-                                <h2 className="test-results-header">
-                                    Test Result:{' '}
-                                    {testsPassedCount ? 'PASS' : 'FAIL'}
-                                </h2>
-                                <TestPlanResultsTable
-                                    tableClassName="test-results-table"
-                                    key={`${testPlanReport.id} + ${testResult.id}`}
-                                    test={currentTest}
-                                    testResult={testResult}
-                                />
-                            </>
-                        );
+
+                        if (testResult) {
+                            const { testsPassedCount } = getMetrics({
+                                testResult
+                            });
+                            return (
+                                <>
+                                    <h2 className="test-results-header">
+                                        Test Result:{' '}
+                                        {testsPassedCount ? 'PASS' : 'FAIL'}
+                                    </h2>
+                                    <TestPlanResultsTable
+                                        tableClassName="test-results-table"
+                                        key={`${testPlanReport.id} + ${testResult.id}`}
+                                        test={currentTest}
+                                        testResult={testResult}
+                                    />
+                                </>
+                            );
+                        } else {
+                            return (
+                                <>
+                                    <h2 className="test-results-header">
+                                        Test Result: INCOMPLETE
+                                    </h2>
+                                </>
+                            );
+                        }
                     })
                 ]}
                 stacked
@@ -542,7 +578,7 @@ const CandidateTestPlanRun = () => {
                     currentTestIndex={currentTestIndex}
                     toggleShowClick={toggleTestNavigator}
                     handleTestClick={handleTestClick}
-                    viewedTests={viewedTests}
+                    viewedTests={viewedCompleteTests}
                 />
                 <Col
                     className="candidate-test-area"
@@ -601,7 +637,10 @@ const CandidateTestPlanRun = () => {
                                                             true
                                                         );
                                                     }}
-                                                    disabled={!isLastTest}
+                                                    disabled={
+                                                        !isLastTest ||
+                                                        hasIncompleteTests
+                                                    }
                                                 >
                                                     Finish
                                                 </Button>

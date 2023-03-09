@@ -427,12 +427,20 @@ const TestQueueRow = ({
     };
 
     const evaluateNewReportStatus = () => {
-        const { status, conflictsLength } = testPlanReport;
+        const { status, conflictsLength, runnableTestsLength, draftTestPlanRuns } =
+            testPlanReport;
+
         const conflictsCount = conflictsLength;
+        const draftTestPlansTestResultsLengths = draftTestPlanRuns.map(x => x.testResultsLength);
+
+        const hasIncompleteTests = draftTestPlansTestResultsLengths.filter(x => x != runnableTestsLength).length > 0
 
         // If there are no conflicts OR the test has been marked as "final",
         // and admin can mark a test run as "draft"
         let newStatus;
+        let newStatusCanContinue;
+        let newStatusInformationText;
+
         if (
             (status !== 'IN_REVIEW' &&
                 conflictsCount === 0 &&
@@ -450,11 +458,24 @@ const TestQueueRow = ({
         ) {
             newStatus = 'CANDIDATE';
         }
-        return newStatus;
+
+        if (newStatus === 'CANDIDATE' && hasIncompleteTests) {
+            newStatusCanContinue = false;
+            newStatusInformationText =
+                'Incomplete test plans cannot transition to the candidate report status.';
+        } else {
+            newStatusCanContinue = true;
+        }
+
+        return { newStatus, newStatusCanContinue, newStatusInformationText };
     };
 
     const { status, results } = evaluateStatusAndResults();
-    const nextReportStatus = evaluateNewReportStatus();
+    const {
+        newStatus: nextReportStatus,
+        newStatusCanContinue: nextReportStatusCanContinue,
+        newStatusInformationText: nextReportStatusInformationText
+    } = evaluateNewReportStatus();
 
     const getRowId = tester =>
         [
@@ -533,25 +554,37 @@ const TestQueueRow = ({
                     <div className="status-wrapper">{status}</div>
                     {isSignedIn && isTester && (
                         <div className="secondary-actions">
-                            {isAdmin && !isLoading && nextReportStatus && (
-                                <>
-                                    <Button
-                                        ref={updateTestPlanStatusButtonRef}
-                                        variant="secondary"
-                                        onClick={async () => {
-                                            focusButtonRef.current =
-                                                updateTestPlanStatusButtonRef.current;
-                                            await updateReportStatus(
-                                                nextReportStatus
-                                            );
-                                        }}
-                                    >
-                                        Mark as{' '}
-                                        {capitalizeEachWord(nextReportStatus, {
-                                            splitChar: '_'
-                                        })}
-                                    </Button>
-                                </>
+                            {isAdmin &&
+                                !isLoading &&
+                                nextReportStatus &&
+                                nextReportStatusCanContinue && (
+                                    <>
+                                        <Button
+                                            ref={updateTestPlanStatusButtonRef}
+                                            variant="secondary"
+                                            onClick={async () => {
+                                                focusButtonRef.current =
+                                                    updateTestPlanStatusButtonRef.current;
+                                                await updateReportStatus(
+                                                    nextReportStatus
+                                                );
+                                            }}
+                                        >
+                                            Mark as{' '}
+                                            {capitalizeEachWord(
+                                                nextReportStatus,
+                                                {
+                                                    splitChar: '_'
+                                                }
+                                            )}
+                                        </Button>
+                                    </>
+                                )}
+
+                            {nextReportStatusInformationText && (
+                                <span className="next-report-status-information-text">
+                                    {nextReportStatusInformationText}
+                                </span>
                             )}
                             {results}
                         </div>
