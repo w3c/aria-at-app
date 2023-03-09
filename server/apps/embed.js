@@ -161,7 +161,10 @@ const getLatestReportsForPattern = async pattern => {
     allBrowsers = Array.from(allBrowsers).sort();
     testPlanVersionIds = Array.from(testPlanVersionIds);
 
-    allAts.forEach(at => {
+    const allAtsAlphabetical = Array.from(allAts).sort((a, b) =>
+        a.localeCompare(b)
+    );
+    allAtsAlphabetical.forEach(at => {
         reportsByAt[at] = latestReports
             .filter(report => report.at.name === at)
             .sort((a, b) => a.browser.name.localeCompare(b.browser.name));
