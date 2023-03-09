@@ -174,9 +174,9 @@ table tbody tr td {
     background-color: #024e5c;
     border-color: #024e5c;
 }
-#view-report-button:focus {
+#view-report-button:focus-visible {
     margin-left: 4px;
-    margin-right: 2px;
+    padding: 0 8px 0 12px;
 }
 #embed-button {
     color: #175a6a;
@@ -192,7 +192,7 @@ table tbody tr td {
     padding: 0 12px;
     line-height: 36px;
 }
-#view-report-button:focus, #embed-button:focus {
+#view-report-button:focus-visible, #embed-button:focus-visible {
     outline-offset: 2px;
     outline: 2px solid #3a86d1;
 }
