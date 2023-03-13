@@ -71,8 +71,12 @@ h3#report-title {
     display: inline-block;
 }
 
-#candidate-title.recommended h3 {
-    width: 130px;
+#candidate-title.recommended {
+    border: 1.5px solid #7ac498;
+    background-color: #e9fbe9;
+}
+#candidate-title.recommended > span {
+    background-color: #115b11;
 }
 
 #candidate-content-container {
@@ -90,7 +94,7 @@ h3#report-title {
     margin-bottom: 3px;
 }
 
-.none {
+.no-data-cell {
     display: block;
     color: #72777f;
     font-style: italic;

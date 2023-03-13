@@ -6,7 +6,7 @@ const iframeCode = link =>
     `<iframe
   class="${iframeClass}"
   src="${link}"
-  height="500"
+  height="100"
   allow="clipboard-write"
   style="border-style: none; width: 100%;">
 </iframe>`;
