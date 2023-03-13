@@ -71,7 +71,7 @@ module.exports = {
         proxy: [
             {
                 context: ['/aria-at', '/api', '/embed'],
-                target: 'http://localhost:5000'
+                target: 'http://localhost:8000'
             }
         ]
     },

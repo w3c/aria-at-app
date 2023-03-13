@@ -59,9 +59,11 @@ To deploy this project to  server:
   - Confirm that `sudo su` successfully switches you to the root user. You will need to enter the sodoer password you chose during your Bocoup onboarding. This password will be required when deploying to the Sandbox.
 3. Obtain a copy of the `ansible-vault-password.txt` file in LastPass and place it in the directory which contains this document.
 4. Install [Ansible](https://www.ansible.com/) version 2.8. Instructions for macOS are as follows:
-  - Install Ansible at the specific 2.8 version: `brew install ansible@2.8`
-  - Add the `ansible` command to your shell: `brew link --overwrite ansible@2.8`
+  - Install Python 2.7, which is not included by default on recent macOS versions.
+  - Verify that Pip, Python's package manager, is using Python 2.7 by running `pip --version`.
+  - Install Ansible at the specific 2.8 version: `pip install ansible==2.8.20`
   - Run `ansible --version` to verify your ansible is on version 2.8.
+  - You may need to run `ansible-galaxy collection install ansible.posix --ignore-certs` as well.
 5. Execute the following command from the deploy directory:
    - Sandbox:
     ```
