@@ -80,7 +80,6 @@ const getLatestReportsForPattern = async pattern => {
     let allAts = new Set();
     let allBrowsers = new Set();
     let allAtVersionsByAt = {};
-    let status = 'RECOMMENDED';
     let reportsByAt = {};
     let testPlanVersionIds = new Set();
     const uniqueReports = [];
@@ -89,9 +88,6 @@ const getLatestReportsForPattern = async pattern => {
     testPlanReports.forEach(report => {
         allAts.add(report.at.name);
         allBrowsers.add(report.browser.name);
-        if (report.status === 'CANDIDATE') {
-            status = report.status;
-        }
 
         if (!allAtVersionsByAt[report.at.name])
             allAtVersionsByAt[report.at.name] =
@@ -154,6 +150,15 @@ const getLatestReportsForPattern = async pattern => {
             .filter(report => report.at.name === at)
             .sort((a, b) => a.browser.name.localeCompare(b.browser.name));
     });
+
+    let status = 'RECOMMENDED';
+    if (
+        Object.values(reportsByAt).find(atReports =>
+            atReports.find(report => report.status === 'CANDIDATE')
+        )
+    ) {
+        status = 'CANDIDATE';
+    }
 
     return {
         title,
