@@ -23,15 +23,17 @@ app.use(bodyParser.json());
 app.use('/auth', authRoutes);
 app.use('/test', testRoutes);
 
-const server = new ApolloServer({
+// Todo: see if there is potentially an easier way to get around the circular
+// dependency issue
+global.apolloServer = new ApolloServer({
     typeDefs: graphqlSchema,
     context: getGraphQLContext,
     resolvers,
     // The newer IDE does not work because of CORS issues
     plugins: [ApolloServerPluginLandingPageGraphQLPlayground()]
 });
-server.start().then(() => {
-    server.applyMiddleware({ app });
+global.apolloServer.start().then(() => {
+    global.apolloServer.applyMiddleware({ app });
 });
 
 const listener = express();
@@ -56,4 +58,4 @@ listener.use((error, req, res, next) => {
     next(error);
 });
 
-module.exports = { app, listener };
+module.exports = { app, listener, apolloServer };

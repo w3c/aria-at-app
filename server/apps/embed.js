@@ -1,13 +1,8 @@
 const express = require('express');
 const { resolve } = require('path');
 const { create } = require('express-handlebars');
-const {
-    ApolloClient,
-    gql,
-    HttpLink,
-    InMemoryCache
-} = require('@apollo/client');
-const fetch = require('cross-fetch');
+const { gql } = require('apollo-server-core');
+const staleWhileRevalidate = require('../util/staleWhileRevalidate');
 
 const app = express();
 const handlebarsPath =
@@ -29,13 +24,8 @@ if (process.env.ENVIRONMENT !== 'dev') {
     app.enable('view cache');
 }
 
-const client = new ApolloClient({
-    link: new HttpLink({ uri: 'http://localhost:8000/api/graphql', fetch }),
-    cache: new InMemoryCache()
-});
-
 const getLatestReportsForPattern = async pattern => {
-    const { data } = await client.query({
+    const { data } = await global.apolloServer.executeOperation({
         query: gql`
             query {
                 testPlanReports(statuses: [CANDIDATE, RECOMMENDED]) {
@@ -151,14 +141,10 @@ const getLatestReportsForPattern = async pattern => {
             .sort((a, b) => a.browser.name.localeCompare(b.browser.name));
     });
 
-    let status = 'RECOMMENDED';
-    if (
-        Object.values(reportsByAt).find(atReports =>
-            atReports.find(report => report.status === 'CANDIDATE')
-        )
-    ) {
-        status = 'CANDIDATE';
-    }
+    const hasAnyCandidateReports = Object.values(reportsByAt).find(atReports =>
+        atReports.find(report => report.status === 'CANDIDATE')
+    );
+    let status = hasAnyCandidateReports ? 'CANDIDATE' : 'RECOMMENDED';
 
     return {
         title,
@@ -169,6 +155,12 @@ const getLatestReportsForPattern = async pattern => {
         reportsByAt
     };
 };
+
+const getLatestReportsForPatternWithCaching = staleWhileRevalidate({
+    expensiveFunction: getLatestReportsForPattern,
+    getCacheKeyFromArguments: pattern => pattern,
+    millisecondsUntilStale: 15 * 1000
+});
 
 app.get('/reports/:pattern', async (req, res) => {
     // In the instance where an editor doesn't want to display a certain title
@@ -187,7 +179,7 @@ app.get('/reports/:pattern', async (req, res) => {
         testPlanVersionIds,
         status,
         reportsByAt
-    } = await getLatestReportsForPattern(pattern);
+    } = await getLatestReportsForPatternWithCaching(pattern);
     res.render('main', {
         layout: 'index',
         dataEmpty: Object.keys(reportsByAt).length === 0,

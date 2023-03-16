@@ -24,7 +24,6 @@
   },
   "homepage": "https://github.com/bocoup/aria-at-app#readme",
   "dependencies": {
-    "@apollo/client": "^3.7.2",
     "@moebius/http-graceful-shutdown": "^1.1.0",
     "apicache": "^1.6.3",
     "apollo-server": "^3.4.0",
