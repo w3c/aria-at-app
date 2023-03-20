@@ -2,7 +2,6 @@
 const fs = require('fs');
 const db = require('../../models');
 const populateFakeTestResults = require('./populateFakeTestResults');
-const updateStatusResolver = require('../../resolvers/TestPlanReportOperations/updateStatusResolver');
 
 const populateTestDatabase = async () => {
     const testDataScript = fs.readFileSync(
@@ -102,12 +101,6 @@ const populateTestDatabase = async () => {
         'completeAndFailingDueToNoOutputAssertions',
         'completeAndPassing'
     ]);
-
-    await updateStatusResolver(
-        { parentContext: { id: 3 } },
-        { status: 'CANDIDATE' },
-        { user: { roles: [{ name: 'ADMIN' }] } }
-    );
 
     console.info(
         'Successfully populated. Please wait a moment for the process to close.'
