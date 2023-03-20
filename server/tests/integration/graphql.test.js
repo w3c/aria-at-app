@@ -752,6 +752,10 @@ const getMutationInputs = async () => {
                     id
                     passed
                     failedReason
+                    assertion {
+                        id
+                        priority
+                    }
                 }
                 unexpectedBehaviors {
                     id
