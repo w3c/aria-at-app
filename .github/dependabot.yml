@@ -1,0 +1,29 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    open-pull-requests-limit: 99
+    directory: "/"
+    schedule:
+      interval: "monthly"
+
+  - package-ecosystem: "npm"
+    open-pull-requests-limit: 99
+    directory: "/client"
+    schedule:
+      interval: "monthly"
+    commit-message:
+      prefix: "client"
+
+  - package-ecosystem: "npm"
+    open-pull-requests-limit: 99
+    directory: "/server"
+    schedule:
+      interval: "monthly"
+    commit-message:
+      prefix: "server"
+
+  - package-ecosystem: "github-actions"
+    open-pull-requests-limit: 99
+    directory: "/"
+    schedule:
+      interval: "daily"
