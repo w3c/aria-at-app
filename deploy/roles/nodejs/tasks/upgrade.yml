@@ -1,0 +1,25 @@
+- name: Check if Node exists
+  shell: |
+    if ! node --version; then
+      echo "Node.js is not installed"
+    fi
+  register: node_version
+  ignore_errors: true
+
+- name: Show status of nodejs installation
+  debug: msg="{{ node_version.stdout }}"
+
+- name: Remove Node.js repo if not version 18
+  apt_repository:
+    state: absent
+    repo: deb https://deb.nodesource.com/node_14.x buster main
+    update_cache: True
+  become: yes
+  when: 'node_version.stdout is not match("v18.*")'
+
+- name: Remove Node.js if not version 18
+  apt:
+    name: nodejs
+    state: absent
+  become: yes
+  when: 'node_version.stdout is not match("v18.*")'

@@ -137,7 +137,7 @@ If you have a Linux computer, you will have to download a Windows VM in order to
     * Then write the following commands:
     ```
     netsh interface portproxy add v4tov4 listenaddress=127.0.0.1 listenport=3000 connectaddress=10.0.2.2 connectport=3000
-    netsh interface portproxy add v4tov4 listenaddress=127.0.0.1 listenport=5000 connectaddress=10.0.2.2 connectport=5000
+    netsh interface portproxy add v4tov4 listenaddress=127.0.0.1 listenport=8000 connectaddress=10.0.2.2 connectport=8000
     ```
 * Now open your browser, and navigate to: `localhost:3000` and log in, and turn
   on the screen reader. There are several helpful [guides](https://dequeuniversity.com/screenreaders/) to the keyboard shortcuts used. 

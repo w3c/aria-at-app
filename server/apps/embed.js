@@ -30,7 +30,7 @@ if (process.env.ENVIRONMENT !== 'dev') {
 }
 
 const client = new ApolloClient({
-    link: new HttpLink({ uri: 'http://localhost:5000/api/graphql', fetch }),
+    link: new HttpLink({ uri: 'http://localhost:8000/api/graphql', fetch }),
     cache: new InMemoryCache()
 });
 
@@ -50,23 +50,10 @@ const getLatestReportsForPattern = async pattern => {
                         id
                         name
                     }
-                    finalizedTestResults {
+                    latestAtVersionReleasedAt {
                         id
-                        atVersion {
-                            id
-                            name
-                            releasedAt
-                        }
-                    }
-                    runnableTests {
-                        id
-                    }
-                    draftTestPlanRuns {
-                        testResults {
-                            test {
-                                id
-                            }
-                        }
+                        name
+                        releasedAt
                     }
                     testPlanVersion {
                         id
@@ -106,18 +93,16 @@ const getLatestReportsForPattern = async pattern => {
             status = report.status;
         }
 
-        // Get the latest AT version used for testing per AT
-        report.finalizedTestResults.forEach(result => {
-            if (report.at.name in allAtVersionsByAt) {
-                allAtVersionsByAt[report.at.name] =
-                    new Date(result.atVersion.releasedAt) >
-                    new Date(allAtVersionsByAt[report.at.name].releasedAt)
-                        ? result.atVersion
-                        : allAtVersionsByAt[report.at.name];
-            } else {
-                allAtVersionsByAt[report.at.name] = result.atVersion;
-            }
-        });
+        if (!allAtVersionsByAt[report.at.name])
+            allAtVersionsByAt[report.at.name] =
+                report.latestAtVersionReleasedAt;
+        else if (
+            new Date(report.latestAtVersionReleasedAt.releasedAt) >
+            new Date(allAtVersionsByAt[report.at.name].releasedAt)
+        ) {
+            allAtVersionsByAt[report.at.name] =
+                report.latestAtVersionReleasedAt;
+        }
 
         const sameAtAndBrowserReports = testPlanReports.filter(
             r =>
@@ -161,7 +146,10 @@ const getLatestReportsForPattern = async pattern => {
     allBrowsers = Array.from(allBrowsers).sort();
     testPlanVersionIds = Array.from(testPlanVersionIds);
 
-    allAts.forEach(at => {
+    const allAtsAlphabetical = Array.from(allAts).sort((a, b) =>
+        a.localeCompare(b)
+    );
+    allAtsAlphabetical.forEach(at => {
         reportsByAt[at] = latestReports
             .filter(report => report.at.name === at)
             .sort((a, b) => a.browser.name.localeCompare(b.browser.name));
@@ -184,7 +172,9 @@ app.get('/reports/:pattern', async (req, res) => {
     // Usage: https://aria-at.w3.org/embed/reports/command-button?title=Link+Example+(span+element+with+text+content)
     const queryTitle = req.query.title;
     const pattern = req.params.pattern;
-    const protocol = process.env.ENVIRONMENT === 'dev' ? 'http://' : 'https://';
+    const protocol = /dev|vagrant/.test(process.env.ENVIRONMENT)
+        ? 'http://'
+        : 'https://';
     const {
         title,
         allBrowsers,
