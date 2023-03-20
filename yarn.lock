@@ -14635,10 +14635,10 @@ sequelize-pool@^7.1.0:
   resolved "https://registry.yarnpkg.com/sequelize-pool/-/sequelize-pool-7.1.0.tgz#210b391af4002762f823188fd6ecfc7413020768"
   integrity sha512-G9c0qlIWQSK29pR/5U2JF5dDQeqqHRragoyahj/Nx4KOOQ3CPPfzxnfqFPCSB7x5UgjOgnZ61nSxz+fjDpRlJg==
 
-sequelize-test-helpers@1.3.3:
-  version "1.3.3"
-  resolved "https://registry.yarnpkg.com/sequelize-test-helpers/-/sequelize-test-helpers-1.3.3.tgz#99ed213d21c0a794a67b89886bf227dec460fb47"
-  integrity sha512-np07UQY+hbgn6fJvfTU5CdKxjUk7MDme8okDx/4i5hCcDGB4BMXUQpt5N/MwpsLumR82bqGTHGdh4hGIpojGEQ==
+sequelize-test-helpers@1.4.3:
+  version "1.4.3"
+  resolved "https://registry.yarnpkg.com/sequelize-test-helpers/-/sequelize-test-helpers-1.4.3.tgz#afa0fafc8c0e6ecbcc8df8bee8ccf7d82788c494"
+  integrity sha512-5NzQljzIDaKi+iAK5237DcemsJI1FmTPgMoE9Tu/oYZVwa6l3Lf5nF2yV0ruTrsrAKi2XWywnXFl2AATEfoBGw==
 
 sequelize@^6.28.0:
   version "6.28.0"
