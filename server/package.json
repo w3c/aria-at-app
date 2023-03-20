@@ -43,7 +43,7 @@
     "express-session": "^1.17.2",
     "fs-extra": "^11.1.0",
     "graphql": "^16.6.0",
-    "js-base64": "^3.6.1",
+    "js-base64": "^3.7.5",
     "lodash": "^4.17.21",
     "minimist": "^1.2.7",
     "moment": "^2.29.4",
