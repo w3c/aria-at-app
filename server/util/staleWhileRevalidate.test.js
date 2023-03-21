@@ -1,9 +1,9 @@
 const staleWhileRevalidate = require('./staleWhileRevalidate');
 
 describe('staleWhileRevalidate', () => {
-    const timeToCalculate = 20;
-    const timeUntilStale = 20;
-    const buffer = 10;
+    const timeToCalculate = 40;
+    const timeUntilStale = 40;
+    const buffer = 20;
 
     const waitMs = async ms => {
         await new Promise(resolve => {
