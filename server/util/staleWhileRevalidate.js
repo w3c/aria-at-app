@@ -11,26 +11,25 @@ const cache = new NodeCache({
  * nearly impossible to debug (where you have to wait an hour or longer before
  * seeing the latest data appear).
  *
- * @param {*} options
- * @param {Function} options.expensiveFunction A function which loads
+ * @param {Function} expensiveFunction A function which loads
  * expensive-to-calculate data.
+ * @param {*} options
  * @param {Boolean} options.getCacheKeyFromArguments An optional function that
  * receives the arguments passed to the expensiveFunction and returns a string
  * which will be used to correlate equivalent results. If this key matches the
  * key from a previous run, its existing stale data will be returned. If no
  * function is provided, a single key will be used for all results.
- * @param {Boolean} options.staleDuration How many milliseconds before data is
- * considered stale. To keep the benefits of stale-while-revalidate caching,
- * it's probably a good idea to keep this value low, no more than 30
- * seconds or a minute.
+ * @param {Boolean} options.millisecondsUntilStale How many milliseconds before
+ * data is considered stale. To keep the benefits of stale-while-revalidate
+ * caching, it's probably a good idea to keep this value low, no more than 30
+ * seconds or a minute. Optional and defaults to 0.
  * @returns {Function} A version of the expensiveFunction which includes
  * stale-while-revalidate caching.
  */
-const staleWhileRevalidate = ({
+const staleWhileRevalidate = (
     expensiveFunction,
-    getCacheKeyFromArguments,
-    millisecondsUntilStale
-}) => {
+    { getCacheKeyFromArguments, millisecondsUntilStale = 0 } = {}
+) => {
     // Allows the same cache key to be reused for different
     // staleWhileRevalidate instances
     const randomString = Math.random().toString().substr(2, 10);

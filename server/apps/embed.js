@@ -3,6 +3,7 @@ const { resolve } = require('path');
 const { create } = require('express-handlebars');
 const { gql } = require('apollo-server-core');
 const staleWhileRevalidate = require('../util/staleWhileRevalidate');
+const hash = require('object-hash');
 
 const app = express();
 const handlebarsPath =
@@ -20,11 +21,15 @@ app.engine('hbs', hbs.engine);
 app.set('view engine', 'hbs');
 app.set('views', resolve(`${handlebarsPath}/views`));
 
-if (process.env.ENVIRONMENT !== 'dev') {
-    app.enable('view cache');
-}
+// Prevent refreshing cached data for five seconds - using a short time like
+// this is possible because the stale-while-revalidate caching strategy works in
+// the background and doesn't spin up more than one simultaneous request.
+//
+// If queries are very slow, anyone trying to get the refreshed data will get
+// stale data for however long it takes for the query to complete.
+const millisecondsUntilStale = 5000;
 
-const getLatestReportsForPattern = async pattern => {
+const queryReports = async () => {
     const { data } = await global.apolloServer.executeOperation({
         query: gql`
             query {
@@ -58,9 +63,22 @@ const getLatestReportsForPattern = async pattern => {
         `
     });
 
+    const reportsHashed = hash(data.testPlanReports);
+
+    return { allTestPlanReports: data.testPlanReports, reportsHashed };
+};
+
+// As of now, a full query for the complete list of reports is needed to build
+// the embed for a single pattern. This caching allows that query to be reused
+// between pattern embeds.
+const queryReportsCached = staleWhileRevalidate(queryReports, {
+    millisecondsUntilStale
+});
+
+const getLatestReportsForPattern = ({ allTestPlanReports, pattern }) => {
     let title;
 
-    const testPlanReports = data.testPlanReports.filter(report => {
+    const testPlanReports = allTestPlanReports.filter(report => {
         if (report.testPlanVersion.testPlan.id === pattern) {
             title = report.testPlanVersion.title;
             return true;
@@ -156,22 +174,13 @@ const getLatestReportsForPattern = async pattern => {
     };
 };
 
-const getLatestReportsForPatternWithCaching = staleWhileRevalidate({
-    expensiveFunction: getLatestReportsForPattern,
-    getCacheKeyFromArguments: pattern => pattern,
-    millisecondsUntilStale: 15 * 1000
-});
-
-app.get('/reports/:pattern', async (req, res) => {
-    // In the instance where an editor doesn't want to display a certain title
-    // as it has defined when importing into the ARIA-AT database for being too
-    // verbose, etc. eg. `Link Example 1 (span element with text content)`
-    // Usage: https://aria-at.w3.org/embed/reports/command-button?title=Link+Example+(span+element+with+text+content)
-    const queryTitle = req.query.title;
-    const pattern = req.params.pattern;
-    const protocol = /dev|vagrant/.test(process.env.ENVIRONMENT)
-        ? 'http://'
-        : 'https://';
+const renderEmbed = ({
+    allTestPlanReports,
+    queryTitle,
+    pattern,
+    protocol,
+    host
+}) => {
     const {
         title,
         allBrowsers,
@@ -179,8 +188,8 @@ app.get('/reports/:pattern', async (req, res) => {
         testPlanVersionIds,
         status,
         reportsByAt
-    } = await getLatestReportsForPatternWithCaching(pattern);
-    res.render('main', {
+    } = getLatestReportsForPattern({ pattern, allTestPlanReports });
+    return hbs.renderView('handlebars/views/main.hbs', {
         layout: 'index',
         dataEmpty: Object.keys(reportsByAt).length === 0,
         title: queryTitle || title || 'Pattern Not Found',
@@ -189,11 +198,43 @@ app.get('/reports/:pattern', async (req, res) => {
         allBrowsers,
         allAtVersionsByAt,
         reportsByAt,
-        completeReportLink: `${protocol}${
-            req.headers.host
-        }/report/${testPlanVersionIds.join(',')}`,
-        embedLink: `${protocol}${req.headers.host}/embed/reports/${pattern}`
+        completeReportLink: `${protocol}${host}/report/${testPlanVersionIds.join(
+            ','
+        )}`,
+        embedLink: `${protocol}${host}/embed/reports/${pattern}`
     });
+};
+
+// Limit the number of times the template is rendered
+const renderEmbedCached = staleWhileRevalidate(renderEmbed, {
+    getCacheKeyFromArguments: ({ reportsHashed, pattern }) =>
+        hash({ reportsHashed, pattern }),
+    millisecondsUntilStale
+});
+
+app.get('/reports/:pattern', async (req, res) => {
+    // In the instance where an editor doesn't want to display a certain title
+    // as it has defined when importing into the ARIA-AT database for being too
+    // verbose, etc. eg. `Link Example 1 (span element with text content)`
+    // Usage: https://aria-at.w3.org/embed/reports/command-button?title=Link+Example+(span+element+with+text+content)
+    console.time();
+    const queryTitle = req.query.title;
+    const pattern = req.params.pattern;
+    const host = req.headers.host;
+    const protocol = /dev|vagrant/.test(process.env.ENVIRONMENT)
+        ? 'http://'
+        : 'https://';
+    const { allTestPlanReports, reportsHashed } = await queryReportsCached();
+    const embedRendered = await renderEmbedCached({
+        allTestPlanReports,
+        reportsHashed,
+        queryTitle,
+        pattern,
+        protocol,
+        host
+    });
+    res.set('cache-control', 'must-revalidate').send(embedRendered);
+    console.timeEnd();
 });
 
 app.use(express.static(resolve(`${handlebarsPath}/public`)));

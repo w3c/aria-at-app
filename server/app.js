@@ -58,4 +58,4 @@ listener.use((error, req, res, next) => {
     next(error);
 });
 
-module.exports = { app, listener, apolloServer };
+module.exports = { app, listener };
