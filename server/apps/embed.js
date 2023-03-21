@@ -2,6 +2,7 @@ const express = require('express');
 const { resolve } = require('path');
 const { create } = require('express-handlebars');
 const { gql } = require('apollo-server-core');
+const apolloServer = require('../graphql-server');
 const staleWhileRevalidate = require('../util/staleWhileRevalidate');
 const hash = require('object-hash');
 
@@ -30,7 +31,7 @@ app.set('views', resolve(`${handlebarsPath}/views`));
 const millisecondsUntilStale = 5000;
 
 const queryReports = async () => {
-    const { data } = await global.apolloServer.executeOperation({
+    const { data } = await apolloServer.executeOperation({
         query: gql`
             query {
                 testPlanReports(statuses: [CANDIDATE, RECOMMENDED]) {
@@ -208,7 +209,7 @@ const renderEmbed = ({
 // Limit the number of times the template is rendered
 const renderEmbedCached = staleWhileRevalidate(renderEmbed, {
     getCacheKeyFromArguments: ({ reportsHashed, pattern }) =>
-        hash({ reportsHashed, pattern }),
+        reportsHashed + pattern,
     millisecondsUntilStale
 });
 
@@ -217,7 +218,6 @@ app.get('/reports/:pattern', async (req, res) => {
     // as it has defined when importing into the ARIA-AT database for being too
     // verbose, etc. eg. `Link Example 1 (span element with text content)`
     // Usage: https://aria-at.w3.org/embed/reports/command-button?title=Link+Example+(span+element+with+text+content)
-    console.time();
     const queryTitle = req.query.title;
     const pattern = req.params.pattern;
     const host = req.headers.host;
@@ -233,8 +233,10 @@ app.get('/reports/:pattern', async (req, res) => {
         protocol,
         host
     });
+
+    // Disable browser-based caching which could potentially make the embed
+    // contents appear stale even after being refreshed
     res.set('cache-control', 'must-revalidate').send(embedRendered);
-    console.timeEnd();
 });
 
 app.use(express.static(resolve(`${handlebarsPath}/public`)));

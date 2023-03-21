@@ -2,19 +2,12 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cacheMiddleware = require('apicache').middleware;
 const proxyMiddleware = require('rawgit/lib/middleware');
-const { ApolloServer } = require('apollo-server-express');
-const {
-    ApolloServerPluginLandingPageGraphQLPlayground
-} = require('apollo-server-core');
 const { session } = require('./middleware/session');
 const embedApp = require('./apps/embed');
 const authRoutes = require('./routes/auth');
 const testRoutes = require('./routes/tests');
 const path = require('path');
-const graphqlSchema = require('./graphql-schema');
-const getGraphQLContext = require('./graphql-context');
-const resolvers = require('./resolvers');
-
+const apolloServer = require('./graphql-server');
 const app = express();
 
 // test session
@@ -23,17 +16,8 @@ app.use(bodyParser.json());
 app.use('/auth', authRoutes);
 app.use('/test', testRoutes);
 
-// Todo: see if there is potentially an easier way to get around the circular
-// dependency issue
-global.apolloServer = new ApolloServer({
-    typeDefs: graphqlSchema,
-    context: getGraphQLContext,
-    resolvers,
-    // The newer IDE does not work because of CORS issues
-    plugins: [ApolloServerPluginLandingPageGraphQLPlayground()]
-});
-global.apolloServer.start().then(() => {
-    global.apolloServer.applyMiddleware({ app });
+apolloServer.start().then(() => {
+    apolloServer.applyMiddleware({ app });
 });
 
 const listener = express();
