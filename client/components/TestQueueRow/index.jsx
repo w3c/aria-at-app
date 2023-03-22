@@ -14,6 +14,7 @@ import ATAlert from '../ATAlert';
 import { capitalizeEachWord } from '../../utils/formatter';
 import {
     TEST_PLAN_REPORT_QUERY,
+    TEST_PLAN_REPORT_CANDIDATE_QUERY,
     ASSIGN_TESTER_MUTATION,
     UPDATE_TEST_PLAN_REPORT_STATUS_MUTATION,
     REMOVE_TEST_PLAN_REPORT_MUTATION,
@@ -25,6 +26,8 @@ import TestPlanUpdaterModal from '../TestPlanUpdater/TestPlanUpdaterModal';
 import BasicThemedModal from '../common/BasicThemedModal';
 import { LoadingStatus, useTriggerLoad } from '../common/LoadingStatus';
 import './TestQueueRow.css';
+import CandidatePhaseSelectModal from '@components/TestQueueRow/CandidatePhaseSelectModal';
+
 const TestQueueRow = ({
     user = {},
     testers = [],
@@ -45,6 +48,8 @@ const TestQueueRow = ({
     const deleteTestPlanButtonRef = useRef();
     const updateTestPlanStatusButtonRef = useRef();
 
+    const [candidatePhaseTestPlanReports, setCandidatePhaseTestPlanReports] =
+        useState([]);
     const [alertMessage, setAlertMessage] = useState('');
 
     const [showThemedModal, setShowThemedModal] = useState(false);
@@ -63,6 +68,8 @@ const TestQueueRow = ({
     const [removeTesterResults] = useMutation(REMOVE_TESTER_RESULTS_MUTATION);
 
     const [showTestPlanUpdaterModal, setShowTestPlanUpdaterModal] =
+        useState(false);
+    const [showCandidatePhaseSelectModal, setShowCandidatePhaseSelectModal] =
         useState(false);
     const [testPlanReport, setTestPlanReport] = useState(testPlanReportData);
     const [isLoading, setIsLoading] = useState(false);
@@ -378,14 +385,49 @@ const TestQueueRow = ({
     const updateReportStatus = async status => {
         try {
             await triggerLoad(async () => {
-                await updateTestPlanReportStatus({
-                    variables: {
-                        testReportId: testPlanReport.id,
-                        status: status
-                    }
-                });
-                if (status === 'CANDIDATE') await triggerPageUpdate();
-                else await triggerTestPlanReportUpdate();
+                if (status === 'CANDIDATE') {
+                    // Get list of testPlanReports which are already in CANDIDATE phase and check to see which
+                    // is also in the same directory as what's being upgraded here to provide as a date option
+
+                    // TODO: I think we should also alert the admin in the case that what they're updating
+                    //       will never overwrite what is available on the Test Reports page?
+                    const { data } = await client.query({
+                        query: TEST_PLAN_REPORT_CANDIDATE_QUERY,
+                        fetchPolicy: 'network-only'
+                    });
+
+                    const directory = testPlanVersion.testPlan.directory;
+                    const candidateReports = data.testPlanReports.filter(
+                        r => r.testPlanVersion.testPlan.directory === directory
+                    );
+
+                    const dates = candidateReports.map(c => {
+                        return {
+                            candidateStatusReachedAt:
+                                c.candidateStatusReachedAt,
+                            recommendedStatusTargetDate:
+                                c.recommendedStatusTargetDate
+                        };
+                    });
+                    const stringifiedDates = dates.map(d => JSON.stringify(d));
+                    const uniq = [...new Set(stringifiedDates)];
+                    const candidatePhaseList = uniq.map(u => JSON.parse(u));
+                    setCandidatePhaseTestPlanReports(candidatePhaseList);
+
+                    // if (candidatePhaseList > 1) {
+                    // There is a test plan report in Candidate Test Plans to be overwritten
+                    setShowCandidatePhaseSelectModal(true);
+                    // }
+                } else {
+                    await updateTestPlanReportStatus({
+                        variables: {
+                            testReportId: testPlanReport.id,
+                            status: status
+                        }
+                    });
+                    if (status === 'CANDIDATE') await triggerPageUpdate();
+                    else await triggerTestPlanReportUpdate();
+                }
             }, 'Updating Test Plan Status');
         } catch (e) {
             showThemedMessage(
@@ -466,6 +508,45 @@ const TestQueueRow = ({
             tester.username,
             'completed'
         ].join('-');
+
+    const onHandleCandidatePhaseSelectModalAction = async date => {
+        let variables = {};
+
+        if (date) {
+            const { candidateStatusReachedAt, recommendedStatusTargetDate } =
+                date;
+            variables = {
+                candidateStatusReachedAt,
+                recommendedStatusTargetDate
+            };
+        }
+
+        // Null 'date' if candidate phase is to be created; promote to candidate phase as normal
+        try {
+            await triggerLoad(async () => {
+                setShowCandidatePhaseSelectModal(false);
+                await updateTestPlanReportStatus({
+                    variables: {
+                        testReportId: testPlanReport.id,
+                        status: 'CANDIDATE',
+                        ...variables
+                    }
+                });
+                await triggerPageUpdate();
+            }, 'Updating Test Plan Status');
+        } catch (e) {
+            showThemedMessage(
+                'Error Updating Test Plan Status',
+                <>{e.message}</>,
+                'warning'
+            );
+        }
+    };
+
+    const onCandidatePhaseSelectModalClose = () => {
+        setShowCandidatePhaseSelectModal(false);
+        focusButtonRef.current.focus();
+    };
 
     return (
         <LoadingStatus message={loadingMessage}>
@@ -653,6 +734,15 @@ const TestQueueRow = ({
                     handleClose={() => setShowTestPlanUpdaterModal(false)}
                     testPlanReportId={testPlanReportId}
                     triggerTestPlanReportUpdate={triggerTestPlanReportUpdate}
+                />
+            )}
+            {showCandidatePhaseSelectModal && (
+                <CandidatePhaseSelectModal
+                    show={showCandidatePhaseSelectModal}
+                    title={`Select existing Candidate Phase for the ${testPlanVersion.title}, ${testPlanReport.at?.name} & ${testPlanReport.browser?.name} Test Plan Report`}
+                    dates={candidatePhaseTestPlanReports}
+                    handleAction={onHandleCandidatePhaseSelectModalAction}
+                    handleClose={onCandidatePhaseSelectModalClose}
                 />
             )}
             {showThemedModal && (

@@ -126,6 +126,38 @@ export const TEST_PLAN_REPORT_QUERY = gql`
     }
 `;
 
+export const TEST_PLAN_REPORT_CANDIDATE_QUERY = gql`
+    query CandidateTestPlanReportsQuery {
+        testPlanReports(statuses: [CANDIDATE]) {
+            id
+            latestAtVersionReleasedAt {
+                id
+                name
+                releasedAt
+            }
+            candidateStatusReachedAt
+            recommendedStatusTargetDate
+            at {
+                id
+                name
+            }
+            browser {
+                id
+                name
+            }
+            testPlanVersion {
+                id
+                title
+                gitSha
+                testPlan {
+                    directory
+                }
+                metadata
+            }
+        }
+    }
+`;
+
 export const ADD_AT_VERSION_MUTATION = gql`
     mutation AddAtVersion($atId: ID!, $name: String!, $releasedAt: Timestamp!) {
         at(id: $atId) {
@@ -241,9 +273,15 @@ export const UPDATE_TEST_PLAN_REPORT_STATUS_MUTATION = gql`
     mutation UpdateTestPlanReportStatus(
         $testReportId: ID!
         $status: TestPlanReportStatus!
+        $candidateStatusReachedAt: Timestamp
+        $recommendedStatusTargetDate: Timestamp
     ) {
         testPlanReport(id: $testReportId) {
-            updateStatus(status: $status) {
+            updateStatus(
+                status: $status
+                candidateStatusReachedAt: $candidateStatusReachedAt
+                recommendedStatusTargetDate: $recommendedStatusTargetDate
+            ) {
                 testPlanReport {
                     status
                 }

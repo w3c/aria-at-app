@@ -1083,7 +1083,11 @@ const graphqlSchema = gql`
         Update the report status. Remember that all conflicts must be resolved
         when setting the status to IN_REVIEW. Only available to admins.
         """
-        updateStatus(status: TestPlanReportStatus!): PopulatedData!
+        updateStatus(
+            status: TestPlanReportStatus!
+            candidateStatusReachedAt: Timestamp
+            recommendedStatusTargetDate: Timestamp
+        ): PopulatedData!
         """
         Update the report status for multiple TestPlanReports. Remember that all
         conflicts must be resolved when setting the status to IN_REVIEW. Only
