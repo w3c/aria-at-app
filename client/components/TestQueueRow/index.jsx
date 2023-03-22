@@ -414,19 +414,28 @@ const TestQueueRow = ({
                     const candidatePhaseList = uniq.map(u => JSON.parse(u));
                     setCandidatePhaseTestPlanReports(candidatePhaseList);
 
-                    // if (candidatePhaseList > 1) {
-                    // There is a test plan report in Candidate Test Plans to be overwritten
-                    setShowCandidatePhaseSelectModal(true);
-                    // }
+                    if (candidatePhaseList.length > 0) {
+                        // There already exists a Test Plan Report which uses this pattern so
+                        // there is already a candidate phase to select from
+                        setShowCandidatePhaseSelectModal(true);
+                    } else {
+                        await updateTestPlanReportStatus({
+                            variables: {
+                                testReportId: testPlanReport.id,
+                                status: status
+                            }
+                        });
+                        await triggerPageUpdate();
+                    }
                 } else {
+                    // Create a new candidate phase since no others exist
                     await updateTestPlanReportStatus({
                         variables: {
                             testReportId: testPlanReport.id,
                             status: status
                         }
                     });
-                    if (status === 'CANDIDATE') await triggerPageUpdate();
-                    else await triggerTestPlanReportUpdate();
+                    await triggerTestPlanReportUpdate();
                 }
             }, 'Updating Test Plan Status');
         } catch (e) {
