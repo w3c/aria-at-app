@@ -1,6 +1,6 @@
-const iframeClass = `support-levels-${document.currentScript.getAttribute(
-    'pattern'
-)}`;
+const iframeClass = `support-levels-${document
+    .querySelector('script[pattern]')
+    .getAttribute('pattern')}`;
 
 const iframeCode = link =>
     `<iframe
@@ -13,6 +13,7 @@ const iframeCode = link =>
 
 // eslint-disable-next-line no-unused-vars
 const announceCopied = link => {
+    console.log('announceCopied');
     navigator.clipboard.writeText(iframeCode(link));
     const parentDiv = document.getElementById('copied-message');
     const innerDiv = document.createElement('div');
@@ -42,3 +43,5 @@ document
     .addEventListener('toggle', postHeightAndClass);
 
 postHeightAndClass();
+
+console.log('script run');

@@ -7,20 +7,19 @@ const staleWhileRevalidate = require('../util/staleWhileRevalidate');
 const hash = require('object-hash');
 
 const app = express();
-const handlebarsPath =
-    process.env.ENVIRONMENT === 'dev' ? 'handlebars' : 'server/handlebars';
+const handlebarsPath = resolve(__dirname, '../handlebars');
 
 // handlebars
 const hbs = create({
-    layoutsDir: resolve(`${handlebarsPath}/views/layouts`),
+    layoutsDir: resolve(handlebarsPath, 'views/layouts'),
     extname: 'hbs',
     defaultLayout: 'index',
-    helpers: require(resolve(`${handlebarsPath}/helpers`))
+    helpers: require(resolve(handlebarsPath, 'helpers'))
 });
 
 app.engine('hbs', hbs.engine);
 app.set('view engine', 'hbs');
-app.set('views', resolve(`${handlebarsPath}/views`));
+app.set('views', resolve(handlebarsPath, 'views'));
 
 // Prevent refreshing cached data for five seconds - using a short time like
 // this is possible because the stale-while-revalidate caching strategy works in
@@ -31,7 +30,7 @@ app.set('views', resolve(`${handlebarsPath}/views`));
 const millisecondsUntilStale = 5000;
 
 const queryReports = async () => {
-    const { data } = await apolloServer.executeOperation({
+    const { data, errors } = await apolloServer.executeOperation({
         query: gql`
             query {
                 testPlanReports(statuses: [CANDIDATE, RECOMMENDED]) {
@@ -63,6 +62,10 @@ const queryReports = async () => {
             }
         `
     });
+
+    if (errors) {
+        throw new Error(errors);
+    }
 
     const reportsHashed = hash(data.testPlanReports);
 
@@ -190,7 +193,7 @@ const renderEmbed = ({
         status,
         reportsByAt
     } = getLatestReportsForPattern({ pattern, allTestPlanReports });
-    return hbs.renderView('handlebars/views/main.hbs', {
+    return hbs.renderView(resolve(handlebarsPath, 'views/main.hbs'), {
         layout: 'index',
         dataEmpty: Object.keys(reportsByAt).length === 0,
         title: queryTitle || title || 'Pattern Not Found',
