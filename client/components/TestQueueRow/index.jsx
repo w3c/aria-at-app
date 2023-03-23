@@ -440,14 +440,24 @@ const TestQueueRow = ({
                     );
                     // --- SECTION END: OutdatedCandidatePhaseComparison
 
-                    const dates = filteredCandidateReports.map(c => {
-                        return {
-                            candidateStatusReachedAt:
-                                c.candidateStatusReachedAt,
-                            recommendedStatusTargetDate:
-                                c.recommendedStatusTargetDate
-                        };
-                    });
+                    const dates = filteredCandidateReports
+                        .map(c => {
+                            return {
+                                candidateStatusReachedAt:
+                                    c.candidateStatusReachedAt,
+                                recommendedStatusTargetDate:
+                                    c.recommendedStatusTargetDate
+                            };
+                        })
+                        // Sort in descending order of dates (top is the latest date the existing
+                        // candidate report status was reached at)
+                        .sort((a, b) =>
+                            new Date(a.candidateStatusReachedAt) >
+                            new Date(b.candidateStatusReachedAt)
+                                ? -1
+                                : 1
+                        );
+
                     const stringifiedDates = dates.map(d => JSON.stringify(d));
                     const uniq = [...new Set(stringifiedDates)];
                     const candidatePhaseList = uniq.map(u => JSON.parse(u));
