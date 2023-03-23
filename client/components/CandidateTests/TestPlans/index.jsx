@@ -1113,9 +1113,6 @@ const TestPlans = ({
                                 return (
                                     <tr key={testPlanVersionId}>
                                         <td>
-                                            {testPlanReports.map(
-                                                t => `${t.id}, `
-                                            )}
                                             {getTestPlanVersionTitle(
                                                 testPlanVersion
                                             )}
