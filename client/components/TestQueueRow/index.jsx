@@ -393,9 +393,9 @@ const TestQueueRow = ({
                         fetchPolicy: 'network-only'
                     });
 
-                    // TODO: Check to see if the proposed test plan report to be promoted has a test plan
-                    //  version date less than whatever is in CANDIDATE tests (if any, then note it
-                    //  may never be displayed
+                    // TODO: Check to see if the proposed test plan report to be promoted to CANDIDATE
+                    //  has a test plan version date less than whatever is in CANDIDATE or RECOMMENDED
+                    //  tests already, if any, and note it may never be displayed to the admin
 
                     // --- SECTION START: OutdatedCandidatePhaseComparison
                     // Check to see if there are candidate test reports are already being compared
