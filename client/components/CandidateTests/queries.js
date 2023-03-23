@@ -2,8 +2,9 @@ import { gql } from '@apollo/client';
 
 export const CANDIDATE_TESTS_PAGE_QUERY = gql`
     query {
-        testPlanReports(statuses: [CANDIDATE]) {
+        testPlanReports(statuses: [CANDIDATE, RECOMMENDED]) {
             id
+            status
             metrics
             at {
                 id

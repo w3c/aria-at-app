@@ -34,9 +34,17 @@ const CandidateTests = () => {
 
     if (!data) return null;
 
+    const candidateTestPlanReports = data.testPlanReports.filter(
+        t => t.status === 'CANDIDATE'
+    );
+    const recommendedTestPlanReports = data.testPlanReports.filter(
+        t => t.status === 'RECOMMENDED'
+    );
+
     return (
         <TestPlans
-            testPlanReports={data.testPlanReports}
+            candidateTestPlanReports={candidateTestPlanReports}
+            recommendedTestPlanReports={recommendedTestPlanReports}
             triggerPageUpdate={refetch}
         />
     );

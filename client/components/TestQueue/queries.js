@@ -126,10 +126,11 @@ export const TEST_PLAN_REPORT_QUERY = gql`
     }
 `;
 
-export const TEST_PLAN_REPORT_CANDIDATE_QUERY = gql`
+export const TEST_PLAN_REPORT_CANDIDATE_RECOMMENDED_QUERY = gql`
     query CandidateTestPlanReportsQuery {
-        testPlanReports(statuses: [CANDIDATE]) {
+        testPlanReports(statuses: [CANDIDATE, RECOMMENDED]) {
             id
+            status
             latestAtVersionReleasedAt {
                 id
                 name

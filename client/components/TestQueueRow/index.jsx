@@ -14,7 +14,7 @@ import ATAlert from '../ATAlert';
 import { capitalizeEachWord } from '../../utils/formatter';
 import {
     TEST_PLAN_REPORT_QUERY,
-    TEST_PLAN_REPORT_CANDIDATE_QUERY,
+    TEST_PLAN_REPORT_CANDIDATE_RECOMMENDED_QUERY,
     ASSIGN_TESTER_MUTATION,
     UPDATE_TEST_PLAN_REPORT_STATUS_MUTATION,
     REMOVE_TEST_PLAN_REPORT_MUTATION,
@@ -387,21 +387,60 @@ const TestQueueRow = ({
             await triggerLoad(async () => {
                 if (status === 'CANDIDATE') {
                     // Get list of testPlanReports which are already in CANDIDATE phase and check to see which
-                    // is also in the same directory as what's being upgraded here to provide as a date option
-
-                    // TODO: I think we should also alert the admin in the case that what they're updating
-                    //       will never overwrite what is available on the Test Reports page?
+                    // is also the same pattern as what's being updated here to provide as a date option
                     const { data } = await client.query({
-                        query: TEST_PLAN_REPORT_CANDIDATE_QUERY,
+                        query: TEST_PLAN_REPORT_CANDIDATE_RECOMMENDED_QUERY,
                         fetchPolicy: 'network-only'
                     });
 
+                    // TODO: Check to see if the proposed test plan report to be promoted has a test plan
+                    //  version date less than whatever is in CANDIDATE tests (if any, then note it
+                    //  may never be displayed
+
+                    // --- SECTION START: OutdatedCandidatePhaseComparison
+                    // Check to see if there are candidate test reports are already being compared
+                    // which can never be shown in the test reports page as it currently is, so do
+                    // not show it as an existing candidate phase option
+                    const ignoredIds = [];
+
                     const directory = testPlanVersion.testPlan.directory;
                     const candidateReports = data.testPlanReports.filter(
-                        r => r.testPlanVersion.testPlan.directory === directory
+                        r =>
+                            r.status === 'CANDIDATE' &&
+                            r.testPlanVersion.testPlan.directory === directory
                     );
 
-                    const dates = candidateReports.map(c => {
+                    const recommendedReports = data.testPlanReports.filter(
+                        r =>
+                            r.status === 'RECOMMENDED' &&
+                            r.testPlanVersion.testPlan.directory === directory
+                    );
+
+                    recommendedReports.forEach(r => {
+                        candidateReports.forEach(t => {
+                            if (
+                                !ignoredIds.includes(t.id) &&
+                                t.at.id == r.at.id &&
+                                t.browser.id == r.browser.id &&
+                                t.testPlanVersion.testPlan.directory ==
+                                    r.testPlanVersion.testPlan.directory &&
+                                new Date(
+                                    t.latestAtVersionReleasedAt.releasedAt
+                                ) <
+                                    new Date(
+                                        r.latestAtVersionReleasedAt.releasedAt
+                                    )
+                            )
+                                ignoredIds.push(t.id);
+                        });
+                    });
+
+                    const filteredCandidateReports = candidateReports.filter(
+                        t => !ignoredIds.includes(t.id)
+                    );
+                    // --- SECTION END: OutdatedCandidatePhaseComparison
+
+                    const dates = filteredCandidateReports.map(c => {
                         return {
                             candidateStatusReachedAt:
                                 c.candidateStatusReachedAt,

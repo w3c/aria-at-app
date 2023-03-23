@@ -185,7 +185,11 @@ const None = styled.span`
     }
 `;
 
-const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
+const TestPlans = ({
+    candidateTestPlanReports,
+    recommendedTestPlanReports,
+    triggerPageUpdate = () => {}
+}) => {
     const { triggerLoad, loadingMessage } = useTriggerLoad();
     const {
         themedModal,
@@ -256,6 +260,29 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
             setThemedModalContent(<>{e.message}</>);
         }
     };
+
+    // Compare testPlanReports with recommendedTestPlanReports to make sure there aren't any test
+    // plan reports which will never be shown on the Reports page when promoted
+    const ignoredIds = [];
+
+    recommendedTestPlanReports.forEach(r => {
+        candidateTestPlanReports.forEach(t => {
+            if (
+                !ignoredIds.includes(t.id) &&
+                t.at.id == r.at.id &&
+                t.browser.id == r.browser.id &&
+                t.testPlanVersion.testPlan.directory ==
+                    r.testPlanVersion.testPlan.directory &&
+                new Date(t.latestAtVersionReleasedAt.releasedAt) <
+                    new Date(r.latestAtVersionReleasedAt.releasedAt)
+            )
+                ignoredIds.push(t.id);
+        });
+    });
+
+    const testPlanReports = candidateTestPlanReports.filter(
+        t => !ignoredIds.includes(t.id)
+    );
 
     if (!testPlanReports.length) {
         return (
@@ -1086,6 +1113,9 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
                                 return (
                                     <tr key={testPlanVersionId}>
                                         <td>
+                                            {testPlanReports.map(
+                                                t => `${t.id}, `
+                                            )}
                                             {getTestPlanVersionTitle(
                                                 testPlanVersion
                                             )}
@@ -1220,7 +1250,19 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
 };
 
 TestPlans.propTypes = {
-    testPlanReports: PropTypes.arrayOf(
+    candidateTestPlanReports: PropTypes.arrayOf(
+        PropTypes.shape({
+            id: PropTypes.string.isRequired,
+            testPlanVersion: PropTypes.shape({
+                id: PropTypes.string.isRequired,
+                title: PropTypes.string,
+                testPlan: PropTypes.shape({
+                    directory: PropTypes.string.isRequired
+                }).isRequired
+            }).isRequired
+        })
+    ).isRequired,
+    recommendedTestPlanReports: PropTypes.arrayOf(
         PropTypes.shape({
             id: PropTypes.string.isRequired,
             testPlanVersion: PropTypes.shape({
