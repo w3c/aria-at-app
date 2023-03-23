@@ -191,16 +191,19 @@ table tbody tr td {
     background-color: #f4f4f4;
 }
 
-#view-report-button, #embed-button {
+#view-report-button,
+#embed-button {
     margin-bottom: 1em;
     padding: 0 12px;
     line-height: 36px;
 }
-#view-report-button:focus-visible, #embed-button:focus-visible {
+#view-report-button:focus-visible,
+#embed-button:focus-visible {
     outline-offset: 2px;
     outline: 2px solid #3a86d1;
 }
-#view-report-button svg, #embed-button svg {
+#view-report-button svg,
+#embed-button svg {
     width: 24px;
     margin-right: 8px;
     float: left;
