@@ -1,0 +1,19 @@
+{
+  "version": "1.0.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Jest Server Debug Current Test File",
+      //"env": { "NODE_ENV": "test" },
+      "envFile": "${workspaceFolder}/config/test.env",
+      "program": "${workspaceFolder}/server/node_modules/.bin/jest",
+      "args": ["${fileBasenameNoExtension}", "--config", "server/jest.config.js"],
+      "console": "integratedTerminal",
+      "disableOptimisticBPs": true,
+      "windows": {
+        "program": "${workspaceFolder}/server/node_modules/jest/bin/jest"
+      }
+    }
+  ]
+}

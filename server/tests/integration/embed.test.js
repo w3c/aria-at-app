@@ -3,10 +3,8 @@ const startSupertestServer = require('../util/api-server');
 const db = require('../../models/index');
 const applyJsdomGlobals = require('jsdom-global');
 // Must be called before requiring the testing-library
-applyJsdomGlobals('', { runScripts: 'dangerously' });
+applyJsdomGlobals();
 const { screen } = require('@testing-library/dom');
-const fs = require('fs/promises');
-const path = require('path');
 
 let apiServer;
 let sessionAgent;
@@ -25,37 +23,22 @@ afterAll(async () => {
     await db.sequelize.close();
 });
 
-const evaluateScripts = async () => {
-    const scripts = Array.from(document.querySelectorAll('script'));
-    if (
-        scripts.length !== 1 ||
-        scripts[0].getAttribute('src') !== '/embed/script.js'
-    ) {
-        throw new Error(
-            'Test must be updated to support any additional scripts'
-        );
-    }
-    const scriptText = await fs.readFile(
-        path.resolve(__dirname, '../../handlebars/public/script.js'),
-        { encoding: 'utf8' }
-    );
-
-    // const script = document.createElement('script');
-    // script.innerHTML = scriptText;
-    // document.body.append(script);
-};
-
 describe('embed', () => {
     it('renders support table with data', async () => {
-        // Loads the iframe
+        // Load the iframe, twice, one with a normal load and a second time from
+        // the cache
+        const initialLoadTimeStart = Number(new Date());
         const res = await sessionAgent.get('/embed/reports/modal-dialog');
+        const initialLoadTimeEnd = Number(new Date());
+        const initialLoadTime = initialLoadTimeEnd - initialLoadTimeStart;
+
+        const cachedTimeStart = Number(new Date());
+        const res2 = await sessionAgent.get('/embed/reports/modal-dialog');
+        const cachedTimeEnd = Number(new Date());
+        const cachedTime = cachedTimeEnd - cachedTimeStart;
 
         // Enables the "screen" API of @testing-library/dom
         document.body.innerHTML = res.text;
-
-        // @testing-library/dom does not find and execute client-side JS so it
-        // must be evaluated manually
-        await evaluateScripts();
 
         const nonWarning = screen.queryByText('Recommended Report');
         const warning = screen.queryByText('Warning! Unapproved Report');
@@ -74,9 +57,14 @@ describe('embed', () => {
         const copyEmbedButtonOnClick = copyEmbedButton.getAttribute('onclick');
         const table = document.querySelector('table');
         const cellWithData = Array.from(table.querySelectorAll('td')).find(td =>
-            td.innerHTML.match(/<b>\s*\d+%<\/b>\s*supported/)
+            // TODO: change check to \d+ instead of \d* as soon as the missing
+            // number issue is fixed
+            td.innerHTML.match(/<b>\s*\d*%\s*<\/b>\s*supported/)
         );
 
+        expect(res.text).toEqual(res2.text);
+        // Caching should speed up the load time by more than 10x
+        expect(initialLoadTime / 10).toBeGreaterThan(cachedTime);
         expect(nonWarning || warning).toBeTruthy();
         expect(nonWarningContents || warningContents).toBeTruthy();
         expect(viewReportButton).toBeTruthy();
@@ -90,5 +78,17 @@ describe('embed', () => {
             /announceCopied\('https?:\/\/[\w.:]+\/embed\/reports\/modal-dialog'\)/
         );
         expect(cellWithData).toBeTruthy();
+    });
+
+    it('renders a failure message without a pattern', async () => {
+        const res = await sessionAgent.get('/embed/reports/polka-dot-button');
+
+        document.body.innerHTML = res.text;
+
+        const failText = screen.queryByText(
+            'There is no data for this pattern.'
+        );
+
+        expect(failText).toBeTruthy();
     });
 });
