@@ -71,8 +71,12 @@ h3#report-title {
     display: inline-block;
 }
 
-#candidate-title.recommended h3 {
-    width: 130px;
+#candidate-title.recommended {
+    border: 1.5px solid #7ac498;
+    background-color: #e9fbe9;
+}
+#candidate-title.recommended > span {
+    background-color: #115b11;
 }
 
 #candidate-content-container {
@@ -90,7 +94,7 @@ h3#report-title {
     margin-bottom: 3px;
 }
 
-.none {
+.no-data-cell {
     display: block;
     color: #72777f;
     font-style: italic;
@@ -187,16 +191,19 @@ table tbody tr td {
     background-color: #f4f4f4;
 }
 
-#view-report-button, #embed-button {
+#view-report-button,
+#embed-button {
     margin-bottom: 1em;
     padding: 0 12px;
     line-height: 36px;
 }
-#view-report-button:focus-visible, #embed-button:focus-visible {
+#view-report-button:focus-visible,
+#embed-button:focus-visible {
     outline-offset: 2px;
     outline: 2px solid #3a86d1;
 }
-#view-report-button svg, #embed-button svg {
+#view-report-button svg,
+#embed-button svg {
     width: 24px;
     margin-right: 8px;
     float: left;

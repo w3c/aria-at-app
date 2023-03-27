@@ -1,6 +1,5 @@
 <div id="main">
     {{#if dataEmpty}}
-        <h3 id="report-title">{{title}}</h3>
         <div id="no-data-container">
             <div id="no-data-content-container">
                  There is no data for this pattern.
@@ -13,7 +12,7 @@
             <summary id="candidate-title"><span>Warning! Unapproved Report</span></summary>
             <div id="candidate-content-container">
                 The information in this report is generated from candidate tests developed and run by the <a href="http://aria-at.w3.org">ARIA-AT Project</a>.
-                ARIA-AT tests are in review by assistive technology developers and lack consensus regarding:
+                Candidate ARIA-AT tests are in review by assistive technology developers and lack consensus regarding:
                 <ol>
                     <li>applicability and validity of the tests, and</li>
                     <li>accuracy of test results.</li>
@@ -21,18 +20,17 @@
             </div>
         </details>
         {{else}}
-        <div id="embed-report-status-container">
-            <div id="candidate-title" class="recommended"><h3>Recommended Report</h3></div>
+        <details id="embed-report-status-container">
+            <summary id="candidate-title" class="recommended"><span>Recommended Report</span></summary>
             <div id="candidate-content-container">
                 The information in this report is generated from recommended tests.
-                Recommended ARIA-AT tests have been reviewed by assistive technology
-                developers and represent consensus regarding
+                Recommended ARIA-AT tests have been reviewed by assistive technology developers and represent consensus regarding:
                 <ol>
                     <li>applicability and validity of the tests, and</li>
                     <li>accuracy of test results.</li>
                 </ol>
             </div>
-        </div>
+        </details>
         {{/if}}
         <div class="responsive-table">
             <table id="embed-report-table" aria-label="Assistive Technology Support for {{title}}">
@@ -55,13 +53,13 @@
                                                 <div class="meter" aria-hidden="true">
                                                     <span style="width: {{this.metrics.supportPercent}}%;"></span>
                                                 </div>
-                                                <b>{{this.metrics.supportPercent}}%</b> supported</b>
+                                                <b>{{this.metrics.supportPercent}}%</b> supported
                                             </td>
                                     {{/if}}
                                 {{else}}
                                     {{#if (isInAllBrowsers "Chrome" @../../this) }}
                                         {{#unless (elementExists @../../this @../this this.at.name "Chrome" @last)}}
-                                            <td><span class="none">None</span></td>
+                                            <td><span class="no-data-cell">No Data</span></td>
                                         {{/unless}}
                                     {{/if}}
                                 {{/if}}
@@ -71,13 +69,13 @@
                                                 <div class="meter" aria-hidden="true">
                                                     <span style="width: {{this.metrics.supportPercent}}%;"></span>
                                                 </div>
-                                                <b>{{this.metrics.supportPercent}}%</b> supported</b>
+                                                <b>{{this.metrics.supportPercent}}%</b> supported
                                             </td>
                                     {{/if}}
                                 {{else}}
                                     {{#if (isInAllBrowsers "Firefox" @../../this) }}
                                         {{#unless (elementExists @../../this @../this this.at.name "Firefox" @last)}}
-                                            <td><span class="none">None</span></td>
+                                            <td><span class="no-data-cell">No Data</span></td>
                                         {{/unless}}
                                     {{/if}}
                                 {{/if}}
@@ -87,13 +85,13 @@
                                                 <div class="meter" aria-hidden="true">
                                                     <span style="width: {{this.metrics.supportPercent}}%;"></span>
                                                 </div>
-                                                <b>{{this.metrics.supportPercent}}%</b> supported</b>
+                                                <b>{{this.metrics.supportPercent}}%</b> supported
                                             </td>
                                     {{/if}}
                                 {{else}}
                                     {{#if (isInAllBrowsers "Safari" @../../this) }}
                                         {{#unless (elementExists @../../this @../this this.at.name "Safari" @last)}}
-                                            <td><span class="none">None</span></td>
+                                            <td><span class="no-data-cell">No Data</span></td>
                                         {{/unless}}
                                     {{/if}}
                                 {{/if}}
