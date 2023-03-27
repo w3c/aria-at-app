@@ -8,7 +8,9 @@ const hash = require('object-hash');
 
 const app = express();
 const handlebarsPath =
-    process.env.ENVIRONMENT === 'dev' ? 'handlebars' : 'server/handlebars';
+    process.env.ENVIRONMENT === 'dev' || process.env.ENVIRONMENT === 'test'
+        ? 'handlebars'
+        : 'server/handlebars';
 
 // handlebars
 const hbs = create({
