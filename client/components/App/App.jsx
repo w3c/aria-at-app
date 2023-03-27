@@ -70,20 +70,20 @@ const App = () => {
                                     Test Reports
                                 </Nav.Link>
                             </li>
-                            {/*{isSignedIn && isAdmin && (*/}
-                            {/*    <li>*/}
-                            {/*        <Nav.Link*/}
-                            {/*            as={Link}*/}
-                            {/*            to="/test-management"*/}
-                            {/*            aria-current={*/}
-                            {/*                location.pathname ===*/}
-                            {/*                '/test-management'*/}
-                            {/*            }*/}
-                            {/*        >*/}
-                            {/*            Test Management*/}
-                            {/*        </Nav.Link>*/}
-                            {/*    </li>*/}
-                            {/*)}*/}
+                            {isSignedIn && isAdmin && (
+                                <li>
+                                    <Nav.Link
+                                        as={Link}
+                                        to="/test-management"
+                                        aria-current={
+                                            location.pathname ===
+                                            '/test-management'
+                                        }
+                                    >
+                                        Test Management
+                                    </Nav.Link>
+                                </li>
+                            )}
                             <li>
                                 <Nav.Link
                                     as={Link}
