@@ -1,13 +1,13 @@
 version: 2
 updates:
   - package-ecosystem: "npm"
-    open-pull-requests-limit: 99
+    open-pull-requests-limit: 5
     directory: "/"
     schedule:
       interval: "monthly"
 
   - package-ecosystem: "npm"
-    open-pull-requests-limit: 99
+    open-pull-requests-limit: 5
     directory: "/client"
     schedule:
       interval: "monthly"
@@ -15,7 +15,7 @@ updates:
       prefix: "client"
 
   - package-ecosystem: "npm"
-    open-pull-requests-limit: 99
+    open-pull-requests-limit: 5
     directory: "/server"
     schedule:
       interval: "monthly"
