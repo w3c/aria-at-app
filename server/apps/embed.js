@@ -7,7 +7,8 @@ const staleWhileRevalidate = require('../util/staleWhileRevalidate');
 const hash = require('object-hash');
 
 const app = express();
-const handlebarsPath = resolve(__dirname, '../handlebars');
+const handlebarsPath =
+    process.env.ENVIRONMENT === 'dev' ? 'handlebars' : 'server/handlebars';
 
 // handlebars
 const hbs = create({
