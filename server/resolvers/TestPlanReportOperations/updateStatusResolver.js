@@ -12,7 +12,7 @@ const getMetrics = require('../../util/getMetrics');
 
 const updateStatusResolver = async (
     { parentContext: { id: testPlanReportId } },
-    { status },
+    { status, candidateStatusReachedAt, recommendedStatusTargetDate },
     { user }
 ) => {
     if (!user?.roles.find(role => role.name === 'ADMIN')) {
@@ -63,15 +63,20 @@ const updateStatusResolver = async (
                 metrics: { ...testPlanReport.metrics, ...metrics }
             };
         } else if (status === 'CANDIDATE') {
-            const candidateStatusReachedAt = new Date();
+            const candidateStatusReachedAtValue = candidateStatusReachedAt
+                ? candidateStatusReachedAt
+                : new Date();
+            const recommendedStatusTargetDateValue = recommendedStatusTargetDate
+                ? recommendedStatusTargetDate
+                : recommendedStatusTargetDateResolver({
+                      candidateStatusReachedAt
+                  });
+
             updateParams = {
                 ...updateParams,
-                candidateStatusReachedAt,
                 metrics: { ...testPlanReport.metrics, ...metrics },
-                recommendedStatusTargetDate:
-                    recommendedStatusTargetDateResolver({
-                        candidateStatusReachedAt
-                    }),
+                candidateStatusReachedAt: candidateStatusReachedAtValue,
+                recommendedStatusTargetDate: recommendedStatusTargetDateValue,
                 vendorReviewStatus: 'READY'
             };
         } else if (status === 'RECOMMENDED') {

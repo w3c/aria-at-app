@@ -185,7 +185,11 @@ const None = styled.span`
     }
 `;
 
-const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
+const TestPlans = ({
+    candidateTestPlanReports,
+    recommendedTestPlanReports,
+    triggerPageUpdate = () => {}
+}) => {
     const { triggerLoad, loadingMessage } = useTriggerLoad();
     const {
         themedModal,
@@ -256,6 +260,29 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
             setThemedModalContent(<>{e.message}</>);
         }
     };
+
+    // Compare testPlanReports with recommendedTestPlanReports to make sure there aren't any test
+    // plan reports which will never be shown on the Reports page when promoted
+    const ignoredIds = [];
+
+    recommendedTestPlanReports.forEach(r => {
+        candidateTestPlanReports.forEach(t => {
+            if (
+                !ignoredIds.includes(t.id) &&
+                t.at.id == r.at.id &&
+                t.browser.id == r.browser.id &&
+                t.testPlanVersion.testPlan.directory ==
+                    r.testPlanVersion.testPlan.directory &&
+                new Date(t.latestAtVersionReleasedAt.releasedAt) <
+                    new Date(r.latestAtVersionReleasedAt.releasedAt)
+            )
+                ignoredIds.push(t.id);
+        });
+    });
+
+    const testPlanReports = candidateTestPlanReports.filter(
+        t => !ignoredIds.includes(t.id)
+    );
 
     if (!testPlanReports.length) {
         return (
@@ -462,19 +489,36 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
         );
 
         const tabularReports = {};
+        const tabularReportsByDirectory = {};
         Object.keys(testPlanVersionsById).forEach(testPlanVersionId => {
+            const directory =
+                testPlanVersionsById[testPlanVersionId].testPlan.directory;
+
             tabularReports[testPlanVersionId] = {};
+            if (!tabularReportsByDirectory[directory])
+                tabularReportsByDirectory[directory] = {};
+            tabularReportsByDirectory[directory][testPlanVersionId] = {};
             Object.keys(testPlanTargetsById).forEach(testPlanTargetId => {
                 tabularReports[testPlanVersionId][testPlanTargetId] = null;
+                tabularReportsByDirectory[directory][testPlanVersionId][
+                    testPlanTargetId
+                ] = null;
             });
         });
         testPlanReportsByAtId.forEach(testPlanReport => {
             const { testPlanVersion, at, browser } = testPlanReport;
+            const directory = testPlanVersion.testPlan.directory;
 
             // Construct testPlanTarget
             const testPlanTarget = { id: `${at.id}${browser.id}`, at, browser };
             tabularReports[testPlanVersion.id][testPlanTarget.id] =
                 testPlanReport;
+            tabularReportsByDirectory[directory][testPlanVersion.id][
+                testPlanTarget.id
+            ] = testPlanReport;
+            tabularReportsByDirectory[directory][
+                testPlanVersion.id
+            ].testPlanVersion = testPlanVersion;
         });
 
         return (
@@ -518,11 +562,46 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {Object.values(testPlanVersionsById)
+                                {Object.values(tabularReportsByDirectory)
                                     .sort((a, b) =>
-                                        a.title < b.title ? -1 : 1
+                                        Object.values(a)[0].testPlanVersion
+                                            .title <
+                                        Object.values(b)[0].testPlanVersion
+                                            .title
+                                            ? -1
+                                            : 1
                                     )
-                                    .map(testPlanVersion => {
+                                    .map(tabularReport => {
+                                        let reportResult = null;
+                                        let testPlanVersionId = null;
+
+                                        // Evaluate what is prioritised across the
+                                        // collection of testPlanVersions
+                                        if (
+                                            Object.values(tabularReport)
+                                                .length > 1
+                                        ) {
+                                            const {
+                                                resultTestPlanTargets,
+                                                combinedTestPlanVersionIdArray
+                                            } = combineObject(tabularReport);
+                                            reportResult =
+                                                resultTestPlanTargets;
+                                            testPlanVersionId =
+                                                combinedTestPlanVersionIdArray.join(
+                                                    ','
+                                                );
+                                        } else {
+                                            reportResult =
+                                                Object.values(tabularReport)[0];
+                                            testPlanVersionId =
+                                                reportResult.testPlanVersion.id;
+                                        }
+
+                                        const testPlanVersion =
+                                            reportResult.testPlanVersion;
+                                        delete reportResult.testPlanVersion;
+
                                         // All testPlanReports across browsers per AT
                                         const testPlanReports = [];
                                         const allMetrics = [];
@@ -534,9 +613,9 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
                                         Object.values(testPlanTargetsById).map(
                                             testPlanTarget => {
                                                 const testPlanReport =
-                                                    tabularReports[
-                                                        testPlanVersion.id
-                                                    ][testPlanTarget.id];
+                                                    reportResult[
+                                                        testPlanTarget.id
+                                                    ];
 
                                                 if (testPlanReport) {
                                                     const metrics =
@@ -578,7 +657,7 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
                                                         recommendedStatusTargetDate =
                                                             testPlanReportRecommendedStatusTargetDate;
                                                     }
-                                                    // Use latest recommendStatusTargetDate across browser results for AT
+                                                    // Use latest recommendedStatusTargetDate across browser results for AT
                                                     else {
                                                         recommendedStatusTargetDate =
                                                             new Date(
@@ -645,15 +724,20 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
                                             );
 
                                         return (
-                                            <tr key={testPlanVersion.id}>
+                                            <tr key={testPlanVersionId}>
                                                 <td>
                                                     <Link
-                                                        to={`/candidate-test-plan/${testPlanVersion.id}/${atId}`}
+                                                        to={`/candidate-test-plan/${testPlanVersionId}/${atId}`}
                                                     >
                                                         {getTestPlanVersionTitle(
                                                             testPlanVersion
                                                         )}{' '}
-                                                        ({testsCount} Tests)
+                                                        ({testsCount} Test
+                                                        {testsCount === 0 ||
+                                                        testsCount > 1
+                                                            ? `s`
+                                                            : ''}
+                                                        )
                                                     </Link>
                                                     <CellSubRow>
                                                         <i>
@@ -720,7 +804,7 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
                                                                 (changeTargetDateButtonRefs.current =
                                                                     {
                                                                         ...changeTargetDateButtonRefs.current,
-                                                                        [`${testPlanVersion.id}-${atId}`]:
+                                                                        [`${testPlanVersionId}-${atId}`]:
                                                                             changeTargetDateButtonRef
                                                                     })
                                                             }
@@ -729,7 +813,7 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
                                                             onClick={() => {
                                                                 focusButtonRef.current =
                                                                     changeTargetDateButtonRefs.current[
-                                                                        `${testPlanVersion.id}-${atId}`
+                                                                        `${testPlanVersionId}-${atId}`
                                                                     ];
                                                                 setUpdateTargetDateModalTitle(
                                                                     `Change Target Date for ${testPlanVersion.title} for ${atName}`
@@ -768,7 +852,7 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
                                                 </CenteredTd>
                                                 <CenteredTd>
                                                     <Link
-                                                        to={`/candidate-test-plan/${testPlanVersion.id}/${atId}`}
+                                                        to={`/candidate-test-plan/${testPlanVersionId}/${atId}`}
                                                     >
                                                         <ClippedProgressBar
                                                             progress={
@@ -802,6 +886,53 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
         );
     };
 
+    const combineObject = originalObject => {
+        let combinedTestPlanVersionIdArray = [];
+        let resultTestPlanTargets = Object.values(originalObject)[0];
+        combinedTestPlanVersionIdArray.push(
+            resultTestPlanTargets.testPlanVersion.id
+        );
+
+        for (let i = 1; i < Object.values(originalObject).length; i++) {
+            let testPlanTargets = Object.values(originalObject)[i];
+            if (
+                !combinedTestPlanVersionIdArray.includes(
+                    testPlanTargets.testPlanVersion.id
+                )
+            )
+                combinedTestPlanVersionIdArray.push(
+                    testPlanTargets.testPlanVersion.id
+                );
+
+            delete testPlanTargets.testPlanVersion;
+
+            // Check if exists in newObject and add/update newObject based on criteria
+            Object.keys(testPlanTargets).forEach(testPlanTargetKey => {
+                if (!resultTestPlanTargets[testPlanTargetKey])
+                    resultTestPlanTargets[testPlanTargetKey] =
+                        testPlanTargets[testPlanTargetKey];
+                else {
+                    const latestPrevDate = new Date(
+                        testPlanTargets[
+                            testPlanTargetKey
+                        ]?.latestAtVersionReleasedAt.releasedAt
+                    );
+
+                    const latestCurrDate = new Date(
+                        resultTestPlanTargets[
+                            testPlanTargetKey
+                        ]?.latestAtVersionReleasedAt.releasedAt
+                    );
+
+                    if (latestPrevDate > latestCurrDate)
+                        resultTestPlanTargets[testPlanTargetKey] =
+                            testPlanTargets[testPlanTargetKey];
+                }
+            });
+        }
+        return { resultTestPlanTargets, combinedTestPlanVersionIdArray };
+    };
+
     const constructTableForResultsSummary = () => {
         if (!testPlanReports.length) return borderedNone;
 
@@ -827,19 +958,36 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
         );
 
         const tabularReports = {};
+        const tabularReportsByDirectory = {};
         Object.keys(testPlanVersionsById).forEach(testPlanVersionId => {
+            const directory =
+                testPlanVersionsById[testPlanVersionId].testPlan.directory;
+
             tabularReports[testPlanVersionId] = {};
+            if (!tabularReportsByDirectory[directory])
+                tabularReportsByDirectory[directory] = {};
+            tabularReportsByDirectory[directory][testPlanVersionId] = {};
             Object.keys(testPlanTargetsById).forEach(testPlanTargetId => {
                 tabularReports[testPlanVersionId][testPlanTargetId] = null;
+                tabularReportsByDirectory[directory][testPlanVersionId][
+                    testPlanTargetId
+                ] = null;
             });
         });
         testPlanReports.forEach(testPlanReport => {
             const { testPlanVersion, at, browser } = testPlanReport;
+            const directory = testPlanVersion.testPlan.directory;
 
             // Construct testPlanTarget
             const testPlanTarget = { id: `${at.id}${browser.id}`, at, browser };
             tabularReports[testPlanVersion.id][testPlanTarget.id] =
                 testPlanReport;
+            tabularReportsByDirectory[directory][testPlanVersion.id][
+                testPlanTarget.id
+            ] = testPlanReport;
+            tabularReportsByDirectory[directory][
+                testPlanVersion.id
+            ].testPlanVersion = testPlanVersion;
         });
 
         return (
@@ -855,9 +1003,40 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
                         </tr>
                     </thead>
                     <tbody>
-                        {Object.values(testPlanVersionsById)
-                            .sort((a, b) => (a.title < b.title ? -1 : 1))
-                            .map(testPlanVersion => {
+                        {Object.values(tabularReportsByDirectory)
+                            .sort((a, b) =>
+                                Object.values(a)[0].testPlanVersion.title <
+                                Object.values(b)[0].testPlanVersion.title
+                                    ? -1
+                                    : 1
+                            )
+                            .map(tabularReport => {
+                                let reportResult = null;
+                                let testPlanVersionId = null;
+
+                                // Evaluate what is prioritised across the
+                                // collection of testPlanVersions
+                                if (Object.values(tabularReport).length > 1) {
+                                    const {
+                                        resultTestPlanTargets,
+                                        combinedTestPlanVersionIdArray
+                                    } = combineObject(tabularReport);
+                                    reportResult = resultTestPlanTargets;
+                                    testPlanVersionId =
+                                        combinedTestPlanVersionIdArray.join(
+                                            ','
+                                        );
+                                } else {
+                                    reportResult =
+                                        Object.values(tabularReport)[0];
+                                    testPlanVersionId =
+                                        reportResult.testPlanVersion.id;
+                                }
+
+                                const testPlanVersion =
+                                    reportResult.testPlanVersion;
+                                delete reportResult.testPlanVersion;
+
                                 const testPlanReports = [];
                                 let jawsDataExists = false;
                                 let nvdaDataExists = false;
@@ -866,9 +1045,7 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
                                 Object.values(testPlanTargetsById).map(
                                     testPlanTarget => {
                                         const testPlanReport =
-                                            tabularReports[testPlanVersion.id][
-                                                testPlanTarget.id
-                                            ];
+                                            reportResult[testPlanTarget.id];
 
                                         if (testPlanReport) {
                                             testPlanReports.push(
@@ -934,13 +1111,11 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
                                 );
 
                                 return (
-                                    <tr key={testPlanVersion.id}>
+                                    <tr key={testPlanVersionId}>
                                         <td>
-                                            <Link to={`/candidate-tests/`}>
-                                                {getTestPlanVersionTitle(
-                                                    testPlanVersion
-                                                )}
-                                            </Link>
+                                            {getTestPlanVersionTitle(
+                                                testPlanVersion
+                                            )}
                                         </td>
                                         <CenteredTd>
                                             {jawsDataExists
@@ -1072,7 +1247,19 @@ const TestPlans = ({ testPlanReports, triggerPageUpdate = () => {} }) => {
 };
 
 TestPlans.propTypes = {
-    testPlanReports: PropTypes.arrayOf(
+    candidateTestPlanReports: PropTypes.arrayOf(
+        PropTypes.shape({
+            id: PropTypes.string.isRequired,
+            testPlanVersion: PropTypes.shape({
+                id: PropTypes.string.isRequired,
+                title: PropTypes.string,
+                testPlan: PropTypes.shape({
+                    directory: PropTypes.string.isRequired
+                }).isRequired
+            }).isRequired
+        })
+    ).isRequired,
+    recommendedTestPlanReports: PropTypes.arrayOf(
         PropTypes.shape({
             id: PropTypes.string.isRequired,
             testPlanVersion: PropTypes.shape({

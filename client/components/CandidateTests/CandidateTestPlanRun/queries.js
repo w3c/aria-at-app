@@ -25,16 +25,21 @@ export const PROMOTE_VENDOR_REVIEW_STATUS_REPORT_MUTATION = gql`
 `;
 
 export const CANDIDATE_REPORTS_QUERY = gql`
-    query CandidateReportsQuery($testPlanVersionId: ID!, $atId: ID!) {
+    query CandidateReportsQuery(
+        $atId: ID!
+        $testPlanVersionId: ID
+        $testPlanVersionIds: [ID]
+    ) {
         me {
             id
             roles
             username
         }
         testPlanReports(
+            atId: $atId
             statuses: [CANDIDATE]
             testPlanVersionId: $testPlanVersionId
-            atId: $atId
+            testPlanVersionIds: $testPlanVersionIds
         ) {
             id
             candidateStatusReachedAt
@@ -49,6 +54,11 @@ export const CANDIDATE_REPORTS_QUERY = gql`
             at {
                 id
                 name
+            }
+            latestAtVersionReleasedAt {
+                id
+                name
+                releasedAt
             }
             browser {
                 id
