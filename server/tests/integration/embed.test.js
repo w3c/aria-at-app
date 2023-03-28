@@ -42,6 +42,11 @@ describe('embed', () => {
 
         const nonWarning = screen.queryByText('Recommended Report');
         const warning = screen.queryByText('Warning! Unapproved Report');
+        const unsupportedAtBrowserCombination =
+            screen.getAllByText('Not Applicable');
+        const futureSupportedAtBrowserCombination = screen.getAllByText(
+            'Data Not Yet Available'
+        );
         const nonWarningContents = screen.queryByText(
             'The information in this report is generated from candidate tests',
             { exact: false }
@@ -67,6 +72,8 @@ describe('embed', () => {
         expect(initialLoadTime / 10).toBeGreaterThan(cachedTime);
         expect(nonWarning || warning).toBeTruthy();
         expect(nonWarningContents || warningContents).toBeTruthy();
+        expect(unsupportedAtBrowserCombination).toBeTruthy();
+        expect(futureSupportedAtBrowserCombination).toBeTruthy();
         expect(viewReportButton).toBeTruthy();
         expect(viewReportButtonOnClick).toMatch(
             // Onclick should be like the following:

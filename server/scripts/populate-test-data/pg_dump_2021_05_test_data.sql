@@ -74,6 +74,7 @@ INSERT INTO "TestPlanReport" (id, "status", "testPlanVersionId", "createdAt", "a
 INSERT INTO "TestPlanReport" (id, "status", "testPlanVersionId", "createdAt", "atId", "browserId", "candidateStatusReachedAt", "recommendedStatusReachedAt", "vendorReviewStatus") VALUES (4, 'CANDIDATE', get_test_plan_version_id(text 'Modal Dialog Example'), '2021-05-14 14:18:23.602-05', 2, 1, '2022-07-06', '2023-01-02', 'READY');
 INSERT INTO "TestPlanReport" (id, "status", "testPlanVersionId", "createdAt", "atId", "browserId", "candidateStatusReachedAt", "recommendedStatusReachedAt", "vendorReviewStatus") VALUES (5, 'CANDIDATE', get_test_plan_version_id(text 'Modal Dialog Example'), '2021-05-14 14:18:23.602-05', 3, 3, '2022-07-06', '2023-01-02', 'READY');
 INSERT INTO "TestPlanReport" (id, "status", "testPlanVersionId", "createdAt", "atId", "browserId", "candidateStatusReachedAt", "recommendedStatusReachedAt", "vendorReviewStatus") VALUES (6, 'CANDIDATE', get_test_plan_version_id(text 'Checkbox Example (Mixed-State)'), '2021-05-14 14:18:23.602-05', 3, 3, '2022-07-06', '2023-01-02', 'READY');
+INSERT INTO "TestPlanReport" (id, "status", "testPlanVersionId", "createdAt", "atId", "browserId") VALUES (7, 'DRAFT', get_test_plan_version_id(text 'Alert Example'), '2021-05-14 14:18:23.602-05', 3, 1);
 
 --
 -- Data for Name: User; Type: TABLE DATA; Schema: public; Owner: atr
