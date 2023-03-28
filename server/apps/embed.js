@@ -36,7 +36,7 @@ const queryReports = async () => {
     const { data, errors } = await apolloServer.executeOperation({
         query: gql`
             query {
-                testPlanReports(statuses: [CANDIDATE, RECOMMENDED]) {
+                testPlanReports(statuses: [DRAFT, CANDIDATE, RECOMMENDED]) {
                     id
                     metrics
                     status
@@ -86,7 +86,10 @@ const getLatestReportsForPattern = ({ allTestPlanReports, pattern }) => {
     let title;
 
     const testPlanReports = allTestPlanReports.filter(report => {
-        if (report.testPlanVersion.testPlan.id === pattern) {
+        if (
+            report.testPlanVersion.testPlan.id === pattern &&
+            report.status !== 'DRAFT'
+        ) {
             title = report.testPlanVersion.title;
             return true;
         }
@@ -181,6 +184,19 @@ const getLatestReportsForPattern = ({ allTestPlanReports, pattern }) => {
     };
 };
 
+const getAllAtBrowserCombinations = reports => {
+    const combinations = {};
+
+    reports.forEach(report => {
+        if (!(report.at.name in combinations)) {
+            combinations[report.at.name] = new Set();
+        }
+        combinations[report.at.name].add(report.browser.name);
+    });
+
+    return combinations;
+};
+
 const renderEmbed = ({
     allTestPlanReports,
     queryTitle,
@@ -196,9 +212,12 @@ const renderEmbed = ({
         status,
         reportsByAt
     } = getLatestReportsForPattern({ pattern, allTestPlanReports });
+    const allAtBrowserCombinations =
+        getAllAtBrowserCombinations(allTestPlanReports);
     return hbs.renderView(resolve(handlebarsPath, 'views/main.hbs'), {
         layout: 'index',
         dataEmpty: Object.keys(reportsByAt).length === 0,
+        allAtBrowserCombinations,
         title: queryTitle || title || 'Pattern Not Found',
         pattern,
         status,
