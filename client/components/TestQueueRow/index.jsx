@@ -517,39 +517,30 @@ const TestQueueRow = ({
             );
         } else if (runStatus === 'DRAFT' || !runStatus) {
             status = <span className="status-label not-started">Draft</span>;
-        } else if (runStatus === 'IN_REVIEW') {
-            status = (
-                <span className="status-label in-progress">In Review</span>
-            );
-        }
+        } 
 
         return { status, results };
     };
 
     const evaluateNewReportStatus = () => {
-        const { status, conflictsLength } = testPlanReport;
+        const { conflictsLength } = testPlanReport;
         const conflictsCount = conflictsLength;
 
         // If there are no conflicts OR the test has been marked as "final",
         // and admin can mark a test run as "draft"
-        let newStatus;
-        if (
-            (status !== 'IN_REVIEW' &&
-                conflictsCount === 0 &&
-                testPlanRunsWithResults.length > 0) ||
-            status === 'CANDIDATE'
-        ) {
-            newStatus = 'IN_REVIEW';
-        }
+
         // If the results have been marked as draft and there is no conflict,
         // they can be marked as "final"
-        else if (
-            status === 'IN_REVIEW' &&
+
+        let newStatus;
+
+        if (
             conflictsCount === 0 &&
             testPlanRunsWithResults.length > 0
         ) {
             newStatus = 'CANDIDATE';
         }
+
         return newStatus;
     };
 

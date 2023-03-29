@@ -35,7 +35,7 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
             }
             updatedAt
         }
-        testPlanReports(statuses: [DRAFT, IN_REVIEW]) {
+        testPlanReports(statuses: [DRAFT]) {
             id
             status
             conflictsLength
