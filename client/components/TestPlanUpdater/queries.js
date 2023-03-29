@@ -4,20 +4,6 @@ export const TEST_PLAN_ID_QUERY = gql`
     query TestPlanIdQuery($testPlanReportId: ID!) {
         testPlanReport(id: $testPlanReportId) {
             id
-            testPlanVersion {
-                id
-                testPlan {
-                    id
-                }
-            }
-        }
-    }
-`;
-
-export const UPDATER_QUERY = gql`
-    query Updater($testPlanReportId: ID!, $testPlanId: ID!) {
-        testPlanReport(id: $testPlanReportId) {
-            id
             at {
                 name
                 id
@@ -28,21 +14,16 @@ export const UPDATER_QUERY = gql`
             }
             testPlanVersion {
                 id
+                testPlan {
+                    id
+                    latestTestPlanVersion {
+                        id
+                        gitSha
+                        gitMessage
+                        updatedAt
+                    }
+                }
                 title
-                gitMessage
-                gitSha
-                updatedAt
-            }
-        }
-        testPlan(id: $testPlanId) {
-            latestTestPlanVersion {
-                id
-                gitMessage
-                gitSha
-                updatedAt
-            }
-            testPlanVersions {
-                id
                 gitMessage
                 gitSha
                 updatedAt
@@ -71,7 +52,7 @@ export const VERSION_QUERY = gql`
         }
     }
 
-    query VersionQuery(
+    query LatestVersionQuery(
         $testPlanReportId: ID!
         $testPlanVersionId: ID!
         $atId: ID!

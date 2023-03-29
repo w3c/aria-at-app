@@ -1,3 +1,5 @@
+@import url('https://use.fontawesome.com/releases/v5.0.1/css/all.css');
+
 .main-test-area {
     position: relative;
 }
@@ -74,7 +76,8 @@ button.test-navigator-toggle:focus {
     height: 0%;
 }
 
-.complete.test-name-wrapper:before {
+.complete.test-name-wrapper:before,
+.changes-requested.test-name-wrapper:before {
     background: #1d8f37;
 }
 
@@ -115,6 +118,21 @@ button.test-navigator-toggle:focus {
         rgba(255, 255, 255, 1) 100%
     );
     border: 2px solid #1e8f37;
+}
+
+.test-name-wrapper.changes-requested .progress-indicator {
+    background: #f87f1c;
+}
+
+.test-name-wrapper.changes-requested .progress-indicator:before {
+    position: relative;
+    content: '\f024';
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    color: white;
+    font-size: 10px;
+    top: -3px;
+    left: 4px;
 }
 
 .test-name-wrapper.skipped .progress-indicator {
@@ -195,6 +213,9 @@ main.container-fluid .test-iframe-container > .row {
 .test-run-toolbar {
     display: flex;
     width: 100%;
+
+    padding-left: 0;
+    padding-right: 0;
 }
 .test-run-toolbar li:first-of-type {
     flex-grow: 1;
@@ -233,6 +254,9 @@ main.container-fluid .test-iframe-container > .row {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    flex-wrap: wrap;
+
+    padding: 0;
 }
 
 .test-info-entity {
@@ -244,7 +268,9 @@ main.container-fluid .test-iframe-container > .row {
 
 .apg-example-name,
 .tests-completed,
-.test-version {
+.test-version,
+.review-status,
+.target-date {
     background: #f5f8fa;
     border: 1px solid #d2d5d9;
     width: 37%;
@@ -355,6 +381,14 @@ main.container-fluid .test-iframe-container > .row {
 
 fieldset .at-browser-details-modal-alert {
     margin-bottom: 0;
+}
+
+.btn-options {
+    width: 100%;
+}
+
+a.btn-options:hover {
+    text-decoration: none;
 }
 
 .at-browser-details-modal-alert span {

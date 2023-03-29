@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Helmet } from 'react-helmet';
-import { Link, useParams, useHistory } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import useRouterQuery from '../../hooks/useRouterQuery';
 import { useQuery, useMutation } from '@apollo/client';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -25,6 +25,7 @@ import BasicThemedModal from '../common/BasicThemedModal';
 import AtAndBrowserDetailsModal from '../common/AtAndBrowserDetailsModal';
 import { useDetectUa } from '../../hooks/useDetectUa';
 import DisplayNone from '../../utils/DisplayNone';
+import { navigateTests } from '../../utils/navigateTests';
 import {
     TEST_RUN_PAGE_QUERY,
     TEST_RUN_PAGE_ANON_QUERY,
@@ -82,7 +83,7 @@ const createGitHubIssueWithTitleAndBody = ({
 
 const TestRun = () => {
     const params = useParams();
-    const history = useHistory();
+    const navigate = useNavigate();
     const routerQuery = useRouterQuery();
 
     // Detect UA information
@@ -113,14 +114,12 @@ const TestRun = () => {
             variables: { testPlanRunId, testPlanReportId }
         }
     );
-    const [
-        createTestResult,
-        { loading: createTestResultLoading }
-    ] = useMutation(FIND_OR_CREATE_TEST_RESULT_MUTATION, {
-        refetchQueries: [
-            { query: TEST_RUN_PAGE_QUERY, variables: { testPlanRunId } }
-        ]
-    });
+    const [createTestResult, { loading: createTestResultLoading }] =
+        useMutation(FIND_OR_CREATE_TEST_RESULT_MUTATION, {
+            refetchQueries: [
+                { query: TEST_RUN_PAGE_QUERY, variables: { testPlanRunId } }
+            ]
+        });
     const [saveTestResult] = useMutation(SAVE_TEST_RESULT_MUTATION, {
         refetchQueries: [
             { query: TEST_RUN_PAGE_QUERY, variables: { testPlanRunId } }
@@ -136,10 +135,10 @@ const TestRun = () => {
         FIND_OR_CREATE_BROWSER_VERSION_MUTATION
     );
 
-    const [isShowingAtBrowserModal, setIsShowingAtBrowserModal] = useState(
-        true
-    );
+    const [isShowingAtBrowserModal, setIsShowingAtBrowserModal] =
+        useState(true);
     const [isRendererReady, setIsRendererReady] = useState(false);
+    const [isSavingForm, setIsSavingForm] = useState(false);
     const [isTestSubmitClicked, setIsTestSubmitClicked] = useState(false);
     const [isTestEditClicked, setIsTestEditClicked] = useState(false);
     const [showTestNavigator, setShowTestNavigator] = useState(true);
@@ -147,19 +146,16 @@ const TestRun = () => {
     const [atVersionId, setAtVersionId] = useState();
     const [browserVersionId, setBrowserVersionId] = useState();
     const [showStartOverModal, setShowStartOverModal] = useState(false);
-    const [showReviewConflictsModal, setShowReviewConflictsModal] = useState(
-        false
-    );
+    const [showReviewConflictsModal, setShowReviewConflictsModal] =
+        useState(false);
     const [showGetInvolvedModal, setShowGetInvolvedModal] = useState(false);
 
     const [showThemedModal, setShowThemedModal] = useState(false);
     const [themedModalTitle, setThemedModalTitle] = useState('');
     const [themedModalContent, setThemedModalContent] = useState(<></>);
     const [themedModalOtherButton, setThemedModalOtherButton] = useState(null);
-    const [
-        isEditAtBrowserDetailsModalClick,
-        setIsEditAtBrowserDetailsClicked
-    ] = useState(false);
+    const [isEditAtBrowserDetailsModalClick, setIsEditAtBrowserDetailsClicked] =
+        useState(false);
     const [updateMessageComponent, setUpdateMessageComponent] = useState(null);
 
     useEffect(() => setup(), [currentTestIndex]);
@@ -188,7 +184,7 @@ const TestRun = () => {
         );
     }
 
-    if (!data || loading || createTestResultLoading) {
+    if (!data || loading || createTestResultLoading || isSavingForm) {
         return (
             <PageStatus
                 title="Loading - Test Results | ARIA-AT"
@@ -209,8 +205,11 @@ const TestRun = () => {
     if (testPlanReportId) isSignedIn = false;
     if (!isSignedIn) testPlanReport = data.testPlanReport;
 
-    const { testPlanVersion, runnableTests = [], conflicts = [] } =
-        testPlanReport || {};
+    const {
+        testPlanVersion,
+        runnableTests = [],
+        conflicts = []
+    } = testPlanReport || {};
 
     // check to ensure an admin that manually went to a test run url doesn't
     // run the test as themselves
@@ -327,23 +326,6 @@ const TestRun = () => {
         conflictMarkdown: conflictMarkdownRef.current
     });
 
-    const navigateTests = (previous = false) => {
-        // assume navigation forward if previous is false
-        let newTestIndex = currentTest.seq;
-        if (!previous) {
-            // next
-            const newTestIndexToEval = currentTest.seq + 1;
-            if (newTestIndexToEval <= tests.length)
-                newTestIndex = newTestIndexToEval;
-        } else {
-            // previous
-            const newTestIndexToEval = currentTest.seq - 1;
-            if (newTestIndexToEval >= 1 && newTestIndexToEval <= tests.length)
-                newTestIndex = newTestIndexToEval;
-        }
-        setCurrentTestIndex(tests.find(t => t.seq === newTestIndex).index);
-    };
-
     const remapScenarioResults = (
         rendererState,
         scenarioResults,
@@ -359,8 +341,9 @@ const TestRun = () => {
         const { commands } = rendererState;
         if (!commands || commands.length !== scenarioResults.length) {
             throw new Error(
-                `Unable to merge invalid results:commands:${commands} | commands.length !== scenarioResults.length:${commands.length !==
-                    scenarioResults.length}`
+                `Unable to merge invalid results:commands:${commands} | commands.length !== scenarioResults.length:${
+                    commands.length !== scenarioResults.length
+                }`
             );
         }
 
@@ -434,7 +417,8 @@ const TestRun = () => {
             scenarioResult.unexpectedBehaviorNote =
                 unexpected.note.value === '' ? null : unexpected.note.value;
             if (captureHighlightRequired)
-                scenarioResult.unexpectedBehaviorHighlightRequired = highlightRequired;
+                scenarioResult.unexpectedBehaviorHighlightRequired =
+                    highlightRequired;
 
             newScenarioResults.push(scenarioResult);
         }
@@ -465,28 +449,41 @@ const TestRun = () => {
             forceSave = false,
             forceEdit = false
         ) => {
-            if (forceEdit) setIsTestEditClicked(true);
-            else setIsTestEditClicked(false);
+            try {
+                if (forceEdit) setIsTestEditClicked(true);
+                else setIsTestEditClicked(false);
 
-            if (!isSignedIn) return true;
-            if (!forceEdit && currentTest.testResult?.completedAt) return true;
+                if (!isSignedIn) return true;
+                if (!forceEdit && currentTest.testResult?.completedAt)
+                    return true;
 
-            const scenarioResults = remapScenarioResults(
-                testRunStateRef.current || recentTestRunStateRef.current,
-                currentTest.testResult?.scenarioResults,
-                false
-            );
+                setIsSavingForm(true);
+                const scenarioResults = remapScenarioResults(
+                    testRunStateRef.current || recentTestRunStateRef.current,
+                    currentTest.testResult?.scenarioResults,
+                    false
+                );
 
-            await handleSaveOrSubmitTestResultAction(
-                {
-                    atVersionId: currentTestAtVersionId,
-                    browserVersionId: currentTestBrowserVersionId,
-                    scenarioResults
-                },
-                forceSave ? false : !!testRunResultRef.current
-            );
-            if (withResult && !forceSave) return !!testRunResultRef.current;
-            return true;
+                await handleSaveOrSubmitTestResultAction(
+                    {
+                        atVersionId: currentTestAtVersionId,
+                        browserVersionId: currentTestBrowserVersionId,
+                        scenarioResults
+                    },
+                    forceSave ? false : !!testRunResultRef.current
+                );
+
+                if (withResult && !forceSave) {
+                    setIsSavingForm(false);
+                    return !!testRunResultRef.current;
+                }
+
+                setIsSavingForm(false);
+                return true;
+            } catch (e) {
+                console.error('save.error', e);
+                setIsSavingForm(false);
+            }
         };
 
         switch (action) {
@@ -499,13 +496,13 @@ const TestRun = () => {
             case 'goToNextTest': {
                 // Save renderer's form state
                 await saveForm(false, true);
-                navigateTests();
+                navigateTests(false, currentTest, tests, setCurrentTestIndex);
                 break;
             }
             case 'goToPreviousTest': {
                 // Save renderer's form state
                 await saveForm(false, true);
-                navigateTests(true);
+                navigateTests(true, currentTest, tests, setCurrentTestIndex);
                 break;
             }
             case 'editTest': {
@@ -533,7 +530,7 @@ const TestRun = () => {
             case 'closeTest': {
                 // Save renderer's form state
                 await saveForm();
-                history.push('/test-queue');
+                navigate('/test-queue');
                 break;
             }
         }
@@ -849,7 +846,10 @@ const TestRun = () => {
                         <OptionButton
                             text="Raise An Issue"
                             icon={
-                                <FontAwesomeIcon icon={faExclamationCircle} />
+                                <FontAwesomeIcon
+                                    icon={faExclamationCircle}
+                                    color="#94979b"
+                                />
                             }
                             target="_blank"
                             href={gitHubIssueLinkWithTitleAndBody}
@@ -858,7 +858,12 @@ const TestRun = () => {
                     <li>
                         <OptionButton
                             text="Start Over"
-                            icon={<FontAwesomeIcon icon={faRedo} />}
+                            icon={
+                                <FontAwesomeIcon
+                                    icon={faRedo}
+                                    color="#94979b"
+                                />
+                            }
                             onClick={handleStartOverButtonClick}
                             disabled={!isSignedIn}
                         />
@@ -1038,9 +1043,11 @@ const TestRun = () => {
                 >
                     <div className="info-label">
                         <b>Test Plan:</b>{' '}
-                        {`${testPlanVersion.title ||
+                        {`${
+                            testPlanVersion.title ||
                             testPlanVersion.testPlan?.directory ||
-                            ''}`}
+                            ''
+                        }`}
                     </div>
                 </div>
                 <div

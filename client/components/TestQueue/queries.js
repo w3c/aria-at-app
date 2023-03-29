@@ -38,17 +38,57 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
         testPlanReports(statuses: [DRAFT, IN_REVIEW]) {
             id
             status
-            conflicts {
-                source {
-                    locationOfData
+            conflictsLength
+            runnableTestsLength
+            at {
+                id
+                name
+            }
+            browser {
+                id
+                name
+            }
+            testPlanVersion {
+                id
+                title
+                gitSha
+                gitMessage
+                testPlan {
+                    directory
                 }
-                conflictingResults {
-                    locationOfData
+                updatedAt
+            }
+            draftTestPlanRuns {
+                id
+                tester {
+                    id
+                    username
+                }
+                testResultsLength
+            }
+        }
+        testPlans {
+            latestTestPlanVersion {
+                id
+                gitSha
+                testPlan {
+                    id
                 }
             }
+        }
+    }
+`;
+
+export const TEST_PLAN_REPORT_QUERY = gql`
+    query TestPlanReport($testPlanReportId: ID!) {
+        testPlanReport(id: $testPlanReportId) {
+            id
+            status
+            conflictsLength
             runnableTests {
                 id
             }
+            runnableTestsLength
             at {
                 id
                 name
@@ -80,48 +120,41 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
                     }
                     completedAt
                 }
-            }
-        }
-        testPlans {
-            latestTestPlanVersion {
-                id
-                gitSha
-                testPlan {
-                    id
-                }
+                testResultsLength
             }
         }
     }
 `;
 
-export const POPULATE_ADD_TEST_PLAN_TO_QUEUE_MODAL_QUERY = gql`
-    query TestQueueAddTestPlanModal {
-        ats {
+export const TEST_PLAN_REPORT_CANDIDATE_RECOMMENDED_QUERY = gql`
+    query CandidateTestPlanReportsQuery {
+        testPlanReports(statuses: [CANDIDATE, RECOMMENDED]) {
             id
-            name
-            atVersions {
+            status
+            latestAtVersionReleasedAt {
                 id
                 name
                 releasedAt
             }
-        }
-        browsers {
-            id
-            name
-            browserVersions {
+            candidateStatusReachedAt
+            recommendedStatusTargetDate
+            at {
                 id
                 name
             }
-        }
-        testPlanVersions {
-            id
-            title
-            gitSha
-            gitMessage
-            testPlan {
-                directory
+            browser {
+                id
+                name
             }
-            updatedAt
+            testPlanVersion {
+                id
+                title
+                gitSha
+                testPlan {
+                    directory
+                }
+                metadata
+            }
         }
     }
 `;
@@ -237,15 +270,38 @@ export const ASSIGN_TESTER_MUTATION = gql`
     }
 `;
 
-export const UPDATE_TEST_PLAN_REPORT_MUTATION = gql`
+export const UPDATE_TEST_PLAN_REPORT_STATUS_MUTATION = gql`
     mutation UpdateTestPlanReportStatus(
         $testReportId: ID!
         $status: TestPlanReportStatus!
+        $candidateStatusReachedAt: Timestamp
+        $recommendedStatusTargetDate: Timestamp
     ) {
         testPlanReport(id: $testReportId) {
-            updateStatus(status: $status) {
+            updateStatus(
+                status: $status
+                candidateStatusReachedAt: $candidateStatusReachedAt
+                recommendedStatusTargetDate: $recommendedStatusTargetDate
+            ) {
                 testPlanReport {
                     status
+                }
+            }
+        }
+    }
+`;
+
+export const UPDATE_TEST_PLAN_REPORT_RECOMMENDED_TARGET_DATE_MUTATION = gql`
+    mutation UpdateTestPlanReportRecommendedTargetDate(
+        $testReportId: ID!
+        $recommendedStatusTargetDate: Timestamp!
+    ) {
+        testPlanReport(id: $testReportId) {
+            updateRecommendedStatusTargetDate(
+                recommendedStatusTargetDate: $recommendedStatusTargetDate
+            ) {
+                testPlanReport {
+                    recommendedStatusTargetDate
                 }
             }
         }

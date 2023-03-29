@@ -7,10 +7,14 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { Col } from 'react-bootstrap';
 import React from 'react';
+import '@fortawesome/fontawesome-svg-core/styles.css';
 
 const TestNavigator = ({
     show = true,
     isSignedIn = false,
+    viewedTests = [],
+    isVendor = false,
+    testPlanReport = {},
     tests = [],
     currentTestIndex = 0,
     toggleShowClick = () => {},
@@ -47,6 +51,9 @@ const TestNavigator = ({
                     {tests.map(test => {
                         let resultClassName = 'not-started';
                         let resultStatus = 'Not Started';
+                        const issuesExist = testPlanReport.issues?.filter(
+                            issue => issue.testNumberFilteredByAt == test.seq
+                        ).length;
 
                         if (test) {
                             if (test.hasConflicts) {
@@ -61,13 +68,21 @@ const TestNavigator = ({
                                     : 'In Progress';
                             } else if (
                                 !isSignedIn &&
+                                !isVendor &&
                                 test.index === currentTestIndex
                             ) {
                                 resultClassName = 'in-progress';
                                 resultStatus = 'In Progress:';
+                            } else if (isVendor) {
+                                if (issuesExist) {
+                                    resultClassName = 'changes-requested';
+                                    resultStatus = 'Changes Requested';
+                                } else if (viewedTests.includes(test.id)) {
+                                    resultClassName = 'complete';
+                                    resultStatus = 'Test Viewed';
+                                }
                             }
                         }
-
                         return (
                             <li
                                 className={`test-name-wrapper ${resultClassName}`}
@@ -101,10 +116,13 @@ const TestNavigator = ({
 TestNavigator.propTypes = {
     show: PropTypes.bool,
     isSignedIn: PropTypes.bool,
+    isVendor: PropTypes.bool,
+    testPlanReport: PropTypes.object,
     tests: PropTypes.array,
     testResult: PropTypes.object,
     conflicts: PropTypes.object,
     currentTestIndex: PropTypes.number,
+    viewedTests: PropTypes.array,
     toggleShowClick: PropTypes.func,
     handleTestClick: PropTypes.func
 };

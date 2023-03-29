@@ -14,7 +14,9 @@ import { evaluateAuth } from '../../utils/evaluateAuth';
 import './TestQueue.css';
 
 const TestQueue = () => {
-    const { loading, data, refetch } = useQuery(TEST_QUEUE_PAGE_QUERY);
+    const { loading, data, error, refetch } = useQuery(TEST_QUEUE_PAGE_QUERY, {
+        fetchPolicy: 'cache-and-network'
+    });
 
     const [pageReady, setPageReady] = useState(false);
     const [testers, setTesters] = useState([]);
@@ -26,18 +28,13 @@ const TestQueue = () => {
     const [structuredTestPlanTargets, setStructuredTestPlanTargets] = useState(
         {}
     );
-    const [
-        deleteTestPlanReportDetails,
-        setDeleteTestPlanReportDetails
-    ] = useState({});
-    const [
-        isShowingDeleteTestPlanReportModal,
-        setDeleteTestPlanReportModal
-    ] = useState(false);
+    const [deleteTestPlanReportDetails, setDeleteTestPlanReportDetails] =
+        useState({});
+    const [isShowingDeleteTestPlanReportModal, setDeleteTestPlanReportModal] =
+        useState(false);
     const [deleteResultsDetails, setDeleteResultsDetails] = useState({});
-    const [isShowingDeleteResultsModal, setDeleteResultsModal] = useState(
-        false
-    );
+    const [isShowingDeleteResultsModal, setDeleteResultsModal] =
+        useState(false);
 
     const auth = evaluateAuth(data && data.me ? data.me : {});
     const { id, isAdmin } = auth;
@@ -62,17 +59,16 @@ const TestQueue = () => {
             );
             setAts(ats);
             setTestPlanVersions(testPlanVersions);
-            setBrowsers(browsers);
             setTestPlanReports(testPlanReports);
+            setBrowsers(browsers);
             setLatestTestPlanVersions(testPlans);
             setPageReady(true);
         }
     }, [data]);
 
     useEffect(() => {
-        const structuredTestPlanTargets = generateStructuredTestPlanVersions(
-            testPlanReports
-        );
+        const structuredTestPlanTargets =
+            generateStructuredTestPlanVersions(testPlanReports);
         setStructuredTestPlanTargets(structuredTestPlanTargets);
     }, [testPlanReports]);
 
@@ -104,9 +100,8 @@ const TestQueue = () => {
                 <Table
                     className="test-queue"
                     aria-labelledby={tableId}
-                    striped
                     bordered
-                    hover
+                    responsive
                 >
                     <thead>
                         <tr>
@@ -124,7 +119,7 @@ const TestQueue = () => {
                                     key={key}
                                     user={auth}
                                     testers={testers}
-                                    testPlanReport={testPlanReport}
+                                    testPlanReportData={testPlanReport}
                                     latestTestPlanVersions={
                                         latestTestPlanVersions
                                     }
@@ -134,7 +129,7 @@ const TestQueue = () => {
                                     triggerDeleteResultsModal={
                                         triggerDeleteResultsModal
                                     }
-                                    triggerTestPlanReportUpdate={refetch}
+                                    triggerPageUpdate={refetch}
                                 />
                             );
                         })}
@@ -154,17 +149,17 @@ const TestQueue = () => {
     };
 
     const handleDeleteTestPlanReport = async () => {
+        handleCloseDeleteTestPlanReportModal();
+
         if (deleteTestPlanReportDetails.deleteFunction)
             await deleteTestPlanReportDetails.deleteFunction();
-        handleCloseDeleteTestPlanReportModal();
-    };
-
-    const handleCloseDeleteTestPlanReportModal = () => {
-        setDeleteTestPlanReportModal(false);
 
         // reset deleteTestPlanDetails
         setDeleteTestPlanReportDetails({});
     };
+
+    const handleCloseDeleteTestPlanReportModal = () =>
+        setDeleteTestPlanReportModal(false);
 
     const triggerDeleteResultsModal = (
         title = null,
@@ -180,17 +175,27 @@ const TestQueue = () => {
     };
 
     const handleDeleteResults = async () => {
+        handleCloseDeleteResultsModal();
+
         if (deleteResultsDetails.deleteFunction)
             await deleteResultsDetails.deleteFunction();
-        handleCloseDeleteResultsModal();
-    };
-
-    const handleCloseDeleteResultsModal = () => {
-        setDeleteResultsModal(false);
 
         // reset deleteResultsDetails
         setDeleteResultsDetails({});
     };
+
+    const handleCloseDeleteResultsModal = () => setDeleteResultsModal(false);
+
+    if (error) {
+        return (
+            <PageStatus
+                title="Test Queue | ARIA-AT"
+                heading="Test Queue"
+                message={error.message}
+                isError
+            />
+        );
+    }
 
     if (loading || !pageReady) {
         return (

@@ -6,3 +6,4 @@ all:
   vars:
     deployment_mode: staging
     fqdn: aria-at-staging.w3.org
+    ansible_python_interpreter: /usr/bin/python3

@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useQuery } from '@apollo/client';
-import { renderRoutes } from 'react-router-config';
 import { Link, useLocation } from 'react-router-dom';
-import { Container, Navbar, Nav } from 'react-bootstrap';
+import Container from 'react-bootstrap/Container';
+import Navbar from 'react-bootstrap/Navbar';
+import Nav from 'react-bootstrap/Nav';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
 import { evaluateAuth } from '../../utils/evaluateAuth';
@@ -20,7 +21,7 @@ const App = () => {
     const [isNavbarExpanded, setIsNavbarExpanded] = useState(false);
 
     const auth = evaluateAuth(data && data.me ? data.me : {});
-    const { username, isSignedIn } = auth;
+    const { username, isSignedIn, isAdmin, isVendor } = auth;
 
     const signOut = async () => {
         await fetch('/api/auth/signout', { method: 'POST' });
@@ -39,7 +40,7 @@ const App = () => {
                 <Navbar
                     bg="light"
                     expand="lg"
-                    aria-label="Main Menu"
+                    aria-label="Menu"
                     expanded={isNavbarExpanded}
                     onToggle={() => setIsNavbarExpanded(previous => !previous)}
                 >
@@ -57,18 +58,32 @@ const App = () => {
                         id="basic-navbar-nav"
                         className="justify-content-end"
                     >
-                        <ul>
+                        <Nav>
                             <li>
                                 <Nav.Link
                                     as={Link}
                                     to="/reports"
                                     aria-current={location.pathname.startsWith(
-                                        '/reports'
+                                        '/report'
                                     )}
                                 >
                                     Test Reports
                                 </Nav.Link>
                             </li>
+                            {isSignedIn && isAdmin && (
+                                <li>
+                                    <Nav.Link
+                                        as={Link}
+                                        to="/test-management"
+                                        aria-current={
+                                            location.pathname ===
+                                            '/test-management'
+                                        }
+                                    >
+                                        Test Management
+                                    </Nav.Link>
+                                </li>
+                            )}
                             <li>
                                 <Nav.Link
                                     as={Link}
@@ -80,20 +95,35 @@ const App = () => {
                                     Test Queue
                                 </Nav.Link>
                             </li>
+                            {isSignedIn && (isAdmin || isVendor) && (
+                                <li>
+                                    <Nav.Link
+                                        as={Link}
+                                        to="/candidate-tests"
+                                        aria-current={location.pathname.startsWith(
+                                            '/candidate-test'
+                                        )}
+                                    >
+                                        Candidate Tests
+                                    </Nav.Link>
+                                </li>
+                            )}
                             {isSignedIn && (
                                 <>
-                                    <li>
-                                        <Nav.Link
-                                            as={Link}
-                                            to="/account/settings"
-                                            aria-current={
-                                                location.pathname ===
-                                                '/account/settings'
-                                            }
-                                        >
-                                            Settings
-                                        </Nav.Link>
-                                    </li>
+                                    {!isVendor && (
+                                        <li>
+                                            <Nav.Link
+                                                as={Link}
+                                                to="/account/settings"
+                                                aria-current={
+                                                    location.pathname ===
+                                                    '/account/settings'
+                                                }
+                                            >
+                                                Settings
+                                            </Nav.Link>
+                                        </li>
+                                    )}
                                     <li className="signed-in-wrapper">
                                         <div
                                             className="signed-in"
@@ -128,13 +158,11 @@ const App = () => {
                                     </Nav.Link>
                                 </li>
                             )}
-                        </ul>
+                        </Nav>
                     </Navbar.Collapse>
                 </Navbar>
             </Container>
-            <Container fluid>
-                <div>{renderRoutes(routes)}</div>
-            </Container>
+            <Container fluid>{routes()}</Container>
         </ScrollFixer>
     );
 };

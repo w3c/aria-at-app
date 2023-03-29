@@ -1,0 +1,22 @@
+.test-management.table {
+    padding: 0;
+    margin: 0;
+}
+
+.test-management.table tbody tr th {
+    padding: 20px;
+}
+
+.test-management.table th.phase {
+    width: 225px;
+}
+
+.change-phase {
+    margin-left: 12px;
+    margin-right: 12px;
+}
+
+.change-phase .btn {
+    display: flex;
+    align-items: center;
+}

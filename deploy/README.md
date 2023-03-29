@@ -58,10 +58,14 @@ To deploy this project to  server:
   - Run `ssh aria-at-app-sandbox.bocoup.com` and confirm you can connect.
   - Confirm that `sudo su` successfully switches you to the root user. You will need to enter the sodoer password you chose during your Bocoup onboarding. This password will be required when deploying to the Sandbox.
 3. Obtain a copy of the `ansible-vault-password.txt` file in LastPass and place it in the directory which contains this document.
-4. Install [Ansible](https://www.ansible.com/) version 2.8. Instructions for macOS are as follows:
-  - Install Ansible at the specific 2.8 version: `brew install ansible@2.8`
-  - Add the `ansible` command to your shell: `brew link --overwrite ansible@2.8`
-  - Run `ansible --version` to verify your ansible is on version 2.8.
+4. Install [Ansible](https://www.ansible.com/) version 2.11. Instructions for macOS are as follows:
+  - Install Ansible at the specific 2.11 version: `python3 -m pip install --user ansible-core==2.11.1`
+  - Add the following line to your `~/.zshrc` file, changing the path below to match where Python installs Ansible for you:
+    ```
+    export PATH=$PATH:/Users/Luigi/Library/Python/3.9/bin
+    ```
+  - Run `source ~/.zshrc` to refresh your shell.
+  - Run `ansible --version` to verify your ansible is on version 2.11.
 5. Execute the following command from the deploy directory:
    - Sandbox:
     ```

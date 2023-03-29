@@ -16,6 +16,7 @@ export const evaluateAuth = (data = {}) => {
         // calculated booleans
         isAdmin: roles.includes('ADMIN'),
         isTester: roles.includes('TESTER'),
+        isVendor: roles.includes('VENDOR'),
         isSignedIn: !!data.username,
 
         // user object values

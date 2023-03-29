@@ -72,7 +72,7 @@ const ReviewConflicts = ({
         });
 
         return (
-            <li key={assertion.id}>
+            <li key={`${assertion.id}-${commandString(scenario)}`}>
                 <h3>
                     Assertion Results for &quot;
                     {commandString(scenario)}&quot; Command and &quot;

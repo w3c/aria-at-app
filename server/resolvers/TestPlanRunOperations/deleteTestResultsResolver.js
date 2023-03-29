@@ -3,6 +3,7 @@ const {
     updateTestPlanRun
 } = require('../../models/services/TestPlanRunService');
 const populateData = require('../../services/PopulatedData/populateData');
+const persistConflictsCount = require('../helpers/persistConflictsCount');
 
 const deleteTestResultsResolver = async (
     { parentContext: { id: testPlanRunId } },
@@ -23,6 +24,9 @@ const deleteTestResultsResolver = async (
 
     await updateTestPlanRun(testPlanRunId, { testResults: [] });
 
+    // TODO: Avoid blocking loads in test runs with a larger amount of tests
+    //       and/or test results
+    await persistConflictsCount(testPlanRun);
     return populateData({ testPlanRunId });
 };
 

@@ -1,6 +1,6 @@
 const MODEL_NAME = 'Browser';
 
-module.exports = function(sequelize, DataTypes) {
+module.exports = function (sequelize, DataTypes) {
     const Model = sequelize.define(
         MODEL_NAME,
         {
@@ -27,7 +27,7 @@ module.exports = function(sequelize, DataTypes) {
 
     Model.BROWSER_VERSION_ASSOCIATION = { as: 'browserVersions' };
 
-    Model.associate = function(models) {
+    Model.associate = function (models) {
         Model.hasMany(models.BrowserVersion, {
             ...Model.BROWSER_VERSION_ASSOCIATION,
             foreignKey: 'browserId',

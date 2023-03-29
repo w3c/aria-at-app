@@ -7,6 +7,7 @@ const deepCustomMerge = require('../../util/deepCustomMerge');
 const deepPickEqual = require('../../util/deepPickEqual');
 const convertTestResultToInput = require('../TestPlanRunOperations/convertTestResultToInput');
 const createTestResultSkeleton = require('../TestPlanRunOperations/createTestResultSkeleton');
+const persistConflictsCount = require('../helpers/persistConflictsCount');
 
 const saveTestResultCommon = async ({
     testResultId,
@@ -75,6 +76,9 @@ const saveTestResultCommon = async ({
 
     await updateTestPlanRun(testPlanRun.id, { testResults: newTestResults });
 
+    // TODO: Avoid blocking loads in test runs with a larger amount of tests
+    //       and/or test results
+    await persistConflictsCount(testPlanRun);
     return populateData({ testResultId });
 };
 

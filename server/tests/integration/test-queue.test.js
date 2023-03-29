@@ -96,9 +96,10 @@ describe('test queue', () => {
                     }
                 }
             `);
-            const previousTesterIds = previous.testPlanReport.draftTestPlanRuns.map(
-                testPlanRun => testPlanRun.tester.id
-            );
+            const previousTesterIds =
+                previous.testPlanReport.draftTestPlanRuns.map(
+                    testPlanRun => testPlanRun.tester.id
+                );
 
             // A2
             const result = await mutate(gql`
@@ -151,9 +152,10 @@ describe('test queue', () => {
                     }
                 }
             `);
-            const previousTesterIds = previous.testPlanReport.draftTestPlanRuns.map(
-                run => run.tester.id
-            );
+            const previousTesterIds =
+                previous.testPlanReport.draftTestPlanRuns.map(
+                    run => run.tester.id
+                );
 
             // A2
             const result = await mutate(gql`
@@ -214,10 +216,10 @@ describe('test queue', () => {
             `);
             const previousStatus = previous.testPlanReport.status;
 
-            const result = await mutate(gql`
+            const candidateResult = await mutate(gql`
                 mutation {
                     testPlanReport(id: ${testPlanReportId}) {
-                        updateStatus(status: FINALIZED) {
+                        updateStatus(status: CANDIDATE) {
                             testPlanReport {
                                 status
                             }
@@ -225,11 +227,28 @@ describe('test queue', () => {
                     }
                 }
             `);
-            const resultStatus =
-                result.testPlanReport.updateStatus.testPlanReport.status;
+            const candidateResultStatus =
+                candidateResult.testPlanReport.updateStatus.testPlanReport
+                    .status;
 
-            expect(previousStatus).not.toBe('FINALIZED');
-            expect(resultStatus).toBe('FINALIZED');
+            const recommendedResult = await mutate(gql`
+                mutation {
+                    testPlanReport(id: ${testPlanReportId}) {
+                        updateStatus(status: RECOMMENDED) {
+                            testPlanReport {
+                                status
+                            }
+                        }
+                    }
+                }
+            `);
+            const recommendedResultStatus =
+                recommendedResult.testPlanReport.updateStatus.testPlanReport
+                    .status;
+
+            expect(previousStatus).not.toBe('CANDIDATE');
+            expect(candidateResultStatus).toBe('CANDIDATE');
+            expect(recommendedResultStatus).toBe('RECOMMENDED');
         });
     });
 
@@ -481,275 +500,275 @@ describe('test queue', () => {
         );
 
         expect(result.testPlanReport).toMatchInlineSnapshot(`
-            Object {
-              "conflicts": Array [
-                Object {
-                  "conflictingResults": Array [
-                    Object {
-                      "assertionResult": Object {
+            {
+              "conflicts": [
+                {
+                  "conflictingResults": [
+                    {
+                      "assertionResult": {
                         "failedReason": null,
                         "passed": true,
                       },
-                      "scenarioResult": Object {
+                      "scenarioResult": {
                         "output": "automatically seeded sample output",
                         "unexpectedBehaviorNote": null,
-                        "unexpectedBehaviors": Array [],
+                        "unexpectedBehaviors": [],
                       },
-                      "testPlanRun": Object {
+                      "testPlanRun": {
                         "id": "2",
-                        "tester": Object {
+                        "tester": {
                           "username": "esmeralda-baggins",
                         },
                       },
                     },
-                    Object {
-                      "assertionResult": Object {
+                    {
+                      "assertionResult": {
                         "failedReason": "INCORRECT_OUTPUT",
                         "passed": false,
                       },
-                      "scenarioResult": Object {
+                      "scenarioResult": {
                         "output": "automatically seeded sample output",
                         "unexpectedBehaviorNote": null,
-                        "unexpectedBehaviors": Array [],
+                        "unexpectedBehaviors": [],
                       },
-                      "testPlanRun": Object {
+                      "testPlanRun": {
                         "id": "3",
-                        "tester": Object {
+                        "tester": {
                           "username": "tom-proudfeet",
                         },
                       },
                     },
                   ],
-                  "source": Object {
-                    "assertion": Object {
+                  "source": {
+                    "assertion": {
                       "text": "Role 'combobox' is conveyed",
                     },
-                    "scenario": Object {
-                      "commands": Array [
-                        Object {
+                    "scenario": {
+                      "commands": [
+                        {
                           "text": "Shift+Tab",
                         },
                       ],
                     },
-                    "test": Object {
+                    "test": {
                       "rowNumber": 4,
                       "title": "Navigate backwards to a collapsed select-only combobox in interaction mode",
                     },
                   },
                 },
-                Object {
-                  "conflictingResults": Array [
-                    Object {
-                      "assertionResult": Object {
+                {
+                  "conflictingResults": [
+                    {
+                      "assertionResult": {
                         "failedReason": "INCORRECT_OUTPUT",
                         "passed": false,
                       },
-                      "scenarioResult": Object {
+                      "scenarioResult": {
                         "output": "automatically seeded sample output",
                         "unexpectedBehaviorNote": null,
-                        "unexpectedBehaviors": Array [],
+                        "unexpectedBehaviors": [],
                       },
-                      "testPlanRun": Object {
+                      "testPlanRun": {
                         "id": "2",
-                        "tester": Object {
+                        "tester": {
                           "username": "esmeralda-baggins",
                         },
                       },
                     },
-                    Object {
-                      "assertionResult": Object {
+                    {
+                      "assertionResult": {
                         "failedReason": "NO_OUTPUT",
                         "passed": false,
                       },
-                      "scenarioResult": Object {
+                      "scenarioResult": {
                         "output": "automatically seeded sample output",
                         "unexpectedBehaviorNote": null,
-                        "unexpectedBehaviors": Array [],
+                        "unexpectedBehaviors": [],
                       },
-                      "testPlanRun": Object {
+                      "testPlanRun": {
                         "id": "3",
-                        "tester": Object {
+                        "tester": {
                           "username": "tom-proudfeet",
                         },
                       },
                     },
                   ],
-                  "source": Object {
-                    "assertion": Object {
+                  "source": {
+                    "assertion": {
                       "text": "Role 'combobox' is conveyed",
                     },
-                    "scenario": Object {
-                      "commands": Array [
-                        Object {
+                    "scenario": {
+                      "commands": [
+                        {
                           "text": "Insert+Tab",
                         },
                       ],
                     },
-                    "test": Object {
+                    "test": {
                       "rowNumber": 7,
                       "title": "Read information about a collapsed select-only combobox in reading mode",
                     },
                   },
                 },
-                Object {
-                  "conflictingResults": Array [
-                    Object {
+                {
+                  "conflictingResults": [
+                    {
                       "assertionResult": null,
-                      "scenarioResult": Object {
+                      "scenarioResult": {
                         "output": "automatically seeded sample output",
                         "unexpectedBehaviorNote": null,
-                        "unexpectedBehaviors": Array [],
+                        "unexpectedBehaviors": [],
                       },
-                      "testPlanRun": Object {
+                      "testPlanRun": {
                         "id": "2",
-                        "tester": Object {
+                        "tester": {
                           "username": "esmeralda-baggins",
                         },
                       },
                     },
-                    Object {
+                    {
                       "assertionResult": null,
-                      "scenarioResult": Object {
+                      "scenarioResult": {
                         "output": "automatically seeded sample output",
                         "unexpectedBehaviorNote": "Seeded other unexpected behavior",
-                        "unexpectedBehaviors": Array [
-                          Object {
+                        "unexpectedBehaviors": [
+                          {
                             "text": "Other",
                           },
                         ],
                       },
-                      "testPlanRun": Object {
+                      "testPlanRun": {
                         "id": "3",
-                        "tester": Object {
+                        "tester": {
                           "username": "tom-proudfeet",
                         },
                       },
                     },
                   ],
-                  "source": Object {
+                  "source": {
                     "assertion": null,
-                    "scenario": Object {
-                      "commands": Array [
-                        Object {
+                    "scenario": {
+                      "commands": [
+                        {
                           "text": "Insert+Tab",
                         },
                       ],
                     },
-                    "test": Object {
+                    "test": {
                       "rowNumber": 8,
                       "title": "Read information about a collapsed select-only combobox in interaction mode",
                     },
                   },
                 },
-                Object {
-                  "conflictingResults": Array [
-                    Object {
+                {
+                  "conflictingResults": [
+                    {
                       "assertionResult": null,
-                      "scenarioResult": Object {
+                      "scenarioResult": {
                         "output": "automatically seeded sample output",
                         "unexpectedBehaviorNote": null,
-                        "unexpectedBehaviors": Array [],
+                        "unexpectedBehaviors": [],
                       },
-                      "testPlanRun": Object {
+                      "testPlanRun": {
                         "id": "2",
-                        "tester": Object {
+                        "tester": {
                           "username": "esmeralda-baggins",
                         },
                       },
                     },
-                    Object {
+                    {
                       "assertionResult": null,
-                      "scenarioResult": Object {
+                      "scenarioResult": {
                         "output": "automatically seeded sample output",
                         "unexpectedBehaviorNote": "Seeded other unexpected behavior",
-                        "unexpectedBehaviors": Array [
-                          Object {
+                        "unexpectedBehaviors": [
+                          {
                             "text": "Output is excessively verbose, e.g., includes redundant and/or irrelevant speech",
                           },
-                          Object {
+                          {
                             "text": "Other",
                           },
                         ],
                       },
-                      "testPlanRun": Object {
+                      "testPlanRun": {
                         "id": "3",
-                        "tester": Object {
+                        "tester": {
                           "username": "tom-proudfeet",
                         },
                       },
                     },
                   ],
-                  "source": Object {
+                  "source": {
                     "assertion": null,
-                    "scenario": Object {
-                      "commands": Array [
-                        Object {
+                    "scenario": {
+                      "commands": [
+                        {
                           "text": "Alt+Down",
                         },
                       ],
                     },
-                    "test": Object {
+                    "test": {
                       "rowNumber": 10,
                       "title": "Open a collapsed select-only combobox in reading mode",
                     },
                   },
                 },
-                Object {
-                  "conflictingResults": Array [
-                    Object {
-                      "assertionResult": Object {
+                {
+                  "conflictingResults": [
+                    {
+                      "assertionResult": {
                         "failedReason": "NO_OUTPUT",
                         "passed": false,
                       },
-                      "scenarioResult": Object {
+                      "scenarioResult": {
                         "output": "automatically seeded sample output",
                         "unexpectedBehaviorNote": null,
-                        "unexpectedBehaviors": Array [],
+                        "unexpectedBehaviors": [],
                       },
-                      "testPlanRun": Object {
+                      "testPlanRun": {
                         "id": "2",
-                        "tester": Object {
+                        "tester": {
                           "username": "esmeralda-baggins",
                         },
                       },
                     },
-                    Object {
-                      "assertionResult": Object {
+                    {
+                      "assertionResult": {
                         "failedReason": "INCORRECT_OUTPUT",
                         "passed": false,
                       },
-                      "scenarioResult": Object {
+                      "scenarioResult": {
                         "output": "automatically seeded sample output",
                         "unexpectedBehaviorNote": "Seeded other unexpected behavior",
-                        "unexpectedBehaviors": Array [
-                          Object {
+                        "unexpectedBehaviors": [
+                          {
                             "text": "Output is excessively verbose, e.g., includes redundant and/or irrelevant speech",
                           },
-                          Object {
+                          {
                             "text": "Other",
                           },
                         ],
                       },
-                      "testPlanRun": Object {
+                      "testPlanRun": {
                         "id": "3",
-                        "tester": Object {
+                        "tester": {
                           "username": "tom-proudfeet",
                         },
                       },
                     },
                   ],
-                  "source": Object {
-                    "assertion": Object {
+                  "source": {
+                    "assertion": {
                       "text": "State of the combobox (expanded) is conveyed",
                     },
-                    "scenario": Object {
-                      "commands": Array [
-                        Object {
+                    "scenario": {
+                      "commands": [
+                        {
                           "text": "Alt+Down",
                         },
                       ],
                     },
-                    "test": Object {
+                    "test": {
                       "rowNumber": 10,
                       "title": "Open a collapsed select-only combobox in reading mode",
                     },

@@ -38,16 +38,15 @@ This functionality is available in development environments where the ALLOW_FAKE
 
 ## Debugging
 
-Instead of running `yarn dev` to start the local enviornment run `yarn run dev-debug`.
+Instead of running `yarn dev` to start the local environment run `yarn run dev-debug`.
 
-This will add [express debuging](https://expressjs.com/en/guide/debugging.html)
-to information about routes, middleware and the request responce cycle.
+This will add [express debugging](https://expressjs.com/en/guide/debugging.html)
+to information about routes, middleware and the request response cycle.
 
-Additionally it adds the the ability for you use chrome dev tools and a
-`debbuger` to step through code via node's build in
-[inspector](https://nodejs.org/en/docs/guides/debugging-getting-started/). Just
-navigate to [chrome://inspect/#devices](chrome://inspect/#devices) and open the
-dedicated dev tools for node.
+Additionally it adds the ability for you use Chrome DevTools and a
+`debugger` to step through code via Node's built-in
+[inspector](https://nodejs.org/en/docs/guides/debugging-getting-started/). Navigate to [chrome://inspect/#devices](chrome://inspect/#devices) and open the
+dedicated DevTools for Node.
 
 ## GraphQL Playground
 
@@ -103,13 +102,25 @@ yarn workspace client jest --watchAll
 yarn workspace server jest --watchAll
 ```
 
+### Previewing components with Storybook
+Storybook is a tool for building out UI components. To start the Storybook server, run:
+```
+yarn storybook
+```
+
+#### Writing stories
+- Make a new file in `client/stories` with the format `<component>.stories.jsx`. 
+- Run the Storybook server
+
+Any changes in the component will be picked up by the Storybook server.
+
 ### Accessibility testing
 
-#### Manual accessibilty testings
+#### Manual accessibilty testing
 
-There are some automatable accessibility checks, but the only real way to know whether a webpage is accessible is to access it with a screen reader.
+Please note that this section may be out of date.
 
-If you have a linux computer, you will have to download a Windows VM in order to test the application with NVDA or JAWS. Here are the basic instructions:
+If you have a Linux computer, you will have to download a Windows VM in order to test the application with NVDA or JAWS. Here are the basic instructions:
 * Enable virtualization in your BIOS settings
 * Download [VirtualBox](http://download.virtualbox.org/virtualbox/)
 * Download a [Windows VM](https://developer.microsoft.com/en-us/windows/downloads/virtual-machines)
@@ -126,7 +137,7 @@ If you have a linux computer, you will have to download a Windows VM in order to
     * Then write the following commands:
     ```
     netsh interface portproxy add v4tov4 listenaddress=127.0.0.1 listenport=3000 connectaddress=10.0.2.2 connectport=3000
-    netsh interface portproxy add v4tov4 listenaddress=127.0.0.1 listenport=5000 connectaddress=10.0.2.2 connectport=5000
+    netsh interface portproxy add v4tov4 listenaddress=127.0.0.1 listenport=8000 connectaddress=10.0.2.2 connectport=8000
     ```
 * Now open your browser, and navigate to: `localhost:3000` and log in, and turn
   on the screen reader. There are several helpful [guides](https://dequeuniversity.com/screenreaders/) to the keyboard shortcuts used. 
@@ -134,7 +145,7 @@ If you have a linux computer, you will have to download a Windows VM in order to
 
 #### Automated accessibility tests
 
-[Lighthouse CI](https://github.com/GoogleChrome/lighthouse-ci) is used for automated accessibility testing of the React application. It has also been integrated into the CI workflow To run the Lighthouse tests, run:
+[Lighthouse CI](https://github.com/GoogleChrome/lighthouse-ci) is used for automated accessibility testing of the React application. It has also been integrated into the CI workflow. To run the Lighthouse tests, run:
 
 ```
 yarn a11y
@@ -142,4 +153,4 @@ yarn a11y
 
 ## Best Practices
 
-Before submitting a pull request, please run `yarn test` to ensure formatting, linting, and passing tests. The CI system will pick up on failing tests, in addition to local testing.
+Before submitting a pull request, run `yarn test` to make sure the linters and tests are passing. After opening a PR the GitHub Actions CI system will automatically verify the linters and tests are passing.

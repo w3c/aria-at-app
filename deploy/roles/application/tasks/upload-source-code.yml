@@ -40,7 +40,7 @@
         src: '{{playbook_dir}}/..'
         dest: '{{source_dir}}'
         rsync_opts:
-          - '--filter=:- .gitignore'
+          - '--filter=":- .gitignore"'
           - '--delete'
       become: yes
   always:

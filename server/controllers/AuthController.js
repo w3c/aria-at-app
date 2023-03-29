@@ -1,7 +1,7 @@
 const { User } = require('../models');
 const { getOrCreateUser } = require('../models/services/UserService');
 const { GithubService } = require('../services');
-const getTesters = require('../util/get-testers');
+const getUsersFromFile = require('../util/getUsersFromFile');
 
 const ALLOW_FAKE_ROLE = process.env.ALLOW_FAKE_ROLE === 'true';
 const APP_SERVER = process.env.APP_SERVER;
@@ -40,6 +40,7 @@ const oauthRedirectFromGithubController = async (req, res) => {
     const githubUsername = await GithubService.getGithubUsername(
         githubAccessToken
     );
+
     if (!githubUsername) return loginFailedDueToGitHub();
 
     const isAdmin = await GithubService.isMemberOfAdminTeam({
@@ -48,7 +49,8 @@ const oauthRedirectFromGithubController = async (req, res) => {
     });
     if (isAdmin == null) return loginFailedDueToGitHub();
 
-    const testers = await getTesters();
+    const testers = await getUsersFromFile('../../testers.txt');
+    const vendors = await getUsersFromFile('../../vendors.txt');
 
     const roles = [];
     if (isAdmin) {
@@ -57,6 +59,14 @@ const oauthRedirectFromGithubController = async (req, res) => {
     if (isAdmin || testers.includes(githubUsername)) {
         roles.push({ name: User.TESTER }); // Admins are always testers
     }
+
+    if (
+        isAdmin ||
+        vendors.findIndex(vendor => vendor.includes(githubUsername)) > -1
+    ) {
+        roles.push({ name: User.VENDOR });
+    }
+
     if (roles.length === 0) return loginFailedDueToRole();
 
     let [user] = await getOrCreateUser(
@@ -81,6 +91,7 @@ const oauthRedirectFromGithubController = async (req, res) => {
                 : [{ name: matchedFakeRole[1].toUpperCase() }];
         if (user.roles[0] && user.roles[0].name === User.ADMIN) {
             user.roles.push({ name: User.TESTER }); // Admins are always testers
+            user.roles.push({ name: User.VENDOR });
         }
     }
     if (user.roles.length === 0) return loginFailedDueToRole();

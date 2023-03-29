@@ -8,9 +8,17 @@ const {
     TEST_PLAN_VERSION_ATTRIBUTES
 } = require('../models/services/helpers');
 
-const testPlanReportsResolver = async (_, { statuses }, context, info) => {
+const testPlanReportsResolver = async (
+    _,
+    { statuses, testPlanVersionId, testPlanVersionIds, atId },
+    context,
+    info
+) => {
     const where = {};
     if (statuses) where.status = statuses;
+    if (testPlanVersionId) where.testPlanVersionId = testPlanVersionId;
+    if (testPlanVersionIds) where.testPlanVersionId = testPlanVersionIds;
+    if (atId) where.atId = atId;
 
     const {
         raw: testPlanReportRawAttributes,
@@ -33,6 +41,9 @@ const testPlanReportsResolver = async (_, { statuses }, context, info) => {
 
     if (testPlanReportRawAttributes.includes('runnableTests'))
         testPlanVersionAttributes.push('tests');
+
+    if (testPlanReportRawAttributes.includes('conflictsLength'))
+        testPlanReportAttributes.push('metrics');
 
     return getTestPlanReports(
         null,

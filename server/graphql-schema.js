@@ -30,6 +30,11 @@ const graphqlSchema = gql`
         of a special GitHub team, which is different for each app environment.
         """
         ADMIN
+        """
+        Whether the user can perform vendor actions, such as reviewing
+        candidate test plans. Vendors are specified in vendors.txt.
+        """
+        VENDOR
     }
 
     type User {
@@ -357,6 +362,10 @@ const graphqlSchema = gql`
         info on the Assertion type.
         """
         assertions(priority: AssertionPriority): [Assertion]!
+        """
+        Vendors who viewed the tests
+        """
+        viewers: [User]
     }
 
     """
@@ -673,6 +682,12 @@ const graphqlSchema = gql`
         found on the TestPlanVersion type.
         """
         testResults: [TestResult]!
+        """
+        The number of completed tests for this TestPlanRun. Foregoes the need of
+        getting the length from testResults which would require running
+        expensive time-consuming operations to calculate.
+        """
+        testResultsLength: Int!
     }
 
     """
@@ -690,9 +705,14 @@ const graphqlSchema = gql`
         IN_REVIEW
         """
         Testing is complete and consistent, and ready to be displayed in the
-        Reports section of the app.
+        Candidate Tests and Reports section of the app.
         """
-        FINALIZED
+        CANDIDATE
+        """
+        Testing is complete and consistent, and ready to be displayed in the
+        Reports section of the app as being recommended.
+        """
+        RECOMMENDED
     }
 
     """
@@ -718,6 +738,39 @@ const graphqlSchema = gql`
     }
 
     """
+    Indicates the type of issue. 'CHANGES_REQUESTED' or 'FEEDBACK'.
+    'FEEDBACK' is the default type.
+    """
+    enum IssueFeedbackType {
+        FEEDBACK
+        CHANGES_REQUESTED
+    }
+
+    type Issue {
+        """
+        GitHub username of the issue creator.
+        """
+        author: String!
+        """
+        Link to the GitHub issue's first comment.
+        """
+        link: String!
+        """
+        Indicates the type of issue. 'CHANGES_REQUESTED' or 'FEEDBACK'.
+        'FEEDBACK' is the default type.
+        """
+        feedbackType: IssueFeedbackType!
+        """
+        Indicates if the issue is currently open on GitHub.
+        """
+        isOpen: Boolean!
+        """
+        Test Number the issue was raised for.
+        """
+        testNumberFilteredByAt: Int
+    }
+
+    """
     A container for test results as captured by multiple testers. The tests to
     be run for a TestPlanReport originate in the TestPlanVersion.
     """
@@ -731,6 +784,22 @@ const graphqlSchema = gql`
         """
         status: TestPlanReportStatus!
         """
+        Date of when the TestPlanReport was last updated to the 'Candidate'
+        status.
+        """
+        candidateStatusReachedAt: Timestamp
+        """
+        Date of when the TestPlanReport was last updated to the 'Recommended'
+        status.
+        """
+        recommendedStatusReachedAt: Timestamp
+        """
+        The intended target date for the final TestPlanReport status promotion.
+        Based on the ARIA-AT Working Mode.
+        https://github.com/w3c/aria-at/wiki/Working-Mode
+        """
+        recommendedStatusTargetDate: Timestamp
+        """
         The snapshot of a TestPlan to use.
         """
         testPlanVersion: TestPlanVersion!
@@ -738,6 +807,14 @@ const graphqlSchema = gql`
         The AT used when collecting results.
         """
         at: At!
+        """
+        The unique AT Versions used when collecting results for this report.
+        """
+        atVersions: [AtVersion]!
+        """
+        The latest AT Version used collecting results for this report.
+        """
+        latestAtVersionReleasedAt: AtVersion
         """
         The browser used when collecting results.
         """
@@ -748,14 +825,26 @@ const graphqlSchema = gql`
         """
         runnableTests: [Test]!
         """
+        The number of tests available for this TestPlanReport's AT. Foregoes the
+        need of getting the length from runnableTests which would require
+        running expensive time-consuming operations to calculate.
+        """
+        runnableTestsLength: Int!
+        """
         A list of conflicts between runs, which may occur at the level of the
         Scenario if the output or unexpected behaviors do not match, or even at
         the level of an Assertion, if the result of an assertion does not match.
 
         These conflicts must be resolved before the status can change from
-        DRAFT or IN_REVIEW to FINALIZED.
+        DRAFT to IN_REVIEW or CANDIDATE.
         """
         conflicts: [TestPlanReportConflict]!
+        """
+        The number of conflicts for this TestPlanReport. Foregoes the need for
+        getting the length from conflicts which would require running expensive
+        time-consuming operations to calculate.
+        """
+        conflictsLength: Int!
         """
         Finalizing a test plan report requires resolving any conflicts between
         runs. At this stage a single set of results is able to represent all
@@ -763,10 +852,24 @@ const graphqlSchema = gql`
         """
         finalizedTestResults: [TestResult]
         """
+        These are the different feedback and requested change items created for
+        the TestPlanReport and retrieved from GitHub.
+        """
+        issues: [Issue]!
+        """
         These are all the TestPlanRuns which were recorded during the
         TestPlanReport's DRAFT stage.
         """
         draftTestPlanRuns: [TestPlanRun]!
+        """
+        The state of the vendor review, which can be "READY", "IN_PROGRESS", and "APPROVED"
+        """
+        vendorReviewStatus: String
+        """
+        Various metrics and calculations related to the TestPlanReport which
+        may be used for reporting purposes.
+        """
+        metrics: Any!
         """
         The point at which an admin created the TestPlanReport.
         """
@@ -872,9 +975,15 @@ const graphqlSchema = gql`
         testPlanVersion(id: ID!): TestPlanVersion
         """
         Load multiple TestPlanReports, with the optional ability to filter by
-        status. See TestPlanReport type for more information.
+        status, atId and testPlanVersionId.
+        See TestPlanReport type for more information.
         """
-        testPlanReports(statuses: [TestPlanReportStatus]): [TestPlanReport]!
+        testPlanReports(
+            statuses: [TestPlanReportStatus]
+            testPlanVersionId: ID
+            testPlanVersionIds: [ID]
+            atId: ID
+        ): [TestPlanReport]!
         """
         Get a TestPlanReport by ID.
         """
@@ -960,9 +1069,31 @@ const graphqlSchema = gql`
         deleteTestPlanRun(userId: ID!): PopulatedData!
         """
         Update the report status. Remember that all conflicts must be resolved
-        when setting the status to FINALIZED. Only available to admins.
+        when setting the status to IN_REVIEW. Only available to admins.
         """
-        updateStatus(status: TestPlanReportStatus!): PopulatedData!
+        updateStatus(
+            status: TestPlanReportStatus!
+            candidateStatusReachedAt: Timestamp
+            recommendedStatusTargetDate: Timestamp
+        ): PopulatedData!
+        """
+        Update the report status for multiple TestPlanReports. Remember that all
+        conflicts must be resolved when setting the status to IN_REVIEW. Only
+        available to admins.
+        """
+        bulkUpdateStatus(status: TestPlanReportStatus!): [PopulatedData]!
+        """
+        Update the report recommended status target date.
+        Only available to admins.
+        """
+        updateRecommendedStatusTargetDate(
+            recommendedStatusTargetDate: Timestamp!
+        ): PopulatedData!
+        """
+        Move the vendor review status from READY to IN PROGRESS
+        or IN PROGRESS to APPROVED
+        """
+        promoteVendorReviewStatus(vendorReviewStatus: String!): PopulatedData
         """
         Permanently deletes the TestPlanReport and all associated TestPlanRuns.
         Only available to admins.
@@ -1052,7 +1183,7 @@ const graphqlSchema = gql`
         state of "DRAFT", resulting in the report appearing in the Test Queue.
         In the case an identical report already exists, it will be returned
         without changes and without affecting existing results. In the case an
-        identical report exists but with a status of "FINALIZED",
+        identical report exists but with a status of "CANDIDATE" or "RECOMMENDED",
         it will be given a status of "DRAFT" and will therefore be pulled back
         into the queue with its results unaffected.
         """
@@ -1065,7 +1196,7 @@ const graphqlSchema = gql`
         """
         Get the available mutations for the given TestPlanReport.
         """
-        testPlanReport(id: ID!): TestPlanReportOperations!
+        testPlanReport(id: ID, ids: [ID]): TestPlanReportOperations!
         """
         Get the available mutations for the given TestPlanRun.
         """
@@ -1078,6 +1209,10 @@ const graphqlSchema = gql`
         Update the currently-logged-in User.
         """
         updateMe(input: UserInput): User!
+        """
+        Add a viewer to a test
+        """
+        addViewer(testPlanVersionId: ID!, testId: ID!): User!
     }
 `;
 

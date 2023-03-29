@@ -1,0 +1,42 @@
+import { gql } from '@apollo/client';
+
+export const CANDIDATE_TESTS_PAGE_QUERY = gql`
+    query {
+        testPlanReports(statuses: [CANDIDATE, RECOMMENDED]) {
+            id
+            status
+            metrics
+            at {
+                id
+                name
+            }
+            latestAtVersionReleasedAt {
+                id
+                name
+                releasedAt
+            }
+            browser {
+                id
+                name
+            }
+            testPlanVersion {
+                id
+                title
+                gitSha
+                testPlan {
+                    directory
+                }
+                metadata
+                updatedAt
+            }
+            vendorReviewStatus
+            candidateStatusReachedAt
+            recommendedStatusTargetDate
+            issues {
+                link
+                isOpen
+                feedbackType
+            }
+        }
+    }
+`;
