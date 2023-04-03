@@ -166,7 +166,7 @@ function displayInstructionsForBehaviorTest() {
   if (window.parent && window.parent.postMessage) {
     // results can be submitted by parent posting a message to the
     // iFrame with a data.type property of 'submit'
-    window.addEventListener('message', function(message) {
+    window.addEventListener('message', function (message) {
       if (!validateMessage(message, 'submit')) return;
       app.hooks.submit();
     });
