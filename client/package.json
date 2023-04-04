@@ -95,7 +95,7 @@
     "storybook-addon-apollo-client": "^4.0.12",
     "storybook-react-router": "^1.0.8",
     "style-loader": "^3.3.1",
-    "webpack": "^5.75.0",
+    "webpack": "^5.77.0",
     "webpack-cli": "^5.0.1",
     "webpack-dev-server": "^4.11.1"
   },
