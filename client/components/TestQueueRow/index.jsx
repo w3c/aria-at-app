@@ -516,7 +516,7 @@ const TestQueueRow = ({
             );
         } else if (runStatus === 'DRAFT' || !runStatus) {
             status = <span className="status-label not-started">Draft</span>;
-        } 
+        }
 
         return { status, results };
     };
@@ -527,10 +527,7 @@ const TestQueueRow = ({
         // If the results have been marked as draft and there is no conflict,
         // they can be marked as "CANDIDATE"
 
-        if (
-            conflictsLength === 0 &&
-            testPlanRunsWithResults.length > 0
-        ) {
+        if (conflictsLength === 0 && testPlanRunsWithResults.length > 0) {
             return 'CANDIDATE';
         }
 
