@@ -329,7 +329,8 @@ const TestRun = () => {
     const remapScenarioResults = (
         rendererState,
         scenarioResults,
-        captureHighlightRequired = false
+        captureHighlightRequired = false,
+        mutation = false
     ) => {
         let newScenarioResults = [];
         if (!rendererState || !scenarioResults) {
@@ -390,21 +391,54 @@ const TestRun = () => {
                 for (let i = 0; i < behaviors.length; i++) {
                     const behavior = behaviors[i];
                     if (behavior.checked) {
-                        if (i === 0)
-                            unexpectedBehaviors.push({
-                                id: 'EXCESSIVELY_VERBOSE'
-                            });
-                        if (i === 1)
-                            unexpectedBehaviors.push({
-                                id: 'UNEXPECTED_CURSOR_POSITION'
-                            });
-                        if (i === 2)
-                            unexpectedBehaviors.push({ id: 'SLUGGISH' });
-                        if (i === 3)
-                            unexpectedBehaviors.push({ id: 'AT_CRASHED' });
-                        if (i === 4)
-                            unexpectedBehaviors.push({ id: 'BROWSER_CRASHED' });
-                        if (i === 5) unexpectedBehaviors.push({ id: 'OTHER' });
+                        if (i === 0) {
+                            const behavior = mutation
+                                ? 'EXCESSIVELY_VERBOSE'
+                                : {
+                                      id: 'EXCESSIVELY_VERBOSE'
+                                  };
+                            unexpectedBehaviors.push(behavior);
+                        }
+                        if (i === 1) {
+                            const behavior = mutation
+                                ? 'UNEXPECTED_CURSOR_POSITION'
+                                : {
+                                      id: 'UNEXPECTED_CURSOR_POSITION'
+                                  };
+                            unexpectedBehaviors.push(behavior);
+                        }
+                        if (i === 2) {
+                            const behavior = mutation
+                                ? 'SLUGGISH'
+                                : {
+                                      id: 'SLUGGISH'
+                                  };
+                            unexpectedBehaviors.push(behavior);
+                        }
+                        if (i === 3) {
+                            const behavior = mutation
+                                ? 'AT_CRASHED'
+                                : {
+                                      id: 'AT_CRASHED'
+                                  };
+                            unexpectedBehaviors.push(behavior);
+                        }
+                        if (i === 4) {
+                            const behavior = mutation
+                                ? 'BROWSER_CRASHED'
+                                : {
+                                      id: 'BROWSER_CRASHED'
+                                  };
+                            unexpectedBehaviors.push(behavior);
+                        }
+                        if (i === 5) {
+                            const behavior = mutation
+                                ? 'OTHER'
+                                : {
+                                      id: 'OTHER'
+                                  };
+                            unexpectedBehaviors.push(behavior);
+                        }
                     }
                 }
             } else if (hasUnexpected === 'doesNotHaveUnexpected')
@@ -465,7 +499,8 @@ const TestRun = () => {
                 const scenarioResults = remapScenarioResults(
                     testRunStateRef.current || recentTestRunStateRef.current,
                     currentTest.testResult?.scenarioResults,
-                    false
+                    false,
+                    true
                 );
 
                 await handleSaveOrSubmitTestResultAction(
