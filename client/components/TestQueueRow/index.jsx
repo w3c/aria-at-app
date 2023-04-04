@@ -500,15 +500,14 @@ const TestQueueRow = ({
         const { status: runStatus, conflictsLength } = testPlanReport;
 
         let status, results;
-        const conflictsCount = conflictsLength;
 
         if (isLoading) {
             status = (
                 <span className="status-label not-started">Loading ...</span>
             );
-        } else if (conflictsCount > 0) {
-            let pluralizedStatus = `${conflictsCount} Conflict${
-                conflictsCount === 1 ? '' : 's'
+        } else if (conflictsLength > 0) {
+            let pluralizedStatus = `${conflictsLength} Conflict${
+                conflictsLength === 1 ? '' : 's'
             }`;
             status = (
                 <span className="status-label conflicts">
@@ -517,40 +516,22 @@ const TestQueueRow = ({
             );
         } else if (runStatus === 'DRAFT' || !runStatus) {
             status = <span className="status-label not-started">Draft</span>;
-        } else if (runStatus === 'IN_REVIEW') {
-            status = (
-                <span className="status-label in-progress">In Review</span>
-            );
         }
 
         return { status, results };
     };
 
     const evaluateNewReportStatus = () => {
-        const { status, conflictsLength } = testPlanReport;
-        const conflictsCount = conflictsLength;
+        const { conflictsLength } = testPlanReport;
 
-        // If there are no conflicts OR the test has been marked as "final",
-        // and admin can mark a test run as "draft"
-        let newStatus;
-        if (
-            (status !== 'IN_REVIEW' &&
-                conflictsCount === 0 &&
-                testPlanRunsWithResults.length > 0) ||
-            status === 'CANDIDATE'
-        ) {
-            newStatus = 'IN_REVIEW';
-        }
         // If the results have been marked as draft and there is no conflict,
-        // they can be marked as "final"
-        else if (
-            status === 'IN_REVIEW' &&
-            conflictsCount === 0 &&
-            testPlanRunsWithResults.length > 0
-        ) {
-            newStatus = 'CANDIDATE';
+        // they can be marked as "CANDIDATE"
+
+        if (conflictsLength === 0 && testPlanRunsWithResults.length > 0) {
+            return 'CANDIDATE';
         }
-        return newStatus;
+
+        return null;
     };
 
     const { status, results } = evaluateStatusAndResults();

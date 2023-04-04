@@ -32,11 +32,7 @@ const updateStatusResolver = async (
         }
     }
 
-    if (
-        status === 'IN_REVIEW' ||
-        status === 'CANDIDATE' ||
-        status === 'RECOMMENDED'
-    ) {
+    if (status === 'CANDIDATE' || status === 'RECOMMENDED') {
         const finalizedTestResults = finalizedTestResultsResolver({
             ...testPlanReport,
             status
@@ -57,12 +53,7 @@ const updateStatusResolver = async (
             }
         });
 
-        if (status === 'IN_REVIEW') {
-            updateParams = {
-                ...updateParams,
-                metrics: { ...testPlanReport.metrics, ...metrics }
-            };
-        } else if (status === 'CANDIDATE') {
+        if (status === 'CANDIDATE') {
             const candidateStatusReachedAtValue = candidateStatusReachedAt
                 ? candidateStatusReachedAt
                 : new Date();

@@ -712,10 +712,6 @@ const graphqlSchema = gql`
         """
         DRAFT
         """
-        No longer accepting testing, but not yet published.
-        """
-        IN_REVIEW
-        """
         Testing is complete and consistent, and ready to be displayed in the
         Candidate Tests and Reports section of the app.
         """
@@ -848,7 +844,7 @@ const graphqlSchema = gql`
         the level of an Assertion, if the result of an assertion does not match.
 
         These conflicts must be resolved before the status can change from
-        DRAFT to IN_REVIEW or CANDIDATE.
+        DRAFT to CANDIDATE.
         """
         conflicts: [TestPlanReportConflict]!
         """
@@ -1081,7 +1077,7 @@ const graphqlSchema = gql`
         deleteTestPlanRun(userId: ID!): PopulatedData!
         """
         Update the report status. Remember that all conflicts must be resolved
-        when setting the status to IN_REVIEW. Only available to admins.
+        when setting the status to CANDIDATE. Only available to admins.
         """
         updateStatus(
             status: TestPlanReportStatus!
@@ -1090,7 +1086,7 @@ const graphqlSchema = gql`
         ): PopulatedData!
         """
         Update the report status for multiple TestPlanReports. Remember that all
-        conflicts must be resolved when setting the status to IN_REVIEW. Only
+        conflicts must be resolved when setting the status to CANDIDATE. Only
         available to admins.
         """
         bulkUpdateStatus(status: TestPlanReportStatus!): [PopulatedData]!

@@ -2,7 +2,6 @@ const MODEL_NAME = 'TestPlanReport';
 
 const STATUS = {
     DRAFT: 'DRAFT',
-    IN_REVIEW: 'IN_REVIEW',
     CANDIDATE: 'CANDIDATE',
     RECOMMENDED: 'RECOMMENDED'
 };
@@ -62,7 +61,6 @@ module.exports = function (sequelize, DataTypes) {
     );
 
     Model.DRAFT = STATUS.DRAFT;
-    Model.IN_REVIEW = STATUS.IN_REVIEW;
     Model.CANDIDATE = STATUS.CANDIDATE;
     Model.RECOMMENDED = STATUS.RECOMMENDED;
 

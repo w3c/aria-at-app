@@ -500,13 +500,13 @@ describe('graphql', () => {
                         }
                         reportStatus: testPlanReport(id: 1) {
                             __typename
-                            updateStatus(status: IN_REVIEW) {
+                            updateStatus(status: CANDIDATE) {
                                 locationOfData
                             }
                         }
                         bulkReportStatus: testPlanReport(ids: [1]) {
                             __typename
-                            bulkUpdateStatus(status: IN_REVIEW) {
+                            bulkUpdateStatus(status: CANDIDATE) {
                                 locationOfData
                             }
                         }

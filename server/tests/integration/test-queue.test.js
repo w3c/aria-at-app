@@ -14,9 +14,8 @@ describe('test queue', () => {
         const result = await query(
             gql`
                 query {
-                    testPlanReports(statuses: [DRAFT, IN_REVIEW]) {
+                    testPlanReports(statuses: [DRAFT]) {
                         id
-                        status
                         conflicts {
                             source {
                                 test {
@@ -50,7 +49,6 @@ describe('test queue', () => {
             testPlanReports: expect.arrayContaining([
                 {
                     id: expect.anything(),
-                    status: expect.stringMatching(/^(DRAFT|IN_REVIEW)$/),
                     conflicts: expect.any(Array),
                     testPlanVersion: {
                         title: expect.any(String),

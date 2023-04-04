@@ -103,7 +103,7 @@ const StatusSummaryRow = ({ reportResult, testPlanVersion }) => {
         dropdownUpdateReportStatusButtonRef.current.focus();
     };
 
-    let phase = 'Draft'; // also accounts for IN_REVIEW
+    let phase = 'Draft';
     if (testPlanReports.every(i => i.status === 'RECOMMENDED'))
         phase = 'Recommended';
     else if (testPlanReports.every(i => i.status === 'CANDIDATE'))

@@ -25,7 +25,7 @@ export const TEST_MANAGEMENT_PAGE_QUERY = gql`
             }
             updatedAt
         }
-        testPlanReports(statuses: [DRAFT, IN_REVIEW, CANDIDATE, RECOMMENDED]) {
+        testPlanReports(statuses: [DRAFT, CANDIDATE, RECOMMENDED]) {
             id
             status
             at {
