@@ -500,15 +500,14 @@ const TestQueueRow = ({
         const { status: runStatus, conflictsLength } = testPlanReport;
 
         let status, results;
-        const conflictsCount = conflictsLength;
 
         if (isLoading) {
             status = (
                 <span className="status-label not-started">Loading ...</span>
             );
-        } else if (conflictsCount > 0) {
-            let pluralizedStatus = `${conflictsCount} Conflict${
-                conflictsCount === 1 ? '' : 's'
+        } else if (conflictsLength > 0) {
+            let pluralizedStatus = `${conflictsLength} Conflict${
+                conflictsLength === 1 ? '' : 's'
             }`;
             status = (
                 <span className="status-label conflicts">
@@ -524,24 +523,18 @@ const TestQueueRow = ({
 
     const evaluateNewReportStatus = () => {
         const { conflictsLength } = testPlanReport;
-        const conflictsCount = conflictsLength;
-
-        // If there are no conflicts OR the test has been marked as "final",
-        // and admin can mark a test run as "draft"
 
         // If the results have been marked as draft and there is no conflict,
-        // they can be marked as "final"
-
-        let newStatus;
+        // they can be marked as "CANDIDATE"
 
         if (
-            conflictsCount === 0 &&
+            conflictsLength === 0 &&
             testPlanRunsWithResults.length > 0
         ) {
-            newStatus = 'CANDIDATE';
+            return 'CANDIDATE';
         }
 
-        return newStatus;
+        return null;
     };
 
     const { status, results } = evaluateStatusAndResults();
