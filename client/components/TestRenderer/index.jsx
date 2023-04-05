@@ -345,17 +345,17 @@ const TestRenderer = ({
                      * 5 = OTHER
                      */
                     const unexpectedBehavior = unexpectedBehaviors[k];
-                    if (unexpectedBehavior.id === 'EXCESSIVELY_VERBOSE')
+                    if (unexpectedBehavior === 'EXCESSIVELY_VERBOSE')
                         commands[i].unexpected.behaviors[0].checked = true;
-                    if (unexpectedBehavior.id === 'UNEXPECTED_CURSOR_POSITION')
+                    if (unexpectedBehavior === 'UNEXPECTED_CURSOR_POSITION')
                         commands[i].unexpected.behaviors[1].checked = true;
-                    if (unexpectedBehavior.id === 'SLUGGISH')
+                    if (unexpectedBehavior === 'SLUGGISH')
                         commands[i].unexpected.behaviors[2].checked = true;
-                    if (unexpectedBehavior.id === 'AT_CRASHED')
+                    if (unexpectedBehavior === 'AT_CRASHED')
                         commands[i].unexpected.behaviors[3].checked = true;
-                    if (unexpectedBehavior.id === 'BROWSER_CRASHED')
+                    if (unexpectedBehavior === 'BROWSER_CRASHED')
                         commands[i].unexpected.behaviors[4].checked = true;
-                    if (unexpectedBehavior.id === 'OTHER') {
+                    if (unexpectedBehavior === 'OTHER') {
                         commands[i].unexpected.behaviors[5].checked = true;
                     }
                 }

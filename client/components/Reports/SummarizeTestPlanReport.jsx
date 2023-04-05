@@ -274,9 +274,7 @@ SummarizeTestPlanReport.propTypes = {
                             unexpectedBehaviors: PropTypes.arrayOf(
                                 PropTypes.shape({
                                     id: PropTypes.string.isRequired,
-                                    text: PropTypes.string.isRequired,
-                                    otherUnexpectedBehaviorText:
-                                        PropTypes.string
+                                    text: PropTypes.string.isRequired
                                 }).isRequired
                             ).isRequired,
                             unexpectedBehaviorNote: PropTypes.string

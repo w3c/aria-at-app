@@ -329,8 +329,7 @@ const TestRun = () => {
     const remapScenarioResults = (
         rendererState,
         scenarioResults,
-        captureHighlightRequired = false,
-        mutation = false
+        captureHighlightRequired = false
     ) => {
         let newScenarioResults = [];
         if (!rendererState || !scenarioResults) {
@@ -391,54 +390,17 @@ const TestRun = () => {
                 for (let i = 0; i < behaviors.length; i++) {
                     const behavior = behaviors[i];
                     if (behavior.checked) {
-                        if (i === 0) {
-                            const behavior = mutation
-                                ? 'EXCESSIVELY_VERBOSE'
-                                : {
-                                      id: 'EXCESSIVELY_VERBOSE'
-                                  };
-                            unexpectedBehaviors.push(behavior);
-                        }
-                        if (i === 1) {
-                            const behavior = mutation
-                                ? 'UNEXPECTED_CURSOR_POSITION'
-                                : {
-                                      id: 'UNEXPECTED_CURSOR_POSITION'
-                                  };
-                            unexpectedBehaviors.push(behavior);
-                        }
-                        if (i === 2) {
-                            const behavior = mutation
-                                ? 'SLUGGISH'
-                                : {
-                                      id: 'SLUGGISH'
-                                  };
-                            unexpectedBehaviors.push(behavior);
-                        }
-                        if (i === 3) {
-                            const behavior = mutation
-                                ? 'AT_CRASHED'
-                                : {
-                                      id: 'AT_CRASHED'
-                                  };
-                            unexpectedBehaviors.push(behavior);
-                        }
-                        if (i === 4) {
-                            const behavior = mutation
-                                ? 'BROWSER_CRASHED'
-                                : {
-                                      id: 'BROWSER_CRASHED'
-                                  };
-                            unexpectedBehaviors.push(behavior);
-                        }
-                        if (i === 5) {
-                            const behavior = mutation
-                                ? 'OTHER'
-                                : {
-                                      id: 'OTHER'
-                                  };
-                            unexpectedBehaviors.push(behavior);
-                        }
+                        if (i === 0)
+                            unexpectedBehaviors.push('EXCESSIVELY_VERBOSE');
+                        if (i === 1)
+                            unexpectedBehaviors.push(
+                                'UNEXPECTED_CURSOR_POSITION'
+                            );
+                        if (i === 2) unexpectedBehaviors.push('SLUGGISH');
+                        if (i === 3) unexpectedBehaviors.push('AT_CRASHED');
+                        if (i === 4)
+                            unexpectedBehaviors.push('BROWSER_CRASHED');
+                        if (i === 5) unexpectedBehaviors.push('OTHER');
                     }
                 }
             } else if (hasUnexpected === 'doesNotHaveUnexpected')
@@ -469,8 +431,23 @@ const TestRun = () => {
             !rendererState ||
             !testResult.scenarioResults ||
             rendererState.commands.length !== testResult.scenarioResults.length
-        )
-            return testResult;
+        ) {
+            // Mapping unexpected behaviors to expected TestRenderer downstream format
+            const scenarioResults = testResult.scenarioResults.map(
+                scenarioResult => {
+                    return {
+                        ...scenarioResult,
+                        unexpectedBehaviors: scenarioResult.unexpectedBehaviors
+                            ? scenarioResult.unexpectedBehaviors.map(
+                                  behavior => behavior.id
+                              )
+                            : scenarioResult.unexpectedBehaviors
+                    };
+                }
+            );
+
+            return { ...testResult, scenarioResults };
+        }
 
         const scenarioResults = remapScenarioResults(
             rendererState,
@@ -499,8 +476,7 @@ const TestRun = () => {
                 const scenarioResults = remapScenarioResults(
                     testRunStateRef.current || recentTestRunStateRef.current,
                     currentTest.testResult?.scenarioResults,
-                    false,
-                    true
+                    false
                 );
 
                 await handleSaveOrSubmitTestResultAction(
