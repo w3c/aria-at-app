@@ -78,11 +78,11 @@ const testPlanVersionAssociation = testPlanVersionAttributes => ({
  */
 const atAssociation = (atAttributes, atVersionAttributes) => ({
     association: 'at',
-    attributes: atAttributes,
-    include: [
-        // eslint-disable-next-line no-use-before-define
-        atVersionAssociation(atVersionAttributes)
-    ]
+    attributes: atAttributes
+    // include: [
+    //     // eslint-disable-next-line no-use-before-define
+    //     atVersionAssociation(atVersionAttributes)
+    // ]
 });
 
 /**
@@ -101,11 +101,11 @@ const atVersionAssociation = atVersionAttributes => ({
  */
 const browserAssociation = (browserAttributes, browserVersionAttributes) => ({
     association: 'browser',
-    attributes: browserAttributes,
-    include: [
-        // eslint-disable-next-line no-use-before-define
-        browserVersionAssociation(browserVersionAttributes)
-    ]
+    attributes: browserAttributes
+    // include: [
+    //     // eslint-disable-next-line no-use-before-define
+    //     browserVersionAssociation(browserVersionAttributes)
+    // ]
 });
 
 /**
@@ -194,13 +194,16 @@ const getTestPlanReports = async (
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
     atAttributes = AT_ATTRIBUTES,
-    atVersionAttributes = AT_VERSION_ATTRIBUTES,
+    // atVersionAttributes = AT_VERSION_ATTRIBUTES,
+    atVersionAttributes = null,
     browserAttributes = BROWSER_ATTRIBUTES,
-    browserVersionAttributes = BROWSER_VERSION_ATTRIBUTES,
+    // browserVersionAttributes = BROWSER_VERSION_ATTRIBUTES,
+    browserVersionAttributes = null,
     userAttributes = USER_ATTRIBUTES,
     pagination = {},
     options = {}
 ) => {
+    console.log('getTestPlanReports');
     // search and filtering options
     let where = { ...filter };
 

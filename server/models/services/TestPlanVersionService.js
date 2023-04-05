@@ -66,11 +66,11 @@ const testPlanRunAssociation = (testPlanRunAttributes, userAttributes) => ({
  */
 const atAssociation = (atAttributes, atVersionAttributes) => ({
     association: 'at',
-    attributes: atAttributes,
-    include: [
-        // eslint-disable-next-line no-use-before-define
-        atVersionAssociation(atVersionAttributes)
-    ]
+    attributes: atAttributes
+    // include: [
+    //     // eslint-disable-next-line no-use-before-define
+    //     atVersionAssociation(atVersionAttributes)
+    // ]
 });
 
 /**
@@ -89,11 +89,11 @@ const atVersionAssociation = atVersionAttributes => ({
  */
 const browserAssociation = (browserAttributes, browserVersionAttributes) => ({
     association: 'browser',
-    attributes: browserAttributes,
-    include: [
-        // eslint-disable-next-line no-use-before-define
-        browserVersionAssociation(browserVersionAttributes)
-    ]
+    attributes: browserAttributes
+    // include: [
+    //     // eslint-disable-next-line no-use-before-define
+    //     browserVersionAssociation(browserVersionAttributes)
+    // ]
 });
 
 /**

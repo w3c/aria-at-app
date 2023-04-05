@@ -95,12 +95,12 @@ From the `deploy` folder:
 
 1. Retrieve the database user (aka PGUSER) and database password (aka PGPASSWORD).
    `ansible-vault view --vault-password-file ansible-vault-password.txt files/config-<environment>.env`
-2. Ssh into the machine.
-  `ssh -i <deploy key> root@aria-at-staging.w3.org`
+2. Ssh into the machine. The domain is aria-at.w3.org for production and aria-at-staging.w3.org for staging.
+  `ssh -i <deploy key> root@<domain>`
 3. Create the backup and save it to a file.
-  `pg_dump -U <value for PGUSER> -h localhost -d aria_at_report > <environment>_dump_<timestamp>.sql`
-4. Copy the backup to your machine
-  `scp root@aria-at-staging.w3.org:<environment>_dump_<timestamp>.sql .`
+  `pg_dump -U <value for PGUSER> -h localhost -d aria_at_report > <environment>_dump_<timestamp>.sql`. It will ask for the PGPASSWORD.
+4. From another terminal window that's not connected to the server, copy the backup to your machine.
+  `scp -i <deploy key> root@<domain>:<environment>_dump_<timestamp>.sql .`
 
 ## Database Restore
 1. Ssh into the machine.
