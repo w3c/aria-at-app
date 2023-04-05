@@ -5,12 +5,38 @@ const {
 const populateData = require('../../services/PopulatedData/populateData');
 const sortArrayLikeArray = require('../../util/sortArrayLikeArray');
 const createTestResultSkeleton = require('./createTestResultSkeleton');
+const getMetrics = require('../../util/getMetrics');
+const {
+    updateTestPlanReport
+} = require('../../models/services/TestPlanReportService');
+const runnableTestsResolver = require('../TestPlanReport/runnableTestsResolver');
+const finalizedTestResultsResolver = require('../TestPlanReport/finalizedTestResultsResolver');
 
 const findOrCreateTestResultResolver = async (
     { parentContext: { id: testPlanRunId } },
     { testId, atVersionId, browserVersionId },
     { user }
 ) => {
+    const fixTestPlanReportMetrics = async testPlanReportStale => {
+        const { testPlanReport } = await populateData({
+            testPlanReportId: testPlanReportStale.id
+        });
+        const runnableTests = runnableTestsResolver(testPlanReport);
+        const finalizedTestResults = finalizedTestResultsResolver({
+            ...testPlanReport
+        });
+        const metrics = getMetrics({
+            testPlanReport: {
+                ...testPlanReport,
+                finalizedTestResults,
+                runnableTests
+            }
+        });
+        await updateTestPlanReport(testPlanReport.id, {
+            metrics: { ...testPlanReport.metrics, ...metrics }
+        });
+    };
+
     const {
         testPlanRun,
         testPlanReport,
@@ -66,6 +92,7 @@ const findOrCreateTestResultResolver = async (
         await updateTestPlanRun(testPlanRun.id, {
             testResults: newTestResults
         });
+        await fixTestPlanReportMetrics(testPlanReport);
     } else {
         // atVersionId and browserVersionId update
         const testResultIndex = testPlanRun.testResults.findIndex(
@@ -79,6 +106,7 @@ const findOrCreateTestResultResolver = async (
         await updateTestPlanRun(testPlanRun.id, {
             testResults: newTestResults
         });
+        await fixTestPlanReportMetrics(testPlanReport);
     }
 
     return populateData({ testResultId: newTestResult.id });
