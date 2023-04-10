@@ -57,9 +57,7 @@ describe('embed', () => {
         const copyEmbedButtonOnClick = copyEmbedButton.getAttribute('onclick');
         const table = document.querySelector('table');
         const cellWithData = Array.from(table.querySelectorAll('td')).find(td =>
-            // TODO: change check to \d+ instead of \d* as soon as the missing
-            // number issue is fixed
-            td.innerHTML.match(/<b>\s*\d*%\s*<\/b>\s*supported/)
+            td.innerHTML.match(/<b>\s*\d+%\s*<\/b>\s*supported/)
         );
 
         expect(res.text).toEqual(res2.text);
