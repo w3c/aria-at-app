@@ -24,8 +24,15 @@ const Home = () => {
                         <p className="w3c-authorization-message">
                             <i aria-hidden="true">✨</i>
                             <em>
-                                <strong>Note:</strong> This project is managed
-                                by the{' '}
+                                <strong>Note:</strong> The{' '}
+                                <a
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    href="https://github.com/w3c/aria-at"
+                                >
+                                    ARIA-AT Project
+                                </a>{' '}
+                                is managed by the{' '}
                                 <a
                                     target="_blank"
                                     rel="noreferrer"

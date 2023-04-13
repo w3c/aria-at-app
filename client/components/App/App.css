@@ -415,7 +415,7 @@ main.home-page.container h1 {
 .w3c-authorization-message em {
     display: block;
     font-style: normal;
-    font-size: 14px;
+    font-size: 0.875rem;
     color: #654E29;
     line-height: 1.3;
 }
