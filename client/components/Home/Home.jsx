@@ -86,7 +86,7 @@ const Home = () => {
                         <iframe
                             src="https://player.vimeo.com/video/651279608?h=45aefd646f&byline=false&dnt=true&portrait=false"
                             width="640"
-                            height="360"
+                            height="340"
                             frameBorder="0"
                             allow="autoplay; fullscreen; picture-in-picture"
                             allowFullScreen
