@@ -49,7 +49,11 @@ const Home = () => {
                                 >
                                     ARIA Working Group
                                 </a>
-                                . The W3C staff contact is Daniel Montalvo.
+                                . The W3C staff contact is{' '}
+                                <a href="mailto:dmontalvo@w3.org">
+                                    Daniel Montalvo
+                                </a>
+                                .
                             </em>
                         </p>
                         <p>
