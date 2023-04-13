@@ -21,6 +21,37 @@ const Home = () => {
                 </h1>
                 <div className="hero-copy-and-video">
                     <div className="hero-copy">
+                        <p className="w3c-authorization-message">
+                            <i aria-hidden="true">✨</i>
+                            <em>
+                                <strong>Note:</strong> This project is managed
+                                by the{' '}
+                                <a
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    href="https://www.w3.org/community/aria-at/"
+                                >
+                                    ARIA-AT Community Group
+                                </a>{' '}
+                                in coordination with the{' '}
+                                <a
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    href="https://www.w3.org/WAI/ARIA/task-forces/practices/"
+                                >
+                                    Authoring Practices Task Force
+                                </a>{' '}
+                                of the{' '}
+                                <a
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    href="https://www.w3.org/WAI/ARIA/"
+                                >
+                                    ARIA Working Group
+                                </a>
+                                . The W3C staff contact is Daniel Montalvo.
+                            </em>
+                        </p>
                         <p>
                             Today, different screen readers often yield
                             conflicting experiences when presenting a web page,
