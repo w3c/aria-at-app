@@ -471,6 +471,27 @@ const getTestPlanById = async (id, options = {}) => {
     return result[0];
 };
 
+const isInvalidDirectoryOrTitles = async ({
+    directories = [],
+    titles = [],
+    testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES
+}) => {
+    // Check to see if the current `directories` or `titles` conform to a provided list of the same
+    const where = {
+        [Op.or]: {
+            directory: { [Op.notIn]: directories },
+            title: { [Op.notIn]: titles }
+        }
+    };
+    const result = await ModelService.get(
+        TestPlanVersion,
+        where,
+        testPlanVersionAttributes
+    );
+
+    return !result.length;
+};
+
 module.exports = {
     // Basic CRUD
     getTestPlanVersionById,
@@ -480,5 +501,6 @@ module.exports = {
 
     // Custom functions
     getTestPlans,
-    getTestPlanById
+    getTestPlanById,
+    isInvalidDirectoryOrTitles
 };
