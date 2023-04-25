@@ -46,6 +46,13 @@ const gitCloneDirectory = path.resolve(__dirname, 'tmp');
 const builtTestsDirectory = path.resolve(gitCloneDirectory, 'build', 'tests');
 const testsDirectory = path.resolve(gitCloneDirectory, 'tests');
 
+// Use `directory_names.txt` as a source of truth for the test plan names as determined by the
+// latest names pulled from the aria-at repository
+const directoryNamesFile = path.resolve(__dirname, 'directory_names.txt');
+fse.ensureFileSync(directoryNamesFile);
+
+let fileContent = '';
+
 const importTestPlanVersions = async () => {
     await client.connect();
 
@@ -119,6 +126,7 @@ const importTestPlanVersions = async () => {
             gitSha
         });
 
+        fileContent = `${fileContent}${directory},${title}\n`;
         await createTestPlanVersion({
             id: testPlanVersionId,
             title,
@@ -321,7 +329,10 @@ const getTests = ({ builtDirectoryPath, testPlanVersionId, ats, gitSha }) => {
 
 importTestPlanVersions()
     .then(
-        () => console.log('Done, no errors'),
+        () => {
+            fse.writeFileSync(directoryNamesFile, fileContent);
+            console.log('Done, no errors');
+        },
         err => {
             console.error(`Error found: ${err.stack}`);
             process.exitCode = 1;
