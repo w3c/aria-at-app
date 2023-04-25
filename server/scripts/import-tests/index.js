@@ -51,7 +51,7 @@ const testsDirectory = path.resolve(gitCloneDirectory, 'tests');
 const directoryNamesFile = path.resolve(__dirname, 'directory_names.txt');
 fse.ensureFileSync(directoryNamesFile);
 
-let fileContent = '';
+let directoryNamesFileContent = '';
 
 const importTestPlanVersions = async () => {
     await client.connect();
@@ -126,7 +126,8 @@ const importTestPlanVersions = async () => {
             gitSha
         });
 
-        fileContent = `${fileContent}${directory},${title}\n`;
+        // A part of the workflow only when a new commit has been picked up from aria-at
+        directoryNamesFileContent = `${directoryNamesFileContent}${directory},${title}\n`;
         await createTestPlanVersion({
             id: testPlanVersionId,
             title,
@@ -330,7 +331,13 @@ const getTests = ({ builtDirectoryPath, testPlanVersionId, ats, gitSha }) => {
 importTestPlanVersions()
     .then(
         () => {
-            fse.writeFileSync(directoryNamesFile, fileContent);
+            // Overwrites the file to ensure we'll always have the latest title and directory
+            // combinations
+            if (directoryNamesFileContent)
+                fse.writeFileSync(
+                    directoryNamesFile,
+                    directoryNamesFileContent
+                );
             console.log('Done, no errors');
         },
         err => {
