@@ -333,7 +333,7 @@ importTestPlanVersions()
         () => {
             // Overwrites the file to ensure we'll always have the latest title and directory
             // combinations
-            if (directoryNamesFileContent)
+            if (directoryNamesFileContent && !args.commit)
                 fse.writeFileSync(
                     directoryNamesFile,
                     directoryNamesFileContent
