@@ -20,6 +20,7 @@ module.exports = function (sequelize, DataTypes) {
                 defaultValue: DataTypes.NOW
             },
             tests: { type: DataTypes.JSONB },
+            testPlanId: { type: DataTypes.INTEGER },
             metadata: { type: DataTypes.JSONB }
         },
         {

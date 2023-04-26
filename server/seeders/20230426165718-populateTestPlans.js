@@ -4,7 +4,7 @@ const { TestPlanVersion } = require('../models');
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-    async up(queryInterface, Sequelize) {
+    async up(queryInterface) {
         // Find all unique Test Plans
         const testPlanVersions = await TestPlanVersion.findAll();
         const testPlanVersionDetails = testPlanVersions.map(testPlanVersion => {

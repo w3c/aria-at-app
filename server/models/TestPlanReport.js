@@ -22,6 +22,7 @@ module.exports = function (sequelize, DataTypes) {
                 defaultValue: STATUS.DRAFT
             },
             testPlanVersionId: { type: DataTypes.INTEGER },
+            testPlanId: { type: DataTypes.INTEGER },
             atId: { type: DataTypes.INTEGER },
             browserId: { type: DataTypes.INTEGER },
             createdAt: {
