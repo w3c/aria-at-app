@@ -30,12 +30,20 @@ module.exports = function (sequelize, DataTypes) {
 
     Model.TEST_PLAN_REPORT_ASSOCIATION = { as: 'testPlanReports' };
 
+    //    Model.TEST_PLAN_ASSOCIATION = { foreignKey: 'testPlanVersionId' };
+
     Model.associate = function (models) {
         Model.hasMany(models.TestPlanReport, {
             ...Model.TEST_PLAN_REPORT_ASSOCIATION,
             foreignKey: 'testPlanVersionId',
             sourceKey: 'id'
         });
+
+        // Model.belongsTo(models.TestPlan, {
+        //     ...Model.TEST_PLAN_ASSOCIATION,
+        //     targetKey: 'id',
+        //     as: 'testPlan'
+        // });
     };
 
     return Model;
