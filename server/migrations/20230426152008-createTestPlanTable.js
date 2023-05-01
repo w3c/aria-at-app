@@ -20,21 +20,6 @@ module.exports = {
                 },
                 { transaction: t }
             );
-
-            await queryInterface.addColumn(
-                'TestPlanVersion',
-                'testPlanId',
-                { type: Sequelize.DataTypes.INTEGER },
-                { transaction: t }
-            );
-
-            await queryInterface.addColumn(
-                'TestPlanReport',
-                'testPlanId',
-                { type: Sequelize.DataTypes.INTEGER },
-                { transaction: t }
-            );
-
             await t.commit();
         } catch (error) {
             await t.rollback();
@@ -44,13 +29,7 @@ module.exports = {
     async down(queryInterface) {
         const t = await queryInterface.sequelize.transaction();
         try {
-            await queryInterface.removeColumn('TestPlanVersion', 'testPlanId', {
-                transaction: t
-            });
-            await queryInterface.removeColumn('TestPlanReport', 'testPlanId', {
-                transaction: t
-            });
-
+            await queryInterface.dropTable('TestPlan', { transaction: t });
             await t.commit();
         } catch (error) {
             await t.rollback();
