@@ -15,7 +15,7 @@ const getTestPlans = async (
     // search and filtering options
     let where = { ...filter };
 
-    return ModelService.get(
+    const data = await ModelService.get(
         TestPlan,
         where,
         testPlanAttributes,
@@ -32,6 +32,19 @@ const getTestPlans = async (
         pagination,
         options
     );
+
+    return data.map(d => {
+        const latestTestPlanVersion = d.dataValues.testPlanVersions.sort(
+            (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
+        )[0];
+        return {
+            ...d,
+            dataValues: {
+                ...d.dataValues,
+                latestTestPlanVersion
+            }
+        };
+    });
 };
 
 const createTestPlan = async ({ title, directory }) => {
