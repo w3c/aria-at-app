@@ -245,7 +245,8 @@ const createTestPlanVersion = async (
         testPageUrl,
         updatedAt,
         metadata,
-        tests
+        tests,
+        testPlanId = null
     },
     testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
     testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
@@ -266,7 +267,8 @@ const createTestPlanVersion = async (
         testPageUrl,
         updatedAt,
         metadata,
-        tests
+        tests,
+        testPlanId
     });
 
     return await getTestPlanVersionById(

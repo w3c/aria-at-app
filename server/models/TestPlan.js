@@ -23,19 +23,19 @@ module.exports = function (sequelize, DataTypes) {
 
     Model.TEST_PLAN_REPORT_ASSOCIATION = { as: 'testPlanReports' };
 
-    // Model.associate = function (models) {
-    //     Model.hasMany(models.TestPlanVersion, {
-    //         ...Model.TEST_PLAN_VERSION_ASSOCIATION,
-    //         foreignKey: 'testPlanId',
-    //         sourceKey: 'id'
-    //     });
+    Model.associate = function (models) {
+        Model.hasMany(models.TestPlanVersion, {
+            ...Model.TEST_PLAN_VERSION_ASSOCIATION,
+            foreignKey: 'testPlanId',
+            sourceKey: 'id'
+        });
 
-    //     Model.hasMany(models.TestPlanReport, {
-    //         ...Model.TEST_PLAN_REPORT_ASSOCIATION,
-    //         foreignKey: 'testPlanId',
-    //         sourceKey: 'id'
-    //     });
-    // };
+        Model.hasMany(models.TestPlanReport, {
+            ...Model.TEST_PLAN_REPORT_ASSOCIATION,
+            foreignKey: 'testPlanId',
+            sourceKey: 'id'
+        });
+    };
 
     return Model;
 };

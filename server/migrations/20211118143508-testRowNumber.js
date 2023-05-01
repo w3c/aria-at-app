@@ -3,7 +3,9 @@ const { TestPlanVersion } = require('../models');
 
 module.exports = {
     up: async () => {
-        const testPlanVersions = await TestPlanVersion.findAll();
+        const testPlanVersions = await TestPlanVersion.findAll({
+            attributes: { exclude: ['testPlanId'] }
+        });
         await Promise.all(
             testPlanVersions.map(testPlanVersion => {
                 const newTests = testPlanVersion.tests.map((test, index) => {
@@ -23,7 +25,9 @@ module.exports = {
     },
 
     down: async () => {
-        const testPlanVersions = await TestPlanVersion.findAll();
+        const testPlanVersions = await TestPlanVersion.findAll({
+            attributes: { exclude: ['testPlanId'] }
+        });
         await Promise.all(
             testPlanVersions.map(testPlanVersion => {
                 const newTests = testPlanVersion.tests.map(test => {

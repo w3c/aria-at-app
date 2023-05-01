@@ -31,7 +31,7 @@ module.exports = function (sequelize, DataTypes) {
 
     Model.TEST_PLAN_REPORT_ASSOCIATION = { as: 'testPlanReports' };
 
-    //    Model.TEST_PLAN_ASSOCIATION = { foreignKey: 'testPlanVersionId' };
+    Model.TEST_PLAN_ASSOCIATION = { foreignKey: 'testPlanId' };
 
     Model.associate = function (models) {
         Model.hasMany(models.TestPlanReport, {
@@ -40,11 +40,11 @@ module.exports = function (sequelize, DataTypes) {
             sourceKey: 'id'
         });
 
-        // Model.belongsTo(models.TestPlan, {
-        //     ...Model.TEST_PLAN_ASSOCIATION,
-        //     targetKey: 'id',
-        //     as: 'testPlan'
-        // });
+        Model.belongsTo(models.TestPlan, {
+            ...Model.TEST_PLAN_ASSOCIATION,
+            targetKey: 'id',
+            as: 'testPlan'
+        });
     };
 
     return Model;
