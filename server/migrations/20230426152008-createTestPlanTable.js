@@ -44,7 +44,6 @@ module.exports = {
     async down(queryInterface) {
         const t = await queryInterface.sequelize.transaction();
         try {
-            await queryInterface.dropTable('TestPlan', { transaction: t });
             await queryInterface.removeColumn('TestPlanVersion', 'testPlanId', {
                 transaction: t
             });
