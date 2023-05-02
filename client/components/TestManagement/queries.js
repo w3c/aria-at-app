@@ -15,6 +15,15 @@ export const TEST_MANAGEMENT_PAGE_QUERY = gql`
             id
             name
         }
+        testPlans {
+            directory
+            id
+            title
+            latestTestPlanVersion {
+                id
+                title
+            }
+        }
         testPlanVersions {
             id
             title

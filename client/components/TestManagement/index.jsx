@@ -25,6 +25,7 @@ const TestManagement = () => {
     const [pageReady, setPageReady] = useState(false);
     const [ats, setAts] = useState([]);
     const [browsers, setBrowsers] = useState([]);
+    const [testPlans, setTestPlans] = useState([]);
     const [testPlanVersions, setTestPlanVersions] = useState([]);
     const [testPlanReports, setTestPlanReports] = useState([]);
 
@@ -34,11 +35,13 @@ const TestManagement = () => {
                 ats = [],
                 browsers = [],
                 testPlanVersions = [],
-                testPlanReports = []
+                testPlanReports = [],
+                testPlans = []
             } = data;
             setAts(ats);
             setTestPlanVersions(testPlanVersions);
             setTestPlanReports(testPlanReports);
+            setTestPlans(testPlans);
             setBrowsers(browsers);
             setPageReady(true);
         }
@@ -102,6 +105,7 @@ const TestManagement = () => {
             ] = null;
         });
     });
+
     testPlanReports.forEach(testPlanReport => {
         const { testPlanVersion, at, browser } = testPlanReport;
         const directory = testPlanVersion.testPlan.directory;
@@ -115,6 +119,12 @@ const TestManagement = () => {
         tabularReportsByDirectory[directory][
             testPlanVersion.id
         ].testPlanVersion = testPlanVersion;
+    });
+
+    testPlans.forEach(testPlan => {
+        if (!(testPlan.directory in tabularReportsByDirectory)) {
+            tabularReportsByDirectory[testPlan.directory] = testPlan;
+        }
     });
 
     const combineObject = originalObject => {
@@ -223,14 +233,17 @@ const TestManagement = () => {
                             <tbody>
                                 {/* Sort the summary items by title */}
                                 {Object.values(tabularReportsByDirectory)
-                                    .sort((a, b) =>
-                                        Object.values(a)[0].testPlanVersion
-                                            .title <
-                                        Object.values(b)[0].testPlanVersion
-                                            .title
-                                            ? -1
-                                            : 1
-                                    )
+                                    .sort((a, b) => {
+                                        return (
+                                            a.title ||
+                                            Object.values(a)[0].testPlanVersion
+                                                .title
+                                        ).localeCompare(
+                                            b.title ||
+                                                Object.values(b)[0]
+                                                    .testPlanVersion.title
+                                        );
+                                    })
                                     .map(tabularReport => {
                                         let reportResult = null;
                                         let testPlanVersionId = null;
@@ -238,6 +251,24 @@ const TestManagement = () => {
                                         // Evaluate what is prioritised across the
                                         // collection of testPlanVersions
                                         if (
+                                            typeof Object.values(
+                                                tabularReport
+                                            )[0] !== 'object'
+                                        ) {
+                                            return (
+                                                <StatusSummaryRow
+                                                    key={
+                                                        tabularReport
+                                                            .latestTestPlanVersion
+                                                            .id
+                                                    }
+                                                    testPlanVersion={
+                                                        tabularReport.latestTestPlanVersion
+                                                    }
+                                                    reportResult={{}}
+                                                />
+                                            );
+                                        } else if (
                                             Object.values(tabularReport)
                                                 .length > 1
                                         ) {

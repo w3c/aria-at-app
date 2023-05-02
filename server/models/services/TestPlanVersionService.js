@@ -317,6 +317,7 @@ const getTestPlans = async ({
                         directory as "id",
                         directory as "directory",
                         id as "latestTestPlanVersionId",
+                        "title",
                         "updatedAt"
                     FROM "TestPlanVersion"
                     ${whereClause}

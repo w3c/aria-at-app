@@ -212,6 +212,7 @@ const graphqlSchema = gql`
         as a directory, and this allows you to do both.
         """
         id: ID!
+        title: String!
         """
         Corresponds to directory in the ARIA-AT repo which stores the test plan,
         e.g. "checkbox-tri-state" or "disclosure-navigation"
