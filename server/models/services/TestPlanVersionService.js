@@ -195,6 +195,7 @@ const createTestPlanVersion = async (
         gitSha,
         gitMessage,
         testPageUrl,
+        hashedTests,
         updatedAt,
         metadata,
         tests,
@@ -215,6 +216,7 @@ const createTestPlanVersion = async (
         gitSha,
         gitMessage,
         testPageUrl,
+        hashedTests,
         updatedAt,
         metadata,
         tests,
@@ -254,6 +256,7 @@ const updateTestPlanVersion = async (
         gitSha,
         gitMessage,
         testPageUrl,
+        hashedTests,
         updatedAt,
         metadata,
         tests
@@ -275,6 +278,7 @@ const updateTestPlanVersion = async (
             gitSha,
             gitMessage,
             testPageUrl,
+            hashedTests,
             updatedAt,
             metadata,
             tests

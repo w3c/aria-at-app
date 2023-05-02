@@ -19,6 +19,8 @@ const {
     createAssertionId
 } = require('../../services/PopulatedData/locationOfDataId');
 const deepPickEqual = require('../../util/deepPickEqual');
+const objectHash = require('object-hash');
+const { omit } = require('lodash');
 
 const args = require('minimist')(process.argv.slice(2), {
     alias: {
@@ -95,13 +97,6 @@ const importTestPlanVersions = async () => {
             continue;
         }
 
-        const existing = await getTestPlanVersions('', {
-            directory,
-            gitSha
-        });
-
-        if (existing.length) continue;
-
         // Gets the next ID and increments the ID counter in Postgres
         // Needed to create the testIds - see LocationOfDataId.js for more info
         const testPlanVersionId = (
@@ -112,15 +107,21 @@ const importTestPlanVersions = async () => {
             )
         ).rows[0].nextval;
 
-        const { title, exampleUrl, designPatternUrl, testPageUrl } = readCsv({
-            sourceDirectoryPath
-        });
-
         const tests = getTests({
             builtDirectoryPath,
             testPlanVersionId,
             ats,
             gitSha
+        });
+
+        const hashedTests = hashTests(tests);
+
+        const existing = await getTestPlanVersions('', { hashedTests });
+
+        if (existing.length) continue;
+
+        const { title, exampleUrl, designPatternUrl, testPageUrl } = readCsv({
+            sourceDirectoryPath
         });
 
         let testPlanId = null;
@@ -145,6 +146,7 @@ const importTestPlanVersions = async () => {
             }),
             gitSha,
             gitMessage,
+            hashedTests,
             updatedAt: gitCommitDate,
             metadata: {
                 designPatternUrl,
@@ -241,6 +243,22 @@ const updateAtsJson = async ats => {
             null,
             4
         )
+    );
+};
+
+const hashTests = tests => {
+    // Be careful if you change this, ideally the hash of old test plans will
+    // not change or else duplicates will be imported
+    return objectHash(
+        tests.map(test => ({
+            ...omit(test, ['id', 'renderedUrls']),
+            assertions: test.assertions.map(assertion => ({
+                ...omit(assertion, ['id'])
+            })),
+            scenarios: test.scenarios.map(scenario => ({
+                ...omit(scenario, ['id'])
+            }))
+        }))
     );
 };
 
