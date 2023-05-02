@@ -3,7 +3,13 @@ const { TestPlanVersion } = require('../models');
 const commandList = require('../resources/commands.json');
 
 module.exports = {
-    up: async () => {
+    up: async queryInterface => {
+        const [[{ count: testPlanVersionCount }]] =
+            await queryInterface.sequelize.query(
+                `SELECT COUNT(*) FROM "TestPlanVersion"`
+            );
+        if (!Number(testPlanVersionCount)) return;
+
         const testPlanVersions = await TestPlanVersion.findAll({
             attributes: { exclude: ['testPlanId'] }
         });

@@ -78,13 +78,15 @@ module.exports = {
                 );
             }
 
-            // eslint-disable-next-line no-console
-            console.info(
-                'Indexed',
-                Number(testPlanVersionCount),
-                'of',
-                Number(testPlanVersionCount)
-            );
+            if (Number(testPlanVersionCount)) {
+                // eslint-disable-next-line no-console
+                console.info(
+                    'Indexed',
+                    Number(testPlanVersionCount),
+                    'of',
+                    Number(testPlanVersionCount)
+                );
+            }
 
             const uniqueHashCount = Object.keys(
                 testPlanVersionIdsByHashedTests
@@ -133,8 +135,10 @@ module.exports = {
                 );
             }
 
-            // eslint-disable-next-line no-console
-            console.info('Fixed', uniqueHashCount, 'of', uniqueHashCount);
+            if (uniqueHashCount) {
+                // eslint-disable-next-line no-console
+                console.info('Fixed', uniqueHashCount, 'of', uniqueHashCount);
+            }
 
             await queryInterface.changeColumn(
                 'TestPlanVersion',
