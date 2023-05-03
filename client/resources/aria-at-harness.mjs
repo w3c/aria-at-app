@@ -440,7 +440,6 @@ function renderVirtualInstructionDocument(doc) {
           )
         ),
         fragment(
-          // TODO: Figure out why this isn't appearing
           div(
             label(forInput('unexpected-behavior-note'), rich('Add an explanation')),
             input(
