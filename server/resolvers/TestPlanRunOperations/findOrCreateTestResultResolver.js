@@ -9,16 +9,23 @@ const createTestResultSkeleton = require('./createTestResultSkeleton');
 const findOrCreateTestResultResolver = async (
     { parentContext: { id: testPlanRunId } },
     { testId, atVersionId, browserVersionId },
-    { user }
+    context
 ) => {
+    const { user } = context;
     const {
         testPlanRun,
         testPlanReport,
         testPlanVersion: testPlanRunTestPlanVersion
-    } = await populateData({
-        testPlanRunId
-    });
-    const { test, testPlanVersion } = await populateData({ testId });
+    } = await populateData(
+        {
+            testPlanRunId
+        },
+        { context }
+    );
+    const { test, testPlanVersion } = await populateData(
+        { testId },
+        { context }
+    );
 
     if (
         !(
@@ -81,7 +88,7 @@ const findOrCreateTestResultResolver = async (
         });
     }
 
-    return populateData({ testResultId: newTestResult.id });
+    return populateData({ testResultId: newTestResult.id }, { context });
 };
 
 module.exports = findOrCreateTestResultResolver;

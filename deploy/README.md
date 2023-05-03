@@ -52,6 +52,7 @@ To deploy this project to  server:
 1. Obtain an authorized key and add it to your keychain. This is needed for deploys to Staging and Production. 
   - The shared key is named `aria-at-bocoup`.
   - Place it in the ~/.ssh directory.
+  - For security, set permissions on the key file, which is required by the OS: `chmod 600 ~/.ssh/aria-at-bocoup`.
   - Add it to your keychain with the following command: `ssh-add ~/.ssh/aria-at-bocoup`.
   - Run `ssh root@aria-at-staging.w3.org` and `ssh root@aria-at.w3.org` to verify that you can connect to the servers.
 2. Bocoup maintains its own instance of the app on its internal infrastructure for quick and easy testing. Note that you must be a Bocouper to deploy to this environment. Follow the steps below to verify you are able to connect.
@@ -93,12 +94,12 @@ ansible-vault edit files/config-sandbox.env
 ## Manual DB Backup
 From the `deploy` folder:
 
-1. Retrieve the database user (aka PGUSER) and database password (aka PGPASSWORD).
+1. Retrieve the database user (aka PGUSER) and database password (aka PGPASSWORD), the environment is `production` or `staging`.
    `ansible-vault view --vault-password-file ansible-vault-password.txt files/config-<environment>.env`
-2. Ssh into the machine. The domain is aria-at.w3.org for production and aria-at-staging.w3.org for staging.
+2. Ssh into the machine. The deploy key will be at `~/.ssh/aria-at-bocoup`, if you followed the deploy setup instructions. The domain is `aria-at.w3.org` for production and `aria-at-staging.w3.org` for staging.
   `ssh -i <deploy key> root@<domain>`
-3. Create the backup and save it to a file.
-  `pg_dump -U <value for PGUSER> -h localhost -d aria_at_report > <environment>_dump_<timestamp>.sql`. It will ask for the PGPASSWORD.
+3. Create the backup and save it to a file. After running the command, the terminal prompt will ask for the PGPASSWORD. Use the current date for the timestamp, e.g. `20230406`. Run
+  `pg_dump -U <value for PGUSER> -h localhost -d aria_at_report > <environment>_dump_<timestamp>.sql`. 
 4. From another terminal window that's not connected to the server, copy the backup to your machine.
   `scp -i <deploy key> root@<domain>:<environment>_dump_<timestamp>.sql .`
 

@@ -64,22 +64,9 @@ const testPlanRunAssociation = (testPlanRunAttributes, userAttributes) => ({
  * @param {string[]} atVersionAttributes - AT version attributes
  * @returns {{association: string, attributes: string[]}}
  */
-const atAssociation = (atAttributes, atVersionAttributes) => ({
+const atAssociation = atAttributes => ({
     association: 'at',
     attributes: atAttributes
-    // include: [
-    //     // eslint-disable-next-line no-use-before-define
-    //     atVersionAssociation(atVersionAttributes)
-    // ]
-});
-
-/**
- * @param {string[]} atVersionAttributes - AT version attributes
- * @returns {{association: string, attributes: string[]}}
- */
-const atVersionAssociation = atVersionAttributes => ({
-    association: 'atVersions',
-    attributes: atVersionAttributes
 });
 
 /**
@@ -87,22 +74,9 @@ const atVersionAssociation = atVersionAttributes => ({
  * @param {string[]} browserVersionAttributes - Browser version attributes
  * @returns {{association: string, attributes: string[]}}
  */
-const browserAssociation = (browserAttributes, browserVersionAttributes) => ({
+const browserAssociation = browserAttributes => ({
     association: 'browser',
     attributes: browserAttributes
-    // include: [
-    //     // eslint-disable-next-line no-use-before-define
-    //     browserVersionAssociation(browserVersionAttributes)
-    // ]
-});
-
-/**
- * @param {string[]} browserVersionAttributes - Browser version attributes
- * @returns {{association: string, attributes: string[]}}
- */
-const browserVersionAssociation = browserVersionAttributes => ({
-    association: 'browserVersions',
-    attributes: browserVersionAttributes
 });
 
 /**

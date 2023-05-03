@@ -10,7 +10,7 @@ const {
 } = require('../../models/services/TestPlanRunService');
 const { decodeLocationOfDataId } = require('./locationOfDataId');
 const testsResolver = require('../../resolvers/TestPlanVersion/testsResolver');
-const testsResultsResolver = require('../../resolvers/TestPlanRun/testResultsResolver');
+const testResultsResolver = require('../../resolvers/TestPlanRun/testResultsResolver');
 const testPlanVersionTestPlanResolver = require('../../resolvers/TestPlanVersion/testPlanVersionTestPlanResolver');
 
 /**
@@ -22,7 +22,7 @@ const testPlanVersionTestPlanResolver = require('../../resolvers/TestPlanVersion
  * and no database queries will be run by this function.
  * @returns
  */
-const populateData = async (locationOfData, { preloaded } = {}) => {
+const populateData = async (locationOfData, { preloaded, context }) => {
     let {
         testPlanId,
         testPlanVersionId,
@@ -130,7 +130,11 @@ const populateData = async (locationOfData, { preloaded } = {}) => {
     let browserVersion;
 
     if (testResultId) {
-        const testResults = testsResultsResolver(testPlanRun);
+        const testResults = await testResultsResolver(
+            testPlanRun,
+            null,
+            context
+        );
         testResult = testResults.find(each => each.id === testResultId);
         if (!testResult) {
             throw new Error(

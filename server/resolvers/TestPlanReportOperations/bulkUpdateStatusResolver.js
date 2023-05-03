@@ -8,8 +8,9 @@ const {
 const bulkUpdateStatusResolver = async (
     { parentContext: { ids } },
     { status },
-    { user }
+    context
 ) => {
+    const { user } = context;
     if (!user?.roles.find(role => role.name === 'ADMIN')) {
         throw new AuthenticationError();
     }
@@ -19,7 +20,11 @@ const bulkUpdateStatusResolver = async (
         const id = ids[i];
 
         const testPlanReport = await getTestPlanReportById(id);
-        const conflicts = await conflictsResolver(testPlanReport);
+        const conflicts = await conflictsResolver(
+            testPlanReport,
+            null,
+            context
+        );
         if (conflicts.length > 0) {
             throw new Error(
                 `Cannot update test plan report due to conflicts with the ${testPlanReport.at.name} report.`
@@ -29,7 +34,7 @@ const bulkUpdateStatusResolver = async (
         const result = await updateStatusResolver(
             { parentContext: { id } },
             { status },
-            { user }
+            context
         );
         populateDataResultArray.push(result);
     }

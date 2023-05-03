@@ -13,8 +13,9 @@ const getMetrics = require('../../util/getMetrics');
 const updateStatusResolver = async (
     { parentContext: { id: testPlanReportId } },
     { status, candidateStatusReachedAt, recommendedStatusTargetDate },
-    { user }
+    context
 ) => {
+    const { user } = context;
     if (!user?.roles.find(role => role.name === 'ADMIN')) {
         throw new AuthenticationError();
     }
@@ -26,17 +27,25 @@ const updateStatusResolver = async (
     let updateParams = { status };
 
     if (status !== 'DRAFT') {
-        const conflicts = await conflictsResolver(testPlanReport);
+        const conflicts = await conflictsResolver(
+            testPlanReport,
+            null,
+            context
+        );
         if (conflicts.length > 0) {
             throw new Error('Cannot update test plan report due to conflicts');
         }
     }
 
     if (status === 'CANDIDATE' || status === 'RECOMMENDED') {
-        const finalizedTestResults = finalizedTestResultsResolver({
-            ...testPlanReport,
-            status
-        });
+        const finalizedTestResults = await finalizedTestResultsResolver(
+            {
+                ...testPlanReport,
+                status
+            },
+            null,
+            context
+        );
 
         if (!finalizedTestResults || !finalizedTestResults.length) {
             throw new Error(
@@ -80,7 +89,7 @@ const updateStatusResolver = async (
     }
     await updateTestPlanReport(testPlanReportId, updateParams);
 
-    return populateData({ testPlanReportId });
+    return populateData({ testPlanReportId }, { context });
 };
 
 module.exports = updateStatusResolver;

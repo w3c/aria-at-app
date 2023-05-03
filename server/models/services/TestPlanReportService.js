@@ -76,7 +76,7 @@ const testPlanVersionAssociation = testPlanVersionAttributes => ({
  * @param {string[]} atVersionAttributes - AT version attributes
  * @returns {{association: string, attributes: string[]}}
  */
-const atAssociation = (atAttributes, atVersionAttributes) => ({
+const atAssociation = atAttributes => ({
     association: 'at',
     attributes: atAttributes
     // include: [
@@ -86,35 +86,17 @@ const atAssociation = (atAttributes, atVersionAttributes) => ({
 });
 
 /**
- * @param {string[]} atVersionAttributes - AT version attributes
- * @returns {{association: string, attributes: string[]}}
- */
-const atVersionAssociation = atVersionAttributes => ({
-    association: 'atVersions',
-    attributes: atVersionAttributes
-});
-
-/**
  * @param {string[]} browserAttributes - Browser attributes
  * @param {string[]} browserVersionAttributes - Browser version attributes
  * @returns {{association: string, attributes: string[]}}
  */
-const browserAssociation = (browserAttributes, browserVersionAttributes) => ({
+const browserAssociation = browserAttributes => ({
     association: 'browser',
     attributes: browserAttributes
     // include: [
     //     // eslint-disable-next-line no-use-before-define
     //     browserVersionAssociation(browserVersionAttributes)
     // ]
-});
-
-/**
- * @param {string[]} browserVersionAttributes - Browser version attributes
- * @returns {{association: string, attributes: string[]}}
- */
-const browserVersionAssociation = browserVersionAttributes => ({
-    association: 'browserVersions',
-    attributes: browserVersionAttributes
 });
 
 /**
@@ -203,7 +185,6 @@ const getTestPlanReports = async (
     pagination = {},
     options = {}
 ) => {
-    console.log('getTestPlanReports');
     // search and filtering options
     let where = { ...filter };
 
