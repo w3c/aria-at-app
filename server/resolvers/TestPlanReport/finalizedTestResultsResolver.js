@@ -11,6 +11,7 @@ const finalizedTestResultsResolver = async (testPlanReport, _, context) => {
         testPlanReport.status === 'DRAFT' ||
         !testPlanReport.testPlanRuns.length
     ) {
+        console.log('THIS FILE RAN NOW!!');
         return null;
     }
 
@@ -28,7 +29,7 @@ const finalizedTestResultsResolver = async (testPlanReport, _, context) => {
             }
         );
     }
-
+    console.log('THIS RETURNED SOMETHING BEFOR THE RETURN!!');
     return testResultsResolver(
         { testPlanReport, testResults: merged },
         null,

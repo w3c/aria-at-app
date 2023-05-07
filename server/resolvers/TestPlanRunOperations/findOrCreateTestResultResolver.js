@@ -20,13 +20,21 @@ const findOrCreateTestResultResolver = async (
     const { user } = context;
 
     const fixTestPlanReportMetrics = async testPlanReportStale => {
-        const { testPlanReport } = await populateData({
-            testPlanReportId: testPlanReportStale.id
-        }, {context});
+        const { testPlanReport } = await populateData(
+            {
+                testPlanReportId: testPlanReportStale.id
+            },
+            { context }
+        );
         const runnableTests = runnableTestsResolver(testPlanReport);
-        const finalizedTestResults = finalizedTestResultsResolver({
-            ...testPlanReport
-        }, null, context);
+        const finalizedTestResults = finalizedTestResultsResolver(
+            {
+                ...testPlanReport
+            },
+            null,
+            context
+        );
+        console.log(finalizedTestResults);
         const metrics = getMetrics({
             testPlanReport: {
                 ...testPlanReport,
