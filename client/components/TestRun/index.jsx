@@ -329,7 +329,8 @@ const TestRun = () => {
     const remapScenarioResults = (
         rendererState,
         scenarioResults,
-        captureHighlightRequired = false
+        captureHighlightRequired = false,
+        save = false
     ) => {
         let newScenarioResults = [];
         if (!rendererState || !scenarioResults) {
@@ -379,6 +380,7 @@ const TestRun = () => {
             const { hasUnexpected, behaviors, highlightRequired } = unexpected;
             if (hasUnexpected === 'hasUnexpected') {
                 unexpectedBehaviors = [];
+                if (!save) scenarioResult.expandUnexpected = true;
                 /**
                  * 0 = EXCESSIVELY_VERBOSE
                  * 1 = UNEXPECTED_CURSOR_POSITION
@@ -403,8 +405,9 @@ const TestRun = () => {
                         if (i === 5) unexpectedBehaviors.push('OTHER');
                     }
                 }
-            } else if (hasUnexpected === 'doesNotHaveUnexpected')
+            } else if (hasUnexpected === 'doesNotHaveUnexpected') {
                 unexpectedBehaviors = [];
+            }
 
             // re-assign scenario result due to read only values
             scenarioResult.output = atOutput.value ? atOutput.value : null;
@@ -476,7 +479,8 @@ const TestRun = () => {
                 const scenarioResults = remapScenarioResults(
                     testRunStateRef.current || recentTestRunStateRef.current,
                     currentTest.testResult?.scenarioResults,
-                    false
+                    false,
+                    true
                 );
 
                 await handleSaveOrSubmitTestResultAction(

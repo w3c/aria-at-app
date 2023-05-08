@@ -311,7 +311,8 @@ const TestRenderer = ({
                 unexpectedBehaviors,
                 unexpectedBehaviorNote,
                 highlightRequired = false, // atOutput
-                unexpectedBehaviorHighlightRequired = false
+                unexpectedBehaviorHighlightRequired = false,
+                expandUnexpected = false
             } = scenarioResults[i];
 
             if (output) commands[i].atOutput.value = output;
@@ -359,10 +360,13 @@ const TestRenderer = ({
                         commands[i].unexpected.behaviors[5].checked = true;
                     }
                 }
-            } else if (unexpectedBehaviors)
+            } else if (!expandUnexpected) {
                 // but not populated
                 commands[i].unexpected.hasUnexpected = 'doesNotHaveUnexpected';
-            else commands[i].unexpected.hasUnexpected = 'notSet';
+            } else if (expandUnexpected) {
+                commands[i].unexpected.hasUnexpected = 'hasUnexpected';
+                commands[i].unexpected.expand = true;
+            } else commands[i].unexpected.hasUnexpected = 'notSet';
 
             commands[i].unexpected.highlightRequired =
                 unexpectedBehaviorHighlightRequired;
