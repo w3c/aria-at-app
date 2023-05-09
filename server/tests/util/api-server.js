@@ -38,7 +38,7 @@ const startSupertestServer = async ({ graphql = false, pathToRoutes = [] }) => {
 
     // Error handling must be the last middleware
     expressApp.use((error, req, res, next) => {
-        // console.error(error);
+        console.error(error);
         next(error);
     });
 

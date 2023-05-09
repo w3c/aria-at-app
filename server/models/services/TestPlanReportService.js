@@ -79,10 +79,6 @@ const testPlanVersionAssociation = testPlanVersionAttributes => ({
 const atAssociation = atAttributes => ({
     association: 'at',
     attributes: atAttributes
-    // include: [
-    //     // eslint-disable-next-line no-use-before-define
-    //     atVersionAssociation(atVersionAttributes)
-    // ]
 });
 
 /**
@@ -93,10 +89,6 @@ const atAssociation = atAttributes => ({
 const browserAssociation = browserAttributes => ({
     association: 'browser',
     attributes: browserAttributes
-    // include: [
-    //     // eslint-disable-next-line no-use-before-define
-    //     browserVersionAssociation(browserVersionAttributes)
-    // ]
 });
 
 /**
@@ -176,10 +168,8 @@ const getTestPlanReports = async (
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
     atAttributes = AT_ATTRIBUTES,
-    // atVersionAttributes = AT_VERSION_ATTRIBUTES,
     atVersionAttributes = null,
     browserAttributes = BROWSER_ATTRIBUTES,
-    // browserVersionAttributes = BROWSER_VERSION_ATTRIBUTES,
     browserVersionAttributes = null,
     userAttributes = USER_ATTRIBUTES,
     pagination = {},

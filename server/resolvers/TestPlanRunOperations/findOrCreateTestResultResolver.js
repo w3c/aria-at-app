@@ -34,7 +34,6 @@ const findOrCreateTestResultResolver = async (
             null,
             context
         );
-        // console.log(finalizedTestResults);
         const metrics = getMetrics({
             testPlanReport: {
                 ...testPlanReport,

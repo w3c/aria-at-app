@@ -78,10 +78,6 @@ const testPlanVersionAssociation = testPlanVersionAttributes => ({
 const atAssociation = atAttributes => ({
     association: 'at',
     attributes: atAttributes
-    // include: [
-    //     // eslint-disable-next-line no-use-before-define
-    //     atVersionAssociation(atVersionAttributes)
-    // ]
 });
 
 /**
@@ -92,10 +88,6 @@ const atAssociation = atAttributes => ({
 const browserAssociation = browserAttributes => ({
     association: 'browser',
     attributes: browserAttributes
-    // include: [
-    //     // eslint-disable-next-line no-use-before-define
-    //     browserVersionAssociation(browserVersionAttributes)
-    // ]
 });
 
 /**
