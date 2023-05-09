@@ -10,7 +10,7 @@ const {
     AT_VERSION_ATTRIBUTES,
     BROWSER_VERSION_ATTRIBUTES
 } = require('./helpers');
-const { TestPlanReport } = require('../');
+const { TestPlanReport, TestPlanVersion } = require('../');
 
 // custom column additions to Models being queried
 const testPlanRunLiterals = [
@@ -245,9 +245,18 @@ const createTestPlanReport = async (
     userAttributes = USER_ATTRIBUTES,
     options
 ) => {
+    const testPlanVersion = await TestPlanVersion.findOne({
+        where: { id: testPlanVersionId }
+    });
     const testPlanReportResult = await ModelService.create(
         TestPlanReport,
-        { status, testPlanVersionId, atId, browserId },
+        {
+            status,
+            testPlanVersionId,
+            atId,
+            browserId,
+            testPlanId: testPlanVersion.testPlanId
+        },
         options
     );
 
