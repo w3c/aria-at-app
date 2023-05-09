@@ -27,14 +27,14 @@ const findOrCreateTestResultResolver = async (
             { context }
         );
         const runnableTests = runnableTestsResolver(testPlanReport);
-        const finalizedTestResults = finalizedTestResultsResolver(
+        const finalizedTestResults = await finalizedTestResultsResolver(
             {
                 ...testPlanReport
             },
             null,
             context
         );
-        console.log(finalizedTestResults);
+        // console.log(finalizedTestResults);
         const metrics = getMetrics({
             testPlanReport: {
                 ...testPlanReport,
