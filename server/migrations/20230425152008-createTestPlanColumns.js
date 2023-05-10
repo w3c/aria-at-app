@@ -8,14 +8,30 @@ module.exports = {
             await queryInterface.addColumn(
                 'TestPlanVersion',
                 'testPlanId',
-                { type: Sequelize.DataTypes.INTEGER },
+                {
+                    type: Sequelize.DataTypes.INTEGER,
+                    references: {
+                        model: {
+                            tableName: 'TestPlan'
+                        },
+                        key: 'id'
+                    }
+                },
                 { transaction: t }
             );
 
             await queryInterface.addColumn(
                 'TestPlanReport',
                 'testPlanId',
-                { type: Sequelize.DataTypes.INTEGER },
+                {
+                    type: Sequelize.DataTypes.INTEGER,
+                    references: {
+                        model: {
+                            tableName: 'TestPlan'
+                        },
+                        key: 'id'
+                    }
+                },
                 { transaction: t }
             );
 
