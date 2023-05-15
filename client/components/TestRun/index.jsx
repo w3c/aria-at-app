@@ -125,6 +125,7 @@ const TestRun = () => {
     const { loading, data, error } = useQuery(
         testPlanRunId ? TEST_RUN_PAGE_QUERY : TEST_RUN_PAGE_ANON_QUERY,
         {
+            fetchPolicy: 'cache-and-network',
             variables: { testPlanRunId, testPlanReportId }
         }
     );
@@ -174,6 +175,22 @@ const TestRun = () => {
     const [currentAtVersion, setCurrentAtVersion] = useState('');
     const [currentBrowserVersion, setCurrentBrowserVersion] = useState('');
     const [pageReady, setPageReady] = useState(false);
+
+    const auth = evaluateAuth(data && data.me ? data.me : {});
+    let { id: userId, isSignedIn, isAdmin } = auth;
+
+    // if a signed in user navigates to this page, treat them as anon to prevent
+    // invalid save attempts
+    if (testPlanReportId) isSignedIn = false;
+
+    // check to ensure an admin that manually went to a test run url doesn't
+    // run the test as themselves
+    const openAsUserId =
+        routerQuery.get('user') || (tester && tester.id !== userId)
+            ? tester?.id
+            : null;
+    const testerId = openAsUserId || userId;
+    const isAdminReviewer = !!(isAdmin && openAsUserId);
 
     useEffect(() => {
         if (data) {
@@ -323,22 +340,6 @@ const TestRun = () => {
             />
         );
     }
-
-    const auth = evaluateAuth(data && data.me ? data.me : {});
-    let { id: userId, isSignedIn, isAdmin } = auth;
-
-    // if a signed in user navigates to this page, treat them as anon to prevent
-    // invalid save attempts
-    if (testPlanReportId) isSignedIn = false;
-
-    // check to ensure an admin that manually went to a test run url doesn't
-    // run the test as themselves
-    const openAsUserId =
-        routerQuery.get('user') || (tester && tester.id !== userId)
-            ? tester?.id
-            : null;
-    const testerId = openAsUserId || userId;
-    const isAdminReviewer = !!(isAdmin && openAsUserId);
 
     if (isSignedIn && !testPlanRun) {
         return (
