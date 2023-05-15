@@ -123,7 +123,6 @@ const getTestPlanReportById = async (
     atAttributes = AT_ATTRIBUTES,
     atVersionAttributes = AT_VERSION_ATTRIBUTES,
     browserAttributes = BROWSER_ATTRIBUTES,
-    browserVersionAttributes = BROWSER_VERSION_ATTRIBUTES,
     userAttributes = USER_ATTRIBUTES,
     options = {}
 ) => {
@@ -135,7 +134,7 @@ const getTestPlanReportById = async (
             testPlanRunAssociation(testPlanRunAttributes, userAttributes),
             testPlanVersionAssociation(testPlanVersionAttributes),
             atAssociation(atAttributes, atVersionAttributes),
-            browserAssociation(browserAttributes, browserVersionAttributes)
+            browserAssociation(browserAttributes)
         ],
         options
     );
@@ -170,7 +169,6 @@ const getTestPlanReports = async (
     atAttributes = AT_ATTRIBUTES,
     atVersionAttributes = null,
     browserAttributes = BROWSER_ATTRIBUTES,
-    browserVersionAttributes = null,
     userAttributes = USER_ATTRIBUTES,
     pagination = {},
     options = {}
@@ -186,7 +184,7 @@ const getTestPlanReports = async (
             testPlanRunAssociation(testPlanRunAttributes, userAttributes),
             testPlanVersionAssociation(testPlanVersionAttributes),
             atAssociation(atAttributes, atVersionAttributes),
-            browserAssociation(browserAttributes, browserVersionAttributes)
+            browserAssociation(browserAttributes)
         ],
         pagination,
         options
@@ -215,7 +213,6 @@ const createTestPlanReport = async (
     atAttributes = AT_ATTRIBUTES,
     atVersionAttributes = AT_VERSION_ATTRIBUTES,
     browserAttributes = BROWSER_ATTRIBUTES,
-    browserVersionAttributes = BROWSER_VERSION_ATTRIBUTES,
     userAttributes = USER_ATTRIBUTES,
     options
 ) => {
@@ -234,7 +231,7 @@ const createTestPlanReport = async (
             testPlanRunAssociation(testPlanRunAttributes, userAttributes),
             testPlanVersionAssociation(testPlanVersionAttributes),
             atAssociation(atAttributes, atVersionAttributes),
-            browserAssociation(browserAttributes, browserVersionAttributes)
+            browserAssociation(browserAttributes)
         ],
         options
     );

@@ -11,7 +11,6 @@ const finalizedTestResultsResolver = async (testPlanReport, _, context) => {
         testPlanReport.status === 'DRAFT' ||
         !testPlanReport.testPlanRuns.length
     ) {
-
         return null;
     }
 

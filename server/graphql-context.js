@@ -8,6 +8,7 @@ const getGraphQLContext = ({ req }) => {
     const atLoader = AtLoader();
     const browserLoader = BrowserLoader();
 
+    // AtLoader and BrowserLoader needed to fetch all At versions and browser versions, respectively
     return { user, atLoader, browserLoader };
 };
 
