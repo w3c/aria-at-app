@@ -8,7 +8,9 @@ const { TestPlan } = require('../');
 
 const getTestPlans = async (
     filter = {},
+    includeLatestTestPlanVersion,
     testPlanAttributes = TEST_PLAN_ATTRIBUTES,
+    testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
     pagination = {},
     options = {}
 ) => {
@@ -22,7 +24,7 @@ const getTestPlans = async (
         [
             {
                 association: 'testPlanVersions',
-                attributes: TEST_PLAN_VERSION_ATTRIBUTES
+                attributes: testPlanVersionAttributes
             },
             {
                 association: 'testPlanReports',
@@ -33,18 +35,20 @@ const getTestPlans = async (
         options
     );
 
-    return data.map(d => {
-        const latestTestPlanVersion = d.dataValues.testPlanVersions.sort(
-            (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
-        )[0];
-        return {
-            ...d,
-            dataValues: {
-                ...d.dataValues,
-                latestTestPlanVersion
-            }
-        };
-    });
+    if (includeLatestTestPlanVersion) {
+        return data.map(d => {
+            const latestTestPlanVersion = d.dataValues.testPlanVersions[0];
+            return {
+                ...d,
+                dataValues: {
+                    ...d.dataValues,
+                    latestTestPlanVersion
+                }
+            };
+        });
+    }
+
+    return data;
 };
 
 const createTestPlan = async ({ title, directory }) => {

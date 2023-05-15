@@ -213,6 +213,7 @@ describe('graphql', () => {
                         __typename
                         id
                         directory
+                        title
                         latestTestPlanVersion {
                             __typename
                             id
@@ -258,6 +259,7 @@ describe('graphql', () => {
                     }
                     testPlans {
                         directory
+                        title
                     }
                     testPlanVersions {
                         id
