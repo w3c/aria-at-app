@@ -17,7 +17,7 @@ import DisclaimerInfo from '../DisclaimerInfo';
 import TestPlanResultsTable from './TestPlanResultsTable';
 import DisclosureComponent from '../common/DisclosureComponent';
 import { Navigate } from 'react-router';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 
 const getTestersRunHistory = (
     testPlanReport,
@@ -77,6 +77,7 @@ const getTestersRunHistory = (
 };
 
 const SummarizeTestPlanReport = ({ testPlanReports }) => {
+    const location = useLocation();
     const { testPlanReportId } = useParams();
 
     const testPlanReport = testPlanReports.find(
@@ -145,8 +146,13 @@ const SummarizeTestPlanReport = ({ testPlanReports }) => {
             {testPlanReport.finalizedTestResults.map(testResult => {
                 const test = testResult.test;
 
+                const fromReportPageLink = `https://aria-at.w3.org${location.pathname}#result-${testResult.id}`;
                 const gitHubIssueLinkWithTitleAndBody =
-                    createGitHubIssueWithTitleAndBody({ test, testPlanReport });
+                    createGitHubIssueWithTitleAndBody({
+                        test,
+                        testPlanReport,
+                        fromReportPageLink
+                    });
 
                 // TODO: fix renderedUrl
                 let modifiedRenderedUrl = test.renderedUrl.replace(

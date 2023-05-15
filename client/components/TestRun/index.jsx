@@ -44,7 +44,8 @@ const createGitHubIssueWithTitleAndBody = ({
     testPlanReport = {},
     atVersion,
     browserVersion,
-    conflictMarkdown = null
+    conflictMarkdown = null,
+    fromReportPageLink = null
 }) => {
     // TODO: fix renderedUrl
     let modifiedRenderedUrl = test?.renderedUrl?.replace(
@@ -70,6 +71,20 @@ const createGitHubIssueWithTitleAndBody = ({
         `${at.name} (version ${atVersion})\n` +
         `- Browser: ` +
         `${browser.name} (version ${browserVersion})\n`;
+
+    if (fromReportPageLink)
+        body =
+            `## Description of Behavior\n\n` +
+            `<!-- write your description here -->\n\n` +
+            `## Test Setup\n\n` +
+            `- Test File: ` +
+            `[${shortenedUrl}](${modifiedRenderedUrl})\n` +
+            `- Report Page: ` +
+            `[Link](${fromReportPageLink})\n` +
+            `- AT: ` +
+            `${at.name}\n` +
+            `- Browser: ` +
+            `${browser.name}\n`;
 
     if (conflictMarkdown) {
         body += `\n${conflictMarkdown}`;
