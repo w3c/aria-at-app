@@ -1077,25 +1077,25 @@ const TestRun = () => {
                                 isSignedIn ? ` ${currentAtVersion?.name}` : ''
                             }`}
                         </div>
-                        {isSignedIn && (
-                            <Button
-                                ref={editAtBrowserDetailsButtonRef}
-                                id="edit-fa-button"
-                                aria-label="Edit version details for AT and Browser"
-                                onClick={handleEditAtBrowserDetailsClick}
-                            >
-                                <FontAwesomeIcon icon={faEdit} />
-                            </Button>
-                        )}
+                        <div className="info-label">
+                            <b>Browser:</b>{' '}
+                            {`${testPlanReport.browser?.name}${
+                                isSignedIn
+                                    ? ` ${currentBrowserVersion?.name || ''}`
+                                    : ''
+                            }`}
+                        </div>
                     </div>
-                    <div className="info-label">
-                        <b>Browser:</b>{' '}
-                        {`${testPlanReport.browser?.name}${
-                            isSignedIn
-                                ? ` ${currentBrowserVersion?.name || ''}`
-                                : ''
-                        }`}
-                    </div>
+                    {isSignedIn && (
+                        <Button
+                            ref={editAtBrowserDetailsButtonRef}
+                            id="edit-fa-button"
+                            aria-label="Edit version details for AT and Browser"
+                            onClick={handleEditAtBrowserDetailsClick}
+                        >
+                            <FontAwesomeIcon icon={faEdit} />
+                        </Button>
+                    )}
                 </div>
                 <div className="test-info-entity tests-completed">
                     <div className="info-label">
