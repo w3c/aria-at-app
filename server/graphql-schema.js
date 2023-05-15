@@ -225,6 +225,10 @@ const graphqlSchema = gql`
         """
         title: String!
         """
+        The formal name of the test plan
+        """
+        title: String!
+        """
         Corresponds to directory in the ARIA-AT repo which stores the test plan,
         e.g. "checkbox-tri-state" or "disclosure-navigation"
         """
