@@ -107,7 +107,6 @@ const TestRun = () => {
     const titleRef = useRef();
     // To prevent default AT/Browser versions being set before initial
     // AT & Browser Details Modal is saved
-    const initialTestResultReadyRef = useRef(false);
     const testRunStateRef = useRef();
     // HACK: Temporary fix to allow for consistency of TestRenderer after
     // testRunStateRef is nullified during unmount.
@@ -193,85 +192,18 @@ const TestRun = () => {
     const isAdminReviewer = !!(isAdmin && openAsUserId);
 
     useEffect(() => {
-        if (data) {
-            const { testPlanRun, users } = data;
-            const { tester, testResults = [] } = testPlanRun || {};
-            let { testPlanReport } = testPlanRun || {};
-
-            // if a signed in user navigates to this page, treat them as anon to prevent
-            // invalid save attempts
-            if (testPlanReportId) isSignedIn = false;
-            if (!isSignedIn) testPlanReport = data.testPlanReport;
-
-            const {
-                testPlanVersion,
-                runnableTests = [],
-                conflicts = []
-            } = testPlanReport || {};
-
-            const tests = runnableTests.map((test, index) => ({
-                ...test,
-                index,
-                seq: index + 1,
-                testResult: testResults.find(t => t.test.id === test.id),
-                hasConflicts: !!conflicts.find(
-                    c => c.source.test.id === test.id
-                )
-            }));
-            const currentTest = tests[currentTestIndex];
-
-            // Capture the AT & Browser Versions
-            const defaultAtVersionId = testPlanReport.at.atVersions[0].id;
-            const defaultBrowserVersionId =
-                testPlanReport.browser.browserVersions[0].id;
-
-            const currentTestAtVersionId =
-                currentTest.testResult?.atVersion?.id || defaultAtVersionId;
-
-            const currentTestBrowserVersionId =
-                currentTest.testResult?.browserVersion?.id ||
-                defaultBrowserVersionId;
-
-            const currentAtVersion =
-                currentTest.testResult?.atVersion ||
-                testPlanReport.at.atVersions.find(
-                    item => item.id === currentTestAtVersionId
-                ) ||
-                'N/A';
-
-            const currentBrowserVersion =
-                currentTest.testResult?.browserVersion ||
-                testPlanReport.browser.browserVersions.find(
-                    item => item.id === currentTestBrowserVersionId
-                ) ||
-                'N/A';
-
-            // Auto batch the states
-            setUsers(users);
-            setTester(tester);
-            setTestPlanRun(testPlanRun);
-            setTestPlanReport(testPlanReport);
-            setTestPlanVersion(testPlanVersion);
-            setTests(tests);
-            setTestResults(testResults);
-            setCurrentTest(currentTest);
-            setCurrentTestAtVersionId(currentTestAtVersionId);
-            setCurrentTestBrowserVersionId(currentTestBrowserVersionId);
-            setCurrentAtVersion(currentAtVersion);
-            setCurrentBrowserVersion(currentBrowserVersion);
-            setPageReady(true);
-        }
+        if (data) setup(data);
     }, [data]);
 
     useEffect(() => {
-        setup();
+        reset();
 
-        // set up for the current Test
+        // Set up for the current test
         const currentTest = tests[currentTestIndex];
         if (currentTest) {
+            setPageReady(false);
             if (isSignedIn) {
                 (async () => {
-                    setPageReady(false);
                     const { testPlanRun, testPlanReport } =
                         await createTestResultForRenderer(
                             currentTest.id,
@@ -283,12 +215,91 @@ const TestRun = () => {
                 })();
             } else {
                 // To account for ANON viewing
-                setPageReady(false);
                 setCurrentTest(tests[currentTestIndex]);
                 setPageReady(true);
             }
-        }
+        } else if (data) setup(data);
     }, [currentTestIndex]);
+
+    const setup = data => {
+        const { testPlanRun, users } = data;
+        const { tester, testResults = [] } = testPlanRun || {};
+        let { testPlanReport } = testPlanRun || {};
+
+        // if a signed in user navigates to this page, treat them as anon to prevent
+        // invalid save attempts
+        if (testPlanReportId) isSignedIn = false;
+        if (!isSignedIn) testPlanReport = data.testPlanReport;
+
+        const {
+            testPlanVersion,
+            runnableTests = [],
+            conflicts = []
+        } = testPlanReport || {};
+
+        const tests = runnableTests.map((test, index) => ({
+            ...test,
+            index,
+            seq: index + 1,
+            testResult: testResults.find(t => t.test.id === test.id),
+            hasConflicts: !!conflicts.find(c => c.source.test.id === test.id)
+        }));
+        const currentTest = tests[currentTestIndex];
+
+        // Capture the AT & Browser Versions
+        const defaultAtVersionId = testPlanReport.at.atVersions[0].id;
+        const defaultBrowserVersionId =
+            testPlanReport.browser.browserVersions[0].id;
+
+        const currentTestAtVersionId =
+            currentTest.testResult?.atVersion?.id || defaultAtVersionId;
+
+        const currentTestBrowserVersionId =
+            currentTest.testResult?.browserVersion?.id ||
+            defaultBrowserVersionId;
+
+        const currentAtVersion =
+            currentTest.testResult?.atVersion ||
+            testPlanReport.at.atVersions.find(
+                item => item.id === currentTestAtVersionId
+            ) ||
+            'N/A';
+
+        const currentBrowserVersion =
+            currentTest.testResult?.browserVersion ||
+            testPlanReport.browser.browserVersions.find(
+                item => item.id === currentTestBrowserVersionId
+            ) ||
+            'N/A';
+
+        // Auto batch the states
+        setUsers(users);
+        setTester(tester);
+        setTestPlanRun(testPlanRun);
+        setTestPlanReport(testPlanReport);
+        setTestPlanVersion(testPlanVersion);
+        setTests(tests);
+        setTestResults(testResults);
+        setCurrentTest(currentTest);
+        setCurrentTestAtVersionId(currentTestAtVersionId);
+        setCurrentTestBrowserVersionId(currentTestBrowserVersionId);
+        setCurrentAtVersion(currentAtVersion);
+        setCurrentBrowserVersion(currentBrowserVersion);
+        setPageReady(true);
+    };
+
+    const reset = () => {
+        testRunStateRef.current = null;
+        recentTestRunStateRef.current = null;
+        testRunResultRef.current = null;
+        conflictMarkdownRef.current = null;
+
+        setPageReady(false);
+        setIsRendererReady(false);
+        setIsTestSubmitClicked(false);
+
+        if (titleRef.current) titleRef.current.focus();
+    };
 
     const updateLocalState = (testPlanRun, testPlanReport) => {
         const { conflicts, runnableTests } = testPlanReport;
@@ -305,19 +316,6 @@ const TestRun = () => {
         setTests(tests);
         setTestResults(testResults);
         setCurrentTest(tests[currentTestIndex]);
-    };
-
-    const setup = () => {
-        testRunStateRef.current = null;
-        recentTestRunStateRef.current = null;
-        testRunResultRef.current = null;
-        conflictMarkdownRef.current = null;
-
-        setPageReady(false);
-        setIsRendererReady(false);
-        setIsTestSubmitClicked(false);
-
-        if (titleRef.current) titleRef.current.focus();
     };
 
     if (error) {
@@ -373,7 +371,7 @@ const TestRun = () => {
     // Check to see if there are tests to run
     const hasTestsToRun = tests.length;
 
-    // Verify whether this test is being run as an admin
+    // Check if this test is being run as an admin
     if (
         adminReviewerOriginalTestRef.current &&
         adminReviewerOriginalTestRef.current !== currentTest.id
@@ -647,7 +645,7 @@ const TestRun = () => {
         };
         await deleteTestResult({ variables });
 
-        setup();
+        reset();
         setPageReady(false);
         const { testPlanRun, testPlanReport } =
             await createTestResultForRenderer(
@@ -858,7 +856,6 @@ const TestRun = () => {
 
     const handleAtAndBrowserDetailsModalCloseAction = () => {
         setIsShowingAtBrowserModal(false);
-        initialTestResultReadyRef.current = true;
         if (isEditAtBrowserDetailsModalClick)
             editAtBrowserDetailsButtonRef.current.focus();
     };
