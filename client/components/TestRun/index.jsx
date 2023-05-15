@@ -1,14 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { Link, useParams, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import useRouterQuery from '../../hooks/useRouterQuery';
-import { useQuery, useMutation } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-    faRedo,
-    faCheck,
     faPen,
     faEdit,
+    faRedo,
+    faCheck,
     faCheckCircle,
     faExclamationCircle
 } from '@fortawesome/free-solid-svg-icons';
@@ -27,38 +27,38 @@ import { useDetectUa } from '../../hooks/useDetectUa';
 import DisplayNone from '../../utils/DisplayNone';
 import { navigateTests } from '../../utils/navigateTests';
 import {
-    TEST_RUN_PAGE_QUERY,
-    TEST_RUN_PAGE_ANON_QUERY,
+    DELETE_TEST_RESULT_MUTATION,
+    FIND_OR_CREATE_BROWSER_VERSION_MUTATION,
     FIND_OR_CREATE_TEST_RESULT_MUTATION,
     SAVE_TEST_RESULT_MUTATION,
     SUBMIT_TEST_RESULT_MUTATION,
-    DELETE_TEST_RESULT_MUTATION,
-    FIND_OR_CREATE_BROWSER_VERSION_MUTATION
+    TEST_RUN_PAGE_ANON_QUERY,
+    TEST_RUN_PAGE_QUERY
 } from './queries';
 import { evaluateAuth } from '../../utils/evaluateAuth';
 import './TestRun.css';
 import ReviewConflicts from '../ReviewConflicts';
 
 const createGitHubIssueWithTitleAndBody = ({
-    test,
-    testPlanReport,
+    test = {},
+    testPlanReport = {},
     atVersion,
     browserVersion,
     conflictMarkdown = null
 }) => {
     // TODO: fix renderedUrl
-    let modifiedRenderedUrl = test.renderedUrl.replace(
+    let modifiedRenderedUrl = test?.renderedUrl?.replace(
         /.+(?=\/tests)/,
         'https://aria-at.netlify.app'
     );
 
-    const { testPlanVersion, at, browser } = testPlanReport;
+    const { testPlanVersion = {}, at = {}, browser = {} } = testPlanReport;
 
     const title =
-        `Feedback: "${test.title}" (${testPlanVersion.title}, ` +
-        `Test ${test.rowNumber})`;
+        `Feedback: "${test?.title}" (${testPlanVersion.title}, ` +
+        `Test ${test?.rowNumber})`;
 
-    const shortenedUrl = modifiedRenderedUrl.match(/[^/]+$/)[0];
+    const shortenedUrl = modifiedRenderedUrl?.match(/[^/]+$/)[0];
 
     let body =
         `## Description of Behavior\n\n` +
@@ -90,7 +90,6 @@ const TestRun = () => {
     const { uaBrowser, uaMajor, uaMinor, uaPatch } = useDetectUa();
 
     const titleRef = useRef();
-    const pageReadyRef = useRef(false);
     // To prevent default AT/Browser versions being set before initial
     // AT & Browser Details Modal is saved
     const initialTestResultReadyRef = useRef(false);
@@ -115,41 +114,27 @@ const TestRun = () => {
         }
     );
     const [createTestResult, { loading: createTestResultLoading }] =
-        useMutation(FIND_OR_CREATE_TEST_RESULT_MUTATION, {
-            refetchQueries: [
-                { query: TEST_RUN_PAGE_QUERY, variables: { testPlanRunId } }
-            ]
-        });
-    const [saveTestResult] = useMutation(SAVE_TEST_RESULT_MUTATION, {
-        refetchQueries: [
-            { query: TEST_RUN_PAGE_QUERY, variables: { testPlanRunId } }
-        ]
-    });
-    const [submitTestResult] = useMutation(SUBMIT_TEST_RESULT_MUTATION, {
-        refetchQueries: [
-            { query: TEST_RUN_PAGE_QUERY, variables: { testPlanRunId } }
-        ]
-    });
+        useMutation(FIND_OR_CREATE_TEST_RESULT_MUTATION);
+    const [saveTestResult] = useMutation(SAVE_TEST_RESULT_MUTATION);
+    const [submitTestResult] = useMutation(SUBMIT_TEST_RESULT_MUTATION);
     const [deleteTestResult] = useMutation(DELETE_TEST_RESULT_MUTATION);
     const [createBrowserVersion] = useMutation(
         FIND_OR_CREATE_BROWSER_VERSION_MUTATION
     );
 
-    const [isShowingAtBrowserModal, setIsShowingAtBrowserModal] =
-        useState(true);
     const [isRendererReady, setIsRendererReady] = useState(false);
     const [isSavingForm, setIsSavingForm] = useState(false);
     const [isTestSubmitClicked, setIsTestSubmitClicked] = useState(false);
     const [isTestEditClicked, setIsTestEditClicked] = useState(false);
     const [showTestNavigator, setShowTestNavigator] = useState(true);
-    const [currentTestIndex, setCurrentTestIndex] = useState(0);
-    const [atVersionId, setAtVersionId] = useState();
-    const [browserVersionId, setBrowserVersionId] = useState();
     const [showStartOverModal, setShowStartOverModal] = useState(false);
     const [showReviewConflictsModal, setShowReviewConflictsModal] =
         useState(false);
     const [showGetInvolvedModal, setShowGetInvolvedModal] = useState(false);
 
+    // Modal State Values
+    const [isShowingAtBrowserModal, setIsShowingAtBrowserModal] =
+        useState(true);
     const [showThemedModal, setShowThemedModal] = useState(false);
     const [themedModalTitle, setThemedModalTitle] = useState('');
     const [themedModalContent, setThemedModalContent] = useState(<></>);
@@ -158,14 +143,145 @@ const TestRun = () => {
         useState(false);
     const [updateMessageComponent, setUpdateMessageComponent] = useState(null);
 
-    useEffect(() => setup(), [currentTestIndex]);
+    // Queried State Values
+    const [testPlanRun, setTestPlanRun] = useState({});
+    const [users, setUsers] = useState([]);
+    const [tester, setTester] = useState();
+    const [tests, setTests] = useState([]);
+    const [testResults, setTestResults] = useState([]);
+    const [testPlanReport, setTestPlanReport] = useState({});
+    const [testPlanVersion, setTestPlanVersion] = useState();
+    const [currentTest, setCurrentTest] = useState({});
+    const [currentTestIndex, setCurrentTestIndex] = useState(0);
+    const [currentTestAtVersionId, setCurrentTestAtVersionId] = useState('');
+    const [currentTestBrowserVersionId, setCurrentTestBrowserVersionId] =
+        useState('');
+    const [currentAtVersion, setCurrentAtVersion] = useState('');
+    const [currentBrowserVersion, setCurrentBrowserVersion] = useState('');
+    const [pageReady, setPageReady] = useState(false);
+
+    useEffect(() => {
+        if (data) {
+            const { testPlanRun, users } = data;
+            const { tester, testResults = [] } = testPlanRun || {};
+            let { testPlanReport } = testPlanRun || {};
+
+            // if a signed in user navigates to this page, treat them as anon to prevent
+            // invalid save attempts
+            if (testPlanReportId) isSignedIn = false;
+            if (!isSignedIn) testPlanReport = data.testPlanReport;
+
+            const {
+                testPlanVersion,
+                runnableTests = [],
+                conflicts = []
+            } = testPlanReport || {};
+
+            const tests = runnableTests.map((test, index) => ({
+                ...test,
+                index,
+                seq: index + 1,
+                testResult: testResults.find(t => t.test.id === test.id),
+                hasConflicts: !!conflicts.find(
+                    c => c.source.test.id === test.id
+                )
+            }));
+            const currentTest = tests[currentTestIndex];
+
+            // Capture the AT & Browser Versions
+            const defaultAtVersionId = testPlanReport.at.atVersions[0].id;
+            const defaultBrowserVersionId =
+                testPlanReport.browser.browserVersions[0].id;
+
+            const currentTestAtVersionId =
+                currentTest.testResult?.atVersion?.id || defaultAtVersionId;
+
+            const currentTestBrowserVersionId =
+                currentTest.testResult?.browserVersion?.id ||
+                defaultBrowserVersionId;
+
+            const currentAtVersion =
+                currentTest.testResult?.atVersion ||
+                testPlanReport.at.atVersions.find(
+                    item => item.id === currentTestAtVersionId
+                ) ||
+                'N/A';
+
+            const currentBrowserVersion =
+                currentTest.testResult?.browserVersion ||
+                testPlanReport.browser.browserVersions.find(
+                    item => item.id === currentTestBrowserVersionId
+                ) ||
+                'N/A';
+
+            // Auto batch the states
+            setUsers(users);
+            setTester(tester);
+            setTestPlanRun(testPlanRun);
+            setTestPlanReport(testPlanReport);
+            setTestPlanVersion(testPlanVersion);
+            setTests(tests);
+            setTestResults(testResults);
+            setCurrentTest(currentTest);
+            setCurrentTestAtVersionId(currentTestAtVersionId);
+            setCurrentTestBrowserVersionId(currentTestBrowserVersionId);
+            setCurrentAtVersion(currentAtVersion);
+            setCurrentBrowserVersion(currentBrowserVersion);
+            setPageReady(true);
+        }
+    }, [data]);
+
+    useEffect(() => {
+        setup();
+
+        // set up for the current Test
+        const currentTest = tests[currentTestIndex];
+        if (currentTest) {
+            if (isSignedIn) {
+                (async () => {
+                    setPageReady(false);
+                    const { testPlanRun, testPlanReport } =
+                        await createTestResultForRenderer(
+                            currentTest.id,
+                            currentTestAtVersionId,
+                            currentTestBrowserVersionId
+                        );
+                    updateLocalState(testPlanRun, testPlanReport);
+                    setPageReady(true);
+                })();
+            } else {
+                // To account for ANON viewing
+                setPageReady(false);
+                setCurrentTest(tests[currentTestIndex]);
+                setPageReady(true);
+            }
+        }
+    }, [currentTestIndex]);
+
+    const updateLocalState = (testPlanRun, testPlanReport) => {
+        const { conflicts, runnableTests } = testPlanReport;
+
+        const testResults = testPlanRun.testResults;
+        const tests = runnableTests.map((test, index) => ({
+            ...test,
+            index,
+            seq: index + 1,
+            testResult: testResults.find(t => t.test.id === test.id),
+            hasConflicts: !!conflicts.find(c => c.source.test.id === test.id)
+        }));
+
+        setTests(tests);
+        setTestResults(testResults);
+        setCurrentTest(tests[currentTestIndex]);
+    };
 
     const setup = () => {
-        pageReadyRef.current = false;
         testRunStateRef.current = null;
         recentTestRunStateRef.current = null;
         testRunResultRef.current = null;
         conflictMarkdownRef.current = null;
+
+        setPageReady(false);
         setIsRendererReady(false);
         setIsTestSubmitClicked(false);
 
@@ -196,26 +312,15 @@ const TestRun = () => {
     const auth = evaluateAuth(data && data.me ? data.me : {});
     let { id: userId, isSignedIn, isAdmin } = auth;
 
-    const { testPlanRun, users } = data;
-    const { tester, testResults = [] } = testPlanRun || {};
-    let { testPlanReport } = testPlanRun || {};
-
     // if a signed in user navigates to this page, treat them as anon to prevent
     // invalid save attempts
     if (testPlanReportId) isSignedIn = false;
-    if (!isSignedIn) testPlanReport = data.testPlanReport;
-
-    const {
-        testPlanVersion,
-        runnableTests = [],
-        conflicts = []
-    } = testPlanReport || {};
 
     // check to ensure an admin that manually went to a test run url doesn't
     // run the test as themselves
     const openAsUserId =
         routerQuery.get('user') || (tester && tester.id !== userId)
-            ? tester.id
+            ? tester?.id
             : null;
     const testerId = openAsUserId || userId;
     const isAdminReviewer = !!(isAdmin && openAsUserId);
@@ -238,7 +343,7 @@ const TestRun = () => {
         atVersionId,
         browserVersionId
     ) => {
-        await createTestResult({
+        const result = await createTestResult({
             variables: {
                 testPlanRunId,
                 testId,
@@ -246,78 +351,29 @@ const TestRun = () => {
                 browserVersionId
             }
         });
-        pageReadyRef.current = true;
+        return result.data.testPlanRun.findOrCreateTestResult;
     };
 
-    const tests = runnableTests.map((test, index) => ({
-        ...test,
-        index,
-        seq: index + 1,
-        testResult: testResults.find(t => t.test.id === test.id),
-        hasConflicts: !!conflicts.find(c => c.source.test.id === test.id)
-    }));
-    const currentTest = tests[currentTestIndex];
+    // Check to see if there are tests to run
     const hasTestsToRun = tests.length;
 
+    // Verify whether this test is being run as an admin
     if (
         adminReviewerOriginalTestRef.current &&
         adminReviewerOriginalTestRef.current !== currentTest.id
-    ) {
+    )
         adminReviewerCheckedRef.current = false;
-    }
 
     if (
         isAdminReviewer &&
         currentTest.testResult &&
         !adminReviewerCheckedRef.current
-    ) {
+    )
         adminReviewerOriginalTestRef.current = currentTest;
-    }
 
     adminReviewerCheckedRef.current = true;
 
-    const defaultAtVersionId = testPlanReport.at.atVersions[0].id;
-    const defaultBrowserVersionId =
-        testPlanReport.browser.browserVersions[0].id;
-
-    const currentTestAtVersionId =
-        currentTest.testResult?.atVersion?.id ||
-        atVersionId ||
-        defaultAtVersionId;
-
-    const currentTestBrowserVersionId =
-        currentTest.testResult?.browserVersion?.id ||
-        browserVersionId ||
-        defaultBrowserVersionId;
-
-    const currentAtVersion =
-        currentTest.testResult?.atVersion ||
-        testPlanReport.at.atVersions.find(
-            item => item.id === currentTestAtVersionId
-        ) ||
-        'N/A';
-
-    const currentBrowserVersion =
-        currentTest.testResult?.browserVersion ||
-        testPlanReport.browser.browserVersions.find(
-            item => item.id === currentTestBrowserVersionId
-        ) ||
-        'N/A';
-
-    if (
-        !currentTest.testResult &&
-        !pageReadyRef.current &&
-        isSignedIn &&
-        initialTestResultReadyRef.current
-    ) {
-        (async () =>
-            await createTestResultForRenderer(
-                currentTest.id,
-                currentTestAtVersionId,
-                currentTestBrowserVersionId
-            ))();
-    } else pageReadyRef.current = true;
-
+    // For creating content for GitHub Issue
     const gitHubIssueLinkWithTitleAndBody = createGitHubIssueWithTitleAndBody({
         test: currentTest,
         testPlanReport,
@@ -576,11 +632,15 @@ const TestRun = () => {
         await deleteTestResult({ variables });
 
         setup();
-        await createTestResultForRenderer(
-            currentTest.id,
-            currentTestAtVersionId,
-            currentTestBrowserVersionId
-        );
+        setPageReady(false);
+        const { testPlanRun, testPlanReport } =
+            await createTestResultForRenderer(
+                currentTest.id,
+                currentTestAtVersionId,
+                currentTestBrowserVersionId
+            );
+        updateLocalState(testPlanRun, testPlanReport);
+        setPageReady(true);
 
         // close modal after action
         setShowStartOverModal(false);
@@ -598,8 +658,17 @@ const TestRun = () => {
             scenarioResults
         };
 
-        await saveTestResult({ variables });
-        if (isSubmit) await submitTestResult({ variables });
+        if (isSubmit) {
+            const result = await submitTestResult({ variables });
+            const { testPlanRun, testPlanReport } =
+                result.data.testResult.submitTestResult;
+            updateLocalState(testPlanRun, testPlanReport);
+        } else {
+            const result = await saveTestResult({ variables });
+            const { testPlanRun, testPlanReport } =
+                result.data.testResult.saveTestResult;
+            updateLocalState(testPlanRun, testPlanReport);
+        }
     };
 
     const handleReviewConflictsButtonClick = async () =>
@@ -727,26 +796,25 @@ const TestRun = () => {
         updateMessage
     ) => {
         // Get version id for selected atVersion and browserVersion from name
-        const atVersionId = testPlanReport.at.atVersions.find(
+        const atVersion = testPlanReport.at.atVersions.find(
             item => item.name === updatedAtVersionName
-        ).id;
+        );
 
-        let browserVersionId = testPlanReport.browser.browserVersions.find(
+        let browserVersion = testPlanReport.browser.browserVersions.find(
             item => item.name === updatedBrowserVersionName
-        )?.id;
+        );
 
         // create version if not exists (accounting for admin providing new versions)
-        if (!browserVersionId) {
+        if (!browserVersion) {
             const createBrowserVersionResult = await createBrowserVersion({
                 variables: {
                     browserId: testPlanReport.browser.id,
                     browserVersionName: updatedBrowserVersionName
                 }
             });
-
-            browserVersionId =
+            browserVersion =
                 createBrowserVersionResult.data?.browser
-                    ?.findOrCreateBrowserVersion?.id;
+                    ?.findOrCreateBrowserVersion;
         }
 
         const updateMessageComponent = updateMessage ? (
@@ -756,15 +824,19 @@ const TestRun = () => {
             </>
         ) : null;
 
-        setAtVersionId(atVersionId);
-        setBrowserVersionId(browserVersionId);
+        setCurrentTestAtVersionId(atVersion.id);
+        setCurrentTestBrowserVersionId(browserVersion.id);
+        setCurrentAtVersion(atVersion);
+        setCurrentBrowserVersion(browserVersion);
         setUpdateMessageComponent(updateMessageComponent);
 
-        await createTestResultForRenderer(
-            currentTest.id,
-            atVersionId,
-            browserVersionId
-        );
+        const { testPlanRun: _testPlanRun, testPlanReport: _testPlanReport } =
+            await createTestResultForRenderer(
+                currentTest.id,
+                atVersion.id,
+                browserVersion.id
+            );
+        updateLocalState(_testPlanRun, _testPlanReport);
         handleAtAndBrowserDetailsModalCloseAction();
     };
 
@@ -913,69 +985,66 @@ const TestRun = () => {
                         handleReviewConflictsButtonClick
                     }
                 />
-                {pageReadyRef.current &&
-                    (isSignedIn ? currentTest.testResult : true) && (
-                        <Row>
-                            <Col className="test-iframe-container" md={9}>
-                                <Row>
-                                    <TestRenderer
-                                        key={nextId()}
-                                        at={testPlanReport.at}
-                                        testResult={
-                                            !isSignedIn
-                                                ? {
-                                                      test: currentTest,
-                                                      // force the summary to be shown for an anonymous user
-                                                      completedAt: !!(
-                                                          !isSignedIn &&
-                                                          testRunResultRef.current
-                                                      )
-                                                  }
-                                                : remapState(
-                                                      testRunStateRef.current,
-                                                      currentTest.testResult
+                {pageReady && (isSignedIn ? currentTest.testResult : true) && (
+                    <Row>
+                        <Col className="test-iframe-container" md={9}>
+                            <Row>
+                                <TestRenderer
+                                    key={nextId()}
+                                    at={testPlanReport.at}
+                                    testResult={
+                                        !isSignedIn
+                                            ? {
+                                                  test: currentTest,
+                                                  // force the summary to be shown for an anonymous user
+                                                  completedAt: !!(
+                                                      !isSignedIn &&
+                                                      testRunResultRef.current
                                                   )
-                                        }
-                                        testPageUrl={
-                                            testPlanVersion.testPageUrl
-                                        }
-                                        testRunStateRef={testRunStateRef}
-                                        recentTestRunStateRef={
-                                            recentTestRunStateRef
-                                        }
-                                        testRunResultRef={testRunResultRef}
-                                        submitButtonRef={
-                                            testRendererSubmitButtonRef
-                                        }
-                                        isSubmitted={isTestSubmitClicked}
-                                        isEdit={isTestEditClicked}
-                                        setIsRendererReady={setIsRendererReady}
-                                    />
+                                              }
+                                            : remapState(
+                                                  testRunStateRef.current,
+                                                  currentTest.testResult
+                                              )
+                                    }
+                                    testPageUrl={testPlanVersion.testPageUrl}
+                                    testRunStateRef={testRunStateRef}
+                                    recentTestRunStateRef={
+                                        recentTestRunStateRef
+                                    }
+                                    testRunResultRef={testRunResultRef}
+                                    submitButtonRef={
+                                        testRendererSubmitButtonRef
+                                    }
+                                    isSubmitted={isTestSubmitClicked}
+                                    isEdit={isTestEditClicked}
+                                    setIsRendererReady={setIsRendererReady}
+                                />
+                            </Row>
+                            {isRendererReady && (
+                                <Row>
+                                    <h2
+                                        id="test-toolbar-heading"
+                                        className="sr-only"
+                                    >
+                                        Test Controls
+                                    </h2>
+                                    <ul
+                                        aria-labelledby="test-toolbar-heading"
+                                        className="test-run-toolbar mt-1"
+                                    >
+                                        {primaryButtons.map(button => (
+                                            <li key={nextId()}>{button}</li>
+                                        ))}
+                                    </ul>
                                 </Row>
-                                {isRendererReady && (
-                                    <Row>
-                                        <h2
-                                            id="test-toolbar-heading"
-                                            className="sr-only"
-                                        >
-                                            Test Controls
-                                        </h2>
-                                        <ul
-                                            aria-labelledby="test-toolbar-heading"
-                                            className="test-run-toolbar mt-1"
-                                        >
-                                            {primaryButtons.map(button => (
-                                                <li key={nextId()}>{button}</li>
-                                            ))}
-                                        </ul>
-                                    </Row>
-                                )}
-                            </Col>
-                            <Col className="current-test-options" md={3}>
-                                {menuRightOfContent}
-                            </Col>
-                        </Row>
-                    )}
+                            )}
+                        </Col>
+                        <Col className="current-test-options" md={3}>
+                            {menuRightOfContent}
+                        </Col>
+                    </Row>
+                )}
                 <DisplayNone>
                     <ReviewConflicts
                         testPlanReport={testPlanReport}
@@ -1050,7 +1119,7 @@ const TestRun = () => {
         );
     }
 
-    heading = (
+    heading = pageReady && (
         <>
             <div className="test-info-wrapper">
                 <div
@@ -1109,7 +1178,7 @@ const TestRun = () => {
                         ) : hasTestsToRun ? (
                             <>
                                 {' '}
-                                <b>{`${testPlanRun.testResults.reduce(
+                                <b>{`${testResults.reduce(
                                     (acc, { completedAt }) =>
                                         acc + (completedAt ? 1 : 0),
                                     0
@@ -1154,93 +1223,95 @@ const TestRun = () => {
     }
 
     return (
-        <Container className="test-run-container">
-            <Helmet>
-                <title>
-                    {hasTestsToRun
-                        ? `${currentTest.title} for ${testPlanReport.at?.name} ${currentAtVersion?.name} and ${testPlanReport.browser?.name} ${currentBrowserVersion?.name} ` +
-                          `| ARIA-AT`
-                        : 'No tests for this AT and Browser | ARIA-AT'}
-                </title>
-            </Helmet>
-            {updateMessageComponent && (
-                <Alert
-                    variant="success"
-                    className="at-browser-details-modal-alert"
-                >
-                    {updateMessageComponent}
-                </Alert>
-            )}
-            <Row>
-                <TestNavigator
-                    show={showTestNavigator}
-                    tests={tests}
-                    currentTestIndex={currentTestIndex}
-                    toggleShowClick={toggleTestNavigator}
-                    handleTestClick={handleTestClick}
-                />
-                <Col
-                    className="main-test-area"
-                    id="main"
-                    as="main"
-                    tabIndex="-1"
-                >
-                    <Row>
-                        <Col>{content}</Col>
-                    </Row>
-                </Col>
-            </Row>
-            {showThemedModal && (
-                <BasicThemedModal
-                    show={showThemedModal}
-                    theme={'warning'}
-                    title={themedModalTitle}
-                    dialogClassName="modal-50w"
-                    content={themedModalContent}
-                    actionButtons={
-                        themedModalOtherButton
-                            ? [
-                                  themedModalOtherButton,
-                                  {
-                                      text: 'Continue without changes',
-                                      action: onThemedModalClose
-                                  }
-                              ]
-                            : [
-                                  // only applies to Admin, Scenario 4
-                                  {
-                                      text: 'Continue',
-                                      action: onThemedModalClose
-                                  }
-                              ]
-                    }
-                    handleClose={onThemedModalClose}
-                />
-            )}
-            {isSignedIn && isShowingAtBrowserModal && (
-                <AtAndBrowserDetailsModal
-                    show={isShowingAtBrowserModal}
-                    firstLoad={!currentTest.testResult}
-                    isAdmin={isAdminReviewer}
-                    atName={testPlanReport.at.name}
-                    atVersion={currentTest.testResult?.atVersion?.name}
-                    atVersions={testPlanReport.at.atVersions.map(
-                        item => item.name
-                    )}
-                    browserName={testPlanReport.browser.name}
-                    browserVersion={
-                        currentTest.testResult?.browserVersion?.name
-                    }
-                    browserVersions={testPlanReport.browser.browserVersions.map(
-                        item => item.name
-                    )}
-                    patternName={testPlanVersion.title}
-                    testerName={tester.username}
-                    handleAction={handleAtAndBrowserDetailsModalAction}
-                    handleClose={handleAtAndBrowserDetailsModalCloseAction}
-                />
-            )}
-        </Container>
+        pageReady && (
+            <Container className="test-run-container">
+                <Helmet>
+                    <title>
+                        {hasTestsToRun
+                            ? `${currentTest.title} for ${testPlanReport.at?.name} ${currentAtVersion?.name} and ${testPlanReport.browser?.name} ${currentBrowserVersion?.name} ` +
+                              `| ARIA-AT`
+                            : 'No tests for this AT and Browser | ARIA-AT'}
+                    </title>
+                </Helmet>
+                {updateMessageComponent && (
+                    <Alert
+                        variant="success"
+                        className="at-browser-details-modal-alert"
+                    >
+                        {updateMessageComponent}
+                    </Alert>
+                )}
+                <Row>
+                    <TestNavigator
+                        show={showTestNavigator}
+                        tests={tests}
+                        currentTestIndex={currentTestIndex}
+                        toggleShowClick={toggleTestNavigator}
+                        handleTestClick={handleTestClick}
+                    />
+                    <Col
+                        className="main-test-area"
+                        id="main"
+                        as="main"
+                        tabIndex="-1"
+                    >
+                        <Row>
+                            <Col>{content}</Col>
+                        </Row>
+                    </Col>
+                </Row>
+                {showThemedModal && (
+                    <BasicThemedModal
+                        show={showThemedModal}
+                        theme={'warning'}
+                        title={themedModalTitle}
+                        dialogClassName="modal-50w"
+                        content={themedModalContent}
+                        actionButtons={
+                            themedModalOtherButton
+                                ? [
+                                      themedModalOtherButton,
+                                      {
+                                          text: 'Continue without changes',
+                                          action: onThemedModalClose
+                                      }
+                                  ]
+                                : [
+                                      // only applies to Admin, Scenario 4
+                                      {
+                                          text: 'Continue',
+                                          action: onThemedModalClose
+                                      }
+                                  ]
+                        }
+                        handleClose={onThemedModalClose}
+                    />
+                )}
+                {isSignedIn && isShowingAtBrowserModal && (
+                    <AtAndBrowserDetailsModal
+                        show={isShowingAtBrowserModal}
+                        firstLoad={!currentTest.testResult}
+                        isAdmin={isAdminReviewer}
+                        atName={testPlanReport.at.name}
+                        atVersion={currentTest.testResult?.atVersion?.name}
+                        atVersions={testPlanReport.at.atVersions.map(
+                            item => item.name
+                        )}
+                        browserName={testPlanReport.browser.name}
+                        browserVersion={
+                            currentTest.testResult?.browserVersion?.name
+                        }
+                        browserVersions={testPlanReport.browser.browserVersions.map(
+                            item => item.name
+                        )}
+                        patternName={testPlanVersion.title}
+                        testerName={tester.username}
+                        handleAction={handleAtAndBrowserDetailsModalAction}
+                        handleClose={handleAtAndBrowserDetailsModalCloseAction}
+                    />
+                )}
+            </Container>
+        )
     );
 };
 
