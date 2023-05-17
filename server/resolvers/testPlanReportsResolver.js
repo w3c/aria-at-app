@@ -54,8 +54,6 @@ const testPlanReportsResolver = async (
         null,
         null,
         null,
-        null,
-        null,
         { order: [['createdAt', 'desc']] }
     );
 };

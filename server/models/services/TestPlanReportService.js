@@ -6,9 +6,7 @@ const {
     TEST_PLAN_RUN_ATTRIBUTES,
     AT_ATTRIBUTES,
     BROWSER_ATTRIBUTES,
-    USER_ATTRIBUTES,
-    AT_VERSION_ATTRIBUTES,
-    BROWSER_VERSION_ATTRIBUTES
+    USER_ATTRIBUTES
 } = require('./helpers');
 const { TestPlanReport } = require('../');
 
@@ -73,7 +71,6 @@ const testPlanVersionAssociation = testPlanVersionAttributes => ({
 
 /**
  * @param {string[]} atAttributes - AT attributes
- * @param {string[]} atVersionAttributes - AT version attributes
  * @returns {{association: string, attributes: string[]}}
  */
 const atAssociation = atAttributes => ({
@@ -83,7 +80,6 @@ const atAssociation = atAttributes => ({
 
 /**
  * @param {string[]} browserAttributes - Browser attributes
- * @param {string[]} browserVersionAttributes - Browser version attributes
  * @returns {{association: string, attributes: string[]}}
  */
 const browserAssociation = browserAttributes => ({
@@ -107,9 +103,7 @@ const userAssociation = userAttributes => ({
  * @param {string[]} testPlanRunAttributes - TestPlanRun attributes to be returned in the result
  * @param {string[]} testPlanVersionAttributes - TestPlanVersion attributes to be returned in the result
  * @param {string[]} atAttributes - At attributes to be returned in the result
- * @param {string[]} atVersionAttributes - At version attributes to be returned in the result
  * @param {string[]} browserAttributes - Browser attributes to be returned in the result
- * @param {string[]} browserVersionAttributes - Browser version attributes to be returned in the result
  * @param {string[]} userAttributes - User attributes to be returned in the result
  * @param {object} options - Generic options for Sequelize
  * @param {*} options.transaction - Sequelize transaction
@@ -121,7 +115,6 @@ const getTestPlanReportById = async (
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
     atAttributes = AT_ATTRIBUTES,
-    atVersionAttributes = AT_VERSION_ATTRIBUTES,
     browserAttributes = BROWSER_ATTRIBUTES,
     userAttributes = USER_ATTRIBUTES,
     options = {}
@@ -133,7 +126,7 @@ const getTestPlanReportById = async (
         [
             testPlanRunAssociation(testPlanRunAttributes, userAttributes),
             testPlanVersionAssociation(testPlanVersionAttributes),
-            atAssociation(atAttributes, atVersionAttributes),
+            atAssociation(atAttributes),
             browserAssociation(browserAttributes)
         ],
         options
@@ -142,14 +135,12 @@ const getTestPlanReportById = async (
 
 /**
  * @param {string|any} search - use this to combine with {@param filter} to be passed to Sequelize's where clause
- * @param {object} filter - use this define conditions to be passed to Sequelize's where clause
+ * @param {object} filter - Use this to define conditions to be passed to Sequelize's where clause
  * @param {string[]} testPlanReportAttributes - TestPlanReport attributes to be returned in the result
  * @param {string[]} testPlanRunAttributes - TestPlanRun attributes to be returned in the result
  * @param {string[]} testPlanVersionAttributes - TestPlanVersion attributes to be returned in the result
  * @param {string[]} atAttributes - At attributes to be returned in the result
- * @param {string[]} atVersionAttributes - At version attributes to be returned in the result
  * @param {string[]} browserAttributes - Browser attributes to be returned in the result
- * @param {string[]} browserVersionAttributes - Browser version attributes to be returned in the result
  * @param {string[]} userAttributes - User attributes to be returned in the result
  * @param {object} pagination - pagination options for query
  * @param {number} [pagination.page=0] - page to be queried in the pagination result (affected by {@param pagination.enablePagination})
@@ -167,7 +158,6 @@ const getTestPlanReports = async (
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
     atAttributes = AT_ATTRIBUTES,
-    atVersionAttributes = null,
     browserAttributes = BROWSER_ATTRIBUTES,
     userAttributes = USER_ATTRIBUTES,
     pagination = {},
@@ -183,7 +173,7 @@ const getTestPlanReports = async (
         [
             testPlanRunAssociation(testPlanRunAttributes, userAttributes),
             testPlanVersionAssociation(testPlanVersionAttributes),
-            atAssociation(atAttributes, atVersionAttributes),
+            atAssociation(atAttributes),
             browserAssociation(browserAttributes)
         ],
         pagination,
@@ -197,9 +187,7 @@ const getTestPlanReports = async (
  * @param {string[]} testPlanRunAttributes - TestPlanRun attributes to be returned in the result
  * @param {string[]} testPlanVersionAttributes - TestPlanVersion attributes to be returned in the result
  * @param {string[]} atAttributes - At attributes to be returned in the result
- * @param {string[]} atVersionAttributes - At version attributes to be returned in the result
  * @param {string[]} browserAttributes - Browser attributes to be returned in the result
- * @param {string[]} browserVersionAttributes - Browser version attributes to be returned in the result
  * @param {string[]} userAttributes - User attributes to be returned in the result
  * @param {object} options - Generic options for Sequelize
  * @param {*} options.transaction - Sequelize transaction
@@ -211,7 +199,6 @@ const createTestPlanReport = async (
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
     atAttributes = AT_ATTRIBUTES,
-    atVersionAttributes = AT_VERSION_ATTRIBUTES,
     browserAttributes = BROWSER_ATTRIBUTES,
     userAttributes = USER_ATTRIBUTES,
     options
@@ -230,7 +217,7 @@ const createTestPlanReport = async (
         [
             testPlanRunAssociation(testPlanRunAttributes, userAttributes),
             testPlanVersionAssociation(testPlanVersionAttributes),
-            atAssociation(atAttributes, atVersionAttributes),
+            atAssociation(atAttributes),
             browserAssociation(browserAttributes)
         ],
         options
@@ -266,9 +253,7 @@ const updateTestPlanReport = async (
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
     atAttributes = AT_ATTRIBUTES,
-    atVersionAttributes = AT_VERSION_ATTRIBUTES,
     browserAttributes = BROWSER_ATTRIBUTES,
-    browserVersionAttributes = BROWSER_VERSION_ATTRIBUTES,
     userAttributes = USER_ATTRIBUTES,
     options = {}
 ) => {
@@ -295,9 +280,7 @@ const updateTestPlanReport = async (
         testPlanRunAttributes,
         testPlanVersionAttributes,
         atAttributes,
-        atVersionAttributes,
         browserAttributes,
-        browserVersionAttributes,
         userAttributes
     );
 };
@@ -326,7 +309,7 @@ const removeTestPlanReport = async (
  * @param {*} userAttributes - User attributes to be returned in the result
  * @param {object} options - Generic options for Sequelize
  * @param {*} options.transaction - Sequelize transaction
- * @returns {Promise<[*, [*]]}
+ * @returns {Promise<[*, [*]]>}
  */
 const getOrCreateTestPlanReport = async (
     { testPlanVersionId, atId, browserId },
@@ -335,9 +318,7 @@ const getOrCreateTestPlanReport = async (
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
     atAttributes = AT_ATTRIBUTES,
-    atVersionAttributes = AT_VERSION_ATTRIBUTES,
     browserAttributes = BROWSER_ATTRIBUTES,
-    browserVersionAttributes = BROWSER_VERSION_ATTRIBUTES,
     userAttributes = USER_ATTRIBUTES,
     options = {}
 ) => {
@@ -364,9 +345,7 @@ const getOrCreateTestPlanReport = async (
         testPlanRunAttributes,
         testPlanVersionAttributes,
         atAttributes,
-        atVersionAttributes,
         browserAttributes,
-        browserVersionAttributes,
         userAttributes,
         { transaction: options.transaction }
     );
