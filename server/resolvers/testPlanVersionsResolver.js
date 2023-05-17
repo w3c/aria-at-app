@@ -20,8 +20,6 @@ const testPlanVersionsResolver = async (root, args, context, info) => {
         [],
         [],
         [],
-        [],
-        [],
         {
             order: [
                 ['updatedAt', 'desc'],

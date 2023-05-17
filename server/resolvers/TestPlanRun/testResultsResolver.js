@@ -1,9 +1,11 @@
 const testsResolver = require('../TestPlanVersion/testsResolver');
 const unexpectedBehaviorsJson = require('../../resources/unexpectedBehaviors.json');
 
-const testResultsResolver = testPlanRun => {
+const testResultsResolver = async (testPlanRun, _, context) => {
     const { testPlanReport } = testPlanRun;
     const tests = testsResolver(testPlanReport);
+    const ats = await context.atLoader.getAll();
+    const browsers = await context.browserLoader.getAll();
 
     // Populate nested test, atVersion, browserVersion, scenario, assertion and
     // unexpectedBehavior fields
@@ -12,12 +14,14 @@ const testResultsResolver = testPlanRun => {
         return {
             ...testResult,
             test,
-            atVersion: testPlanReport.at.atVersions.find(
-                each => each.id == testResult.atVersionId
-            ),
-            browserVersion: testPlanReport.browser.browserVersions.find(
-                each => each.id == testResult.browserVersionId
-            ),
+            atVersion: ats
+                .find(at => at.id === testPlanReport.at.id)
+                .atVersions.find(each => each.id == testResult.atVersionId),
+            browserVersion: browsers
+                .find(browser => browser.id === testPlanReport.browser.id)
+                .browserVersions.find(
+                    each => each.id == testResult.browserVersionId
+                ),
             scenarioResults: testResult.scenarioResults.map(scenarioResult => ({
                 ...scenarioResult,
                 scenario: test.scenarios.find(

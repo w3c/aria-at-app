@@ -29,12 +29,6 @@ The database migrations are managed by [Sequelize](https://sequelize.org/). To r
     yarn db-import-tests:dev
     ```
 
-The sample data which is used in test environments can also be populated on development environments.
-
-```
-yarn workspace server db-populate-sample-data:dev;
-```
-
 All at once:
 
 ```
@@ -50,7 +44,33 @@ yarn sequelize db:seed:all;
 yarn db-import-tests:dev;
 ```
 
-### Test Database
+The sample data which is used in test environments can also be populated on development environments.
+
+```
+yarn workspace server db-populate-sample-data:dev;
+```
+
+### Cloning the Production Database
+
+The prerequisite for the following steps is SSH access to the production server.
+
+1. Follow the [manual backup instructions](../deploy/README.md#manual-db-backup) which will produce a local database dump of the production database.
+2. Drop your **local** aria_at_report database using your preferred tool.
+3. Initialize the database in an empty state:
+    ```
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        createdb # run this if the PostgreSQL installation is freshly installed
+        yarn db-init:dev;
+    else
+        sudo -u postgres yarn db-init:dev;
+    fi;
+    ```
+4. Execute the database dump file:
+    ```
+    psql -d aria_at_report -f <environment>_dump_<timestamp>.sql
+    ```
+
+## Test Database
 
 The instructions are similar for the test database, with one extra step:
 

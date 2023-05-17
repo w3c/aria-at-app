@@ -7,6 +7,8 @@ const conflictsLength = require('./conflictsLengthResolver');
 const issues = require('./issuesResolver');
 const recommendedStatusTargetDate = require('./recommendedStatusTargetDateResolver');
 const atVersions = require('./atVersionsResolver');
+const at = require('./atResolver');
+const browser = require('./browserResolver');
 const latestAtVersionReleasedAt = require('./latestAtVersionReleasedAtResolver');
 
 module.exports = {
@@ -19,5 +21,7 @@ module.exports = {
     issues,
     recommendedStatusTargetDate,
     atVersions,
+    at,
+    browser,
     latestAtVersionReleasedAt
 };

@@ -1,4 +1,5 @@
 const ModelService = require('./ModelService');
+
 const {
     AT_ATTRIBUTES,
     AT_VERSION_ATTRIBUTES,

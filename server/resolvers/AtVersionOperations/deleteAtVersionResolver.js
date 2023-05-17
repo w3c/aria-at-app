@@ -10,8 +10,9 @@ const populateData = require('../../services/PopulatedData/populateData');
 const deleteAtVersionResolver = async (
     { parentContext: { id: atVersionId } },
     _,
-    { user }
+    context
 ) => {
+    const { user } = context;
     if (!user?.roles.find(role => role.name === 'ADMIN')) {
         throw new AuthenticationError();
     }
@@ -23,7 +24,7 @@ const deleteAtVersionResolver = async (
         return { isDeleted: true };
     }
 
-    const populatedTestResults = populateTestResults(resultIds);
+    const populatedTestResults = populateTestResults(resultIds, context);
 
     return {
         isDeleted: false,
@@ -31,7 +32,7 @@ const deleteAtVersionResolver = async (
     };
 };
 
-const populateTestResults = async resultIds => {
+const populateTestResults = async (resultIds, context) => {
     // Limits the number of queries that will be made for this endpoint
     const queryLimit = 10;
 
@@ -52,7 +53,7 @@ const populateTestResults = async resultIds => {
             const testPlanRun = preloadedTestPlanRunsById[testPlanRunId];
             return populateData(
                 { testResultId },
-                { preloaded: { testPlanRun } }
+                { preloaded: { testPlanRun }, context }
             );
         })
     );

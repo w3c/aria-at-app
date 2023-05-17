@@ -1,5 +1,4 @@
 const MODEL_NAME = 'TestPlanReport';
-
 const STATUS = {
     DRAFT: 'DRAFT',
     CANDIDATE: 'CANDIDATE',
