@@ -35,7 +35,6 @@ describe('TestPlanReportModel Data Checks', () => {
                 [],
                 [],
                 [],
-                [],
                 []
             );
         const { id, status, testPlanVersionId, createdAt, atId, browserId } =
