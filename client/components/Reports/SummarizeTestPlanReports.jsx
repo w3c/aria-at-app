@@ -222,7 +222,9 @@ const SummarizeTestPlanReports = ({ testPlanReports }) => {
                                 <tr key={testPlanVersionId}>
                                     <td>
                                         <Link
-                                            to={`/report/${testPlanVersionId}`}
+                                            to={`/report/${encodeURIComponent(
+                                                testPlanVersionId
+                                            )}`}
                                             aria-label={`${getTestPlanVersionTitle(
                                                 testPlanVersion
                                             )}, ${status} report`}
