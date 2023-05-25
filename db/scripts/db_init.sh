@@ -16,7 +16,7 @@ fi
 
 result="$(psql postgres -tAc "SELECT 1 FROM pg_roles WHERE rolname='${PGUSER}'")"
 
-if [ $result = '1' ]; then
+if [[ $result = '1' ]]; then
   echo "User ${PGUSER} already exists."
 else
   echo "Creating ${PGUSER} user..."
