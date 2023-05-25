@@ -18,9 +18,7 @@ The database migrations are managed by [Sequelize](https://sequelize.org/). To r
     ```
     - Linux
     ```
-    su root
-    su postgres
-    yarn db-init:dev
+    sudo -u postgres yarn db-init:dev
     ```
 2. Run database migrations
     ```
