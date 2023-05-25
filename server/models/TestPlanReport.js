@@ -1,12 +1,11 @@
 const MODEL_NAME = 'TestPlanReport';
-
 const STATUS = {
     DRAFT: 'DRAFT',
-    IN_REVIEW: 'IN_REVIEW',
-    FINALIZED: 'FINALIZED'
+    CANDIDATE: 'CANDIDATE',
+    RECOMMENDED: 'RECOMMENDED'
 };
 
-module.exports = function(sequelize, DataTypes) {
+module.exports = function (sequelize, DataTypes) {
     const Model = sequelize.define(
         MODEL_NAME,
         {
@@ -18,19 +17,40 @@ module.exports = function(sequelize, DataTypes) {
             },
             status: {
                 type: DataTypes.TEXT,
-                // type: DataTypes.ENUM(
-                //     STATUS.DRAFT,
-                //     STATUS.IN_REVIEW,
-                //     STATUS.FINALIZED
-                // ),
                 allowNull: false,
                 defaultValue: STATUS.DRAFT
             },
-            testPlanTargetId: { type: DataTypes.INTEGER },
             testPlanVersionId: { type: DataTypes.INTEGER },
+            atId: { type: DataTypes.INTEGER },
+            browserId: { type: DataTypes.INTEGER },
             createdAt: {
                 type: DataTypes.DATE,
                 defaultValue: DataTypes.NOW
+            },
+            candidateStatusReachedAt: {
+                type: DataTypes.DATE,
+                defaultValue: null,
+                allowNull: true
+            },
+            recommendedStatusReachedAt: {
+                type: DataTypes.DATE,
+                defaultValue: null,
+                allowNull: true
+            },
+            recommendedStatusTargetDate: {
+                type: DataTypes.DATE,
+                defaultValue: null,
+                allowNull: true
+            },
+            vendorReviewStatus: {
+                type: DataTypes.TEXT, // 'READY', 'IN_PROGRESS', 'APPROVED'
+                defaultValue: null,
+                allowNull: true
+            },
+            metrics: {
+                type: DataTypes.JSONB,
+                defaultValue: {},
+                allowNull: false
             }
         },
         {
@@ -40,26 +60,34 @@ module.exports = function(sequelize, DataTypes) {
     );
 
     Model.DRAFT = STATUS.DRAFT;
-    Model.IN_REVIEW = STATUS.IN_REVIEW;
-    Model.FINALIZED = STATUS.FINALIZED;
+    Model.CANDIDATE = STATUS.CANDIDATE;
+    Model.RECOMMENDED = STATUS.RECOMMENDED;
 
     Model.TEST_PLAN_VERSION_ASSOCIATION = { foreignKey: 'testPlanVersionId' };
 
-    Model.TEST_PLAN_TARGET_ASSOCIATION = { foreignKey: 'testPlanTargetId' };
+    Model.AT_ASSOCIATION = { foreignKey: 'atId' };
+
+    Model.BROWSER_ASSOCIATION = { foreignKey: 'browserId' };
 
     Model.TEST_PLAN_RUN_ASSOCIATION = { as: 'testPlanRuns' };
 
-    Model.associate = function(models) {
+    Model.associate = function (models) {
         Model.belongsTo(models.TestPlanVersion, {
             ...Model.TEST_PLAN_VERSION_ASSOCIATION,
             targetKey: 'id',
             as: 'testPlanVersion'
         });
 
-        Model.belongsTo(models.TestPlanTarget, {
-            ...Model.TEST_PLAN_TARGET_ASSOCIATION,
+        Model.belongsTo(models.At, {
+            ...Model.AT_ASSOCIATION,
             targetKey: 'id',
-            as: 'testPlanTarget'
+            as: 'at'
+        });
+
+        Model.belongsTo(models.Browser, {
+            ...Model.BROWSER_ASSOCIATION,
+            targetKey: 'id',
+            as: 'browser'
         });
 
         Model.hasMany(models.TestPlanRun, {

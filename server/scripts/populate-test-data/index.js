@@ -99,11 +99,12 @@ const populateTestDatabase = async () => {
         'completeAndFailingDueToIncorrectAssertions',
         'completeAndPassing',
         'completeAndFailingDueToNoOutputAssertions',
-        'completeAndPassing',
         'completeAndPassing'
     ]);
 
-    console.info('Successfully Populated');
+    console.info(
+        'Successfully populated. Please wait a moment for the process to close.'
+    );
 };
 
 if (require.main === module)

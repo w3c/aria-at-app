@@ -1,6 +1,6 @@
 const MODEL_NAME = 'TestPlanRun';
 
-module.exports = function(sequelize, DataTypes) {
+module.exports = function (sequelize, DataTypes) {
     const Model = sequelize.define(
         MODEL_NAME,
         {
@@ -12,7 +12,7 @@ module.exports = function(sequelize, DataTypes) {
             },
             testerUserId: { type: DataTypes.INTEGER, allowNull: true },
             testPlanReportId: { type: DataTypes.INTEGER },
-            testResults: { type: DataTypes.ARRAY(DataTypes.JSONB) }
+            testResults: { type: DataTypes.JSONB }
         },
         {
             timestamps: false,
@@ -26,7 +26,7 @@ module.exports = function(sequelize, DataTypes) {
 
     Model.USER_ASSOCIATION = { foreignKey: 'testerUserId' };
 
-    Model.associate = function(models) {
+    Model.associate = function (models) {
         Model.belongsTo(models.TestPlanReport, {
             ...Model.TEST_PLAN_REPORT_ASSOCIATION,
             targetKey: 'id',

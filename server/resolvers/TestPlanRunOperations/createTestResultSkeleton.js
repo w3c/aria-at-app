@@ -4,14 +4,23 @@ const {
     createAssertionResultId
 } = require('../../services/PopulatedData/locationOfDataId');
 
-const createTestResultSkeleton = ({ test, testPlanRun, testPlanTarget }) => {
+const createTestResultSkeleton = ({
+    test,
+    testPlanRun,
+    testPlanReport,
+    atVersionId,
+    browserVersionId
+}) => {
     const testResultId = createTestResultId(testPlanRun.id, test.id);
+
     return {
         id: testResultId,
         testId: test.id,
+        atVersionId,
+        browserVersionId,
         startedAt: new Date(),
         scenarioResults: test.scenarios
-            .filter(each => each.atId === testPlanTarget.at.id)
+            .filter(each => each.at.id === testPlanReport.at.id)
             .map(scenario => {
                 const scenarioResultId = createScenarioResultId(
                     testResultId,

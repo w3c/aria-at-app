@@ -21,6 +21,48 @@ const Home = () => {
                 </h1>
                 <div className="hero-copy-and-video">
                     <div className="hero-copy">
+                        <p className="w3c-authorization-message">
+                            <i aria-hidden="true">✨</i>
+                            <em>
+                                <strong>Note:</strong> The{' '}
+                                <a
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    href="https://github.com/w3c/aria-at"
+                                >
+                                    ARIA-AT Project
+                                </a>{' '}
+                                is managed by the{' '}
+                                <a
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    href="https://www.w3.org/community/aria-at/"
+                                >
+                                    ARIA-AT Community Group
+                                </a>{' '}
+                                in coordination with the{' '}
+                                <a
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    href="https://www.w3.org/WAI/ARIA/task-forces/practices/"
+                                >
+                                    Authoring Practices Task Force
+                                </a>{' '}
+                                of the{' '}
+                                <a
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    href="https://www.w3.org/WAI/ARIA/"
+                                >
+                                    ARIA Working Group
+                                </a>
+                                . The W3C staff contact is{' '}
+                                <a href="mailto:dmontalvo@w3.org">
+                                    Daniel Montalvo
+                                </a>
+                                .
+                            </em>
+                        </p>
                         <p>
                             Today, different screen readers often yield
                             conflicting experiences when presenting a web page,
@@ -55,7 +97,7 @@ const Home = () => {
                         <iframe
                             src="https://player.vimeo.com/video/651279608?h=45aefd646f&byline=false&dnt=true&portrait=false"
                             width="640"
-                            height="360"
+                            height="340"
                             frameBorder="0"
                             allow="autoplay; fullscreen; picture-in-picture"
                             allowFullScreen
@@ -80,7 +122,7 @@ const Home = () => {
                                     Test Writing Progress Report
                                 </a>{' '}
                                 and{' '}
-                                <a href="https://w3c.github.io/aria-at/build/">
+                                <a href="https://aria-at.netlify.app">
                                     view the draft test plans
                                 </a>{' '}
                                 preview.

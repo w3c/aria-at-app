@@ -55,15 +55,18 @@ describe('RoleModel Data Checks', () => {
         expect(name).toEqual(_name);
     });
 
-    it('should only have 2 named roles (ADMIN & TESTER)', async () => {
+    it('should only have 3 named roles (ADMIN, TESTER, and VENDOR)', async () => {
         const roles = await RoleService.getRoles('');
 
-        expect(roles.length).toEqual(2);
+        expect(roles.length).toEqual(3);
         expect(roles).toContainEqual(
             expect.objectContaining({ name: 'ADMIN' })
         );
         expect(roles).toContainEqual(
             expect.objectContaining({ name: 'TESTER' })
+        );
+        expect(roles).toContainEqual(
+            expect.objectContaining({ name: 'VENDOR' })
         );
     });
 
@@ -92,10 +95,8 @@ describe('RoleModel Data Checks', () => {
             await UserService.addUserToRole(_user, updatedName);
 
             const addedUserRole = await RoleService.getRoleByName(updatedName);
-            const {
-                name: addedUserRoleName,
-                users: addedUserRoleUsers
-            } = addedUserRole;
+            const { name: addedUserRoleName, users: addedUserRoleUsers } =
+                addedUserRole;
 
             // after role created
             expect(name).toEqual(_name);

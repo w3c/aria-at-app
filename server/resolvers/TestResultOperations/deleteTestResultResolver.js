@@ -7,9 +7,10 @@ const populateData = require('../../services/PopulatedData/populateData');
 const deleteTestResultResolver = async (
     { parentContext: { id: testResultId } },
     _,
-    { user }
+    context
 ) => {
-    const { testPlanRun } = await populateData({ testResultId });
+    const { user } = context;
+    const { testPlanRun } = await populateData({ testResultId }, { context });
 
     if (
         !(
@@ -31,7 +32,7 @@ const deleteTestResultResolver = async (
 
     await updateTestPlanRun(testPlanRun.id, { testResults: newTestResults });
 
-    return populateData({ testPlanRunId: testPlanRun.id });
+    return populateData({ testPlanRunId: testPlanRun.id }, { context });
 };
 
 module.exports = deleteTestResultResolver;

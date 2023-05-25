@@ -1,84 +1,81 @@
 import React from 'react';
-import { Route, Redirect } from 'react-router-dom';
+import { Route, Navigate, Routes } from 'react-router-dom';
 import ConfirmAuth from '@components/ConfirmAuth';
 import Home from '@components/Home';
 import InvalidRequest from '@components/InvalidRequest';
 import NotFound from '@components/NotFound';
-import Reports from '@components/Reports';
+import { Reports, Report } from '@components/Reports';
+import CandidateTests from '@components/CandidateTests';
 import SignupInstructions from '@components/SignupInstructions';
 import TestQueue from '@components/TestQueue';
 import TestRun from '@components/TestRun';
 import UserSettings from '@components/UserSettings';
+import CandidateTestPlanRun from '@components/CandidateTests/CandidateTestPlanRun';
+import TestManagement from '@components/TestManagement';
 
-export default [
-    {
-        path: '/',
-        exact: true,
-        component: Home
-    },
-    {
-        path: '/signup-instructions',
-        exact: true,
-        component: SignupInstructions
-    },
-    {
-        path: '/account/settings',
-        exact: true,
-        component: () => {
-            return (
+export default () => (
+    <Routes>
+        <Route index path="/" exact element={<Home />} />
+        <Route
+            exact
+            path="/signup-instructions"
+            element={<SignupInstructions />}
+        />
+        <Route
+            exact
+            path="/account/settings"
+            element={
                 <ConfirmAuth requiredPermission="TESTER">
-                    <Route component={UserSettings} />
+                    <UserSettings />
                 </ConfirmAuth>
-            );
-        }
-    },
-    {
-        path: '/test-queue',
-        exact: true,
-        component: TestQueue
-    },
-    {
-        path: '/test-plan-report/:testPlanReportId(\\d+)',
-        component: TestRun
-    },
-    {
-        path: '/run/:runId(\\d+)/task/:taskId(\\d+)',
-        component: () => {
-            return (
+            }
+        />
+        <Route
+            exact
+            path="/candidate-test-plan/:testPlanVersionId/:atId"
+            element={
+                <ConfirmAuth requiredPermission="VENDOR">
+                    <CandidateTestPlanRun />
+                </ConfirmAuth>
+            }
+        />
+        <Route exact path="/test-queue" element={<TestQueue />} />
+        <Route
+            exact
+            path="/test-plan-report/:testPlanReportId"
+            element={<TestRun />}
+        />
+        <Route
+            exact
+            path="/run/:runId"
+            element={
                 <ConfirmAuth requiredPermission="TESTER">
-                    <Route component={TestRun} />
+                    <TestRun />
                 </ConfirmAuth>
-            );
-        }
-    },
-    {
-        path: '/run/:runId(\\d+)',
-        component: () => {
-            return (
-                <ConfirmAuth requiredPermission="TESTER">
-                    <Route component={TestRun} />
+            }
+        />
+        <Route exact path="/reports" element={<Reports />} />
+        <Route exact path="/report/:testPlanVersionId/*" element={<Report />} />
+        <Route
+            exact
+            path="/candidate-tests"
+            element={
+                <ConfirmAuth requiredPermission="VENDOR">
+                    <CandidateTests />
                 </ConfirmAuth>
-            );
-        }
-    },
-    {
-        // Note that this component includes a nested router!
-        path: '/reports',
-        component: Reports
-    },
-    {
-        path: '/invalid-request',
-        exact: true,
-        component: InvalidRequest
-    },
-    {
-        path: '/404',
-        exact: true,
-        component: NotFound
-    },
-    {
-        component: () => {
-            return <Redirect to={{ pathname: '/404' }} />;
-        }
-    }
-];
+            }
+        />
+        <Route
+            exact
+            path="/test-management"
+            element={
+                <ConfirmAuth requiredPermission="ADMIN">
+                    <TestManagement />
+                </ConfirmAuth>
+            }
+        />
+        <Route exact path="/invalid-request" element={<InvalidRequest />} />
+        <Route exact path="/404" element={<NotFound />} />
+        <Route exact path="*" element={<Navigate to="/404" replace />} />
+    </Routes>
+);

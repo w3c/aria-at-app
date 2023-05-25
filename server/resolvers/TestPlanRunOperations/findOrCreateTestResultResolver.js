@@ -5,20 +5,61 @@ const {
 const populateData = require('../../services/PopulatedData/populateData');
 const sortArrayLikeArray = require('../../util/sortArrayLikeArray');
 const createTestResultSkeleton = require('./createTestResultSkeleton');
+const getMetrics = require('../../util/getMetrics');
+const {
+    updateTestPlanReport
+} = require('../../models/services/TestPlanReportService');
+const runnableTestsResolver = require('../TestPlanReport/runnableTestsResolver');
+const finalizedTestResultsResolver = require('../TestPlanReport/finalizedTestResultsResolver');
 
 const findOrCreateTestResultResolver = async (
     { parentContext: { id: testPlanRunId } },
-    { testId },
-    { user }
+    { testId, atVersionId, browserVersionId },
+    context
 ) => {
+    const { user } = context;
+
+    const fixTestPlanReportMetrics = async testPlanReportStale => {
+        const { testPlanReport } = await populateData(
+            {
+                testPlanReportId: testPlanReportStale.id
+            },
+            { context }
+        );
+        const runnableTests = runnableTestsResolver(testPlanReport);
+        const finalizedTestResults = await finalizedTestResultsResolver(
+            {
+                ...testPlanReport
+            },
+            null,
+            context
+        );
+        const metrics = getMetrics({
+            testPlanReport: {
+                ...testPlanReport,
+                finalizedTestResults,
+                runnableTests
+            }
+        });
+        await updateTestPlanReport(testPlanReport.id, {
+            metrics: { ...testPlanReport.metrics, ...metrics }
+        });
+    };
+
     const {
         testPlanRun,
-        testPlanTarget,
+        testPlanReport,
         testPlanVersion: testPlanRunTestPlanVersion
-    } = await populateData({
-        testPlanRunId
-    });
-    const { test, testPlanVersion } = await populateData({ testId });
+    } = await populateData(
+        {
+            testPlanRunId
+        },
+        { context }
+    );
+    const { test, testPlanVersion } = await populateData(
+        { testId },
+        { context }
+    );
 
     if (
         !(
@@ -31,7 +72,7 @@ const findOrCreateTestResultResolver = async (
     }
 
     if (
-        !test.atIds.find(atId => atId === testPlanTarget.at.id) ||
+        !test.atIds.find(atId => atId === testPlanReport.at.id) ||
         testPlanRunTestPlanVersion.id !== testPlanVersion.id
     ) {
         throw new UserInputError(
@@ -42,7 +83,9 @@ const findOrCreateTestResultResolver = async (
     const newTestResult = createTestResultSkeleton({
         test,
         testPlanRun,
-        testPlanTarget
+        testPlanReport,
+        atVersionId,
+        browserVersionId
     });
 
     const alreadyExists = !!testPlanRun.testResults.find(
@@ -64,9 +107,24 @@ const findOrCreateTestResultResolver = async (
         await updateTestPlanRun(testPlanRun.id, {
             testResults: newTestResults
         });
+        await fixTestPlanReportMetrics(testPlanReport);
+    } else {
+        // atVersionId and browserVersionId update
+        const testResultIndex = testPlanRun.testResults.findIndex(
+            testResult => testResult.id === newTestResult.id
+        );
+        const newTestResults = [...testPlanRun.testResults];
+
+        newTestResults[testResultIndex].atVersionId = atVersionId;
+        newTestResults[testResultIndex].browserVersionId = browserVersionId;
+
+        await updateTestPlanRun(testPlanRun.id, {
+            testResults: newTestResults
+        });
+        await fixTestPlanReportMetrics(testPlanReport);
     }
 
-    return populateData({ testResultId: newTestResult.id });
+    return populateData({ testResultId: newTestResult.id }, { context });
 };
 
 module.exports = findOrCreateTestResultResolver;

@@ -112,7 +112,7 @@
     flex-shrink: 0;
 }
 
-.test-result-buttons button {
+.test-result-buttons a {
     margin-right: 0.5em;
 }
 
@@ -132,10 +132,41 @@
     height: 1.2rem;
     border-radius: 1rem;
     margin-top: 0.2em;
+    border: 1px solid gray;
 }
 
 .progress .progress-bar.bg-info {
     background-color: #0b60ab !important;
+}
+
+.progress.clipped {
+    position: relative;
+    display: flex;
+    overflow: hidden;
+}
+
+.progress.clipped .front {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background: #e9ecef;
+    color: black;
+    /*clip-path: inset(0 0 0 50%);*/
+    /*-webkit-clip-path: inset(0 0 0 50%);*/
+}
+
+.progress.clipped .back {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    background: #0b60ab;
+    color: white;
 }
 
 .test-details {

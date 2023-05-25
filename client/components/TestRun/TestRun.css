@@ -1,3 +1,5 @@
+@import url('https://use.fontawesome.com/releases/v5.0.1/css/all.css');
+
 .main-test-area {
     position: relative;
 }
@@ -7,15 +9,19 @@
     margin-top: 0;
 }
 
-button.test-navigator-toggle.hide,
-button.test-navigator-toggle.show {
+#test-navigator-heading {
+    font-size: 1em;
+    margin-top: 0.75em;
+}
+
+button.test-navigator-toggle {
     border: 0;
     background-color: transparent;
     color: #929292;
 }
 
-button.test-navigator-toggle.hide:hover,
-button.test-navigator-toggle.show:hover {
+button.test-navigator-toggle:hover,
+button.test-navigator-toggle:focus {
     color: #0b60ab;
 }
 
@@ -70,7 +76,8 @@ button.test-navigator-toggle.show:hover {
     height: 0%;
 }
 
-.complete.test-name-wrapper:before {
+.complete.test-name-wrapper:before,
+.changes-requested.test-name-wrapper:before {
     background: #1d8f37;
 }
 
@@ -111,6 +118,21 @@ button.test-navigator-toggle.show:hover {
         rgba(255, 255, 255, 1) 100%
     );
     border: 2px solid #1e8f37;
+}
+
+.test-name-wrapper.changes-requested .progress-indicator {
+    background: #f87f1c;
+}
+
+.test-name-wrapper.changes-requested .progress-indicator:before {
+    position: relative;
+    content: '\f024';
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    color: white;
+    font-size: 10px;
+    top: -3px;
+    left: 4px;
 }
 
 .test-name-wrapper.skipped .progress-indicator {
@@ -191,6 +213,9 @@ main.container-fluid .test-iframe-container > .row {
 .test-run-toolbar {
     display: flex;
     width: 100%;
+
+    padding-left: 0;
+    padding-right: 0;
 }
 .test-run-toolbar li:first-of-type {
     flex-grow: 1;
@@ -229,6 +254,9 @@ main.container-fluid .test-iframe-container > .row {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    flex-wrap: wrap;
+
+    padding: 0;
 }
 
 .test-info-entity {
@@ -239,12 +267,46 @@ main.container-fluid .test-iframe-container > .row {
 }
 
 .apg-example-name,
-.at-browser,
-.tests-completed {
+.tests-completed,
+.test-version,
+.review-status,
+.target-date {
     background: #f5f8fa;
     border: 1px solid #d2d5d9;
     width: 37%;
     text-align: center;
+}
+
+.at-browser {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+
+    background: #f5f8fa;
+    border: 1px solid #d2d5d9;
+    width: 37%;
+    /*text-align: center;*/
+}
+
+.at-browser-row {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+}
+
+#edit-fa-button {
+    padding: 0;
+    margin: 0;
+    background: none;
+    color: #919191;
+    border: none;
+}
+
+#edit-fa-button svg {
+    padding: 0;
+    margin: 0;
 }
 
 .tests-completed {
@@ -275,7 +337,7 @@ main.container-fluid .test-iframe-container > .row {
     border-radius: 3px;
 }
 
-.current-test-options h3 {
+.current-test-options h2 {
     margin-top: 0;
     padding: 0.9em;
     background: #e9ebee;
@@ -309,4 +371,51 @@ main.container-fluid .test-iframe-container > .row {
 .status-bar {
     display: flex;
     align-items: center;
+}
+
+.at-browser-details-modal-alert {
+    display: flex;
+
+    grid-column: 1 / -1;
+}
+
+fieldset .at-browser-details-modal-alert {
+    margin-bottom: 0;
+}
+
+.btn-options {
+    width: 100%;
+}
+
+a.btn-options:hover {
+    text-decoration: none;
+}
+
+.at-browser-details-modal-alert span {
+    font-size: 0.875rem;
+    line-height: 1.125rem;
+}
+
+.at-browser-details-full-column {
+    grid-column: 1 / -1;
+}
+
+.modal-header,
+.modal-body,
+.modal-footer {
+    padding: 1.5rem 2.5rem;
+}
+
+@media (min-width: 768px) {
+    .modal-50w {
+        min-width: 50%;
+    }
+
+    .modal-60w {
+        min-width: 60%;
+    }
+}
+
+.form-control.is-invalid {
+    background-image: none;
 }

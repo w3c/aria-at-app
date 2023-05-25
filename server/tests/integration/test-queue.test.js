@@ -1,6 +1,7 @@
 const { gql } = require('apollo-server');
 const dbCleaner = require('../util/db-cleaner');
 const { query, mutate } = require('../util/graphql-test-utilities');
+const { sortBy } = require('lodash');
 const db = require('../../models');
 
 afterAll(async () => {
@@ -13,19 +14,14 @@ describe('test queue', () => {
         const result = await query(
             gql`
                 query {
-                    testPlanReports(statuses: [DRAFT, IN_REVIEW]) {
+                    testPlanReports(statuses: [DRAFT]) {
                         id
-                        status
                         conflicts {
                             source {
                                 test {
                                     id
                                 }
                             }
-                        }
-                        testPlanTarget {
-                            id
-                            title
                         }
                         testPlanVersion {
                             title
@@ -53,12 +49,7 @@ describe('test queue', () => {
             testPlanReports: expect.arrayContaining([
                 {
                     id: expect.anything(),
-                    status: expect.stringMatching(/^(DRAFT|IN_REVIEW)$/),
                     conflicts: expect.any(Array),
-                    testPlanTarget: {
-                        id: expect.anything(),
-                        title: expect.any(String)
-                    },
                     testPlanVersion: {
                         title: expect.any(String),
                         gitSha: expect.any(String),
@@ -103,9 +94,10 @@ describe('test queue', () => {
                     }
                 }
             `);
-            const previousTesterIds = previous.testPlanReport.draftTestPlanRuns.map(
-                testPlanRun => testPlanRun.tester.id
-            );
+            const previousTesterIds =
+                previous.testPlanReport.draftTestPlanRuns.map(
+                    testPlanRun => testPlanRun.tester.id
+                );
 
             // A2
             const result = await mutate(gql`
@@ -158,9 +150,10 @@ describe('test queue', () => {
                     }
                 }
             `);
-            const previousTesterIds = previous.testPlanReport.draftTestPlanRuns.map(
-                run => run.tester.id
-            );
+            const previousTesterIds =
+                previous.testPlanReport.draftTestPlanRuns.map(
+                    run => run.tester.id
+                );
 
             // A2
             const result = await mutate(gql`
@@ -221,10 +214,10 @@ describe('test queue', () => {
             `);
             const previousStatus = previous.testPlanReport.status;
 
-            const result = await mutate(gql`
+            const candidateResult = await mutate(gql`
                 mutation {
                     testPlanReport(id: ${testPlanReportId}) {
-                        updateStatus(status: FINALIZED) {
+                        updateStatus(status: CANDIDATE) {
                             testPlanReport {
                                 status
                             }
@@ -232,11 +225,28 @@ describe('test queue', () => {
                     }
                 }
             `);
-            const resultStatus =
-                result.testPlanReport.updateStatus.testPlanReport.status;
+            const candidateResultStatus =
+                candidateResult.testPlanReport.updateStatus.testPlanReport
+                    .status;
 
-            expect(previousStatus).not.toBe('FINALIZED');
-            expect(resultStatus).toBe('FINALIZED');
+            const recommendedResult = await mutate(gql`
+                mutation {
+                    testPlanReport(id: ${testPlanReportId}) {
+                        updateStatus(status: RECOMMENDED) {
+                            testPlanReport {
+                                status
+                            }
+                        }
+                    }
+                }
+            `);
+            const recommendedResultStatus =
+                recommendedResult.testPlanReport.updateStatus.testPlanReport
+                    .status;
+
+            expect(previousStatus).not.toBe('CANDIDATE');
+            expect(candidateResultStatus).toBe('CANDIDATE');
+            expect(recommendedResultStatus).toBe('RECOMMENDED');
         });
     });
 
@@ -246,12 +256,18 @@ describe('test queue', () => {
                 ats {
                     id
                     name
-                    atVersions
+                    atVersions {
+                        id
+                        name
+                    }
                 }
                 browsers {
                     id
                     name
-                    browserVersions
+                    browserVersions {
+                        id
+                        name
+                    }
                 }
                 testPlans {
                     latestTestPlanVersion {
@@ -268,14 +284,32 @@ describe('test queue', () => {
                     expect.objectContaining({
                         id: expect.anything(),
                         name: 'NVDA',
-                        atVersions: expect.arrayContaining(['2020.1'])
+                        atVersions: expect.arrayContaining([
+                            expect.objectContaining({
+                                id: expect.anything(),
+                                name: '2020.4'
+                            })
+                        ])
                     })
                 ]),
                 browsers: expect.arrayContaining([
                     expect.objectContaining({
                         id: expect.anything(),
                         name: 'Firefox',
-                        browserVersions: expect.arrayContaining(['88.0'])
+                        browserVersions: expect.arrayContaining([
+                            expect.objectContaining({
+                                id: expect.anything(),
+                                name: '99.0.1'
+                            })
+                        ])
+                    })
+                ]),
+                testPlans: expect.arrayContaining([
+                    expect.objectContaining({
+                        latestTestPlanVersion: expect.objectContaining({
+                            id: expect.anything(),
+                            title: 'Alert Example'
+                        })
                     })
                 ])
             })
@@ -287,36 +321,25 @@ describe('test queue', () => {
             // A1
             const testPlanVersionId = '1';
             const atId = '1';
-            const unknownAtVersion = '2221.1';
             const browserId = '1';
-            const unknownBrowserVersion = '9999.0';
             const mutationToTest = async () => {
                 const result = await mutate(gql`
                         mutation {
                             findOrCreateTestPlanReport(input: {
                                 testPlanVersionId: ${testPlanVersionId}
-                                testPlanTarget: {
-                                    atId: ${atId}
-                                    atVersion: "${unknownAtVersion}"
-                                    browserId: ${browserId}
-                                    browserVersion: "${unknownBrowserVersion}"
-                                }
+                                atId: ${atId}
+                                browserId: ${browserId}
                             }) {
                                 populatedData {
                                     testPlanReport {
                                         id
                                         status
-                                    }
-                                    testPlanTarget {
-                                        id
                                         at {
                                             id
                                         }
-                                        atVersion
                                         browser {
                                             id
                                         }
-                                        browserVersion
                                     }
                                     testPlanVersion {
                                         id
@@ -329,41 +352,14 @@ describe('test queue', () => {
                         }
                     `);
                 const {
-                    populatedData: {
-                        testPlanReport,
-                        testPlanTarget,
-                        testPlanVersion
-                    },
+                    populatedData: { testPlanReport, testPlanVersion },
                     created
                 } = result.findOrCreateTestPlanReport;
-                const createdBrowserVersions = created.filter(
-                    ({ locationOfData }) => locationOfData.browserVersion
-                );
-                const createdAtVersions = created.filter(
-                    ({ locationOfData }) => locationOfData.atVersion
-                );
-                const createdTestPlanTargets = created.filter(
-                    ({ locationOfData }) =>
-                        locationOfData.testPlanTargetId &&
-                        !(
-                            locationOfData.browserVersion ||
-                            locationOfData.atVersion
-                        )
-                );
-                const createdTestPlanReports = created.filter(
-                    ({ locationOfData }) =>
-                        locationOfData.testPlanReportId &&
-                        !locationOfData.testPlanTargetId
-                );
+
                 return {
                     testPlanReport,
-                    testPlanTarget,
                     testPlanVersion,
-                    created,
-                    createdBrowserVersions,
-                    createdAtVersions,
-                    createdTestPlanTargets,
-                    createdTestPlanReports
+                    created
                 };
             };
 
@@ -375,7 +371,13 @@ describe('test queue', () => {
             expect(first.testPlanReport).toEqual(
                 expect.objectContaining({
                     id: expect.anything(),
-                    status: 'DRAFT'
+                    status: 'DRAFT',
+                    at: expect.objectContaining({
+                        id: atId
+                    }),
+                    browser: expect.objectContaining({
+                        id: browserId
+                    })
                 })
             );
             expect(first.testPlanVersion).toEqual(
@@ -383,38 +385,11 @@ describe('test queue', () => {
                     id: testPlanVersionId
                 })
             );
-            expect(first.testPlanTarget).toEqual(
-                expect.objectContaining({
-                    at: expect.objectContaining({
-                        id: atId
-                    }),
-                    atVersion: unknownAtVersion,
-                    browser: expect.objectContaining({
-                        id: browserId
-                    }),
-                    browserVersion: unknownBrowserVersion
-                })
-            );
-            expect(first.created.length).toBe(4);
-            expect(first.createdBrowserVersions.length).toBe(1);
-            expect(
-                first.createdBrowserVersions[0].locationOfData.browserVersion
-            ).toBe(unknownBrowserVersion);
-            expect(first.createdAtVersions.length).toBe(1);
-            expect(first.createdAtVersions[0].locationOfData.atVersion).toBe(
-                unknownAtVersion
-            );
-            expect(first.createdTestPlanTargets.length).toBe(1);
-            expect(first.createdTestPlanReports.length).toBe(1);
+            expect(first.created.length).toBe(1);
 
             expect(second.testPlanReport).toEqual(
                 expect.objectContaining({
                     id: first.testPlanReport.id
-                })
-            );
-            expect(second.testPlanTarget).toEqual(
-                expect.objectContaining({
-                    id: first.testPlanTarget.id
                 })
             );
             expect(second.testPlanVersion).toEqual(
@@ -428,7 +403,7 @@ describe('test queue', () => {
 
     it('can be deleted along with associated runs', async () => {
         await dbCleaner(async () => {
-            const testPlanReportId = '2';
+            const testPlanReportId = '3';
             const queryBefore = await query(gql`
                 query {
                     testPlanReport(id: ${testPlanReportId}) {
@@ -474,18 +449,15 @@ describe('test queue', () => {
                     conflicts {
                         source {
                             test {
-                                id
                                 title
                                 rowNumber
                             }
                             scenario {
-                                id
                                 commands {
                                     text
                                 }
                             }
                             assertion {
-                                id
                                 text
                             }
                         }
@@ -513,284 +485,283 @@ describe('test queue', () => {
             }
         `);
 
+        // Nested sorting turns out to be inconsistent across environments -
+        // it might be nice to figure out an elegant way to establish a default
+        // sorting scheme for nested models, but this will do for now
+        result.testPlanReport.conflicts = result.testPlanReport.conflicts.map(
+            conflict => ({
+                ...conflict,
+                conflictingResults: sortBy(conflict.conflictingResults, [
+                    'testPlanRun.id'
+                ])
+            })
+        );
+
         expect(result.testPlanReport).toMatchInlineSnapshot(`
-            Object {
-              "conflicts": Array [
-                Object {
-                  "conflictingResults": Array [
-                    Object {
-                      "assertionResult": Object {
+            {
+              "conflicts": [
+                {
+                  "conflictingResults": [
+                    {
+                      "assertionResult": {
                         "failedReason": null,
                         "passed": true,
                       },
-                      "scenarioResult": Object {
+                      "scenarioResult": {
                         "output": "automatically seeded sample output",
-                        "unexpectedBehaviors": Array [],
+                        "unexpectedBehaviors": [],
                       },
-                      "testPlanRun": Object {
+                      "testPlanRun": {
                         "id": "2",
-                        "tester": Object {
+                        "tester": {
                           "username": "esmeralda-baggins",
                         },
                       },
                     },
-                    Object {
-                      "assertionResult": Object {
+                    {
+                      "assertionResult": {
                         "failedReason": "INCORRECT_OUTPUT",
                         "passed": false,
                       },
-                      "scenarioResult": Object {
+                      "scenarioResult": {
                         "output": "automatically seeded sample output",
-                        "unexpectedBehaviors": Array [],
+                        "unexpectedBehaviors": [],
                       },
-                      "testPlanRun": Object {
+                      "testPlanRun": {
                         "id": "3",
-                        "tester": Object {
+                        "tester": {
                           "username": "tom-proudfeet",
                         },
                       },
                     },
                   ],
-                  "source": Object {
-                    "assertion": Object {
-                      "id": "MmEzMeyIzIjoiTmpBeU9leUl5SWpvaU5pSjlHTmhORCJ9jlhMW",
+                  "source": {
+                    "assertion": {
                       "text": "Role 'combobox' is conveyed",
                     },
-                    "scenario": Object {
-                      "commands": Array [
-                        Object {
+                    "scenario": {
+                      "commands": [
+                        {
                           "text": "Shift+Tab",
                         },
                       ],
-                      "id": "NWFkZeyIzIjoiTmpBeU9leUl5SWpvaU5pSjlHTmhORCJ9DBiOG",
                     },
-                    "test": Object {
-                      "id": "NjAyOeyIyIjoiNiJ9GNhND",
+                    "test": {
                       "rowNumber": 4,
                       "title": "Navigate backwards to a collapsed select-only combobox in interaction mode",
                     },
                   },
                 },
-                Object {
-                  "conflictingResults": Array [
-                    Object {
-                      "assertionResult": Object {
+                {
+                  "conflictingResults": [
+                    {
+                      "assertionResult": {
                         "failedReason": "INCORRECT_OUTPUT",
                         "passed": false,
                       },
-                      "scenarioResult": Object {
+                      "scenarioResult": {
                         "output": "automatically seeded sample output",
-                        "unexpectedBehaviors": Array [],
+                        "unexpectedBehaviors": [],
                       },
-                      "testPlanRun": Object {
+                      "testPlanRun": {
                         "id": "2",
-                        "tester": Object {
+                        "tester": {
                           "username": "esmeralda-baggins",
                         },
                       },
                     },
-                    Object {
-                      "assertionResult": Object {
+                    {
+                      "assertionResult": {
                         "failedReason": "NO_OUTPUT",
                         "passed": false,
                       },
-                      "scenarioResult": Object {
+                      "scenarioResult": {
                         "output": "automatically seeded sample output",
-                        "unexpectedBehaviors": Array [],
+                        "unexpectedBehaviors": [],
                       },
-                      "testPlanRun": Object {
+                      "testPlanRun": {
                         "id": "3",
-                        "tester": Object {
+                        "tester": {
                           "username": "tom-proudfeet",
                         },
                       },
                     },
                   ],
-                  "source": Object {
-                    "assertion": Object {
-                      "id": "ODVlNeyIzIjoiTlRnd1pleUl5SWpvaU5pSjlXWTJPVCJ9zgzMj",
+                  "source": {
+                    "assertion": {
                       "text": "Role 'combobox' is conveyed",
                     },
-                    "scenario": Object {
-                      "commands": Array [
-                        Object {
+                    "scenario": {
+                      "commands": [
+                        {
                           "text": "Insert+Tab",
                         },
                       ],
-                      "id": "NzY5NeyIzIjoiTlRnd1pleUl5SWpvaU5pSjlXWTJPVCJ9GRiND",
                     },
-                    "test": Object {
-                      "id": "NTgwZeyIyIjoiNiJ9WY2OT",
+                    "test": {
                       "rowNumber": 7,
                       "title": "Read information about a collapsed select-only combobox in reading mode",
                     },
                   },
                 },
-                Object {
-                  "conflictingResults": Array [
-                    Object {
+                {
+                  "conflictingResults": [
+                    {
                       "assertionResult": null,
-                      "scenarioResult": Object {
+                      "scenarioResult": {
                         "output": "automatically seeded sample output",
-                        "unexpectedBehaviors": Array [],
+                        "unexpectedBehaviors": [],
                       },
-                      "testPlanRun": Object {
+                      "testPlanRun": {
                         "id": "2",
-                        "tester": Object {
+                        "tester": {
                           "username": "esmeralda-baggins",
                         },
                       },
                     },
-                    Object {
+                    {
                       "assertionResult": null,
-                      "scenarioResult": Object {
+                      "scenarioResult": {
                         "output": "automatically seeded sample output",
-                        "unexpectedBehaviors": Array [
-                          Object {
+                        "unexpectedBehaviors": [
+                          {
                             "otherUnexpectedBehaviorText": "Seeded other unexpected behavior",
                             "text": "Other",
                           },
                         ],
                       },
-                      "testPlanRun": Object {
+                      "testPlanRun": {
                         "id": "3",
-                        "tester": Object {
+                        "tester": {
                           "username": "tom-proudfeet",
                         },
                       },
                     },
                   ],
-                  "source": Object {
+                  "source": {
                     "assertion": null,
-                    "scenario": Object {
-                      "commands": Array [
-                        Object {
+                    "scenario": {
+                      "commands": [
+                        {
                           "text": "Insert+Tab",
                         },
                       ],
-                      "id": "OTFhZeyIzIjoiTVRVNE1leUl5SWpvaU5pSjlUTXpabSJ9DM2Ym",
                     },
-                    "test": Object {
-                      "id": "MTU4MeyIyIjoiNiJ9TMzZm",
+                    "test": {
                       "rowNumber": 8,
                       "title": "Read information about a collapsed select-only combobox in interaction mode",
                     },
                   },
                 },
-                Object {
-                  "conflictingResults": Array [
-                    Object {
+                {
+                  "conflictingResults": [
+                    {
                       "assertionResult": null,
-                      "scenarioResult": Object {
+                      "scenarioResult": {
                         "output": "automatically seeded sample output",
-                        "unexpectedBehaviors": Array [],
+                        "unexpectedBehaviors": [],
                       },
-                      "testPlanRun": Object {
+                      "testPlanRun": {
                         "id": "2",
-                        "tester": Object {
+                        "tester": {
                           "username": "esmeralda-baggins",
                         },
                       },
                     },
-                    Object {
+                    {
                       "assertionResult": null,
-                      "scenarioResult": Object {
+                      "scenarioResult": {
                         "output": "automatically seeded sample output",
-                        "unexpectedBehaviors": Array [
-                          Object {
+                        "unexpectedBehaviors": [
+                          {
                             "otherUnexpectedBehaviorText": null,
                             "text": "Output is excessively verbose, e.g., includes redundant and/or irrelevant speech",
                           },
-                          Object {
+                          {
                             "otherUnexpectedBehaviorText": "Seeded other unexpected behavior",
                             "text": "Other",
                           },
                         ],
                       },
-                      "testPlanRun": Object {
+                      "testPlanRun": {
                         "id": "3",
-                        "tester": Object {
+                        "tester": {
                           "username": "tom-proudfeet",
                         },
                       },
                     },
                   ],
-                  "source": Object {
+                  "source": {
                     "assertion": null,
-                    "scenario": Object {
-                      "commands": Array [
-                        Object {
+                    "scenario": {
+                      "commands": [
+                        {
                           "text": "Alt+Down",
                         },
                       ],
-                      "id": "MmI1ZeyIzIjoiWVRKbE9leUl5SWpvaU5pSjlUTXdZVCJ9TJlZT",
                     },
-                    "test": Object {
-                      "id": "YTJlOeyIyIjoiNiJ9TMwYT",
+                    "test": {
                       "rowNumber": 10,
                       "title": "Open a collapsed select-only combobox in reading mode",
                     },
                   },
                 },
-                Object {
-                  "conflictingResults": Array [
-                    Object {
-                      "assertionResult": Object {
+                {
+                  "conflictingResults": [
+                    {
+                      "assertionResult": {
                         "failedReason": "NO_OUTPUT",
                         "passed": false,
                       },
-                      "scenarioResult": Object {
+                      "scenarioResult": {
                         "output": "automatically seeded sample output",
-                        "unexpectedBehaviors": Array [],
+                        "unexpectedBehaviors": [],
                       },
-                      "testPlanRun": Object {
+                      "testPlanRun": {
                         "id": "2",
-                        "tester": Object {
+                        "tester": {
                           "username": "esmeralda-baggins",
                         },
                       },
                     },
-                    Object {
-                      "assertionResult": Object {
+                    {
+                      "assertionResult": {
                         "failedReason": "INCORRECT_OUTPUT",
                         "passed": false,
                       },
-                      "scenarioResult": Object {
+                      "scenarioResult": {
                         "output": "automatically seeded sample output",
-                        "unexpectedBehaviors": Array [
-                          Object {
+                        "unexpectedBehaviors": [
+                          {
                             "otherUnexpectedBehaviorText": null,
                             "text": "Output is excessively verbose, e.g., includes redundant and/or irrelevant speech",
                           },
-                          Object {
+                          {
                             "otherUnexpectedBehaviorText": "Seeded other unexpected behavior",
                             "text": "Other",
                           },
                         ],
                       },
-                      "testPlanRun": Object {
+                      "testPlanRun": {
                         "id": "3",
-                        "tester": Object {
+                        "tester": {
                           "username": "tom-proudfeet",
                         },
                       },
                     },
                   ],
-                  "source": Object {
-                    "assertion": Object {
-                      "id": "OTI0MeyIzIjoiWVRKbE9leUl5SWpvaU5pSjlUTXdZVCJ9mQ5N2",
+                  "source": {
+                    "assertion": {
                       "text": "State of the combobox (expanded) is conveyed",
                     },
-                    "scenario": Object {
-                      "commands": Array [
-                        Object {
+                    "scenario": {
+                      "commands": [
+                        {
                           "text": "Alt+Down",
                         },
                       ],
-                      "id": "MmI1ZeyIzIjoiWVRKbE9leUl5SWpvaU5pSjlUTXdZVCJ9TJlZT",
                     },
-                    "test": Object {
-                      "id": "YTJlOeyIyIjoiNiJ9TMwYT",
+                    "test": {
                       "rowNumber": 10,
                       "title": "Open a collapsed select-only combobox in reading mode",
                     },

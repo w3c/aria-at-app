@@ -36,6 +36,8 @@ async function importTests(gitSha) {
             [],
             [],
             [],
+            [],
+            [],
             []
         );
         let versionExists = results.length !== 0;

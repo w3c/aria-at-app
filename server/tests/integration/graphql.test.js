@@ -4,6 +4,10 @@ const deepFlatFilter = require('../../util/deepFlatFilter');
 const { query, mutate } = require('../util/graphql-test-utilities');
 const db = require('../../models/index');
 const dbCleaner = require('../util/db-cleaner');
+const { getAtVersionByQuery } = require('../../models/services/AtService');
+const {
+    getBrowserVersionByQuery
+} = require('../../models/services/BrowserService');
 
 /**
  * Get a function for making GraphQL queries - as well as functions to check
@@ -133,10 +137,17 @@ describe('graphql', () => {
         const excludedTypeNames = [
             // Items formatted like this:
             // 'TestResult'
+            'Issue',
+            'Vendor'
         ];
         const excludedTypeNameAndField = [
             // Items formatted like this:
             // ['TestResult', 'startedAt'],
+            ['PopulatedData', 'atVersion'],
+            ['PopulatedData', 'browserVersion'],
+            ['TestPlanReport', 'issues'],
+            ['TestPlanReport', 'vendorReviewStatus'],
+            ['Test', 'viewers']
         ];
         ({
             typeAwareQuery,
@@ -166,13 +177,22 @@ describe('graphql', () => {
                         __typename
                         id
                         name
-                        browserVersions
+                        browserVersions {
+                            __typename
+                            id
+                            name
+                        }
                     }
                     ats {
                         __typename
                         id
                         name
-                        atVersions
+                        atVersions {
+                            __typename
+                            id
+                            name
+                            releasedAt
+                        }
                     }
                     users {
                         __typename
@@ -255,7 +275,16 @@ describe('graphql', () => {
                         id
                         status
                         createdAt
+                        vendorReviewStatus
                         testPlanVersion {
+                            id
+                        }
+                        at {
+                            __typename
+                            id
+                        }
+                        browser {
+                            __typename
                             id
                         }
                         runnableTests {
@@ -264,19 +293,7 @@ describe('graphql', () => {
                             renderableContent
                             renderedUrl
                         }
-                        testPlanTarget {
-                            __typename
-                            id
-                            title
-                            at {
-                                id
-                            }
-                            atVersion
-                            browser {
-                                id
-                            }
-                            browserVersion
-                        }
+                        runnableTestsLength
                         draftTestPlanRuns {
                             __typename
                             id
@@ -288,6 +305,17 @@ describe('graphql', () => {
                                 id
                                 test {
                                     id
+                                }
+                                atVersion {
+                                    __typename
+                                    id
+                                    name
+                                    releasedAt
+                                }
+                                browserVersion {
+                                    __typename
+                                    id
+                                    name
                                 }
                                 scenarioResults {
                                     __typename
@@ -313,6 +341,7 @@ describe('graphql', () => {
                                     }
                                 }
                             }
+                            testResultsLength
                         }
                         conflicts {
                             __typename
@@ -323,6 +352,9 @@ describe('graphql', () => {
                                 locationOfData
                             }
                         }
+                        issues {
+                            __typename
+                        }
                     }
                     testPlanReport(id: 3) {
                         __typename
@@ -332,9 +364,34 @@ describe('graphql', () => {
                             startedAt
                             completedAt
                         }
+                        metrics
+                        conflictsLength
+                        candidateStatusReachedAt
+                        recommendedStatusTargetDate
+                        recommendedStatusReachedAt
+                        atVersions {
+                            id
+                            name
+                            releasedAt
+                        }
+                        latestAtVersionReleasedAt {
+                            id
+                            name
+                            releasedAt
+                        }
                     }
                     testPlanReports {
                         id
+                        atVersions {
+                            id
+                            name
+                            releasedAt
+                        }
+                        latestAtVersionReleasedAt {
+                            id
+                            name
+                            releasedAt
+                        }
                     }
                     testPlanRun(id: 3) {
                         __typename
@@ -357,20 +414,15 @@ describe('graphql', () => {
                         testPlanReport {
                             id
                         }
-                        testPlanRun {
-                            id
-                        }
-                        testPlanTarget {
-                            id
-                        }
                         at {
                             id
                         }
                         browser {
                             id
                         }
-                        atVersion
-                        browserVersion
+                        testPlanRun {
+                            id
+                        }
                         test {
                             id
                         }
@@ -381,6 +433,12 @@ describe('graphql', () => {
                             id
                         }
                         testResult {
+                            id
+                        }
+                        atVersion {
+                            id
+                        }
+                        browserVersion {
                             id
                         }
                         scenarioResult {
@@ -400,7 +458,9 @@ describe('graphql', () => {
                 emptyTestResultInput,
                 passingTestResultInput,
                 testPlanRun1DeletableTestResultId,
-                testPlanRun1TestId
+                testPlanRun1TestId,
+                atVersionId,
+                browserVersionId
             } = await getMutationInputs();
 
             // eslint-disable-next-line no-unused-vars
@@ -413,17 +473,15 @@ describe('graphql', () => {
                         $passingTestResultId: ID!
                         $testPlanRun1DeletableTestResultId: ID!
                         $testPlanRun1TestId: ID!
+                        $atVersionId: ID!
+                        $browserVersionId: ID!
                     ) {
                         __typename
                         findOrCreateTestPlanReport(
                             input: {
                                 testPlanVersionId: 2
-                                testPlanTarget: {
-                                    atId: 2
-                                    browserId: 2
-                                    atVersion: "123"
-                                    browserVersion: "123"
-                                }
+                                atId: 2
+                                browserId: 2
                             }
                         ) {
                             __typename
@@ -442,7 +500,23 @@ describe('graphql', () => {
                         }
                         reportStatus: testPlanReport(id: 1) {
                             __typename
-                            updateStatus(status: IN_REVIEW) {
+                            updateStatus(status: CANDIDATE) {
+                                locationOfData
+                            }
+                        }
+                        bulkReportStatus: testPlanReport(ids: [1]) {
+                            __typename
+                            bulkUpdateStatus(status: CANDIDATE) {
+                                locationOfData
+                            }
+                        }
+                        reportRecommendedStatusTargetDate: testPlanReport(
+                            id: 3
+                        ) {
+                            __typename
+                            updateRecommendedStatusTargetDate(
+                                recommendedStatusTargetDate: "2023-12-25"
+                            ) {
                                 locationOfData
                             }
                         }
@@ -456,10 +530,22 @@ describe('graphql', () => {
                             __typename
                             deleteTestPlanReport
                         }
+                        promoteVendorStatus: testPlanReport(id: 6) {
+                            __typename
+                            promoteVendorReviewStatus(
+                                vendorReviewStatus: "READY"
+                            ) {
+                                testPlanReport {
+                                    id
+                                }
+                            }
+                        }
                         testPlanRun(id: 1) {
                             __typename
                             findOrCreateTestResult(
                                 testId: $testPlanRun1TestId
+                                atVersionId: $atVersionId
+                                browserVersionId: $browserVersionId
                             ) {
                                 locationOfData
                             }
@@ -495,6 +581,57 @@ describe('graphql', () => {
                                 id
                             }
                         }
+                        at(id: 1) {
+                            __typename
+                            findOrCreateAtVersion(
+                                input: {
+                                    name: "2022.5.2"
+                                    releasedAt: "2022/05/02"
+                                }
+                            ) {
+                                id
+                                name
+                                releasedAt
+                            }
+                        }
+                        atVersion(id: 1) {
+                            __typename
+                            updateAtVersion(
+                                input: {
+                                    name: "2022"
+                                    releasedAt: "2022/05/03"
+                                }
+                            ) {
+                                id
+                                name
+                                releasedAt
+                            }
+                        }
+                        deleteAtVersion: atVersion(id: 3) {
+                            __typename
+                            deleteAtVersion {
+                                __typename
+                                isDeleted
+                                failedDueToTestResults {
+                                    locationOfData
+                                }
+                            }
+                        }
+                        browser(id: 1) {
+                            __typename
+                            findOrCreateBrowserVersion(
+                                input: { name: "2022.5.4" }
+                            ) {
+                                id
+                                name
+                            }
+                        }
+                        addViewer(
+                            testPlanVersionId: 1
+                            testId: "NjgwYeyIyIjoiMSJ9zYxZT"
+                        ) {
+                            username
+                        }
                     }
                 `,
                 {
@@ -504,7 +641,9 @@ describe('graphql', () => {
                         passingTestResultInput,
                         passingTestResultId: passingTestResultInput.id,
                         testPlanRun1DeletableTestResultId,
-                        testPlanRun1TestId
+                        testPlanRun1TestId,
+                        atVersionId,
+                        browserVersionId
                     }
                 }
             );
@@ -570,7 +709,7 @@ const getQueryInputs = async () => {
 const getMutationInputs = async () => {
     const {
         populateData: {
-            testPlanReport: { runnableTests }
+            testPlanReport: { runnableTests, at, browser }
         }
     } = await query(gql`
         query {
@@ -579,10 +718,27 @@ const getMutationInputs = async () => {
                     runnableTests {
                         id
                     }
+                    at {
+                        id
+                    }
+                    browser {
+                        id
+                    }
                 }
             }
         }
     `);
+
+    const atVersion = await getAtVersionByQuery(
+        { atId: at.id },
+        undefined,
+        undefined,
+        { order: [['releasedAt', 'DESC']] }
+    );
+
+    const browserVersion = await getBrowserVersionByQuery({
+        browserId: browser.id
+    });
 
     const {
         testPlanRun: { empty, toBePassing, toBeDeleted }
@@ -606,17 +762,29 @@ const getMutationInputs = async () => {
 
         mutation {
             testPlanRun(id: 1) {
-                empty: findOrCreateTestResult(testId: "${runnableTests[0].id}") {
+                empty: findOrCreateTestResult(
+                    testId: "${runnableTests[0].id}",
+                    atVersionId: "${atVersion.id}",
+                    browserVersionId: "${browserVersion.id}"
+                ) {
                     testResult {
                         ...TestResultFields
                     }
                 }
-                toBePassing: findOrCreateTestResult(testId: "${runnableTests[1].id}") {
+                toBePassing: findOrCreateTestResult(
+                    testId: "${runnableTests[1].id}",
+                    atVersionId: "${atVersion.id}",
+                    browserVersionId: "${browserVersion.id}"
+                ) {
                     testResult {
                         ...TestResultFields
                     }
                 }
-                toBeDeleted:  findOrCreateTestResult(testId: "${runnableTests[2].id}") {
+                toBeDeleted:  findOrCreateTestResult(
+                    testId: "${runnableTests[2].id}",
+                    atVersionId: "${atVersion.id}",
+                    browserVersionId: "${browserVersion.id}"
+                ) {
                     testResult {
                         id
                     }
@@ -627,6 +795,8 @@ const getMutationInputs = async () => {
 
     const passingTestResultInput = {
         ...toBePassing.testResult,
+        atVersionId: atVersion.id,
+        browserVersionId: browserVersion.id,
         scenarioResults: toBePassing.testResult.scenarioResults.map(
             scenarioResult => ({
                 ...scenarioResult,
@@ -642,10 +812,18 @@ const getMutationInputs = async () => {
         )
     };
 
+    const emptyTestResultInput = {
+        atVersionId: atVersion.id,
+        browserVersionId: browserVersion.id,
+        ...empty.testResult
+    };
+
     return {
         passingTestResultInput,
-        emptyTestResultInput: empty.testResult,
+        emptyTestResultInput,
         testPlanRun1DeletableTestResultId: toBeDeleted.testResult.id,
-        testPlanRun1TestId: runnableTests[3].id
+        testPlanRun1TestId: runnableTests[3].id,
+        atVersionId: atVersion.id,
+        browserVersionId: browserVersion.id
     };
 };

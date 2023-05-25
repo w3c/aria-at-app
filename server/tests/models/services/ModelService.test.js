@@ -4,7 +4,7 @@ const {
     getSequelizeModelAttributes
 } = require('../../../models/services/helpers');
 const AtService = require('../../../models/services/AtService');
-const TestPlanTargetService = require('../../../models/services/TestPlanTargetService');
+const BrowserService = require('../../../models/services/BrowserService');
 const dbCleaner = require('../../util/db-cleaner');
 
 // Most valid ModelService functionality has been covered by all other ModelService tests
@@ -102,7 +102,7 @@ describe('ModelService', () => {
             const _atId = 2;
             const _atVersion = '2222.0';
             const _browserId = 1;
-            const _browserVersion = '88.0';
+            const _browserVersion = '90.0';
 
             const results = await ModelService.nestedGetOrCreate([
                 {
@@ -110,20 +110,18 @@ describe('ModelService', () => {
                     create: AtService.createAtVersion,
                     values: {
                         atId: _atId,
-                        atVersion: _atVersion
+                        name: _atVersion
                     },
                     returnAttributes: [null, []]
                 },
                 {
-                    get: TestPlanTargetService.getTestPlanTargets,
-                    create: TestPlanTargetService.createTestPlanTarget,
+                    get: BrowserService.getBrowserVersions,
+                    create: BrowserService.createBrowserVersion,
                     values: {
-                        atId: _atId,
-                        atVersion: _atVersion,
                         browserId: _browserId,
-                        browserVersion: _browserVersion
+                        name: _browserVersion
                     },
-                    returnAttributes: [null]
+                    returnAttributes: [null, []]
                 }
             ]);
 
@@ -131,16 +129,14 @@ describe('ModelService', () => {
                 [
                     expect.objectContaining({
                         atId: _atId,
-                        atVersion: _atVersion
+                        name: _atVersion
                     }),
                     true
                 ],
                 [
                     expect.objectContaining({
-                        atId: _atId,
-                        atVersion: _atVersion,
                         browserId: _browserId,
-                        browserVersion: _browserVersion
+                        name: _browserVersion
                     }),
                     true
                 ]

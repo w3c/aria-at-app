@@ -17,7 +17,7 @@ const followRedirects = async firstUrl => {
         RegExp(`^${process.env.GITHUB_OAUTH_SERVER}`)
     );
     expect(res1.headers.location).toMatch(
-        /\/login\/oauth\/authorize\?scope=[\w:%]+&client_id=\w+&state=[\w-]*$/
+        /\/login\/oauth\/authorize\?scope=[\w:%]+&client_id=\w+&state=[%\w-]*$/
     );
 
     const res2 = await fetch(res1.headers.location, { redirect: 'manual' });
@@ -27,7 +27,7 @@ const followRedirects = async firstUrl => {
         RegExp(`^${process.env.API_SERVER}`)
     );
     expect(res2.headers.get('location')).toMatch(
-        /\/api\/auth\/authorize\?code=\w+&state=[\w-]*$/
+        /\/api\/auth\/authorize\?code=\w+&state=[%\w-]*$/
     );
 
     const removeDomain = process.env.API_SERVER.length;
@@ -89,7 +89,9 @@ describe('authentication', () => {
                 `${process.env.APP_SERVER}/test-queue`
             );
             expect(data.me.username).toBe(_knownUsername);
-            expect(data.me.roles.sort()).toEqual(['ADMIN', 'TESTER'].sort());
+            expect(data.me.roles.sort()).toEqual(
+                ['ADMIN', 'TESTER', 'VENDOR'].sort()
+            );
         });
     });
 
@@ -124,7 +126,9 @@ describe('authentication', () => {
                 `${process.env.APP_SERVER}/test-queue`
             );
             expect(data.me.username).toBe(_unknownUsername);
-            expect(data.me.roles.sort()).toEqual(['ADMIN', 'TESTER'].sort());
+            expect(data.me.roles.sort()).toEqual(
+                ['ADMIN', 'TESTER', 'VENDOR'].sort()
+            );
         });
     });
 
@@ -290,7 +294,7 @@ describe('authentication', () => {
             // A3
             expect(firstLogin.me.roles).toEqual(['TESTER']);
             expect(secondLogin.me.roles.sort()).toEqual(
-                ['ADMIN', 'TESTER'].sort()
+                ['ADMIN', 'TESTER', 'VENDOR'].sort()
             );
         });
     });
@@ -315,6 +319,43 @@ describe('authentication', () => {
             expect(res.headers.location).toBe(
                 `${process.env.APP_SERVER}/signup-instructions`
             );
+        });
+    });
+
+    it('allows faking vendor', async () => {
+        await dbCleaner(async () => {
+            // A1
+            const _dataFromFrontend = 'fakeRole-vendor';
+            const _knownUsername = 'esmeralda-baggins';
+            mockGithubServer.nextLogin({
+                githubUsername: _knownUsername,
+                isOnAdminTeam: true
+            });
+
+            // A2
+            const res = await followRedirects(
+                `/api/auth/oauth?dataFromFrontend=${_dataFromFrontend}`
+            );
+
+            // A3
+            expect(res.status).toBe(303);
+            expect(res.headers.location).toBe(
+                `${process.env.APP_SERVER}/test-queue`
+            );
+
+            const {
+                body: { data }
+            } = await sessionAgent.post('/api/graphql').send({
+                query: `
+                    query {
+                        me {
+                            roles
+                        }
+                    }
+                `
+            });
+
+            expect(data.me.roles).toEqual(['VENDOR']);
         });
     });
 });

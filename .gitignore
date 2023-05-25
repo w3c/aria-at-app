@@ -112,12 +112,13 @@ storybook-static
 # Lighthouse
 .lighthouseci
 
-#VSCode
-.vscode
-
 # Ansible
 deploy/ansible-vault-password.txt
 
 # Vagrant
 /.vagrant/
 deploy/provision.retry
+
+# Migration generated files
+server/migrations/pg_dump_test_plan_target.sql
+server/migrations/test_plan_target_id.csv

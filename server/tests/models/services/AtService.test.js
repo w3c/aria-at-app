@@ -214,26 +214,49 @@ describe('AtModel Data Checks', () => {
 });
 
 describe('AtVersionModel Data Checks', () => {
+    it('should return valid atVersion for id query with all associations', async () => {
+        // A1
+        const _id = 1;
+
+        // A2
+        const atVersion = await AtService.getAtVersionById(_id);
+        const { id, name, at, releasedAt } = atVersion;
+
+        // A3
+        expect(id).toEqual(_id);
+        expect(name).toBeTruthy();
+        expect(releasedAt).toBeTruthy();
+        expect(at).toEqual(
+            expect.objectContaining({
+                name: expect.any(String),
+                id: expect.any(Number)
+            })
+        );
+        expect(atVersion).toHaveProperty('at');
+    });
     it('should return valid atVersion with at for query with all associations', async () => {
         // A1
         const _atId = 1;
-        const _atVersion = '2021.2103.174';
+        const _atVersion = '2021.2111.13';
+        const _releasedAt = new Date('2021-11-01 04:00:00.000Z');
 
         // A2
         const atVersionInstance = await AtService.getAtVersionByQuery({
             atId: _atId,
-            atVersion: _atVersion
+            name: _atVersion,
+            releasedAt: _releasedAt
         });
-        const { atId, atVersion, at } = atVersionInstance;
+        const { atId, name, at, releasedAt } = atVersionInstance;
 
         // A3
         expect(atId).toBeTruthy();
-        expect(atVersion).toBeTruthy();
+        expect(name).toBeTruthy();
         expect(at).toBeTruthy();
+        expect(releasedAt).toBeTruthy();
         expect(atVersionInstance).toEqual(
             expect.objectContaining({
                 atId: _atId,
-                atVersion: _atVersion,
+                name: _atVersion,
                 at: expect.objectContaining({
                     id: _atId,
                     name: expect.any(String)
@@ -246,26 +269,28 @@ describe('AtVersionModel Data Checks', () => {
     it('should return valid atVersion for query with no associations', async () => {
         // A1
         const _atId = 1;
-        const _atVersion = '2021.2103.174';
+        const _atVersion = '2021.2111.13';
+        const _releasedAt = new Date('2021-11-01 04:00:00.000Z');
 
         // A2
         const atVersionInstance = await AtService.getAtVersionByQuery(
             {
                 atId: _atId,
-                atVersion: _atVersion
+                name: _atVersion,
+                releasedAt: _releasedAt
             },
             null,
             []
         );
-        const { atId, atVersion } = atVersionInstance;
+        const { atId, name } = atVersionInstance;
 
         // A3
         expect(atId).toBeTruthy();
-        expect(atVersion).toBeTruthy();
+        expect(name).toBeTruthy();
         expect(atVersionInstance).toEqual(
             expect.objectContaining({
                 atId: _atId,
-                atVersion: _atVersion
+                name: _atVersion
             })
         );
         expect(atVersionInstance).not.toHaveProperty('at');
@@ -275,11 +300,13 @@ describe('AtVersionModel Data Checks', () => {
         // A1
         const _atId = 53935;
         const _atVersion = randomStringGenerator();
+        const _releasedAt = new Date('2022-04-05');
 
         // A2
         const atVersionResult = await AtService.getAtVersionByQuery({
             atId: _atId,
-            atVersion: _atVersion
+            name: _atVersion,
+            releasedAt: _releasedAt
         });
 
         // A3
@@ -291,24 +318,27 @@ describe('AtVersionModel Data Checks', () => {
             // A1
             const _atId = 1;
             const _atVersion = randomStringGenerator();
+            const _releasedAt = new Date('2022-05-01 20:00:00-04');
 
             // A2
             const atVersionInstance = await AtService.createAtVersion({
                 atId: _atId,
-                atVersion: _atVersion
+                name: _atVersion,
+                releasedAt: _releasedAt
             });
-            const { atId, atVersion, at } = atVersionInstance;
+            const { atId, name, at, releasedAt } = atVersionInstance;
 
             // A2
-            await AtService.removeAtVersionByQuery({ atId, atVersion });
+            await AtService.removeAtVersionByQuery({ atId, name, releasedAt });
             const deletedAtVersion = await AtService.getAtVersionByQuery({
                 atId,
-                atVersion
+                name,
+                releasedAt
             });
 
             // after atVersion created
             expect(atId).toEqual(_atId);
-            expect(atVersion).toEqual(_atVersion);
+            expect(name).toEqual(_atVersion);
             expect(at).toHaveProperty('id');
             expect(at).toHaveProperty('name');
 
@@ -327,26 +357,26 @@ describe('AtVersionModel Data Checks', () => {
             // A2
             const atVersionInstance = await AtService.createAtVersion({
                 atId: _atId,
-                atVersion: _atVersion
+                name: _atVersion
             });
-            const { atId, atVersion, at } = atVersionInstance;
+            const { id, atId, name, at } = atVersionInstance;
 
             // A2
-            const updatedAtVersionInstance = await AtService.updateAtVersionByQuery(
-                { atId, atVersion },
-                { atVersion: _updatedAtVersion }
-            );
-            const { atVersion: updatedAtVersion } = updatedAtVersionInstance;
+            const updatedAtVersionInstance =
+                await AtService.updateAtVersionById(id, {
+                    name: _updatedAtVersion
+                });
+            const { name: updatedAtVersion } = updatedAtVersionInstance;
 
             // after atVersion created
             expect(atId).toEqual(_atId);
-            expect(atVersion).toEqual(_atVersion);
+            expect(name).toEqual(_atVersion);
             expect(at).toHaveProperty('id');
             expect(at).toHaveProperty('name');
 
             // after atVersion updated
             expect(_atVersion).not.toEqual(_updatedAtVersion);
-            expect(atVersion).not.toEqual(updatedAtVersion);
+            expect(name).not.toEqual(updatedAtVersion);
             expect(updatedAtVersion).toEqual(_updatedAtVersion);
         });
     });
@@ -355,16 +385,19 @@ describe('AtVersionModel Data Checks', () => {
         await dbCleaner(async () => {
             // A1
             const _atId = 1;
-            const _atVersion = '2021.2103.174';
+            const _atVersion = '2021.2111.13';
+            const _releasedAt = new Date('2021-11-01 04:00:00.000Z');
 
             // A2
             const originalAtVersion = await AtService.getAtVersionByQuery({
                 atId: _atId,
-                atVersion: _atVersion
+                name: _atVersion,
+                releasedAt: _releasedAt
             });
             const updatedAtVersion = await AtService.updateAtVersionByQuery({
                 atId: _atId,
-                atVersion: _atVersion
+                name: _atVersion,
+                releasedAt: _releasedAt
             });
 
             // A3
@@ -381,12 +414,14 @@ describe('AtVersionModel Data Checks', () => {
         expect(result).toEqual(
             expect.arrayContaining([
                 expect.objectContaining({
+                    id: expect.any(Number),
                     atId: expect.any(Number),
-                    atVersion: expect.any(String),
+                    name: expect.any(String),
                     at: expect.objectContaining({
                         id: expect.any(Number),
                         name: expect.any(String)
-                    })
+                    }),
+                    releasedAt: expect.anything()
                 })
             ])
         );
@@ -394,7 +429,7 @@ describe('AtVersionModel Data Checks', () => {
 
     it('should return collection of atVersions for atVersion query', async () => {
         // A1
-        const search = '2019';
+        const search = '202';
 
         // A2
         const result = await AtService.getAtVersions(search, {});
@@ -405,12 +440,14 @@ describe('AtVersionModel Data Checks', () => {
         expect(result).toEqual(
             expect.arrayContaining([
                 expect.objectContaining({
+                    id: expect.any(Number),
                     atId: expect.any(Number),
-                    atVersion: expect.stringMatching(/2019/gi),
+                    name: expect.stringMatching(/202/gi),
                     at: expect.objectContaining({
                         id: expect.any(Number),
                         name: expect.any(String)
-                    })
+                    }),
+                    releasedAt: expect.anything()
                 })
             ])
         );
@@ -418,13 +455,9 @@ describe('AtVersionModel Data Checks', () => {
 
     it('should return collection of atVersions with paginated structure', async () => {
         // A1
-        const result = await AtService.getAtVersions(
-            '',
-            {},
-            ['atVersion'],
-            [],
-            { enablePagination: true }
-        );
+        const result = await AtService.getAtVersions('', {}, ['name'], [], {
+            enablePagination: true
+        });
 
         // A3
         expect(result.data.length).toBeGreaterThanOrEqual(1);
@@ -437,7 +470,7 @@ describe('AtVersionModel Data Checks', () => {
                 pagesCount: expect.any(Number),
                 data: expect.arrayContaining([
                     expect.objectContaining({
-                        atVersion: expect.any(String)
+                        name: expect.any(String)
                     })
                 ])
             })

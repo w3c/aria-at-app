@@ -2,15 +2,12 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cacheMiddleware = require('apicache').middleware;
 const proxyMiddleware = require('rawgit/lib/middleware');
-const { ApolloServer } = require('apollo-server-express');
 const { session } = require('./middleware/session');
+const embedApp = require('./apps/embed');
 const authRoutes = require('./routes/auth');
 const testRoutes = require('./routes/tests');
 const path = require('path');
-const graphqlSchema = require('./graphql-schema');
-const getGraphQLContext = require('./graphql-context');
-const resolvers = require('./resolvers');
-
+const apolloServer = require('./graphql-server');
 const app = express();
 
 // test session
@@ -19,22 +16,17 @@ app.use(bodyParser.json());
 app.use('/auth', authRoutes);
 app.use('/test', testRoutes);
 
-const server = new ApolloServer({
-    typeDefs: graphqlSchema,
-    context: getGraphQLContext,
-    resolvers
-});
-server.start().then(() => {
-    server.applyMiddleware({ app });
+apolloServer.start().then(() => {
+    apolloServer.applyMiddleware({ app });
 });
 
 const listener = express();
-listener.use('/api', app);
+listener.use('/api', app).use('/embed', embedApp);
 
 const baseUrl = 'https://raw.githubusercontent.com';
 const onlyStatus200 = (req, res) => res.statusCode === 200;
 
-listener.route('/aria-at/:branch/*').get(
+listener.route('/aria-at/:branch*').get(
     cacheMiddleware('7 days', onlyStatus200),
     (req, res, next) => {
         req.url = path.join('w3c', req.url);

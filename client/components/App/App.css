@@ -43,6 +43,11 @@ nav.navbar {
 
 .nav-link:hover {
     color: #000;
+    text-decoration: none;
+}
+
+a.nav-link {
+    color: #0b60ab;
 }
 
 .nav-link[aria-current='true'] {
@@ -107,10 +112,12 @@ nav .logo.navbar-brand {
 
 a {
     color: #0b60ab;
+    text-decoration: none;
 }
 
 a:hover {
     color: #214e86;
+    text-decoration: underline;
 }
 
 h1 {
@@ -148,9 +155,6 @@ button {
 
 .table thead th {
     border-bottom: 0;
-}
-
-table thead th {
     background: #e9ebee;
 }
 
@@ -170,6 +174,10 @@ table tbody tr:nth-of-type(odd),
 .table-bordered th,
 .table-bordered td {
     border: 1px solid #d2d5d9;
+}
+
+.table td {
+    padding: 0.75rem;
 }
 
 table.table-hover tbody tr:hover,
@@ -298,6 +306,10 @@ ul li {
     color: #d52a49;
 }
 
+.form-group {
+    margin-bottom: 1rem;
+}
+
 /* STATUS LABELS */
 
 .status-wrapper {
@@ -353,6 +365,7 @@ main.home-page.container {
 
 main.home-page.container h1 {
     border: none;
+    padding-bottom: 0;
 }
 
 .hero-section {
@@ -387,6 +400,34 @@ main.home-page.container h1 {
 .hero-link:active,
 .hero-link:focus {
     color: #0058b6;
+}
+
+.w3c-authorization-message {
+    background-color: #fff9ea;
+    display: flex;
+    padding: 1em;
+}
+.w3c-authorization-message i {
+    padding-right: 0.5em;
+    font-size: 25px;
+    font-style: normal;
+}
+.w3c-authorization-message em {
+    display: block;
+    font-style: normal;
+    font-size: 0.875rem;
+    color: #654e29;
+    line-height: 1.3;
+}
+.w3c-authorization-message strong {
+    font-style: italic;
+}
+.w3c-authorization-message a {
+    font-weight: bold;
+    color: #654e29;
+}
+.w3c-authorization-message a:hover {
+    text-decoration: underline;
 }
 
 .right {
@@ -444,6 +485,10 @@ img {
     padding-bottom: 2em;
 }
 
+ol.breadcrumb {
+    padding: 0.75rem 1rem;
+}
+
 @media (min-width: 700px) {
     nav.navbar {
         padding: 0.5rem 3rem;
@@ -494,11 +539,12 @@ img {
 }
 
 @media (min-width: 1100px) {
-    h1 {
-        width: 45%;
-    }
     .hero-section {
         padding: 5rem;
+    }
+
+    .hero-section h1 {
+        width: 45%;
     }
 
     .hero-copy {

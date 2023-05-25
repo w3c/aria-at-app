@@ -3,12 +3,17 @@ const {
     removeTestPlanRunByQuery
 } = require('../../models/services/TestPlanRunService');
 const populateData = require('../../services/PopulatedData/populateData');
+const conflictsResolver = require('../TestPlanReport/conflictsResolver');
+const {
+    updateTestPlanReport
+} = require('../../models/services/TestPlanReportService');
 
 const deleteTestPlanRunResolver = async (
     { parentContext: { id: testPlanReportId } },
     { userId: testerUserId },
-    { user }
+    context
 ) => {
+    const { user } = context;
     if (
         !(
             user?.roles.find(role => role.name === 'ADMIN') ||
@@ -24,7 +29,21 @@ const deleteTestPlanRunResolver = async (
         testerUserId
     });
 
-    return populateData({ testPlanReportId });
+    const { testPlanReport } = await populateData(
+        {
+            testPlanReportId
+        },
+        context
+    );
+    const conflicts = await conflictsResolver(testPlanReport, null, context);
+    await updateTestPlanReport(testPlanReport.id, {
+        metrics: {
+            ...testPlanReport.metrics,
+            conflictsCount: conflicts.length
+        }
+    });
+
+    return populateData({ testPlanReportId }, { context });
 };
 
 module.exports = deleteTestPlanRunResolver;

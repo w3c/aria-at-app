@@ -1,11 +1,12 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { Button, Container, Form } from 'react-bootstrap';
-import { CURRENT_SETTINGS_QUERY, UPDATE_ME_MUTATION } from './queries';
 import { useMutation, useQuery } from '@apollo/client';
+import PageStatus from '../common/PageStatus';
+import { CURRENT_SETTINGS_QUERY, UPDATE_ME_MUTATION } from './queries';
 
 const UserSettings = () => {
-    const { data } = useQuery(CURRENT_SETTINGS_QUERY);
+    const { loading, data, error } = useQuery(CURRENT_SETTINGS_QUERY);
 
     const [updateMe] = useMutation(UPDATE_ME_MUTATION, {
         refetchQueries: [{ query: CURRENT_SETTINGS_QUERY }]
@@ -39,6 +40,26 @@ const UserSettings = () => {
         setCheckedAts(data.me.ats.map(at => at.id));
     }, [data]);
 
+    if (error) {
+        return (
+            <PageStatus
+                title="Settings | ARIA-AT"
+                heading="Settings"
+                message={error.message}
+                isError
+            />
+        );
+    }
+
+    if (loading) {
+        return (
+            <PageStatus
+                title="Loading - Settings | ARIA-AT"
+                heading="Settings"
+            />
+        );
+    }
+
     if (!data || !checkedAts) return null;
 
     const {
@@ -66,7 +87,7 @@ const UserSettings = () => {
                         </a>
                     </p>
                     <h2>Assistive Technology Settings</h2>
-                    <div tabIndex={0} aria-live="polite">
+                    <div aria-atomic="true" aria-live="polite">
                         {savedAts.length > 0 ? (
                             <div>
                                 <p>

@@ -1,21 +1,63 @@
 import { gql } from '@apollo/client';
 
 export const REPORTS_PAGE_QUERY = gql`
-    query {
-        testPlanReports(statuses: [FINALIZED]) {
+    query ReportsPageQuery {
+        testPlanReports(statuses: [CANDIDATE, RECOMMENDED]) {
             id
-            testPlanTarget {
+            status
+            metrics
+            candidateStatusReachedAt
+            recommendedStatusReachedAt
+            at {
                 id
-                at {
-                    id
-                    name
+                name
+            }
+            latestAtVersionReleasedAt {
+                id
+                name
+                releasedAt
+            }
+            browser {
+                id
+                name
+            }
+            testPlanVersion {
+                id
+                title
+                gitSha
+                testPlan {
+                    directory
                 }
-                browser {
-                    id
-                    name
-                }
-                atVersion
-                browserVersion
+                metadata
+            }
+        }
+    }
+`;
+
+export const REPORT_PAGE_QUERY = gql`
+    query ReportPageQuery($testPlanVersionId: ID, $testPlanVersionIds: [ID]) {
+        testPlanReports(
+            statuses: [CANDIDATE, RECOMMENDED]
+            testPlanVersionId: $testPlanVersionId
+            testPlanVersionIds: $testPlanVersionIds
+        ) {
+            id
+            status
+            metrics
+            candidateStatusReachedAt
+            recommendedStatusReachedAt
+            at {
+                id
+                name
+            }
+            latestAtVersionReleasedAt {
+                id
+                name
+                releasedAt
+            }
+            browser {
+                id
+                name
             }
             testPlanVersion {
                 id
@@ -79,6 +121,29 @@ export const REPORTS_PAGE_QUERY = gql`
                         text
                         otherUnexpectedBehaviorText
                     }
+                }
+            }
+            draftTestPlanRuns {
+                tester {
+                    username
+                }
+                testPlanReport {
+                    id
+                    status
+                }
+                testResults {
+                    test {
+                        id
+                    }
+                    atVersion {
+                        id
+                        name
+                    }
+                    browserVersion {
+                        id
+                        name
+                    }
+                    completedAt
                 }
             }
         }

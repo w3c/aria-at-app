@@ -10,7 +10,7 @@ const {
 } = require('../../models/services/TestPlanRunService');
 const { decodeLocationOfDataId } = require('./locationOfDataId');
 const testsResolver = require('../../resolvers/TestPlanVersion/testsResolver');
-const testsResultsResolver = require('../../resolvers/TestPlanRun/testResultsResolver');
+const testResultsResolver = require('../../resolvers/TestPlanRun/testResultsResolver');
 const testPlanVersionTestPlanResolver = require('../../resolvers/TestPlanVersion/testPlanVersionTestPlanResolver');
 
 /**
@@ -22,7 +22,7 @@ const testPlanVersionTestPlanResolver = require('../../resolvers/TestPlanVersion
  * and no database queries will be run by this function.
  * @returns
  */
-const populateData = async (locationOfData, { preloaded } = {}) => {
+const populateData = async (locationOfData, { preloaded, context }) => {
     let {
         testPlanId,
         testPlanVersionId,
@@ -31,8 +31,8 @@ const populateData = async (locationOfData, { preloaded } = {}) => {
         // testPlanTargetId,
         // atId,
         // browserId,
-        atVersion: providedAtVersion,
-        browserVersion: providedBrowserVersion,
+        // atVersionId,
+        // browserVersionId,
         testId,
         scenarioId,
         assertionId,
@@ -110,11 +110,8 @@ const populateData = async (locationOfData, { preloaded } = {}) => {
         });
     }
 
-    const testPlanTarget = testPlanReport?.testPlanTarget;
-    const at = testPlanTarget?.at;
-    const browser = testPlanTarget?.browser;
-    const atVersion = testPlanTarget?.atVersion;
-    const browserVersion = testPlanTarget?.browserVersion;
+    const at = testPlanReport?.at;
+    const browser = testPlanReport?.browser;
 
     testPlan =
         testPlanVersion && !testPlan
@@ -129,9 +126,15 @@ const populateData = async (locationOfData, { preloaded } = {}) => {
     let testResult;
     let scenarioResult;
     let assertionResult;
+    let atVersion;
+    let browserVersion;
 
     if (testResultId) {
-        const testResults = testsResultsResolver(testPlanRun);
+        const testResults = await testResultsResolver(
+            testPlanRun,
+            null,
+            context
+        );
         testResult = testResults.find(each => each.id === testResultId);
         if (!testResult) {
             throw new Error(
@@ -139,7 +142,7 @@ const populateData = async (locationOfData, { preloaded } = {}) => {
                     `does not exist on the TestPlanRun with ID ${testPlanRunId}`
             );
         }
-        testId = testResult.testId;
+        ({ testId, atVersion, browserVersion } = testResult);
     }
     if (scenarioResultId) {
         scenarioResult = testResult.scenarioResults.find(
@@ -180,17 +183,16 @@ const populateData = async (locationOfData, { preloaded } = {}) => {
         idsContradict(locationOfData.testPlanVersionId, testPlanVersion) ||
         idsContradict(locationOfData.testPlanReportId, testPlanReport) ||
         idsContradict(locationOfData.testPlanRunId, testPlanRun) ||
-        idsContradict(locationOfData.testPlanTargetId, testPlanTarget) ||
         idsContradict(locationOfData.atId, at) ||
+        idsContradict(locationOfData.atVersionId, atVersion) ||
         idsContradict(locationOfData.browserId, browser) ||
+        idsContradict(locationOfData.browserVersionId, browserVersion) ||
         idsContradict(locationOfData.testId, test) ||
         idsContradict(locationOfData.scenarioId, scenario) ||
         idsContradict(locationOfData.assertionId, assertion) ||
         idsContradict(locationOfData.testResultId, testResult) ||
         idsContradict(locationOfData.scenarioResultId, scenarioResult) ||
-        idsContradict(locationOfData.assertionResultId, assertionResult) ||
-        (providedAtVersion && providedAtVersion !== atVersion) ||
-        (providedBrowserVersion && providedBrowserVersion !== browserVersion)
+        idsContradict(locationOfData.assertionResultId, assertionResult)
     ) {
         throw new Error(
             'You provided IDs for both a parent and child model, implying a ' +
@@ -204,7 +206,6 @@ const populateData = async (locationOfData, { preloaded } = {}) => {
         testPlanVersion,
         testPlanReport,
         testPlanRun,
-        testPlanTarget,
         at,
         browser,
         atVersion,

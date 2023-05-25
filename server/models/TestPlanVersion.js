@@ -1,12 +1,6 @@
 const MODEL_NAME = 'TestPlanVersion';
 
-const STATUS = {
-    DRAFT: 'DRAFT',
-    IN_REVIEW: 'IN_REVIEW',
-    FINALIZED: 'FINALIZED'
-};
-
-module.exports = function(sequelize, DataTypes) {
+module.exports = function (sequelize, DataTypes) {
     const Model = sequelize.define(
         MODEL_NAME,
         {
@@ -25,7 +19,7 @@ module.exports = function(sequelize, DataTypes) {
                 type: DataTypes.DATE,
                 defaultValue: DataTypes.NOW
             },
-            tests: { type: DataTypes.ARRAY(DataTypes.JSONB) },
+            tests: { type: DataTypes.JSONB },
             metadata: { type: DataTypes.JSONB }
         },
         {
@@ -34,13 +28,9 @@ module.exports = function(sequelize, DataTypes) {
         }
     );
 
-    Model.DRAFT = STATUS.DRAFT;
-    Model.IN_REVIEW = STATUS.IN_REVIEW;
-    Model.FINALIZED = STATUS.FINALIZED;
-
     Model.TEST_PLAN_REPORT_ASSOCIATION = { as: 'testPlanReports' };
 
-    Model.associate = function(models) {
+    Model.associate = function (models) {
         Model.hasMany(models.TestPlanReport, {
             ...Model.TEST_PLAN_REPORT_ASSOCIATION,
             foreignKey: 'testPlanVersionId',

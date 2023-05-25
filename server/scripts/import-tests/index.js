@@ -1,9 +1,9 @@
 /* eslint no-console: 0 */
 
 const path = require('path');
-const nodegit = require('nodegit');
 const { Client } = require('pg');
 const fse = require('fs-extra');
+const spawn = require('cross-spawn');
 const { At } = require('../../models');
 const {
     createTestPlanVersion,
@@ -41,7 +41,7 @@ Default use:
 const client = new Client();
 
 const ariaAtRepo = 'https://github.com/w3c/aria-at.git';
-const DEFAULT_BRANCH = 'master';
+const ariaAtDefaultBranch = 'master';
 const gitCloneDirectory = path.resolve(__dirname, 'tmp');
 const builtTestsDirectory = path.resolve(gitCloneDirectory, 'build', 'tests');
 const testsDirectory = path.resolve(gitCloneDirectory, 'tests');
@@ -50,6 +50,18 @@ const importTestPlanVersions = async () => {
     await client.connect();
 
     const { gitCommitDate, gitMessage, gitSha } = await readRepo();
+
+    console.log('Running `npm install` ...\n');
+    const installOutput = spawn.sync('npm', ['install'], {
+        cwd: gitCloneDirectory
+    });
+    console.log('`npm install` output', installOutput.stdout.toString());
+
+    console.log('Running `npm run build` ...\n');
+    const buildOutput = spawn.sync('npm', ['run', 'build'], {
+        cwd: gitCloneDirectory
+    });
+    console.log('`npm run build` output', buildOutput.stdout.toString());
 
     const ats = await At.findAll();
     await updateAtsJson(ats);
@@ -61,6 +73,14 @@ const importTestPlanVersions = async () => {
 
         const builtDirectoryPath = path.join(builtTestsDirectory, directory);
         const sourceDirectoryPath = path.join(testsDirectory, directory);
+
+        // https://github.com/w3c/aria-at/commit/9d73d6bb274b3fe75b9a8825e020c0546a33a162
+        // This is the date of the last commit before the build folder removal.
+        // Meant to support backward compatability until the existing tests can
+        // be updated to the current structure
+        const buildRemovalDate = new Date('2022-03-10 18:08:36.000000 +00:00');
+        const useBuildInAppAppUrlPath =
+            gitCommitDate.getTime() <= buildRemovalDate.getTime();
 
         if (
             !(
@@ -103,7 +123,12 @@ const importTestPlanVersions = async () => {
             id: testPlanVersionId,
             title,
             directory,
-            testPageUrl: getAppUrl(testPageUrl, { gitSha, builtDirectoryPath }),
+            testPageUrl: getAppUrl(testPageUrl, {
+                gitSha,
+                directoryPath: useBuildInAppAppUrlPath
+                    ? builtDirectoryPath
+                    : sourceDirectoryPath
+            }),
             gitSha,
             gitMessage,
             updatedAt: gitCommitDate,
@@ -117,54 +142,36 @@ const importTestPlanVersions = async () => {
 };
 
 const readRepo = async () => {
-    fse.ensureDirSync(gitCloneDirectory);
-    let repo = await nodegit.Clone(ariaAtRepo, gitCloneDirectory, {});
-    console.log(`Cloned ${path.basename(ariaAtRepo)} to ${repo.workdir()}`);
-
-    let commit;
-    if (args.commit) {
-        try {
-            commit = await nodegit.Commit.lookup(repo, args.commit);
-        } catch (error) {
-            console.log(
-                `IMPORT FAILED! Cannot checkout repo at commit: ${args.commit}`
-            );
-            throw error;
-        }
-
-        await nodegit.Checkout.tree(repo, commit);
-        await repo.setHeadDetached(commit);
-    } else {
-        let latestCommit = fse
-            .readFileSync(
-                path.join(
-                    gitCloneDirectory,
-                    '.git',
-                    'refs',
-                    'heads',
-                    DEFAULT_BRANCH
-                ),
-                'utf8'
-            )
-            .trim();
-        commit = await nodegit.Commit.lookup(repo, latestCommit);
-    }
-
-    return {
-        gitCommitDate: commit.date(),
-        gitMessage: commit.message(),
-        gitSha: commit.id().tostrS()
+    const gitRun = args => {
+        return spawn
+            .sync('git', args.split(' '), { cwd: gitCloneDirectory })
+            .stdout.toString()
+            .trimEnd();
     };
+
+    fse.ensureDirSync(gitCloneDirectory);
+
+    console.info('Cloning aria-at repo ...');
+    spawn.sync('git', ['clone', ariaAtRepo, gitCloneDirectory]);
+    console.info('Cloning aria-at repo complete.');
+
+    gitRun(`checkout ${args.commit ?? ariaAtDefaultBranch}`);
+
+    const gitSha = gitRun(`log --format=%H -n 1`);
+    const gitMessage = gitRun(`log --format=%B -n 1`);
+    const gitCommitDate = new Date(gitRun(`log --format=%aI -n 1`));
+
+    return { gitSha, gitCommitDate, gitMessage };
 };
 
-const getAppUrl = (directoryRelativePath, { gitSha, builtDirectoryPath }) => {
+const getAppUrl = (directoryRelativePath, { gitSha, directoryPath }) => {
     return path.join(
         '/',
         'aria-at', // The app's proxy to the ARIA-AT repo
         gitSha,
         path.relative(
             gitCloneDirectory,
-            path.join(builtDirectoryPath, directoryRelativePath)
+            path.join(directoryPath, directoryRelativePath)
         )
     );
 };
@@ -201,9 +208,9 @@ const readCsv = ({ sourceDirectoryPath }) => {
 const updateCommandsJson = async () => {
     const keysMjsPath = path.join(testsDirectory, 'resources', 'keys.mjs');
 
-    const commands = Object.entries(
-        await import(keysMjsPath)
-    ).map(([id, text]) => ({ id, text }));
+    const commands = Object.entries(await import(keysMjsPath)).map(
+        ([id, text]) => ({ id, text })
+    );
 
     await fse.writeFile(
         path.resolve(__dirname, '../../resources/commands.json'),
@@ -280,7 +287,7 @@ const getTests = ({ builtDirectoryPath, testPlanVersionId, ats, gitSha }) => {
                         atId,
                         getAppUrl(renderedUrls[index], {
                             gitSha,
-                            builtDirectoryPath
+                            directoryPath: builtDirectoryPath
                         })
                     ];
                 })
@@ -304,7 +311,8 @@ const getTests = ({ builtDirectoryPath, testPlanVersionId, ats, gitSha }) => {
                 id: createAssertionId(testId, index),
                 priority: assertion.priority === 1 ? 'REQUIRED' : 'OPTIONAL',
                 text: assertion.expectation
-            }))
+            })),
+            viewers: []
         });
     });
 

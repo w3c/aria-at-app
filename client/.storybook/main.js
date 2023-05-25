@@ -1,3 +1,7 @@
 module.exports = {
-    addons: ['@storybook/addon-actions/register']
+    core: {
+        builder: 'webpack5'
+    },
+    stories: ['../stories/*.stories.jsx'],
+    addons: ['@storybook/addon-a11y', '@storybook/addon-controls']
 };

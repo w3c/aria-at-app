@@ -25,9 +25,7 @@ module.exports = {
                     // Creates `style` nodes from JS strings
                     'style-loader',
                     // Translates CSS into CommonJS
-                    'css-loader',
-                    // Compiles Sass to CSS
-                    'sass-loader'
+                    'css-loader'
                 ]
             },
             {
@@ -54,11 +52,13 @@ module.exports = {
         extensions: ['*', '.js', '.jsx']
     },
     plugins: [
-        new CopyWebpackPlugin([
-            {
-                from: 'static'
-            }
-        ]),
+        new CopyWebpackPlugin({
+            patterns: [
+                {
+                    from: 'static'
+                }
+            ]
+        }),
         new webpack.DefinePlugin({
             'process.env.API_SERVER': JSON.stringify(process.env.API_SERVER),
             'process.env.ENVIRONMENT': JSON.stringify(process.env.ENVIRONMENT)

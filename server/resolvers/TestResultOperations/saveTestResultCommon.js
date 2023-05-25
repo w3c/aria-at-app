@@ -5,20 +5,23 @@ const {
 const populateData = require('../../services/PopulatedData/populateData');
 const deepCustomMerge = require('../../util/deepCustomMerge');
 const deepPickEqual = require('../../util/deepPickEqual');
+const convertTestResultToInput = require('../TestPlanRunOperations/convertTestResultToInput');
 const createTestResultSkeleton = require('../TestPlanRunOperations/createTestResultSkeleton');
+const persistConflictsCount = require('../helpers/persistConflictsCount');
 
 const saveTestResultCommon = async ({
     testResultId,
     input,
     user,
-    isSubmit
+    isSubmit,
+    context
 }) => {
     const {
         testPlanRun,
-        testPlanTarget,
+        testPlanReport,
         test,
-        testResult: oldTestResult
-    } = await populateData({ testResultId });
+        testResult: testResultPopulated
+    } = await populateData({ testResultId }, { context });
 
     if (
         !(
@@ -30,7 +33,12 @@ const saveTestResultCommon = async ({
         throw new AuthenticationError();
     }
 
+    // The populateData function will populate associations of JSON-based
+    // models, but not Sequelize-based models. This is why the
+    // convertTestResultToInput function is needed to make testResultPopulated
+    // equivalent to testPlanRun.testResults.
     const oldTestResults = testPlanRun.testResults;
+    const oldTestResult = convertTestResultToInput(testResultPopulated);
 
     const newTestResult = deepCustomMerge(oldTestResult, input, {
         identifyArrayItem: item => item.id,
@@ -39,7 +47,7 @@ const saveTestResultCommon = async ({
 
     const isCorrupted = !deepPickEqual(
         [
-            createTestResultSkeleton({ test, testPlanRun, testPlanTarget }),
+            createTestResultSkeleton({ test, testPlanRun, testPlanReport }),
             newTestResult
         ],
         {
@@ -70,7 +78,10 @@ const saveTestResultCommon = async ({
 
     await updateTestPlanRun(testPlanRun.id, { testResults: newTestResults });
 
-    return populateData({ testResultId });
+    // TODO: Avoid blocking loads in test runs with a larger amount of tests
+    //       and/or test results
+    await persistConflictsCount(testPlanRun, context);
+    return populateData({ testResultId }, { context });
 };
 
 const assertTestResultIsValid = newTestResult => {

@@ -3,13 +3,32 @@ const testResultsResolver = require('../TestPlanRun/testResultsResolver');
 const populateData = require('../../services/PopulatedData/populateData');
 const allEqual = require('../../util/allEqual');
 
-const conflictsResolver = async testPlanReport => {
+const conflictsResolver = async (testPlanReport, _, context) => {
+    let testPlanReportData = {};
+
+    // Used in cases where the testPlanRuns to evaluate the conflicts doesn't
+    // exist for `testPlanReport`, such as this function being called from
+    // `conflictsLengthResolver.js`
+    if (testPlanReport.testPlanRuns.some(t => !t.testResults)) {
+        const { testPlanReport: _testPlanReport } = await populateData(
+            {
+                testPlanReportId: testPlanReport.id
+            },
+            { context }
+        );
+        testPlanReportData = _testPlanReport;
+    } else testPlanReportData = testPlanReport;
+
     const conflicts = [];
 
     const testResultsByTestId = {};
-    testPlanReport.testPlanRuns.forEach(testPlanRun => {
-        testPlanRun.testPlanReport = testPlanReport; // TODO: remove hacky fix
-        const testResults = testResultsResolver(testPlanRun);
+    for (const testPlanRun of testPlanReportData.testPlanRuns) {
+        testPlanRun.testPlanReport = testPlanReportData; // TODO: remove hacky fix
+        const testResults = await testResultsResolver(
+            testPlanRun,
+            null,
+            context
+        );
         testResults
             .filter(testResult => testResult.completedAt)
             .forEach(testResult => {
@@ -18,7 +37,7 @@ const conflictsResolver = async testPlanReport => {
                 }
                 testResultsByTestId[testResult.testId].push(testResult);
             });
-    });
+    }
 
     Object.values(testResultsByTestId).forEach(testResults => {
         // See GraphQL TestPlanResultConflict for more info about how the
@@ -77,14 +96,14 @@ const conflictsResolver = async testPlanReport => {
         }
     });
 
-    const preloaded = { testPlanReport };
+    const preloaded = { testPlanReport: testPlanReportData };
 
     return Promise.all(
         conflicts.map(async ({ source, conflictingResults }) => ({
-            source: await populateData(source, { preloaded }),
+            source: await populateData(source, { preloaded, context }),
             conflictingResults: await Promise.all(
                 conflictingResults.map(conflictingResult =>
-                    populateData(conflictingResult, { preloaded })
+                    populateData(conflictingResult, { preloaded, context })
                 )
             )
         }))

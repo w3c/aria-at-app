@@ -1,4 +1,10 @@
-import React, { Fragment, useEffect, useLayoutEffect, useState } from 'react';
+import React, {
+    Fragment,
+    useEffect,
+    useLayoutEffect,
+    useState,
+    useRef
+} from 'react';
 import styled from '@emotion/styled';
 import PropTypes from 'prop-types';
 import nextId from 'react-id-generator';
@@ -121,6 +127,7 @@ const Fieldset = styled.fieldset`
     > legend {
         display: block;
 
+        float: inherit;
         width: auto;
         margin: 0;
         font-size: initial;
@@ -222,14 +229,17 @@ const TestRenderer = ({
     testResult = {},
     testPageUrl,
     testRunStateRef,
+    recentTestRunStateRef,
     testRunResultRef,
     submitButtonRef,
     isSubmitted = false,
-    setIsRendererReady = () => {}
+    isEdit = false,
+    setIsRendererReady = false
 }) => {
     const { scenarioResults, test = {}, completedAt } = testResult;
     const { renderableContent } = test;
 
+    const mounted = useRef(false);
     const [testRunExport, setTestRunExport] = useState();
     const [pageContent, setPageContent] = useState(null);
     const [testRendererState, setTestRendererState] = useState(null);
@@ -280,8 +290,8 @@ const TestRenderer = ({
             resultsJSON: state => testRunIO.submitResultsJSON(state),
             state: _state
         });
-        setTestRendererState(_state);
-        setTestRunExport(testRunExport);
+        mounted.current && setTestRendererState(_state);
+        mounted.current && setTestRunExport(testRunExport);
     };
 
     const remapState = (state, scenarioResults = []) => {
@@ -359,16 +369,21 @@ const TestRenderer = ({
                 commands[i].unexpected.hasUnexpected = 'doesNotHaveUnexpected';
             else commands[i].unexpected.hasUnexpected = 'notSet';
 
-            commands[
-                i
-            ].unexpected.highlightRequired = unexpectedBehaviorHighlightRequired;
+            commands[i].unexpected.highlightRequired =
+                unexpectedBehaviorHighlightRequired;
         }
 
         return { ...state, commands, currentUserAction: 'validateResults' };
     };
 
     useEffect(() => {
-        (async () => await setup())();
+        (async () => {
+            mounted.current = true;
+            await setup();
+        })();
+        return () => {
+            mounted.current = false;
+        };
     }, []);
 
     useLayoutEffect(() => {
@@ -382,6 +397,7 @@ const TestRenderer = ({
                 setSubmitResult(submitResult);
 
                 testRunStateRef.current = newState;
+                recentTestRunStateRef.current = newState;
                 testRunResultRef.current =
                     submitResult &&
                     submitResult.resultsJSON &&
@@ -394,17 +410,89 @@ const TestRenderer = ({
         }
 
         testRunStateRef.current = testRendererState;
-
+        recentTestRunStateRef.current = testRendererState;
         setIsRendererReady(true);
     }, [testRunExport]);
 
     useEffect(() => {
         if (!submitCalled && completedAt && pageContent) {
             testRunStateRef.current = testRendererState;
+            recentTestRunStateRef.current = testRendererState;
             pageContent.submit.click();
             setSubmitCalled(true);
         }
+        return () => {
+            setSubmitCalled(false);
+
+            // Use to validate whether or not errors exist on page. Error
+            // feedback may be erased on submit otherwise
+            if (
+                !checkStateForErrors(testRunStateRef.current) &&
+                !checkPageContentForErrors(pageContent)
+            )
+                testRunStateRef.current = null;
+        };
     }, [pageContent]);
+
+    const checkStateForErrors = state => {
+        if (state) {
+            const { commands } = state;
+            // short circuit all checks
+            return commands.some(item => {
+                const atOutputError = item.atOutput.highlightRequired;
+                if (atOutputError) return true;
+
+                const assertionsError = item.assertions.some(
+                    item => item.highlightRequired
+                );
+                if (assertionsError) return true;
+
+                const unexpectedError = item.unexpected.highlightRequired;
+                if (unexpectedError) return true;
+
+                const { behaviors } = item.unexpected;
+                const uncheckedBehaviorsMoreError = behaviors.some(item => {
+                    if (item.more) return item.more.highlightRequired;
+                    return false;
+                });
+                if (uncheckedBehaviorsMoreError) return true;
+                return false;
+            });
+        }
+        return false;
+    };
+
+    const checkPageContentForErrors = pageContent => {
+        if (pageContent) {
+            const { commands } = pageContent.results;
+            // short circuit all checks
+            return commands.some(item => {
+                const atOutputError =
+                    item.atOutput.description[1].highlightRequired;
+                if (atOutputError) return true;
+
+                const assertionsError = item.assertions.some(
+                    item => item.description[1].highlightRequired
+                );
+                if (assertionsError) return true;
+
+                const unexpectedBehaviorError =
+                    item.unexpectedBehaviors.description[1].highlightRequired;
+                if (unexpectedBehaviorError) return true;
+
+                const { failChoice } = item.unexpectedBehaviors;
+                const failChoiceOptionsMoreError =
+                    failChoice.options.options.some(item => {
+                        if (item.more)
+                            return item.more.description[1].highlightRequired;
+                        else return false;
+                    });
+                if (failChoiceOptionsMoreError) return true;
+                return false;
+            });
+        }
+        return false;
+    };
 
     const parseRichContent = (instruction = []) => {
         let content = null;
@@ -460,7 +548,7 @@ const TestRenderer = ({
         });
     };
 
-    const InstructionsContent = () => {
+    const InstructionsContent = ({ labelIdRef }) => {
         const allInstructions = [
             ...pageContent.instructions.instructions.instructions,
             ...pageContent.instructions.instructions.strongInstructions,
@@ -473,16 +561,24 @@ const TestRenderer = ({
         const commandsContent = parseListContent(commands);
         const content = parseListContent(allInstructions, commandsContent);
 
-        return <NumberedList>{content}</NumberedList>;
+        return (
+            <NumberedList aria-labelledby={labelIdRef}>{content}</NumberedList>
+        );
     };
 
-    const AssertionsContent = () => {
+    InstructionsContent.propTypes = { labelIdRef: PropTypes.string };
+
+    const AssertionsContent = ({ labelIdRef }) => {
         const assertions = [...pageContent.instructions.assertions.assertions];
 
         const content = parseListContent(assertions);
 
-        return <NumberedList>{content}</NumberedList>;
+        return (
+            <NumberedList aria-labelledby={labelIdRef}>{content}</NumberedList>
+        );
     };
+
+    AssertionsContent.propTypes = { labelIdRef: PropTypes.string };
 
     const parseLinebreakOutput = (output = []) => {
         return output.map(item => {
@@ -599,7 +695,8 @@ const TestRenderer = ({
 
     return (
         <Container>
-            {submitResult &&
+            {!isEdit &&
+            submitResult &&
             submitResult.resultsJSON &&
             submitResult.results ? (
                 <SubmitResultsContent />
@@ -615,17 +712,17 @@ const TestRenderer = ({
                             {pageContent.instructions.header.header}
                         </HeadingText>
                         <Text>{pageContent.instructions.description}</Text>
-                        <SubHeadingText>
+                        <SubHeadingText id="instruction-list-heading">
                             {pageContent.instructions.instructions.header}
                         </SubHeadingText>
-                        <InstructionsContent />
-                        <SubHeadingText>
+                        <InstructionsContent labelIdRef="instruction-list-heading" />
+                        <SubHeadingText id="success-criteria-list-heading">
                             {pageContent.instructions.assertions.header}
                         </SubHeadingText>
                         <Text>
                             {pageContent.instructions.assertions.description}
                         </Text>
-                        <AssertionsContent />
+                        <AssertionsContent labelIdRef="success-criteria-list-heading" />
                         <Button
                             disabled={
                                 !pageContent.instructions.openTestPage.enabled
@@ -666,13 +763,17 @@ const TestRenderer = ({
                                                 {atOutput.description[0]}
                                                 {isSubmitted && (
                                                     <Feedback
-                                                        className={`${atOutput
-                                                            .description[1]
-                                                            .required &&
-                                                            'required'} ${atOutput
-                                                            .description[1]
-                                                            .highlightRequired &&
-                                                            'highlight-required'}`}
+                                                        className={`${
+                                                            atOutput
+                                                                .description[1]
+                                                                .required &&
+                                                            'required'
+                                                        } ${
+                                                            atOutput
+                                                                .description[1]
+                                                                .highlightRequired &&
+                                                            'highlight-required'
+                                                        }`}
                                                     >
                                                         {
                                                             atOutput
@@ -697,7 +798,14 @@ const TestRenderer = ({
                                                 }
                                             />
                                         </Text>
-                                        <Table>
+                                        <h4
+                                            id={`command-${commandIndex}-assertions-heading`}
+                                        >
+                                            Assertions {header}
+                                        </h4>
+                                        <Table
+                                            aria-labelledby={`command-${commandIndex}-assertions-heading`}
+                                        >
                                             <tbody>
                                                 <tr>
                                                     <th>
@@ -742,11 +850,15 @@ const TestRenderer = ({
                                                                     }
                                                                     {isSubmitted && (
                                                                         <Feedback
-                                                                            className={`${description[1]
-                                                                                .required &&
-                                                                                'required'} ${description[1]
-                                                                                .highlightRequired &&
-                                                                                'highlight-required'}`}
+                                                                            className={`${
+                                                                                description[1]
+                                                                                    .required &&
+                                                                                'required'
+                                                                            } ${
+                                                                                description[1]
+                                                                                    .highlightRequired &&
+                                                                                'highlight-required'
+                                                                            }`}
                                                                         >
                                                                             {
                                                                                 description[1]
@@ -783,10 +895,12 @@ const TestRenderer = ({
                                                                                 .label[0]
                                                                         }
                                                                         <Feedback
-                                                                            className={`${passChoice
-                                                                                .label[1]
-                                                                                .offScreen &&
-                                                                                'off-screen'}`}
+                                                                            className={`${
+                                                                                passChoice
+                                                                                    .label[1]
+                                                                                    .offScreen &&
+                                                                                'off-screen'
+                                                                            }`}
                                                                         >
                                                                             {
                                                                                 passChoice
@@ -824,10 +938,12 @@ const TestRenderer = ({
                                                                                 .label[0]
                                                                         }
                                                                         <Feedback
-                                                                            className={`${missingChoice
-                                                                                .label[1]
-                                                                                .offScreen &&
-                                                                                'off-screen'}`}
+                                                                            className={`${
+                                                                                missingChoice
+                                                                                    .label[1]
+                                                                                    .offScreen &&
+                                                                                'off-screen'
+                                                                            }`}
                                                                         >
                                                                             {
                                                                                 missingChoice
@@ -863,10 +979,12 @@ const TestRenderer = ({
                                                                                 .label[0]
                                                                         }
                                                                         <Feedback
-                                                                            className={`${failureChoice
-                                                                                .label[1]
-                                                                                .offScreen &&
-                                                                                'off-screen'}`}
+                                                                            className={`${
+                                                                                failureChoice
+                                                                                    .label[1]
+                                                                                    .offScreen &&
+                                                                                'off-screen'
+                                                                            }`}
                                                                         >
                                                                             {
                                                                                 failureChoice
@@ -886,16 +1004,25 @@ const TestRenderer = ({
                                         <Fieldset
                                             id={`cmd-${commandIndex}-problems`}
                                         >
-                                            {unexpectedBehaviors.description[0]}
+                                            <legend>
+                                                {
+                                                    unexpectedBehaviors
+                                                        .description[0]
+                                                }
+                                            </legend>
                                             {isSubmitted && (
                                                 <Feedback
-                                                    className={`${unexpectedBehaviors
-                                                        .description[1]
-                                                        .required &&
-                                                        'required'} ${unexpectedBehaviors
-                                                        .description[1]
-                                                        .highlightRequired &&
-                                                        'highlight-required'}`}
+                                                    className={`${
+                                                        unexpectedBehaviors
+                                                            .description[1]
+                                                            .required &&
+                                                        'required'
+                                                    } ${
+                                                        unexpectedBehaviors
+                                                            .description[1]
+                                                            .highlightRequired &&
+                                                        'highlight-required'
+                                                    }`}
                                                 >
                                                     {
                                                         unexpectedBehaviors
@@ -965,7 +1092,13 @@ const TestRenderer = ({
                                                 </label>
                                             </div>
 
-                                            <Fieldset className="problem-select">
+                                            <Fieldset
+                                                className="problem-select"
+                                                hidden={
+                                                    !unexpectedBehaviors
+                                                        .failChoice.checked
+                                                }
+                                            >
                                                 <legend>
                                                     {
                                                         unexpectedBehaviors
@@ -1014,11 +1147,6 @@ const TestRenderer = ({
                                                                                 .checked
                                                                         )
                                                                     }
-                                                                    disabled={
-                                                                        !unexpectedBehaviors
-                                                                            .failChoice
-                                                                            .checked
-                                                                    }
                                                                 />
                                                                 <label
                                                                     htmlFor={`${description}-${commandIndex}`}
@@ -1039,13 +1167,17 @@ const TestRenderer = ({
                                                                             }
                                                                             {isSubmitted && (
                                                                                 <Feedback
-                                                                                    className={`${more
-                                                                                        .description[1]
-                                                                                        .required &&
-                                                                                        'required'} ${more
-                                                                                        .description[1]
-                                                                                        .highlightRequired &&
-                                                                                        'highlight-required'}`}
+                                                                                    className={`${
+                                                                                        more
+                                                                                            .description[1]
+                                                                                            .required &&
+                                                                                        'required'
+                                                                                    } ${
+                                                                                        more
+                                                                                            .description[1]
+                                                                                            .highlightRequired &&
+                                                                                        'highlight-required'
+                                                                                    }`}
                                                                                 >
                                                                                     {
                                                                                         more
@@ -1098,6 +1230,7 @@ const TestRenderer = ({
                         hidden
                         onClick={() => {
                             testRunStateRef.current = testRendererState;
+                            recentTestRunStateRef.current = testRendererState;
                             pageContent.submit.click();
                         }}
                     >
@@ -1119,9 +1252,11 @@ TestRenderer.propTypes = {
     support: PropTypes.object,
     testPageUrl: PropTypes.string,
     testRunStateRef: PropTypes.any,
+    recentTestRunStateRef: PropTypes.any,
     testRunResultRef: PropTypes.any,
     submitButtonRef: PropTypes.any,
     isSubmitted: PropTypes.bool,
+    isEdit: PropTypes.bool,
     setIsRendererReady: PropTypes.func
 };
 

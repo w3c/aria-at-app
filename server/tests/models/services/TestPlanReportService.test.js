@@ -10,64 +10,53 @@ describe('TestPlanReportModel Data Checks', () => {
     it('should return valid testPlanReport for id query with all associations', async () => {
         const _id = 1;
 
-        const testPlanReport = await TestPlanReportService.getTestPlanReportById(
-            _id
-        );
-        const {
-            id,
-            status,
-            testPlanTargetId,
-            testPlanVersionId,
-            createdAt
-        } = testPlanReport;
+        const testPlanReport =
+            await TestPlanReportService.getTestPlanReportById(_id);
+        const { id, status, testPlanVersionId, createdAt } = testPlanReport;
 
         expect(id).toEqual(_id);
-        expect(status).toMatch(/^(DRAFT|IN_REVIEW|FINALIZED|REMOVED)$/);
-        expect(testPlanTargetId).toBeTruthy();
+        expect(status).toMatch(/^(DRAFT|CANDIDATE|RECOMMENDED)$/);
         expect(testPlanVersionId).toBeTruthy();
         expect(createdAt).toBeTruthy();
         expect(testPlanReport).toHaveProperty('testPlanRuns');
         expect(testPlanReport).toHaveProperty('testPlanVersion');
-        expect(testPlanReport).toHaveProperty('testPlanTarget');
+        expect(testPlanReport).toHaveProperty('at');
+        expect(testPlanReport).toHaveProperty('browser');
     });
 
     it('should return valid testPlanReport for id query with no associations', async () => {
         const _id = 1;
 
-        const testPlanReport = await TestPlanReportService.getTestPlanReportById(
-            _id,
-            null,
-            [],
-            [],
-            [],
-            [],
-            [],
-            []
-        );
-        const {
-            id,
-            status,
-            testPlanTargetId,
-            testPlanVersionId,
-            createdAt
-        } = testPlanReport;
+        const testPlanReport =
+            await TestPlanReportService.getTestPlanReportById(
+                _id,
+                null,
+                [],
+                [],
+                [],
+                [],
+                []
+            );
+        const { id, status, testPlanVersionId, createdAt, atId, browserId } =
+            testPlanReport;
 
         expect(id).toEqual(_id);
-        expect(status).toMatch(/^(DRAFT|IN_REVIEW|FINALIZED)$/);
-        expect(testPlanTargetId).toBeTruthy();
+        expect(status).toMatch(/^(DRAFT|CANDIDATE|RECOMMENDED)$/);
         expect(testPlanVersionId).toBeTruthy();
         expect(createdAt).toBeTruthy();
+        expect(atId).toBeTruthy();
+        expect(browserId).toBeTruthy();
         expect(testPlanReport).not.toHaveProperty('testPlanRuns');
         expect(testPlanReport).not.toHaveProperty('testPlanVersion');
-        expect(testPlanReport).not.toHaveProperty('testPlanTarget');
+        expect(testPlanReport).not.toHaveProperty('at');
+        expect(testPlanReport).not.toHaveProperty('browser');
     });
 
     it('should not be valid testPlanReport query', async () => {
         const _id = 53935;
 
-        const testPlanReport = await TestPlanReportService.getTestPlanReportById(
-            _id
-        );
+        const testPlanReport =
+            await TestPlanReportService.getTestPlanReportById(_id);
 
         expect(testPlanReport).toBeNull();
     });
@@ -82,7 +71,6 @@ describe('TestPlanReportModel Data Checks', () => {
             '',
             {},
             ['id'],
-            [],
             [],
             [],
             [],
@@ -110,17 +98,18 @@ describe('TestPlanReportModel Data Checks', () => {
 
     it('should create TestPlanReport', async () => {
         await dbCleaner(async () => {
-            const _testPlanTargetId = 1;
+            const _atId = 1;
+            const _browserId = 1;
             const _testPlanVersionId = 3;
             const _status = 'DRAFT';
 
-            const testPlanReport = await TestPlanReportService.createTestPlanReport(
-                {
+            const testPlanReport =
+                await TestPlanReportService.createTestPlanReport({
                     status: _status,
-                    testPlanTargetId: _testPlanTargetId,
-                    testPlanVersionId: _testPlanVersionId
-                }
-            );
+                    testPlanVersionId: _testPlanVersionId,
+                    atId: _atId,
+                    browserId: _browserId
+                });
 
             expect(testPlanReport).toEqual(
                 expect.objectContaining({
@@ -129,8 +118,11 @@ describe('TestPlanReportModel Data Checks', () => {
                     testPlanVersion: expect.objectContaining({
                         id: _testPlanVersionId
                     }),
-                    testPlanTarget: expect.objectContaining({
-                        id: _testPlanTargetId
+                    at: expect.objectContaining({
+                        id: _atId
+                    }),
+                    browser: expect.objectContaining({
+                        id: _browserId
                     })
                 })
             );
@@ -143,25 +135,16 @@ describe('TestPlanReportModel Data Checks', () => {
             const _status = 'DRAFT';
             const _testPlanVersionId = 2;
             const _atId = 2;
-            const _atVersion = '2020.4';
             const _browserId = 1;
-            const _browserVersion = '86.0.1';
-            const _testPlanTarget = {
-                atId: _atId,
-                atVersion: _atVersion,
-                browserId: _browserId,
-                browserVersion: _browserVersion
-            };
 
             // A2
-            const [
-                testPlanReport,
-                created
-            ] = await TestPlanReportService.getOrCreateTestPlanReport({
-                status: _status,
-                testPlanVersionId: _testPlanVersionId,
-                testPlanTarget: _testPlanTarget
-            });
+            const [testPlanReport, created] =
+                await TestPlanReportService.getOrCreateTestPlanReport({
+                    status: _status,
+                    testPlanVersionId: _testPlanVersionId,
+                    atId: _atId,
+                    browserId: _browserId
+                });
 
             // A3
             expect(testPlanReport).toEqual(
@@ -171,25 +154,20 @@ describe('TestPlanReportModel Data Checks', () => {
                     testPlanVersion: expect.objectContaining({
                         id: _testPlanVersionId
                     }),
-                    testPlanTarget: expect.objectContaining({
-                        atId: _atId,
-                        atVersion: _atVersion,
-                        browserId: _browserId,
-                        browserVersion: _browserVersion
+                    at: expect.objectContaining({
+                        id: _atId
+                    }),
+                    browser: expect.objectContaining({
+                        id: _browserId
                     })
                 })
             );
-            expect(created.length).toBe(2);
+            expect(created.length).toBe(1);
             expect(created).toEqual(
                 expect.arrayContaining([
                     // TestPlanReport
                     expect.objectContaining({
                         testPlanReportId: testPlanReport.id
-                    }),
-                    // TestPlanTarget
-                    expect.objectContaining({
-                        testPlanReportId: testPlanReport.id,
-                        testPlanTargetId: expect.anything()
                     })
                 ])
             );

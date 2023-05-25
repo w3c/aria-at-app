@@ -3,13 +3,15 @@ const saveTestResultCommon = require('./saveTestResultCommon');
 const saveTestResultResolver = (
     { parentContext: { id: testResultId } },
     { input },
-    { user }
+    context
 ) => {
+    const { user } = context;
     return saveTestResultCommon({
         testResultId,
         input,
         user,
-        isSubmit: false
+        isSubmit: false,
+        context
     });
 };
 

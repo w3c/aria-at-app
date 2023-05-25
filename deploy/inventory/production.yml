@@ -6,3 +6,4 @@ all:
   vars:
     deployment_mode: production
     fqdn: aria-at.w3.org
+    ansible_python_interpreter: /usr/bin/python3

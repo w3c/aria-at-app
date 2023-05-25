@@ -5,9 +5,10 @@ const deepCustomMerge = require('../../util/deepCustomMerge');
  * Completed test results sourced from all the report's runs. The runs must be
  * merged because each run might have skipped different tests.
  */
-const finalizedTestResultsResolver = testPlanReport => {
+const finalizedTestResultsResolver = async (testPlanReport, _, context) => {
     if (
-        testPlanReport.status !== 'FINALIZED' ||
+        // CANDIDATE & RECOMMENDED status should be evaluated
+        testPlanReport.status === 'DRAFT' ||
         !testPlanReport.testPlanRuns.length
     ) {
         return null;
@@ -27,8 +28,11 @@ const finalizedTestResultsResolver = testPlanReport => {
             }
         );
     }
-
-    return testResultsResolver({ testPlanReport, testResults: merged });
+    return testResultsResolver(
+        { testPlanReport, testResults: merged },
+        null,
+        context
+    );
 };
 
 module.exports = finalizedTestResultsResolver;

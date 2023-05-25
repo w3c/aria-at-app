@@ -47,11 +47,11 @@ const Container = styled.div`
     }
 `;
 
-const defaultTitle = 'Unapproved Report';
-const defaultMessageContent = (
+const candidateTitle = 'Unapproved Report';
+const candidateMessageContent = (
     <>
         The information in this report is generated from candidate tests.
-        Candidate aria-at tests are in review by assistive technology developers
+        Candidate ARIA-AT tests are in review by assistive technology developers
         and lack consensus regarding:
         <ol>
             <li>applicability and validity of the tests, and</li>
@@ -60,11 +60,32 @@ const defaultMessageContent = (
     </>
 );
 
-const DisclaimerInfo = ({
-    title = defaultTitle,
-    messageContent = defaultMessageContent
-}) => {
+const recommendedTitle = 'Approved Report';
+const recommendedMessageContent = (
+    <>
+        The information in this report is generated from recommended tests.
+        Recommended ARIA-AT tests have been reviewed by assistive technology
+        developers and represent consensus regarding: applicability and validity
+        of the tests, and accuracy of test results.
+    </>
+);
+
+const content = {
+    CANDIDATE: {
+        title: candidateTitle,
+        messageContent: candidateMessageContent
+    },
+    RECOMMENDED: {
+        title: recommendedTitle,
+        messageContent: recommendedMessageContent
+    }
+};
+
+const DisclaimerInfo = ({ reportStatus }) => {
     const [expanded, setExpanded] = useState(false);
+
+    const title = content[reportStatus].title;
+    const messageContent = content[reportStatus].messageContent;
 
     return (
         <Container>
@@ -91,9 +112,7 @@ const DisclaimerInfo = ({
 };
 
 DisclaimerInfo.propTypes = {
-    title: PropTypes.string,
-    messageContent: PropTypes.element
+    reportStatus: PropTypes.string
 };
 
-export { defaultTitle, defaultMessageContent };
 export default DisclaimerInfo;

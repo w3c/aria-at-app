@@ -17,6 +17,10 @@ module.exports = {
     },
 
     down: async queryInterface => {
-        await queryInterface.bulkDelete('At', null, {});
+        await queryInterface.bulkDelete('At', null, {
+            cascade: true,
+            truncate: true,
+            restartIdentity: true
+        });
     }
 };

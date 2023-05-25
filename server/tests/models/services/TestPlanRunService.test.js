@@ -122,17 +122,13 @@ describe('TestPlanRunModel Data Checks', () => {
                 testResults: _testResults
             });
 
-            const {
-                id,
-                testerUserId,
-                testPlanReportId,
-                testResults
-            } = testPlanRun;
+            const { id, testerUserId, testPlanReportId, testResults } =
+                testPlanRun;
 
-            const updatedTestPlanRun = await TestPlanRunService.updateTestPlanRun(
-                id,
-                { testResults: [{ test: 'goesHere' }] }
-            );
+            const updatedTestPlanRun =
+                await TestPlanRunService.updateTestPlanRun(id, {
+                    testResults: [{ test: 'goesHere' }]
+                });
             const {
                 testerUserId: updatedTesterUserId,
                 testPlanReportId: updatedTestPlanReportId,
@@ -161,9 +157,8 @@ describe('TestPlanRunModel Data Checks', () => {
 
             await TestPlanRunService.removeTestPlanRun(_id);
 
-            const deletedTestPlanRun = await TestPlanRunService.getTestPlanRunById(
-                _id
-            );
+            const deletedTestPlanRun =
+                await TestPlanRunService.getTestPlanRunById(_id);
 
             // before testPlanRun removed
             expect(testPlanRun).not.toBeNull();
@@ -187,9 +182,8 @@ describe('TestPlanRunModel Data Checks', () => {
                 testPlanReportId
             });
 
-            const deletedTestPlanRun = await TestPlanRunService.getTestPlanRunById(
-                _id
-            );
+            const deletedTestPlanRun =
+                await TestPlanRunService.getTestPlanRunById(_id);
 
             // before testPlanRun removed
             expect(testPlanRun).not.toBeNull();
@@ -209,6 +203,7 @@ describe('TestPlanRunModel Data Checks', () => {
             '',
             {},
             ['id'],
+            [],
             [],
             [],
             [],

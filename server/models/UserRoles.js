@@ -1,6 +1,6 @@
 const MODEL_NAME = 'UserRoles';
 
-module.exports = function(sequelize, DataTypes) {
+module.exports = function (sequelize, DataTypes) {
     return sequelize.define(
         MODEL_NAME,
         {

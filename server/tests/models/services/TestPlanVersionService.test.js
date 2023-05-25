@@ -11,9 +11,8 @@ describe('TestPlanReportModel Data Checks', () => {
     it('should return valid testPlanVersion for id query with all associations', async () => {
         const _id = 1;
 
-        const testPlanVersion = await TestPlanVersionService.getTestPlanVersionById(
-            _id
-        );
+        const testPlanVersion =
+            await TestPlanVersionService.getTestPlanVersionById(_id);
         const {
             id,
             title,
@@ -41,14 +40,16 @@ describe('TestPlanReportModel Data Checks', () => {
     it('should return valid testPlanVersion for id query with no associations', async () => {
         const _id = 1;
 
-        const testPlanVersion = await TestPlanVersionService.getTestPlanVersionById(
-            _id,
-            null,
-            [],
-            [],
-            [],
-            []
-        );
+        const testPlanVersion =
+            await TestPlanVersionService.getTestPlanVersionById(
+                _id,
+                null,
+                [],
+                [],
+                [],
+                [],
+                []
+            );
         const {
             id,
             title,
@@ -74,9 +75,8 @@ describe('TestPlanReportModel Data Checks', () => {
     it('should not be valid testPlanVersion query', async () => {
         const _id = 90210;
 
-        const testPlanVersion = await TestPlanVersionService.getTestPlanVersionById(
-            _id
-        );
+        const testPlanVersion =
+            await TestPlanVersionService.getTestPlanVersionById(_id);
 
         expect(testPlanVersion).toBeNull();
     });
@@ -97,8 +97,8 @@ describe('TestPlanReportModel Data Checks', () => {
             const _updatedTitle = randomStringGenerator();
 
             // A2
-            const testPlanVersion = await TestPlanVersionService.createTestPlanVersion(
-                {
+            const testPlanVersion =
+                await TestPlanVersionService.createTestPlanVersion({
                     id: _id,
                     title: _title,
                     directory: _directory,
@@ -108,8 +108,7 @@ describe('TestPlanReportModel Data Checks', () => {
                     updatedAt: _updatedAt,
                     metadata: _metadata,
                     tests: _tests
-                }
-            );
+                });
             const {
                 id: createdId,
                 title: createdTitle,
@@ -123,14 +122,12 @@ describe('TestPlanReportModel Data Checks', () => {
             } = testPlanVersion;
 
             // A2
-            const updatedTestPlanVersion = await TestPlanVersionService.updateTestPlanVersion(
-                createdId,
-                { title: _updatedTitle }
-            );
-            const {
-                title: updatedTitle,
-                updatedAt: updatedUpdatedAt
-            } = updatedTestPlanVersion;
+            const updatedTestPlanVersion =
+                await TestPlanVersionService.updateTestPlanVersion(createdId, {
+                    title: _updatedTitle
+                });
+            const { title: updatedTitle, updatedAt: updatedUpdatedAt } =
+                updatedTestPlanVersion;
 
             // A3
             // After testPlanVersion created
@@ -183,6 +180,7 @@ describe('TestPlanReportModel Data Checks', () => {
             '',
             {},
             ['id'],
+            [],
             [],
             [],
             [],

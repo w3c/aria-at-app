@@ -1,0 +1,222 @@
+body {
+    margin: 0;
+    /* Parent should use the posted message and set an explicit height */
+    overflow: hidden;
+}
+
+#main {
+    width: 100%;
+}
+
+a {
+    color: #036;
+}
+a:focus-visible {
+    outline: 2px solid #3a86d1;
+}
+
+h3#report-title {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 18px;
+}
+
+#copied-message {
+    align-self: center;
+}
+
+#at-version {
+    font-weight: lighter;
+}
+
+#no-data-content-container {
+    border-left: 1.5px solid #c0c0c0;
+    border-right: 1.5px solid #c0c0c0;
+    border-bottom: 1.5px solid #c0c0c0;
+    background-color: #c0c0c0;
+    padding: 1em 0.5em 0.5em 1em;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    margin-bottom: 1em;
+    text-align: center;
+}
+
+#embed-report-status-container {
+    margin-bottom: 1em;
+}
+#embed-report-status-container summary:focus-visible {
+    outline-offset: -2px;
+    outline: 2px solid #3a86d1;
+}
+
+#candidate-title {
+    border: 1.5px solid #ffc4a2;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    background-color: #ffd8c1;
+    padding: 0.5em 0.5em 0.5em 1em;
+    cursor: pointer;
+}
+
+#candidate-title > span {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    color: white;
+    background-color: #c25401;
+    padding: 8px 14px;
+    border-radius: 15px;
+    display: inline-block;
+}
+
+#candidate-title.recommended {
+    border: 1.5px solid #7ac498;
+    background-color: #e9fbe9;
+}
+#candidate-title.recommended > span {
+    background-color: #115b11;
+}
+
+#candidate-content-container {
+    border-left: 1.5px solid #c0c0c0;
+    border-right: 1.5px solid #c0c0c0;
+    border-bottom: 1.5px solid #c0c0c0;
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
+    padding: 1em 0.5em 0.5em 1em;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
+}
+
+#candidate-content-container > ol > li:not(:last-child) {
+    margin-bottom: 3px;
+}
+
+.no-data-cell {
+    display: block;
+    color: #72777f;
+    font-style: italic;
+    text-align: center;
+}
+
+.responsive-table {
+    overflow-x: auto;
+    width: 100%;
+    margin-bottom: 1em;
+}
+
+table {
+    border-collapse: collapse;
+    border-top: 1.5px solid #c0c0c0;
+    width: 100%;
+}
+
+table td,
+th {
+    padding: 1rem;
+    border: 1.5px solid #c0c0c0;
+}
+
+th,
+td {
+    font-family: Arial, Helvetica, sans-serif;
+    padding: 15px;
+    border: 1.5px solid #c0c0c0;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+table tbody tr th {
+    text-align: left;
+}
+
+table tbody tr td {
+    padding: 20px;
+    text-align: center;
+}
+
+.meter {
+    box-sizing: content-box;
+    height: 15px; /* Can be anything */
+    position: relative;
+    background: #c0c0c0;
+    border-radius: 25px;
+    margin-bottom: 10px;
+    overflow: hidden;
+}
+
+.meter > span {
+    display: block;
+    height: 100%;
+    float: left;
+    background-color: #175a6a;
+    border-radius: 25px;
+    position: relative;
+}
+
+.button {
+    border: none;
+    padding: 10px 20px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 3px;
+    border: 3px solid #175a6a;
+}
+
+#view-report-button {
+    color: white;
+    background-color: #175a6a;
+    margin-right: 6px;
+}
+#view-report-button:hover {
+    background-color: #024e5c;
+    border-color: #024e5c;
+}
+#view-report-button:focus-visible {
+    margin-left: 4px;
+    padding: 0 8px 0 12px;
+}
+#embed-button {
+    color: #175a6a;
+    background-color: white;
+    margin-left: 4px;
+}
+#embed-button:hover {
+    background-color: #f4f4f4;
+}
+
+#view-report-button,
+#embed-button {
+    margin-bottom: 1em;
+    padding: 0 12px;
+    line-height: 36px;
+}
+#view-report-button:focus-visible,
+#embed-button:focus-visible {
+    outline-offset: 2px;
+    outline: 2px solid #3a86d1;
+}
+#view-report-button svg,
+#embed-button svg {
+    width: 24px;
+    margin-right: 8px;
+    float: left;
+    position: relative;
+    top: 6px;
+}
+
+#embed-button-wrap {
+    display: inline-block;
+}
+
+#copied-message {
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 5px;
+    display: inline-block;
+}

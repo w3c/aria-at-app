@@ -13,6 +13,10 @@ module.exports = {
     },
 
     down: async queryInterface => {
-        await queryInterface.bulkDelete('Browser', null, {});
+        await queryInterface.bulkDelete('Browser', null, {
+            cascade: true,
+            truncate: true,
+            restartIdentity: true
+        });
     }
 };

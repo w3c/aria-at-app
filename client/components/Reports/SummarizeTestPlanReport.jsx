@@ -2,9 +2,8 @@ import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
 import { createGitHubIssueWithTitleAndBody } from '../TestRun';
-import getMetrics from './getMetrics';
 import { getTestPlanTargetTitle, getTestPlanVersionTitle } from './getTitles';
-import { Breadcrumb, Button, Container, Table } from 'react-bootstrap';
+import { Breadcrumb, Button, Container } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -13,21 +12,88 @@ import {
     faHome
 } from '@fortawesome/free-solid-svg-icons';
 import { differenceBy } from 'lodash';
+import { convertDateToString } from '../../utils/formatter';
 import DisclaimerInfo from '../DisclaimerInfo';
+import TestPlanResultsTable from './TestPlanResultsTable';
+import DisclosureComponent from '../common/DisclosureComponent';
+import { Navigate } from 'react-router';
+import { useLocation, useParams } from 'react-router-dom';
 
-const getAssertionResultString = assertionResult => {
-    let output = 'Good output';
-    if (!assertionResult.passed) {
-        output =
-            assertionResult.failedReason === 'INCORRECT_OUTPUT'
-                ? 'Incorrect output'
-                : 'No output';
-    }
-    return `${output}: ${assertionResult.assertion.text}`;
+const getTestersRunHistory = (
+    testPlanReport,
+    testId,
+    draftTestPlanRuns = []
+) => {
+    const { id: testPlanReportId, at, browser } = testPlanReport;
+    let lines = [];
+
+    draftTestPlanRuns.forEach(draftTestPlanRun => {
+        const { testPlanReport, testResults, tester } = draftTestPlanRun;
+
+        const testResult = testResults.find(item => item.test.id === testId);
+        if (
+            testPlanReportId === testPlanReport.id &&
+            testPlanReport.status === 'CANDIDATE' &&
+            testResult?.completedAt
+        ) {
+            lines.push(
+                <li
+                    key={`${testResult.atVersion.id}-${testResult.browserVersion.id}-${testResult.test.id}-${tester.username}`}
+                >
+                    Tested with{' '}
+                    <b>
+                        {at.name} {testResult.atVersion.name}
+                    </b>{' '}
+                    and{' '}
+                    <b>
+                        {browser.name} {testResult.browserVersion.name}
+                    </b>{' '}
+                    by{' '}
+                    <b>
+                        <a href={`https://github.com/${tester.username}`}>
+                            {tester.username}
+                        </a>
+                    </b>{' '}
+                    on{' '}
+                    {convertDateToString(
+                        testResult.completedAt,
+                        'MMMM DD, YYYY'
+                    )}
+                    .
+                </li>
+            );
+        }
+    });
+
+    return (
+        <ul
+            style={{
+                marginBottom: '0'
+            }}
+        >
+            {lines}
+        </ul>
+    );
 };
 
-const SummarizeTestPlanReport = ({ testPlanReport }) => {
-    const { testPlanVersion, testPlanTarget } = testPlanReport;
+const SummarizeTestPlanReport = ({ testPlanReports }) => {
+    const location = useLocation();
+    const { testPlanReportId } = useParams();
+
+    const testPlanReport = testPlanReports.find(
+        each => each.id == testPlanReportId
+    );
+
+    if (!testPlanReport) return <Navigate to="/404" />;
+
+    const { testPlanVersion, at, browser } = testPlanReport;
+
+    // Construct testPlanTarget
+    const testPlanTarget = {
+        id: `${at.id}${browser.id}`,
+        at,
+        browser
+    };
 
     const skippedTests = differenceBy(
         testPlanReport.runnableTests,
@@ -47,14 +113,19 @@ const SummarizeTestPlanReport = ({ testPlanReport }) => {
                 {getTestPlanVersionTitle(testPlanVersion)}&nbsp;with&nbsp;
                 {getTestPlanTargetTitle(testPlanTarget)}
             </h1>
-            <Breadcrumb>
+            <Breadcrumb
+                label="Breadcrumb"
+                listProps={{
+                    'aria-label': 'Breadcrumb Navigation'
+                }}
+            >
                 <LinkContainer to="/reports">
                     <Breadcrumb.Item>
                         <FontAwesomeIcon icon={faHome} />
                         Test Reports
                     </Breadcrumb.Item>
                 </LinkContainer>
-                <LinkContainer to={`/reports/${testPlanVersion.id}`}>
+                <LinkContainer to={`/report/${testPlanVersion.id}`}>
                     <Breadcrumb.Item>
                         {getTestPlanVersionTitle(testPlanVersion)}
                     </Breadcrumb.Item>
@@ -75,8 +146,18 @@ const SummarizeTestPlanReport = ({ testPlanReport }) => {
             {testPlanReport.finalizedTestResults.map(testResult => {
                 const test = testResult.test;
 
-                const gitHubIssueLinkWithTitleAndBody = createGitHubIssueWithTitleAndBody(
-                    { test, testPlanReport }
+                const fromReportPageLink = `https://aria-at.w3.org${location.pathname}#result-${testResult.id}`;
+                const gitHubIssueLinkWithTitleAndBody =
+                    createGitHubIssueWithTitleAndBody({
+                        test,
+                        testPlanReport,
+                        fromReportPageLink
+                    });
+
+                // TODO: fix renderedUrl
+                let modifiedRenderedUrl = test.renderedUrl.replace(
+                    /.+(?=\/tests)/,
+                    'https://aria-at.netlify.app'
                 );
 
                 return (
@@ -87,7 +168,9 @@ const SummarizeTestPlanReport = ({ testPlanReport }) => {
                                     Details for test:
                                 </span>
                                 {test.title}
-                                <DisclaimerInfo />
+                                <DisclaimerInfo
+                                    reportStatus={testPlanReport.status}
+                                />
                             </h2>
                             <div className="test-result-buttons">
                                 <Button
@@ -98,144 +181,38 @@ const SummarizeTestPlanReport = ({ testPlanReport }) => {
                                 >
                                     <FontAwesomeIcon
                                         icon={faExclamationCircle}
+                                        color="#94979b"
                                     />
                                     Raise an Issue
                                 </Button>
                                 <Button
                                     target="_blank"
                                     rel="noreferrer"
-                                    href={test.renderedUrl}
+                                    href={modifiedRenderedUrl}
                                     variant="secondary"
                                 >
-                                    <FontAwesomeIcon icon={faExternalLinkAlt} />
+                                    <FontAwesomeIcon
+                                        icon={faExternalLinkAlt}
+                                        color="#94979b"
+                                    />
                                     Open Test
                                 </Button>
                             </div>
                         </div>
-                        <Table
-                            bordered
-                            responsive
-                            aria-label={`Results for test ${test.title}`}
-                        >
-                            <thead>
-                                <tr>
-                                    <th>Command</th>
-                                    <th>Support</th>
-                                    <th>Details</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {testResult.scenarioResults.map(
-                                    scenarioResult => {
-                                        const passedAssertions = scenarioResult.assertionResults.filter(
-                                            assertionResult =>
-                                                assertionResult.passed
-                                        );
-                                        const failedAssertions = scenarioResult.assertionResults.filter(
-                                            assertionResult =>
-                                                !assertionResult.passed
-                                        );
-                                        const metrics = getMetrics({
-                                            scenarioResult
-                                        });
-                                        return (
-                                            <tr key={scenarioResult.id}>
-                                                <td>
-                                                    {scenarioResult.scenario.commands
-                                                        .map(({ text }) => text)
-                                                        .join(', then ')}
-                                                </td>
-                                                <td>{metrics.supportLevel}</td>
-                                                <td>
-                                                    <dl>
-                                                        <dt>Output:</dt>
-                                                        <dd>
-                                                            {
-                                                                scenarioResult.output
-                                                            }
-                                                        </dd>
-                                                        <dt>
-                                                            Passing Assertions:
-                                                        </dt>
-                                                        <dd>
-                                                            {passedAssertions.length ? (
-                                                                <ul>
-                                                                    {passedAssertions.map(
-                                                                        assertionResult => (
-                                                                            <li
-                                                                                key={
-                                                                                    assertionResult.id
-                                                                                }
-                                                                            >
-                                                                                {getAssertionResultString(
-                                                                                    assertionResult
-                                                                                )}
-                                                                            </li>
-                                                                        )
-                                                                    )}
-                                                                </ul>
-                                                            ) : (
-                                                                'None'
-                                                            )}
-                                                        </dd>
-                                                        <dt>
-                                                            Failing Assertions:
-                                                        </dt>
-                                                        <dd>
-                                                            {failedAssertions.length ? (
-                                                                <ul>
-                                                                    {failedAssertions.map(
-                                                                        assertionResult => (
-                                                                            <li
-                                                                                key={
-                                                                                    assertionResult.id
-                                                                                }
-                                                                            >
-                                                                                {getAssertionResultString(
-                                                                                    assertionResult
-                                                                                )}
-                                                                            </li>
-                                                                        )
-                                                                    )}
-                                                                </ul>
-                                                            ) : (
-                                                                'None'
-                                                            )}
-                                                        </dd>
-                                                        <dt>
-                                                            Unexpected
-                                                            Behaviors:
-                                                        </dt>
-                                                        <dd>
-                                                            {scenarioResult
-                                                                .unexpectedBehaviors
-                                                                .length ? (
-                                                                <ul>
-                                                                    {scenarioResult.unexpectedBehaviors.map(
-                                                                        unexpected => (
-                                                                            <li
-                                                                                key={
-                                                                                    unexpected.id
-                                                                                }
-                                                                            >
-                                                                                {unexpected.otherUnexpectedBehaviorText ??
-                                                                                    unexpected.text}
-                                                                            </li>
-                                                                        )
-                                                                    )}
-                                                                </ul>
-                                                            ) : (
-                                                                'None'
-                                                            )}
-                                                        </dd>
-                                                    </dl>
-                                                </td>
-                                            </tr>
-                                        );
-                                    }
-                                )}
-                            </tbody>
-                        </Table>
+                        <TestPlanResultsTable
+                            test={test}
+                            testResult={testResult}
+                        />
+
+                        <DisclosureComponent
+                            componentId={`run-history-${testResult.id}`}
+                            title="Run History"
+                            disclosureContainerView={getTestersRunHistory(
+                                testPlanReport,
+                                testResult.test.id,
+                                testPlanReport.draftTestPlanRuns
+                            )}
+                        />
                     </Fragment>
                 );
             })}
@@ -264,44 +241,63 @@ const SummarizeTestPlanReport = ({ testPlanReport }) => {
 };
 
 SummarizeTestPlanReport.propTypes = {
-    testPlanReport: PropTypes.shape({
-        testPlanVersion: PropTypes.object.isRequired,
-        testPlanTarget: PropTypes.object.isRequired,
-        runnableTests: PropTypes.arrayOf(PropTypes.object.isRequired)
-            .isRequired,
-        finalizedTestResults: PropTypes.arrayOf(
-            PropTypes.shape({
+    testPlanReports: PropTypes.arrayOf(
+        PropTypes.shape({
+            id: PropTypes.string.isRequired,
+            status: PropTypes.string.isRequired,
+            testPlanVersion: PropTypes.object.isRequired,
+            runnableTests: PropTypes.arrayOf(PropTypes.object.isRequired)
+                .isRequired,
+            at: PropTypes.shape({
                 id: PropTypes.string.isRequired,
-                test: PropTypes.shape({
-                    title: PropTypes.string.isRequired,
-                    renderedUrl: PropTypes.string.isRequired
-                }).isRequired,
-                scenarioResults: PropTypes.arrayOf(
-                    PropTypes.shape({
-                        id: PropTypes.string.isRequired,
-                        output: PropTypes.string.isRequired,
-                        assertionResults: PropTypes.arrayOf(
-                            PropTypes.shape({
-                                id: PropTypes.string.isRequired,
-                                passed: PropTypes.bool.isRequired,
-                                failedReason: PropTypes.string,
-                                assertion: PropTypes.shape({
-                                    text: PropTypes.string.isRequired
+                name: PropTypes.string.isRequired
+            }).isRequired,
+            browser: PropTypes.shape({
+                id: PropTypes.string.isRequired,
+                name: PropTypes.string.isRequired
+            }).isRequired,
+            finalizedTestResults: PropTypes.arrayOf(
+                PropTypes.shape({
+                    id: PropTypes.string.isRequired,
+                    test: PropTypes.shape({
+                        title: PropTypes.string.isRequired,
+                        renderedUrl: PropTypes.string.isRequired
+                    }).isRequired,
+                    scenarioResults: PropTypes.arrayOf(
+                        PropTypes.shape({
+                            id: PropTypes.string.isRequired,
+                            output: PropTypes.string.isRequired,
+                            assertionResults: PropTypes.arrayOf(
+                                PropTypes.shape({
+                                    id: PropTypes.string.isRequired,
+                                    passed: PropTypes.bool.isRequired,
+                                    failedReason: PropTypes.string,
+                                    assertion: PropTypes.shape({
+                                        text: PropTypes.string.isRequired
+                                    }).isRequired
                                 }).isRequired
-                            }).isRequired
-                        ).isRequired,
-                        unexpectedBehaviors: PropTypes.arrayOf(
-                            PropTypes.shape({
-                                id: PropTypes.string.isRequired,
-                                text: PropTypes.string.isRequired,
-                                otherUnexpectedBehaviorText: PropTypes.string
-                            }).isRequired
-                        ).isRequired
-                    }).isRequired
-                ).isRequired
-            }).isRequired
-        ).isRequired
-    }).isRequired
+                            ).isRequired,
+                            unexpectedBehaviors: PropTypes.arrayOf(
+                                PropTypes.shape({
+                                    id: PropTypes.string.isRequired,
+                                    text: PropTypes.string.isRequired,
+                                    otherUnexpectedBehaviorText:
+                                        PropTypes.string
+                                }).isRequired
+                            ).isRequired
+                        }).isRequired
+                    ).isRequired
+                }).isRequired
+            ).isRequired,
+            draftTestPlanRuns: PropTypes.arrayOf(
+                PropTypes.shape({
+                    tester: PropTypes.shape({
+                        username: PropTypes.string.isRequired
+                    })
+                })
+            )
+        }).isRequired
+    )
 };
 
 export default SummarizeTestPlanReport;

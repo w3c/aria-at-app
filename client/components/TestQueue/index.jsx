@@ -5,10 +5,7 @@ import { Container, Table, Alert } from 'react-bootstrap';
 import { Helmet } from 'react-helmet';
 import nextId from 'react-id-generator';
 import TestQueueRow from '../TestQueueRow';
-import {
-    NewTestPlanReportContainer,
-    NewTestPlanReportModal
-} from '../NewTestPlanReport';
+import ManageTestQueue from '../ManageTestQueue';
 import DeleteTestPlanReportModal from '../DeleteTestPlanReportModal';
 import DeleteResultsModal from '../DeleteResultsModal';
 import PageStatus from '../common/PageStatus';
@@ -17,26 +14,27 @@ import { evaluateAuth } from '../../utils/evaluateAuth';
 import './TestQueue.css';
 
 const TestQueue = () => {
-    const { loading, data, refetch } = useQuery(TEST_QUEUE_PAGE_QUERY);
+    const { loading, data, error, refetch } = useQuery(TEST_QUEUE_PAGE_QUERY, {
+        fetchPolicy: 'cache-and-network'
+    });
 
+    const [pageReady, setPageReady] = useState(false);
     const [testers, setTesters] = useState([]);
+    const [ats, setAts] = useState([]);
+    const [browsers, setBrowsers] = useState([]);
+    const [testPlanVersions, setTestPlanVersions] = useState([]);
     const [testPlanReports, setTestPlanReports] = useState([]);
+    const [latestTestPlanVersions, setLatestTestPlanVersions] = useState([]);
     const [structuredTestPlanTargets, setStructuredTestPlanTargets] = useState(
         {}
     );
-    const [
-        deleteTestPlanReportDetails,
-        setDeleteTestPlanReportDetails
-    ] = useState({});
-    const [
-        isShowingDeleteTestPlanReportModal,
-        setDeleteTestPlanReportModal
-    ] = useState(false);
+    const [deleteTestPlanReportDetails, setDeleteTestPlanReportDetails] =
+        useState({});
+    const [isShowingDeleteTestPlanReportModal, setDeleteTestPlanReportModal] =
+        useState(false);
     const [deleteResultsDetails, setDeleteResultsDetails] = useState({});
-    const [isShowingDeleteResultsModal, setDeleteResultsModal] = useState(
-        false
-    );
-    const [isShowingAddToQueueModal, setAddToQueueModal] = useState(false);
+    const [isShowingDeleteResultsModal, setDeleteResultsModal] =
+        useState(false);
 
     const auth = evaluateAuth(data && data.me ? data.me : {});
     const { id, isAdmin } = auth;
@@ -44,7 +42,14 @@ const TestQueue = () => {
 
     useEffect(() => {
         if (data) {
-            const { users = [], testPlanReports = [] } = data;
+            const {
+                users = [],
+                ats = [],
+                browsers = [],
+                testPlanVersions = [],
+                testPlanReports = [],
+                testPlans = []
+            } = data;
             setTesters(
                 users.filter(
                     tester =>
@@ -52,14 +57,18 @@ const TestQueue = () => {
                         tester.roles.includes('ADMIN')
                 )
             );
+            setAts(ats);
+            setTestPlanVersions(testPlanVersions);
             setTestPlanReports(testPlanReports);
+            setBrowsers(browsers);
+            setLatestTestPlanVersions(testPlans);
+            setPageReady(true);
         }
     }, [data]);
 
     useEffect(() => {
-        const structuredTestPlanTargets = generateStructuredTestPlanVersions(
-            testPlanReports
-        );
+        const structuredTestPlanTargets =
+            generateStructuredTestPlanVersions(testPlanReports);
         setStructuredTestPlanTargets(structuredTestPlanTargets);
     }, [testPlanReports]);
 
@@ -68,14 +77,11 @@ const TestQueue = () => {
 
         // get all testPlanTargets grouped to make it easier to drop into TestQueue table
         testPlanReports.forEach(testPlanReport => {
-            if (!structuredData[testPlanReport.testPlanTarget.title]) {
-                structuredData[testPlanReport.testPlanTarget.title] = [
-                    testPlanReport
-                ];
+            const title = `${testPlanReport.at?.name} and ${testPlanReport.browser?.name}`;
+            if (!structuredData[title]) {
+                structuredData[title] = [testPlanReport];
             } else {
-                structuredData[testPlanReport.testPlanTarget.title].push(
-                    testPlanReport
-                );
+                structuredData[title].push(testPlanReport);
             }
         });
 
@@ -94,9 +100,8 @@ const TestQueue = () => {
                 <Table
                     className="test-queue"
                     aria-labelledby={tableId}
-                    striped
                     bordered
-                    hover
+                    responsive
                 >
                     <thead>
                         <tr>
@@ -114,14 +119,17 @@ const TestQueue = () => {
                                     key={key}
                                     user={auth}
                                     testers={testers}
-                                    testPlanReport={testPlanReport}
+                                    testPlanReportData={testPlanReport}
+                                    latestTestPlanVersions={
+                                        latestTestPlanVersions
+                                    }
                                     triggerDeleteTestPlanReportModal={
                                         triggerDeleteTestPlanReportModal
                                     }
                                     triggerDeleteResultsModal={
                                         triggerDeleteResultsModal
                                     }
-                                    triggerTestPlanReportUpdate={refetch}
+                                    triggerPageUpdate={refetch}
                                 />
                             );
                         })}
@@ -141,17 +149,17 @@ const TestQueue = () => {
     };
 
     const handleDeleteTestPlanReport = async () => {
+        handleCloseDeleteTestPlanReportModal();
+
         if (deleteTestPlanReportDetails.deleteFunction)
             await deleteTestPlanReportDetails.deleteFunction();
-        handleCloseDeleteTestPlanReportModal();
-    };
-
-    const handleCloseDeleteTestPlanReportModal = () => {
-        setDeleteTestPlanReportModal(false);
 
         // reset deleteTestPlanDetails
         setDeleteTestPlanReportDetails({});
     };
+
+    const handleCloseDeleteTestPlanReportModal = () =>
+        setDeleteTestPlanReportModal(false);
 
     const triggerDeleteResultsModal = (
         title = null,
@@ -167,21 +175,29 @@ const TestQueue = () => {
     };
 
     const handleDeleteResults = async () => {
+        handleCloseDeleteResultsModal();
+
         if (deleteResultsDetails.deleteFunction)
             await deleteResultsDetails.deleteFunction();
-        handleCloseDeleteResultsModal();
-    };
-
-    const handleCloseDeleteResultsModal = () => {
-        setDeleteResultsModal(false);
 
         // reset deleteResultsDetails
         setDeleteResultsDetails({});
     };
 
-    const handleCloseAddTestPlanToQueueModal = () => setAddToQueueModal(false);
+    const handleCloseDeleteResultsModal = () => setDeleteResultsModal(false);
 
-    if (loading) {
+    if (error) {
+        return (
+            <PageStatus
+                title="Test Queue | ARIA-AT"
+                heading="Test Queue"
+                message={error.message}
+                isError
+            />
+        );
+    }
+
+    if (loading || !pageReady) {
         return (
             <PageStatus
                 title="Loading - Test Queue | ARIA-AT"
@@ -190,76 +206,65 @@ const TestQueue = () => {
         );
     }
 
-    if (!testPlanReports.length) {
-        const noTestPlansMessage = 'There are no test plans available';
-        const settingsLink = <Link to="/account/settings">Settings</Link>;
-
-        return (
-            <Container id="main" as="main" tabIndex="-1">
-                <Helmet>
-                    <title>{noTestPlansMessage} | ARIA-AT</title>
-                </Helmet>
-                <h2 data-testid="test-queue-no-test-plans-h2">
-                    {noTestPlansMessage}
-                </h2>
-                {!isAdmin && isSignedIn && (
-                    <Alert
-                        key="alert-configure"
-                        variant="danger"
-                        data-testid="test-queue-no-test-plans-p"
-                    >
-                        Please configure your preferred Assistive Technologies
-                        in the {settingsLink} page.
-                    </Alert>
-                )}
-                {isAdmin && (
-                    <Alert
-                        key="alert-configure"
-                        variant="danger"
-                        data-testid="test-queue-no-test-plans-p"
-                    >
-                        Add a Test Plan to the Queue
-                    </Alert>
-                )}
-
-                {isAdmin && (
-                    <NewTestPlanReportContainer
-                        handleOpenDialog={() => setAddToQueueModal(true)}
-                    />
-                )}
-
-                {isAdmin && isShowingAddToQueueModal && (
-                    <NewTestPlanReportModal
-                        show={isShowingAddToQueueModal}
-                        handleClose={handleCloseAddTestPlanToQueueModal}
-                        handleAddToTestQueue={refetch}
-                    />
-                )}
-            </Container>
-        );
-    }
+    const emptyTestPlans = !testPlanReports.length;
+    const noTestPlansMessage = 'There are no test plans available';
+    const settingsLink = <Link to="/account/settings">Settings</Link>;
 
     return (
         <Container id="main" as="main" tabIndex="-1">
             <Helmet>
-                <title>{`Test Queue | ARIA-AT`}</title>
+                <title>{`${
+                    emptyTestPlans ? noTestPlansMessage : 'Test Queue'
+                } | ARIA-AT`}</title>
             </Helmet>
             <h1>Test Queue</h1>
-            <p data-testid="test-queue-instructions">
-                {isSignedIn
-                    ? 'Assign yourself a test plan or start executing one that is already assigned to you.'
-                    : 'Select a test plan to view. Your results will not be saved.'}
-            </p>
+            {emptyTestPlans && (
+                <h2 data-testid="test-queue-no-test-plans-h2">
+                    {noTestPlansMessage}
+                </h2>
+            )}
+            {emptyTestPlans && !isAdmin && isSignedIn && (
+                <Alert
+                    key="alert-configure"
+                    variant="danger"
+                    data-testid="test-queue-no-test-plans-p"
+                >
+                    Please configure your preferred Assistive Technologies in
+                    the {settingsLink} page.
+                </Alert>
+            )}
+
+            {emptyTestPlans && isAdmin && (
+                <Alert
+                    key="alert-configure"
+                    variant="danger"
+                    data-testid="test-queue-no-test-plans-p"
+                >
+                    Add a Test Plan to the Queue
+                </Alert>
+            )}
+
+            {!emptyTestPlans && (
+                <p data-testid="test-queue-instructions">
+                    {isSignedIn
+                        ? 'Assign yourself a test plan or start executing one that is already assigned to you.'
+                        : 'Select a test plan to view. Your results will not be saved.'}
+                </p>
+            )}
 
             {isAdmin && (
-                <NewTestPlanReportContainer
-                    handleOpenDialog={() => setAddToQueueModal(true)}
+                <ManageTestQueue
+                    ats={ats}
+                    browsers={browsers}
+                    testPlanVersions={testPlanVersions}
+                    triggerUpdate={refetch}
                 />
             )}
 
-            {Object.keys(structuredTestPlanTargets).map(key =>
-                renderAtBrowserList(key, structuredTestPlanTargets[key])
-            )}
+            {!emptyTestPlans &&
+                Object.keys(structuredTestPlanTargets).map(key =>
+                    renderAtBrowserList(key, structuredTestPlanTargets[key])
+                )}
 
             {isSignedIn && (
                 <DeleteResultsModal
@@ -277,14 +282,6 @@ const TestQueue = () => {
                     details={deleteTestPlanReportDetails}
                     handleClose={handleCloseDeleteTestPlanReportModal}
                     handleAction={handleDeleteTestPlanReport}
-                />
-            )}
-
-            {isAdmin && isShowingAddToQueueModal && (
-                <NewTestPlanReportModal
-                    show={isShowingAddToQueueModal}
-                    handleClose={handleCloseAddTestPlanToQueueModal}
-                    handleAddToTestQueue={refetch}
                 />
             )}
         </Container>

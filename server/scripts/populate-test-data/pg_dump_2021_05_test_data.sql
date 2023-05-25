@@ -39,52 +39,42 @@ INSERT INTO "AtMode" ("atId", name) VALUES (3, 'INTERACTION');
 -- Data for Name: AtVersion; Type: TABLE DATA; Schema: public; Owner: atr
 --
 
-INSERT INTO "AtVersion" ("atId", "atVersion") VALUES (2, '2019.3');
-INSERT INTO "AtVersion" ("atId", "atVersion") VALUES (2, '2020.1');
-INSERT INTO "AtVersion" ("atId", "atVersion") VALUES (2, '2020.2');
-INSERT INTO "AtVersion" ("atId", "atVersion") VALUES (2, '2020.3');
-INSERT INTO "AtVersion" ("atId", "atVersion") VALUES (2, '2020.4');
-INSERT INTO "AtVersion" ("atId", "atVersion") VALUES (1, '2021.2103.174');
-INSERT INTO "AtVersion" ("atId", "atVersion") VALUES (3, '11.5.2');
+-- INSERT INTO "AtVersion" ("atId", "name", "releasedAt") VALUES (2, '2019.3', '2022-05-02');
+-- INSERT INTO "AtVersion" ("atId", "name", "releasedAt") VALUES (2, '2020.1', '2022-05-02');
+-- INSERT INTO "AtVersion" ("atId", "name", "releasedAt") VALUES (2, '2020.2', '2022-05-02');
+-- INSERT INTO "AtVersion" ("atId", "name", "releasedAt") VALUES (2, '2020.3', '2022-05-02');
+-- INSERT INTO "AtVersion" ("atId", "name", "releasedAt") VALUES (2, '2020.4', '2022-05-02');
+-- INSERT INTO "AtVersion" ("atId", "name", "releasedAt") VALUES (1, '2021.2103.174', '2022-05-02');
+-- INSERT INTO "AtVersion" ("atId", "name", "releasedAt") VALUES (3, '11.5.2', '2022-05-02');
 
 
 --
 -- Data for Name: BrowserVersion; Type: TABLE DATA; Schema: public; Owner: atr
 --
 
-INSERT INTO "BrowserVersion" ("browserId", "browserVersion") VALUES (1, '86.0');
-INSERT INTO "BrowserVersion" ("browserId", "browserVersion") VALUES (1, '86.0.1');
-INSERT INTO "BrowserVersion" ("browserId", "browserVersion") VALUES (1, '87.0');
-INSERT INTO "BrowserVersion" ("browserId", "browserVersion") VALUES (1, '88.0');
-INSERT INTO "BrowserVersion" ("browserId", "browserVersion") VALUES (1, '88.0.1');
-INSERT INTO "BrowserVersion" ("browserId", "browserVersion") VALUES (2, '90.0.4430');
-INSERT INTO "BrowserVersion" ("browserId", "browserVersion") VALUES (2, '91.0.4472');
-INSERT INTO "BrowserVersion" ("browserId", "browserVersion") VALUES (3, '13.0');
-INSERT INTO "BrowserVersion" ("browserId", "browserVersion") VALUES (3, '13.1');
-INSERT INTO "BrowserVersion" ("browserId", "browserVersion") VALUES (3, '14.0');
-INSERT INTO "BrowserVersion" ("browserId", "browserVersion") VALUES (3, '14.1');
-
-
---
--- Data for Name: TestPlanTarget; Type: TABLE DATA; Schema: public; Owner: atr
---
-
-INSERT INTO "TestPlanTarget" (id, title, "atId", "browserId", "atVersion", "browserVersion") VALUES (1, 'JAWS 2021.2103.174 with Chrome 91.0.4472', 1, 2, '2021.2103.174', '91.0.4472');
-INSERT INTO "TestPlanTarget" (id, title, "atId", "browserId", "atVersion", "browserVersion") VALUES (2, 'NVDA 2020.4 with Firefox 88.0.1', 2, 1, '2020.4', '88.0.1');
-INSERT INTO "TestPlanTarget" (id, title, "atId", "browserId", "atVersion", "browserVersion") VALUES (3, 'VoiceOver for macOS 11.5.2 with Safari 14.1', 3, 3, '11.5.2', '14.1');
-
+-- INSERT INTO "BrowserVersion" ("browserId", "name") VALUES (1, '86.0');
+-- INSERT INTO "BrowserVersion" ("browserId", "name") VALUES (1, '86.0.1');
+-- INSERT INTO "BrowserVersion" ("browserId", "name") VALUES (1, '87.0');
+-- INSERT INTO "BrowserVersion" ("browserId", "name") VALUES (1, '88.0');
+-- INSERT INTO "BrowserVersion" ("browserId", "name") VALUES (1, '88.0.1');
+-- INSERT INTO "BrowserVersion" ("browserId", "name") VALUES (2, '90.0.4430');
+-- INSERT INTO "BrowserVersion" ("browserId", "name") VALUES (2, '91.0.4472');
+-- INSERT INTO "BrowserVersion" ("browserId", "name") VALUES (3, '13.0');
+-- INSERT INTO "BrowserVersion" ("browserId", "name") VALUES (3, '13.1');
+-- INSERT INTO "BrowserVersion" ("browserId", "name") VALUES (3, '14.0');
+-- INSERT INTO "BrowserVersion" ("browserId", "name") VALUES (3, '14.1');
 
 --
 -- Data for Name: TestPlanReport; Type: TABLE DATA; Schema: public; Owner: atr
 --
 
-INSERT INTO "TestPlanReport" (id, "status", "testPlanTargetId", "testPlanVersionId", "createdAt") VALUES (1, 'DRAFT', 1, get_test_plan_version_id(text 'Toggle Button'), '2021-05-14 14:18:23.602-05');
-INSERT INTO "TestPlanReport" (id, "status", "testPlanTargetId", "testPlanVersionId", "createdAt") VALUES (2, 'DRAFT', 2, get_test_plan_version_id(text 'Select Only Combobox Example'), '2021-05-14 14:18:23.602-05');
-INSERT INTO "TestPlanReport" (id, "status", "testPlanTargetId", "testPlanVersionId", "createdAt") VALUES (3, 'FINALIZED', 1, get_test_plan_version_id(text 'Modal Dialog Example'), '2021-05-14 14:18:23.602-05');
-INSERT INTO "TestPlanReport" (id, "status", "testPlanTargetId", "testPlanVersionId", "createdAt") VALUES (4, 'FINALIZED', 2, get_test_plan_version_id(text 'Modal Dialog Example'), '2021-05-14 14:18:23.602-05');
-INSERT INTO "TestPlanReport" (id, "status", "testPlanTargetId", "testPlanVersionId", "createdAt") VALUES (5, 'FINALIZED', 3, get_test_plan_version_id(text 'Modal Dialog Example'), '2021-05-14 14:18:23.602-05');
-INSERT INTO "TestPlanReport" (id, "status", "testPlanTargetId", "testPlanVersionId", "createdAt") VALUES (6, 'FINALIZED', 3, get_test_plan_version_id(text 'Checkbox Example (Tri State)'), '2021-05-14 14:18:23.602-05');
-
+INSERT INTO "TestPlanReport" (id, "status", "testPlanVersionId", "createdAt", "atId", "browserId") VALUES (1, 'DRAFT', get_test_plan_version_id(text 'Toggle Button'), '2021-05-14 14:18:23.602-05', 1, 2);
+INSERT INTO "TestPlanReport" (id, "status", "testPlanVersionId", "createdAt", "atId", "browserId") VALUES (2, 'DRAFT', get_test_plan_version_id(text 'Select Only Combobox Example'), '2021-05-14 14:18:23.602-05', 2, 1);
+INSERT INTO "TestPlanReport" (id, "status", "testPlanVersionId", "createdAt", "atId", "browserId", "candidateStatusReachedAt", "recommendedStatusReachedAt", "vendorReviewStatus") VALUES (3, 'CANDIDATE', get_test_plan_version_id(text 'Modal Dialog Example'), '2021-05-14 14:18:23.602-05', 1, 2, '2022-07-06', '2023-01-02', 'READY');
+INSERT INTO "TestPlanReport" (id, "status", "testPlanVersionId", "createdAt", "atId", "browserId", "candidateStatusReachedAt", "recommendedStatusReachedAt", "vendorReviewStatus") VALUES (4, 'CANDIDATE', get_test_plan_version_id(text 'Modal Dialog Example'), '2021-05-14 14:18:23.602-05', 2, 1, '2022-07-06', '2023-01-02', 'READY');
+INSERT INTO "TestPlanReport" (id, "status", "testPlanVersionId", "createdAt", "atId", "browserId", "candidateStatusReachedAt", "recommendedStatusReachedAt", "vendorReviewStatus") VALUES (5, 'CANDIDATE', get_test_plan_version_id(text 'Modal Dialog Example'), '2021-05-14 14:18:23.602-05', 3, 3, '2022-07-06', '2023-01-02', 'READY');
+INSERT INTO "TestPlanReport" (id, "status", "testPlanVersionId", "createdAt", "atId", "browserId", "candidateStatusReachedAt", "recommendedStatusReachedAt", "vendorReviewStatus") VALUES (6, 'CANDIDATE', get_test_plan_version_id(text 'Checkbox Example (Mixed-State)'), '2021-05-14 14:18:23.602-05', 3, 3, '2022-07-06', '2023-01-02', 'READY');
+INSERT INTO "TestPlanReport" (id, "status", "testPlanVersionId", "createdAt", "atId", "browserId") VALUES (7, 'DRAFT', get_test_plan_version_id(text 'Alert Example'), '2021-05-14 14:18:23.602-05', 3, 1);
 
 --
 -- Data for Name: User; Type: TABLE DATA; Schema: public; Owner: atr
@@ -104,13 +94,13 @@ INSERT INTO "UserRoles" ("userId", "roleName") VALUES (2, 'TESTER');
 -- Data for Name: TestPlanRun; Type: TABLE DATA; Schema: public; Owner: atr
 --
 
-INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults") VALUES (1, 1, 1, '{}');
-INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults") VALUES (2, 1, 2, '{}');
-INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults") VALUES (3, 2, 2, '{}');
-INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults") VALUES (4, 1, 3, '{}');
-INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults") VALUES (5, 1, 4, '{}');
-INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults") VALUES (6, 1, 5, '{}');
-INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults") VALUES (7, 2, 6, '{}');
+INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults") VALUES (1, 1, 1, '[]');
+INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults") VALUES (2, 1, 2, '[]');
+INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults") VALUES (3, 2, 2, '[]');
+INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults") VALUES (4, 1, 3, '[]');
+INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults") VALUES (5, 1, 4, '[]');
+INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults") VALUES (6, 1, 5, '[]');
+INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults") VALUES (7, 2, 6, '[]');
 
 --
 -- Name: At_id_seq; Type: SEQUENCE SET; Schema: public; Owner: atr
@@ -152,14 +142,6 @@ SELECT pg_catalog.setval('"TestPlanReport_id_seq"', 100, true);
 --
 
 SELECT pg_catalog.setval('"TestPlanRun_id_seq"', 100, true);
-
-
---
--- Name: TestPlanTarget_id_seq; Type: SEQUENCE SET; Schema: public; Owner: atr
---
-
-SELECT pg_catalog.setval('"TestPlanTarget_id_seq"', 100, true);
-
 
 --
 -- Name: TestPlan_id_seq; Type: SEQUENCE SET; Schema: public; Owner: atr

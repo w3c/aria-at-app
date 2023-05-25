@@ -17,7 +17,7 @@ sequelize = new Sequelize(
             ssl: true,
             native: true
         },
-        logging: console.log // eslint-disable-line
+        logging: false // console.log // eslint-disable-line
     }
 );
 
@@ -30,7 +30,10 @@ fs.readdirSync(__dirname)
         );
     })
     .forEach(file => {
-        const model = sequelize['import'](path.join(__dirname, file));
+        const model = require(path.join(__dirname, file))(
+            sequelize,
+            Sequelize.DataTypes
+        );
         db[model.name] = model;
     });
 
