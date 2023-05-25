@@ -106,7 +106,7 @@ const ManageTestQueue = ({
 
     const [showManageATs, setShowManageATs] = useState(false);
     const [showAddTestPlans, setShowAddTestPlans] = useState(false);
-    const [selectedManageAtId, setSelectedManageAtId] = useState('');
+    const [selectedManageAtId, setSelectedManageAtId] = useState('1');
     const [selectedManageAtVersions, setSelectedManageAtVersions] = useState(
         []
     );
