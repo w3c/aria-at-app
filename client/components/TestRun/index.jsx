@@ -120,6 +120,7 @@ const TestRun = () => {
     const editAtBrowserDetailsButtonRef = useRef();
 
     const { runId: testPlanRunId, testPlanReportId } = params;
+    let { taskId: testPlanTaskId } = params;
 
     const { loading, data, error } = useQuery(
         testPlanRunId ? TEST_RUN_PAGE_QUERY : TEST_RUN_PAGE_ANON_QUERY,
@@ -244,7 +245,24 @@ const TestRun = () => {
             testResult: testResults.find(t => t.test.id === test.id),
             hasConflicts: !!conflicts.find(c => c.source.test.id === test.id)
         }));
-        const currentTest = tests[currentTestIndex];
+
+        // Verify testPlanTaskId param aren't non-numeric and single digit values
+        if (testPlanTaskId && /^-?\d+$/.test(testPlanTaskId))
+            testPlanTaskId = Number(testPlanTaskId);
+        else testPlanTaskId = undefined;
+
+        // Validate any /task/\d+ route parameter
+        if (
+            testPlanTaskId &&
+            testPlanTaskId > 0 &&
+            tests.length < testPlanTaskId
+        )
+            return navigate('/404');
+
+        if (testPlanTaskId && testPlanTaskId - 1 !== currentTestIndex)
+            setCurrentTestIndex(testPlanTaskId - 1);
+
+        const currentTest = tests[testPlanTaskId - 1 || currentTestIndex];
 
         // Capture the AT & Browser Versions
         const defaultAtVersionId = testPlanReport.at.atVersions[0].id;
@@ -1257,7 +1275,10 @@ const TestRun = () => {
                 <Row>
                     <TestNavigator
                         show={showTestNavigator}
+                        isSignedIn={isSignedIn}
                         tests={tests}
+                        testPlanReport={testPlanReport}
+                        testPlanRunId={parseInt(testPlanRunId)}
                         currentTestIndex={currentTestIndex}
                         toggleShowClick={toggleTestNavigator}
                         handleTestClick={handleTestClick}

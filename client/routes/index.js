@@ -30,20 +30,25 @@ export default () => (
                 </ConfirmAuth>
             }
         />
+        <Route exact path="/test-queue" element={<TestQueue />} />
         <Route
             exact
-            path="/candidate-test-plan/:testPlanVersionId/:atId"
-            element={
-                <ConfirmAuth requiredPermission="VENDOR">
-                    <CandidateTestPlanRun />
-                </ConfirmAuth>
-            }
+            path="/test-plan-report/:testPlanReportId/task/:taskId"
+            element={<TestRun />}
         />
-        <Route exact path="/test-queue" element={<TestQueue />} />
         <Route
             exact
             path="/test-plan-report/:testPlanReportId"
             element={<TestRun />}
+        />
+        <Route
+            exact
+            path="/run/:runId/task/:taskId"
+            element={
+                <ConfirmAuth requiredPermission="TESTER">
+                    <TestRun />
+                </ConfirmAuth>
+            }
         />
         <Route
             exact
@@ -62,6 +67,15 @@ export default () => (
             element={
                 <ConfirmAuth requiredPermission="VENDOR">
                     <CandidateTests />
+                </ConfirmAuth>
+            }
+        />
+        <Route
+            exact
+            path="/candidate-test-plan/:testPlanVersionId/:atId"
+            element={
+                <ConfirmAuth requiredPermission="VENDOR">
+                    <CandidateTestPlanRun />
                 </ConfirmAuth>
             }
         />
