@@ -30,10 +30,6 @@ const PhaseText = styled.span`
     }
 `;
 
-const NoPhaseText = styled.span`
-    margin-left: 12px;
-`;
-
 const PhaseDot = styled.span`
     display: inline-block;
     height: 10px;
@@ -53,6 +49,11 @@ const PhaseDot = styled.span`
     &.recommended {
         background: #b253f8;
     }
+`;
+
+const NoPhaseText = styled.span`
+    margin-left: 12px;
+    margin-right: 12px;
 `;
 
 const StatusSummaryRow = ({ reportResult, testPlanVersion }) => {

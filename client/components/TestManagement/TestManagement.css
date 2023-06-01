@@ -5,6 +5,11 @@
 
 .test-management.table tbody tr th {
     padding: 20px;
+    vertical-align: middle;
+}
+
+.test-management.table tbody tr td {
+    vertical-align: middle;
 }
 
 .test-management.table th.phase {
