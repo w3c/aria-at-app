@@ -221,8 +221,7 @@ const getAllAtBrowserCombinations = reports => {
     const loggedAtIds = [];
 
     const report = reports[0];
-    for (let i = 0; i < report.testPlanVersion.tests.length; i++) {
-        const test = report.testPlanVersion.tests[i];
+    report.testPlanVersion.tests.forEach(test => {
         const atIds = test.ats.map(at => at.id);
 
         if (!loggedAtIds.includes(1) && atIds.includes('1')) {
@@ -242,7 +241,7 @@ const getAllAtBrowserCombinations = reports => {
                 Object.values(validAtBrowserCombinations)[2];
             loggedAtIds.push(3);
         }
-    }
+    });
 
     return combinations;
 };
