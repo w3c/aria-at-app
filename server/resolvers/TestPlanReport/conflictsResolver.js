@@ -4,7 +4,10 @@ const populateData = require('../../services/PopulatedData/populateData');
 const allEqual = require('../../util/allEqual');
 
 const conflictsResolver = async testPlanReport => {
-    console.log(testPlanReport?.testPlanRuns?.[1]?.testResults?.[0]?.scenarioResults?.[0]?.unexpectedBehaviors);
+    console.log(
+        testPlanReport?.testPlanRuns?.[1]?.testResults?.[0]
+            ?.scenarioResults?.[0]?.unexpectedBehaviors
+    );
     let testPlanReportData = {};
 
     // Used in cases where the testPlanRuns to evaluate the conflicts doesn't
