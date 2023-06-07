@@ -28,7 +28,7 @@ module.exports = {
                     continue;
                 }
                 if (
-                    Array.isArray(results[i].testResults) &&
+                    // Array.isArray(results[i].testResults) &&
                     results[i].testResults.length < 1
                 ) {
                     continue;
@@ -44,9 +44,9 @@ module.exports = {
                         continue;
                     }
                     if (
-                        Array.isArray(
-                            results[i].testResults[j].scenarioResults
-                        ) &&
+                        // Array.isArray(
+                        //     results[i].testResults[j].scenarioResults
+                        // ) &&
                         results[i].testResults[j].scenarioResults.length < 1
                     ) {
                         console.log(8);
@@ -66,10 +66,10 @@ module.exports = {
                         }
 
                         if (
-                            Array.isArray(
-                                results[i].testResults[j].scenarioResults[p]
-                                    .unexpectedBehaviors
-                            ) &&
+                            // Array.isArray(
+                            //     results[i].testResults[j].scenarioResults[p]
+                            //         .unexpectedBehaviors
+                            // ) &&
                             results[i].testResults[j].scenarioResults[p]
                                 .unexpectedBehaviors.length < 1
                         ) {
@@ -84,6 +84,7 @@ module.exports = {
                                 .unexpectedBehaviors.length;
                             s += 1
                         ) {
+                            needsUpdate = false;
                             // if (results[i].id === 440 && results[i].testResults[j].id === "MzZiMeyIxMiI6NDQwfQTNkND") {
                             //   console.log("FOUND");
                             // }
