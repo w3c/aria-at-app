@@ -51,6 +51,11 @@ const PhaseDot = styled.span`
     }
 `;
 
+const NoPhaseText = styled.span`
+    margin-left: 12px;
+    margin-right: 12px;
+`;
+
 const StatusSummaryRow = ({ reportResult, testPlanVersion }) => {
     const [bulkUpdateTestPlanReportStatusMutation] = useMutation(
         BULK_UPDATE_TEST_PLAN_REPORT_STATUS_MUTATION
@@ -114,63 +119,69 @@ const StatusSummaryRow = ({ reportResult, testPlanVersion }) => {
             <tr>
                 <th>
                     {testPlanVersion.title}
-                    <PhaseText className={phase.toLowerCase()}>
-                        {phase}
-                    </PhaseText>
+                    {Object.entries(reportResult).length > 0 && (
+                        <PhaseText className={phase.toLowerCase()}>
+                            {phase}
+                        </PhaseText>
+                    )}
                 </th>
                 <td>
-                    <Dropdown className="change-phase">
-                        <Dropdown.Toggle
-                            id={nextId()}
-                            ref={dropdownUpdateReportStatusButtonRef}
-                            variant="secondary"
-                            aria-label={`Change test plan phase for ${testPlanVersion.title}`}
-                        >
-                            <PhaseDot className={phase.toLowerCase()} />
-                            {phase}
-                        </Dropdown.Toggle>
-                        <Dropdown.Menu role="menu">
-                            <Dropdown.Item
-                                role="menuitem"
-                                disabled={phase === 'Draft'}
-                                onClick={async () => {
-                                    await bulkUpdateReportStatus(
-                                        testPlanReports.map(i => i.id),
-                                        'DRAFT'
-                                    );
-                                }}
+                    {(Object.entries(reportResult).length <= 0 && (
+                        <NoPhaseText>Not tested</NoPhaseText>
+                    )) || (
+                        <Dropdown className="change-phase">
+                            <Dropdown.Toggle
+                                id={nextId()}
+                                ref={dropdownUpdateReportStatusButtonRef}
+                                variant="secondary"
+                                aria-label={`Change test plan phase for ${testPlanVersion.title}`}
                             >
-                                <PhaseDot className="draft" />
-                                Draft
-                            </Dropdown.Item>
-                            <Dropdown.Item
-                                role="menuitem"
-                                disabled={phase === 'Candidate'}
-                                onClick={async () => {
-                                    await bulkUpdateReportStatus(
-                                        testPlanReports.map(i => i.id),
-                                        'CANDIDATE'
-                                    );
-                                }}
-                            >
-                                <PhaseDot className="candidate" />
-                                Candidate
-                            </Dropdown.Item>
-                            <Dropdown.Item
-                                role="menuitem"
-                                disabled={phase === 'Recommended'}
-                                onClick={async () => {
-                                    await bulkUpdateReportStatus(
-                                        testPlanReports.map(i => i.id),
-                                        'RECOMMENDED'
-                                    );
-                                }}
-                            >
-                                <PhaseDot className="recommended" />
-                                Recommended
-                            </Dropdown.Item>
-                        </Dropdown.Menu>
-                    </Dropdown>
+                                <PhaseDot className={phase.toLowerCase()} />
+                                {phase}
+                            </Dropdown.Toggle>
+                            <Dropdown.Menu role="menu">
+                                <Dropdown.Item
+                                    role="menuitem"
+                                    disabled={phase === 'Draft'}
+                                    onClick={async () => {
+                                        await bulkUpdateReportStatus(
+                                            testPlanReports.map(i => i.id),
+                                            'DRAFT'
+                                        );
+                                    }}
+                                >
+                                    <PhaseDot className="draft" />
+                                    Draft
+                                </Dropdown.Item>
+                                <Dropdown.Item
+                                    role="menuitem"
+                                    disabled={phase === 'Candidate'}
+                                    onClick={async () => {
+                                        await bulkUpdateReportStatus(
+                                            testPlanReports.map(i => i.id),
+                                            'CANDIDATE'
+                                        );
+                                    }}
+                                >
+                                    <PhaseDot className="candidate" />
+                                    Candidate
+                                </Dropdown.Item>
+                                <Dropdown.Item
+                                    role="menuitem"
+                                    disabled={phase === 'Recommended'}
+                                    onClick={async () => {
+                                        await bulkUpdateReportStatus(
+                                            testPlanReports.map(i => i.id),
+                                            'RECOMMENDED'
+                                        );
+                                    }}
+                                >
+                                    <PhaseDot className="recommended" />
+                                    Recommended
+                                </Dropdown.Item>
+                            </Dropdown.Menu>
+                        </Dropdown>
+                    )}
                 </td>
             </tr>
 

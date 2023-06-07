@@ -213,6 +213,7 @@ describe('graphql', () => {
                         __typename
                         id
                         directory
+                        title
                         latestTestPlanVersion {
                             __typename
                             id
