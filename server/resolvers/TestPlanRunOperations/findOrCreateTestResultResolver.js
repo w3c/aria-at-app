@@ -15,16 +15,25 @@ const finalizedTestResultsResolver = require('../TestPlanReport/finalizedTestRes
 const findOrCreateTestResultResolver = async (
     { parentContext: { id: testPlanRunId } },
     { testId, atVersionId, browserVersionId },
-    { user }
+    context
 ) => {
+    const { user } = context;
+
     const fixTestPlanReportMetrics = async testPlanReportStale => {
-        const { testPlanReport } = await populateData({
-            testPlanReportId: testPlanReportStale.id
-        });
+        const { testPlanReport } = await populateData(
+            {
+                testPlanReportId: testPlanReportStale.id
+            },
+            { context }
+        );
         const runnableTests = runnableTestsResolver(testPlanReport);
-        const finalizedTestResults = finalizedTestResultsResolver({
-            ...testPlanReport
-        });
+        const finalizedTestResults = await finalizedTestResultsResolver(
+            {
+                ...testPlanReport
+            },
+            null,
+            context
+        );
         const metrics = getMetrics({
             testPlanReport: {
                 ...testPlanReport,
@@ -41,10 +50,16 @@ const findOrCreateTestResultResolver = async (
         testPlanRun,
         testPlanReport,
         testPlanVersion: testPlanRunTestPlanVersion
-    } = await populateData({
-        testPlanRunId
-    });
-    const { test, testPlanVersion } = await populateData({ testId });
+    } = await populateData(
+        {
+            testPlanRunId
+        },
+        { context }
+    );
+    const { test, testPlanVersion } = await populateData(
+        { testId },
+        { context }
+    );
 
     if (
         !(
@@ -109,7 +124,7 @@ const findOrCreateTestResultResolver = async (
         await fixTestPlanReportMetrics(testPlanReport);
     }
 
-    return populateData({ testResultId: newTestResult.id });
+    return populateData({ testResultId: newTestResult.id }, { context });
 };
 
 module.exports = findOrCreateTestResultResolver;

@@ -7,8 +7,9 @@ const populateData = require('../../services/PopulatedData/populateData');
 const assignTesterResolver = async (
     { parentContext: { id: testPlanReportId } },
     { userId: testerUserId },
-    { user }
+    context
 ) => {
+    const { user } = context;
     if (
         !(
             user?.roles.find(role => role.name === 'ADMIN') ||
@@ -24,7 +25,7 @@ const assignTesterResolver = async (
         testerUserId
     });
 
-    return populateData({ testPlanRunId });
+    return populateData({ testPlanRunId }, { context });
 };
 
 module.exports = assignTesterResolver;

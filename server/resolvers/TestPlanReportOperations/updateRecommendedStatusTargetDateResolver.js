@@ -7,8 +7,9 @@ const populateData = require('../../services/PopulatedData/populateData');
 const updateRecommendedStatusTargetDateResolver = async (
     { parentContext: { id: testPlanReportId } },
     { recommendedStatusTargetDate },
-    { user }
+    context
 ) => {
+    const { user } = context;
     if (!user?.roles.find(role => role.name === 'ADMIN')) {
         throw new AuthenticationError();
     }
@@ -17,7 +18,7 @@ const updateRecommendedStatusTargetDateResolver = async (
         recommendedStatusTargetDate
     });
 
-    return populateData({ testPlanReportId });
+    return populateData({ testPlanReportId }, { context });
 };
 
 module.exports = updateRecommendedStatusTargetDateResolver;

@@ -59,7 +59,11 @@
                                 {{else}}
                                     {{#if (isInAllBrowsers "Chrome" @../../this) }}
                                         {{#unless (elementExists @../../this @../this this.at.name "Chrome" @last)}}
-                                            <td><span class="no-data-cell">No Data</span></td>
+                                            {{#if (combinationExists @../../this this.at.name "Chrome")}}
+                                                <td><span class="no-data-cell">Data Not Yet Available</span></td>
+                                            {{else}}
+                                                <td><span class="no-data-cell">Not Applicable</span></td>
+                                            {{/if}}
                                         {{/unless}}
                                     {{/if}}
                                 {{/if}}
@@ -75,7 +79,11 @@
                                 {{else}}
                                     {{#if (isInAllBrowsers "Firefox" @../../this) }}
                                         {{#unless (elementExists @../../this @../this this.at.name "Firefox" @last)}}
-                                            <td><span class="no-data-cell">No Data</span></td>
+                                            {{#if (combinationExists @../../this this.at.name "Firefox")}}
+                                                <td><span class="no-data-cell">Data Not Yet Available</span></td>
+                                            {{else}}
+                                                <td><span class="no-data-cell">Not Applicable</span></td>
+                                            {{/if}}
                                         {{/unless}}
                                     {{/if}}
                                 {{/if}}
@@ -91,7 +99,11 @@
                                 {{else}}
                                     {{#if (isInAllBrowsers "Safari" @../../this) }}
                                         {{#unless (elementExists @../../this @../this this.at.name "Safari" @last)}}
-                                            <td><span class="no-data-cell">No Data</span></td>
+                                            {{#if (combinationExists @../../this this.at.name "Safari")}}
+                                                <td><span class="no-data-cell">Data Not Yet Available</span></td>
+                                            {{else}}
+                                                <td><span class="no-data-cell">Not Applicable</span></td>
+                                            {{/if}}
                                         {{/unless}}
                                     {{/if}}
                                 {{/if}}

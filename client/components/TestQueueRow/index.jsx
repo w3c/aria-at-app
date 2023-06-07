@@ -636,7 +636,7 @@ const TestQueueRow = ({
                                                 {tester.username}
                                             </a>
                                             <div id={getRowId(tester)}>
-                                                {`${testResultsLength} of ${runnableTestsLength} tests complete)`}
+                                                {`${testResultsLength} of ${runnableTestsLength} tests complete`}
                                             </div>
                                         </li>
                                     )

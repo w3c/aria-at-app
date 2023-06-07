@@ -13,14 +13,15 @@ const saveTestResultCommon = async ({
     testResultId,
     input,
     user,
-    isSubmit
+    isSubmit,
+    context
 }) => {
     const {
         testPlanRun,
         testPlanReport,
         test,
         testResult: testResultPopulated
-    } = await populateData({ testResultId });
+    } = await populateData({ testResultId }, { context });
 
     if (
         !(
@@ -93,8 +94,8 @@ const saveTestResultCommon = async ({
 
     // TODO: Avoid blocking loads in test runs with a larger amount of tests
     //       and/or test results
-    await persistConflictsCount(testPlanRun);
-    return populateData({ testResultId });
+    await persistConflictsCount(testPlanRun, context);
+    return populateData({ testResultId }, { context });
 };
 
 const assertTestResultIsValid = newTestResult => {

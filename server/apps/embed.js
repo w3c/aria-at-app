@@ -32,11 +32,18 @@ app.set('views', resolve(handlebarsPath, 'views'));
 // stale data for however long it takes for the query to complete.
 const millisecondsUntilStale = 5000;
 
+// TODO: Provide through resolvers
+const validAtBrowserCombinations = {
+    JAWS: new Set(['Firefox', 'Chrome']),
+    NVDA: new Set(['Firefox', 'Chrome']),
+    'VoiceOver for macOS': new Set(['Firefox', 'Chrome', 'Safari'])
+};
+
 const queryReports = async () => {
     const { data, errors } = await apolloServer.executeOperation({
         query: gql`
             query {
-                testPlanReports(statuses: [CANDIDATE, RECOMMENDED]) {
+                testPlanReports(statuses: [DRAFT, CANDIDATE, RECOMMENDED]) {
                     id
                     metrics
                     status
@@ -59,6 +66,12 @@ const queryReports = async () => {
                         updatedAt
                         testPlan {
                             id
+                        }
+                        tests {
+                            ats {
+                                id
+                                name
+                            }
                         }
                     }
                 }
@@ -86,7 +99,10 @@ const getLatestReportsForPattern = ({ allTestPlanReports, pattern }) => {
     let title;
 
     const testPlanReports = allTestPlanReports.filter(report => {
-        if (report.testPlanVersion.testPlan.id === pattern) {
+        if (
+            report.testPlanVersion.testPlan.id === pattern &&
+            report.status !== 'DRAFT'
+        ) {
             title = report.testPlanVersion.title;
             return true;
         }
@@ -181,6 +197,55 @@ const getLatestReportsForPattern = ({ allTestPlanReports, pattern }) => {
     };
 };
 
+// This function gets all the AT + Browser Combinations which have been added to the Test Queue at
+// some point; this means if the combination has never been added, a valid combination will be
+// marked as 'Not Applicable' rather than 'Data Not Yet Available'.
+/*const getAllAtBrowserCombinations = reports => {
+    const combinations = {};
+
+    reports.forEach(report => {
+        if (!(report.at.name in combinations)) {
+            combinations[report.at.name] = new Set();
+        }
+        combinations[report.at.name].add(report.browser.name);
+    });
+
+    return combinations;
+};*/
+
+// TODO: Provide through resolvers
+// Check if the applicable ATs reported for the tests found for a report link to an already known
+// reference of which ATs match against which browsers
+const getAllAtBrowserCombinations = reports => {
+    const combinations = {};
+    const loggedAtIds = [];
+
+    const report = reports[0];
+    report.testPlanVersion.tests.forEach(test => {
+        const atIds = test.ats.map(at => at.id);
+
+        if (!loggedAtIds.includes(1) && atIds.includes('1')) {
+            combinations[Object.keys(validAtBrowserCombinations)[0]] =
+                Object.values(validAtBrowserCombinations)[0];
+            loggedAtIds.push(1);
+        }
+
+        if (!loggedAtIds.includes(2) && atIds.includes('2')) {
+            combinations[Object.keys(validAtBrowserCombinations)[1]] =
+                Object.values(validAtBrowserCombinations)[1];
+            loggedAtIds.push(2);
+        }
+
+        if (!loggedAtIds.includes(3) && atIds.includes('3')) {
+            combinations[Object.keys(validAtBrowserCombinations)[2]] =
+                Object.values(validAtBrowserCombinations)[2];
+            loggedAtIds.push(3);
+        }
+    });
+
+    return combinations;
+};
+
 const renderEmbed = ({
     allTestPlanReports,
     queryTitle,
@@ -196,9 +261,12 @@ const renderEmbed = ({
         status,
         reportsByAt
     } = getLatestReportsForPattern({ pattern, allTestPlanReports });
+    const allAtBrowserCombinations =
+        getAllAtBrowserCombinations(allTestPlanReports);
     return hbs.renderView(resolve(handlebarsPath, 'views/main.hbs'), {
         layout: 'index',
         dataEmpty: Object.keys(reportsByAt).length === 0,
+        allAtBrowserCombinations,
         title: queryTitle || title || 'Pattern Not Found',
         pattern,
         status,

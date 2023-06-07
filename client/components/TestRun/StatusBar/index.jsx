@@ -17,7 +17,7 @@ const StatusBar = ({
             const variant = 'warning';
             const action = (
                 <Button
-                    className="ml-auto"
+                    className="ms-auto"
                     variant={variant}
                     onClick={handleReviewConflictsButtonClick}
                 >
@@ -46,7 +46,7 @@ const StatusBar = ({
                         variant={variant}
                         className="status-bar"
                     >
-                        <Octicon icon={Octicons[icon]} className="mr-2" />{' '}
+                        <Octicon icon={Octicons[icon]} className="me-2" />{' '}
                         {message}
                         {action}
                     </Alert>

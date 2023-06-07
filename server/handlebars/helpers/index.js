@@ -13,6 +13,12 @@ module.exports = {
     getAtVersion: function (object, key) {
         return object.allAtVersionsByAt[key].name;
     },
+    combinationExists: function (object, atName, browserName) {
+        if (object.allAtBrowserCombinations[atName].has(browserName)) {
+            return true;
+        }
+        return false;
+    },
     elementExists: function (parentObject, childObject, at, key, last) {
         const atBrowsers = childObject.map(o => o.browser.name);
 

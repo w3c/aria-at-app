@@ -11,8 +11,9 @@ const {
 const deleteTestPlanRunResolver = async (
     { parentContext: { id: testPlanReportId } },
     { userId: testerUserId },
-    { user }
+    context
 ) => {
+    const { user } = context;
     if (
         !(
             user?.roles.find(role => role.name === 'ADMIN') ||
@@ -28,10 +29,13 @@ const deleteTestPlanRunResolver = async (
         testerUserId
     });
 
-    const { testPlanReport } = await populateData({
-        testPlanReportId
-    });
-    const conflicts = await conflictsResolver(testPlanReport);
+    const { testPlanReport } = await populateData(
+        {
+            testPlanReportId
+        },
+        context
+    );
+    const conflicts = await conflictsResolver(testPlanReport, null, context);
     await updateTestPlanReport(testPlanReport.id, {
         metrics: {
             ...testPlanReport.metrics,
@@ -39,7 +43,7 @@ const deleteTestPlanRunResolver = async (
         }
     });
 
-    return populateData({ testPlanReportId });
+    return populateData({ testPlanReportId }, { context });
 };
 
 module.exports = deleteTestPlanRunResolver;

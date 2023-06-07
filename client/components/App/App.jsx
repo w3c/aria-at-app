@@ -89,7 +89,13 @@ const App = () => {
                                     as={Link}
                                     to="/test-queue"
                                     aria-current={
-                                        location.pathname === '/test-queue'
+                                        location.pathname.includes(
+                                            '/test-queue'
+                                        ) ||
+                                        location.pathname.includes('/run') ||
+                                        location.pathname.includes(
+                                            '/test-plan-report'
+                                        )
                                     }
                                 >
                                     Test Queue
