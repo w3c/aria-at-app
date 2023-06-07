@@ -1,6 +1,7 @@
 'use strict';
-const { updateTestPlanRun } = require('../models/services/TestPlanRunService');
+
 const populateData = require('../services/PopulatedData/populateData');
+const { updateTestPlanRun } = require('../models/services/TestPlanRunService');
 const {
     updateTestPlanReport
 } = require('../models/services/TestPlanReportService');
@@ -23,7 +24,10 @@ module.exports = {
                 }
             );
 
+            // console.log("RIGHT HERE", testPlanReportQuery)
+
             const testPlanRunData = testPlanRunQuery[0];
+            const testPlanReportsData = testPlanReportQuery[0];
             if (!testPlanRunData) {
                 // eslint-disable-next-line no-console
                 console.info('The test Results are empty');
@@ -141,18 +145,22 @@ module.exports = {
                     await updateTestPlanRun(testPlanRunId, updateParams);
             }
 
-            const testPlanReportsData = testPlanReportQuery[0];
+            // const testPlanReportsData = testPlanReportQuery[0];
 
             for (let i = 0; i < testPlanReportsData.length; i++) {
                 const testPlanReportId = testPlanReportsData[i].id;
+              
+                console.log("Test1");
+                console.log(testPlanReportId);
+                console.log("Test2");
                 // const status = testPlanReportsData[i].status;
 
                 // eslint-disable-next-line no-console
-                console.info(
-                    `=== Calculating metrics for TestPlanReport:${testPlanReportId} ===`
-                );
+                // console.info(
+                //     `=== Calculating metrics for TestPlanReport:${testPlanReportId} ===`
+                // );
+               
                 let updateParams = {};
-
                 const { testPlanReport } = await populateData({
                     testPlanReportId
                 });
