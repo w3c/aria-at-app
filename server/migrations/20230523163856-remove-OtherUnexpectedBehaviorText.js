@@ -1,11 +1,12 @@
 'use strict';
-
 const populateData = require('../services/PopulatedData/populateData');
 const { updateTestPlanRun } = require('../models/services/TestPlanRunService');
 const {
     updateTestPlanReport
 } = require('../models/services/TestPlanReportService');
 const conflictsResolver = require('../resolvers/TestPlanReport/conflictsResolver');
+const BrowserLoader = require('../models/loaders/BrowserLoader');
+const AtLoader = require('../models/loaders/AtLoader');
 
 module.exports = {
     up: queryInterface => {
@@ -18,14 +19,14 @@ module.exports = {
             );
 
             const testPlanReportQuery = await queryInterface.sequelize.query(
-                `SELECT id FROM "TestPlanReport"`,
+                `SELECT id, status FROM "TestPlanReport"`,
                 {
                     transaction
                 }
             );
 
-            // console.log("RIGHT HERE", testPlanReportQuery)
-
+            const atLoader = AtLoader();
+            const browserLoader = BrowserLoader();
             const testPlanRunData = testPlanRunQuery[0];
             const testPlanReportsData = testPlanReportQuery[0];
             if (!testPlanRunData) {
@@ -64,7 +65,6 @@ module.exports = {
                     j += 1
                 ) {
                     if (!testPlanRunData[i].testResults[j].scenarioResults) {
-                        console.log(7);
                         continue;
                     }
                     if (
@@ -74,7 +74,6 @@ module.exports = {
                         testPlanRunData[i].testResults[j].scenarioResults
                             .length < 1
                     ) {
-                        console.log(8);
                         continue;
                     }
                     for (
@@ -89,7 +88,6 @@ module.exports = {
                                 p
                             ].unexpectedBehaviors
                         ) {
-                            console.log(9);
                             continue;
                         }
 
@@ -101,7 +99,6 @@ module.exports = {
                             testPlanRunData[i].testResults[j].scenarioResults[p]
                                 .unexpectedBehaviors.length < 1
                         ) {
-                            console.log(10);
                             continue;
                         }
                         for (
@@ -111,10 +108,6 @@ module.exports = {
                                 .unexpectedBehaviors.length;
                             s += 1
                         ) {
-                            // if (results[i].id === 440 && results[i].testResults[j].id === "MzZiMeyIxMiI6NDQwfQTNkND") {
-                            //   console.log("FOUND");
-                            // }
-                            console.log(11);
                             const unexpectedBehavior =
                                 testPlanRunData[i].testResults[j]
                                     .scenarioResults[p].unexpectedBehaviors[s];
@@ -123,9 +116,7 @@ module.exports = {
                                 unexpectedBehavior.otherUnexpectedBehaviorText ===
                                     null
                             ) {
-                                console.log(12);
                                 delete unexpectedBehavior.otherUnexpectedBehaviorText;
-                                console.log(13);
 
                                 updateParams.testResults[j] =
                                     testPlanRunData[i].testResults[j];
@@ -134,66 +125,38 @@ module.exports = {
                             }
                         }
                     }
-                    // updateParams = {
-                    //     testResults: testPlanRunData[i].testResults
-                    // };
-                    // console.log("PARAMS", JSON.stringify(updateParams, null, 2));
-                    // console.log("PARAMS", updateParams, JSON.stringify(updateParams?.testResults?.scenarioResults, updateParams?.testResults?.scenarioResults, null, 2));
                 }
 
                 if (needsUpdate)
                     await updateTestPlanRun(testPlanRunId, updateParams);
             }
 
-            // const testPlanReportsData = testPlanReportQuery[0];
-
             for (let i = 0; i < testPlanReportsData.length; i++) {
                 const testPlanReportId = testPlanReportsData[i].id;
-              
-                console.log("Test1");
-                console.log(testPlanReportId);
-                console.log("Test2");
-                // const status = testPlanReportsData[i].status;
+                const status = testPlanReportsData[i].status;
+                if (status === 'DRAFT') {
+                    let updateParams = {};
+                    const { testPlanReport } = await populateData(
+                        {
+                            testPlanReportId
+                        },
+                        {}
+                    );
 
-                // eslint-disable-next-line no-console
-                // console.info(
-                //     `=== Calculating metrics for TestPlanReport:${testPlanReportId} ===`
-                // );
-               
-                let updateParams = {};
-                const { testPlanReport } = await populateData({
-                    testPlanReportId
-                });
-                const conflicts = await conflictsResolver(testPlanReport);
-                updateParams = {
-                    metrics: {
-                        conflictsCount: conflicts.length
-                    }
-                };
+                    const conflicts = await conflictsResolver(
+                        testPlanReport,
+                        null,
+                        { atLoader, browserLoader }
+                    );
 
-                // if (status === 'IN_REVIEW' || status === 'FINALIZED') {
-                //     const finalizedTestResults =
-                //         finalizedTestResultsResolver({
-                //             ...testPlanReport,
-                //             status
-                //         }) || [];
-                //     if (finalizedTestResults.length) {
-                //         const runnableTests =
-                //             runnableTestsResolver(testPlanReport);
-                //         const metrics = getMetrics({
-                //             testPlanReport: {
-                //                 ...testPlanReport,
-                //                 finalizedTestResults,
-                //                 runnableTests
-                //             }
-                //         });
-                //         updateParams = {
-                //             metrics: { ...updateParams.metrics, ...metrics }
-                //         };
-                //     }
-                // }
+                    updateParams = {
+                        metrics: {
+                            conflictsCount: conflicts.length
+                        }
+                    };
 
-                await updateTestPlanReport(testPlanReport.id, updateParams);
+                    await updateTestPlanReport(testPlanReport.id, updateParams);
+                }
             }
         });
     }
