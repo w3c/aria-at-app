@@ -259,7 +259,10 @@ const updateTestPlanVersion = async (
         hashedTests,
         updatedAt,
         metadata,
-        tests
+        tests,
+        candidateStatusReachedAt,
+        recommendedStatusReachedAt,
+        recommendedStatusTargetDate
     },
     testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
     testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
@@ -281,7 +284,10 @@ const updateTestPlanVersion = async (
             hashedTests,
             updatedAt,
             metadata,
-            tests
+            tests,
+            candidateStatusReachedAt,
+            recommendedStatusReachedAt,
+            recommendedStatusTargetDate
         },
         options
     );

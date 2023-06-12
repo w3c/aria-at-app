@@ -1101,6 +1101,15 @@ const graphqlSchema = gql`
             recommendedStatusTargetDate: Timestamp
         ): PopulatedData!
         """
+        Update the report to a specific TestPlanVersion id.
+        """
+        updateTestPlanReportTestPlanVersion(
+            """
+            The TestPlanReport to update.
+            """
+            input: TestPlanReportInput!
+        ): PopulatedData!
+        """
         Update the report status for multiple TestPlanReports. Remember that all
         conflicts must be resolved when setting the status to CANDIDATE. Only
         available to admins.
