@@ -1,4 +1,4 @@
-const testPlan = require('./testPlanVersionTestPlanResolver');
+const testPlan = require('./testPlanResolver');
 const gitMessage = require('./gitMessageResolver');
 const tests = require('./testsResolver');
 

@@ -11,7 +11,7 @@ const {
 const { decodeLocationOfDataId } = require('./locationOfDataId');
 const testsResolver = require('../../resolvers/TestPlanVersion/testsResolver');
 const testResultsResolver = require('../../resolvers/TestPlanRun/testResultsResolver');
-const testPlanVersionTestPlanResolver = require('../../resolvers/TestPlanVersion/testPlanVersionTestPlanResolver');
+const testPlanVersionTestPlanResolver = require('../../resolvers/TestPlanVersion/testPlanResolver');
 
 /**
  *

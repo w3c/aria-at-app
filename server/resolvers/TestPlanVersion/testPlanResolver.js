@@ -2,12 +2,7 @@ const {
     getTestPlanById
 } = require('../../models/services/TestPlanVersionService');
 
-const testPlanVersionTestPlanResolver = async (
-    testPlanVersion,
-    args,
-    cotext,
-    info
-) => {
+const testPlanResolver = async (testPlanVersion, args, context, info) => {
     const requestedFields =
         info?.fieldNodes[0] &&
         info.fieldNodes[0].selectionSet.selections.map(
@@ -33,4 +28,4 @@ const testPlanVersionTestPlanResolver = async (
     };
 };
 
-module.exports = testPlanVersionTestPlanResolver;
+module.exports = testPlanResolver;
