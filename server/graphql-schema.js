@@ -262,6 +262,31 @@ const graphqlSchema = gql`
     }
 
     """
+    The life-cycle of a TestPlanVersion from the point it is imported automatically
+    or by an admin until it is saved an available to the public on the reports page.
+    """
+    enum TestPlanVersionPhase {
+        """
+        Accepting new TestPlanRuns from testers.
+        """
+        RD
+        """
+        Accepting new TestPlanRuns from testers.
+        """
+        DRAFT
+        """
+        Testing is complete and consistent, and ready to be displayed in the
+        Candidate Tests and Reports section of the app.
+        """
+        CANDIDATE
+        """
+        Testing is complete and consistent, and ready to be displayed in the
+        Reports section of the app as being recommended.
+        """
+        RECOMMENDED
+    }
+
+    """
     A snapshot of time for a test plan, containing all the test plan data,
     including the actual executable tests.
     """
@@ -285,6 +310,26 @@ const graphqlSchema = gql`
         # versions when that label has changed.
         # """
         # label: String!
+        """
+        See TestPlanVersionStatus type for more information.
+        """
+        phase: TestPlanVersionPhase!
+        """
+        Date of when the TestPlanVersion was last updated to the 'Candidate'
+        status.
+        """
+        candidateStatusReachedAt: Timestamp
+        """
+        Date of when the TestPlanVersion was last updated to the 'Recommended'
+        status.
+        """
+        recommendedStatusReachedAt: Timestamp
+        """
+        The intended target date for the final TestPlanVersion status promotion.
+        Based on the ARIA-AT Working Mode.
+        https://github.com/w3c/aria-at/wiki/Working-Mode
+        """
+        recommendedStatusTargetDate: Timestamp
         """
         The TestPlan this TestPlanVersion is a snapshot of.
         """
@@ -319,6 +364,11 @@ const graphqlSchema = gql`
         The tests as they stand at this point in time.
         """
         tests: [Test]!
+        """
+        The TestPlanReports attached to the TestPlanVersion. There will always
+        be a unique combination of AT + Browser + TestPlanVersion
+        """
+        testPlanReports: [TestPlanReport]!
     }
 
     """
@@ -992,11 +1042,11 @@ const graphqlSchema = gql`
         """
         Get all TestPlanVersions.
         """
-        testPlanVersions: [TestPlanVersion]!
+        testPlanVersions(phases: [TestPlanVersionPhase]): [TestPlanVersion]!
         """
         Get a particular TestPlanVersion by ID.
         """
-        testPlanVersion(id: ID!): TestPlanVersion
+        testPlanVersion(id: ID): TestPlanVersion
         """
         Load multiple TestPlanReports, with the optional ability to filter by
         status, atId and testPlanVersionId.

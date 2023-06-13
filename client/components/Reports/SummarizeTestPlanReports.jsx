@@ -31,8 +31,8 @@ const PhaseText = styled.span`
     }
 `;
 
-const SummarizeTestPlanReports = ({ testPlanReports }) => {
-    if (!testPlanReports.length) {
+const SummarizeTestPlanReports = ({ testPlanVersions }) => {
+    if (!testPlanVersions.length) {
         return (
             <FullHeightContainer id="main" as="main" tabIndex="-1">
                 <Helmet>
@@ -47,117 +47,20 @@ const SummarizeTestPlanReports = ({ testPlanReports }) => {
         );
     }
 
-    const testPlanReportsById = {};
     let testPlanTargetsById = {};
-    let testPlanVersionsById = {};
-    testPlanReports.forEach(testPlanReport => {
-        const { testPlanVersion, at, browser } = testPlanReport;
+    testPlanVersions.forEach(testPlanVersion => {
+        const { testPlanReports } = testPlanVersion;
 
-        // Construct testPlanTarget
-        const testPlanTarget = { id: `${at.id}${browser.id}`, at, browser };
-        testPlanReportsById[testPlanReport.id] = testPlanReport;
-        testPlanTargetsById[testPlanTarget.id] = testPlanTarget;
-        testPlanVersionsById[testPlanVersion.id] = testPlanVersion;
+        testPlanReports.forEach(testPlanReport => {
+            const { at, browser } = testPlanReport;
+            // Construct testPlanTarget
+            const testPlanTarget = { id: `${at.id}${browser.id}`, at, browser };
+            testPlanTargetsById[testPlanTarget.id] = testPlanTarget;
+        });
     });
     testPlanTargetsById = alphabetizeObjectBy(testPlanTargetsById, keyValue =>
         getTestPlanTargetTitle(keyValue[1])
     );
-    testPlanVersionsById = alphabetizeObjectBy(testPlanVersionsById, keyValue =>
-        getTestPlanVersionTitle(keyValue[1])
-    );
-
-    const tabularReports = {};
-    const tabularReportsByDirectory = {};
-    Object.keys(testPlanVersionsById).forEach(testPlanVersionId => {
-        const directory =
-            testPlanVersionsById[testPlanVersionId].testPlan.directory;
-
-        tabularReports[testPlanVersionId] = {};
-        if (!tabularReportsByDirectory[directory])
-            tabularReportsByDirectory[directory] = {};
-        tabularReportsByDirectory[directory][testPlanVersionId] = {};
-        Object.keys(testPlanTargetsById).forEach(testPlanTargetId => {
-            tabularReports[testPlanVersionId][testPlanTargetId] = null;
-            tabularReportsByDirectory[directory][testPlanVersionId][
-                testPlanTargetId
-            ] = null;
-        });
-    });
-    testPlanReports.forEach(testPlanReport => {
-        const { testPlanVersion, at, browser } = testPlanReport;
-        const directory = testPlanVersion.testPlan.directory;
-
-        // Construct testPlanTarget
-        const testPlanTarget = { id: `${at.id}${browser.id}`, at, browser };
-
-        if (!tabularReports[testPlanVersion.id][testPlanTarget.id])
-            tabularReports[testPlanVersion.id][testPlanTarget.id] =
-                testPlanReport;
-
-        if (
-            !tabularReportsByDirectory[directory][testPlanVersion.id][
-                testPlanTarget.id
-            ]
-        )
-            tabularReportsByDirectory[directory][testPlanVersion.id][
-                testPlanTarget.id
-            ] = testPlanReport;
-
-        if (
-            !tabularReportsByDirectory[directory][testPlanVersion.id]
-                .testPlanVersion
-        )
-            tabularReportsByDirectory[directory][
-                testPlanVersion.id
-            ].testPlanVersion = testPlanVersion;
-    });
-
-    const combineObject = originalObject => {
-        let combinedTestPlanVersionIdArray = [];
-        let resultTestPlanTargets = Object.values(originalObject)[0];
-        combinedTestPlanVersionIdArray.push(
-            resultTestPlanTargets.testPlanVersion.id
-        );
-
-        for (let i = 1; i < Object.values(originalObject).length; i++) {
-            let testPlanTargets = Object.values(originalObject)[i];
-            if (
-                !combinedTestPlanVersionIdArray.includes(
-                    testPlanTargets.testPlanVersion.id
-                )
-            )
-                combinedTestPlanVersionIdArray.push(
-                    testPlanTargets.testPlanVersion.id
-                );
-
-            delete testPlanTargets.testPlanVersion;
-
-            // Check if exists in newObject and add/update newObject based on criteria
-            Object.keys(testPlanTargets).forEach(testPlanTargetKey => {
-                if (!resultTestPlanTargets[testPlanTargetKey])
-                    resultTestPlanTargets[testPlanTargetKey] =
-                        testPlanTargets[testPlanTargetKey];
-                else {
-                    const latestPrevDate = new Date(
-                        testPlanTargets[
-                            testPlanTargetKey
-                        ]?.latestAtVersionReleasedAt.releasedAt
-                    );
-
-                    const latestCurrDate = new Date(
-                        resultTestPlanTargets[
-                            testPlanTargetKey
-                        ]?.latestAtVersionReleasedAt.releasedAt
-                    );
-
-                    if (latestPrevDate >= latestCurrDate)
-                        resultTestPlanTargets[testPlanTargetKey] =
-                            testPlanTargets[testPlanTargetKey];
-                }
-            });
-        }
-        return { resultTestPlanTargets, combinedTestPlanVersionIdArray };
-    };
 
     return (
         <FullHeightContainer id="main" as="main" tabIndex="-1">
@@ -190,72 +93,47 @@ const SummarizeTestPlanReports = ({ testPlanReports }) => {
                     </tr>
                 </thead>
                 <tbody>
-                    {Object.values(tabularReportsByDirectory)
-                        .sort((a, b) =>
-                            Object.values(a)[0].testPlanVersion.title <
-                            Object.values(b)[0].testPlanVersion.title
-                                ? -1
-                                : 1
-                        )
-                        .map(tabularReport => {
-                            let status = 'Recommended';
-                            let reportResult = null;
-                            let testPlanVersionId = null;
-
-                            // Evaluate what is prioritised across the
-                            // collection of testPlanVersions
-                            if (Object.values(tabularReport).length > 1) {
-                                const {
-                                    resultTestPlanTargets,
-                                    combinedTestPlanVersionIdArray
-                                } = combineObject(tabularReport);
-                                reportResult = resultTestPlanTargets;
-                                testPlanVersionId =
-                                    combinedTestPlanVersionIdArray.join(',');
-                            } else {
-                                reportResult = Object.values(tabularReport)[0];
-                                testPlanVersionId =
-                                    reportResult.testPlanVersion.id;
-                            }
-
-                            const testPlanVersion =
-                                reportResult.testPlanVersion;
-                            delete reportResult.testPlanVersion;
-
-                            Object.values(testPlanTargetsById).forEach(
-                                testPlanTarget => {
-                                    const testPlanReport =
-                                        reportResult[testPlanTarget.id];
-
-                                    if (testPlanReport?.status === 'CANDIDATE')
-                                        status = 'Candidate';
-                                }
-                            );
+                    {Object.values(testPlanVersions)
+                        .sort((a, b) => (a.title < b.title ? -1 : 1))
+                        .map(testPlanVersion => {
+                            const phase = testPlanVersion.phase;
+                            const testPlanReports =
+                                testPlanVersion.testPlanReports;
 
                             return (
-                                <tr key={testPlanVersionId}>
+                                <tr key={testPlanVersion.id}>
                                     <td>
                                         <Link
-                                            to={`/report/${testPlanVersionId}`}
+                                            to={`/report/${testPlanVersion.id}`}
                                             aria-label={`${getTestPlanVersionTitle(
                                                 testPlanVersion
-                                            )}, ${status} report`}
+                                            )}, ${phase} report`}
                                         >
                                             {getTestPlanVersionTitle(
                                                 testPlanVersion
                                             )}
                                         </Link>
                                         <PhaseText
-                                            className={status.toLowerCase()}
+                                            className={phase.toLowerCase()}
                                             aria-hidden
                                         >
-                                            {status}
+                                            {phase}
                                         </PhaseText>
                                     </td>
                                     {Object.values(testPlanTargetsById).map(
                                         testPlanTarget => {
                                             const testPlanReport =
-                                                reportResult[testPlanTarget.id];
+                                                testPlanReports.find(
+                                                    testPlanReport =>
+                                                        testPlanReport.at.id ===
+                                                            testPlanTarget.at
+                                                                .id &&
+                                                        testPlanReport.browser
+                                                            .id ===
+                                                            testPlanTarget
+                                                                .browser.id
+                                                );
+
                                             if (!testPlanReport) {
                                                 return (
                                                     <td
@@ -271,7 +149,7 @@ const SummarizeTestPlanReports = ({ testPlanReports }) => {
                                                 <td key={testPlanReport.id}>
                                                     <Link
                                                         to={
-                                                            `/report/${testPlanReport.testPlanVersion.id}` +
+                                                            `/report/${testPlanVersion.id}` +
                                                             `/targets/${testPlanReport.id}`
                                                         }
                                                     >
@@ -300,16 +178,26 @@ const SummarizeTestPlanReports = ({ testPlanReports }) => {
 };
 
 SummarizeTestPlanReports.propTypes = {
-    testPlanReports: PropTypes.arrayOf(
+    testPlanVersions: PropTypes.arrayOf(
         PropTypes.shape({
             id: PropTypes.string.isRequired,
-            testPlanVersion: PropTypes.shape({
-                id: PropTypes.string.isRequired,
-                title: PropTypes.string,
-                testPlan: PropTypes.shape({
-                    directory: PropTypes.string.isRequired
-                }).isRequired
-            }).isRequired
+            title: PropTypes.string.isRequired,
+            phase: PropTypes.string.isRequired,
+            candidateStatusReachedAt: PropTypes.string,
+            recommendedStatusReachedAt: PropTypes.string,
+            gitSha: PropTypes.string,
+            testPlan: PropTypes.shape({
+                directory: PropTypes.string
+            }),
+            metadata: PropTypes.object,
+            testPlanReports: PropTypes.arrayOf(
+                PropTypes.shape({
+                    id: PropTypes.string.isRequired,
+                    metrics: PropTypes.object.isRequired,
+                    at: PropTypes.object.isRequired,
+                    browser: PropTypes.object.isRequired
+                })
+            )
         })
     ).isRequired
 };

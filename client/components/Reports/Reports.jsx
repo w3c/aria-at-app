@@ -32,7 +32,9 @@ const Reports = () => {
 
     if (!data) return null;
 
-    return <SummarizeTestPlanReports testPlanReports={data.testPlanReports} />;
+    return (
+        <SummarizeTestPlanReports testPlanVersions={data.testPlanVersions} />
+    );
 };
 
 export default Reports;
