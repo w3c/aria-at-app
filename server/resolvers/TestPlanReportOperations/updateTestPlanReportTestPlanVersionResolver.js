@@ -1,7 +1,9 @@
 const hash = require('object-hash');
 const { omit } = require('lodash');
 const {
-    getTestPlanReportById
+    getTestPlanReportById,
+    getOrCreateTestPlanReport,
+    updateTestPlanReport
 } = require('../../models/services/TestPlanReportService');
 const {
     getTestPlanVersionById
@@ -9,6 +11,12 @@ const {
 const { testResults } = require('../TestPlanRun');
 const populateData = require('../../services/PopulatedData/populateData');
 const scenariosResolver = require('../Test/scenariosResolver');
+const {
+    createTestPlanRun
+} = require('../../models/services/TestPlanRunService');
+const { findOrCreateTestResult } = require('../TestPlanRunOperations');
+const { submitTestResult, saveTestResult } = require('../TestResultOperations');
+const { AuthenticationError } = require('apollo-server-express');
 
 const compareTestContent = (currentTests, newTests) => {
     const hashTest = test => hash(omit(test, ['id']));
@@ -33,17 +41,49 @@ const compareTestContent = (currentTests, newTests) => {
     return { testsToDelete, currentTestIdsToNewTestIds };
 };
 
+const copyTestResult = (testResultSkeleton, testResult) => {
+    return {
+        id: testResultSkeleton.id,
+        atVersionId: testResultSkeleton.atVersion.id,
+        browserVersionId: testResultSkeleton.browserVersion.id,
+        scenarioResults: testResultSkeleton.scenarioResults.map(
+            (scenarioResultSkeleton, index) => {
+                const scenarioResult = testResult.scenarioResults[index];
+                return {
+                    id: scenarioResultSkeleton.id,
+                    output: scenarioResult.output,
+                    assertionResults:
+                        scenarioResultSkeleton.assertionResults.map(
+                            (assertionResultSkeleton, assertionResultIndex) => {
+                                const assertionResult =
+                                    scenarioResult.assertionResults[
+                                        assertionResultIndex
+                                    ];
+                                return {
+                                    id: assertionResultSkeleton.id,
+                                    passed: assertionResult.passed,
+                                    failedReason: assertionResult.failedReason
+                                };
+                            }
+                        ),
+                    unexpectedBehaviors: scenarioResult.unexpectedBehaviors
+                };
+            }
+        )
+    };
+};
+
 const updateTestPlanReportTestPlanVersionResolver = async (
     { parentContext: { id: testPlanReportId } },
-    { input },
+    { input }, // { testPlanVersionId, atId, browserId }
     context
 ) => {
-    // const { user } = context;
-    // if (!user?.roles.find(role => role.name === 'ADMIN')) {
-    //     throw new AuthenticationError();
-    // }
+    const { user } = context;
+    if (!user?.roles.find(role => role.name === 'ADMIN')) {
+        throw new AuthenticationError();
+    }
 
-    const { testPlanVersionId: newTestPlanVersionId, atId, browserId } = input;
+    const { testPlanVersionId: newTestPlanVersionId, atId } = input;
 
     // [SECTION START]: Preparing data to be worked with in a similar way to TestPlanUpdaterModal
     const newTestPlanVersionData = (
@@ -77,19 +117,6 @@ const updateTestPlanReportTestPlanVersionResolver = async (
             }
         )
     };
-    // console.log('newTestPlanVersion', newTestPlanVersion);
-    // console.log(
-    //     'newTestPlanVersion:checkAts',
-    //     JSON.stringify(newTestPlanVersion.tests[0].ats, null, 2)
-    // );
-    // console.log(
-    //     'newTestPlanVersion:checkAssertions',
-    //     JSON.stringify(newTestPlanVersion.tests[0].assertions, null, 2)
-    // );
-    // console.log(
-    //     'newTestPlanVersion:checkCommands',
-    //     JSON.stringify(newTestPlanVersion.tests[0].scenarios, null, 2)
-    // );
 
     const currentTestPlanReport = (
         await getTestPlanReportById(testPlanReportId)
@@ -112,7 +139,6 @@ const updateTestPlanReportTestPlanVersionResolver = async (
             currentTestPlanReport.draftTestPlanRuns = [];
         currentTestPlanReport.draftTestPlanRuns[i] = testPlanRun;
     }
-    // console.log('currentTestPlanReport', currentTestPlanReport);
 
     const skeletonTestPlanReport = {
         id: currentTestPlanReport.id,
@@ -189,7 +215,6 @@ const updateTestPlanReportTestPlanVersionResolver = async (
             })
         )
     };
-    // console.log('skeletonTestPlanReport', skeletonTestPlanReport);
 
     let runsWithResults,
         allTestResults,
@@ -200,102 +225,44 @@ const updateTestPlanReportTestPlanVersionResolver = async (
     runsWithResults = skeletonTestPlanReport.draftTestPlanRuns.filter(
         testPlanRun => testPlanRun.testResults.length
     );
-    // console.log('runsWithResults', runsWithResults);
-    // console.log('runsWithResults:testResult', runsWithResults[0].testResults);
 
     allTestResults = runsWithResults.flatMap(
         testPlanRun => testPlanRun.testResults
     );
-    // console.log('allTestResults', allTestResults);
 
+    // eslint-disable-next-line no-unused-vars
     ({ testsToDelete, currentTestIdsToNewTestIds } = compareTestContent(
         allTestResults.map(testResult => testResult.test),
         newTestPlanVersion.tests
     ));
-    console.log('testsToDelete', testsToDelete);
-    console.log('currentTestIdsToNewTestIds', currentTestIdsToNewTestIds);
 
+    // eslint-disable-next-line no-unused-vars
     copyableTestResults = allTestResults.filter(
         testResult => currentTestIdsToNewTestIds[testResult.test.id]
     );
-    console.log('copyableTestResults', copyableTestResults);
     // [SECTION END]: Preparing data to be worked with in a similar way to TestPlanUpdaterModal
-
-    /*const copyTestResult = (testResultSkeleton, testResult) => {
-        return {
-            id: testResultSkeleton.id,
-            atVersionId: testResultSkeleton.atVersion.id,
-            browserVersionId: testResultSkeleton.browserVersion.id,
-            scenarioResults: testResultSkeleton.scenarioResults.map(
-                (scenarioResultSkeleton, index) => {
-                    const scenarioResult = testResult.scenarioResults[index];
-                    return {
-                        id: scenarioResultSkeleton.id,
-                        output: scenarioResult.output,
-                        assertionResults:
-                            scenarioResultSkeleton.assertionResults.map(
-                                (
-                                    assertionResultSkeleton,
-                                    assertionResultIndex
-                                ) => {
-                                    const assertionResult =
-                                        scenarioResult.assertionResults[
-                                            assertionResultIndex
-                                        ];
-                                    return {
-                                        id: assertionResultSkeleton.id,
-                                        passed: assertionResult.passed,
-                                        failedReason:
-                                            assertionResult.failedReason
-                                    };
-                                }
-                            ),
-                        unexpectedBehaviors: scenarioResult.unexpectedBehaviors
-                    };
-                }
-            )
-        };
-    };
-
-    const compareTestContent = (currentTests, newTests) => {
-        const hashTest = test => hash(omit(test, ['id']));
-        const hashTests = tests => {
-            return Object.fromEntries(
-                tests.map(test => [hashTest(test), test])
-            );
-        };
-
-        const currentTestsByHash = hashTests(currentTests);
-        const newTestsByHash = hashTests(newTests);
-
-        const testsToDelete = [];
-        const currentTestIdsToNewTestIds = {};
-        Object.entries(currentTestsByHash).forEach(([hash, currentTest]) => {
-            const newTest = newTestsByHash[hash];
-            if (!newTest) {
-                testsToDelete.push(currentTest);
-                return;
-            }
-            currentTestIdsToNewTestIds[currentTest.id] = newTest.id;
-        });
-
-        return { testsToDelete, currentTestIdsToNewTestIds };
-    };
-
-    let testsToDelete;
-    let currentTestIdsToNewTestIds;
-
-    const { testPlanReport } = await populateData(
-        { testPlanReportId },
-        { context }
-    );
 
     // TODO: If no input.testPlanVersionId, infer it by whatever the latest is for this directory
     const [foundOrCreatedTestPlanReport, createdLocationsOfData] =
         await getOrCreateTestPlanReport(input, {
             // TODO: Pass a boolean on taking the current testPlanReport's status or use DRAFT
-            status: testPlanReport.status
+            status: currentTestPlanReport.status
         });
+
+    const candidateStatusReachedAt =
+        currentTestPlanReport.candidateStatusReachedAt;
+    const recommendedStatusReachedAt =
+        currentTestPlanReport.recommendedStatusReachedAt;
+    const recommendedStatusTargetDate =
+        currentTestPlanReport.recommendedStatusTargetDate;
+    const vendorReviewStatus = currentTestPlanReport.vendorReviewStatus;
+
+    await updateTestPlanReport(foundOrCreatedTestPlanReport.id, {
+        candidateStatusReachedAt,
+        recommendedStatusReachedAt,
+        recommendedStatusTargetDate,
+        vendorReviewStatus
+    });
 
     const locationOfData = {
         testPlanReportId: foundOrCreatedTestPlanReport.id
@@ -308,36 +275,18 @@ const updateTestPlanReportTestPlanVersionResolver = async (
         )
     );
     const reportIsNew = !!created.find(item => item.testPlanReport.id);
-    if (reportIsNew)
-        console.error(
+    if (!reportIsNew)
+        // eslint-disable-next-line no-console
+        console.info(
             'A report already exists and continuing would overwrite its data.'
         );
 
-    const testPlanRuns = draftTestPlanRuns(testPlanReport);
-    const runsWithResults = testPlanRuns.filter(
-        testPlanRun => testPlanRun.testResults.length
-    );
-
-    let allTestResults = runsWithResults.flatMap(
-        testPlanRun => testPlanRun.testResults
-    );
-
-    ({ testsToDelete, currentTestIdsToNewTestIds } = compareTestContent(
-        allTestResults.map(testResult => testResult.test),
-        foundOrCreatedTestPlanReport.tests
-    ));
-
-    let copyableTestResults = allTestResults.filter(
-        testResult => currentTestIdsToNewTestIds[testResult.test.id]
-    );
-
     for (const testPlanRun of runsWithResults) {
+        // Create new TestPlanRuns
         const { id: testPlanRunId } = await createTestPlanRun({
-            testPlanReportId,
+            testPlanReportId: foundOrCreatedTestPlanReport.id,
             testerUserId: testPlanRun.tester.id
         });
-
-        console.log('check.testPlanRunId', testPlanRunId);
 
         for (const testResult of testPlanRun.testResults) {
             const testId = currentTestIdsToNewTestIds[testResult.test.id];
@@ -345,52 +294,45 @@ const updateTestPlanReportTestPlanVersionResolver = async (
             const browserVersionId = testResult.browserVersion.id;
             if (!testId) continue;
 
-            const { data: testResultData } = await client.mutate({
-                mutation: CREATE_TEST_RESULT_MUTATION,
-                variables: {
-                    testPlanRunId,
-                    testId,
-                    atVersionId,
-                    browserVersionId
-                }
-            });
-
-            const testResultSkeleton =
-                testResultData.testPlanRun.findOrCreateTestResult.testResult;
+            // Create new testResults
+            const { testResult: testResultSkeleton } =
+                await findOrCreateTestResult(
+                    {
+                        parentContext: { id: testPlanRunId }
+                    },
+                    { testId, atVersionId, browserVersionId },
+                    { ...context, user }
+                );
 
             const copiedTestResultInput = copyTestResult(
                 testResultSkeleton,
                 testResult
             );
 
-            const saveMutation = testResult.completedAt
-                ? SUBMIT_TEST_RESULT_MUTATION
-                : SAVE_TEST_RESULT_MUTATION;
-
-            const { data: savedData } = await client.mutate({
-                mutation: saveMutation,
-                variables: {
-                    testResultId: copiedTestResultInput.id,
-                    testResultInput: copiedTestResultInput
-                }
-            });
-
-            if (savedData.errors) throw savedData.errors;
+            let savedData;
+            if (testResult.completedAt) {
+                savedData = await submitTestResult(
+                    { parentContext: { id: copiedTestResultInput.id } },
+                    { input: copiedTestResultInput },
+                    { ...context, user }
+                );
+            } else {
+                savedData = await saveTestResult(
+                    { parentContext: { id: copiedTestResultInput.id } },
+                    { input: copiedTestResultInput },
+                    { ...context, user }
+                );
+            }
+            if (savedData.errors)
+                console.error('savedData.errors', savedData.errors);
         }
     }
 
-    console.log('check.testPlanReport', testPlanReport);
-    console.log(
-        'check.foundOrCreatedTestPlanReport',
-        foundOrCreatedTestPlanReport
-    );
-    console.log('check.created', created);
-    console.log('check.runsWithResults', runsWithResults);
-    // console.log('check.testsToDelete', testsToDelete);
-    // console.log('check.currentTestIdsToNewTestIds', currentTestIdsToNewTestIds);
-    // console.log('check.copyableTestResults', copyableTestResults);*/
+    // TODO: Delete the old TestPlanReport?
+    // await removeTestPlanRunByQuery({ testPlanReportId });
+    // await removeTestPlanReport(testPlanReportId);
 
-    // return populateData(locationOfData, { preloaded, context });
+    return populateData(locationOfData, { preloaded, context });
 };
 
 module.exports = updateTestPlanReportTestPlanVersionResolver;
