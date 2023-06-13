@@ -1,4 +1,9 @@
 const MODEL_NAME = 'TestPlanVersion';
+const PHASE = {
+    DRAFT: 'DRAFT',
+    CANDIDATE: 'CANDIDATE',
+    RECOMMENDED: 'RECOMMENDED'
+};
 
 module.exports = function (sequelize, DataTypes) {
     const Model = sequelize.define(
@@ -9,6 +14,11 @@ module.exports = function (sequelize, DataTypes) {
                 allowNull: false,
                 primaryKey: true,
                 autoIncrement: true
+            },
+            phase: {
+                type: DataTypes.TEXT,
+                allowNull: false,
+                defaultValue: PHASE.DRAFT
             },
             title: { type: DataTypes.TEXT },
             directory: { type: DataTypes.TEXT },

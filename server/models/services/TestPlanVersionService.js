@@ -187,11 +187,12 @@ const getTestPlanVersions = async (
  */
 const createTestPlanVersion = async (
     {
-        // ID must be provided so it matches the ID which is baked into the Test
+        // ID must be provided, so it matches the ID which is baked into the Test
         // IDs (see LocationOfDataId.js for more information).
         id,
         title,
         directory,
+        phase,
         gitSha,
         gitMessage,
         testPageUrl,
@@ -213,6 +214,7 @@ const createTestPlanVersion = async (
         id,
         title,
         directory,
+        phase,
         gitSha,
         gitMessage,
         testPageUrl,
@@ -253,6 +255,7 @@ const updateTestPlanVersion = async (
     {
         title,
         directory,
+        phase,
         gitSha,
         gitMessage,
         testPageUrl,
@@ -278,6 +281,7 @@ const updateTestPlanVersion = async (
         {
             title,
             directory,
+            phase,
             gitSha,
             gitMessage,
             testPageUrl,
