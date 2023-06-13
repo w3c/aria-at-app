@@ -17,6 +17,7 @@ module.exports = {
                 `select "TestPlanReport".id  as "testPlanReportId",
                             "TestPlanVersion".id as "testPlanVersionId",
                             directory,
+                            status,
                             "testPlanVersionId",
                             "atId",
                             "browserId",
@@ -89,6 +90,7 @@ module.exports = {
                     const reports = testPlanReportsByDirectory[directory];
 
                     let highestTestPlanVersion = 0;
+                    let highestCollectiveStatus = 'RECOMMENDED';
                     let latestAtVersionReleasedAtOverall = '';
                     let latestCandidateStatusReachedAt = '';
                     let latestRecommendedStatusReachedAt = '';
@@ -98,6 +100,7 @@ module.exports = {
                     for (const report of reports) {
                         const {
                             testPlanVersionId,
+                            status,
                             atId,
                             browserId,
                             latestAtVersionReleasedAt,
@@ -117,6 +120,9 @@ module.exports = {
                         ) {
                             latestAtBrowserMatchings[uniqueAtBrowserKey] =
                                 report;
+
+                            if (status === 'CANDIDATE')
+                                highestCollectiveStatus = 'CANDIDATE';
                         }
 
                         if (
@@ -140,6 +146,7 @@ module.exports = {
                     result[directory] = {
                         directory,
                         highestTestPlanVersion,
+                        highestCollectiveStatus,
                         latestAtVersionReleasedAtOverall,
                         latestCandidateStatusReachedAt,
                         latestRecommendedStatusReachedAt,
@@ -166,6 +173,7 @@ module.exports = {
                 // "latest" test plan reports' phases
                 const {
                     highestTestPlanVersion: highestTestPlanVersionId,
+                    highestCollectiveStatus: phase,
                     latestCandidateStatusReachedAt: candidateStatusReachedAt,
                     latestRecommendedStatusReachedAt:
                         recommendedStatusReachedAt,
@@ -175,6 +183,7 @@ module.exports = {
                 } = highestTestPlanVersion;
 
                 await updateTestPlanVersion(highestTestPlanVersionId, {
+                    phase,
                     candidateStatusReachedAt,
                     recommendedStatusReachedAt,
                     recommendedStatusTargetDate
@@ -191,7 +200,7 @@ module.exports = {
                     ) {
                         // eslint-disable-next-line no-console
                         console.info(
-                            `=== Updating: testPlanReportId ${uniqueMatch.testPlanReportId} to testPlanVersionId ${highestTestPlanVersionId} for atId ${uniqueMatch.atId} and browserId ${uniqueMatch.browserId} ===`
+                            `=== Updating testPlanReportId ${uniqueMatch.testPlanReportId} to testPlanVersionId ${highestTestPlanVersionId} for atId ${uniqueMatch.atId} and browserId ${uniqueMatch.browserId} ===`
                         );
                         await updateTestPlanReportTestPlanVersion(
                             {
