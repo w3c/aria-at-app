@@ -77,7 +77,7 @@ const Report = () => {
                     curr.latestAtVersionReleasedAt.releasedAt
                 );
 
-                return latestPrevDate > latestCurrDate ? prev : curr;
+                return latestPrevDate >= latestCurrDate ? prev : curr;
             });
         });
     };

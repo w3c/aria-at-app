@@ -150,7 +150,7 @@ const SummarizeTestPlanReports = ({ testPlanReports }) => {
                         ]?.latestAtVersionReleasedAt.releasedAt
                     );
 
-                    if (latestPrevDate > latestCurrDate)
+                    if (latestPrevDate >= latestCurrDate)
                         resultTestPlanTargets[testPlanTargetKey] =
                             testPlanTargets[testPlanTargetKey];
                 }
