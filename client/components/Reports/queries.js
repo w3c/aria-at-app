@@ -2,33 +2,29 @@ import { gql } from '@apollo/client';
 
 export const REPORTS_PAGE_QUERY = gql`
     query ReportsPageQuery {
-        testPlanReports(statuses: [CANDIDATE, RECOMMENDED]) {
+        testPlanVersions(phases: [CANDIDATE, RECOMMENDED]) {
             id
-            status
-            metrics
+            title
+            phase
             candidateStatusReachedAt
             recommendedStatusReachedAt
-            at {
-                id
-                name
+            gitSha
+            updatedAt
+            testPlan {
+                directory
             }
-            latestAtVersionReleasedAt {
+            metadata
+            testPlanReports {
                 id
-                name
-                releasedAt
-            }
-            browser {
-                id
-                name
-            }
-            testPlanVersion {
-                id
-                title
-                gitSha
-                testPlan {
-                    directory
+                metrics
+                at {
+                    id
+                    name
                 }
-                metadata
+                browser {
+                    id
+                    name
+                }
             }
         }
     }
