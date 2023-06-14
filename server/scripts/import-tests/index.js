@@ -10,6 +10,10 @@ const {
     getTestPlanVersions
 } = require('../../models/services/TestPlanVersionService');
 const {
+    getTestPlans,
+    createTestPlan
+} = require('../../models/services/TestPlanService');
+const {
     createTestId,
     createScenarioId,
     createAssertionId
@@ -119,6 +123,16 @@ const importTestPlanVersions = async () => {
             gitSha
         });
 
+        let testPlanId = null;
+        const associatedTestPlans = await getTestPlans({ directory });
+
+        if (associatedTestPlans.length) {
+            testPlanId = associatedTestPlans[0].dataValues.id;
+        } else {
+            const newTestPlan = await createTestPlan({ title, directory });
+            testPlanId = newTestPlan.dataValues.id;
+        }
+
         await createTestPlanVersion({
             id: testPlanVersionId,
             title,
@@ -136,7 +150,8 @@ const importTestPlanVersions = async () => {
                 designPatternUrl,
                 exampleUrl
             },
-            tests
+            tests,
+            testPlanId
         });
     }
 };

@@ -20,6 +20,7 @@ module.exports = function (sequelize, DataTypes) {
                 defaultValue: DataTypes.NOW
             },
             tests: { type: DataTypes.JSONB },
+            testPlanId: { type: DataTypes.INTEGER },
             metadata: { type: DataTypes.JSONB }
         },
         {
@@ -30,11 +31,19 @@ module.exports = function (sequelize, DataTypes) {
 
     Model.TEST_PLAN_REPORT_ASSOCIATION = { as: 'testPlanReports' };
 
+    Model.TEST_PLAN_ASSOCIATION = { foreignKey: 'testPlanId' };
+
     Model.associate = function (models) {
         Model.hasMany(models.TestPlanReport, {
             ...Model.TEST_PLAN_REPORT_ASSOCIATION,
             foreignKey: 'testPlanVersionId',
             sourceKey: 'id'
+        });
+
+        Model.belongsTo(models.TestPlan, {
+            ...Model.TEST_PLAN_ASSOCIATION,
+            targetKey: 'id',
+            as: 'testPlan'
         });
     };
 

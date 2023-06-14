@@ -21,6 +21,7 @@ module.exports = function (sequelize, DataTypes) {
                 defaultValue: STATUS.DRAFT
             },
             testPlanVersionId: { type: DataTypes.INTEGER },
+            testPlanId: { type: DataTypes.INTEGER },
             atId: { type: DataTypes.INTEGER },
             browserId: { type: DataTypes.INTEGER },
             createdAt: {
@@ -69,6 +70,8 @@ module.exports = function (sequelize, DataTypes) {
 
     Model.BROWSER_ASSOCIATION = { foreignKey: 'browserId' };
 
+    Model.TEST_PLAN_ASSOCIATION = { foreignKey: 'testPlanId' };
+
     Model.TEST_PLAN_RUN_ASSOCIATION = { as: 'testPlanRuns' };
 
     Model.associate = function (models) {
@@ -88,6 +91,12 @@ module.exports = function (sequelize, DataTypes) {
             ...Model.BROWSER_ASSOCIATION,
             targetKey: 'id',
             as: 'browser'
+        });
+
+        Model.belongsTo(models.TestPlan, {
+            ...Model.TEST_PLAN_ASSOCIATION,
+            targetKey: 'id',
+            as: 'testPlan'
         });
 
         Model.hasMany(models.TestPlanRun, {

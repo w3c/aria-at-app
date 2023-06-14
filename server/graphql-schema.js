@@ -214,6 +214,10 @@ const graphqlSchema = gql`
         id: ID!
         title: String!
         """
+        The formal name of the test plan
+        """
+        title: String!
+        """
         Corresponds to directory in the ARIA-AT repo which stores the test plan,
         e.g. "checkbox-tri-state" or "disclosure-navigation"
         """
@@ -224,7 +228,7 @@ const graphqlSchema = gql`
         """
         Gets the most recent version imported from the test plan's directory.
         """
-        latestTestPlanVersion: TestPlanVersion!
+        latestTestPlanVersion: TestPlanVersion
         # latestTestPlanVersion(
         #     # TODO: Waiting for TestPlanVersionStatus to be implemented
         #     status: TestPlanVersionStatus

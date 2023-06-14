@@ -259,6 +259,7 @@ describe('graphql', () => {
                     }
                     testPlans {
                         directory
+                        title
                     }
                     testPlanVersions {
                         id
