@@ -25,7 +25,6 @@ import TestPlanUpdaterModal from '../TestPlanUpdater/TestPlanUpdaterModal';
 import BasicThemedModal from '../common/BasicThemedModal';
 import { LoadingStatus, useTriggerLoad } from '../common/LoadingStatus';
 import './TestQueueRow.css';
-import CandidatePhaseSelectModal from '@components/TestQueueRow/CandidatePhaseSelectModal';
 
 const TestQueueRow = ({
     user = {},
@@ -47,8 +46,6 @@ const TestQueueRow = ({
     const deleteTestPlanButtonRef = useRef();
     const updateTestPlanStatusButtonRef = useRef();
 
-    const [candidatePhaseTestPlanReports, setCandidatePhaseTestPlanReports] =
-        useState([]);
     const [alertMessage, setAlertMessage] = useState('');
 
     const [showThemedModal, setShowThemedModal] = useState(false);
@@ -67,8 +64,6 @@ const TestQueueRow = ({
     const [removeTesterResults] = useMutation(REMOVE_TESTER_RESULTS_MUTATION);
 
     const [showTestPlanUpdaterModal, setShowTestPlanUpdaterModal] =
-        useState(false);
-    const [showCandidatePhaseSelectModal, setShowCandidatePhaseSelectModal] =
         useState(false);
     const [testPlanReport, setTestPlanReport] = useState(testPlanReportData);
     const [isLoading, setIsLoading] = useState(false);
@@ -465,45 +460,6 @@ const TestQueueRow = ({
             'completed'
         ].join('-');
 
-    const onHandleCandidatePhaseSelectModalAction = async date => {
-        let variables = {};
-
-        if (date) {
-            const { candidateStatusReachedAt, recommendedStatusTargetDate } =
-                date;
-            variables = {
-                candidateStatusReachedAt,
-                recommendedStatusTargetDate
-            };
-        }
-
-        // Null 'date' if candidate phase is to be created; promote to candidate phase as normal
-        try {
-            await triggerLoad(async () => {
-                setShowCandidatePhaseSelectModal(false);
-                await updateTestPlanReportStatus({
-                    variables: {
-                        testReportId: testPlanReport.id,
-                        status: 'CANDIDATE',
-                        ...variables
-                    }
-                });
-                await triggerPageUpdate();
-            }, 'Updating Test Plan Status');
-        } catch (e) {
-            showThemedMessage(
-                'Error Updating Test Plan Status',
-                <>{e.message}</>,
-                'warning'
-            );
-        }
-    };
-
-    const onCandidatePhaseSelectModalClose = () => {
-        setShowCandidatePhaseSelectModal(false);
-        focusButtonRef.current.focus();
-    };
-
     return (
         <LoadingStatus message={loadingMessage}>
             <tr className="test-queue-run-row">
@@ -697,15 +653,6 @@ const TestQueueRow = ({
                     handleClose={() => setShowTestPlanUpdaterModal(false)}
                     testPlanReportId={testPlanReportId}
                     triggerTestPlanReportUpdate={triggerTestPlanReportUpdate}
-                />
-            )}
-            {showCandidatePhaseSelectModal && (
-                <CandidatePhaseSelectModal
-                    show={showCandidatePhaseSelectModal}
-                    title={`Select existing Candidate Phase for the ${testPlanVersion.title}, ${testPlanReport.at?.name} & ${testPlanReport.browser?.name} Test Plan Report`}
-                    dates={candidatePhaseTestPlanReports}
-                    handleAction={onHandleCandidatePhaseSelectModalAction}
-                    handleClose={onCandidatePhaseSelectModalClose}
                 />
             )}
             {showThemedModal && (
