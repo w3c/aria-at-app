@@ -28,21 +28,6 @@ module.exports = function (sequelize, DataTypes) {
                 type: DataTypes.DATE,
                 defaultValue: DataTypes.NOW
             },
-            candidateStatusReachedAt: {
-                type: DataTypes.DATE,
-                defaultValue: null,
-                allowNull: true
-            },
-            recommendedStatusReachedAt: {
-                type: DataTypes.DATE,
-                defaultValue: null,
-                allowNull: true
-            },
-            recommendedStatusTargetDate: {
-                type: DataTypes.DATE,
-                defaultValue: null,
-                allowNull: true
-            },
             vendorReviewStatus: {
                 type: DataTypes.TEXT, // 'READY', 'IN_PROGRESS', 'APPROVED'
                 defaultValue: null,

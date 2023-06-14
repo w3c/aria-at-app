@@ -858,22 +858,6 @@ const graphqlSchema = gql`
         """
         status: TestPlanReportStatus!
         """
-        Date of when the TestPlanReport was last updated to the 'Candidate'
-        status.
-        """
-        candidateStatusReachedAt: Timestamp
-        """
-        Date of when the TestPlanReport was last updated to the 'Recommended'
-        status.
-        """
-        recommendedStatusReachedAt: Timestamp
-        """
-        The intended target date for the final TestPlanReport status promotion.
-        Based on the ARIA-AT Working Mode.
-        https://github.com/w3c/aria-at/wiki/Working-Mode
-        """
-        recommendedStatusTargetDate: Timestamp
-        """
         The snapshot of a TestPlan to use.
         """
         testPlanVersion: TestPlanVersion!
@@ -1145,11 +1129,7 @@ const graphqlSchema = gql`
         Update the report status. Remember that all conflicts must be resolved
         when setting the status to CANDIDATE. Only available to admins.
         """
-        updateStatus(
-            status: TestPlanReportStatus!
-            candidateStatusReachedAt: Timestamp
-            recommendedStatusTargetDate: Timestamp
-        ): PopulatedData!
+        updateStatus(status: TestPlanReportStatus!): PopulatedData!
         """
         Update the report to a specific TestPlanVersion id.
         """
@@ -1166,13 +1146,6 @@ const graphqlSchema = gql`
         """
         bulkUpdateStatus(status: TestPlanReportStatus!): [PopulatedData]!
         """
-        Update the report recommended status target date.
-        Only available to admins.
-        """
-        updateRecommendedStatusTargetDate(
-            recommendedStatusTargetDate: Timestamp!
-        ): PopulatedData!
-        """
         Move the vendor review status from READY to IN PROGRESS
         or IN PROGRESS to APPROVED
         """
@@ -1182,6 +1155,28 @@ const graphqlSchema = gql`
         Only available to admins.
         """
         deleteTestPlanReport: NoResponse
+    }
+
+    """
+    Mutations scoped to a previously-created TestPlanVersion.
+    """
+    type TestPlanVersionOperations {
+        """
+        Update the test plan version phase. Remember that all conflicts must be resolved
+        when setting the status to CANDIDATE. Only available to admins.
+        """
+        updatePhase(
+            phase: TestPlanVersionPhase!
+            candidateStatusReachedAt: Timestamp
+            recommendedStatusTargetDate: Timestamp
+        ): PopulatedData!
+        """
+        Update the test plan version recommended status target date.
+        Only available to admins.
+        """
+        updateRecommendedStatusTargetDate(
+            recommendedStatusTargetDate: Timestamp!
+        ): PopulatedData!
     }
 
     """
@@ -1288,6 +1283,10 @@ const graphqlSchema = gql`
         Get the available mutations for the given TestResult.
         """
         testResult(id: ID!): TestResultOperations!
+        """
+        Get the available mutations for the given TestPlanVersion.
+        """
+        testPlanVersion(id: ID!): TestPlanVersionOperations!
         """
         Update the currently-logged-in User.
         """
