@@ -2,40 +2,72 @@ import { gql } from '@apollo/client';
 
 export const CANDIDATE_TESTS_PAGE_QUERY = gql`
     query {
-        testPlanReports(statuses: [CANDIDATE, RECOMMENDED]) {
+        testPlanVersions(phases: [CANDIDATE]) {
             id
-            status
-            metrics
-            at {
-                id
-                name
+            phase
+            title
+            gitSha
+            testPlan {
+                directory
             }
-            latestAtVersionReleasedAt {
-                id
-                name
-                releasedAt
-            }
-            browser {
-                id
-                name
-            }
-            testPlanVersion {
-                id
-                title
-                gitSha
-                testPlan {
-                    directory
-                }
-                metadata
-                updatedAt
-            }
-            vendorReviewStatus
+            metadata
+            updatedAt
             candidateStatusReachedAt
             recommendedStatusTargetDate
-            issues {
-                link
-                isOpen
-                feedbackType
+            testPlanReports(isCurrentPhase: true) {
+                id
+                status
+                metrics
+                at {
+                    id
+                    name
+                }
+                latestAtVersionReleasedAt {
+                    id
+                    name
+                    releasedAt
+                }
+                browser {
+                    id
+                    name
+                }
+                testPlanVersion {
+                    id
+                    title
+                    gitSha
+                    testPlan {
+                        directory
+                    }
+                    metadata
+                    updatedAt
+                }
+                vendorReviewStatus
+                issues {
+                    link
+                    isOpen
+                    feedbackType
+                }
+            }
+        }
+    }
+`;
+
+export const UPDATE_TEST_PLAN_VERSION_RECOMMENDED_TARGET_DATE_MUTATION = gql`
+    mutation UpdateTestPlanReportRecommendedTargetDate(
+        $testPlanVersionId: ID!
+        $recommendedStatusTargetDate: Timestamp!
+    ) {
+        testPlanVersion(id: $testPlanVersionId) {
+            updateRecommendedStatusTargetDate(
+                recommendedStatusTargetDate: $recommendedStatusTargetDate
+            ) {
+                testPlanVersion {
+                    phase
+                    testPlanReports {
+                        id
+                        status
+                    }
+                }
             }
         }
     }

@@ -22,10 +22,8 @@ import {
     LoadingStatus,
     useTriggerLoad
 } from '@components/common/LoadingStatus';
-import {
-    UPDATE_TEST_PLAN_REPORT_STATUS_MUTATION,
-    UPDATE_TEST_PLAN_REPORT_RECOMMENDED_TARGET_DATE_MUTATION
-} from '@components/TestQueue/queries';
+import { UPDATE_TEST_PLAN_REPORT_STATUS_MUTATION } from '@components/TestQueue/queries';
+import { UPDATE_TEST_PLAN_VERSION_RECOMMENDED_TARGET_DATE_MUTATION } from '@components/CandidateTests/queries';
 import UpdateTargetDateModal from '@components/common/UpdateTargetDateModal';
 import ClippedProgressBar from '@components/common/ClippedProgressBar';
 import {
@@ -185,11 +183,7 @@ const None = styled.span`
     }
 `;
 
-const TestPlans = ({
-    candidateTestPlanReports,
-    recommendedTestPlanReports,
-    triggerPageUpdate = () => {}
-}) => {
+const TestPlans = ({ testPlanVersions, triggerPageUpdate = () => {} }) => {
     const { triggerLoad, loadingMessage } = useTriggerLoad();
     const {
         themedModal,
@@ -204,8 +198,8 @@ const TestPlans = ({
     const [updateTestPlanReportStatus] = useMutation(
         UPDATE_TEST_PLAN_REPORT_STATUS_MUTATION
     );
-    const [updateTestPlanReportRecommendedTargetDate] = useMutation(
-        UPDATE_TEST_PLAN_REPORT_RECOMMENDED_TARGET_DATE_MUTATION
+    const [updateTestPlanVersionRecommendedTargetDate] = useMutation(
+        UPDATE_TEST_PLAN_VERSION_RECOMMENDED_TARGET_DATE_MUTATION
     );
 
     const changeTargetDateButtonRefs = useRef({});
@@ -222,7 +216,7 @@ const TestPlans = ({
         useState('');
     const [updateTargetDateModalDateText, setUpdateTargetDateModalDateText] =
         useState('');
-    const [testPlanReportsToUpdate, setTestPlanReportsToUpdate] = useState([]);
+    const [testPlanVersionToUpdate, setTestPlanVersionToUpdate] = useState({});
 
     const none = <None>None</None>;
     const borderedNone = <None className="bordered">None</None>;
@@ -261,30 +255,11 @@ const TestPlans = ({
         }
     };
 
-    // Compare testPlanReports with recommendedTestPlanReports to make sure there aren't any test
-    // plan reports which will never be shown on the Reports page when promoted
-    const ignoredIds = [];
-
-    recommendedTestPlanReports.forEach(r => {
-        candidateTestPlanReports.forEach(t => {
-            if (
-                !ignoredIds.includes(t.id) &&
-                t.at.id == r.at.id &&
-                t.browser.id == r.browser.id &&
-                t.testPlanVersion.testPlan.directory ==
-                    r.testPlanVersion.testPlan.directory &&
-                new Date(t.latestAtVersionReleasedAt.releasedAt) <
-                    new Date(r.latestAtVersionReleasedAt.releasedAt)
-            )
-                ignoredIds.push(t.id);
-        });
-    });
-
-    const testPlanReports = candidateTestPlanReports.filter(
-        t => !ignoredIds.includes(t.id)
+    const testPlanReportsExist = testPlanVersions.some(
+        testPlanVersion => testPlanVersion.testPlanReports.length
     );
 
-    if (!testPlanReports.length) {
+    if (!testPlanReportsExist) {
         return (
             <FullHeightContainer id="main" as="main" tabIndex="-1">
                 <Helmet>
@@ -428,12 +403,15 @@ const TestPlans = ({
     };
 
     const constructTableForAtById = (atId, atName) => {
-        const testPlanReportsByAtId = testPlanReports.filter(
-            t => t.at.id === atId
+        const testPlanReportsForAtExists = testPlanVersions.some(
+            testPlanVersion =>
+                testPlanVersion.testPlanReports.some(
+                    testPlanReport => testPlanReport.at.id == atId
+                )
         );
 
         // return 'None' element if no reports exists for AT
-        if (!testPlanReportsByAtId.length) {
+        if (!testPlanReportsForAtExists) {
             return (
                 <DisclosureParent>
                     <h3>
@@ -467,72 +445,25 @@ const TestPlans = ({
             );
         }
 
-        const testPlanReportsById = {};
         let testPlanTargetsById = {};
-        let testPlanVersionsById = {};
-        testPlanReportsByAtId.forEach(testPlanReport => {
-            const { testPlanVersion, at, browser } = testPlanReport;
+        testPlanVersions.forEach(testPlanVersion => {
+            const { testPlanReports } = testPlanVersion;
 
-            // Construct testPlanTarget
-            const testPlanTarget = { id: `${at.id}${browser.id}`, at, browser };
-            testPlanReportsById[testPlanReport.id] = testPlanReport;
-            testPlanTargetsById[testPlanTarget.id] = testPlanTarget;
-            testPlanVersionsById[testPlanVersion.id] = testPlanVersion;
+            testPlanReports.forEach(testPlanReport => {
+                const { at, browser } = testPlanReport;
+                // Construct testPlanTarget
+                const testPlanTarget = {
+                    id: `${at.id}${browser.id}`,
+                    at,
+                    browser
+                };
+                testPlanTargetsById[testPlanTarget.id] = testPlanTarget;
+            });
         });
         testPlanTargetsById = alphabetizeObjectBy(
             testPlanTargetsById,
             keyValue => getTestPlanTargetTitle(keyValue[1])
         );
-        testPlanVersionsById = alphabetizeObjectBy(
-            testPlanVersionsById,
-            keyValue => getTestPlanVersionTitle(keyValue[1])
-        );
-
-        const tabularReports = {};
-        const tabularReportsByDirectory = {};
-        Object.keys(testPlanVersionsById).forEach(testPlanVersionId => {
-            const directory =
-                testPlanVersionsById[testPlanVersionId].testPlan.directory;
-
-            tabularReports[testPlanVersionId] = {};
-            if (!tabularReportsByDirectory[directory])
-                tabularReportsByDirectory[directory] = {};
-            tabularReportsByDirectory[directory][testPlanVersionId] = {};
-            Object.keys(testPlanTargetsById).forEach(testPlanTargetId => {
-                tabularReports[testPlanVersionId][testPlanTargetId] = null;
-                tabularReportsByDirectory[directory][testPlanVersionId][
-                    testPlanTargetId
-                ] = null;
-            });
-        });
-        testPlanReportsByAtId.forEach(testPlanReport => {
-            const { testPlanVersion, at, browser } = testPlanReport;
-            const directory = testPlanVersion.testPlan.directory;
-
-            // Construct testPlanTarget
-            const testPlanTarget = { id: `${at.id}${browser.id}`, at, browser };
-
-            if (!tabularReports[testPlanVersion.id][testPlanTarget.id])
-                tabularReports[testPlanVersion.id][testPlanTarget.id] =
-                    testPlanReport;
-
-            if (
-                !tabularReportsByDirectory[directory][testPlanVersion.id][
-                    testPlanTarget.id
-                ]
-            )
-                tabularReportsByDirectory[directory][testPlanVersion.id][
-                    testPlanTarget.id
-                ] = testPlanReport;
-
-            if (
-                !tabularReportsByDirectory[directory][testPlanVersion.id]
-                    .testPlanVersion
-            )
-                tabularReportsByDirectory[directory][
-                    testPlanVersion.id
-                ].testPlanVersion = testPlanVersion;
-        });
 
         return (
             <LoadingStatus message={loadingMessage}>
@@ -562,11 +493,7 @@ const TestPlans = ({
                         aria-labelledby={`expand-at-${atId}-button`}
                         show={!!atExpandTableItems[atId]}
                     >
-                        <Table
-                            bordered
-                            responsive
-                            aria-label={testPlanReportsByAtId[0].at.name}
-                        >
+                        <Table bordered responsive aria-label={atName}>
                             <thead>
                                 <tr>
                                     <th>Candidate Test Plans</th>
@@ -575,112 +502,51 @@ const TestPlans = ({
                                 </tr>
                             </thead>
                             <tbody>
-                                {Object.values(tabularReportsByDirectory)
+                                {Object.values(testPlanVersions)
                                     .sort((a, b) =>
-                                        Object.values(a)[0].testPlanVersion
-                                            .title <
-                                        Object.values(b)[0].testPlanVersion
-                                            .title
-                                            ? -1
-                                            : 1
+                                        a.title < b.title ? -1 : 1
                                     )
-                                    .map(tabularReport => {
-                                        let reportResult = null;
-                                        let testPlanVersionId = null;
+                                    .map(testPlanVersion => {
+                                        const testPlanReports =
+                                            testPlanVersion.testPlanReports;
+                                        const candidateStatusReachedAt =
+                                            testPlanVersion.candidateStatusReachedAt;
+                                        const recommendedStatusTargetDate =
+                                            testPlanVersion.recommendedStatusTargetDate;
 
-                                        // Evaluate what is prioritised across the
-                                        // collection of testPlanVersions
-                                        if (
-                                            Object.values(tabularReport)
-                                                .length > 1
-                                        ) {
-                                            const {
-                                                resultTestPlanTargets,
-                                                combinedTestPlanVersionIdArray
-                                            } = combineObject(tabularReport);
-                                            reportResult =
-                                                resultTestPlanTargets;
-                                            testPlanVersionId =
-                                                combinedTestPlanVersionIdArray.join(
-                                                    ','
-                                                );
-                                        } else {
-                                            reportResult =
-                                                Object.values(tabularReport)[0];
-                                            testPlanVersionId =
-                                                reportResult.testPlanVersion.id;
-                                        }
-
-                                        const testPlanVersion =
-                                            reportResult.testPlanVersion;
-                                        delete reportResult.testPlanVersion;
-
-                                        // All testPlanReports across browsers per AT
-                                        const testPlanReports = [];
                                         const allMetrics = [];
 
-                                        let candidateStatusReachedAt;
-                                        let recommendedStatusTargetDate;
                                         let testsCount = 0;
+                                        let dataExists = false;
 
                                         Object.values(testPlanTargetsById).map(
                                             testPlanTarget => {
                                                 const testPlanReport =
-                                                    reportResult[
-                                                        testPlanTarget.id
-                                                    ];
+                                                    testPlanReports.find(
+                                                        testPlanReport =>
+                                                            testPlanReport.at
+                                                                .id ===
+                                                                testPlanTarget
+                                                                    .at.id &&
+                                                            testPlanReport.at
+                                                                .id == atId &&
+                                                            testPlanReport
+                                                                .browser.id ===
+                                                                testPlanTarget
+                                                                    .browser.id
+                                                    );
 
                                                 if (testPlanReport) {
                                                     const metrics =
                                                         testPlanReport.metrics;
-                                                    testPlanReports.push(
-                                                        testPlanReport
-                                                    );
                                                     allMetrics.push(metrics);
 
-                                                    const {
-                                                        candidateStatusReachedAt:
-                                                            testPlanReportCandidateStatusReachedAt,
-                                                        recommendedStatusTargetDate:
-                                                            testPlanReportRecommendedStatusTargetDate
-                                                    } = testPlanReport;
-
                                                     if (
-                                                        !candidateStatusReachedAt
+                                                        !dataExists &&
+                                                        testPlanReport.at.id ===
+                                                            atId
                                                     ) {
-                                                        candidateStatusReachedAt =
-                                                            testPlanReportCandidateStatusReachedAt;
-                                                    }
-                                                    // Use earliest candidateStatusReachedAt across browser results for AT
-                                                    else {
-                                                        candidateStatusReachedAt =
-                                                            new Date(
-                                                                testPlanReportCandidateStatusReachedAt
-                                                            ) <
-                                                            new Date(
-                                                                candidateStatusReachedAt
-                                                            )
-                                                                ? testPlanReportCandidateStatusReachedAt
-                                                                : candidateStatusReachedAt;
-                                                    }
-
-                                                    if (
-                                                        !recommendedStatusTargetDate
-                                                    ) {
-                                                        recommendedStatusTargetDate =
-                                                            testPlanReportRecommendedStatusTargetDate;
-                                                    }
-                                                    // Use latest recommendedStatusTargetDate across browser results for AT
-                                                    else {
-                                                        recommendedStatusTargetDate =
-                                                            new Date(
-                                                                testPlanReportRecommendedStatusTargetDate
-                                                            ) >
-                                                            new Date(
-                                                                recommendedStatusTargetDate
-                                                            )
-                                                                ? testPlanReportRecommendedStatusTargetDate
-                                                                : recommendedStatusTargetDate;
+                                                        dataExists = true;
                                                     }
 
                                                     testsCount =
@@ -737,158 +603,161 @@ const TestPlans = ({
                                             );
 
                                         return (
-                                            <tr key={testPlanVersionId}>
-                                                <td>
-                                                    <Link
-                                                        to={`/candidate-test-plan/${testPlanVersionId}/${atId}`}
-                                                    >
-                                                        {getTestPlanVersionTitle(
-                                                            testPlanVersion
-                                                        )}{' '}
-                                                        ({testsCount} Test
-                                                        {testsCount === 0 ||
-                                                        testsCount > 1
-                                                            ? `s`
-                                                            : ''}
-                                                        )
-                                                    </Link>
-                                                    <CellSubRow>
-                                                        <i>
-                                                            Candidate Phase
-                                                            Start Date{' '}
-                                                            <b>
-                                                                {convertDateToString(
-                                                                    candidateStatusReachedAt,
-                                                                    'MMM D, YYYY'
-                                                                )}
-                                                            </b>
-                                                        </i>
-                                                        <i>
-                                                            Target Completion
-                                                            Date{' '}
-                                                            <b>
-                                                                {convertDateToString(
-                                                                    recommendedStatusTargetDate,
-                                                                    'MMM D, YYYY'
-                                                                )}
-                                                            </b>
-                                                        </i>
-                                                    </CellSubRow>
-                                                    <CellSubRow>
-                                                        <Dropdown className="dropdown-btn-mark-as">
-                                                            <Dropdown.Toggle
-                                                                variant="secondary"
-                                                                aria-label="Change report status"
-                                                            >
-                                                                Mark as ...
-                                                            </Dropdown.Toggle>
-                                                            <Dropdown.Menu role="menu">
-                                                                <Dropdown.Item
-                                                                    role="menuitem"
-                                                                    onClick={async () => {
-                                                                        await updateReportStatus(
-                                                                            testPlanReports,
-                                                                            'DRAFT'
-                                                                        );
-                                                                    }}
-                                                                >
-                                                                    Draft
-                                                                </Dropdown.Item>
-                                                                <Dropdown.Item
-                                                                    role="menuitem"
-                                                                    onClick={async () => {
-                                                                        await updateReportStatus(
-                                                                            testPlanReports,
-                                                                            'RECOMMENDED'
-                                                                        );
-                                                                    }}
-                                                                    disabled={testPlanReports.some(
-                                                                        t =>
-                                                                            t.vendorReviewStatus !==
-                                                                            'APPROVED'
+                                            dataExists && (
+                                                <tr key={testPlanVersion.id}>
+                                                    <td>
+                                                        <Link
+                                                            to={`/candidate-test-plan/${testPlanVersion.id}/${atId}`}
+                                                        >
+                                                            {getTestPlanVersionTitle(
+                                                                testPlanVersion
+                                                            )}{' '}
+                                                            ({testsCount} Test
+                                                            {testsCount === 0 ||
+                                                            testsCount > 1
+                                                                ? `s`
+                                                                : ''}
+                                                            )
+                                                        </Link>
+                                                        <CellSubRow>
+                                                            <i>
+                                                                Candidate Phase
+                                                                Start Date{' '}
+                                                                <b>
+                                                                    {convertDateToString(
+                                                                        candidateStatusReachedAt,
+                                                                        'MMM D, YYYY'
                                                                     )}
+                                                                </b>
+                                                            </i>
+                                                            <i>
+                                                                Target
+                                                                Completion Date{' '}
+                                                                <b>
+                                                                    {convertDateToString(
+                                                                        recommendedStatusTargetDate,
+                                                                        'MMM D, YYYY'
+                                                                    )}
+                                                                </b>
+                                                            </i>
+                                                        </CellSubRow>
+                                                        <CellSubRow>
+                                                            <Dropdown className="dropdown-btn-mark-as">
+                                                                <Dropdown.Toggle
+                                                                    variant="secondary"
+                                                                    aria-label="Change report status"
                                                                 >
-                                                                    Recommended
-                                                                </Dropdown.Item>
-                                                            </Dropdown.Menu>
-                                                        </Dropdown>
-                                                        <Button
-                                                            ref={changeTargetDateButtonRef =>
-                                                                (changeTargetDateButtonRefs.current =
-                                                                    {
-                                                                        ...changeTargetDateButtonRefs.current,
-                                                                        [`${testPlanVersionId}-${atId}`]:
-                                                                            changeTargetDateButtonRef
-                                                                    })
-                                                            }
-                                                            variant="secondary"
-                                                            className="dropdown-btn-mark-as"
-                                                            onClick={() => {
-                                                                focusButtonRef.current =
-                                                                    changeTargetDateButtonRefs.current[
-                                                                        `${testPlanVersionId}-${atId}`
-                                                                    ];
-                                                                setUpdateTargetDateModalTitle(
-                                                                    `Change Target Date for ${testPlanVersion.title} for ${atName}`
-                                                                );
-                                                                setUpdateTargetDateModalDateText(
-                                                                    recommendedStatusTargetDate
-                                                                );
-                                                                setShowUpdateTargetDateModal(
-                                                                    true
-                                                                );
-                                                                setTestPlanReportsToUpdate(
-                                                                    testPlanReports
-                                                                );
+                                                                    Mark as ...
+                                                                </Dropdown.Toggle>
+                                                                <Dropdown.Menu role="menu">
+                                                                    <Dropdown.Item
+                                                                        role="menuitem"
+                                                                        onClick={async () => {
+                                                                            await updateReportStatus(
+                                                                                testPlanReports,
+                                                                                'DRAFT'
+                                                                            );
+                                                                        }}
+                                                                    >
+                                                                        Draft
+                                                                    </Dropdown.Item>
+                                                                    <Dropdown.Item
+                                                                        role="menuitem"
+                                                                        onClick={async () => {
+                                                                            await updateReportStatus(
+                                                                                testPlanReports,
+                                                                                'RECOMMENDED'
+                                                                            );
+                                                                        }}
+                                                                        disabled={testPlanReports.some(
+                                                                            t =>
+                                                                                t.vendorReviewStatus !==
+                                                                                'APPROVED'
+                                                                        )}
+                                                                    >
+                                                                        Recommended
+                                                                    </Dropdown.Item>
+                                                                </Dropdown.Menu>
+                                                            </Dropdown>
+                                                            <Button
+                                                                ref={changeTargetDateButtonRef =>
+                                                                    (changeTargetDateButtonRefs.current =
+                                                                        {
+                                                                            ...changeTargetDateButtonRefs.current,
+                                                                            [`${testPlanVersion.id}-${atId}`]:
+                                                                                changeTargetDateButtonRef
+                                                                        })
+                                                                }
+                                                                variant="secondary"
+                                                                className="dropdown-btn-mark-as"
+                                                                onClick={() => {
+                                                                    focusButtonRef.current =
+                                                                        changeTargetDateButtonRefs.current[
+                                                                            `${testPlanVersion.id}-${atId}`
+                                                                        ];
+                                                                    setUpdateTargetDateModalTitle(
+                                                                        `Change Target Date for ${testPlanVersion.title} for ${atName}`
+                                                                    );
+                                                                    setUpdateTargetDateModalDateText(
+                                                                        recommendedStatusTargetDate
+                                                                    );
+                                                                    setShowUpdateTargetDateModal(
+                                                                        true
+                                                                    );
+                                                                    setTestPlanVersionToUpdate(
+                                                                        testPlanVersion
+                                                                    );
+                                                                }}
+                                                            >
+                                                                Change Target
+                                                                Date
+                                                            </Button>
+                                                        </CellSubRow>
+                                                    </td>
+                                                    <CenteredTd>
+                                                        {getRowStatus({
+                                                            issues: allIssues,
+                                                            isInProgressStatusExists:
+                                                                testPlanReports.some(
+                                                                    testPlanReport =>
+                                                                        testPlanReport.vendorReviewStatus ===
+                                                                        'IN_PROGRESS'
+                                                                ),
+                                                            isApprovedStatusExists:
+                                                                testPlanReports.some(
+                                                                    testPlanReport =>
+                                                                        testPlanReport.vendorReviewStatus ===
+                                                                        'APPROVED'
+                                                                )
+                                                        })}
+                                                    </CenteredTd>
+                                                    <CenteredTd>
+                                                        <Link
+                                                            to={`/candidate-test-plan/${testPlanVersion.id}/${atId}`}
+                                                        >
+                                                            <ClippedProgressBar
+                                                                progress={
+                                                                    metrics.totalSupportPercent
+                                                                }
+                                                                label={`${metrics.totalSupportPercent}% completed`}
+                                                                clipped
+                                                            />
+                                                        </Link>
+                                                        <CellSubRow
+                                                            style={{
+                                                                justifyContent:
+                                                                    'center'
                                                             }}
                                                         >
-                                                            Change Target Date
-                                                        </Button>
-                                                    </CellSubRow>
-                                                </td>
-                                                <CenteredTd>
-                                                    {getRowStatus({
-                                                        issues: allIssues,
-                                                        isInProgressStatusExists:
-                                                            testPlanReports.some(
-                                                                testPlanReport =>
-                                                                    testPlanReport.vendorReviewStatus ===
-                                                                    'IN_PROGRESS'
-                                                            ),
-                                                        isApprovedStatusExists:
-                                                            testPlanReports.some(
-                                                                testPlanReport =>
-                                                                    testPlanReport.vendorReviewStatus ===
-                                                                    'APPROVED'
-                                                            )
-                                                    })}
-                                                </CenteredTd>
-                                                <CenteredTd>
-                                                    <Link
-                                                        to={`/candidate-test-plan/${testPlanVersionId}/${atId}`}
-                                                    >
-                                                        <ClippedProgressBar
-                                                            progress={
-                                                                metrics.totalSupportPercent
-                                                            }
-                                                            label={`${metrics.totalSupportPercent}% completed`}
-                                                            clipped
-                                                        />
-                                                    </Link>
-                                                    <CellSubRow
-                                                        style={{
-                                                            justifyContent:
-                                                                'center'
-                                                        }}
-                                                    >
-                                                        <i>
-                                                            {evaluateTestsAssertionsMessage(
-                                                                metrics
-                                                            )}
-                                                        </i>
-                                                    </CellSubRow>
-                                                </CenteredTd>
-                                            </tr>
+                                                            <i>
+                                                                {evaluateTestsAssertionsMessage(
+                                                                    metrics
+                                                                )}
+                                                            </i>
+                                                        </CellSubRow>
+                                                    </CenteredTd>
+                                                </tr>
+                                            )
                                         );
                                     })}
                             </tbody>
@@ -899,109 +768,28 @@ const TestPlans = ({
         );
     };
 
-    const combineObject = originalObject => {
-        let combinedTestPlanVersionIdArray = [];
-        let resultTestPlanTargets = Object.values(originalObject)[0];
-        combinedTestPlanVersionIdArray.push(
-            resultTestPlanTargets.testPlanVersion.id
-        );
-
-        for (let i = 1; i < Object.values(originalObject).length; i++) {
-            let testPlanTargets = Object.values(originalObject)[i];
-            if (
-                !combinedTestPlanVersionIdArray.includes(
-                    testPlanTargets.testPlanVersion.id
-                )
-            )
-                combinedTestPlanVersionIdArray.push(
-                    testPlanTargets.testPlanVersion.id
-                );
-
-            delete testPlanTargets.testPlanVersion;
-
-            // Check if exists in newObject and add/update newObject based on criteria
-            Object.keys(testPlanTargets).forEach(testPlanTargetKey => {
-                if (!resultTestPlanTargets[testPlanTargetKey])
-                    resultTestPlanTargets[testPlanTargetKey] =
-                        testPlanTargets[testPlanTargetKey];
-                else {
-                    const latestPrevDate = new Date(
-                        testPlanTargets[
-                            testPlanTargetKey
-                        ]?.latestAtVersionReleasedAt.releasedAt
-                    );
-
-                    const latestCurrDate = new Date(
-                        resultTestPlanTargets[
-                            testPlanTargetKey
-                        ]?.latestAtVersionReleasedAt.releasedAt
-                    );
-
-                    if (latestPrevDate >= latestCurrDate)
-                        resultTestPlanTargets[testPlanTargetKey] =
-                            testPlanTargets[testPlanTargetKey];
-                }
-            });
-        }
-        return { resultTestPlanTargets, combinedTestPlanVersionIdArray };
-    };
-
     const constructTableForResultsSummary = () => {
-        if (!testPlanReports.length) return borderedNone;
+        if (!testPlanReportsExist) return borderedNone;
 
-        const testPlanReportsById = {};
         let testPlanTargetsById = {};
-        let testPlanVersionsById = {};
-        testPlanReports.forEach(testPlanReport => {
-            const { testPlanVersion, at, browser } = testPlanReport;
+        testPlanVersions.forEach(testPlanVersion => {
+            const { testPlanReports } = testPlanVersion;
 
-            // Construct testPlanTarget
-            const testPlanTarget = { id: `${at.id}${browser.id}`, at, browser };
-            testPlanReportsById[testPlanReport.id] = testPlanReport;
-            testPlanTargetsById[testPlanTarget.id] = testPlanTarget;
-            testPlanVersionsById[testPlanVersion.id] = testPlanVersion;
+            testPlanReports.forEach(testPlanReport => {
+                const { at, browser } = testPlanReport;
+                // Construct testPlanTarget
+                const testPlanTarget = {
+                    id: `${at.id}${browser.id}`,
+                    at,
+                    browser
+                };
+                testPlanTargetsById[testPlanTarget.id] = testPlanTarget;
+            });
         });
         testPlanTargetsById = alphabetizeObjectBy(
             testPlanTargetsById,
             keyValue => getTestPlanTargetTitle(keyValue[1])
         );
-        testPlanVersionsById = alphabetizeObjectBy(
-            testPlanVersionsById,
-            keyValue => getTestPlanVersionTitle(keyValue[1])
-        );
-
-        const tabularReports = {};
-        const tabularReportsByDirectory = {};
-        Object.keys(testPlanVersionsById).forEach(testPlanVersionId => {
-            const directory =
-                testPlanVersionsById[testPlanVersionId].testPlan.directory;
-
-            tabularReports[testPlanVersionId] = {};
-            if (!tabularReportsByDirectory[directory])
-                tabularReportsByDirectory[directory] = {};
-            tabularReportsByDirectory[directory][testPlanVersionId] = {};
-            Object.keys(testPlanTargetsById).forEach(testPlanTargetId => {
-                tabularReports[testPlanVersionId][testPlanTargetId] = null;
-                tabularReportsByDirectory[directory][testPlanVersionId][
-                    testPlanTargetId
-                ] = null;
-            });
-        });
-        testPlanReports.forEach(testPlanReport => {
-            const { testPlanVersion, at, browser } = testPlanReport;
-            const directory = testPlanVersion.testPlan.directory;
-
-            // Construct testPlanTarget
-            const testPlanTarget = { id: `${at.id}${browser.id}`, at, browser };
-            tabularReports[testPlanVersion.id][testPlanTarget.id] =
-                testPlanReport;
-            tabularReportsByDirectory[directory][testPlanVersion.id][
-                testPlanTarget.id
-            ] = testPlanReport;
-            tabularReportsByDirectory[directory][
-                testPlanVersion.id
-            ].testPlanVersion = testPlanVersion;
-        });
 
         return (
             <>
@@ -1016,41 +804,12 @@ const TestPlans = ({
                         </tr>
                     </thead>
                     <tbody>
-                        {Object.values(tabularReportsByDirectory)
-                            .sort((a, b) =>
-                                Object.values(a)[0].testPlanVersion.title <
-                                Object.values(b)[0].testPlanVersion.title
-                                    ? -1
-                                    : 1
-                            )
-                            .map(tabularReport => {
-                                let reportResult = null;
-                                let testPlanVersionId = null;
+                        {Object.values(testPlanVersions)
+                            .sort((a, b) => (a.title < b.title ? -1 : 1))
+                            .map(testPlanVersion => {
+                                const testPlanReports =
+                                    testPlanVersion.testPlanReports;
 
-                                // Evaluate what is prioritised across the
-                                // collection of testPlanVersions
-                                if (Object.values(tabularReport).length > 1) {
-                                    const {
-                                        resultTestPlanTargets,
-                                        combinedTestPlanVersionIdArray
-                                    } = combineObject(tabularReport);
-                                    reportResult = resultTestPlanTargets;
-                                    testPlanVersionId =
-                                        combinedTestPlanVersionIdArray.join(
-                                            ','
-                                        );
-                                } else {
-                                    reportResult =
-                                        Object.values(tabularReport)[0];
-                                    testPlanVersionId =
-                                        reportResult.testPlanVersion.id;
-                                }
-
-                                const testPlanVersion =
-                                    reportResult.testPlanVersion;
-                                delete reportResult.testPlanVersion;
-
-                                const testPlanReports = [];
                                 let jawsDataExists = false;
                                 let nvdaDataExists = false;
                                 let voDataExists = false;
@@ -1058,12 +817,17 @@ const TestPlans = ({
                                 Object.values(testPlanTargetsById).map(
                                     testPlanTarget => {
                                         const testPlanReport =
-                                            reportResult[testPlanTarget.id];
+                                            testPlanReports.find(
+                                                testPlanReport =>
+                                                    testPlanReport.at.id ===
+                                                        testPlanTarget.at.id &&
+                                                    testPlanReport.browser
+                                                        .id ===
+                                                        testPlanTarget.browser
+                                                            .id
+                                            );
 
                                         if (testPlanReport) {
-                                            testPlanReports.push(
-                                                testPlanReport
-                                            );
                                             if (
                                                 !jawsDataExists &&
                                                 testPlanReport.at.id === '1'
@@ -1124,7 +888,7 @@ const TestPlans = ({
                                 );
 
                                 return (
-                                    <tr key={testPlanVersionId}>
+                                    <tr key={testPlanVersion.id}>
                                         <td>
                                             {getTestPlanVersionTitle(
                                                 testPlanVersion
@@ -1199,22 +963,14 @@ const TestPlans = ({
     const onUpdateTargetDateAction = async ({ updatedDateText }) => {
         onUpdateTargetDateModalClose();
         try {
-            const updateTestPlanReportPromises = testPlanReportsToUpdate.map(
-                testPlanReport => {
-                    return updateTestPlanReportRecommendedTargetDate({
-                        variables: {
-                            testReportId: testPlanReport.id,
-                            recommendedStatusTargetDate:
-                                convertStringFormatToAnotherFormat(
-                                    updatedDateText
-                                )
-                        }
-                    });
-                }
-            );
-
             await triggerLoad(async () => {
-                await Promise.all(updateTestPlanReportPromises);
+                await updateTestPlanVersionRecommendedTargetDate({
+                    variables: {
+                        testPlanVersionId: testPlanVersionToUpdate.id,
+                        recommendedStatusTargetDate:
+                            convertStringFormatToAnotherFormat(updatedDateText)
+                    }
+                });
                 await triggerPageUpdate();
                 if (focusButtonRef.current) focusButtonRef.current.focus();
             }, 'Updating Test Plan Recommended Target Date');
@@ -1260,28 +1016,24 @@ const TestPlans = ({
 };
 
 TestPlans.propTypes = {
-    candidateTestPlanReports: PropTypes.arrayOf(
+    testPlanVersions: PropTypes.arrayOf(
         PropTypes.shape({
             id: PropTypes.string.isRequired,
-            testPlanVersion: PropTypes.shape({
-                id: PropTypes.string.isRequired,
-                title: PropTypes.string,
-                testPlan: PropTypes.shape({
-                    directory: PropTypes.string.isRequired
-                }).isRequired
-            }).isRequired
-        })
-    ).isRequired,
-    recommendedTestPlanReports: PropTypes.arrayOf(
-        PropTypes.shape({
-            id: PropTypes.string.isRequired,
-            testPlanVersion: PropTypes.shape({
-                id: PropTypes.string.isRequired,
-                title: PropTypes.string,
-                testPlan: PropTypes.shape({
-                    directory: PropTypes.string.isRequired
-                }).isRequired
-            }).isRequired
+            title: PropTypes.string.isRequired,
+            phase: PropTypes.string.isRequired,
+            gitSha: PropTypes.string,
+            testPlan: PropTypes.shape({
+                directory: PropTypes.string
+            }),
+            metadata: PropTypes.object,
+            testPlanReports: PropTypes.arrayOf(
+                PropTypes.shape({
+                    id: PropTypes.string.isRequired,
+                    metrics: PropTypes.object.isRequired,
+                    at: PropTypes.object.isRequired,
+                    browser: PropTypes.object.isRequired
+                })
+            )
         })
     ).isRequired,
     triggerPageUpdate: PropTypes.func

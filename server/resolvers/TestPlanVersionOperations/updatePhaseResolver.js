@@ -16,7 +16,14 @@ const {
 
 const updatePhaseResolver = async (
     { parentContext: { id: testPlanVersionId } },
-    { phase, candidateStatusReachedAt, recommendedStatusTargetDate },
+    {
+        phase,
+        candidateStatusReachedAt,
+        recommendedStatusTargetDate,
+        // TODO: The following flag will be unnecessary once the application no longer allows
+        //  individual TestPlanReport updating of phase
+        changePhaseWithoutForcingTestPlanReportsUpdate = false
+    },
     context
 ) => {
     const { user } = context;
@@ -45,85 +52,88 @@ const updatePhaseResolver = async (
         }
     );
 
-    for (let key in testPlanReports) {
-        const testPlanReport = testPlanReports[key];
-        const testPlanReportId = testPlanReport.id;
+    // Params to be updated on TestPlanVersion (or TestPlanReports)
+    let updateParams = { phase, status: phase };
 
-        // const testPlanReport = await getTestPlanReportById(testPlanReportId);
-        const runnableTests = runnableTestsResolver(testPlanReport);
+    if (!changePhaseWithoutForcingTestPlanReportsUpdate) {
+        for (let key in testPlanReports) {
+            const testPlanReport = testPlanReports[key];
+            const testPlanReportId = testPlanReport.id;
 
-        // Params to be updated on TestPlanReport
-        let updateParams = { phase, status: phase };
+            // const testPlanReport = await getTestPlanReportById(testPlanReportId);
+            const runnableTests = runnableTestsResolver(testPlanReport);
 
-        if (phase !== 'DRAFT') {
-            const conflicts = await conflictsResolver(
-                testPlanReport,
-                null,
-                context
-            );
-            if (conflicts.length > 0) {
-                throw new Error(
-                    'Cannot update test plan report due to conflicts'
+            if (phase !== 'DRAFT') {
+                const conflicts = await conflictsResolver(
+                    testPlanReport,
+                    null,
+                    context
                 );
-            }
-        }
-
-        if (phase === 'CANDIDATE' || phase === 'RECOMMENDED') {
-            const finalizedTestResults = await finalizedTestResultsResolver(
-                {
-                    ...testPlanReport,
-                    phase,
-                    status: phase
-                },
-                null,
-                context
-            );
-
-            if (!finalizedTestResults || !finalizedTestResults.length) {
-                throw new Error(
-                    'Cannot update test plan report because there are no ' +
-                        'completed test results'
-                );
-            }
-
-            const metrics = getMetrics({
-                testPlanReport: {
-                    ...testPlanReport,
-                    finalizedTestResults,
-                    runnableTests
+                if (conflicts.length > 0) {
+                    throw new Error(
+                        'Cannot update test plan report due to conflicts'
+                    );
                 }
-            });
-
-            if (phase === 'CANDIDATE') {
-                const candidateStatusReachedAtValue = candidateStatusReachedAt
-                    ? candidateStatusReachedAt
-                    : new Date();
-                const recommendedStatusTargetDateValue =
-                    recommendedStatusTargetDate
-                        ? recommendedStatusTargetDate
-                        : recommendedStatusTargetDateResolver({
-                              candidateStatusReachedAt
-                          });
-
-                updateParams = {
-                    ...updateParams,
-                    metrics: { ...testPlanReport.metrics, ...metrics },
-                    candidateStatusReachedAt: candidateStatusReachedAtValue,
-                    recommendedStatusTargetDate:
-                        recommendedStatusTargetDateValue,
-                    vendorReviewStatus: 'READY'
-                };
-            } else if (phase === 'RECOMMENDED') {
-                updateParams = {
-                    ...updateParams,
-                    metrics: { ...testPlanReport.metrics, ...metrics },
-                    recommendedStatusReachedAt: new Date()
-                };
             }
+
+            if (phase === 'CANDIDATE' || phase === 'RECOMMENDED') {
+                const finalizedTestResults = await finalizedTestResultsResolver(
+                    {
+                        ...testPlanReport,
+                        phase,
+                        status: phase
+                    },
+                    null,
+                    context
+                );
+
+                if (!finalizedTestResults || !finalizedTestResults.length) {
+                    throw new Error(
+                        'Cannot update test plan report because there are no ' +
+                            'completed test results'
+                    );
+                }
+
+                const metrics = getMetrics({
+                    testPlanReport: {
+                        ...testPlanReport,
+                        finalizedTestResults,
+                        runnableTests
+                    }
+                });
+
+                if (phase === 'CANDIDATE') {
+                    const candidateStatusReachedAtValue =
+                        candidateStatusReachedAt
+                            ? candidateStatusReachedAt
+                            : new Date();
+                    const recommendedStatusTargetDateValue =
+                        recommendedStatusTargetDate
+                            ? recommendedStatusTargetDate
+                            : recommendedStatusTargetDateResolver({
+                                  candidateStatusReachedAt
+                              });
+
+                    updateParams = {
+                        ...updateParams,
+                        metrics: { ...testPlanReport.metrics, ...metrics },
+                        candidateStatusReachedAt: candidateStatusReachedAtValue,
+                        recommendedStatusTargetDate:
+                            recommendedStatusTargetDateValue,
+                        vendorReviewStatus: 'READY'
+                    };
+                } else if (phase === 'RECOMMENDED') {
+                    updateParams = {
+                        ...updateParams,
+                        metrics: { ...testPlanReport.metrics, ...metrics },
+                        recommendedStatusReachedAt: new Date()
+                    };
+                }
+            }
+            await updateTestPlanReport(testPlanReportId, updateParams);
         }
-        await updateTestPlanReport(testPlanReportId, updateParams);
-        await updateTestPlanVersion(testPlanVersionId, updateParams);
     }
+    await updateTestPlanVersion(testPlanVersionId, updateParams);
 
     return populateData({ testPlanVersionId }, { context });
 };
