@@ -42,8 +42,6 @@ export const CANDIDATE_REPORTS_QUERY = gql`
             testPlanVersionIds: $testPlanVersionIds
         ) {
             id
-            candidateStatusReachedAt
-            recommendedStatusTargetDate
             vendorReviewStatus
             issues {
                 author
@@ -74,6 +72,8 @@ export const CANDIDATE_REPORTS_QUERY = gql`
                 metadata
                 testPageUrl
                 updatedAt
+                candidateStatusReachedAt
+                recommendedStatusTargetDate
             }
             runnableTests {
                 id

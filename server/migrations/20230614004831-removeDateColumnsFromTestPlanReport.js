@@ -4,12 +4,6 @@
 module.exports = {
     async up(queryInterface) {
         return queryInterface.sequelize.transaction(async transaction => {
-            // await queryInterface.renameColumn(
-            //     'TestPlanReport',
-            //     'status',
-            //     'phase',
-            //     { transaction }
-            // );
             await queryInterface.removeColumn(
                 'TestPlanReport',
                 'candidateStatusReachedAt',
@@ -36,12 +30,6 @@ module.exports = {
 
     async down(queryInterface, Sequelize) {
         return queryInterface.sequelize.transaction(async transaction => {
-            // await queryInterface.renameColumn(
-            //     'TestPlanReport',
-            //     'phase',
-            //     'status',
-            //     { transaction }
-            // );
             await queryInterface.addColumn(
                 'TestPlanReport',
                 'candidateStatusReachedAt',
