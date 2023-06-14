@@ -293,8 +293,8 @@ const CandidateTestPlanRun = () => {
     }));
 
     const currentTest = tests[currentTestIndex];
-    const { testPlanVersion, vendorReviewStatus, recommendedStatusTargetDate } =
-        testPlanReport;
+    const { testPlanVersion, vendorReviewStatus } = testPlanReport;
+    const { recommendedStatusTargetDate } = testPlanVersion;
 
     const vendorReviewStatusMap = {
         READY: 'Ready',
