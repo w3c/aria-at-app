@@ -8,6 +8,7 @@ const finalizedTestResultsResolver = require('../TestPlanReport/finalizedTestRes
 const runnableTestsResolver = require('../TestPlanReport/runnableTestsResolver');
 const populateData = require('../../services/PopulatedData/populateData');
 const getMetrics = require('../../util/getMetrics');
+const { updatePhase } = require('../TestPlanVersionOperations');
 
 const updateStatusResolver = async (
     { parentContext: { id: testPlanReportId } },
@@ -75,6 +76,11 @@ const updateStatusResolver = async (
         }
     }
     await updateTestPlanReport(testPlanReportId, updateParams);
+    await updatePhase(
+        { parentContext: { id: testPlanReport.testPlanVersionId } },
+        { phase: status, changePhaseWithoutForcingTestPlanReportsUpdate: true },
+        context
+    );
 
     return populateData({ testPlanReportId }, { context });
 };

@@ -14,7 +14,6 @@ import ATAlert from '../ATAlert';
 import { capitalizeEachWord } from '../../utils/formatter';
 import {
     TEST_PLAN_REPORT_QUERY,
-    TEST_PLAN_REPORT_CANDIDATE_RECOMMENDED_QUERY,
     ASSIGN_TESTER_MUTATION,
     UPDATE_TEST_PLAN_REPORT_STATUS_MUTATION,
     REMOVE_TEST_PLAN_REPORT_MUTATION,
@@ -386,98 +385,16 @@ const TestQueueRow = ({
         try {
             await triggerLoad(async () => {
                 if (status === 'CANDIDATE') {
-                    // Get list of testPlanReports which are already in CANDIDATE phase and check to see which
-                    // is also the same pattern as what's being updated here to provide as a date option
-                    const { data } = await client.query({
-                        query: TEST_PLAN_REPORT_CANDIDATE_RECOMMENDED_QUERY,
-                        fetchPolicy: 'network-only'
+                    await updateTestPlanReportStatus({
+                        variables: {
+                            testReportId: testPlanReport.id,
+                            status: status
+                        }
                     });
-
-                    // TODO: Check to see if the proposed test plan report to be promoted to CANDIDATE
-                    //  has a test plan version date less than whatever is in CANDIDATE or RECOMMENDED
-                    //  tests already, if any, and note it may never be displayed to the admin
-
-                    // --- SECTION START: OutdatedCandidatePhaseComparison
-                    // Check to see if there are candidate test reports are already being compared
-                    // which can never be shown in the test reports page as it currently is, so do
-                    // not show it as an existing candidate phase option
-                    const ignoredIds = [];
-
-                    const directory = testPlanVersion.testPlan.directory;
-                    const candidateReports = data.testPlanReports.filter(
-                        r =>
-                            r.status === 'CANDIDATE' &&
-                            r.testPlanVersion.testPlan.directory === directory
-                    );
-
-                    const recommendedReports = data.testPlanReports.filter(
-                        r =>
-                            r.status === 'RECOMMENDED' &&
-                            r.testPlanVersion.testPlan.directory === directory
-                    );
-
-                    recommendedReports.forEach(r => {
-                        candidateReports.forEach(t => {
-                            if (
-                                !ignoredIds.includes(t.id) &&
-                                t.at.id == r.at.id &&
-                                t.browser.id == r.browser.id &&
-                                t.testPlanVersion.testPlan.directory ==
-                                    r.testPlanVersion.testPlan.directory &&
-                                new Date(
-                                    t.latestAtVersionReleasedAt.releasedAt
-                                ) <
-                                    new Date(
-                                        r.latestAtVersionReleasedAt.releasedAt
-                                    )
-                            )
-                                ignoredIds.push(t.id);
-                        });
-                    });
-
-                    const filteredCandidateReports = candidateReports.filter(
-                        t => !ignoredIds.includes(t.id)
-                    );
-                    // --- SECTION END: OutdatedCandidatePhaseComparison
-
-                    const dates = filteredCandidateReports
-                        .map(c => {
-                            return {
-                                candidateStatusReachedAt:
-                                    c.candidateStatusReachedAt,
-                                recommendedStatusTargetDate:
-                                    c.recommendedStatusTargetDate
-                            };
-                        })
-                        // Sort in descending order of dates (top is the latest date the existing
-                        // candidate report status was reached at)
-                        .sort((a, b) =>
-                            new Date(a.candidateStatusReachedAt) >
-                            new Date(b.candidateStatusReachedAt)
-                                ? -1
-                                : 1
-                        );
-
-                    const stringifiedDates = dates.map(d => JSON.stringify(d));
-                    const uniq = [...new Set(stringifiedDates)];
-                    const candidatePhaseList = uniq.map(u => JSON.parse(u));
-                    setCandidatePhaseTestPlanReports(candidatePhaseList);
-
-                    if (candidatePhaseList.length > 0) {
-                        // There already exists a Test Plan Report which uses this pattern so
-                        // there is already a candidate phase to select from
-                        setShowCandidatePhaseSelectModal(true);
-                    } else {
-                        await updateTestPlanReportStatus({
-                            variables: {
-                                testReportId: testPlanReport.id,
-                                status: status
-                            }
-                        });
-                        await triggerPageUpdate();
-                    }
+                    await triggerPageUpdate();
                 } else {
-                    // Create a new candidate phase since no others exist
+                    // Unnecessary unless we're introducing a new status which can also be viewed
+                    // on the Test Queue
                     await updateTestPlanReportStatus({
                         variables: {
                             testReportId: testPlanReport.id,
