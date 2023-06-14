@@ -1,11 +1,11 @@
 const { AuthenticationError } = require('apollo-server');
-const {
-    updateTestPlanReport
-} = require('../../models/services/TestPlanReportService');
 const populateData = require('../../services/PopulatedData/populateData');
+const {
+    updateTestPlanVersion
+} = require('../../models/services/TestPlanVersionService');
 
 const updateRecommendedStatusTargetDateResolver = async (
-    { parentContext: { id: testPlanReportId } },
+    { parentContext: { id: testPlanVersionId } },
     { recommendedStatusTargetDate },
     context
 ) => {
@@ -14,11 +14,11 @@ const updateRecommendedStatusTargetDateResolver = async (
         throw new AuthenticationError();
     }
 
-    await updateTestPlanReport(testPlanReportId, {
+    await updateTestPlanVersion(testPlanVersionId, {
         recommendedStatusTargetDate
     });
 
-    return populateData({ testPlanReportId }, { context });
+    return populateData({ testPlanVersionId }, { context });
 };
 
 module.exports = updateRecommendedStatusTargetDateResolver;

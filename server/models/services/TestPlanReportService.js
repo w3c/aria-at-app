@@ -253,9 +253,6 @@ const updateTestPlanReport = async (
         metrics,
         testPlanTargetId,
         testPlanVersionId,
-        candidateStatusReachedAt,
-        recommendedStatusReachedAt,
-        recommendedStatusTargetDate,
         vendorReviewStatus
     },
     testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
@@ -274,9 +271,6 @@ const updateTestPlanReport = async (
             metrics,
             testPlanTargetId,
             testPlanVersionId,
-            candidateStatusReachedAt,
-            recommendedStatusReachedAt,
-            recommendedStatusTargetDate,
             vendorReviewStatus
         },
         options
