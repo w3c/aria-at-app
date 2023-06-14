@@ -6,13 +6,12 @@ const {
 const conflictsResolver = require('../TestPlanReport/conflictsResolver');
 const finalizedTestResultsResolver = require('../TestPlanReport/finalizedTestResultsResolver');
 const runnableTestsResolver = require('../TestPlanReport/runnableTestsResolver');
-const recommendedStatusTargetDateResolver = require('../TestPlanReport/recommendedStatusTargetDateResolver');
 const populateData = require('../../services/PopulatedData/populateData');
 const getMetrics = require('../../util/getMetrics');
 
 const updateStatusResolver = async (
     { parentContext: { id: testPlanReportId } },
-    { status, candidateStatusReachedAt, recommendedStatusTargetDate },
+    { status },
     context
 ) => {
     const { user } = context;
@@ -63,27 +62,15 @@ const updateStatusResolver = async (
         });
 
         if (status === 'CANDIDATE') {
-            const candidateStatusReachedAtValue = candidateStatusReachedAt
-                ? candidateStatusReachedAt
-                : new Date();
-            const recommendedStatusTargetDateValue = recommendedStatusTargetDate
-                ? recommendedStatusTargetDate
-                : recommendedStatusTargetDateResolver({
-                      candidateStatusReachedAt
-                  });
-
             updateParams = {
                 ...updateParams,
                 metrics: { ...testPlanReport.metrics, ...metrics },
-                candidateStatusReachedAt: candidateStatusReachedAtValue,
-                recommendedStatusTargetDate: recommendedStatusTargetDateValue,
                 vendorReviewStatus: 'READY'
             };
         } else if (status === 'RECOMMENDED') {
             updateParams = {
                 ...updateParams,
-                metrics: { ...testPlanReport.metrics, ...metrics },
-                recommendedStatusReachedAt: new Date()
+                metrics: { ...testPlanReport.metrics, ...metrics }
             };
         }
     }
