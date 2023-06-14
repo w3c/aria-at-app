@@ -198,7 +198,7 @@ const updateTestPlanReportTestPlanVersionResolver = async (
                                         })
                                     ),
                                     unexpectedBehaviors:
-                                        unexpectedBehaviors.map(
+                                        unexpectedBehaviors?.map(
                                             ({
                                                 id,
                                                 otherUnexpectedBehaviorText
@@ -278,7 +278,7 @@ const updateTestPlanReportTestPlanVersionResolver = async (
     if (!reportIsNew)
         // eslint-disable-next-line no-console
         console.info(
-            'A report already exists and continuing would overwrite its data.'
+            'A report already exists and continuing will overwrite its data.'
         );
 
     for (const testPlanRun of runsWithResults) {
