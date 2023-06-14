@@ -212,7 +212,6 @@ const graphqlSchema = gql`
         as a directory, and this allows you to do both.
         """
         id: ID!
-        title: String!
         """
         The formal name of the test plan
         """
