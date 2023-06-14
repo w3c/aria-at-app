@@ -16,8 +16,7 @@ import { convertDateToString } from '../../utils/formatter';
 import DisclaimerInfo from '../DisclaimerInfo';
 import TestPlanResultsTable from './TestPlanResultsTable';
 import DisclosureComponent from '../common/DisclosureComponent';
-import { Navigate } from 'react-router';
-import { useLocation, useParams } from 'react-router-dom';
+import { Navigate, useLocation, useParams } from 'react-router-dom';
 
 const getTestersRunHistory = (
     testPlanReport,
@@ -76,7 +75,7 @@ const getTestersRunHistory = (
     );
 };
 
-const SummarizeTestPlanReport = ({ testPlanReports }) => {
+const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
     const location = useLocation();
     const { testPlanReportId } = useParams();
 
@@ -86,7 +85,7 @@ const SummarizeTestPlanReport = ({ testPlanReports }) => {
 
     if (!testPlanReport) return <Navigate to="/404" />;
 
-    const { testPlanVersion, at, browser } = testPlanReport;
+    const { at, browser } = testPlanReport;
 
     // Construct testPlanTarget
     const testPlanTarget = {
@@ -241,11 +240,11 @@ const SummarizeTestPlanReport = ({ testPlanReports }) => {
 };
 
 SummarizeTestPlanReport.propTypes = {
+    testPlanVersion: PropTypes.object.isRequired,
     testPlanReports: PropTypes.arrayOf(
         PropTypes.shape({
             id: PropTypes.string.isRequired,
             status: PropTypes.string.isRequired,
-            testPlanVersion: PropTypes.object.isRequired,
             runnableTests: PropTypes.arrayOf(PropTypes.object.isRequired)
                 .isRequired,
             at: PropTypes.shape({
