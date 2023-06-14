@@ -126,39 +126,6 @@ export const TEST_PLAN_REPORT_QUERY = gql`
     }
 `;
 
-export const TEST_PLAN_REPORT_CANDIDATE_RECOMMENDED_QUERY = gql`
-    query CandidateTestPlanReportsQuery {
-        testPlanReports(statuses: [CANDIDATE, RECOMMENDED]) {
-            id
-            status
-            latestAtVersionReleasedAt {
-                id
-                name
-                releasedAt
-            }
-            candidateStatusReachedAt
-            recommendedStatusTargetDate
-            at {
-                id
-                name
-            }
-            browser {
-                id
-                name
-            }
-            testPlanVersion {
-                id
-                title
-                gitSha
-                testPlan {
-                    directory
-                }
-                metadata
-            }
-        }
-    }
-`;
-
 export const ADD_AT_VERSION_MUTATION = gql`
     mutation AddAtVersion($atId: ID!, $name: String!, $releasedAt: Timestamp!) {
         at(id: $atId) {
@@ -274,34 +241,11 @@ export const UPDATE_TEST_PLAN_REPORT_STATUS_MUTATION = gql`
     mutation UpdateTestPlanReportStatus(
         $testReportId: ID!
         $status: TestPlanReportStatus!
-        $candidateStatusReachedAt: Timestamp
-        $recommendedStatusTargetDate: Timestamp
     ) {
         testPlanReport(id: $testReportId) {
-            updateStatus(
-                status: $status
-                candidateStatusReachedAt: $candidateStatusReachedAt
-                recommendedStatusTargetDate: $recommendedStatusTargetDate
-            ) {
+            updateStatus(status: $status) {
                 testPlanReport {
                     status
-                }
-            }
-        }
-    }
-`;
-
-export const UPDATE_TEST_PLAN_REPORT_RECOMMENDED_TARGET_DATE_MUTATION = gql`
-    mutation UpdateTestPlanReportRecommendedTargetDate(
-        $testReportId: ID!
-        $recommendedStatusTargetDate: Timestamp!
-    ) {
-        testPlanReport(id: $testReportId) {
-            updateRecommendedStatusTargetDate(
-                recommendedStatusTargetDate: $recommendedStatusTargetDate
-            ) {
-                testPlanReport {
-                    recommendedStatusTargetDate
                 }
             }
         }
