@@ -147,6 +147,9 @@ describe('graphql', () => {
             ['PopulatedData', 'browserVersion'],
             ['TestPlanReport', 'issues'],
             ['TestPlanReport', 'vendorReviewStatus'],
+            ['TestPlanVersion', 'candidateStatusReachedAt'],
+            ['TestPlanVersion', 'recommendedStatusReachedAt'],
+            ['TestPlanVersion', 'recommendedStatusTargetDate'],
             ['Test', 'viewers']
         ];
         ({
@@ -272,11 +275,19 @@ describe('graphql', () => {
                         title
                     }
                     testPlanVersions {
+                        __typename
                         id
+                        phase
+                        candidateStatusReachedAt
+                        recommendedStatusTargetDate
+                        recommendedStatusReachedAt
                     }
                     testPlanVersion(id: 1) {
                         __typename
                         id
+                        testPlanReports {
+                            id
+                        }
                         testPlan {
                             id
                             directory
@@ -378,9 +389,6 @@ describe('graphql', () => {
                         }
                         metrics
                         conflictsLength
-                        candidateStatusReachedAt
-                        recommendedStatusTargetDate
-                        recommendedStatusReachedAt
                         atVersions {
                             id
                             name
@@ -522,9 +530,25 @@ describe('graphql', () => {
                                 locationOfData
                             }
                         }
-                        reportRecommendedStatusTargetDate: testPlanReport(
-                            id: 3
-                        ) {
+                        updateToTestPlanVersion: testPlanReport(id: 1) {
+                            __typename
+                            updateTestPlanReportTestPlanVersion(
+                                input: {
+                                    testPlanVersionId: 34
+                                    atId: 1
+                                    browserId: 2
+                                }
+                            ) {
+                                locationOfData
+                            }
+                        }
+                        updateTestPlanVersionPhase: testPlanVersion(id: 26) {
+                            __typename
+                            updatePhase(phase: DRAFT) {
+                                locationOfData
+                            }
+                        }
+                        testPlanVersion(id: 3) {
                             __typename
                             updateRecommendedStatusTargetDate(
                                 recommendedStatusTargetDate: "2023-12-25"
