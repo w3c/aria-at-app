@@ -183,8 +183,6 @@ SummarizeTestPlanReports.propTypes = {
             id: PropTypes.string.isRequired,
             title: PropTypes.string.isRequired,
             phase: PropTypes.string.isRequired,
-            candidateStatusReachedAt: PropTypes.string,
-            recommendedStatusReachedAt: PropTypes.string,
             gitSha: PropTypes.string,
             testPlan: PropTypes.shape({
                 directory: PropTypes.string

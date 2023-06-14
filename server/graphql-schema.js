@@ -368,7 +368,7 @@ const graphqlSchema = gql`
         The TestPlanReports attached to the TestPlanVersion. There will always
         be a unique combination of AT + Browser + TestPlanVersion
         """
-        testPlanReports: [TestPlanReport]!
+        testPlanReports(isCurrentPhase: Boolean): [TestPlanReport]!
     }
 
     """

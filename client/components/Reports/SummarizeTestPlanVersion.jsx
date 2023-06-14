@@ -100,7 +100,7 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
                         <DisclaimerInfo reportStatus={testPlanReport.status} />
                         <LinkContainer
                             to={
-                                `/report/${testPlanReport.testPlanVersion.id}` +
+                                `/report/${testPlanVersion.id}` +
                                 `/targets/${testPlanReport.id}`
                             }
                         >
@@ -111,7 +111,7 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
                         {skippedTests.length ? (
                             <Link
                                 to={
-                                    `/report/${testPlanReport.testPlanVersion.id}` +
+                                    `/report/${testPlanVersion.id}` +
                                     `/targets/${testPlanReport.id}` +
                                     `#skipped-tests`
                                 }
@@ -151,7 +151,7 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
                                                 <td>
                                                     <Link
                                                         to={
-                                                            `/report/${testPlanReport.testPlanVersion.id}` +
+                                                            `/report/${testPlanVersion.id}` +
                                                             `/targets/${testPlanReport.id}` +
                                                             `#result-${testResult.id}`
                                                         }
