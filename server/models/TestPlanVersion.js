@@ -37,17 +37,17 @@ module.exports = function (sequelize, DataTypes) {
             tests: { type: DataTypes.JSONB },
             testPlanId: { type: DataTypes.INTEGER },
             metadata: { type: DataTypes.JSONB },
-            candidateStatusReachedAt: {
+            candidatePhaseReachedAt: {
                 type: DataTypes.DATE,
                 defaultValue: null,
                 allowNull: true
             },
-            recommendedStatusReachedAt: {
+            recommendedPhaseReachedAt: {
                 type: DataTypes.DATE,
                 defaultValue: null,
                 allowNull: true
             },
-            recommendedStatusTargetDate: {
+            recommendedPhaseTargetDate: {
                 type: DataTypes.DATE,
                 defaultValue: null,
                 allowNull: true

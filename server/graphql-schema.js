@@ -312,20 +312,20 @@ const graphqlSchema = gql`
         phase: TestPlanVersionPhase!
         """
         Date of when the TestPlanVersion was last updated to the 'Candidate'
-        status.
+        phase.
         """
-        candidateStatusReachedAt: Timestamp
+        candidatePhaseReachedAt: Timestamp
         """
         Date of when the TestPlanVersion was last updated to the 'Recommended'
-        status.
+        phase.
         """
-        recommendedStatusReachedAt: Timestamp
+        recommendedPhaseReachedAt: Timestamp
         """
-        The intended target date for the final TestPlanVersion status promotion.
+        The intended target date for the final TestPlanVersion phase promotion.
         Based on the ARIA-AT Working Mode.
         https://github.com/w3c/aria-at/wiki/Working-Mode
         """
-        recommendedStatusTargetDate: Timestamp
+        recommendedPhaseTargetDate: Timestamp
         """
         The TestPlan this TestPlanVersion is a snapshot of.
         """
@@ -1163,15 +1163,15 @@ const graphqlSchema = gql`
         """
         updatePhase(
             phase: TestPlanVersionPhase!
-            candidateStatusReachedAt: Timestamp
-            recommendedStatusTargetDate: Timestamp
+            candidatePhaseReachedAt: Timestamp
+            recommendedPhaseTargetDate: Timestamp
         ): PopulatedData!
         """
-        Update the test plan version recommended status target date.
+        Update the test plan version recommended phase target date.
         Only available to admins.
         """
-        updateRecommendedStatusTargetDate(
-            recommendedStatusTargetDate: Timestamp!
+        updateRecommendedPhaseTargetDate(
+            recommendedPhaseTargetDate: Timestamp!
         ): PopulatedData!
     }
 

@@ -249,18 +249,18 @@ const updateTestPlanReportTestPlanVersionResolver = async (
             status: currentTestPlanReport.status
         });
 
-    const candidateStatusReachedAt =
-        currentTestPlanReport.candidateStatusReachedAt;
-    const recommendedStatusReachedAt =
-        currentTestPlanReport.recommendedStatusReachedAt;
-    const recommendedStatusTargetDate =
-        currentTestPlanReport.recommendedStatusTargetDate;
+    const candidatePhaseReachedAt =
+        currentTestPlanReport.candidatePhaseReachedAt;
+    const recommendedPhaseReachedAt =
+        currentTestPlanReport.recommendedPhaseReachedAt;
+    const recommendedPhaseTargetDate =
+        currentTestPlanReport.recommendedPhaseTargetDate;
     const vendorReviewStatus = currentTestPlanReport.vendorReviewStatus;
 
     await updateTestPlanReport(foundOrCreatedTestPlanReport.id, {
-        candidateStatusReachedAt,
-        recommendedStatusReachedAt,
-        recommendedStatusTargetDate,
+        candidatePhaseReachedAt,
+        recommendedPhaseReachedAt,
+        recommendedPhaseTargetDate,
         vendorReviewStatus
     });
 
