@@ -17,7 +17,7 @@ module.exports = {
 
             await queryInterface.addColumn(
                 'TestPlanVersion',
-                'candidateStatusReachedAt',
+                'candidatePhaseReachedAt',
                 {
                     type: Sequelize.DataTypes.DATE,
                     defaultValue: null,
@@ -28,7 +28,7 @@ module.exports = {
 
             await queryInterface.addColumn(
                 'TestPlanVersion',
-                'recommendedStatusReachedAt',
+                'recommendedPhaseReachedAt',
                 {
                     type: Sequelize.DataTypes.DATE,
                     defaultValue: null,
@@ -39,7 +39,7 @@ module.exports = {
 
             await queryInterface.addColumn(
                 'TestPlanVersion',
-                'recommendedStatusTargetDate',
+                'recommendedPhaseTargetDate',
                 {
                     type: Sequelize.DataTypes.DATE,
                     defaultValue: null,
@@ -57,21 +57,21 @@ module.exports = {
             });
             await queryInterface.removeColumn(
                 'TestPlanVersion',
-                'candidateStatusReachedAt',
+                'candidatePhaseReachedAt',
                 {
                     transaction
                 }
             );
             await queryInterface.removeColumn(
                 'TestPlanVersion',
-                'recommendedStatusReachedAt',
+                'recommendedPhaseReachedAt',
                 {
                     transaction
                 }
             );
             await queryInterface.removeColumn(
                 'TestPlanVersion',
-                'recommendedStatusTargetDate',
+                'recommendedPhaseTargetDate',
                 {
                     transaction
                 }
