@@ -1,7 +1,7 @@
 const updatePhase = require('./updatePhaseResolver');
-const updateRecommendedStatusTargetDate = require('./updateRecommendedStatusTargetDateResolver');
+const updateRecommendedPhaseTargetDate = require('./updateRecommendedPhaseTargetDateResolver');
 
 module.exports = {
     updatePhase,
-    updateRecommendedStatusTargetDate
+    updateRecommendedPhaseTargetDate
 };

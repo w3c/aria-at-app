@@ -174,19 +174,18 @@ module.exports = {
                 const {
                     highestTestPlanVersion: highestTestPlanVersionId,
                     highestCollectiveStatus: phase,
-                    latestCandidateStatusReachedAt: candidateStatusReachedAt,
-                    latestRecommendedStatusReachedAt:
-                        recommendedStatusReachedAt,
+                    latestCandidateStatusReachedAt: candidatePhaseReachedAt,
+                    latestRecommendedStatusReachedAt: recommendedPhaseReachedAt,
                     latestRecommendedStatusTargetDate:
-                        recommendedStatusTargetDate,
+                        recommendedPhaseTargetDate,
                     latestAtBrowserMatchings
                 } = highestTestPlanVersion;
 
                 await updateTestPlanVersion(highestTestPlanVersionId, {
                     phase,
-                    candidateStatusReachedAt,
-                    recommendedStatusReachedAt,
-                    recommendedStatusTargetDate
+                    candidatePhaseReachedAt,
+                    recommendedPhaseReachedAt,
+                    recommendedPhaseTargetDate
                 });
 
                 // Update the individual reports, so they can be included as part of the same phase

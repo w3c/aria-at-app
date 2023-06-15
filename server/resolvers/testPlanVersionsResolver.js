@@ -25,7 +25,7 @@ const testPlanVersionsResolver = async (_, { phases }, context, info) => {
         [],
         {
             order: [
-                ['candidateStatusReachedAt', 'desc'],
+                ['candidatePhaseReachedAt', 'desc'],
                 ['updatedAt', 'desc'],
                 ['title', 'asc'],
                 ['directory', 'asc']

@@ -55,7 +55,7 @@ const CandidatePhaseSelectModal = ({
                                         Candidate Phase Start Date on{' '}
                                         <b>
                                             {convertDateToString(
-                                                d.candidateStatusReachedAt,
+                                                d.candidatePhaseReachedAt,
                                                 'MMMM D, YYYY'
                                             )}
                                         </b>{' '}
@@ -63,7 +63,7 @@ const CandidatePhaseSelectModal = ({
                                         Date on{' '}
                                         <b>
                                             {convertDateToString(
-                                                d.recommendedStatusTargetDate,
+                                                d.recommendedPhaseTargetDate,
                                                 'MMMM D, YYYY'
                                             )}
                                         </b>

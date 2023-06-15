@@ -15,9 +15,9 @@ module.exports = {
                 exclude: [
                     'testPlanId',
                     'phase',
-                    'candidateStatusReachedAt',
-                    'recommendedStatusReachedAt',
-                    'recommendedStatusTargetDate'
+                    'candidatePhaseReachedAt',
+                    'recommendedPhaseReachedAt',
+                    'recommendedPhaseTargetDate'
                 ]
             }
         });

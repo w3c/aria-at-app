@@ -80,8 +80,8 @@ INSERT INTO "TestPlanReport" (id, "status", "testPlanVersionId", "createdAt", "a
 -- Data for Name: TestPlanVersion; Type: TABLE DATA; Schema: public; Owner: atr
 --
 
-UPDATE "TestPlanVersion" SET "candidateStatusReachedAt" = '2022-07-06', "recommendedStatusTargetDate" = '2023-01-02' WHERE id = get_test_plan_version_id(text 'Modal Dialog Example');
-UPDATE "TestPlanVersion" SET "candidateStatusReachedAt" = '2022-07-06', "recommendedStatusTargetDate" = '2023-01-02' WHERE id = get_test_plan_version_id(text 'Checkbox Example (Mixed-State)');
+UPDATE "TestPlanVersion" SET "candidatePhaseReachedAt" = '2022-07-06', "recommendedPhaseTargetDate" = '2023-01-02' WHERE id = get_test_plan_version_id(text 'Modal Dialog Example');
+UPDATE "TestPlanVersion" SET "candidatePhaseReachedAt" = '2022-07-06', "recommendedPhaseTargetDate" = '2023-01-02' WHERE id = get_test_plan_version_id(text 'Checkbox Example (Mixed-State)');
 
 --
 -- Data for Name: User; Type: TABLE DATA; Schema: public; Owner: atr

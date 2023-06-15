@@ -294,7 +294,7 @@ const CandidateTestPlanRun = () => {
 
     const currentTest = tests[currentTestIndex];
     const { testPlanVersion, vendorReviewStatus } = testPlanReport;
-    const { recommendedStatusTargetDate } = testPlanVersion;
+    const { recommendedPhaseTargetDate } = testPlanVersion;
 
     const vendorReviewStatusMap = {
         READY: 'Ready',
@@ -305,7 +305,7 @@ const CandidateTestPlanRun = () => {
     const reviewStatusText = vendorReviewStatusMap[reviewStatus];
 
     const targetCompletionDate = convertDateToString(
-        new Date(recommendedStatusTargetDate),
+        new Date(recommendedPhaseTargetDate),
         'MMMM D, YYYY'
     );
 

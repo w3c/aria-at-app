@@ -12,8 +12,8 @@ export const CANDIDATE_TESTS_PAGE_QUERY = gql`
             }
             metadata
             updatedAt
-            candidateStatusReachedAt
-            recommendedStatusTargetDate
+            candidatePhaseReachedAt
+            recommendedPhaseTargetDate
             testPlanReports(isCurrentPhase: true) {
                 id
                 status
@@ -55,11 +55,11 @@ export const CANDIDATE_TESTS_PAGE_QUERY = gql`
 export const UPDATE_TEST_PLAN_VERSION_RECOMMENDED_TARGET_DATE_MUTATION = gql`
     mutation UpdateTestPlanReportRecommendedTargetDate(
         $testPlanVersionId: ID!
-        $recommendedStatusTargetDate: Timestamp!
+        $recommendedPhaseTargetDate: Timestamp!
     ) {
         testPlanVersion(id: $testPlanVersionId) {
-            updateRecommendedStatusTargetDate(
-                recommendedStatusTargetDate: $recommendedStatusTargetDate
+            updateRecommendedPhaseTargetDate(
+                recommendedPhaseTargetDate: $recommendedPhaseTargetDate
             ) {
                 testPlanVersion {
                     phase

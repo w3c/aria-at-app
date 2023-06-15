@@ -3,7 +3,7 @@ const { Base64 } = require('js-base64');
 const moment = require('moment');
 
 const issuesResolver = async testPlanReport => {
-    if (!testPlanReport.candidateStatusReachedAt) return [];
+    if (!testPlanReport.candidatePhaseReachedAt) return [];
 
     const searchPrefix = `${testPlanReport.at.name} Feedback: "`;
     const searchTestPlanVersionTitle =
