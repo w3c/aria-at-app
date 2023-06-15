@@ -147,9 +147,9 @@ describe('graphql', () => {
             ['PopulatedData', 'browserVersion'],
             ['TestPlanReport', 'issues'],
             ['TestPlanReport', 'vendorReviewStatus'],
-            ['TestPlanVersion', 'candidateStatusReachedAt'],
-            ['TestPlanVersion', 'recommendedStatusReachedAt'],
-            ['TestPlanVersion', 'recommendedStatusTargetDate'],
+            ['TestPlanVersion', 'candidatePhaseReachedAt'],
+            ['TestPlanVersion', 'recommendedPhaseReachedAt'],
+            ['TestPlanVersion', 'recommendedPhaseTargetDate'],
             ['Test', 'viewers']
         ];
         ({
@@ -278,9 +278,9 @@ describe('graphql', () => {
                         __typename
                         id
                         phase
-                        candidateStatusReachedAt
-                        recommendedStatusTargetDate
-                        recommendedStatusReachedAt
+                        candidatePhaseReachedAt
+                        recommendedPhaseTargetDate
+                        recommendedPhaseReachedAt
                     }
                     testPlanVersion(id: 1) {
                         __typename
@@ -550,8 +550,8 @@ describe('graphql', () => {
                         }
                         testPlanVersion(id: 3) {
                             __typename
-                            updateRecommendedStatusTargetDate(
-                                recommendedStatusTargetDate: "2023-12-25"
+                            updateRecommendedPhaseTargetDate(
+                                recommendedPhaseTargetDate: "2023-12-25"
                             ) {
                                 locationOfData
                             }

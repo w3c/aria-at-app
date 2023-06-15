@@ -6,7 +6,7 @@ const {
 const conflictsResolver = require('../TestPlanReport/conflictsResolver');
 const finalizedTestResultsResolver = require('../TestPlanReport/finalizedTestResultsResolver');
 const runnableTestsResolver = require('../TestPlanReport/runnableTestsResolver');
-const recommendedStatusTargetDateResolver = require('../TestPlanVersion/recommendedStatusTargetDateResolver');
+const recommendedPhaseTargetDateResolver = require('../TestPlanVersion/recommendedPhaseTargetDateResolver');
 const populateData = require('../../services/PopulatedData/populateData');
 const getMetrics = require('../../util/getMetrics');
 const {
@@ -18,8 +18,8 @@ const updatePhaseResolver = async (
     { parentContext: { id: testPlanVersionId } },
     {
         phase,
-        candidateStatusReachedAt,
-        recommendedStatusTargetDate,
+        candidatePhaseReachedAt,
+        recommendedPhaseTargetDate,
         // TODO: The following flag will be unnecessary once the application no longer allows
         //  individual TestPlanReport updating of phase
         changePhaseWithoutForcingTestPlanReportsUpdate = false
@@ -103,30 +103,29 @@ const updatePhaseResolver = async (
                 });
 
                 if (phase === 'CANDIDATE') {
-                    const candidateStatusReachedAtValue =
-                        candidateStatusReachedAt
-                            ? candidateStatusReachedAt
-                            : new Date();
-                    const recommendedStatusTargetDateValue =
-                        recommendedStatusTargetDate
-                            ? recommendedStatusTargetDate
-                            : recommendedStatusTargetDateResolver({
-                                  candidateStatusReachedAt
+                    const candidatePhaseReachedAtValue = candidatePhaseReachedAt
+                        ? candidatePhaseReachedAt
+                        : new Date();
+                    const recommendedPhaseTargetDateValue =
+                        recommendedPhaseTargetDate
+                            ? recommendedPhaseTargetDate
+                            : recommendedPhaseTargetDateResolver({
+                                  candidatePhaseReachedAt
                               });
 
                     updateParams = {
                         ...updateParams,
                         metrics: { ...testPlanReport.metrics, ...metrics },
-                        candidateStatusReachedAt: candidateStatusReachedAtValue,
-                        recommendedStatusTargetDate:
-                            recommendedStatusTargetDateValue,
+                        candidatePhaseReachedAt: candidatePhaseReachedAtValue,
+                        recommendedPhaseTargetDate:
+                            recommendedPhaseTargetDateValue,
                         vendorReviewStatus: 'READY'
                     };
                 } else if (phase === 'RECOMMENDED') {
                     updateParams = {
                         ...updateParams,
                         metrics: { ...testPlanReport.metrics, ...metrics },
-                        recommendedStatusReachedAt: new Date()
+                        recommendedPhaseReachedAt: new Date()
                     };
                 }
             }

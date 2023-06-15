@@ -509,10 +509,10 @@ const TestPlans = ({ testPlanVersions, triggerPageUpdate = () => {} }) => {
                                     .map(testPlanVersion => {
                                         const testPlanReports =
                                             testPlanVersion.testPlanReports;
-                                        const candidateStatusReachedAt =
-                                            testPlanVersion.candidateStatusReachedAt;
-                                        const recommendedStatusTargetDate =
-                                            testPlanVersion.recommendedStatusTargetDate;
+                                        const candidatePhaseReachedAt =
+                                            testPlanVersion.candidatePhaseReachedAt;
+                                        const recommendedPhaseTargetDate =
+                                            testPlanVersion.recommendedPhaseTargetDate;
 
                                         const allMetrics = [];
 
@@ -625,7 +625,7 @@ const TestPlans = ({ testPlanVersions, triggerPageUpdate = () => {} }) => {
                                                                 Start Date{' '}
                                                                 <b>
                                                                     {convertDateToString(
-                                                                        candidateStatusReachedAt,
+                                                                        candidatePhaseReachedAt,
                                                                         'MMM D, YYYY'
                                                                     )}
                                                                 </b>
@@ -635,7 +635,7 @@ const TestPlans = ({ testPlanVersions, triggerPageUpdate = () => {} }) => {
                                                                 Completion Date{' '}
                                                                 <b>
                                                                     {convertDateToString(
-                                                                        recommendedStatusTargetDate,
+                                                                        recommendedPhaseTargetDate,
                                                                         'MMM D, YYYY'
                                                                     )}
                                                                 </b>
@@ -699,7 +699,7 @@ const TestPlans = ({ testPlanVersions, triggerPageUpdate = () => {} }) => {
                                                                         `Change Target Date for ${testPlanVersion.title} for ${atName}`
                                                                     );
                                                                     setUpdateTargetDateModalDateText(
-                                                                        recommendedStatusTargetDate
+                                                                        recommendedPhaseTargetDate
                                                                     );
                                                                     setShowUpdateTargetDateModal(
                                                                         true
@@ -967,7 +967,7 @@ const TestPlans = ({ testPlanVersions, triggerPageUpdate = () => {} }) => {
                 await updateTestPlanVersionRecommendedTargetDate({
                     variables: {
                         testPlanVersionId: testPlanVersionToUpdate.id,
-                        recommendedStatusTargetDate:
+                        recommendedPhaseTargetDate:
                             convertStringFormatToAnotherFormat(updatedDateText)
                     }
                 });

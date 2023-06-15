@@ -72,8 +72,8 @@ export const CANDIDATE_REPORTS_QUERY = gql`
                 metadata
                 testPageUrl
                 updatedAt
-                candidateStatusReachedAt
-                recommendedStatusTargetDate
+                candidatePhaseReachedAt
+                recommendedPhaseTargetDate
             }
             runnableTests {
                 id

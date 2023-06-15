@@ -4,9 +4,9 @@ const {
     updateTestPlanVersion
 } = require('../../models/services/TestPlanVersionService');
 
-const updateRecommendedStatusTargetDateResolver = async (
+const updateRecommendedPhaseTargetDateResolver = async (
     { parentContext: { id: testPlanVersionId } },
-    { recommendedStatusTargetDate },
+    { recommendedPhaseTargetDate },
     context
 ) => {
     const { user } = context;
@@ -15,10 +15,10 @@ const updateRecommendedStatusTargetDateResolver = async (
     }
 
     await updateTestPlanVersion(testPlanVersionId, {
-        recommendedStatusTargetDate
+        recommendedPhaseTargetDate
     });
 
     return populateData({ testPlanVersionId }, { context });
 };
 
-module.exports = updateRecommendedStatusTargetDateResolver;
+module.exports = updateRecommendedPhaseTargetDateResolver;
