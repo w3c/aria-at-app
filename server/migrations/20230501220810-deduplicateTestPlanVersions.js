@@ -284,13 +284,14 @@ module.exports = {
                     .map(ids => ids.slice(1))
                     .flat();
 
-                await queryInterface.sequelize.query(
-                    `DELETE FROM "TestPlanVersion" WHERE id IN (?)`,
-                    {
-                        replacements: [duplicateIds],
-                        transaction
-                    }
-                );
+                if (duplicateIds.length)
+                    await queryInterface.sequelize.query(
+                        `DELETE FROM "TestPlanVersion" WHERE id IN (?)`,
+                        {
+                            replacements: [duplicateIds],
+                            transaction
+                        }
+                    );
             }
 
             if (uniqueHashCount) {
