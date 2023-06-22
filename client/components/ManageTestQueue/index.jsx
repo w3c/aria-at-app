@@ -172,7 +172,11 @@ const ManageTestQueue = ({
         }
 
         setAllTestPlanVersions(allTestPlanVersions);
-        setFilteredTestPlanVersions(filteredTestPlanVersions);
+        setFilteredTestPlanVersions(
+            filteredTestPlanVersions.sort((a, b) =>
+                a.title < b.title ? -1 : 1
+            )
+        );
     }, [testPlanVersions]);
 
     useEffect(() => {
