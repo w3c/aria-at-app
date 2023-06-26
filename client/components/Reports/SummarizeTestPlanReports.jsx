@@ -89,13 +89,27 @@ const SummarizeTestPlanReports = ({ testPlanReports }) => {
 
         // Construct testPlanTarget
         const testPlanTarget = { id: `${at.id}${browser.id}`, at, browser };
-        tabularReports[testPlanVersion.id][testPlanTarget.id] = testPlanReport;
-        tabularReportsByDirectory[directory][testPlanVersion.id][
-            testPlanTarget.id
-        ] = testPlanReport;
-        tabularReportsByDirectory[directory][
-            testPlanVersion.id
-        ].testPlanVersion = testPlanVersion;
+
+        if (!tabularReports[testPlanVersion.id][testPlanTarget.id])
+            tabularReports[testPlanVersion.id][testPlanTarget.id] =
+                testPlanReport;
+
+        if (
+            !tabularReportsByDirectory[directory][testPlanVersion.id][
+                testPlanTarget.id
+            ]
+        )
+            tabularReportsByDirectory[directory][testPlanVersion.id][
+                testPlanTarget.id
+            ] = testPlanReport;
+
+        if (
+            !tabularReportsByDirectory[directory][testPlanVersion.id]
+                .testPlanVersion
+        )
+            tabularReportsByDirectory[directory][
+                testPlanVersion.id
+            ].testPlanVersion = testPlanVersion;
     });
 
     const combineObject = originalObject => {
