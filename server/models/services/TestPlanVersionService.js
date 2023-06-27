@@ -263,6 +263,7 @@ const updateTestPlanVersion = async (
         updatedAt,
         metadata,
         tests,
+        draftPhaseReachedAt,
         candidatePhaseReachedAt,
         recommendedPhaseReachedAt,
         recommendedPhaseTargetDate
@@ -289,6 +290,7 @@ const updateTestPlanVersion = async (
             updatedAt,
             metadata,
             tests,
+            draftPhaseReachedAt,
             candidatePhaseReachedAt,
             recommendedPhaseReachedAt,
             recommendedPhaseTargetDate
