@@ -26,24 +26,36 @@ module.exports = {
                 { transaction }
             );
 
+            // Need to get all the testPlanVersions that don't have testPlanReports attached to them
+            // to consider them as just being R&D Complete, but not yet in the DRAFT phase
             const testPlanVersions = await queryInterface.sequelize.query(
-                `SELECT id, "updatedAt" FROM "TestPlanVersion"`,
+                `SELECT
+                             "TestPlanVersion".id,
+                             "TestPlanVersion"."updatedAt",
+                             CASE
+                                 WHEN COUNT("TestPlanReport".id) = 0 THEN false
+                                 ELSE true
+                                 END AS "hasTestPlanReport"
+                         FROM "TestPlanVersion"
+                                  LEFT JOIN "TestPlanReport" ON "TestPlanVersion".id = "TestPlanReport"."testPlanVersionId"
+                         GROUP BY "TestPlanVersion".id;`,
                 {
+                    type: Sequelize.QueryTypes.SELECT,
                     transaction
                 }
             );
-            const testPlanVersionsData = testPlanVersions[0];
 
-            for (const testPlanVersion of testPlanVersionsData) {
-                const { id, updatedAt } = testPlanVersion;
+            for (const testPlanVersion of testPlanVersions) {
+                const { id, updatedAt, hasTestPlanReport } = testPlanVersion;
 
-                await queryInterface.sequelize.query(
-                    `UPDATE "TestPlanVersion" SET "draftPhaseReachedAt" = ? WHERE id = ?`,
-                    {
-                        replacements: [updatedAt, id],
-                        transaction
-                    }
-                );
+                if (hasTestPlanReport)
+                    await queryInterface.sequelize.query(
+                        `UPDATE "TestPlanVersion" SET "draftPhaseReachedAt" = ? WHERE id = ?`,
+                        {
+                            replacements: [updatedAt, id],
+                            transaction
+                        }
+                    );
             }
 
             await queryInterface.addColumn(
