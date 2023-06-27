@@ -12,6 +12,7 @@ import {
     getTestPlanTargetTitle,
     getTestPlanVersionTitle
 } from '@components/Reports/getTitles';
+import DataManagementRow from '@components/TestManagement/DataManagementRow';
 import './TestManagement.css';
 
 const TestManagement = () => {
@@ -211,6 +212,53 @@ const TestManagement = () => {
 
             <br />
             <br />
+            <>
+                <Table
+                    className="data-management"
+                    aria-label="Unsure right now"
+                    hover
+                    striped
+                    bordered
+                >
+                    <thead>
+                        <tr>
+                            <th>Test Plan</th>
+                            <th>Covered AT</th>
+                            <th>Overall Status</th>
+                            <th>R&D Version</th>
+                            <th>Draft Review</th>
+                            <th>Candidate Review</th>
+                            <th>Recommended Version</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {testPlans
+                            .slice()
+                            .sort((a, b) => (a.title < b.title ? -1 : 1))
+                            .map(testPlan => {
+                                return (
+                                    <DataManagementRow
+                                        key={testPlan.id}
+                                        testPlan={testPlan}
+                                        testPlanVersions={testPlanVersions.filter(
+                                            testPlanVersion =>
+                                                testPlanVersion.testPlan
+                                                    .directory ===
+                                                testPlan.directory
+                                        )}
+                                        testPlanReports={testPlanReports.filter(
+                                            testPlanReport =>
+                                                testPlanReport.testPlanVersion
+                                                    .testPlan.directory ===
+                                                testPlan.directory
+                                        )}
+                                    />
+                                );
+                            })}
+                    </tbody>
+                </Table>
+            </>
+
             <DisclosureComponent
                 componentId="test-management"
                 title="Status Summary"

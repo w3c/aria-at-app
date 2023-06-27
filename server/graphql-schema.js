@@ -311,6 +311,11 @@ const graphqlSchema = gql`
         """
         phase: TestPlanVersionPhase!
         """
+        Date of when the TestPlanVersion last updated to the 'Draft'
+        phase.
+        """
+        draftPhaseReachedAt: Timestamp
+        """
         Date of when the TestPlanVersion was last updated to the 'Candidate'
         phase.
         """
@@ -342,6 +347,7 @@ const graphqlSchema = gql`
         gitMessage: String! # TODO: remove if using version labels
         """
         The date (originating in Git) corresponding to the Git sha's commit.
+        This can also be considered as the time for when R & D was complete
         """
         updatedAt: Timestamp!
         # TODO: consider moving to the Scenario type if we support multiple
