@@ -8,3 +8,16 @@ export const buildTestPageUrl = (gitSha, directory, testReferencePath) => {
     const BASE_PATH = '/aria-at';
     return `${BASE_PATH}/${gitSha}/build/tests/${directory}/${testReferencePath}`;
 };
+
+export const derivePhaseName = name => {
+    switch (name) {
+        case 'RD':
+            return 'R&D Complete';
+        case 'DRAFT':
+            return 'Draft';
+        case 'CANDIDATE':
+            return 'Candidate';
+        case 'RECOMMENDED':
+            return 'Recommended';
+    }
+};

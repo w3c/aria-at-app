@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { Container, Table } from 'react-bootstrap';
 import styled from '@emotion/styled';
 import alphabetizeObjectBy from '../../utils/alphabetizeObjectBy';
+import { derivePhaseName } from '../../utils/aria';
 import { none } from './getMetrics';
 import { getTestPlanTargetTitle, getTestPlanVersionTitle } from './getTitles';
 import ClippedProgressBar from '@components/common/ClippedProgressBar';
@@ -117,7 +118,7 @@ const SummarizeTestPlanReports = ({ testPlanVersions }) => {
                                             className={phase.toLowerCase()}
                                             aria-hidden
                                         >
-                                            {phase}
+                                            {derivePhaseName(phase)}
                                         </PhaseText>
                                     </td>
                                     {Object.values(testPlanTargetsById).map(
