@@ -56,6 +56,14 @@ module.exports = {
                             transaction
                         }
                     );
+                else
+                    await queryInterface.sequelize.query(
+                        `UPDATE "TestPlanVersion" SET phase = ? WHERE id = ?`,
+                        {
+                            replacements: ['RD', id],
+                            transaction
+                        }
+                    );
             }
 
             await queryInterface.addColumn(
