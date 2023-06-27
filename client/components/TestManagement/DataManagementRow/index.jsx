@@ -21,102 +21,120 @@ const DataManagementRow = ({ testPlan, testPlanVersions, testPlanReports }) => {
         ({ phase }) => phase === 'RECOMMENDED'
     );
 
-    const renderCellForStatus = () => {
-        let view;
-        let earliestVersion;
-        let earliestVersionDate = new Date();
+    // Get the version information based on the latest or earliest date info from a group of
+    // TestPlanVersions
+    const getVersionData = (
+        testPlanVersions,
+        { dateKey = 'updatedAt', isEarliest = false } = { dateKey: 'updatedAt' }
+    ) => {
+        if (isEarliest) {
+            const earliestVersion = testPlanVersions.reduce((a, b) =>
+                new Date(a[dateKey]) < new Date(b[dateKey]) ? a : b
+            );
+            const earliestVersionDate = earliestVersion[dateKey];
+            return { earliestVersion, earliestVersionDate };
+        } else {
+            const latestVersion = testPlanVersions.reduce((a, b) =>
+                new Date(a[dateKey]) > new Date(b[dateKey]) ? a : b
+            );
+            const latestVersionDate = latestVersion[dateKey];
+            return { latestVersion, latestVersionDate };
+        }
+    };
 
-        for (const testPlanVersion of testPlanVersions) {
-            const {
-                phase,
-                updatedAt,
-                draftPhaseReachedAt,
-                candidatePhaseReachedAt,
-                recommendedPhaseReachedAt
-            } = testPlanVersion;
-
-            if (phase === 'RECOMMENDED') {
-                if (
-                    new Date(recommendedPhaseReachedAt) <
-                    new Date(earliestVersionDate)
-                ) {
-                    earliestVersion = testPlanVersion;
-                    earliestVersionDate = recommendedPhaseReachedAt;
-                    view = (
-                        <>
-                            Recommended Since{' '}
-                            {convertDateToString(
-                                earliestVersionDate,
-                                'MMM D, YYYY'
-                            )}
-                        </>
-                    );
-                }
-            } else if (phase === 'CANDIDATE') {
-                if (
-                    new Date(candidatePhaseReachedAt) <
-                    new Date(earliestVersionDate)
-                ) {
-                    earliestVersion = testPlanVersion;
-                    earliestVersionDate = candidatePhaseReachedAt;
-                    view = (
-                        <>
-                            Candidate Review Started{' '}
-                            {convertDateToString(
-                                earliestVersionDate,
-                                'MMM D, YYYY'
-                            )}
-                        </>
-                    );
-                }
-            } else if (phase === 'DRAFT') {
-                if (
-                    new Date(draftPhaseReachedAt) <
-                    new Date(earliestVersionDate)
-                ) {
-                    earliestVersion = testPlanVersion;
-                    earliestVersionDate = draftPhaseReachedAt;
-                    view = (
-                        <>
-                            Draft Review Started{' '}
-                            {convertDateToString(
-                                earliestVersionDate,
-                                'MMM D, YYYY'
-                            )}
-                        </>
-                    );
-                }
-            } else if (phase === 'RD') {
-                if (new Date(updatedAt) < new Date(earliestVersionDate)) {
-                    earliestVersion = testPlanVersion;
-                    earliestVersionDate = updatedAt;
-                    view = (
-                        <>
-                            R&D Complete on{' '}
-                            {convertDateToString(
-                                earliestVersionDate,
-                                'MMM D, YYYY'
-                            )}
-                        </>
-                    );
-                }
+    const getUniqueAtObjects = testPlanReports => {
+        const uniqueAtObjects = {};
+        testPlanReports.forEach(testPlanReport => {
+            const atId = testPlanReport.at.id;
+            if (!uniqueAtObjects[atId]) {
+                uniqueAtObjects[atId] = testPlanReport.at;
             }
+        });
+        return uniqueAtObjects;
+    };
+    const renderCellForCoveredAts = () => {
+        // return <button>3 Desktop Screen Readers</button>;
+
+        const uniqueAtObjects = getUniqueAtObjects(testPlanReports);
+        const atNames = Object.values(uniqueAtObjects).map(at => at.name);
+
+        if (atNames.length > 1) {
+            return (
+                <>
+                    {atNames.map((item, index) => (
+                        <React.Fragment key={index}>
+                            <b>{item}</b>
+                            {index !== atNames.length - 1 ? (
+                                index === atNames.length - 2 ? (
+                                    <span> and </span>
+                                ) : (
+                                    <span>, </span>
+                                )
+                            ) : null}
+                        </React.Fragment>
+                    ))}
+                </>
+            );
+        } else if (atNames.length === 1) return <b>{atNames[0]}</b>;
+        else return <>N/A</>;
+    };
+
+    const renderCellForStatus = () => {
+        let view = <>N/A</>;
+
+        if (recommendedTestPlanVersions.length) {
+            const { earliestVersionDate } = getVersionData(
+                recommendedTestPlanVersions,
+                { dateKey: 'recommendedPhaseReachedAt', isEarliest: true }
+            );
+            return (
+                <>
+                    Recommended Since{' '}
+                    {convertDateToString(earliestVersionDate, 'MMM D, YYYY')}
+                </>
+            );
+        }
+
+        if (candidateTestPlanVersions.length) {
+            const { earliestVersionDate } = getVersionData(
+                candidateTestPlanVersions,
+                { dateKey: 'candidatePhaseReachedAt', isEarliest: true }
+            );
+            return (
+                <>
+                    Candidate Review Started{' '}
+                    {convertDateToString(earliestVersionDate, 'MMM D, YYYY')}
+                </>
+            );
+        }
+
+        if (draftTestPlanVersions.length) {
+            const { earliestVersionDate } = getVersionData(
+                draftTestPlanVersions,
+                { dateKey: 'draftPhaseReachedAt', isEarliest: true }
+            );
+            return (
+                <>
+                    Draft Review Started{' '}
+                    {convertDateToString(earliestVersionDate, 'MMM D, YYYY')}
+                </>
+            );
+        }
+
+        if (rdTestPlanVersions.length) {
+            const { latestVersionDate } = getVersionData(rdTestPlanVersions);
+            return (
+                <>
+                    R&D Complete on{' '}
+                    {convertDateToString(latestVersionDate, 'MMM D, YYYY')}
+                </>
+            );
         }
         return view;
     };
 
     const renderCellForPhase = (phase, testPlanVersions = []) => {
         const defaultView = <>N/A</>;
-
-        // Get the latest version information on the TestPlanVersions
-        const getLatestVersionData = testPlanVersions => {
-            const latestVersion = testPlanVersions.reduce((a, b) =>
-                new Date(a.updatedAt) > new Date(b.updatedAt) ? a : b
-            );
-            const latestVersionDate = latestVersion.updatedAt;
-
-            return { latestVersion, latestVersionDate };
-        };
 
         switch (phase) {
             case 'RD': {
@@ -125,18 +143,20 @@ const DataManagementRow = ({ testPlan, testPlanVersions, testPlanReports }) => {
                 // TestPlanVersions
                 if (!testPlanVersions.length) return defaultView;
 
+                const { latestVersion, latestVersionDate } =
+                    getVersionData(testPlanVersions);
+
                 const otherTestPlanVersions = [
                     ...draftTestPlanVersions,
                     ...candidateTestPlanVersions,
                     ...recommendedTestPlanVersions
                 ];
 
-                const { latestVersion, latestVersionDate } =
-                    getLatestVersionData(testPlanVersions);
-
-                for (const otherTestPlanVersion of otherTestPlanVersions) {
+                if (otherTestPlanVersions.length) {
+                    const { latestVersionDate: otherLatestVersionDate } =
+                        getVersionData(otherTestPlanVersions);
                     if (
-                        new Date(otherTestPlanVersion.updatedAt) >
+                        new Date(otherLatestVersionDate) >
                         new Date(latestVersionDate)
                     ) {
                         return defaultView;
@@ -175,7 +195,7 @@ const DataManagementRow = ({ testPlan, testPlanVersions, testPlanReports }) => {
                 // Candidate" button
                 if (testPlanVersions.length) {
                     const { latestVersion, latestVersionDate } =
-                        getLatestVersionData(testPlanVersions);
+                        getVersionData(testPlanVersions);
 
                     return (
                         <>
@@ -204,7 +224,7 @@ const DataManagementRow = ({ testPlan, testPlanVersions, testPlanReports }) => {
                     const {
                         latestVersion: otherLatestVersion,
                         latestVersionDate: otherLatestVersionDate
-                    } = getLatestVersionData(otherTestPlanVersions);
+                    } = getVersionData(otherTestPlanVersions);
 
                     const completionDate =
                         otherLatestVersion.phase === 'CANDIDATE'
@@ -251,26 +271,23 @@ const DataManagementRow = ({ testPlan, testPlanVersions, testPlanReports }) => {
                 //    version.
                 if (testPlanVersions.length) {
                     const { latestVersion, latestVersionDate } =
-                        getLatestVersionData(testPlanVersions);
+                        getVersionData(testPlanVersions);
 
                     const filteredTestPlanReports = testPlanReports.filter(
                         testPlanReport =>
                             testPlanReport.testPlanVersion.id ===
                             latestVersion.id
                     );
+
+                    const uniqueAtObjects = getUniqueAtObjects(
+                        filteredTestPlanReports
+                    );
+                    const uniqueAtsCount = Object.keys(uniqueAtObjects).length;
+
                     const issuesCount = filteredTestPlanReports.reduce(
                         (acc, obj) => acc + obj.issues.length,
                         0
                     );
-
-                    const uniqueAtObjects = {};
-                    filteredTestPlanReports.forEach(testPlanReport => {
-                        const atId = testPlanReport.at.id;
-                        if (!uniqueAtObjects[atId]) {
-                            uniqueAtObjects[atId] = testPlanReport.at;
-                        }
-                    });
-                    const uniqueAtsCount = Object.keys(uniqueAtObjects).length;
 
                     return (
                         <>
@@ -305,7 +322,7 @@ const DataManagementRow = ({ testPlan, testPlanVersions, testPlanReports }) => {
                     const {
                         latestVersion: otherLatestVersion,
                         latestVersionDate: otherLatestVersionDate
-                    } = getLatestVersionData(otherTestPlanVersions);
+                    } = getVersionData(otherTestPlanVersions);
 
                     const completionDate =
                         otherLatestVersion.recommendedPhaseReachedAt;
@@ -331,7 +348,7 @@ const DataManagementRow = ({ testPlan, testPlanVersions, testPlanReports }) => {
 
                 // Link with text "VERSION_STRING" that targets the single-page view of the plan
                 const { latestVersion, latestVersionDate } =
-                    getLatestVersionData(testPlanVersions);
+                    getVersionData(testPlanVersions);
 
                 const completionDate = latestVersion.recommendedPhaseReachedAt;
 
@@ -358,9 +375,7 @@ const DataManagementRow = ({ testPlan, testPlanVersions, testPlanReports }) => {
         <LoadingStatus message={loadingMessage}>
             <tr>
                 <th>{testPlan.title}</th>
-                <td>
-                    <button>3 Desktop Screen Readers</button>
-                </td>
+                <td>{renderCellForCoveredAts()}</td>
                 <td>{renderCellForStatus()}</td>
                 <td>{renderCellForPhase('RD', rdTestPlanVersions)}</td>
                 <td>{renderCellForPhase('DRAFT', draftTestPlanVersions)}</td>
