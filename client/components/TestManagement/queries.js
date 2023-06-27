@@ -27,14 +27,18 @@ export const TEST_MANAGEMENT_PAGE_QUERY = gql`
         testPlanVersions {
             id
             title
+            phase
             gitSha
             gitMessage
             testPlan {
                 directory
             }
             updatedAt
+            draftPhaseReachedAt
+            candidatePhaseReachedAt
+            recommendedPhaseReachedAt
         }
-        testPlanReports(statuses: [DRAFT, CANDIDATE, RECOMMENDED]) {
+        testPlanReports {
             id
             status
             at {
@@ -59,6 +63,11 @@ export const TEST_MANAGEMENT_PAGE_QUERY = gql`
                     directory
                 }
                 updatedAt
+            }
+            issues {
+                link
+                isOpen
+                feedbackType
             }
         }
     }
