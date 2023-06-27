@@ -131,7 +131,7 @@ const DataManagementRow = ({ testPlan, testPlanVersions, testPlanReports }) => {
                     ...recommendedTestPlanVersions
                 ];
 
-                const { latestVersionDate } =
+                const { latestVersion, latestVersionDate } =
                     getLatestVersionData(testPlanVersions);
 
                 for (const otherTestPlanVersion of otherTestPlanVersions) {
@@ -146,7 +146,11 @@ const DataManagementRow = ({ testPlan, testPlanVersions, testPlanReports }) => {
                 // Otherwise, show VERSION_STRING link with a draft transition button
                 return (
                     <>
-                        <a href="">
+                        <a
+                            href={`/aria-at/${latestVersion.gitSha}/build/review/${latestVersion.testPlan.directory}.html`}
+                            target="_blank"
+                            rel="noreferrer"
+                        >
                             V
                             {convertDateToString(latestVersionDate, 'YY.MM.DD')}
                         </a>
@@ -170,12 +174,16 @@ const DataManagementRow = ({ testPlan, testPlanVersions, testPlanReports }) => {
                 // If required reports are complete and user is an admin, show "Advance to
                 // Candidate" button
                 if (testPlanVersions.length) {
-                    const { latestVersionDate } =
+                    const { latestVersion, latestVersionDate } =
                         getLatestVersionData(testPlanVersions);
 
                     return (
                         <>
-                            <a href="">
+                            <a
+                                href={`/aria-at/${latestVersion.gitSha}/build/review/${latestVersion.testPlan.directory}.html`}
+                                target="_blank"
+                                rel="noreferrer"
+                            >
                                 V
                                 {convertDateToString(
                                     latestVersionDate,
@@ -266,7 +274,11 @@ const DataManagementRow = ({ testPlan, testPlanVersions, testPlanReports }) => {
 
                     return (
                         <>
-                            <a href="">
+                            <a
+                                href={`/aria-at/${latestVersion.gitSha}/build/review/${latestVersion.testPlan.directory}.html`}
+                                target="_blank"
+                                rel="noreferrer"
+                            >
                                 V
                                 {convertDateToString(
                                     latestVersionDate,
@@ -325,7 +337,11 @@ const DataManagementRow = ({ testPlan, testPlanVersions, testPlanReports }) => {
 
                 return (
                     <>
-                        <a href="">
+                        <a
+                            href={`/aria-at/${latestVersion.gitSha}/build/review/${latestVersion.testPlan.directory}.html`}
+                            target="_blank"
+                            rel="noreferrer"
+                        >
                             V
                             {convertDateToString(latestVersionDate, 'YY.MM.DD')}
                         </a>
