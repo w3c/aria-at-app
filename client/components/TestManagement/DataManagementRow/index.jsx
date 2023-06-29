@@ -85,7 +85,7 @@ const DataManagementRow = ({
         else return <>N/A</>;
     };
 
-    const renderCellForStatus = () => {
+    const renderCellForOverallStatus = () => {
         let view = <>N/A</>;
 
         if (recommendedTestPlanVersions.length) {
@@ -447,7 +447,7 @@ const DataManagementRow = ({
             <tr>
                 <th>{testPlan.title}</th>
                 <td>{renderCellForCoveredAts()}</td>
-                <td>{renderCellForStatus()}</td>
+                <td>{renderCellForOverallStatus()}</td>
                 <td>{renderCellForPhase('RD', rdTestPlanVersions)}</td>
                 <td>{renderCellForPhase('DRAFT', draftTestPlanVersions)}</td>
                 <td>
