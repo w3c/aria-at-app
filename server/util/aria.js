@@ -7,17 +7,19 @@ const evaluateAtNameKey = atName => {
     else return atName.toLowerCase();
 };
 
-// Generate the hash of a test.
-const hashTest = test => {
-    return objectHash({
-        ...omit(test, ['id', 'renderedUrls']),
-        assertions: test.assertions.map(assertion => omit(assertion, ['id'])),
-        scenarios: test.scenarios.map(scenario => omit(scenario, ['id']))
-    });
-};
+const testWithNoIds = test => ({
+    ...omit(test, ['id', 'renderedUrls']),
+    assertions: test.assertions.map(assertion => omit(assertion, ['id'])),
+    scenarios: test.scenarios.map(scenario => omit(scenario, ['id']))
+});
 
 // Ideally the hash of tests being imported will never change
-const hashTests = tests => objectHash(tests.map(hashTest));
+const hashTests = tests => objectHash(tests.map(testWithNoIds));
+
+// Generate the hash of a test.
+const hashTest = test => {
+    return objectHash(testWithNoIds(test));
+};
 
 module.exports = {
     evaluateAtNameKey,
