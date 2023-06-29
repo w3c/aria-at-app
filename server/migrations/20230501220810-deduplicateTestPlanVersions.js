@@ -1,76 +1,54 @@
 'use strict';
 
-const { omit } = require('lodash');
-const objectHash = require('object-hash');
 const {
     createTestResultId,
     createScenarioResultId,
     createAssertionResultId
 } = require('../services/PopulatedData/locationOfDataId');
+const { hashTest, hashTests } = require('../util/aria');
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
     async up(queryInterface, Sequelize) {
-        // Should be identical to the hash function used in the import script
-        const hashTests = tests => {
-            return objectHash(
-                tests.map(test => ({
-                    ...omit(test, ['id', 'renderedUrls']),
-                    assertions: test.assertions.map(assertion => ({
-                        ...omit(assertion, ['id'])
-                    })),
-                    scenarios: test.scenarios.map(scenario => ({
-                        ...omit(scenario, ['id'])
-                    }))
-                }))
-            );
-        };
-
-        const hashTest = test => {
-            return objectHash({
-                ...omit(test, ['id', 'renderedUrls']),
-                assertions: test.assertions.map(assertion => ({
-                    ...omit(assertion, ['id'])
-                })),
-                scenarios: test.scenarios.map(scenario => ({
-                    ...omit(scenario, ['id'])
-                }))
-            });
-        };
-
-        return queryInterface.sequelize.transaction(async transaction => {
-            await queryInterface.addColumn(
-                'TestPlanVersion',
-                'hashedTests',
-                { type: Sequelize.DataTypes.TEXT },
-                { transaction }
-            );
-
+        /**
+         * Compute TestPlanVersion.hashedTests and return the unique TestPlanVersions found for each
+         * hash
+         * @param transaction - The Sequelize.Transaction object.
+         * See {@https://sequelize.org/api/v6/class/src/sequelize.js~sequelize#instance-method-transaction}
+         * @returns {Promise<{testPlanVersionIdsByHashedTests: {}}>}
+         */
+        const computeTestPlanVersionHashedTests = async transaction => {
             const results = await queryInterface.sequelize.query(
                 `SELECT COUNT(*) FROM "TestPlanVersion"`,
                 { transaction }
             );
             const [[{ count: testPlanVersionCount }]] = results;
 
-            const iterationsNeeded = Math.ceil(testPlanVersionCount / 10);
+            const testPlanVersionBatchSize = 10;
+            const iterationsNeeded = Math.ceil(
+                testPlanVersionCount / testPlanVersionBatchSize
+            );
 
             let testPlanVersionIdsByHashedTests = {};
 
             for (let i = 0; i < iterationsNeeded; i += 1) {
-                const multipleOf100 = i % 10 === 0;
+                const multipleOf100 = i % testPlanVersionBatchSize === 0;
                 if (multipleOf100)
                     // eslint-disable-next-line no-console
                     console.info(
-                        'Indexing',
-                        i * 10,
+                        'Indexing TestPlanVersions',
+                        i * testPlanVersionBatchSize,
                         'of',
                         Number(testPlanVersionCount)
                     );
-                const currentOffset = i * 10;
+                const currentOffset = i * testPlanVersionBatchSize;
 
                 const [testPlanVersions] = await queryInterface.sequelize.query(
-                    `SELECT id, tests FROM "TestPlanVersion" ORDER BY id LIMIT 10 OFFSET ?`,
-                    { replacements: [currentOffset], transaction }
+                    `SELECT id, tests FROM "TestPlanVersion" ORDER BY id LIMIT ? OFFSET ?`,
+                    {
+                        replacements: [testPlanVersionBatchSize, currentOffset],
+                        transaction
+                    }
                 );
 
                 await Promise.all(
@@ -105,170 +83,173 @@ module.exports = {
                 );
             }
 
-            const uniqueHashCount = Object.keys(
-                testPlanVersionIdsByHashedTests
-            ).length;
+            return { testPlanVersionIdsByHashedTests };
+        };
 
-            const batchCount = 100;
-            const iterationsNeeded2 = Math.ceil(uniqueHashCount / batchCount);
+        /**
+         * Regenerate the testIds, scenarioIds and assertionsIds in TestRun.testResults, for
+         * TestRuns that will end up referencing tests from removed TestPlanVersions
+         * @param {int[]} equivalentTestPlanVersionIds - A collection of TestPlanVersion ids that
+         * have equivalent hashes for their tests
+         * @param transaction - The Sequelize.Transaction object.
+         * See {@https://sequelize.org/api/v6/class/src/sequelize.js~sequelize#instance-method-transaction}
+         * @returns {Promise<void>}
+         */
+        const regenerateExistingTestResults = async (
+            equivalentTestPlanVersionIds,
+            transaction
+        ) => {
+            for (const key in equivalentTestPlanVersionIds) {
+                const [keptId, ...unkeptIds] =
+                    equivalentTestPlanVersionIds[key];
 
-            for (let i = 0; i < iterationsNeeded2; i += 1) {
-                // eslint-disable-next-line no-console
-                console.info('Fixing', i * batchCount, 'of', uniqueHashCount);
+                if (!unkeptIds.length) continue;
 
-                const offset = i * batchCount;
-                const equivalentIds = Object.values(
-                    testPlanVersionIdsByHashedTests
-                ).slice(
-                    offset,
-                    offset + 100 < uniqueHashCount
-                        ? offset + 100
-                        : uniqueHashCount
-                );
-
-                for (const key in equivalentIds) {
-                    const [keptId, ...unkeptIds] = equivalentIds[key];
-
-                    if (!unkeptIds.length) continue;
-
-                    // Iterate through all the TestPlanReports using unkept TestPlanVersion ids
-                    // and update the TestRun.testResults information from the TestPlanVersion
-                    // keptId
-                    const unkeptTestPlanReports =
-                        await queryInterface.sequelize.query(
-                            `SELECT id, "testPlanVersionId" FROM "TestPlanReport" WHERE "testPlanVersionId" IN (?)`,
-                            {
-                                replacements: [unkeptIds],
-                                type: Sequelize.QueryTypes.SELECT,
-                                transaction
-                            }
-                        );
-
-                    const keptTestPlanVersion =
-                        await queryInterface.sequelize.query(
-                            `SELECT id, tests FROM "TestPlanVersion" WHERE id = ? LIMIT 1`,
-                            {
-                                replacements: [keptId],
-                                type: Sequelize.QueryTypes.SELECT,
-                                transaction
-                            }
-                        );
-                    const { tests: keptTestPlanVersionTests } =
-                        keptTestPlanVersion[0];
-
-                    // Iterate over all the TestPlanRuns using unkeptIds to update their
-                    // testResults ids
-                    for (const key in unkeptTestPlanReports) {
-                        const { id: testPlanReportId } =
-                            unkeptTestPlanReports[key];
-
-                        const testPlanRuns =
-                            await queryInterface.sequelize.query(
-                                `SELECT testPlanRun.id, "testPlanReportId", "testResults", "testPlanVersionId", tests
-                                         FROM "TestPlanRun" testPlanRun
-                                                  JOIN "TestPlanReport" testPlanReport ON testPlanReport.id = testPlanRun."testPlanReportId"
-                                                  JOIN "TestPlanVersion" testPlanVersion ON testPlanVersion.id = testPlanReport."testPlanVersionId"
-                                         WHERE "testPlanReportId" = ?`,
-                                {
-                                    replacements: [testPlanReportId],
-                                    type: Sequelize.QueryTypes.SELECT,
-                                    transaction
-                                }
-                            );
-
-                        for (const key in testPlanRuns) {
-                            const {
-                                id: testPlanRunId,
-                                testResults,
-                                tests: unkeptTests
-                            } = testPlanRuns[key];
-
-                            unkeptTests.forEach(unkeptTest => {
-                                const unkeptTestId = unkeptTest.id;
-                                const testHash = hashTest(unkeptTest);
-                                const foundKeptTest =
-                                    keptTestPlanVersionTests.find(
-                                        keptTest =>
-                                            hashTest(keptTest) === testHash
-                                    );
-
-                                testResults.forEach(testResult => {
-                                    if (testResult.testId === unkeptTestId) {
-                                        // Reassign the ids the testResult should be using
-                                        testResult.testId = foundKeptTest.id;
-
-                                        // Update testResult.id
-                                        const testResultId = createTestResultId(
-                                            testPlanRunId,
-                                            testResult.testId
-                                        );
-                                        testResult.id = testResultId;
-
-                                        // The hash confirms the sub-arrays should be in the same order
-                                        testResult.scenarioResults.forEach(
-                                            (
-                                                eachScenarioResult,
-                                                scenarioIndex
-                                            ) => {
-                                                eachScenarioResult.scenarioId =
-                                                    foundKeptTest.scenarios[
-                                                        scenarioIndex
-                                                    ].id;
-
-                                                // Update eachScenarioResult.id
-                                                const scenarioResultId =
-                                                    createScenarioResultId(
-                                                        testResultId,
-                                                        eachScenarioResult.scenarioId
-                                                    );
-                                                eachScenarioResult.id =
-                                                    scenarioResultId;
-
-                                                eachScenarioResult.assertionResults.forEach(
-                                                    (
-                                                        eachAssertionResult,
-                                                        assertionIndex
-                                                    ) => {
-                                                        eachAssertionResult.assertionId =
-                                                            foundKeptTest.assertions[
-                                                                assertionIndex
-                                                            ].id;
-
-                                                        // Update eachAssertionResult.id
-                                                        eachAssertionResult.id =
-                                                            createAssertionResultId(
-                                                                scenarioResultId,
-                                                                eachAssertionResult.assertionId
-                                                            );
-                                                    }
-                                                );
-                                            }
-                                        );
-                                    }
-                                });
-                            });
-
-                            await queryInterface.sequelize.query(
-                                `UPDATE "TestPlanRun" SET "testResults" = ? WHERE id = ?`,
-                                {
-                                    replacements: [
-                                        JSON.stringify(testResults),
-                                        testPlanRunId
-                                    ],
-                                    transaction
-                                }
-                            );
-                            // eslint-disable-next-line no-console
-                            console.info(
-                                'Updated testResults (testIds, scenarioIds, assertionsIds) for TestPlanRun',
-                                testPlanRunId
-                            );
+                // Iterate through all the TestPlanReports using unkept TestPlanVersion ids
+                // and update the TestRun.testResults information from the TestPlanVersion
+                // keptId
+                const unkeptTestPlanReports =
+                    await queryInterface.sequelize.query(
+                        `SELECT id, "testPlanVersionId" FROM "TestPlanReport" WHERE "testPlanVersionId" IN (?)`,
+                        {
+                            replacements: [unkeptIds],
+                            type: Sequelize.QueryTypes.SELECT,
+                            transaction
                         }
+                    );
+
+                const keptTestPlanVersion =
+                    await queryInterface.sequelize.query(
+                        `SELECT id, tests FROM "TestPlanVersion" WHERE id = ?`,
+                        {
+                            replacements: [keptId],
+                            type: Sequelize.QueryTypes.SELECT,
+                            transaction
+                        }
+                    );
+                const { tests: keptTestPlanVersionTests } =
+                    keptTestPlanVersion[0];
+
+                // Iterate over all the TestPlanRuns using unkeptIds to update their
+                // testResults ids
+                for (const key in unkeptTestPlanReports) {
+                    const { id: testPlanReportId } = unkeptTestPlanReports[key];
+
+                    const testPlanRuns = await queryInterface.sequelize.query(
+                        `SELECT testPlanRun.id, "testPlanReportId", "testResults", "testPlanVersionId", tests
+                                 FROM "TestPlanRun" testPlanRun
+                                          JOIN "TestPlanReport" testPlanReport ON testPlanReport.id = testPlanRun."testPlanReportId"
+                                          JOIN "TestPlanVersion" testPlanVersion ON testPlanVersion.id = testPlanReport."testPlanVersionId"
+                                 WHERE "testPlanReportId" = ?`,
+                        {
+                            replacements: [testPlanReportId],
+                            type: Sequelize.QueryTypes.SELECT,
+                            transaction
+                        }
+                    );
+
+                    for (const key in testPlanRuns) {
+                        const {
+                            id: testPlanRunId,
+                            testResults,
+                            tests: unkeptTests
+                        } = testPlanRuns[key];
+
+                        unkeptTests.forEach(unkeptTest => {
+                            const unkeptTestId = unkeptTest.id;
+                            const testHash = hashTest(unkeptTest);
+                            const foundKeptTest = keptTestPlanVersionTests.find(
+                                keptTest => hashTest(keptTest) === testHash
+                            );
+
+                            testResults.forEach(testResult => {
+                                if (testResult.testId === unkeptTestId) {
+                                    // Reassign the ids the testResult should be using
+                                    testResult.testId = foundKeptTest.id;
+
+                                    // Update testResult.id
+                                    const testResultId = createTestResultId(
+                                        testPlanRunId,
+                                        testResult.testId
+                                    );
+                                    testResult.id = testResultId;
+
+                                    // The hash confirms the sub-arrays should be in the same order
+                                    testResult.scenarioResults.forEach(
+                                        (eachScenarioResult, scenarioIndex) => {
+                                            eachScenarioResult.scenarioId =
+                                                foundKeptTest.scenarios[
+                                                    scenarioIndex
+                                                ].id;
+
+                                            // Update eachScenarioResult.id
+                                            const scenarioResultId =
+                                                createScenarioResultId(
+                                                    testResultId,
+                                                    eachScenarioResult.scenarioId
+                                                );
+                                            eachScenarioResult.id =
+                                                scenarioResultId;
+
+                                            eachScenarioResult.assertionResults.forEach(
+                                                (
+                                                    eachAssertionResult,
+                                                    assertionIndex
+                                                ) => {
+                                                    eachAssertionResult.assertionId =
+                                                        foundKeptTest.assertions[
+                                                            assertionIndex
+                                                        ].id;
+
+                                                    // Update eachAssertionResult.id
+                                                    eachAssertionResult.id =
+                                                        createAssertionResultId(
+                                                            scenarioResultId,
+                                                            eachAssertionResult.assertionId
+                                                        );
+                                                }
+                                            );
+                                        }
+                                    );
+                                }
+                            });
+                        });
+
+                        await queryInterface.sequelize.query(
+                            `UPDATE "TestPlanRun" SET "testResults" = ? WHERE id = ?`,
+                            {
+                                replacements: [
+                                    JSON.stringify(testResults),
+                                    testPlanRunId
+                                ],
+                                transaction
+                            }
+                        );
+                        // eslint-disable-next-line no-console
+                        console.info(
+                            'Fixing testResults for TestPlanRun',
+                            testPlanRunId
+                        );
                     }
                 }
+            }
+        };
 
-                await Promise.all(
-                    equivalentIds.map(async ([keptId, ...unkeptIds]) => {
+        /**
+         * Remove duplicate versions of found TestPlanVersions
+         * @param {int[]} equivalentTestPlanVersionIds - A collection of TestPlanVersion ids that
+         * have equivalent hashes for their tests
+         * @param transaction - The Sequelize.Transaction object.
+         * See {@https://sequelize.org/api/v6/class/src/sequelize.js~sequelize#instance-method-transaction}
+         * @returns {Promise<void>}
+         */
+        const removeTestPlanVersionDuplicates = async (
+            equivalentTestPlanVersionIds,
+            transaction
+        ) => {
+            await Promise.all(
+                equivalentTestPlanVersionIds.map(
+                    async ([keptId, ...unkeptIds]) => {
                         if (!unkeptIds.length) return;
                         await queryInterface.sequelize.query(
                             `UPDATE "TestPlanReport" SET "testPlanVersionId" = ? WHERE "testPlanVersionId" IN (?)`,
@@ -277,21 +258,68 @@ module.exports = {
                                 transaction
                             }
                         );
-                    })
+                    }
+                )
+            );
+
+            const duplicateIds = equivalentTestPlanVersionIds
+                .map(ids => ids.slice(1))
+                .flat();
+
+            if (duplicateIds.length)
+                await queryInterface.sequelize.query(
+                    `DELETE FROM "TestPlanVersion" WHERE id IN (?)`,
+                    {
+                        replacements: [duplicateIds],
+                        transaction
+                    }
+                );
+        };
+
+        return queryInterface.sequelize.transaction(async transaction => {
+            await queryInterface.addColumn(
+                'TestPlanVersion',
+                'hashedTests',
+                { type: Sequelize.DataTypes.TEXT },
+                { transaction }
+            );
+
+            // Get the unique TestPlanVersions found for each hash
+            const { testPlanVersionIdsByHashedTests } =
+                await computeTestPlanVersionHashedTests(transaction);
+
+            const uniqueHashCount = Object.keys(
+                testPlanVersionIdsByHashedTests
+            ).length;
+            const testPlanReportsBatchSize = 100;
+            const iterationsNeeded = Math.ceil(
+                uniqueHashCount / testPlanReportsBatchSize
+            );
+
+            for (let i = 0; i < iterationsNeeded; i += 1) {
+                // eslint-disable-next-line no-console
+                console.info(
+                    'Fixing TestPlanReports',
+                    i * testPlanReportsBatchSize,
+                    'of',
+                    uniqueHashCount
                 );
 
-                const duplicateIds = equivalentIds
-                    .map(ids => ids.slice(1))
-                    .flat();
+                const offset = i * testPlanReportsBatchSize;
+                const equivalentIds = Object.values(
+                    testPlanVersionIdsByHashedTests
+                ).slice(
+                    offset,
+                    Math.min(offset + testPlanReportsBatchSize, uniqueHashCount)
+                );
 
-                if (duplicateIds.length)
-                    await queryInterface.sequelize.query(
-                        `DELETE FROM "TestPlanVersion" WHERE id IN (?)`,
-                        {
-                            replacements: [duplicateIds],
-                            transaction
-                        }
-                    );
+                // Regenerate the testIds, scenarioIds and assertionsIds in TestRun.testResults
+                await regenerateExistingTestResults(equivalentIds, transaction);
+
+                await removeTestPlanVersionDuplicates(
+                    equivalentIds,
+                    transaction
+                );
             }
 
             if (uniqueHashCount) {

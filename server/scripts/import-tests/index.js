@@ -19,8 +19,7 @@ const {
     createAssertionId
 } = require('../../services/PopulatedData/locationOfDataId');
 const deepPickEqual = require('../../util/deepPickEqual');
-const objectHash = require('object-hash');
-const { omit } = require('lodash');
+const { hashTests } = require('../../util/aria');
 
 const args = require('minimist')(process.argv.slice(2), {
     alias: {
@@ -243,22 +242,6 @@ const updateAtsJson = async ats => {
             null,
             4
         )
-    );
-};
-
-const hashTests = tests => {
-    // Be careful if you change this, ideally the hash of old test plans will
-    // not change or else duplicates will be imported
-    return objectHash(
-        tests.map(test => ({
-            ...omit(test, ['id', 'renderedUrls']),
-            assertions: test.assertions.map(assertion => ({
-                ...omit(assertion, ['id'])
-            })),
-            scenarios: test.scenarios.map(scenario => ({
-                ...omit(scenario, ['id'])
-            }))
-        }))
     );
 };
 
