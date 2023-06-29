@@ -5,7 +5,13 @@ import { useMutation } from '@apollo/client';
 import { LoadingStatus, useTriggerLoad } from '../../common/LoadingStatus';
 import { convertDateToString } from '@client/utils/formatter';
 
-const DataManagementRow = ({ testPlan, testPlanVersions, testPlanReports }) => {
+const DataManagementRow = ({
+    testPlan,
+    testPlanVersions,
+    testPlanReports,
+    activePhasesByTestPlan,
+    setActivePhasesByTestPlan
+}) => {
     const { triggerLoad, loadingMessage } = useTriggerLoad();
 
     const rdTestPlanVersions = testPlanVersions.filter(
@@ -136,6 +142,19 @@ const DataManagementRow = ({ testPlan, testPlanVersions, testPlanReports }) => {
     const renderCellForPhase = (phase, testPlanVersions = []) => {
         const defaultView = <>N/A</>;
 
+        const insertActivePhaseForTestPlan = () => {
+            if (!activePhasesByTestPlan[testPlan.id].includes(phase)) {
+                const result = {
+                    ...activePhasesByTestPlan,
+                    [testPlan.id]: [
+                        ...activePhasesByTestPlan[testPlan.id],
+                        phase
+                    ]
+                };
+                setActivePhasesByTestPlan(result);
+            }
+        };
+
         switch (phase) {
             case 'RD': {
                 // If the latest version of the plan is in the draft, candidate, or recommended
@@ -163,7 +182,9 @@ const DataManagementRow = ({ testPlan, testPlanVersions, testPlanReports }) => {
                     }
                 }
 
-                // Otherwise, show VERSION_STRING link with a draft transition button
+                // Otherwise, show VERSION_STRING link with a draft transition button. Phase is
+                // "active"
+                insertActivePhaseForTestPlan();
                 return (
                     <>
                         <a
@@ -192,11 +213,19 @@ const DataManagementRow = ({ testPlan, testPlanVersions, testPlanReports }) => {
 
                 // Link with text "VERSION_STRING" that targets the single-page view of the plan.
                 // If required reports are complete and user is an admin, show "Advance to
-                // Candidate" button
+                // Candidate" button.
                 if (testPlanVersions.length) {
                     const { latestVersion, latestVersionDate } =
                         getVersionData(testPlanVersions);
 
+                    const otherPreviousActiveVersions = activePhasesByTestPlan[
+                        testPlan.id
+                    ].filter(
+                        e => !['RECOMMENDED', 'CANDIDATE', phase].includes(e)
+                    );
+
+                    // Phase is "active"
+                    insertActivePhaseForTestPlan();
                     return (
                         <>
                             <a
@@ -213,6 +242,16 @@ const DataManagementRow = ({ testPlan, testPlanVersions, testPlanReports }) => {
                             <br />
                             <button>Required Reports In Progress</button>
                             <button>Advance to Candidate</button>
+                            {otherPreviousActiveVersions.length ? (
+                                <>
+                                    <br />+{otherPreviousActiveVersions.length}{' '}
+                                    New Version
+                                    {otherPreviousActiveVersions.length === 1
+                                        ? ''
+                                        : 's'}{' '}
+                                    in Progress
+                                </>
+                            ) : null}
                         </>
                     );
                 }
@@ -289,6 +328,12 @@ const DataManagementRow = ({ testPlan, testPlanVersions, testPlanReports }) => {
                         0
                     );
 
+                    const otherPreviousActiveVersions = activePhasesByTestPlan[
+                        testPlan.id
+                    ].filter(e => !['RECOMMENDED', phase].includes(e));
+
+                    // Phase is "active"
+                    insertActivePhaseForTestPlan();
                     return (
                         <>
                             <a
@@ -312,6 +357,16 @@ const DataManagementRow = ({ testPlan, testPlanVersions, testPlanReports }) => {
                             }`}
                             <br />
                             <button>Advance to Recommended</button>
+                            {otherPreviousActiveVersions.length ? (
+                                <>
+                                    <br />+{otherPreviousActiveVersions.length}{' '}
+                                    New Version
+                                    {otherPreviousActiveVersions.length === 1
+                                        ? ''
+                                        : 's'}{' '}
+                                    in Progress
+                                </>
+                            ) : null}
                         </>
                     );
                 }
@@ -352,6 +407,12 @@ const DataManagementRow = ({ testPlan, testPlanVersions, testPlanReports }) => {
 
                 const completionDate = latestVersion.recommendedPhaseReachedAt;
 
+                const otherPreviousActiveVersions = activePhasesByTestPlan[
+                    testPlan.id
+                ].filter(e => ![phase].includes(e));
+
+                // Phase is "active"
+                insertActivePhaseForTestPlan();
                 return (
                     <>
                         <a
@@ -365,6 +426,16 @@ const DataManagementRow = ({ testPlan, testPlanVersions, testPlanReports }) => {
                         <br />
                         Approved{' '}
                         {convertDateToString(completionDate, 'MMM D, YYYY')}
+                        {otherPreviousActiveVersions.length ? (
+                            <>
+                                <br />+{otherPreviousActiveVersions.length} New
+                                Version
+                                {otherPreviousActiveVersions.length === 1
+                                    ? ''
+                                    : 's'}{' '}
+                                in Progress
+                            </>
+                        ) : null}
                     </>
                 );
             }
