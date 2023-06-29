@@ -1,3 +1,4 @@
 # Allow users with the following GitHub usernames to sign in as vendors.
 # New entries should be in the form <username>|<company>
 #   ex. warp2nowhere|vispero
+RFischer-FS|vispero
