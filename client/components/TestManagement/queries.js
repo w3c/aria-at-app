@@ -106,3 +106,33 @@ export const BULK_UPDATE_TEST_PLAN_REPORT_STATUS_MUTATION = gql`
         }
     }
 `;
+
+export const UPDATE_TEST_PLAN_VERSION_PHASE = gql`
+    mutation UpdateTestPlanVersionPhase(
+        $testPlanVersionId: ID!
+        $phase: TestPlanVersionPhase!
+        $testPlanVersionIdDataToInclude: ID
+    ) {
+        testPlanVersion(id: $testPlanVersionId) {
+            updatePhase(
+                phase: $phase
+                testPlanVersionIdDataToInclude: $testPlanVersionIdDataToInclude
+            ) {
+                testPlanVersion {
+                    id
+                    title
+                    phase
+                    gitSha
+                    gitMessage
+                    testPlan {
+                        directory
+                    }
+                    updatedAt
+                    draftPhaseReachedAt
+                    candidatePhaseReachedAt
+                    recommendedPhaseReachedAt
+                }
+            }
+        }
+    }
+`;

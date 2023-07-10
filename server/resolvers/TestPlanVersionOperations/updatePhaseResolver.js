@@ -16,7 +16,12 @@ const {
 
 const updatePhaseResolver = async (
     { parentContext: { id: testPlanVersionId } },
-    { phase, candidatePhaseReachedAt, recommendedPhaseTargetDate },
+    {
+        phase,
+        candidatePhaseReachedAt,
+        recommendedPhaseTargetDate,
+        testPlanVersionIdDataToInclude
+    },
     context
 ) => {
     const { user } = context;
@@ -136,7 +141,7 @@ const updatePhaseResolver = async (
         const recommendedPhaseTargetDateValue =
             recommendedPhaseTargetDate ||
             recommendedPhaseTargetDateResolver({
-                candidatePhaseReachedAt
+                candidatePhaseReachedAt: candidatePhaseReachedAtValue
             });
         updateParams = {
             ...updateParams,
