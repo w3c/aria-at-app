@@ -332,6 +332,10 @@ const graphqlSchema = gql`
         """
         recommendedPhaseTargetDate: Timestamp
         """
+        The date when the TestPlanVersion was 'sunset'.
+        """
+        archivedAtDate: Timestamp
+        """
         The TestPlan this TestPlanVersion is a snapshot of.
         """
         testPlan: TestPlan!
@@ -1171,6 +1175,7 @@ const graphqlSchema = gql`
             phase: TestPlanVersionPhase!
             candidatePhaseReachedAt: Timestamp
             recommendedPhaseTargetDate: Timestamp
+            testPlanVersionIdDataToInclude: ID
         ): PopulatedData!
         """
         Update the test plan version recommended phase target date.

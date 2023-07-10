@@ -1,34 +1,70 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import styled from '@emotion/styled';
 import { useMutation } from '@apollo/client';
+import { UPDATE_TEST_PLAN_VERSION_PHASE } from '../queries';
 import { LoadingStatus, useTriggerLoad } from '../../common/LoadingStatus';
-import { convertDateToString } from '@client/utils/formatter';
+import { convertDateToString } from '../../../utils/formatter';
+import BasicThemedModal from '@components/common/BasicThemedModal';
 
 const DataManagementRow = ({
     testPlan,
     testPlanVersions,
     testPlanReports,
-    activePhasesByTestPlan: activePhasesByTestPlanFromParent
+    setTestPlanVersions
 }) => {
     const { triggerLoad, loadingMessage } = useTriggerLoad();
 
-    const [activePhasesByTestPlan, setActivePhasesByTestPlan] = useState(
-        activePhasesByTestPlanFromParent
+    const [updateTestPlanVersionPhaseMutation] = useMutation(
+        UPDATE_TEST_PLAN_VERSION_PHASE
     );
 
-    const rdTestPlanVersions = testPlanVersions.filter(
-        ({ phase }) => phase === 'RD'
+    // State
+    const [activePhases, setActivePhases] = useState({});
+    const [rdTestPlanVersions, setRdTestPlanVersions] = useState([]);
+    const [draftTestPlanVersions, setDraftTestPlanVersions] = useState([]);
+    const [candidateTestPlanVersions, setCandidateTestPlanVersions] = useState(
+        []
     );
-    const draftTestPlanVersions = testPlanVersions.filter(
-        ({ phase }) => phase === 'DRAFT'
-    );
-    const candidateTestPlanVersions = testPlanVersions.filter(
-        ({ phase }) => phase === 'CANDIDATE'
-    );
-    const recommendedTestPlanVersions = testPlanVersions.filter(
-        ({ phase }) => phase === 'RECOMMENDED'
-    );
+    const [recommendedTestPlanVersions, setRecommendedTestPlanVersions] =
+        useState([]);
+
+    // TODO: Make this into reusable component
+    const [showThemedModal, setShowThemedModal] = useState(false);
+    const [themedModalType, setThemedModalType] = useState('warning');
+    const [themedModalTitle, setThemedModalTitle] = useState('');
+    const [themedModalContent, setThemedModalContent] = useState(<></>);
+
+    const showThemedMessage = (title, content, theme) => {
+        setThemedModalTitle(title);
+        setThemedModalContent(content);
+        setThemedModalType(theme);
+        setShowThemedModal(true);
+    };
+
+    const onThemedModalClose = () => {
+        setShowThemedModal(false);
+
+        // TODO: Identify focus point
+        // someref.current.focus();
+    };
+
+    useEffect(() => {
+        // TestPlanVersions separated by current TestPlan's phase
+        setActivePhases({});
+        setRdTestPlanVersions(
+            testPlanVersions.filter(({ phase }) => phase === 'RD')
+        );
+        setDraftTestPlanVersions(
+            testPlanVersions.filter(({ phase }) => phase === 'DRAFT')
+        );
+        setCandidateTestPlanVersions(
+            testPlanVersions.filter(({ phase }) => phase === 'CANDIDATE')
+        );
+        setRecommendedTestPlanVersions(
+            testPlanVersions.filter(({ phase }) => phase === 'RECOMMENDED')
+        );
+    }, [testPlanVersions]);
 
     // Get the version information based on the latest or earliest date info from a group of
     // TestPlanVersions
@@ -64,6 +100,49 @@ const DataManagementRow = ({
         });
         return uniqueAtObjects;
     };
+
+    const handleClickUpdateTestPlanVersionPhase = async (
+        testPlanVersionId,
+        phase,
+        testPlanVersionToAdvanceWithData
+    ) => {
+        try {
+            await triggerLoad(async () => {
+                const result = await updateTestPlanVersionPhaseMutation({
+                    variables: {
+                        testPlanVersionId,
+                        phase,
+                        testPlanVersionIdDataToInclude:
+                            testPlanVersionToAdvanceWithData?.id
+                    }
+                });
+
+                const updatedTestPlanVersion =
+                    result.data.testPlanVersion.updatePhase.testPlanVersion;
+                setTestPlanVersions(prevTestPlanVersions => {
+                    let testPlanVersions = [...prevTestPlanVersions];
+
+                    const index = testPlanVersions.findIndex(
+                        testPlanVersion =>
+                            testPlanVersion.id === updatedTestPlanVersion.id
+                    );
+                    if (index !== -1)
+                        testPlanVersions[index] = updatedTestPlanVersion;
+
+                    return testPlanVersions;
+                });
+            }, 'Updating Test Plan Version Phase');
+        } catch (e) {
+            console.error(e.message);
+
+            showThemedMessage(
+                'Error Updating Test Plan Version Phase',
+                <>{e.message}</>,
+                'warning'
+            );
+        }
+    };
+
     const renderCellForCoveredAts = () => {
         // return <button>3 Desktop Screen Readers</button>;
 
@@ -149,15 +228,12 @@ const DataManagementRow = ({
         const defaultView = <>N/A</>;
 
         const insertActivePhaseForTestPlan = testPlanVersion => {
-            if (!activePhasesByTestPlan[testPlan.id][phase]) {
+            if (!activePhases[phase]) {
                 const result = {
-                    ...activePhasesByTestPlan,
-                    [testPlan.id]: {
-                        ...activePhasesByTestPlan[testPlan.id],
-                        [phase]: testPlanVersion
-                    }
+                    ...activePhases,
+                    [phase]: testPlanVersion
                 };
-                setActivePhasesByTestPlan(result);
+                setActivePhases(result);
             }
         };
 
@@ -215,12 +291,18 @@ const DataManagementRow = ({
                         <br />
                         {/* TODO: Use testPlanVersionToAdvanceWithData to determine how this button will work */}
                         <button
-                            onClick={() => {
+                            onClick={async () => {
                                 console.info(
                                     'IMPLEMENT advance to',
                                     testPlanVersionToAdvanceWithData
                                         ? testPlanVersionToAdvanceWithData
                                         : 'use current test run data'
+                                );
+
+                                await handleClickUpdateTestPlanVersionPhase(
+                                    latestVersion.id,
+                                    'DRAFT',
+                                    testPlanVersionToAdvanceWithData
                                 );
                             }}
                         >
@@ -248,7 +330,7 @@ const DataManagementRow = ({
                         getVersionData(testPlanVersions);
 
                     const otherPreviousActiveVersions = Object.keys(
-                        activePhasesByTestPlan[testPlan.id]
+                        activePhases
                     ).filter(
                         e => !['RECOMMENDED', 'CANDIDATE', phase].includes(e)
                     );
@@ -288,12 +370,18 @@ const DataManagementRow = ({
                             <button>Required Reports In Progress</button>
                             {/* TODO: Use testPlanVersionToAdvanceWithData to determine how this button will work */}
                             <button
-                                onClick={() => {
+                                onClick={async () => {
                                     console.info(
                                         'IMPLEMENT advance to',
                                         testPlanVersionToAdvanceWithData
                                             ? testPlanVersionToAdvanceWithData
                                             : 'use current test run data'
+                                    );
+
+                                    await handleClickUpdateTestPlanVersionPhase(
+                                        latestVersion.id,
+                                        'CANDIDATE',
+                                        testPlanVersionToAdvanceWithData
                                     );
                                 }}
                             >
@@ -386,7 +474,7 @@ const DataManagementRow = ({
                     );
 
                     const otherPreviousActiveVersions = Object.keys(
-                        activePhasesByTestPlan[testPlan.id]
+                        activePhases
                     ).filter(e => !['RECOMMENDED', phase].includes(e));
 
                     // If there is an earlier version that is recommended and that version has some
@@ -431,12 +519,18 @@ const DataManagementRow = ({
                             <br />
                             {/* TODO: Use testPlanVersionToAdvanceWithData to determine how this button will work */}
                             <button
-                                onClick={() => {
+                                onClick={async () => {
                                     console.info(
                                         'IMPLEMENT advance to',
                                         testPlanVersionToAdvanceWithData
                                             ? testPlanVersionToAdvanceWithData
                                             : 'use current test run data'
+                                    );
+
+                                    await handleClickUpdateTestPlanVersionPhase(
+                                        latestVersion.id,
+                                        'RECOMMENDED',
+                                        testPlanVersionToAdvanceWithData
                                     );
                                 }}
                             >
@@ -493,7 +587,7 @@ const DataManagementRow = ({
                 const completionDate = latestVersion.recommendedPhaseReachedAt;
 
                 const otherPreviousActiveVersions = Object.keys(
-                    activePhasesByTestPlan[testPlan.id]
+                    activePhases
                 ).filter(e => ![phase].includes(e));
 
                 // Phase is "active"
@@ -545,6 +639,24 @@ const DataManagementRow = ({
                     )}
                 </td>
             </tr>
+
+            {showThemedModal && (
+                <BasicThemedModal
+                    show={showThemedModal}
+                    theme={themedModalType}
+                    title={themedModalTitle}
+                    dialogClassName="modal-50w"
+                    content={themedModalContent}
+                    actionButtons={[
+                        {
+                            text: 'Ok',
+                            action: onThemedModalClose
+                        }
+                    ]}
+                    handleClose={onThemedModalClose}
+                    showCloseAction={false}
+                />
+            )}
         </LoadingStatus>
     );
 };
