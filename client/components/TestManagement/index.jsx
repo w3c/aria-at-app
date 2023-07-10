@@ -30,7 +30,7 @@ const TestManagement = () => {
     const [testPlanVersions, setTestPlanVersions] = useState([]);
     const [testPlanReports, setTestPlanReports] = useState([]);
 
-    // eg. { 1: [DRAFT, CANDIDATE], 2: [RD, CANDIDATE, RECOMMENDED], ... }
+    // eg. { 1: { DRAFT: null, CANDIDATE: { ... } }, 2: { RD: ..., CANDIDATE: ..., RECOMMENDED: ... }, ... }
     const [activePhasesByTestPlan, setActivePhasesByTestPlan] = useState({});
 
     useEffect(() => {
@@ -48,10 +48,10 @@ const TestManagement = () => {
             setTestPlanVersions(testPlanVersions);
             setTestPlanReports(testPlanReports);
 
-            // eg. { 1: [DRAFT, CANDIDATE], 2: [RD, CANDIDATE, RECOMMENDED], ... }
+            // eg. { 1: { DRAFT: null, CANDIDATE: { ... } }, 2: { RD: ..., CANDIDATE: ..., RECOMMENDED: ... }, ... }
             const activePhasesByTestPlan = {};
             testPlans.forEach(testPlan => {
-                activePhasesByTestPlan[testPlan.id] = [];
+                activePhasesByTestPlan[testPlan.id] = {};
             });
             setActivePhasesByTestPlan(activePhasesByTestPlan);
 
@@ -265,9 +265,6 @@ const TestManagement = () => {
                                         )}
                                         activePhasesByTestPlan={
                                             activePhasesByTestPlan
-                                        }
-                                        setActivePhasesByTestPlan={
-                                            setActivePhasesByTestPlan
                                         }
                                     />
                                 );

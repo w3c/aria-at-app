@@ -9,10 +9,13 @@ const DataManagementRow = ({
     testPlan,
     testPlanVersions,
     testPlanReports,
-    activePhasesByTestPlan,
-    setActivePhasesByTestPlan
+    activePhasesByTestPlan: activePhasesByTestPlanFromParent
 }) => {
     const { triggerLoad, loadingMessage } = useTriggerLoad();
+
+    const [activePhasesByTestPlan, setActivePhasesByTestPlan] = useState(
+        activePhasesByTestPlanFromParent
+    );
 
     const rdTestPlanVersions = testPlanVersions.filter(
         ({ phase }) => phase === 'RD'
@@ -44,7 +47,10 @@ const DataManagementRow = ({
                 new Date(a[dateKey]) > new Date(b[dateKey]) ? a : b
             );
             const latestVersionDate = latestVersion[dateKey];
-            return { latestVersion, latestVersionDate };
+            return {
+                latestVersion,
+                latestVersionDate: new Date(latestVersionDate)
+            };
         }
     };
 
@@ -142,14 +148,14 @@ const DataManagementRow = ({
     const renderCellForPhase = (phase, testPlanVersions = []) => {
         const defaultView = <>N/A</>;
 
-        const insertActivePhaseForTestPlan = () => {
-            if (!activePhasesByTestPlan[testPlan.id].includes(phase)) {
+        const insertActivePhaseForTestPlan = testPlanVersion => {
+            if (!activePhasesByTestPlan[testPlan.id][phase]) {
                 const result = {
                     ...activePhasesByTestPlan,
-                    [testPlan.id]: [
+                    [testPlan.id]: {
                         ...activePhasesByTestPlan[testPlan.id],
-                        phase
-                    ]
+                        [phase]: testPlanVersion
+                    }
                 };
                 setActivePhasesByTestPlan(result);
             }
@@ -174,17 +180,28 @@ const DataManagementRow = ({
                 if (otherTestPlanVersions.length) {
                     const { latestVersionDate: otherLatestVersionDate } =
                         getVersionData(otherTestPlanVersions);
-                    if (
-                        new Date(otherLatestVersionDate) >
-                        new Date(latestVersionDate)
-                    ) {
+                    if (otherLatestVersionDate > latestVersionDate) {
                         return defaultView;
                     }
                 }
 
+                // If there is an earlier version that is draft and that version has some test plan
+                // runs in the test queue, this button will run the process for updating existing
+                // reports and preserving data for tests that have not changed.
+                let testPlanVersionToAdvanceWithData;
+                if (draftTestPlanVersions.length) {
+                    const {
+                        latestVersion: draftLatestVersion,
+                        latestVersionDate: draftLatestVersionDate
+                    } = getVersionData(draftTestPlanVersions);
+
+                    if (draftLatestVersionDate < latestVersionDate)
+                        testPlanVersionToAdvanceWithData = draftLatestVersion;
+                }
+
                 // Otherwise, show VERSION_STRING link with a draft transition button. Phase is
                 // "active"
-                insertActivePhaseForTestPlan();
+                insertActivePhaseForTestPlan(latestVersion);
                 return (
                     <>
                         <a
@@ -196,7 +213,19 @@ const DataManagementRow = ({
                             {convertDateToString(latestVersionDate, 'YY.MM.DD')}
                         </a>
                         <br />
-                        <button>Advance to Draft</button>
+                        {/* TODO: Use testPlanVersionToAdvanceWithData to determine how this button will work */}
+                        <button
+                            onClick={() => {
+                                console.info(
+                                    'IMPLEMENT advance to',
+                                    testPlanVersionToAdvanceWithData
+                                        ? testPlanVersionToAdvanceWithData
+                                        : 'use current test run data'
+                                );
+                            }}
+                        >
+                            Advance to Draft
+                        </button>
                     </>
                 );
             }
@@ -218,14 +247,30 @@ const DataManagementRow = ({
                     const { latestVersion, latestVersionDate } =
                         getVersionData(testPlanVersions);
 
-                    const otherPreviousActiveVersions = activePhasesByTestPlan[
-                        testPlan.id
-                    ].filter(
+                    const otherPreviousActiveVersions = Object.keys(
+                        activePhasesByTestPlan[testPlan.id]
+                    ).filter(
                         e => !['RECOMMENDED', 'CANDIDATE', phase].includes(e)
                     );
 
+                    // If there is an earlier version that is candidate and that version has some
+                    // test plan runs in the test queue, this button will run the process for
+                    // updating existing reports and preserving data for tests that have not
+                    // changed.
+                    let testPlanVersionToAdvanceWithData;
+                    if (candidateTestPlanVersions.length) {
+                        const {
+                            latestVersion: candidateLatestVersion,
+                            latestVersionDate: candidateLatestVersionDate
+                        } = getVersionData(candidateTestPlanVersions);
+
+                        if (candidateLatestVersionDate < latestVersionDate)
+                            testPlanVersionToAdvanceWithData =
+                                candidateLatestVersion;
+                    }
+
                     // Phase is "active"
-                    insertActivePhaseForTestPlan();
+                    insertActivePhaseForTestPlan(latestVersion);
                     return (
                         <>
                             <a
@@ -241,7 +286,19 @@ const DataManagementRow = ({
                             </a>
                             <br />
                             <button>Required Reports In Progress</button>
-                            <button>Advance to Candidate</button>
+                            {/* TODO: Use testPlanVersionToAdvanceWithData to determine how this button will work */}
+                            <button
+                                onClick={() => {
+                                    console.info(
+                                        'IMPLEMENT advance to',
+                                        testPlanVersionToAdvanceWithData
+                                            ? testPlanVersionToAdvanceWithData
+                                            : 'use current test run data'
+                                    );
+                                }}
+                            >
+                                Advance to Candidate
+                            </button>
                             {otherPreviousActiveVersions.length ? (
                                 <>
                                     <br />+{otherPreviousActiveVersions.length}{' '}
@@ -328,12 +385,28 @@ const DataManagementRow = ({
                         0
                     );
 
-                    const otherPreviousActiveVersions = activePhasesByTestPlan[
-                        testPlan.id
-                    ].filter(e => !['RECOMMENDED', phase].includes(e));
+                    const otherPreviousActiveVersions = Object.keys(
+                        activePhasesByTestPlan[testPlan.id]
+                    ).filter(e => !['RECOMMENDED', phase].includes(e));
+
+                    // If there is an earlier version that is recommended and that version has some
+                    // test plan runs in the test queue, this button will run the process for
+                    // updating existing reports and preserving data for tests that have not
+                    // changed.
+                    let testPlanVersionToAdvanceWithData;
+                    if (recommendedTestPlanVersions.length) {
+                        const {
+                            latestVersion: recommendedLatestVersion,
+                            latestVersionDate: recommendedLatestVersionDate
+                        } = getVersionData(recommendedTestPlanVersions);
+
+                        if (recommendedLatestVersionDate < latestVersionDate)
+                            testPlanVersionToAdvanceWithData =
+                                recommendedLatestVersion;
+                    }
 
                     // Phase is "active"
-                    insertActivePhaseForTestPlan();
+                    insertActivePhaseForTestPlan(latestVersion);
                     return (
                         <>
                             <a
@@ -356,7 +429,19 @@ const DataManagementRow = ({
                                     : ''
                             }`}
                             <br />
-                            <button>Advance to Recommended</button>
+                            {/* TODO: Use testPlanVersionToAdvanceWithData to determine how this button will work */}
+                            <button
+                                onClick={() => {
+                                    console.info(
+                                        'IMPLEMENT advance to',
+                                        testPlanVersionToAdvanceWithData
+                                            ? testPlanVersionToAdvanceWithData
+                                            : 'use current test run data'
+                                    );
+                                }}
+                            >
+                                Advance to Recommended
+                            </button>
                             {otherPreviousActiveVersions.length ? (
                                 <>
                                     <br />+{otherPreviousActiveVersions.length}{' '}
@@ -407,12 +492,12 @@ const DataManagementRow = ({
 
                 const completionDate = latestVersion.recommendedPhaseReachedAt;
 
-                const otherPreviousActiveVersions = activePhasesByTestPlan[
-                    testPlan.id
-                ].filter(e => ![phase].includes(e));
+                const otherPreviousActiveVersions = Object.keys(
+                    activePhasesByTestPlan[testPlan.id]
+                ).filter(e => ![phase].includes(e));
 
                 // Phase is "active"
-                insertActivePhaseForTestPlan();
+                insertActivePhaseForTestPlan(latestVersion);
                 return (
                     <>
                         <a
