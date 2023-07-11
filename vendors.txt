@@ -2,3 +2,4 @@
 # New entries should be in the form <username>|<company>
 #   ex. warp2nowhere|vispero
 RFischer-FS|vispero
+stevefaulkner|vispero
