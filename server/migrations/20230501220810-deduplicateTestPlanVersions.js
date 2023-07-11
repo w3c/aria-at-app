@@ -136,7 +136,7 @@ module.exports = {
                     const { id: testPlanReportId } = unkeptTestPlanReports[key];
 
                     const testPlanRuns = await queryInterface.sequelize.query(
-                        `SELECT testPlanRun.id, "testPlanReportId", "testResults", "testPlanVersionId", tests
+                        `SELECT testPlanRun.id, "testPlanReportId", "atId", "testPlanVersionId", "testResults", tests
                                  FROM "TestPlanRun" testPlanRun
                                           JOIN "TestPlanReport" testPlanReport ON testPlanReport.id = testPlanRun."testPlanReportId"
                                           JOIN "TestPlanVersion" testPlanVersion ON testPlanVersion.id = testPlanReport."testPlanVersionId"
@@ -151,6 +151,7 @@ module.exports = {
                     for (const key in testPlanRuns) {
                         const {
                             id: testPlanRunId,
+                            atId,
                             testResults,
                             tests: unkeptTests
                         } = testPlanRuns[key];
@@ -178,9 +179,10 @@ module.exports = {
                                     testResult.scenarioResults.forEach(
                                         (eachScenarioResult, scenarioIndex) => {
                                             eachScenarioResult.scenarioId =
-                                                foundKeptTest.scenarios[
-                                                    scenarioIndex
-                                                ].id;
+                                                foundKeptTest.scenarios.filter(
+                                                    scenario =>
+                                                        scenario.atId === atId
+                                                )[scenarioIndex].id;
 
                                             // Update eachScenarioResult.id
                                             const scenarioResultId =
