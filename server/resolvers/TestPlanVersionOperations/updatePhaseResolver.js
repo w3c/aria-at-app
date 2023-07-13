@@ -91,9 +91,6 @@ const updatePhaseResolver = async (
         }
     );
 
-    // Params to be updated on TestPlanVersion
-    let updateParams = { phase };
-
     // If there is an earlier version that for this phase and that version has some test plan runs
     // in the test queue, this will run the process for updating existing test plan versions for the
     // test plan version and preserving data for tests that have not changed.
@@ -250,6 +247,7 @@ const updatePhaseResolver = async (
 
     for (const testPlanReport of testPlanReports) {
         const runnableTests = runnableTestsResolver(testPlanReport);
+        let updateParams = {};
 
         if (phase === 'DRAFT') {
             const conflicts = await conflictsResolver(
@@ -318,13 +316,15 @@ const updatePhaseResolver = async (
         await updateTestPlanReport(testPlanReport.id, updateParams);
     }
 
+    let updateParams = { phase };
     if (phase === 'RD')
         updateParams = {
             ...updateParams,
             draftPhaseReachedAt: null,
             candidatePhaseReachedAt: null,
             recommendedPhaseReachedAt: null,
-            recommendedPhaseTargetDate: null
+            recommendedPhaseTargetDate: null,
+            archivedAtDate: null
         };
     else if (phase === 'DRAFT')
         updateParams = {
@@ -332,7 +332,8 @@ const updatePhaseResolver = async (
             draftPhaseReachedAt: new Date(),
             candidatePhaseReachedAt: null,
             recommendedPhaseReachedAt: null,
-            recommendedPhaseTargetDate: null
+            recommendedPhaseTargetDate: null,
+            archivedAtDate: null
         };
     else if (phase === 'CANDIDATE') {
         const candidatePhaseReachedAtValue =
@@ -346,14 +347,20 @@ const updatePhaseResolver = async (
             ...updateParams,
             candidatePhaseReachedAt: candidatePhaseReachedAtValue,
             recommendedPhaseReachedAt: null,
-            recommendedPhaseTargetDate: recommendedPhaseTargetDateValue
+            recommendedPhaseTargetDate: recommendedPhaseTargetDateValue,
+            archivedAtDate: null
         };
     } else if (phase === 'RECOMMENDED')
         updateParams = {
             ...updateParams,
-            recommendedPhaseReachedAt: new Date()
+            recommendedPhaseReachedAt: new Date(),
+            archivedAtDate: null
         };
 
+    if (testPlanVersionDataToIncludeId)
+        await updateTestPlanVersion(testPlanVersionDataToIncludeId, {
+            archivedAtDate: new Date()
+        });
     await updateTestPlanVersion(testPlanVersionId, updateParams);
     return populateData({ testPlanVersionId }, { context });
 };
