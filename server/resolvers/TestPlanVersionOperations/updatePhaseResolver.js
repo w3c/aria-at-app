@@ -43,8 +43,11 @@ const updatePhaseResolver = async (
     let testPlanVersionDataToInclude;
     let testPlanReportsDataToIncludeId = [];
 
+    // The testPlanVersion being updated
     const testPlanVersion = await getTestPlanVersionById(testPlanVersionId);
 
+    // These checks are needed to support the test plan version reports being updated with earlier
+    // versions' data
     if (testPlanVersionDataToIncludeId) {
         testPlanVersionDataToInclude = await getTestPlanVersionById(
             testPlanVersionDataToIncludeId
@@ -53,7 +56,6 @@ const updatePhaseResolver = async (
         const whereTestPlanVersion = {
             testPlanVersionId: testPlanVersionDataToIncludeId
         };
-        // whereTestPlanVersion.status = testPlanVersion.phase;
 
         testPlanReportsDataToIncludeId = await getTestPlanReports(
             null,
@@ -70,13 +72,11 @@ const updatePhaseResolver = async (
         );
     }
 
-    // Move only the TestPlanReports which also have the same phase as the TestPlanVersion
+    // The test plan reports which will be updated
+    let testPlanReports;
     const whereTestPlanVersion = {
         testPlanVersionId
     };
-    // whereTestPlanVersion.status = testPlanVersion.phase;
-    let testPlanReports;
-
     testPlanReports = await getTestPlanReports(
         null,
         whereTestPlanVersion,
@@ -91,67 +91,70 @@ const updatePhaseResolver = async (
         }
     );
 
-    // Params to be updated on TestPlanVersion (or TestPlanReports)
-    let updateParams = { phase, status: phase };
+    // Params to be updated on TestPlanVersion
+    let updateParams = { phase };
 
+    // If there is an earlier version that for this phase and that version has some test plan runs
+    // in the test queue, this will run the process for updating existing test plan versions for the
+    // test plan version and preserving data for tests that have not changed.
     if (testPlanReportsDataToIncludeId.length) {
-        for (const testPlanReportWithDataToInclude of testPlanReportsDataToIncludeId) {
+        for (const testPlanReportDataToInclude of testPlanReportsDataToIncludeId) {
             // Verify the combination does not exist
             if (
                 !testPlanReports.some(
                     ({ atId, browserId }) =>
-                        atId === testPlanReportWithDataToInclude.atId &&
-                        browserId === testPlanReportWithDataToInclude.browserId
+                        atId === testPlanReportDataToInclude.atId &&
+                        browserId === testPlanReportDataToInclude.browserId
                 )
             ) {
-                // Then this combination needs to be added if the tests are not different between
-                // versions
+                // Then this combination needs to be considered if the tests are not different
+                // between versions
                 let keptTestIds = {};
                 for (const testPlanVersionTest of testPlanVersion.tests) {
                     const testHash = hashTest(testPlanVersionTest);
 
                     if (keptTestIds[testHash]) continue;
 
-                    for (const testPlanVersionWithDataToIncludeTest of testPlanVersionDataToInclude.tests) {
-                        const testWithIncludedDataHash = hashTest(
-                            testPlanVersionWithDataToIncludeTest
+                    for (const testPlanVersionDataToIncludeTest of testPlanVersionDataToInclude.tests) {
+                        const testDataToIncludeHash = hashTest(
+                            testPlanVersionDataToIncludeTest
                         );
 
-                        if (testHash === testWithIncludedDataHash) {
+                        if (testHash === testDataToIncludeHash) {
                             if (!keptTestIds[testHash])
                                 keptTestIds[testHash] = {
                                     testId: testPlanVersionTest.id,
-                                    testWithDataId:
-                                        testPlanVersionWithDataToIncludeTest.id
+                                    testDataToIncludeId:
+                                        testPlanVersionDataToIncludeTest.id
                                 };
                         }
                     }
                 }
 
-                for (const testPlanRun of testPlanReportWithDataToInclude.testPlanRuns) {
-                    const testsToKeep = {};
+                for (const testPlanRun of testPlanReportDataToInclude.testPlanRuns) {
+                    const testResultsToSave = {};
                     for (const testResult of testPlanRun.testResults) {
                         // Check if the testId referenced also matches the hash on any in the
                         // keptTestIds
                         Object.keys(keptTestIds).forEach(key => {
-                            const { testId, testWithDataId } = keptTestIds[key];
+                            const { testId, testDataToIncludeId } =
+                                keptTestIds[key];
 
-                            if (testWithDataId === testResult.testId) {
+                            if (testDataToIncludeId === testResult.testId) {
                                 // Then this data should be preserved
-                                testsToKeep[testId] = testResult;
+                                testResultsToSave[testId] = testResult;
                             } else {
                                 // TODO: Track which tests cannot be preserved
                             }
                         });
                     }
 
-                    if (Object.keys(testsToKeep).length) {
+                    if (Object.keys(testResultsToSave).length) {
                         const [createdTestPlanReport] =
                             await getOrCreateTestPlanReport({
                                 testPlanVersionId,
-                                atId: testPlanReportWithDataToInclude.atId,
-                                browserId:
-                                    testPlanReportWithDataToInclude.browserId
+                                atId: testPlanReportDataToInclude.atId,
+                                browserId: testPlanReportDataToInclude.browserId
                             });
 
                         const createdTestPlanRun = await createTestPlanRun({
@@ -160,30 +163,34 @@ const updatePhaseResolver = async (
                         });
 
                         const testResults = [];
-                        for (const updatedTestId of Object.keys(testsToKeep)) {
+                        for (const testResultToSaveTestId of Object.keys(
+                            testResultsToSave
+                        )) {
                             const foundKeptTest = testPlanVersion.tests.find(
-                                test => test.id === updatedTestId
+                                test => test.id === testResultToSaveTestId
                             );
 
-                            let testResultToSave = testsToKeep[updatedTestId];
+                            let testResultToSave =
+                                testResultsToSave[testResultToSaveTestId];
 
                             // Updating testResult id references
                             const testResultId = createTestResultId(
                                 createdTestPlanRun.id,
-                                updatedTestId
+                                testResultToSaveTestId
                             );
 
-                            testResultToSave.testId = updatedTestId;
+                            testResultToSave.testId = testResultToSaveTestId;
                             testResultToSave.id = testResultId;
 
-                            // The hash confirms the sub-arrays should be in the same order
+                            // The hash confirms the sub-arrays should be in the same order, and
+                            // regenerate the test result related ids for the carried over data
                             testResultToSave.scenarioResults.forEach(
                                 (eachScenarioResult, scenarioIndex) => {
                                     eachScenarioResult.scenarioId =
                                         foundKeptTest.scenarios.filter(
                                             scenario =>
                                                 scenario.atId ===
-                                                testPlanReportWithDataToInclude.atId
+                                                testPlanReportDataToInclude.atId
                                         )[scenarioIndex].id;
 
                                     // Update eachScenarioResult.id
@@ -320,9 +327,6 @@ const updatePhaseResolver = async (
             recommendedPhaseTargetDate: null
         };
     else if (phase === 'DRAFT')
-        // TODO: If there is an earlier version that is draft and that version has some test plan runs
-        //  in the test queue, this button will run the process for updating existing reports and
-        //  preserving data for tests that have not changed.
         updateParams = {
             ...updateParams,
             draftPhaseReachedAt: new Date(),
@@ -331,9 +335,6 @@ const updatePhaseResolver = async (
             recommendedPhaseTargetDate: null
         };
     else if (phase === 'CANDIDATE') {
-        // TODO: If there is an earlier version that is candidate and that version has some test
-        //  plan runs in the test queue, this button will run the process for updating existing
-        //  reports and preserving data for tests that have not changed.
         const candidatePhaseReachedAtValue =
             candidatePhaseReachedAt || new Date();
         const recommendedPhaseTargetDateValue =
@@ -348,9 +349,6 @@ const updatePhaseResolver = async (
             recommendedPhaseTargetDate: recommendedPhaseTargetDateValue
         };
     } else if (phase === 'RECOMMENDED')
-        // TODO: If there is an earlier version that is recommended and that version has some test
-        //  plan runs in the test queue, this button will run the process for updating existing
-        //  reports and preserving data for tests that have not changed.
         updateParams = {
             ...updateParams,
             recommendedPhaseReachedAt: new Date()
