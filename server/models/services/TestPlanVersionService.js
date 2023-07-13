@@ -266,7 +266,8 @@ const updateTestPlanVersion = async (
         draftPhaseReachedAt,
         candidatePhaseReachedAt,
         recommendedPhaseReachedAt,
-        recommendedPhaseTargetDate
+        recommendedPhaseTargetDate,
+        archivedAtDate
     },
     testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
     testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
@@ -293,7 +294,8 @@ const updateTestPlanVersion = async (
             draftPhaseReachedAt,
             candidatePhaseReachedAt,
             recommendedPhaseReachedAt,
-            recommendedPhaseTargetDate
+            recommendedPhaseTargetDate,
+            archivedAtDate
         },
         options
     );
