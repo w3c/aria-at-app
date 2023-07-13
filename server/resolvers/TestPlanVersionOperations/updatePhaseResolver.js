@@ -1,7 +1,8 @@
 const { AuthenticationError } = require('apollo-server');
 const {
     updateTestPlanReport,
-    getTestPlanReports
+    getTestPlanReports,
+    getOrCreateTestPlanReport
 } = require('../../models/services/TestPlanReportService');
 const conflictsResolver = require('../TestPlanReport/conflictsResolver');
 const finalizedTestResultsResolver = require('../TestPlanReport/finalizedTestResultsResolver');
@@ -9,10 +10,20 @@ const runnableTestsResolver = require('../TestPlanReport/runnableTestsResolver')
 const recommendedPhaseTargetDateResolver = require('../TestPlanVersion/recommendedPhaseTargetDateResolver');
 const populateData = require('../../services/PopulatedData/populateData');
 const getMetrics = require('../../util/getMetrics');
+const { hashTest } = require('../../util/aria');
 const {
     getTestPlanVersionById,
     updateTestPlanVersion
 } = require('../../models/services/TestPlanVersionService');
+const {
+    createTestPlanRun,
+    updateTestPlanRun
+} = require('../../models/services/TestPlanRunService');
+const {
+    createTestResultId,
+    createScenarioResultId,
+    createAssertionResultId
+} = require('../../services/PopulatedData/locationOfDataId');
 
 const updatePhaseResolver = async (
     { parentContext: { id: testPlanVersionId } },
@@ -20,7 +31,7 @@ const updatePhaseResolver = async (
         phase,
         candidatePhaseReachedAt,
         recommendedPhaseTargetDate,
-        testPlanVersionIdDataToInclude
+        testPlanVersionDataToIncludeId
     },
     context
 ) => {
@@ -29,14 +40,44 @@ const updatePhaseResolver = async (
         throw new AuthenticationError();
     }
 
+    let testPlanVersionDataToInclude;
+    let testPlanReportsDataToIncludeId = [];
+
     const testPlanVersion = await getTestPlanVersionById(testPlanVersionId);
+
+    if (testPlanVersionDataToIncludeId) {
+        testPlanVersionDataToInclude = await getTestPlanVersionById(
+            testPlanVersionDataToIncludeId
+        );
+
+        const whereTestPlanVersion = {
+            testPlanVersionId: testPlanVersionDataToIncludeId
+        };
+        // whereTestPlanVersion.status = testPlanVersion.phase;
+
+        testPlanReportsDataToIncludeId = await getTestPlanReports(
+            null,
+            whereTestPlanVersion,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            {
+                order: [['createdAt', 'desc']]
+            }
+        );
+    }
 
     // Move only the TestPlanReports which also have the same phase as the TestPlanVersion
     const whereTestPlanVersion = {
         testPlanVersionId
     };
-    whereTestPlanVersion.status = testPlanVersion.phase;
-    const testPlanReports = await getTestPlanReports(
+    // whereTestPlanVersion.status = testPlanVersion.phase;
+    let testPlanReports;
+
+    testPlanReports = await getTestPlanReports(
         null,
         whereTestPlanVersion,
         null,
@@ -53,12 +94,169 @@ const updatePhaseResolver = async (
     // Params to be updated on TestPlanVersion (or TestPlanReports)
     let updateParams = { phase, status: phase };
 
-    for (const key in testPlanReports) {
-        const testPlanReport = testPlanReports[key];
-        const testPlanReportId = testPlanReport.id;
+    if (testPlanReportsDataToIncludeId.length) {
+        for (const testPlanReportWithDataToInclude of testPlanReportsDataToIncludeId) {
+            // Verify the combination does not exist
+            if (
+                !testPlanReports.some(
+                    ({ atId, browserId }) =>
+                        atId === testPlanReportWithDataToInclude.atId &&
+                        browserId === testPlanReportWithDataToInclude.browserId
+                )
+            ) {
+                // Then this combination needs to be added if the tests are not different between
+                // versions
+                let keptTestIds = {};
+                for (const testPlanVersionTest of testPlanVersion.tests) {
+                    const testHash = hashTest(testPlanVersionTest);
 
-        // const testPlanReport = await getTestPlanReportById(testPlanReportId);
+                    if (keptTestIds[testHash]) continue;
+
+                    for (const testPlanVersionWithDataToIncludeTest of testPlanVersionDataToInclude.tests) {
+                        const testWithIncludedDataHash = hashTest(
+                            testPlanVersionWithDataToIncludeTest
+                        );
+
+                        if (testHash === testWithIncludedDataHash) {
+                            if (!keptTestIds[testHash])
+                                keptTestIds[testHash] = {
+                                    testId: testPlanVersionTest.id,
+                                    testWithDataId:
+                                        testPlanVersionWithDataToIncludeTest.id
+                                };
+                        }
+                    }
+                }
+
+                for (const testPlanRun of testPlanReportWithDataToInclude.testPlanRuns) {
+                    const testsToKeep = {};
+                    for (const testResult of testPlanRun.testResults) {
+                        // Check if the testId referenced also matches the hash on any in the
+                        // keptTestIds
+                        Object.keys(keptTestIds).forEach(key => {
+                            const { testId, testWithDataId } = keptTestIds[key];
+
+                            if (testWithDataId === testResult.testId) {
+                                // Then this data should be preserved
+                                testsToKeep[testId] = testResult;
+                            } else {
+                                // TODO: Track which tests cannot be preserved
+                            }
+                        });
+                    }
+
+                    if (Object.keys(testsToKeep).length) {
+                        const [createdTestPlanReport] =
+                            await getOrCreateTestPlanReport({
+                                testPlanVersionId,
+                                atId: testPlanReportWithDataToInclude.atId,
+                                browserId:
+                                    testPlanReportWithDataToInclude.browserId
+                            });
+
+                        const createdTestPlanRun = await createTestPlanRun({
+                            testerUserId: testPlanRun.testerUserId,
+                            testPlanReportId: createdTestPlanReport.id
+                        });
+
+                        const testResults = [];
+                        for (const updatedTestId of Object.keys(testsToKeep)) {
+                            const foundKeptTest = testPlanVersion.tests.find(
+                                test => test.id === updatedTestId
+                            );
+
+                            let testResultToSave = testsToKeep[updatedTestId];
+
+                            // Updating testResult id references
+                            const testResultId = createTestResultId(
+                                createdTestPlanRun.id,
+                                updatedTestId
+                            );
+
+                            testResultToSave.testId = updatedTestId;
+                            testResultToSave.id = testResultId;
+
+                            // The hash confirms the sub-arrays should be in the same order
+                            testResultToSave.scenarioResults.forEach(
+                                (eachScenarioResult, scenarioIndex) => {
+                                    eachScenarioResult.scenarioId =
+                                        foundKeptTest.scenarios.filter(
+                                            scenario =>
+                                                scenario.atId ===
+                                                testPlanReportWithDataToInclude.atId
+                                        )[scenarioIndex].id;
+
+                                    // Update eachScenarioResult.id
+                                    const scenarioResultId =
+                                        createScenarioResultId(
+                                            testResultId,
+                                            eachScenarioResult.scenarioId
+                                        );
+                                    eachScenarioResult.id = scenarioResultId;
+
+                                    eachScenarioResult.assertionResults.forEach(
+                                        (
+                                            eachAssertionResult,
+                                            assertionIndex
+                                        ) => {
+                                            eachAssertionResult.assertionId =
+                                                foundKeptTest.assertions[
+                                                    assertionIndex
+                                                ].id;
+
+                                            // Update eachAssertionResult.id
+                                            eachAssertionResult.id =
+                                                createAssertionResultId(
+                                                    scenarioResultId,
+                                                    eachAssertionResult.assertionId
+                                                );
+                                        }
+                                    );
+                                }
+                            );
+
+                            testResults.push(testResultToSave);
+                        }
+
+                        await updateTestPlanRun(createdTestPlanRun.id, {
+                            testResults
+                        });
+                    }
+                }
+            }
+        }
+
+        testPlanReports = await getTestPlanReports(
+            null,
+            whereTestPlanVersion,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            {
+                order: [['createdAt', 'desc']]
+            }
+        );
+    }
+
+    for (const testPlanReport of testPlanReports) {
         const runnableTests = runnableTestsResolver(testPlanReport);
+
+        if (phase === 'DRAFT') {
+            const conflicts = await conflictsResolver(
+                testPlanReport,
+                null,
+                context
+            );
+            await updateTestPlanReport(testPlanReport.id, {
+                metrics: {
+                    ...testPlanReport.metrics,
+                    conflictsCount: conflicts.length
+                }
+            });
+        }
 
         if (phase === 'CANDIDATE' || phase === 'RECOMMENDED') {
             const conflicts = await conflictsResolver(
@@ -110,7 +308,7 @@ const updatePhaseResolver = async (
                 };
             }
         }
-        await updateTestPlanReport(testPlanReportId, updateParams);
+        await updateTestPlanReport(testPlanReport.id, updateParams);
     }
 
     if (phase === 'RD')
