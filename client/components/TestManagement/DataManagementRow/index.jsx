@@ -104,7 +104,7 @@ const DataManagementRow = ({
     const handleClickUpdateTestPlanVersionPhase = async (
         testPlanVersionId,
         phase,
-        testPlanVersionToAdvanceWithData
+        testPlanVersionDataToInclude
     ) => {
         try {
             await triggerLoad(async () => {
@@ -112,8 +112,8 @@ const DataManagementRow = ({
                     variables: {
                         testPlanVersionId,
                         phase,
-                        testPlanVersionIdDataToInclude:
-                            testPlanVersionToAdvanceWithData?.id
+                        testPlanVersionDataToIncludeId:
+                            testPlanVersionDataToInclude?.id
                     }
                 });
 
@@ -264,7 +264,7 @@ const DataManagementRow = ({
                 // If there is an earlier version that is draft and that version has some test plan
                 // runs in the test queue, this button will run the process for updating existing
                 // reports and preserving data for tests that have not changed.
-                let testPlanVersionToAdvanceWithData;
+                let testPlanVersionDataToInclude;
                 if (draftTestPlanVersions.length) {
                     const {
                         latestVersion: draftLatestVersion,
@@ -272,7 +272,7 @@ const DataManagementRow = ({
                     } = getVersionData(draftTestPlanVersions);
 
                     if (draftLatestVersionDate < latestVersionDate)
-                        testPlanVersionToAdvanceWithData = draftLatestVersion;
+                        testPlanVersionDataToInclude = draftLatestVersion;
                 }
 
                 // Otherwise, show VERSION_STRING link with a draft transition button. Phase is
@@ -289,20 +289,20 @@ const DataManagementRow = ({
                             {convertDateToString(latestVersionDate, 'YY.MM.DD')}
                         </a>
                         <br />
-                        {/* TODO: Use testPlanVersionToAdvanceWithData to determine how this button will work */}
+                        {/* TODO: Use testPlanVersionDataToInclude to determine how this button will work */}
                         <button
                             onClick={async () => {
                                 console.info(
                                     'IMPLEMENT advance to',
-                                    testPlanVersionToAdvanceWithData
-                                        ? testPlanVersionToAdvanceWithData
+                                    testPlanVersionDataToInclude
+                                        ? testPlanVersionDataToInclude
                                         : 'use current test run data'
                                 );
 
                                 await handleClickUpdateTestPlanVersionPhase(
                                     latestVersion.id,
                                     'DRAFT',
-                                    testPlanVersionToAdvanceWithData
+                                    testPlanVersionDataToInclude
                                 );
                             }}
                         >
@@ -339,7 +339,7 @@ const DataManagementRow = ({
                     // test plan runs in the test queue, this button will run the process for
                     // updating existing reports and preserving data for tests that have not
                     // changed.
-                    let testPlanVersionToAdvanceWithData;
+                    let testPlanVersionDataToInclude;
                     if (candidateTestPlanVersions.length) {
                         const {
                             latestVersion: candidateLatestVersion,
@@ -347,7 +347,7 @@ const DataManagementRow = ({
                         } = getVersionData(candidateTestPlanVersions);
 
                         if (candidateLatestVersionDate < latestVersionDate)
-                            testPlanVersionToAdvanceWithData =
+                            testPlanVersionDataToInclude =
                                 candidateLatestVersion;
                     }
 
@@ -368,20 +368,20 @@ const DataManagementRow = ({
                             </a>
                             <br />
                             <button>Required Reports In Progress</button>
-                            {/* TODO: Use testPlanVersionToAdvanceWithData to determine how this button will work */}
+                            {/* TODO: Use testPlanVersionDataToInclude to determine how this button will work */}
                             <button
                                 onClick={async () => {
                                     console.info(
                                         'IMPLEMENT advance to',
-                                        testPlanVersionToAdvanceWithData
-                                            ? testPlanVersionToAdvanceWithData
+                                        testPlanVersionDataToInclude
+                                            ? testPlanVersionDataToInclude
                                             : 'use current test run data'
                                     );
 
                                     await handleClickUpdateTestPlanVersionPhase(
                                         latestVersion.id,
                                         'CANDIDATE',
-                                        testPlanVersionToAdvanceWithData
+                                        testPlanVersionDataToInclude
                                     );
                                 }}
                             >
@@ -481,7 +481,7 @@ const DataManagementRow = ({
                     // test plan runs in the test queue, this button will run the process for
                     // updating existing reports and preserving data for tests that have not
                     // changed.
-                    let testPlanVersionToAdvanceWithData;
+                    let testPlanVersionDataToInclude;
                     if (recommendedTestPlanVersions.length) {
                         const {
                             latestVersion: recommendedLatestVersion,
@@ -489,7 +489,7 @@ const DataManagementRow = ({
                         } = getVersionData(recommendedTestPlanVersions);
 
                         if (recommendedLatestVersionDate < latestVersionDate)
-                            testPlanVersionToAdvanceWithData =
+                            testPlanVersionDataToInclude =
                                 recommendedLatestVersion;
                     }
 
@@ -517,20 +517,20 @@ const DataManagementRow = ({
                                     : ''
                             }`}
                             <br />
-                            {/* TODO: Use testPlanVersionToAdvanceWithData to determine how this button will work */}
+                            {/* TODO: Use testPlanVersionDataToInclude to determine how this button will work */}
                             <button
                                 onClick={async () => {
                                     console.info(
                                         'IMPLEMENT advance to',
-                                        testPlanVersionToAdvanceWithData
-                                            ? testPlanVersionToAdvanceWithData
+                                        testPlanVersionDataToInclude
+                                            ? testPlanVersionDataToInclude
                                             : 'use current test run data'
                                     );
 
                                     await handleClickUpdateTestPlanVersionPhase(
                                         latestVersion.id,
                                         'RECOMMENDED',
-                                        testPlanVersionToAdvanceWithData
+                                        testPlanVersionDataToInclude
                                     );
                                 }}
                             >

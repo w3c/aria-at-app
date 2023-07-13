@@ -111,12 +111,12 @@ export const UPDATE_TEST_PLAN_VERSION_PHASE = gql`
     mutation UpdateTestPlanVersionPhase(
         $testPlanVersionId: ID!
         $phase: TestPlanVersionPhase!
-        $testPlanVersionIdDataToInclude: ID
+        $testPlanVersionDataToIncludeId: ID
     ) {
         testPlanVersion(id: $testPlanVersionId) {
             updatePhase(
                 phase: $phase
-                testPlanVersionIdDataToInclude: $testPlanVersionIdDataToInclude
+                testPlanVersionDataToIncludeId: $testPlanVersionDataToIncludeId
             ) {
                 testPlanVersion {
                     id

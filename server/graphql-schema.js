@@ -1175,7 +1175,7 @@ const graphqlSchema = gql`
             phase: TestPlanVersionPhase!
             candidatePhaseReachedAt: Timestamp
             recommendedPhaseTargetDate: Timestamp
-            testPlanVersionIdDataToInclude: ID
+            testPlanVersionDataToIncludeId: ID
         ): PopulatedData!
         """
         Update the test plan version recommended phase target date.
