@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Container, Table, Alert } from 'react-bootstrap';
 import { useQuery } from '@apollo/client';
-import { TEST_MANAGEMENT_PAGE_QUERY } from './queries';
+import { DATA_MANAGEMENT_PAGE_QUERY } from './queries';
 import StatusSummaryRow from './StatusSummaryRow';
 import PageStatus from '../common/PageStatus';
 import DisclosureComponent from '../common/DisclosureComponent';
@@ -12,12 +12,12 @@ import {
     getTestPlanTargetTitle,
     getTestPlanVersionTitle
 } from '@components/Reports/getTitles';
-import DataManagementRow from '@components/TestManagement/DataManagementRow';
-import './TestManagement.css';
+import DataManagementRow from '@components/DataManagement/DataManagementRow';
+import './DataManagement.css';
 
-const TestManagement = () => {
+const DataManagement = () => {
     const { loading, data, error, refetch } = useQuery(
-        TEST_MANAGEMENT_PAGE_QUERY,
+        DATA_MANAGEMENT_PAGE_QUERY,
         {
             fetchPolicy: 'cache-and-network'
         }
@@ -363,4 +363,4 @@ const TestManagement = () => {
     );
 };
 
-export default TestManagement;
+export default DataManagement;

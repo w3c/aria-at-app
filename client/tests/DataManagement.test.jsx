@@ -9,10 +9,10 @@ import { MockedProvider } from '@apollo/client/testing';
 import { BrowserRouter } from 'react-router-dom';
 import '@testing-library/jest-dom/extend-expect';
 
-import TestManagement from '../components/TestManagement';
+import DataManagement from '../components/DataManagement';
 
 // eslint-disable-next-line jest/no-mocks-import
-import { TEST_MANAGEMENT_PAGE_POPULATED } from './__mocks__/GraphQLMocks';
+import { DATA_MANAGEMENT_PAGE_POPULATED } from './__mocks__/GraphQLMocks';
 
 const setup = (mocks = []) => {
     return render(
@@ -21,17 +21,17 @@ const setup = (mocks = []) => {
                 mocks={mocks}
                 cache={new InMemoryCache({ addTypename: false })}
             >
-                <TestManagement />
+                <DataManagement />
             </MockedProvider>
         </BrowserRouter>
     );
 };
 
-describe('Test Management page', () => {
+describe('Data Management page', () => {
     let wrapper;
 
     beforeEach(() => {
-        wrapper = setup(TEST_MANAGEMENT_PAGE_POPULATED);
+        wrapper = setup(DATA_MANAGEMENT_PAGE_POPULATED);
     });
 
     it('renders loading state on initialization', async () => {
