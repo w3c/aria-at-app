@@ -74,13 +74,13 @@ const App = () => {
                                 <li>
                                     <Nav.Link
                                         as={Link}
-                                        to="/test-management"
+                                        to="/data-management"
                                         aria-current={
                                             location.pathname ===
-                                            '/test-management'
+                                            '/data-management'
                                         }
                                     >
-                                        Test Management
+                                        Data Management
                                     </Nav.Link>
                                 </li>
                             )}

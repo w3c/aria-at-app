@@ -11,7 +11,7 @@ import TestQueue from '@components/TestQueue';
 import TestRun from '@components/TestRun';
 import UserSettings from '@components/UserSettings';
 import CandidateTestPlanRun from '@components/CandidateTests/CandidateTestPlanRun';
-import TestManagement from '@components/TestManagement';
+import DataManagement from 'client/components/DataManagement';
 
 export default () => (
     <Routes>
@@ -67,10 +67,10 @@ export default () => (
         />
         <Route
             exact
-            path="/test-management"
+            path="/data-management"
             element={
                 <ConfirmAuth requiredPermission="ADMIN">
-                    <TestManagement />
+                    <DataManagement />
                 </ConfirmAuth>
             }
         />
