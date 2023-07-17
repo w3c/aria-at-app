@@ -3,15 +3,8 @@ import { Helmet } from 'react-helmet';
 import { Container, Table, Alert } from 'react-bootstrap';
 import { useQuery } from '@apollo/client';
 import { DATA_MANAGEMENT_PAGE_QUERY } from './queries';
-import StatusSummaryRow from './StatusSummaryRow';
 import PageStatus from '../common/PageStatus';
-import DisclosureComponent from '../common/DisclosureComponent';
 import ManageTestQueue from '../ManageTestQueue';
-import alphabetizeObjectBy from '@client/utils/alphabetizeObjectBy';
-import {
-    getTestPlanTargetTitle,
-    getTestPlanVersionTitle
-} from '@components/Reports/getTitles';
 import DataManagementRow from '@components/DataManagement/DataManagementRow';
 import './DataManagement.css';
 
@@ -68,112 +61,7 @@ const DataManagement = () => {
         );
     }
 
-    const emptyTestPlans = !testPlanReports.length;
-
-    const testPlanReportsById = {};
-    let testPlanTargetsById = {};
-    let testPlanVersionsById = {};
-    testPlanReports.forEach(testPlanReport => {
-        const { testPlanVersion, at, browser } = testPlanReport;
-
-        // Construct testPlanTarget
-        const testPlanTarget = { id: `${at.id}${browser.id}`, at, browser };
-        testPlanReportsById[testPlanReport.id] = testPlanReport;
-        testPlanTargetsById[testPlanTarget.id] = testPlanTarget;
-        testPlanVersionsById[testPlanVersion.id] = testPlanVersion;
-    });
-    testPlanTargetsById = alphabetizeObjectBy(testPlanTargetsById, keyValue =>
-        getTestPlanTargetTitle(keyValue[1])
-    );
-    testPlanVersionsById = alphabetizeObjectBy(testPlanVersionsById, keyValue =>
-        getTestPlanVersionTitle(keyValue[1])
-    );
-
-    const tabularReports = {};
-    const tabularReportsByDirectory = {};
-    Object.keys(testPlanVersionsById).forEach(testPlanVersionId => {
-        const directory =
-            testPlanVersionsById[testPlanVersionId].testPlan.directory;
-
-        tabularReports[testPlanVersionId] = {};
-        if (!tabularReportsByDirectory[directory])
-            tabularReportsByDirectory[directory] = {};
-        tabularReportsByDirectory[directory][testPlanVersionId] = {};
-        Object.keys(testPlanTargetsById).forEach(testPlanTargetId => {
-            tabularReports[testPlanVersionId][testPlanTargetId] = null;
-            tabularReportsByDirectory[directory][testPlanVersionId][
-                testPlanTargetId
-            ] = null;
-        });
-    });
-
-    testPlanReports.forEach(testPlanReport => {
-        const { testPlanVersion, at, browser } = testPlanReport;
-        const directory = testPlanVersion.testPlan.directory;
-
-        // Construct testPlanTarget
-        const testPlanTarget = { id: `${at.id}${browser.id}`, at, browser };
-        tabularReports[testPlanVersion.id][testPlanTarget.id] = testPlanReport;
-        tabularReportsByDirectory[directory][testPlanVersion.id][
-            testPlanTarget.id
-        ] = testPlanReport;
-        tabularReportsByDirectory[directory][
-            testPlanVersion.id
-        ].testPlanVersion = testPlanVersion;
-    });
-
-    testPlans.forEach(testPlan => {
-        if (!(testPlan.directory in tabularReportsByDirectory)) {
-            tabularReportsByDirectory[testPlan.directory] = testPlan;
-        }
-    });
-
-    const combineObject = originalObject => {
-        let combinedTestPlanVersionIdArray = [];
-        let resultTestPlanTargets = Object.values(originalObject)[0];
-        combinedTestPlanVersionIdArray.push(
-            resultTestPlanTargets.testPlanVersion.id
-        );
-
-        for (let i = 1; i < Object.values(originalObject).length; i++) {
-            let testPlanTargets = Object.values(originalObject)[i];
-            if (
-                !combinedTestPlanVersionIdArray.includes(
-                    testPlanTargets.testPlanVersion.id
-                )
-            )
-                combinedTestPlanVersionIdArray.push(
-                    testPlanTargets.testPlanVersion.id
-                );
-
-            delete testPlanTargets.testPlanVersion;
-
-            // Check if exists in newObject and add/update newObject based on criteria
-            Object.keys(testPlanTargets).forEach(testPlanTargetKey => {
-                if (!resultTestPlanTargets[testPlanTargetKey])
-                    resultTestPlanTargets[testPlanTargetKey] =
-                        testPlanTargets[testPlanTargetKey];
-                else {
-                    const latestPrevDate = new Date(
-                        testPlanTargets[
-                            testPlanTargetKey
-                        ]?.latestAtVersionReleasedAt?.releasedAt
-                    );
-
-                    const latestCurrDate = new Date(
-                        resultTestPlanTargets[
-                            testPlanTargetKey
-                        ]?.latestAtVersionReleasedAt?.releasedAt
-                    );
-
-                    if (latestPrevDate >= latestCurrDate)
-                        resultTestPlanTargets[testPlanTargetKey] =
-                            testPlanTargets[testPlanTargetKey];
-                }
-            });
-        }
-        return { resultTestPlanTargets, combinedTestPlanVersionIdArray };
-    };
+    const emptyTestPlans = !testPlans.length;
 
     return (
         <Container id="main" as="main" tabIndex="-1">
@@ -183,8 +71,8 @@ const DataManagement = () => {
             <h1>Data Management</h1>
 
             {emptyTestPlans && (
-                <h2 data-testid="test-management-no-test-plans-h2">
-                    There are no test plans available
+                <h2 data-testid="data-management-no-test-plans-h2">
+                    There are no Test Plans available
                 </h2>
             )}
 
@@ -192,15 +80,14 @@ const DataManagement = () => {
                 <Alert
                     key="alert-configure"
                     variant="danger"
-                    data-testid="test-management-no-test-plans-p"
+                    data-testid="data-management-no-test-plans-p"
                 >
                     Add a Test Plan to the Queue
                 </Alert>
             )}
 
-            <p data-testid="test-management-instructions">
-                Manage test plans in the Test Queue (which are using the latest
-                Assistive Technology versions), and their test plan phases.
+            <p data-testid="data-management-instructions">
+                Manage Test Plans in the Test Queue and their phases.
             </p>
 
             <ManageTestQueue
@@ -210,154 +97,51 @@ const DataManagement = () => {
                 triggerUpdate={refetch}
             />
 
-            <br />
-            <br />
-            <>
-                <Table
-                    className="data-management"
-                    aria-label="Test Plans Status Summary Table"
-                    bordered
-                    hover
-                >
-                    <thead>
-                        <tr>
-                            <th>Test Plan</th>
-                            <th>Covered AT</th>
-                            <th>Overall Status</th>
-                            <th>R&D Version</th>
-                            <th>Draft Review</th>
-                            <th>Candidate Review</th>
-                            <th>Recommended Version</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {testPlans
-                            .slice()
-                            .sort((a, b) => (a.title < b.title ? -1 : 1))
-                            .map(testPlan => {
-                                return (
-                                    <DataManagementRow
-                                        key={testPlan.id}
-                                        testPlan={testPlan}
-                                        testPlanVersions={testPlanVersions.filter(
-                                            testPlanVersion =>
-                                                testPlanVersion.testPlan
-                                                    .directory ===
-                                                testPlan.directory
-                                        )}
-                                        testPlanReports={testPlanReports.filter(
-                                            testPlanReport =>
-                                                testPlanReport.testPlanVersion
-                                                    .testPlan.directory ===
-                                                testPlan.directory
-                                        )}
-                                        setTestPlanVersions={
-                                            setTestPlanVersions
-                                        }
-                                    />
-                                );
-                            })}
-                    </tbody>
-                </Table>
-            </>
-
-            <DisclosureComponent
-                componentId="test-management"
-                title="Status Summary"
-                expanded
-                disclosureContainerView={
-                    <>
-                        <Table
-                            className="test-management"
-                            aria-label="Status Summary Table"
-                            striped
-                            bordered
-                            hover
-                        >
-                            <thead>
-                                <tr>
-                                    <th>Test Plans</th>
-                                    <th className="phase">Phase</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {/* Sort the summary items by title */}
-                                {Object.values(tabularReportsByDirectory)
-                                    .sort((a, b) => {
-                                        return (
-                                            a.title ||
-                                            Object.values(a)[0].testPlanVersion
-                                                .title
-                                        ).localeCompare(
-                                            b.title ||
-                                                Object.values(b)[0]
-                                                    .testPlanVersion.title
-                                        );
-                                    })
-                                    .map(tabularReport => {
-                                        let reportResult = null;
-                                        let testPlanVersionId = null;
-
-                                        // Evaluate what is prioritised across the
-                                        // collection of testPlanVersions
-                                        if (
-                                            typeof Object.values(
-                                                tabularReport
-                                            )[0] !== 'object'
-                                        ) {
-                                            return (
-                                                <StatusSummaryRow
-                                                    key={
-                                                        tabularReport
-                                                            .latestTestPlanVersion
-                                                            .id
-                                                    }
-                                                    testPlanVersion={
-                                                        tabularReport.latestTestPlanVersion
-                                                    }
-                                                    reportResult={{}}
-                                                />
-                                            );
-                                        } else if (
-                                            Object.values(tabularReport)
-                                                .length > 1
-                                        ) {
-                                            const {
-                                                resultTestPlanTargets,
-                                                combinedTestPlanVersionIdArray
-                                            } = combineObject(tabularReport);
-                                            reportResult =
-                                                resultTestPlanTargets;
-                                            testPlanVersionId =
-                                                combinedTestPlanVersionIdArray.join(
-                                                    ','
-                                                );
-                                        } else {
-                                            reportResult =
-                                                Object.values(tabularReport)[0];
-                                            testPlanVersionId =
-                                                reportResult.testPlanVersion.id;
-                                        }
-
-                                        const testPlanVersion =
-                                            reportResult.testPlanVersion;
-                                        delete reportResult.testPlanVersion;
-
-                                        return (
-                                            <StatusSummaryRow
-                                                key={testPlanVersionId}
-                                                testPlanVersion={
-                                                    testPlanVersion
-                                                }
-                                                reportResult={reportResult}
-                                            />
-                                        );
-                                    })}
-                            </tbody>
-                        </Table>
-                    </>
-                }
-            />
+            <h2>Test Plans Status Summary</h2>
+            <Table
+                className="data-management"
+                aria-label="Test Plans Status Summary Table"
+                bordered
+                hover
+            >
+                <thead>
+                    <tr>
+                        <th>Test Plan</th>
+                        <th>Covered AT</th>
+                        <th>Overall Status</th>
+                        <th>R&D Version</th>
+                        <th>Draft Review</th>
+                        <th>Candidate Review</th>
+                        <th>Recommended Version</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {testPlans
+                        .slice()
+                        .sort((a, b) => (a.title < b.title ? -1 : 1))
+                        .map(testPlan => {
+                            return (
+                                <DataManagementRow
+                                    key={testPlan.id}
+                                    testPlan={testPlan}
+                                    testPlanVersions={testPlanVersions.filter(
+                                        testPlanVersion =>
+                                            testPlanVersion.testPlan
+                                                .directory ===
+                                            testPlan.directory
+                                    )}
+                                    testPlanReports={testPlanReports.filter(
+                                        testPlanReport =>
+                                            testPlanReport.testPlanVersion
+                                                .testPlan.directory ===
+                                            testPlan.directory
+                                    )}
+                                    setTestPlanVersions={setTestPlanVersions}
+                                />
+                            );
+                        })}
+                </tbody>
+            </Table>
         </Container>
     );
 };
