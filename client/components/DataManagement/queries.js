@@ -19,10 +19,6 @@ export const DATA_MANAGEMENT_PAGE_QUERY = gql`
             directory
             id
             title
-            latestTestPlanVersion {
-                id
-                title
-            }
         }
         testPlanVersions {
             id

@@ -555,12 +555,13 @@ const DataManagementRow = ({
                         <Button
                             variant="secondary"
                             onClick={async () => {
-                                console.info(
-                                    'IMPLEMENT advance to',
-                                    testPlanVersionDataToInclude
-                                        ? testPlanVersionDataToInclude
-                                        : 'use current test run data'
-                                );
+                                // TODO
+                                // console.info(
+                                //     'IMPLEMENT advance to',
+                                //     testPlanVersionDataToInclude
+                                //         ? testPlanVersionDataToInclude
+                                //         : 'use current test run data'
+                                // );
 
                                 await handleClickUpdateTestPlanVersionPhase(
                                     latestVersion.id,
@@ -634,12 +635,13 @@ const DataManagementRow = ({
                             <Button
                                 variant="secondary"
                                 onClick={async () => {
-                                    console.info(
-                                        'IMPLEMENT advance to',
-                                        testPlanVersionDataToInclude
-                                            ? testPlanVersionDataToInclude
-                                            : 'use current test run data'
-                                    );
+                                    // TODO
+                                    // console.info(
+                                    //     'IMPLEMENT advance to',
+                                    //     testPlanVersionDataToInclude
+                                    //         ? testPlanVersionDataToInclude
+                                    //         : 'use current test run data'
+                                    // );
 
                                     await handleClickUpdateTestPlanVersionPhase(
                                         latestVersion.id,
@@ -783,12 +785,13 @@ const DataManagementRow = ({
                             <Button
                                 variant="secondary"
                                 onClick={async () => {
-                                    console.info(
-                                        'IMPLEMENT advance to',
-                                        testPlanVersionDataToInclude
-                                            ? testPlanVersionDataToInclude
-                                            : 'use current test run data'
-                                    );
+                                    // TODO
+                                    // console.info(
+                                    //     'IMPLEMENT advance to',
+                                    //     testPlanVersionDataToInclude
+                                    //         ? testPlanVersionDataToInclude
+                                    //         : 'use current test run data'
+                                    // );
 
                                     await handleClickUpdateTestPlanVersionPhase(
                                         latestVersion.id,
@@ -945,6 +948,36 @@ const DataManagementRow = ({
     );
 };
 
-DataManagementRow.propTypes = {};
+DataManagementRow.propTypes = {
+    testPlan: PropTypes.shape({
+        id: PropTypes.string,
+        title: PropTypes.string,
+        directory: PropTypes.string
+    }).isRequired,
+    testPlanVersions: PropTypes.arrayOf(
+        PropTypes.shape({
+            id: PropTypes.string,
+            title: PropTypes.string,
+            phase: PropTypes.string,
+            gitSha: PropTypes.string,
+            testPlan: PropTypes.shape({
+                directory: PropTypes.string
+            }),
+            updatedAt: PropTypes.string,
+            draftPhaseReachedAt: PropTypes.string,
+            candidatePhaseReachedAt: PropTypes.string,
+            recommendedPhaseReachedAt: PropTypes.string
+        })
+    ).isRequired,
+    testPlanReports: PropTypes.arrayOf(
+        PropTypes.shape({
+            id: PropTypes.string.isRequired,
+            at: PropTypes.object,
+            browser: PropTypes.object,
+            issues: PropTypes.object
+        })
+    ).isRequired,
+    setTestPlanVersions: PropTypes.func
+};
 
 export default DataManagementRow;
