@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client';
 
-export const TEST_MANAGEMENT_PAGE_QUERY = gql`
+export const DATA_MANAGEMENT_PAGE_QUERY = gql`
     query TestManagementPage {
         ats {
             id

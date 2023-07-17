@@ -1,5 +1,5 @@
 import { TEST_QUEUE_PAGE_QUERY } from '../../components/TestQueue/queries';
-import { TEST_MANAGEMENT_PAGE_QUERY } from '../../components/TestManagement/queries';
+import { DATA_MANAGEMENT_PAGE_QUERY } from '../../components/DataManagement/queries';
 
 export const TEST_QUEUE_PAGE_NOT_POPULATED_MOCK_ADMIN = [
     {
@@ -552,10 +552,10 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK_TESTER = [
     }
 ];
 
-export const TEST_MANAGEMENT_PAGE_POPULATED = [
+export const DATA_MANAGEMENT_PAGE_POPULATED = [
     {
         request: {
-            query: TEST_MANAGEMENT_PAGE_QUERY
+            query: DATA_MANAGEMENT_PAGE_QUERY
         },
         result: {
             data: {
