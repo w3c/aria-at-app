@@ -1,21 +1,3 @@
-.test-management.table {
-    padding: 0;
-    margin: 0;
-}
-
-.test-management.table tbody tr th {
-    padding: 20px;
-    vertical-align: middle;
-}
-
-.test-management.table tbody tr td {
-    vertical-align: middle;
-}
-
-.test-management.table th.phase {
-    width: 225px;
-}
-
 .data-management.table {
     padding: 0;
     margin: 0;
