@@ -7,6 +7,7 @@ import PageStatus from '../common/PageStatus';
 import ManageTestQueue from '../ManageTestQueue';
 import DataManagementRow from '@components/DataManagement/DataManagementRow';
 import './DataManagement.css';
+import { evaluateAuth } from '@client/utils/evaluateAuth';
 
 const DataManagement = () => {
     const { loading, data, error, refetch } = useQuery(
@@ -22,6 +23,9 @@ const DataManagement = () => {
     const [testPlans, setTestPlans] = useState([]);
     const [testPlanVersions, setTestPlanVersions] = useState([]);
     const [testPlanReports, setTestPlanReports] = useState([]);
+
+    const auth = evaluateAuth(data && data.me ? data.me : {});
+    const { isAdmin } = auth;
 
     useEffect(() => {
         if (data) {
@@ -123,6 +127,7 @@ const DataManagement = () => {
                             return (
                                 <DataManagementRow
                                     key={testPlan.id}
+                                    isAdmin={isAdmin}
                                     testPlan={testPlan}
                                     testPlanVersions={testPlanVersions.filter(
                                         testPlanVersion =>
