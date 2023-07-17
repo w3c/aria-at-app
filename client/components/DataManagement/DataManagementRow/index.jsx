@@ -1,11 +1,116 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useMutation } from '@apollo/client';
 import PropTypes from 'prop-types';
 import styled from '@emotion/styled';
-import { useMutation } from '@apollo/client';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCircleCheck } from '@fortawesome/free-solid-svg-icons';
 import { UPDATE_TEST_PLAN_VERSION_PHASE } from '../queries';
 import { LoadingStatus, useTriggerLoad } from '../../common/LoadingStatus';
 import { convertDateToString } from '../../../utils/formatter';
 import BasicThemedModal from '@components/common/BasicThemedModal';
+import { derivePhaseName } from '@client/utils/aria';
+
+const StatusCell = styled.div`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    span:nth-of-type(2) {
+        margin-top: 1rem;
+        font-size: 14px;
+        text-align: center;
+    }
+
+    span:nth-of-type(3) {
+        display: flex;
+        margin: 16px -12px -12px;
+        padding: 12px;
+
+        font-size: 14px;
+        text-align: center;
+
+        color: #6a7989;
+        background: #f6f8fa;
+
+        > .pill {
+            display: flex;
+            width: fit-content;
+            height: 20px;
+
+            justify-content: center;
+            align-items: center;
+            align-self: center;
+
+            margin-right: 6px;
+            min-width: 40px;
+            border-radius: 14px;
+
+            background: #6a7989;
+            color: white;
+        }
+    }
+`;
+
+const PhaseText = styled.span`
+    display: inline-block;
+    width: 100%;
+    padding: 2px 4px;
+    border-radius: 14px;
+
+    text-align: center;
+    overflow: hidden;
+    white-space: nowrap;
+    color: white;
+
+    &.rd {
+        background: #4177de;
+    }
+
+    &.draft {
+        background: #818f98;
+    }
+
+    &.candidate {
+        background: #ff6c00;
+    }
+
+    &.recommended {
+        background: #8441de;
+    }
+`;
+
+const PhaseDot = styled.span`
+    display: inline-block;
+    height: 10px;
+    width: 10px;
+    padding: 0;
+    margin-right: 8px;
+    border-radius: 50%;
+
+    &.rd {
+        background: #4177de;
+    }
+
+    &.draft {
+        background: #818f98;
+    }
+
+    &.candidate {
+        background: #ff6c00;
+    }
+
+    &.recommended {
+        background: #8441de;
+    }
+`;
+
+const NoneText = styled.span`
+    display: flex;
+    justify-content: center;
+
+    font-style: italic;
+    color: #6a7989;
+`;
 
 const DataManagementRow = ({
     testPlan,
@@ -28,6 +133,7 @@ const DataManagementRow = ({
     );
     const [recommendedTestPlanVersions, setRecommendedTestPlanVersions] =
         useState([]);
+    // const [otherPreviousActiveVersions,setOtherPreviousActiveVersions] = useState([])
 
     // TODO: Make this into reusable component
     const [showThemedModal, setShowThemedModal] = useState(false);
@@ -167,65 +273,150 @@ const DataManagementRow = ({
                 </>
             );
         } else if (atNames.length === 1) return <b>{atNames[0]}</b>;
-        else return <>N/A</>;
+        else return <NoneText>N/A</NoneText>;
     };
 
     const renderCellForOverallStatus = () => {
-        let view = <>N/A</>;
+        let view = <NoneText>N/A</NoneText>;
+
+        const versionsInProgressView = versionsCount => {
+            return (
+                <span>
+                    <>
+                        <span className="pill">+{versionsCount}</span> New
+                        Version
+                        {versionsCount === 1 ? '' : 's'} in Progress
+                    </>
+                </span>
+            );
+        };
 
         if (recommendedTestPlanVersions.length) {
-            const { earliestVersionDate } = getVersionData(
+            const { earliestVersion, earliestVersionDate } = getVersionData(
                 recommendedTestPlanVersions,
                 { dateKey: 'recommendedPhaseReachedAt', isEarliest: true }
             );
+            const { phase } = earliestVersion;
+
+            const otherVersionsInProgress = Object.keys(activePhases).filter(
+                e => ![phase].includes(e)
+            );
+            const versionsInProgressCount = otherVersionsInProgress.length;
+
             return (
-                <>
-                    Recommended Since{' '}
-                    {convertDateToString(earliestVersionDate, 'MMM D, YYYY')}
-                </>
+                <StatusCell>
+                    <PhaseText className={phase.toLowerCase()}>
+                        {derivePhaseName(phase)}
+                    </PhaseText>
+                    <span>
+                        Recommended Since{' '}
+                        <b>
+                            {convertDateToString(
+                                earliestVersionDate,
+                                'MMM D, YYYY'
+                            )}
+                        </b>
+                    </span>
+                    {versionsInProgressCount
+                        ? versionsInProgressView(versionsInProgressCount)
+                        : null}
+                </StatusCell>
             );
         }
 
         if (candidateTestPlanVersions.length) {
-            const { earliestVersionDate } = getVersionData(
+            const { earliestVersion, earliestVersionDate } = getVersionData(
                 candidateTestPlanVersions,
                 { dateKey: 'candidatePhaseReachedAt', isEarliest: true }
             );
+            const { phase } = earliestVersion;
+
+            const otherVersionsInProgress = Object.keys(activePhases).filter(
+                e => !['RECOMMENDED', phase].includes(e)
+            );
+            const versionsInProgressCount = otherVersionsInProgress.length;
+
             return (
-                <>
-                    Candidate Review Started{' '}
-                    {convertDateToString(earliestVersionDate, 'MMM D, YYYY')}
-                </>
+                <StatusCell>
+                    <PhaseText className={phase.toLowerCase()}>
+                        {derivePhaseName(phase)}
+                    </PhaseText>
+                    <span>
+                        Review Started{' '}
+                        <b>
+                            {convertDateToString(
+                                earliestVersionDate,
+                                'MMM D, YYYY'
+                            )}
+                        </b>
+                    </span>
+                    {versionsInProgressCount
+                        ? versionsInProgressView(versionsInProgressCount)
+                        : null}
+                </StatusCell>
             );
         }
 
         if (draftTestPlanVersions.length) {
-            const { earliestVersionDate } = getVersionData(
+            const { earliestVersion, earliestVersionDate } = getVersionData(
                 draftTestPlanVersions,
                 { dateKey: 'draftPhaseReachedAt', isEarliest: true }
             );
+            const { phase } = earliestVersion;
+
+            const otherVersionsInProgress = Object.keys(activePhases).filter(
+                e => !['RECOMMENDED', 'CANDIDATE', phase].includes(e)
+            );
+            const versionsInProgressCount = otherVersionsInProgress.length;
+
             return (
-                <>
-                    Draft Review Started{' '}
-                    {convertDateToString(earliestVersionDate, 'MMM D, YYYY')}
-                </>
+                <StatusCell>
+                    <PhaseText className={phase.toLowerCase()}>
+                        {derivePhaseName(phase)}
+                    </PhaseText>
+                    <span>
+                        Review Started{' '}
+                        <b>
+                            {convertDateToString(
+                                earliestVersionDate,
+                                'MMM D, YYYY'
+                            )}
+                        </b>
+                    </span>
+                    {versionsInProgressCount
+                        ? versionsInProgressView(versionsInProgressCount)
+                        : null}
+                </StatusCell>
             );
         }
 
         if (rdTestPlanVersions.length) {
-            const { latestVersionDate } = getVersionData(rdTestPlanVersions);
+            const { latestVersion, latestVersionDate } =
+                getVersionData(rdTestPlanVersions);
+            const { phase } = latestVersion;
             return (
-                <>
-                    R&D Complete on{' '}
-                    {convertDateToString(latestVersionDate, 'MMM D, YYYY')}
-                </>
+                <StatusCell>
+                    <PhaseText className={phase.toLowerCase()}>
+                        {derivePhaseName(phase)}
+                    </PhaseText>
+                    <span>
+                        Complete{' '}
+                        <b>
+                            {convertDateToString(
+                                latestVersionDate,
+                                'MMM D, YYYY'
+                            )}
+                        </b>
+                    </span>
+                </StatusCell>
             );
         }
+
         return view;
     };
 
     const renderCellForPhase = (phase, testPlanVersions = []) => {
-        const defaultView = <>N/A</>;
+        const defaultView = <NoneText>N/A</NoneText>;
 
         const insertActivePhaseForTestPlan = testPlanVersion => {
             if (!activePhases[phase]) {
@@ -329,12 +520,6 @@ const DataManagementRow = ({
                     const { latestVersion, latestVersionDate } =
                         getVersionData(testPlanVersions);
 
-                    const otherPreviousActiveVersions = Object.keys(
-                        activePhases
-                    ).filter(
-                        e => !['RECOMMENDED', 'CANDIDATE', phase].includes(e)
-                    );
-
                     // If there is an earlier version that is candidate and that version has some
                     // test plan runs in the test queue, this button will run the process for
                     // updating existing reports and preserving data for tests that have not
@@ -387,16 +572,6 @@ const DataManagementRow = ({
                             >
                                 Advance to Candidate
                             </button>
-                            {otherPreviousActiveVersions.length ? (
-                                <>
-                                    <br />+{otherPreviousActiveVersions.length}{' '}
-                                    New Version
-                                    {otherPreviousActiveVersions.length === 1
-                                        ? ''
-                                        : 's'}{' '}
-                                    in Progress
-                                </>
-                            ) : null}
                         </>
                     );
                 }
@@ -473,10 +648,6 @@ const DataManagementRow = ({
                         0
                     );
 
-                    const otherPreviousActiveVersions = Object.keys(
-                        activePhases
-                    ).filter(e => !['RECOMMENDED', phase].includes(e));
-
                     // If there is an earlier version that is recommended and that version has some
                     // test plan runs in the test queue, this button will run the process for
                     // updating existing reports and preserving data for tests that have not
@@ -536,16 +707,6 @@ const DataManagementRow = ({
                             >
                                 Advance to Recommended
                             </button>
-                            {otherPreviousActiveVersions.length ? (
-                                <>
-                                    <br />+{otherPreviousActiveVersions.length}{' '}
-                                    New Version
-                                    {otherPreviousActiveVersions.length === 1
-                                        ? ''
-                                        : 's'}{' '}
-                                    in Progress
-                                </>
-                            ) : null}
                         </>
                     );
                 }
@@ -586,10 +747,6 @@ const DataManagementRow = ({
 
                 const completionDate = latestVersion.recommendedPhaseReachedAt;
 
-                const otherPreviousActiveVersions = Object.keys(
-                    activePhases
-                ).filter(e => ![phase].includes(e));
-
                 // Phase is "active"
                 insertActivePhaseForTestPlan(latestVersion);
                 return (
@@ -605,16 +762,6 @@ const DataManagementRow = ({
                         <br />
                         Approved{' '}
                         {convertDateToString(completionDate, 'MMM D, YYYY')}
-                        {otherPreviousActiveVersions.length ? (
-                            <>
-                                <br />+{otherPreviousActiveVersions.length} New
-                                Version
-                                {otherPreviousActiveVersions.length === 1
-                                    ? ''
-                                    : 's'}{' '}
-                                in Progress
-                            </>
-                        ) : null}
                     </>
                 );
             }
@@ -624,7 +771,9 @@ const DataManagementRow = ({
     return (
         <LoadingStatus message={loadingMessage}>
             <tr>
-                <th>{testPlan.title}</th>
+                <th>
+                    <b>{testPlan.title}</b>
+                </th>
                 <td>{renderCellForCoveredAts()}</td>
                 <td>{renderCellForOverallStatus()}</td>
                 <td>{renderCellForPhase('RD', rdTestPlanVersions)}</td>

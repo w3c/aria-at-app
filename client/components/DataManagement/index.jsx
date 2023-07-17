@@ -51,8 +51,8 @@ const DataManagement = () => {
     if (error) {
         return (
             <PageStatus
-                title="Test Management | ARIA-AT"
-                heading="Test Management"
+                title="Data Management | ARIA-AT"
+                heading="Data Management"
                 message={error.message}
                 isError
             />
@@ -62,8 +62,8 @@ const DataManagement = () => {
     if (loading || !pageReady) {
         return (
             <PageStatus
-                title="Loading - Test Management | ARIA-AT"
-                heading="Test Management"
+                title="Loading - Data Management | ARIA-AT"
+                heading="Data Management"
             />
         );
     }
@@ -178,9 +178,9 @@ const DataManagement = () => {
     return (
         <Container id="main" as="main" tabIndex="-1">
             <Helmet>
-                <title>Test Management | ARIA-AT</title>
+                <title>Data Management | ARIA-AT</title>
             </Helmet>
-            <h1>Test Management</h1>
+            <h1>Data Management</h1>
 
             {emptyTestPlans && (
                 <h2 data-testid="test-management-no-test-plans-h2">
@@ -215,10 +215,9 @@ const DataManagement = () => {
             <>
                 <Table
                     className="data-management"
-                    aria-label="Unsure right now"
-                    hover
-                    striped
+                    aria-label="Test Plans Status Summary Table"
                     bordered
+                    hover
                 >
                     <thead>
                         <tr>
