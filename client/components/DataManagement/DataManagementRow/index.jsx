@@ -1,7 +1,8 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useMutation } from '@apollo/client';
 import PropTypes from 'prop-types';
 import styled from '@emotion/styled';
+import { Button } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleCheck } from '@fortawesome/free-solid-svg-icons';
 import { UPDATE_TEST_PLAN_VERSION_PHASE } from '../queries';
@@ -14,6 +15,7 @@ const StatusCell = styled.div`
     display: flex;
     flex-direction: column;
     justify-content: center;
+    height: 100%;
 
     span:nth-of-type(2) {
         margin-top: 1rem;
@@ -23,16 +25,19 @@ const StatusCell = styled.div`
 
     span:nth-of-type(3) {
         display: flex;
-        margin: 16px -12px -12px;
+        justify-content: center;
         padding: 12px;
-
         font-size: 14px;
-        text-align: center;
+
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
 
         color: #6a7989;
         background: #f6f8fa;
 
-        > .pill {
+        > span.pill {
             display: flex;
             width: fit-content;
             height: 20px;
@@ -48,6 +53,46 @@ const StatusCell = styled.div`
             background: #6a7989;
             color: white;
         }
+    }
+`;
+
+const PhaseCell = styled.div`
+    > span.version-string {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        height: 2rem;
+        border-radius: 4px;
+
+        width: 100%;
+        background: #f6f8fa;
+    }
+
+    > span.review-complete {
+        display: block;
+        font-size: 14px;
+        text-align: center;
+        margin-top: 12px;
+
+        color: #333f4d;
+    }
+
+    > span.more {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        margin: 16px -12px -12px;
+        padding: 12px;
+        font-size: 14px;
+
+        color: #6a7989;
+        background: #f6f8fa;
+    }
+
+    > button {
+        margin-top: 12px;
     }
 `;
 
@@ -79,7 +124,7 @@ const PhaseText = styled.span`
     }
 `;
 
-const PhaseDot = styled.span`
+const ReportStatusDot = styled.span`
     display: inline-block;
     height: 10px;
     width: 10px;
@@ -87,26 +132,37 @@ const PhaseDot = styled.span`
     margin-right: 8px;
     border-radius: 50%;
 
-    &.rd {
-        background: #4177de;
+    &.issues {
+        background: #f2ba00;
     }
 
-    &.draft {
-        background: #818f98;
+    &.reports-not-started {
+        background: #7c7c7c;
     }
 
-    &.candidate {
-        background: #ff6c00;
+    &.reports-in-progress {
+        background: #3876e8;
     }
 
-    &.recommended {
-        background: #8441de;
+    &.reports-complete {
+        background: #2ba51c;
+    }
+
+    &.reports-missing {
+        background: #ce1b4c;
     }
 `;
 
 const NoneText = styled.span`
     display: flex;
     justify-content: center;
+    align-items: center;
+
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
 
     font-style: italic;
     color: #6a7989;
@@ -470,18 +526,28 @@ const DataManagementRow = ({
                 // "active"
                 insertActivePhaseForTestPlan(latestVersion);
                 return (
-                    <>
-                        <a
-                            href={`/aria-at/${latestVersion.gitSha}/build/review/${latestVersion.testPlan.directory}.html`}
-                            target="_blank"
-                            rel="noreferrer"
-                        >
-                            V
-                            {convertDateToString(latestVersionDate, 'YY.MM.DD')}
-                        </a>
-                        <br />
-                        {/* TODO: Use testPlanVersionDataToInclude to determine how this button will work */}
-                        <button
+                    <PhaseCell>
+                        <span className="version-string">
+                            <FontAwesomeIcon
+                                icon={faCircleCheck}
+                                color="#2BA51C"
+                            />
+                            <a
+                                href={`/aria-at/${latestVersion.gitSha}/build/review/${latestVersion.testPlan.directory}.html`}
+                                target="_blank"
+                                rel="noreferrer"
+                            >
+                                <b>
+                                    V
+                                    {convertDateToString(
+                                        latestVersionDate,
+                                        'YY.MM.DD'
+                                    )}
+                                </b>
+                            </a>
+                        </span>
+                        <Button
+                            variant="secondary"
                             onClick={async () => {
                                 console.info(
                                     'IMPLEMENT advance to',
@@ -498,8 +564,8 @@ const DataManagementRow = ({
                             }}
                         >
                             Advance to Draft
-                        </button>
-                    </>
+                        </Button>
+                    </PhaseCell>
                 );
             }
             case 'DRAFT': {
@@ -511,7 +577,7 @@ const DataManagementRow = ({
                 // If a version of the plan is not in the draft phase and there are no versions in
                 // later phases, show string "Not Started"
                 if (![...testPlanVersions, ...otherTestPlanVersions].length)
-                    return <>Not Started</>;
+                    return <NoneText>Not Started</NoneText>;
 
                 // Link with text "VERSION_STRING" that targets the single-page view of the plan.
                 // If required reports are complete and user is an admin, show "Advance to
@@ -539,22 +605,28 @@ const DataManagementRow = ({
                     // Phase is "active"
                     insertActivePhaseForTestPlan(latestVersion);
                     return (
-                        <>
-                            <a
-                                href={`/aria-at/${latestVersion.gitSha}/build/review/${latestVersion.testPlan.directory}.html`}
-                                target="_blank"
-                                rel="noreferrer"
-                            >
-                                V
-                                {convertDateToString(
-                                    latestVersionDate,
-                                    'YY.MM.DD'
-                                )}
-                            </a>
-                            <br />
-                            <button>Required Reports In Progress</button>
-                            {/* TODO: Use testPlanVersionDataToInclude to determine how this button will work */}
-                            <button
+                        <PhaseCell>
+                            <span className="version-string">
+                                <FontAwesomeIcon
+                                    icon={faCircleCheck}
+                                    color="#2BA51C"
+                                />
+                                <a
+                                    href={`/aria-at/${latestVersion.gitSha}/build/review/${latestVersion.testPlan.directory}.html`}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                >
+                                    <b>
+                                        V
+                                        {convertDateToString(
+                                            latestVersionDate,
+                                            'YY.MM.DD'
+                                        )}
+                                    </b>
+                                </a>
+                            </span>
+                            <Button
+                                variant="secondary"
                                 onClick={async () => {
                                     console.info(
                                         'IMPLEMENT advance to',
@@ -571,8 +643,8 @@ const DataManagementRow = ({
                                 }}
                             >
                                 Advance to Candidate
-                            </button>
-                        </>
+                            </Button>
+                        </PhaseCell>
                     );
                 }
 
@@ -591,15 +663,30 @@ const DataManagementRow = ({
                             : otherLatestVersion.recommendedPhaseReachedAt;
 
                     return (
-                        <>
-                            Review of V
-                            {convertDateToString(
-                                otherLatestVersionDate,
-                                'YY.MM.DD'
-                            )}{' '}
-                            completed{' '}
-                            {convertDateToString(completionDate, 'MMM D, YYYY')}
-                        </>
+                        <PhaseCell>
+                            <span className="version-string">
+                                <FontAwesomeIcon
+                                    icon={faCircleCheck}
+                                    color="#818F98"
+                                />
+                                <b>
+                                    V
+                                    {convertDateToString(
+                                        otherLatestVersionDate,
+                                        'YY.MM.DD'
+                                    )}
+                                </b>
+                            </span>
+                            <span className="review-complete">
+                                Review Completed{' '}
+                                <b>
+                                    {convertDateToString(
+                                        completionDate,
+                                        'MMM D, YYYY'
+                                    )}
+                                </b>
+                            </span>
+                        </PhaseCell>
                     );
                 }
                 return defaultView;
@@ -610,7 +697,7 @@ const DataManagementRow = ({
                 // If a version of the plan is not in the candidate phase and there has not yet been
                 // a recommended version, show string "Not Started"
                 if (![...testPlanVersions, ...otherTestPlanVersions].length)
-                    return <>Not Started</>;
+                    return <NoneText>Not Started</NoneText>;
 
                 // Link with text "VERSION_STRING" that targets the single-page view of the plan.
                 //
@@ -667,29 +754,28 @@ const DataManagementRow = ({
                     // Phase is "active"
                     insertActivePhaseForTestPlan(latestVersion);
                     return (
-                        <>
-                            <a
-                                href={`/aria-at/${latestVersion.gitSha}/build/review/${latestVersion.testPlan.directory}.html`}
-                                target="_blank"
-                                rel="noreferrer"
-                            >
-                                V
-                                {convertDateToString(
-                                    latestVersionDate,
-                                    'YY.MM.DD'
-                                )}
-                            </a>
-                            <br />
-                            {issuesCount} Open Issue
-                            {`${issuesCount === 1 ? '' : 's'}`}
-                            {`${
-                                issuesCount >= 2
-                                    ? ` from ${uniqueAtsCount} ATs`
-                                    : ''
-                            }`}
-                            <br />
-                            {/* TODO: Use testPlanVersionDataToInclude to determine how this button will work */}
-                            <button
+                        <PhaseCell>
+                            <span className="version-string">
+                                <a
+                                    href={`/aria-at/${latestVersion.gitSha}/build/review/${latestVersion.testPlan.directory}.html`}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                >
+                                    <FontAwesomeIcon
+                                        icon={faCircleCheck}
+                                        color="#2BA51C"
+                                    />
+                                    <b>
+                                        V
+                                        {convertDateToString(
+                                            latestVersionDate,
+                                            'YY.MM.DD'
+                                        )}
+                                    </b>
+                                </a>
+                            </span>
+                            <Button
+                                variant="secondary"
                                 onClick={async () => {
                                     console.info(
                                         'IMPLEMENT advance to',
@@ -706,8 +792,18 @@ const DataManagementRow = ({
                                 }}
                             >
                                 Advance to Recommended
-                            </button>
-                        </>
+                            </Button>
+                            <span className="more">
+                                <ReportStatusDot className="issues" />{' '}
+                                {issuesCount} Open Issue
+                                {`${issuesCount === 1 ? '' : 's'}`}
+                                {`${
+                                    issuesCount >= 2
+                                        ? ` from ${uniqueAtsCount} ATs`
+                                        : ''
+                                }`}
+                            </span>
+                        </PhaseCell>
                     );
                 }
 
@@ -723,15 +819,30 @@ const DataManagementRow = ({
                         otherLatestVersion.recommendedPhaseReachedAt;
 
                     return (
-                        <>
-                            Review of V
-                            {convertDateToString(
-                                otherLatestVersionDate,
-                                'YY.MM.DD'
-                            )}{' '}
-                            completed{' '}
-                            {convertDateToString(completionDate, 'MMM D, YYYY')}
-                        </>
+                        <PhaseCell>
+                            <span className="version-string">
+                                <FontAwesomeIcon
+                                    icon={faCircleCheck}
+                                    color="#818F98"
+                                />
+                                <b>
+                                    V
+                                    {convertDateToString(
+                                        otherLatestVersionDate,
+                                        'YY.MM.DD'
+                                    )}
+                                </b>
+                            </span>
+                            <span className="review-complete">
+                                Review Completed{' '}
+                                <b>
+                                    {convertDateToString(
+                                        completionDate,
+                                        'MMM D, YYYY'
+                                    )}
+                                </b>
+                            </span>
+                        </PhaseCell>
                     );
                 }
                 return defaultView;
@@ -739,7 +850,8 @@ const DataManagementRow = ({
             case 'RECOMMENDED': {
                 // If a version of the plan is not in the recommended phase, shows the string "None
                 // Yet"
-                if (!testPlanVersions.length) return <>None Yet</>;
+                if (!testPlanVersions.length)
+                    return <NoneText>None Yet</NoneText>;
 
                 // Link with text "VERSION_STRING" that targets the single-page view of the plan
                 const { latestVersion, latestVersionDate } =
@@ -750,19 +862,34 @@ const DataManagementRow = ({
                 // Phase is "active"
                 insertActivePhaseForTestPlan(latestVersion);
                 return (
-                    <>
-                        <a
-                            href={`/aria-at/${latestVersion.gitSha}/build/review/${latestVersion.testPlan.directory}.html`}
-                            target="_blank"
-                            rel="noreferrer"
-                        >
-                            V
-                            {convertDateToString(latestVersionDate, 'YY.MM.DD')}
-                        </a>
-                        <br />
-                        Approved{' '}
-                        {convertDateToString(completionDate, 'MMM D, YYYY')}
-                    </>
+                    <PhaseCell>
+                        <span className="version-string">
+                            <FontAwesomeIcon
+                                icon={faCircleCheck}
+                                color="#2BA51C"
+                            />
+                            <a
+                                href={`/aria-at/${latestVersion.gitSha}/build/review/${latestVersion.testPlan.directory}.html`}
+                                target="_blank"
+                                rel="noreferrer"
+                            >
+                                V
+                                {convertDateToString(
+                                    latestVersionDate,
+                                    'YY.MM.DD'
+                                )}
+                            </a>
+                        </span>
+                        <span className="review-complete">
+                            Approved{' '}
+                            <b>
+                                {convertDateToString(
+                                    completionDate,
+                                    'MMM D, YYYY'
+                                )}
+                            </b>
+                        </span>
+                    </PhaseCell>
                 );
             }
         }
