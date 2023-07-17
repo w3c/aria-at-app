@@ -41,6 +41,24 @@
     background-color: #fff;
 }
 
+.data-management.table {
+    padding: 0;
+    margin: 0;
+}
+
+.data-management.table thead tr th {
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+.data-management.table tbody tr th {
+    padding: 1rem;
+}
+
+.data-management.table tbody tr:nth-of-type(even), .table-striped tbody tr:nth-of-type(even) {
+    background-color: #fff;
+}
+
 .change-phase {
     margin-left: 12px;
     margin-right: 12px;
