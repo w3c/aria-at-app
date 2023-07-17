@@ -2,6 +2,11 @@ import { gql } from '@apollo/client';
 
 export const DATA_MANAGEMENT_PAGE_QUERY = gql`
     query TestManagementPage {
+        me {
+            id
+            username
+            roles
+        }
         ats {
             id
             name

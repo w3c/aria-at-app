@@ -64,6 +64,7 @@ const PhaseCell = styled.div`
         justify-content: center;
         align-items: center;
 
+        //padding: 4px 8px;
         height: 2rem;
         border-radius: 4px;
 
@@ -175,6 +176,7 @@ const NoneText = styled.span`
 `;
 
 const DataManagementRow = ({
+    isAdmin,
     testPlan,
     testPlanVersions,
     testPlanReports,
@@ -552,26 +554,28 @@ const DataManagementRow = ({
                                 </b>
                             </a>
                         </span>
-                        <Button
-                            variant="secondary"
-                            onClick={async () => {
-                                // TODO
-                                // console.info(
-                                //     'IMPLEMENT advance to',
-                                //     testPlanVersionDataToInclude
-                                //         ? testPlanVersionDataToInclude
-                                //         : 'use current test run data'
-                                // );
+                        {isAdmin && (
+                            <Button
+                                variant="secondary"
+                                onClick={async () => {
+                                    // TODO
+                                    // console.info(
+                                    //     'IMPLEMENT advance to',
+                                    //     testPlanVersionDataToInclude
+                                    //         ? testPlanVersionDataToInclude
+                                    //         : 'use current test run data'
+                                    // );
 
-                                await handleClickUpdateTestPlanVersionPhase(
-                                    latestVersion.id,
-                                    'DRAFT',
-                                    testPlanVersionDataToInclude
-                                );
-                            }}
-                        >
-                            Advance to Draft
-                        </Button>
+                                    await handleClickUpdateTestPlanVersionPhase(
+                                        latestVersion.id,
+                                        'DRAFT',
+                                        testPlanVersionDataToInclude
+                                    );
+                                }}
+                            >
+                                Advance to Draft
+                            </Button>
+                        )}
                     </PhaseCell>
                 );
             }
@@ -632,26 +636,28 @@ const DataManagementRow = ({
                                     </b>
                                 </a>
                             </span>
-                            <Button
-                                variant="secondary"
-                                onClick={async () => {
-                                    // TODO
-                                    // console.info(
-                                    //     'IMPLEMENT advance to',
-                                    //     testPlanVersionDataToInclude
-                                    //         ? testPlanVersionDataToInclude
-                                    //         : 'use current test run data'
-                                    // );
+                            {isAdmin && (
+                                <Button
+                                    variant="secondary"
+                                    onClick={async () => {
+                                        // TODO
+                                        // console.info(
+                                        //     'IMPLEMENT advance to',
+                                        //     testPlanVersionDataToInclude
+                                        //         ? testPlanVersionDataToInclude
+                                        //         : 'use current test run data'
+                                        // );
 
-                                    await handleClickUpdateTestPlanVersionPhase(
-                                        latestVersion.id,
-                                        'CANDIDATE',
-                                        testPlanVersionDataToInclude
-                                    );
-                                }}
-                            >
-                                Advance to Candidate
-                            </Button>
+                                        await handleClickUpdateTestPlanVersionPhase(
+                                            latestVersion.id,
+                                            'CANDIDATE',
+                                            testPlanVersionDataToInclude
+                                        );
+                                    }}
+                                >
+                                    Advance to Candidate
+                                </Button>
+                            )}
                         </PhaseCell>
                     );
                 }
@@ -782,26 +788,28 @@ const DataManagementRow = ({
                                     </b>
                                 </a>
                             </span>
-                            <Button
-                                variant="secondary"
-                                onClick={async () => {
-                                    // TODO
-                                    // console.info(
-                                    //     'IMPLEMENT advance to',
-                                    //     testPlanVersionDataToInclude
-                                    //         ? testPlanVersionDataToInclude
-                                    //         : 'use current test run data'
-                                    // );
+                            {isAdmin && (
+                                <Button
+                                    variant="secondary"
+                                    onClick={async () => {
+                                        // TODO
+                                        // console.info(
+                                        //     'IMPLEMENT advance to',
+                                        //     testPlanVersionDataToInclude
+                                        //         ? testPlanVersionDataToInclude
+                                        //         : 'use current test run data'
+                                        // );
 
-                                    await handleClickUpdateTestPlanVersionPhase(
-                                        latestVersion.id,
-                                        'RECOMMENDED',
-                                        testPlanVersionDataToInclude
-                                    );
-                                }}
-                            >
-                                Advance to Recommended
-                            </Button>
+                                        await handleClickUpdateTestPlanVersionPhase(
+                                            latestVersion.id,
+                                            'RECOMMENDED',
+                                            testPlanVersionDataToInclude
+                                        );
+                                    }}
+                                >
+                                    Advance to Recommended
+                                </Button>
+                            )}
                             <span className="more">
                                 <ReportStatusDot className="issues" />{' '}
                                 {issuesCount} Open Issue
@@ -949,6 +957,7 @@ const DataManagementRow = ({
 };
 
 DataManagementRow.propTypes = {
+    isAdmin: PropTypes.bool,
     testPlan: PropTypes.shape({
         id: PropTypes.string,
         title: PropTypes.string,

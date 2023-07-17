@@ -70,20 +70,17 @@ const App = () => {
                                     Test Reports
                                 </Nav.Link>
                             </li>
-                            {isSignedIn && isAdmin && (
-                                <li>
-                                    <Nav.Link
-                                        as={Link}
-                                        to="/data-management"
-                                        aria-current={
-                                            location.pathname ===
-                                            '/data-management'
-                                        }
-                                    >
-                                        Data Management
-                                    </Nav.Link>
-                                </li>
-                            )}
+                            <li>
+                                <Nav.Link
+                                    as={Link}
+                                    to="/data-management"
+                                    aria-current={
+                                        location.pathname === '/data-management'
+                                    }
+                                >
+                                    Data Management
+                                </Nav.Link>
+                            </li>
                             <li>
                                 <Nav.Link
                                     as={Link}
