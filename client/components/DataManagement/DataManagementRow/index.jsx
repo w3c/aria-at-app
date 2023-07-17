@@ -21,6 +21,8 @@ const StatusCell = styled.div`
         margin-top: 1rem;
         font-size: 14px;
         text-align: center;
+
+        margin-bottom: 72px;
     }
 
     span:nth-of-type(3) {
@@ -83,9 +85,13 @@ const PhaseCell = styled.div`
         justify-content: center;
         align-items: center;
 
-        margin: 16px -12px -12px;
         padding: 12px;
         font-size: 14px;
+
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        right: 0;
 
         color: #6a7989;
         background: #f6f8fa;
@@ -873,11 +879,13 @@ const DataManagementRow = ({
                                 target="_blank"
                                 rel="noreferrer"
                             >
-                                V
-                                {convertDateToString(
-                                    latestVersionDate,
-                                    'YY.MM.DD'
-                                )}
+                                <b>
+                                    V
+                                    {convertDateToString(
+                                        latestVersionDate,
+                                        'YY.MM.DD'
+                                    )}
+                                </b>
                             </a>
                         </span>
                         <span className="review-complete">
