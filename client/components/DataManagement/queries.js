@@ -73,40 +73,6 @@ export const DATA_MANAGEMENT_PAGE_QUERY = gql`
     }
 `;
 
-export const BULK_UPDATE_TEST_PLAN_REPORT_STATUS_MUTATION = gql`
-    mutation BulkUpdateTestPlanReportStatus(
-        $testReportIds: [ID]!
-        $status: TestPlanReportStatus!
-    ) {
-        testPlanReport(ids: $testReportIds) {
-            bulkUpdateStatus(status: $status) {
-                testPlanReport {
-                    id
-                    status
-                    at {
-                        id
-                        name
-                    }
-                    browser {
-                        id
-                        name
-                    }
-                    testPlanVersion {
-                        id
-                        title
-                        gitSha
-                        gitMessage
-                        testPlan {
-                            directory
-                        }
-                        updatedAt
-                    }
-                }
-            }
-        }
-    }
-`;
-
 export const UPDATE_TEST_PLAN_VERSION_PHASE = gql`
     mutation UpdateTestPlanVersionPhase(
         $testPlanVersionId: ID!
