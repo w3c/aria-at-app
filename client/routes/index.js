@@ -65,15 +65,7 @@ export default () => (
                 </ConfirmAuth>
             }
         />
-        <Route
-            exact
-            path="/data-management"
-            element={
-                <ConfirmAuth requiredPermission="ADMIN">
-                    <DataManagement />
-                </ConfirmAuth>
-            }
-        />
+        <Route exact path="/data-management" element={<DataManagement />} />
         <Route exact path="/invalid-request" element={<InvalidRequest />} />
         <Route exact path="/404" element={<NotFound />} />
         <Route exact path="*" element={<Navigate to="/404" replace />} />
