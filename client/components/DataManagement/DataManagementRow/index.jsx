@@ -612,14 +612,15 @@ const DataManagementRow = ({
                                 candidateLatestVersion;
                     }
 
-                    const coveredReports = latestVersion.testPlanReports.map(
-                        testPlanReport => {
-                            return {
-                                atName: testPlanReport.at.name,
-                                browserName: testPlanReport.browser.name
-                            };
-                        }
-                    );
+                    let coveredReports = [];
+                    latestVersion.testPlanReports.forEach(testPlanReport => {
+                        const atName = testPlanReport.at.name;
+                        const browserName = testPlanReport.browser.name;
+                        const value = `${atName}_${browserName}`;
+
+                        if (!coveredReports.includes(value))
+                            coveredReports.push(value);
+                    });
 
                     // Phase is "active"
                     insertActivePhaseForTestPlan(latestVersion);
@@ -787,14 +788,15 @@ const DataManagementRow = ({
                             (!recommendedTestPlanVersions.length &&
                                 daysBetweenDates > daysToProvideFeedback));
 
-                    const coveredReports = latestVersion.testPlanReports.map(
-                        testPlanReport => {
-                            return {
-                                atName: testPlanReport.at.name,
-                                browserName: testPlanReport.browser.name
-                            };
-                        }
-                    );
+                    let coveredReports = [];
+                    latestVersion.testPlanReports.forEach(testPlanReport => {
+                        const atName = testPlanReport.at.name;
+                        const browserName = testPlanReport.browser.name;
+                        const value = `${atName}_${browserName}`;
+
+                        if (!coveredReports.includes(value))
+                            coveredReports.push(value);
+                    });
 
                     // Phase is "active"
                     insertActivePhaseForTestPlan(latestVersion);
@@ -990,16 +992,21 @@ const DataManagementRow = ({
                                     The included reports will cover:
                                     <ul>
                                         {advanceModalData.coveredReports.map(
-                                            e => (
-                                                <li
-                                                    key={`${testPlan.id}${e.atName}${e.browserName}`}
-                                                >
-                                                    <b>
-                                                        {e.atName} and{' '}
-                                                        {e.browserName}
-                                                    </b>
-                                                </li>
-                                            )
+                                            e => {
+                                                const [atName, browserName] =
+                                                    e.split('_');
+
+                                                return (
+                                                    <li
+                                                        key={`${testPlan.id}${atName}${browserName}`}
+                                                    >
+                                                        <b>
+                                                            {atName} and{' '}
+                                                            {browserName}
+                                                        </b>
+                                                    </li>
+                                                );
+                                            }
                                         )}
                                     </ul>
                                     Do you want to continue?
