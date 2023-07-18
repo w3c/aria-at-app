@@ -29,6 +29,28 @@ describe('Verify test hashes are matching as expected', () => {
         expect(testHashA).not.toEqual(testHashB);
     });
 
+    it('should match TestPlanVersion.hashedTests for Alert 252 in production', () => {
+        const testPlanVersionHashedTestsAlert252 =
+            'e1dc1c56213ddb29cf959590ee1b5f115952c4fd';
+        // InsureA is based on TestPlanVersion 252 as the tests/alert directory was updated; see
+        // https://github.com/w3c/aria-at/commit/9ccc788
+        const testsHashA = hashTests(testsWithInstructionsSayingInsureA);
+
+        expect(testsHashA).toEqual(testPlanVersionHashedTestsAlert252);
+    });
+
+    it('should match test hash in production', () => {
+        const singleTestHashInProduction =
+            '33ffd2b5ae2c13820d4abe7491a7f7361643ae59';
+
+        const testIndex0Hash = hashTest(testsWithInstructionsSayingInsureA[0]);
+        // singleTest.json is based on testsWithInstructionsSayingInsureA[0]
+        const singleTestHash = hashTest(singleTest);
+
+        expect(singleTestHashInProduction).toEqual(testIndex0Hash);
+        expect(singleTestHashInProduction).toEqual(singleTestHash);
+    });
+
     it('should have matching hashes for collections of matching tests, but different ids', () => {
         // These tests are based on the tests/alert history seen at
         // https://github.com/w3c/aria-at/commits/master/tests/alert
