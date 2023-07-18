@@ -7,7 +7,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleCheck } from '@fortawesome/free-solid-svg-icons';
 import { UPDATE_TEST_PLAN_VERSION_PHASE } from '../queries';
 import { LoadingStatus, useTriggerLoad } from '../../common/LoadingStatus';
-import { convertDateToString } from '../../../utils/formatter';
+import {
+    checkTimeBetweenDates,
+    convertDateToString
+} from '../../../utils/formatter';
 import BasicThemedModal from '@components/common/BasicThemedModal';
 import { derivePhaseName } from '@client/utils/aria';
 
@@ -22,7 +25,7 @@ const StatusCell = styled.div`
         font-size: 14px;
         text-align: center;
 
-        margin-bottom: 72px;
+        margin-bottom: 80px;
     }
 
     span:nth-of-type(3) {
@@ -765,6 +768,19 @@ const DataManagementRow = ({
                                 recommendedLatestVersion;
                     }
 
+                    const daysBetweenDates = checkTimeBetweenDates(
+                        new Date(),
+                        latestVersion.candidatePhaseReachedAt
+                    );
+                    const daysToProvideFeedback = 120;
+
+                    const shouldShowAdvanceButton =
+                        isAdmin &&
+                        issuesCount === 0 &&
+                        (recommendedTestPlanVersions.length ||
+                            (!recommendedTestPlanVersions.length &&
+                                daysBetweenDates > daysToProvideFeedback));
+
                     // Phase is "active"
                     insertActivePhaseForTestPlan(latestVersion);
                     return (
@@ -788,7 +804,7 @@ const DataManagementRow = ({
                                     </b>
                                 </a>
                             </span>
-                            {isAdmin && (
+                            {shouldShowAdvanceButton && (
                                 <Button
                                     variant="secondary"
                                     onClick={async () => {
