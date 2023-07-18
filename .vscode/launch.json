@@ -2,6 +2,16 @@
   "version": "1.0.0",
   "configurations": [
     {
+      "name": "Import tests",
+      "program": "${workspaceFolder}/server/scripts/import-tests/index.js",
+      "request": "launch",
+      "envFile": "${workspaceFolder}/config/dev.env",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "type": "node"
+    },
+    {
       "type": "node",
       "request": "launch",
       "name": "Jest Server Debug Current Test File",

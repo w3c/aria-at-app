@@ -1,0 +1,154 @@
+{
+  "id": "thisisatestid",
+  "atIds": [1, 2],
+  "title": "Trigger an alert in reading mode",
+  "atMode": "READING",
+  "viewers": [],
+  "rowNumber": "1",
+  "scenarios": [
+    {
+      "id": "ZTVhNeyIzIjoiTmpKa09leUl5SWpvaU1qVXlJbjBHSmtNRyJ9WVlNj",
+      "atId": 1,
+      "commandIds": ["SPACE"]
+    },
+    {
+      "id": "ZGY2NeyIzIjoiTmpKa09leUl5SWpvaU1qVXlJbjBHSmtNRyJ9TVlMz",
+      "atId": 1,
+      "commandIds": ["ENTER"]
+    },
+    {
+      "id": "YWIyMeyIzIjoiTmpKa09leUl5SWpvaU1qVXlJbjBHSmtNRyJ9DIyYj",
+      "atId": 2,
+      "commandIds": ["SPACE"]
+    },
+    {
+      "id": "OWI0MeyIzIjoiTmpKa09leUl5SWpvaU1qVXlJbjBHSmtNRyJ92RkMT",
+      "atId": 2,
+      "commandIds": ["ENTER"]
+    }
+  ],
+  "assertions": [
+    {
+      "id": "MDEyZeyIzIjoiTmpKa09leUl5SWpvaU1qVXlJbjBHSmtNRyJ9DIzZj",
+      "text": "Role 'alert' is conveyed",
+      "priority": "REQUIRED"
+    },
+    {
+      "id": "MjEyOeyIzIjoiTmpKa09leUl5SWpvaU1qVXlJbjBHSmtNRyJ9DUwY2",
+      "text": "Text 'Hello' is conveyed",
+      "priority": "REQUIRED"
+    }
+  ],
+  "renderedUrls": {
+    "1": "/aria-at/da10a207390c56d9a11e1e75fc9a1402ec6e95fd/build/tests/alert/test-01-trigger-alert-reading-jaws.collected.html",
+    "2": "/aria-at/da10a207390c56d9a11e1e75fc9a1402ec6e95fd/build/tests/alert/test-01-trigger-alert-reading-nvda.collected.html"
+  },
+  "renderableContent": {
+    "1": {
+      "info": {
+        "task": "trigger alert",
+        "title": "Trigger an alert in reading mode",
+        "testId": 1,
+        "references": [
+          {
+            "refId": "example",
+            "value": "https://w3c.github.io/aria-practices/examples/alert/alert.html"
+          },
+          {
+            "refId": "alert",
+            "value": "https://w3c.github.io/aria/#alert"
+          }
+        ]
+      },
+      "target": {
+        "at": { "key": "jaws", "raw": "JAWS", "name": "JAWS" },
+        "mode": "reading",
+        "setupScript": {
+          "name": "setFocusOnButton",
+          "source": "// sets focus on the 'Trigger Alert' button\ntestPageDocument.querySelector('#alert-trigger').focus();\n",
+          "jsonpPath": "scripts/setFocusOnButton.jsonp.js",
+          "modulePath": "scripts/setFocusOnButton.module.js",
+          "description": "sets focus on the 'Trigger Alert' button"
+        },
+        "referencePage":
+        "reference/2021-10-15_143458/alert.setFocusOnButton.html"
+      },
+      "commands": [
+        {
+          "id": "SPACE",
+          "keystroke": "Space",
+          "keypresses": [{ "id": "SPACE", "keystroke": "Space" }]
+        },
+        {
+          "id": "ENTER",
+          "keystroke": "Enter",
+          "keypresses": [{ "id": "ENTER", "keystroke": "Enter" }]
+        }
+      ],
+      "assertions": [
+        { "priority": 1, "expectation": "Role 'alert' is conveyed" },
+        { "priority": 1, "expectation": "Text 'Hello' is conveyed" }
+      ],
+      "instructions": {
+        "raw": "With the reading cursor on the 'Trigger Alert' button, activate the button to trigger the alert.",
+        "mode": "Verify the Virtual Cursor is active by pressing Alt+Delete. If it is not, exit Forms Mode to activate the Virtual Cursor by pressing Escape.",
+        "user": [
+          "With the reading cursor on the 'Trigger Alert' button, activate the button to trigger the alert."
+        ]
+      }
+    },
+    "2": {
+      "info": {
+        "task": "trigger alert",
+        "title": "Trigger an alert in reading mode",
+        "testId": 1,
+        "references": [
+          {
+            "refId": "example",
+            "value": "https://w3c.github.io/aria-practices/examples/alert/alert.html"
+          },
+          {
+            "refId": "alert",
+            "value": "https://w3c.github.io/aria/#alert"
+          }
+        ]
+      },
+      "target": {
+        "at": { "key": "nvda", "raw": "NVDA", "name": "NVDA" },
+        "mode": "reading",
+        "setupScript": {
+          "name": "setFocusOnButton",
+          "source": "// sets focus on the 'Trigger Alert' button\ntestPageDocument.querySelector('#alert-trigger').focus();\n",
+          "jsonpPath": "scripts/setFocusOnButton.jsonp.js",
+          "modulePath": "scripts/setFocusOnButton.module.js",
+          "description": "sets focus on the 'Trigger Alert' button"
+        },
+        "referencePage":
+        "reference/2021-10-15_143458/alert.setFocusOnButton.html"
+      },
+      "commands": [
+        {
+          "id": "SPACE",
+          "keystroke": "Space",
+          "keypresses": [{ "id": "SPACE", "keystroke": "Space" }]
+        },
+        {
+          "id": "ENTER",
+          "keystroke": "Enter",
+          "keypresses": [{ "id": "ENTER", "keystroke": "Enter" }]
+        }
+      ],
+      "assertions": [
+        { "priority": 1, "expectation": "Role 'alert' is conveyed" },
+        { "priority": 1, "expectation": "Text 'Hello' is conveyed" }
+      ],
+      "instructions": {
+        "raw": "With the reading cursor on the 'Trigger Alert' button, activate the button to trigger the alert.",
+        "mode": "Insure NVDA is in browse mode by pressing Escape. Note: This command has no effect if NVDA is already in browse mode.",
+        "user": [
+          "With the reading cursor on the 'Trigger Alert' button, activate the button to trigger the alert."
+        ]
+      }
+    }
+  }
+}

@@ -161,8 +161,8 @@ const getLatestReportsForPattern = ({ allTestPlanReports, pattern }) => {
             const latestReport = group
                 .sort(
                     (a, b) =>
-                        new Date(a.testPlanVersion.updatedAt) -
-                        new Date(b.testPlanVersion.updatedAt)
+                        new Date(a.latestAtVersionReleasedAt.releasedAt) -
+                        new Date(b.latestAtVersionReleasedAt.releasedAt)
                 )
                 .pop();
 

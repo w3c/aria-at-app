@@ -19,6 +19,7 @@ describe('TestPlanReportModel Data Checks', () => {
             directory,
             gitSha,
             gitMessage,
+            hashedTests,
             updatedAt,
             metadata,
             tests,
@@ -30,6 +31,7 @@ describe('TestPlanReportModel Data Checks', () => {
         expect(directory).toBeTruthy();
         expect(gitSha).toBeTruthy();
         expect(gitMessage).toBeTruthy();
+        expect(hashedTests).toBeTruthy();
         expect(updatedAt).toBeTruthy();
         expect(metadata).toBeTruthy();
         expect(tests).toBeTruthy();
@@ -56,6 +58,7 @@ describe('TestPlanReportModel Data Checks', () => {
             directory,
             gitSha,
             gitMessage,
+            hashedTests,
             updatedAt,
             metadata,
             tests
@@ -66,6 +69,7 @@ describe('TestPlanReportModel Data Checks', () => {
         expect(directory).toBeTruthy();
         expect(gitSha).toBeTruthy();
         expect(gitMessage).toBeTruthy();
+        expect(hashedTests).toBeTruthy();
         expect(updatedAt).toBeTruthy();
         expect(metadata).toBeTruthy();
         expect(tests).toBeTruthy();
@@ -90,6 +94,7 @@ describe('TestPlanReportModel Data Checks', () => {
             const _gitSha = randomStringGenerator();
             const _gitMessage = randomStringGenerator();
             const _testPageUrl = randomStringGenerator();
+            const _hashedTests = randomStringGenerator();
             const _updatedAt = new Date();
             const _metadata = { designPattern: 'https://google.com' };
             const _tests = [{ test: 'goes here' }];
@@ -105,6 +110,7 @@ describe('TestPlanReportModel Data Checks', () => {
                     gitSha: _gitSha,
                     gitMessage: _gitMessage,
                     testPageUrl: _testPageUrl,
+                    hashedTests: _hashedTests,
                     updatedAt: _updatedAt,
                     metadata: _metadata,
                     tests: _tests
@@ -116,6 +122,7 @@ describe('TestPlanReportModel Data Checks', () => {
                 gitSha: createdGitSha,
                 gitMessage: createdGitMessage,
                 testPageUrl: createdTestPageUrl,
+                hashedTests: createdHashedTests,
                 updatedAt: createdUpdatedAt,
                 metadata: createdMetadata,
                 tests: createdTests
@@ -137,6 +144,7 @@ describe('TestPlanReportModel Data Checks', () => {
             expect(createdGitSha).toBe(_gitSha);
             expect(createdGitMessage).toBe(_gitMessage);
             expect(createdTestPageUrl).toBe(_testPageUrl);
+            expect(createdHashedTests).toEqual(_hashedTests);
             expect(createdUpdatedAt).toEqual(_updatedAt);
             expect(createdMetadata).toEqual(_metadata);
             expect(createdTests).toEqual(_tests);

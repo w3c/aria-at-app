@@ -616,31 +616,38 @@ const TestQueueRow = ({
                     <div className={(isSignedIn && 'secondary-actions') || ''}>
                         {draftTestPlanRuns.length !== 0 ? (
                             <ul className="assignees">
-                                {draftTestPlanRuns.map(
-                                    ({ tester, testResultsLength = 0 }) => (
-                                        <li key={nextId()}>
-                                            <a
-                                                href={
-                                                    `https://github.com/` +
-                                                    `${tester.username}`
-                                                }
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                // Allows ATs to read the number of
-                                                // completed tests when tabbing to this
-                                                // link
-                                                aria-describedby={getRowId(
-                                                    tester
-                                                )}
-                                            >
-                                                {tester.username}
-                                            </a>
-                                            <div id={getRowId(tester)}>
-                                                {`${testResultsLength} of ${runnableTestsLength} tests complete`}
-                                            </div>
-                                        </li>
+                                {draftTestPlanRuns
+                                    .slice() // because array was frozen
+                                    .sort((a, b) =>
+                                        a.tester.username < b.tester.username
+                                            ? -1
+                                            : 1
                                     )
-                                )}
+                                    .map(
+                                        ({ tester, testResultsLength = 0 }) => (
+                                            <li key={nextId()}>
+                                                <a
+                                                    href={
+                                                        `https://github.com/` +
+                                                        `${tester.username}`
+                                                    }
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    // Allows ATs to read the number of
+                                                    // completed tests when tabbing to this
+                                                    // link
+                                                    aria-describedby={getRowId(
+                                                        tester
+                                                    )}
+                                                >
+                                                    {tester.username}
+                                                </a>
+                                                <div id={getRowId(tester)}>
+                                                    {`${testResultsLength} of ${runnableTestsLength} tests complete`}
+                                                </div>
+                                            </li>
+                                        )
+                                    )}
                             </ul>
                         ) : (
                             <div className="no-assignees">

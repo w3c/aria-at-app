@@ -15,6 +15,11 @@ module.exports = function (sequelize, DataTypes) {
             gitSha: { type: DataTypes.TEXT },
             gitMessage: { type: DataTypes.TEXT },
             testPageUrl: { type: DataTypes.TEXT },
+            hashedTests: {
+                type: DataTypes.TEXT,
+                allowNull: false,
+                unique: true
+            },
             updatedAt: {
                 type: DataTypes.DATE,
                 defaultValue: DataTypes.NOW
