@@ -11,8 +11,8 @@ import {
     checkTimeBetweenDates,
     convertDateToString
 } from '../../../utils/formatter';
-import BasicThemedModal from '@components/common/BasicThemedModal';
 import { derivePhaseName } from '@client/utils/aria';
+import { THEMES, useThemedModal } from '@client/hooks/useThemedModal';
 
 const StatusCell = styled.div`
     display: flex;
@@ -186,6 +186,17 @@ const DataManagementRow = ({
     setTestPlanVersions
 }) => {
     const { triggerLoad, loadingMessage } = useTriggerLoad();
+    const {
+        themedModal,
+        showThemedModal,
+        setShowThemedModal,
+        setThemedModalTitle,
+        setThemedModalContent,
+        setFocusRef
+    } = useThemedModal({
+        type: THEMES.WARNING,
+        title: 'Error Updating Test Plan Status'
+    });
 
     const [updateTestPlanVersionPhaseMutation] = useMutation(
         UPDATE_TEST_PLAN_VERSION_PHASE
@@ -200,27 +211,6 @@ const DataManagementRow = ({
     );
     const [recommendedTestPlanVersions, setRecommendedTestPlanVersions] =
         useState([]);
-    // const [otherPreviousActiveVersions,setOtherPreviousActiveVersions] = useState([])
-
-    // TODO: Make this into reusable component
-    const [showThemedModal, setShowThemedModal] = useState(false);
-    const [themedModalType, setThemedModalType] = useState('warning');
-    const [themedModalTitle, setThemedModalTitle] = useState('');
-    const [themedModalContent, setThemedModalContent] = useState(<></>);
-
-    const showThemedMessage = (title, content, theme) => {
-        setThemedModalTitle(title);
-        setThemedModalContent(content);
-        setThemedModalType(theme);
-        setShowThemedModal(true);
-    };
-
-    const onThemedModalClose = () => {
-        setShowThemedModal(false);
-
-        // TODO: Identify focus point
-        // someref.current.focus();
-    };
 
     useEffect(() => {
         // TestPlanVersions separated by current TestPlan's phase
@@ -307,12 +297,9 @@ const DataManagementRow = ({
             }, 'Updating Test Plan Version Phase');
         } catch (e) {
             console.error(e.message);
-
-            showThemedMessage(
-                'Error Updating Test Plan Version Phase',
-                <>{e.message}</>,
-                'warning'
-            );
+            setShowThemedModal(true);
+            setThemedModalTitle('Error Updating Test Plan Version Phase');
+            setThemedModalContent(<>{e.message}</>);
         }
     };
 
@@ -559,16 +546,9 @@ const DataManagementRow = ({
                         </span>
                         {isAdmin && (
                             <Button
+                                ref={ref => setFocusRef(ref)}
                                 variant="secondary"
                                 onClick={async () => {
-                                    // TODO
-                                    // console.info(
-                                    //     'IMPLEMENT advance to',
-                                    //     testPlanVersionDataToInclude
-                                    //         ? testPlanVersionDataToInclude
-                                    //         : 'use current test run data'
-                                    // );
-
                                     await handleClickUpdateTestPlanVersionPhase(
                                         latestVersion.id,
                                         'DRAFT',
@@ -641,16 +621,9 @@ const DataManagementRow = ({
                             </span>
                             {isAdmin && (
                                 <Button
+                                    ref={ref => setFocusRef(ref)}
                                     variant="secondary"
                                     onClick={async () => {
-                                        // TODO
-                                        // console.info(
-                                        //     'IMPLEMENT advance to',
-                                        //     testPlanVersionDataToInclude
-                                        //         ? testPlanVersionDataToInclude
-                                        //         : 'use current test run data'
-                                        // );
-
                                         await handleClickUpdateTestPlanVersionPhase(
                                             latestVersion.id,
                                             'CANDIDATE',
@@ -806,16 +779,9 @@ const DataManagementRow = ({
                             </span>
                             {shouldShowAdvanceButton && (
                                 <Button
+                                    ref={ref => setFocusRef(ref)}
                                     variant="secondary"
                                     onClick={async () => {
-                                        // TODO
-                                        // console.info(
-                                        //     'IMPLEMENT advance to',
-                                        //     testPlanVersionDataToInclude
-                                        //         ? testPlanVersionDataToInclude
-                                        //         : 'use current test run data'
-                                        // );
-
                                         await handleClickUpdateTestPlanVersionPhase(
                                             latestVersion.id,
                                             'RECOMMENDED',
@@ -951,23 +917,7 @@ const DataManagementRow = ({
                 </td>
             </tr>
 
-            {showThemedModal && (
-                <BasicThemedModal
-                    show={showThemedModal}
-                    theme={themedModalType}
-                    title={themedModalTitle}
-                    dialogClassName="modal-50w"
-                    content={themedModalContent}
-                    actionButtons={[
-                        {
-                            text: 'Ok',
-                            action: onThemedModalClose
-                        }
-                    ]}
-                    handleClose={onThemedModalClose}
-                    showCloseAction={false}
-                />
-            )}
+            {showThemedModal && themedModal}
         </LoadingStatus>
     );
 };
