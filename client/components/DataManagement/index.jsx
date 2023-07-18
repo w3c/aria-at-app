@@ -80,7 +80,7 @@ const DataManagement = () => {
                 </h2>
             )}
 
-            {emptyTestPlans && (
+            {emptyTestPlans && isAdmin && (
                 <Alert
                     key="alert-configure"
                     variant="danger"
@@ -90,16 +90,24 @@ const DataManagement = () => {
                 </Alert>
             )}
 
-            <p data-testid="data-management-instructions">
-                Manage Test Plans in the Test Queue and their phases.
-            </p>
+            {isAdmin ? (
+                <>
+                    <p data-testid="data-management-instructions">
+                        Manage Test Plans in the Test Queue and their phases.
+                    </p>
 
-            <ManageTestQueue
-                ats={ats}
-                browsers={browsers}
-                testPlanVersions={testPlanVersions}
-                triggerUpdate={refetch}
-            />
+                    <ManageTestQueue
+                        ats={ats}
+                        browsers={browsers}
+                        testPlanVersions={testPlanVersions}
+                        triggerUpdate={refetch}
+                    />
+                </>
+            ) : (
+                <p data-testid="data-management-instructions">
+                    View Test Plans in the Test Queue and their phases.
+                </p>
+            )}
 
             <h2>Test Plans Status Summary</h2>
             <Table
