@@ -245,6 +245,14 @@ const updatePhaseResolver = async (
         );
     }
 
+    if (
+        testPlanReports.length === 0 &&
+        (phase === 'CANDIDATE' || phase === 'RECOMMENDED')
+    ) {
+        // Stop update if no testPlanReports were found
+        throw new Error('No test plan reports found');
+    }
+
     for (const testPlanReport of testPlanReports) {
         const runnableTests = runnableTestsResolver(testPlanReport);
         let updateParams = {};
