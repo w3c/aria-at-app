@@ -47,19 +47,33 @@
 }
 
 .data-management.table thead tr th {
-    padding-left: 1rem;
-    padding-right: 1rem;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
 }
 
 .data-management.table tbody tr th {
-    padding: 1rem;
+    padding: 0.75rem;
+}
+
+/* Test Plan column & Covered ATs column */
+.data-management.table thead tr th:nth-of-type(-n + 2),
+.data-management.table tbody tr th:nth-of-type(1),
+.data-management.table tbody tr td:nth-of-type(1) {
+    max-width: 200px;
+}
+
+/* RD, DRAFT, CANDIDATE & RECOMMENDED columns */
+.data-management.table thead tr th:nth-last-of-type(-n + 4),
+.data-management.table tbody tr td:nth-last-of-type(-n + 4) {
+    max-width: 150px;
 }
 
 .data-management.table tbody tr td {
     position: relative;
 }
 
-.data-management.table tbody tr:nth-of-type(even), .table-striped tbody tr:nth-of-type(even) {
+.data-management.table tbody tr:nth-of-type(even),
+.table-striped tbody tr:nth-of-type(even) {
     background-color: #fff;
 }
 
