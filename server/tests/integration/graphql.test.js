@@ -150,6 +150,7 @@ describe('graphql', () => {
             ['TestPlanVersion', 'candidatePhaseReachedAt'],
             ['TestPlanVersion', 'recommendedPhaseReachedAt'],
             ['TestPlanVersion', 'recommendedPhaseTargetDate'],
+            ['TestPlanVersion', 'archivedAtDate'],
             ['Test', 'viewers']
         ];
         ({
@@ -278,9 +279,11 @@ describe('graphql', () => {
                         __typename
                         id
                         phase
+                        draftPhaseReachedAt
                         candidatePhaseReachedAt
                         recommendedPhaseTargetDate
                         recommendedPhaseReachedAt
+                        archivedAtDate
                     }
                     testPlanVersion(id: 1) {
                         __typename
