@@ -47,16 +47,24 @@ describe('Data Management page', () => {
         await waitFor(() => new Promise(res => setTimeout(res, 0)));
 
         const { queryAllByText } = wrapper;
-        const statusSummaryElement = queryAllByText(/Status Summary/i);
-        const testPlansElement = queryAllByText(/Test Plans/i);
-        const phaseElement = queryAllByText(/Phase/i);
-        const candidateElements = queryAllByText(/Candidate/i);
-        const notTestedElements = queryAllByText(/Not tested/i);
+        const statusSummaryElement = queryAllByText(
+            /Test Plans Status Summary/i
+        );
+        const testPlanElement = queryAllByText(/Test Plan/i);
+        const coveredAtElement = queryAllByText(/Covered AT/i);
+        const overallStatusElement = queryAllByText(/Overall Status/i);
+        const rdElement = queryAllByText(/R&D Version/i);
+        const draftElement = queryAllByText(/Draft Review/i);
+        const candidateElement = queryAllByText(/Candidate Review/i);
+        const recommendedElement = queryAllByText(/Recommended Version/i);
 
         expect(statusSummaryElement.length).toBeGreaterThanOrEqual(1);
-        expect(testPlansElement.length).toBeGreaterThanOrEqual(1);
-        expect(phaseElement.length).toBeGreaterThanOrEqual(1);
-        expect(candidateElements.length).toBeGreaterThanOrEqual(1);
-        expect(notTestedElements.length).toBeGreaterThanOrEqual(1);
+        expect(testPlanElement.length).toBeGreaterThanOrEqual(1);
+        expect(coveredAtElement.length).toBeGreaterThanOrEqual(1);
+        expect(overallStatusElement.length).toBeGreaterThanOrEqual(1);
+        expect(rdElement.length).toBeGreaterThanOrEqual(1);
+        expect(draftElement.length).toBeGreaterThanOrEqual(1);
+        expect(candidateElement.length).toBeGreaterThanOrEqual(1);
+        expect(recommendedElement.length).toBeGreaterThanOrEqual(1);
     });
 });
