@@ -376,7 +376,7 @@ const DataManagementRow = ({
                         {derivePhaseName(phase)}
                     </PhaseText>
                     <span>
-                        Recommended Since{' '}
+                        Since{' '}
                         <b>
                             {convertDateToString(
                                 earliestVersionDate,
