@@ -13,6 +13,7 @@ import {
 } from '../../../utils/formatter';
 import { derivePhaseName } from '@client/utils/aria';
 import { THEMES, useThemedModal } from '@client/hooks/useThemedModal';
+import BasicModal from '@components/common/BasicModal';
 
 const StatusCell = styled.div`
     display: flex;
@@ -211,6 +212,9 @@ const DataManagementRow = ({
     );
     const [recommendedTestPlanVersions, setRecommendedTestPlanVersions] =
         useState([]);
+
+    const [showAdvanceModal, setShowAdvanceModal] = useState(false);
+    const [advanceModalData, setAdvanceModalData] = useState({});
 
     useEffect(() => {
         // TestPlanVersions separated by current TestPlan's phase
@@ -549,11 +553,23 @@ const DataManagementRow = ({
                                 ref={ref => setFocusRef(ref)}
                                 variant="secondary"
                                 onClick={async () => {
-                                    await handleClickUpdateTestPlanVersionPhase(
-                                        latestVersion.id,
-                                        'DRAFT',
-                                        testPlanVersionDataToInclude
-                                    );
+                                    setShowAdvanceModal(true);
+                                    setAdvanceModalData({
+                                        phase: derivePhaseName('DRAFT'),
+                                        version: convertDateToString(
+                                            latestVersionDate,
+                                            'YY.MM.DD'
+                                        ),
+                                        advanceFunc: () => {
+                                            setShowAdvanceModal(false);
+                                            handleClickUpdateTestPlanVersionPhase(
+                                                latestVersion.id,
+                                                'DRAFT',
+                                                testPlanVersionDataToInclude
+                                            );
+                                        },
+                                        coveredReports: []
+                                    });
                                 }}
                             >
                                 Advance to Draft
@@ -596,6 +612,15 @@ const DataManagementRow = ({
                                 candidateLatestVersion;
                     }
 
+                    const coveredReports = latestVersion.testPlanReports.map(
+                        testPlanReport => {
+                            return {
+                                atName: testPlanReport.at.name,
+                                browserName: testPlanReport.browser.name
+                            };
+                        }
+                    );
+
                     // Phase is "active"
                     insertActivePhaseForTestPlan(latestVersion);
                     return (
@@ -624,11 +649,23 @@ const DataManagementRow = ({
                                     ref={ref => setFocusRef(ref)}
                                     variant="secondary"
                                     onClick={async () => {
-                                        await handleClickUpdateTestPlanVersionPhase(
-                                            latestVersion.id,
-                                            'CANDIDATE',
-                                            testPlanVersionDataToInclude
-                                        );
+                                        setShowAdvanceModal(true);
+                                        setAdvanceModalData({
+                                            phase: derivePhaseName('CANDIDATE'),
+                                            version: convertDateToString(
+                                                latestVersionDate,
+                                                'YY.MM.DD'
+                                            ),
+                                            advanceFunc: () => {
+                                                setShowAdvanceModal(false);
+                                                handleClickUpdateTestPlanVersionPhase(
+                                                    latestVersion.id,
+                                                    'CANDIDATE',
+                                                    testPlanVersionDataToInclude
+                                                );
+                                            },
+                                            coveredReports
+                                        });
                                     }}
                                 >
                                     Advance to Candidate
@@ -709,12 +746,8 @@ const DataManagementRow = ({
                     const { latestVersion, latestVersionDate } =
                         getVersionData(testPlanVersions);
 
-                    const filteredTestPlanReports = testPlanReports.filter(
-                        testPlanReport =>
-                            testPlanReport.testPlanVersion.id ===
-                            latestVersion.id
-                    );
-
+                    const filteredTestPlanReports =
+                        latestVersion.testPlanReports;
                     const uniqueAtObjects = getUniqueAtObjects(
                         filteredTestPlanReports
                     );
@@ -754,6 +787,15 @@ const DataManagementRow = ({
                             (!recommendedTestPlanVersions.length &&
                                 daysBetweenDates > daysToProvideFeedback));
 
+                    const coveredReports = latestVersion.testPlanReports.map(
+                        testPlanReport => {
+                            return {
+                                atName: testPlanReport.at.name,
+                                browserName: testPlanReport.browser.name
+                            };
+                        }
+                    );
+
                     // Phase is "active"
                     insertActivePhaseForTestPlan(latestVersion);
                     return (
@@ -782,11 +824,25 @@ const DataManagementRow = ({
                                     ref={ref => setFocusRef(ref)}
                                     variant="secondary"
                                     onClick={async () => {
-                                        await handleClickUpdateTestPlanVersionPhase(
-                                            latestVersion.id,
-                                            'RECOMMENDED',
-                                            testPlanVersionDataToInclude
-                                        );
+                                        setShowAdvanceModal(true);
+                                        setAdvanceModalData({
+                                            phase: derivePhaseName(
+                                                'RECOMMENDED'
+                                            ),
+                                            version: convertDateToString(
+                                                latestVersionDate,
+                                                'YY.MM.DD'
+                                            ),
+                                            advanceFunc: () => {
+                                                setShowAdvanceModal(false);
+                                                handleClickUpdateTestPlanVersionPhase(
+                                                    latestVersion.id,
+                                                    'RECOMMENDED',
+                                                    testPlanVersionDataToInclude
+                                                );
+                                            },
+                                            coveredReports
+                                        });
                                     }}
                                 >
                                     Advance to Recommended
@@ -918,6 +974,50 @@ const DataManagementRow = ({
             </tr>
 
             {showThemedModal && themedModal}
+            {showAdvanceModal && (
+                <BasicModal
+                    show={showAdvanceModal}
+                    closeButton={false}
+                    title={`Advancing test plan, ${testPlan.title}, V${advanceModalData.version}`}
+                    content={
+                        <>
+                            This version will be updated to{' '}
+                            <b>{advanceModalData.phase}</b>.{' '}
+                            {advanceModalData.coveredReports?.length ? (
+                                <>
+                                    <br />
+                                    <br />
+                                    The included reports will cover:
+                                    <ul>
+                                        {advanceModalData.coveredReports.map(
+                                            e => (
+                                                <li
+                                                    key={`${testPlan.id}${e.atName}${e.browserName}`}
+                                                >
+                                                    <b>
+                                                        {e.atName} and{' '}
+                                                        {e.browserName}
+                                                    </b>
+                                                </li>
+                                            )
+                                        )}
+                                    </ul>
+                                    Do you want to continue?
+                                </>
+                            ) : (
+                                <>Do you want to continue?</>
+                            )}
+                        </>
+                    }
+                    actionLabel="Continue"
+                    closeLabel="Cancel"
+                    handleAction={async () => {
+                        await advanceModalData.advanceFunc();
+                    }}
+                    handleClose={() => setShowAdvanceModal(false)}
+                    staticBackdrop={true}
+                />
+            )}
         </LoadingStatus>
     );
 };
