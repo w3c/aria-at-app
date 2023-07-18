@@ -983,7 +983,7 @@ DataManagementRow.propTypes = {
             id: PropTypes.string.isRequired,
             at: PropTypes.object,
             browser: PropTypes.object,
-            issues: PropTypes.object
+            issues: PropTypes.array
         })
     ).isRequired,
     setTestPlanVersions: PropTypes.func
