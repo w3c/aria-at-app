@@ -3,7 +3,8 @@ const ModelService = require('./ModelService');
 const {
     AT_ATTRIBUTES,
     AT_VERSION_ATTRIBUTES,
-    AT_MODE_ATTRIBUTES
+    AT_MODE_ATTRIBUTES,
+    BROWSER_ATTRIBUTES
 } = require('./helpers');
 const { Sequelize, At, AtVersion, AtMode } = require('../');
 const { Op } = Sequelize;
@@ -37,6 +38,15 @@ const atModeAssociation = atModeAttributes => ({
     attributes: atModeAttributes
 });
 
+/**
+ * @param browserAttributes - Browser attributes
+ * @returns {{association: string, attributes: string[]}}
+ */
+const browserAssociation = browserAttributes => ({
+    association: 'browsers',
+    attributes: browserAttributes
+});
+
 // At
 
 /**
@@ -45,6 +55,7 @@ const atModeAssociation = atModeAttributes => ({
  * @param {string[]} atAttributes  - At attributes to be returned in the result
  * @param {string[]} atVersionAttributes  - AtVersion attributes to be returned in the result
  * @param {string[]} atModeAttributes  - AtMode attributes to be returned in the result
+ * @param {string[]} browserAttributes  - Browser attributes to be returned in the result
  * @param {object} options - Generic options for Sequelize
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
@@ -54,6 +65,7 @@ const getAtById = async (
     atAttributes = AT_ATTRIBUTES,
     atVersionAttributes = AT_VERSION_ATTRIBUTES,
     atModeAttributes = AT_MODE_ATTRIBUTES,
+    browserAttributes = BROWSER_ATTRIBUTES,
     options = {}
 ) => {
     return ModelService.getById(
@@ -62,7 +74,8 @@ const getAtById = async (
         atAttributes,
         [
             atVersionAssociation(atVersionAttributes),
-            atModeAssociation(atModeAttributes)
+            atModeAssociation(atModeAttributes),
+            browserAssociation(browserAttributes)
         ],
         options
     );
@@ -74,6 +87,7 @@ const getAtById = async (
  * @param {string[]} atAttributes  - At attributes to be returned in the result
  * @param {string[]} atVersionAttributes  - AtVersion attributes to be returned in the result
  * @param {string[]} atModeAttributes  - AtMode attributes to be returned in the result
+ * @param {string[]} browserAttributes  - Browser attributes to be returned in the result
  * @param {object} pagination - pagination options for query
  * @param {number} [pagination.page=0] - page to be queried in the pagination result (affected by {@param pagination.enablePagination})
  * @param {number} [pagination.limit=10] - amount of results to be returned per page (affected by {@param pagination.enablePagination})
@@ -89,6 +103,7 @@ const getAts = async (
     atAttributes = AT_ATTRIBUTES,
     atVersionAttributes = AT_VERSION_ATTRIBUTES,
     atModeAttributes = AT_MODE_ATTRIBUTES,
+    browserAttributes = BROWSER_ATTRIBUTES,
     pagination = {},
     options = {}
 ) => {
@@ -103,7 +118,8 @@ const getAts = async (
         atAttributes,
         [
             atVersionAssociation(atVersionAttributes),
-            atModeAssociation(atModeAttributes)
+            atModeAssociation(atModeAttributes),
+            browserAssociation(browserAttributes)
         ],
         pagination,
         options
@@ -115,6 +131,7 @@ const getAts = async (
  * @param {string[]} atAttributes  - At attributes to be returned in the result
  * @param {string[]} atVersionAttributes  - AtVersion attributes to be returned in the result
  * @param {string[]} atModeAttributes  - AtMode attributes to be returned in the result
+ * @param {string[]} browserAttributes  - Browser attributes to be returned in the result
  * @param {object} options - Generic options for Sequelize
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
@@ -124,6 +141,7 @@ const createAt = async (
     atAttributes = AT_ATTRIBUTES,
     atVersionAttributes = AT_VERSION_ATTRIBUTES,
     atModeAttributes = AT_MODE_ATTRIBUTES,
+    browserAttributes = BROWSER_ATTRIBUTES,
     options = {}
 ) => {
     const atResult = await ModelService.create(At, { name });
@@ -136,7 +154,8 @@ const createAt = async (
         atAttributes,
         [
             atVersionAssociation(atVersionAttributes),
-            atModeAssociation(atModeAttributes)
+            atModeAssociation(atModeAttributes),
+            browserAssociation(browserAttributes)
         ],
         options
     );
@@ -148,6 +167,7 @@ const createAt = async (
  * @param {string[]} atAttributes  - At attributes to be returned in the result
  * @param {string[]} atVersionAttributes  - AtVersion attributes to be returned in the result
  * @param {string[]} atModeAttributes  - AtMode attributes to be returned in the result
+ * @param {string[]} browserAttributes  - Browser attributes to be returned in the result
  * @param {object} options - Generic options for Sequelize
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
@@ -158,6 +178,7 @@ const updateAt = async (
     atAttributes = AT_ATTRIBUTES,
     atVersionAttributes = AT_VERSION_ATTRIBUTES,
     atModeAttributes = AT_MODE_ATTRIBUTES,
+    browserAttributes = BROWSER_ATTRIBUTES,
     options = {}
 ) => {
     await ModelService.update(At, { id }, { name }, options);
@@ -168,7 +189,8 @@ const updateAt = async (
         atAttributes,
         [
             atVersionAssociation(atVersionAttributes),
-            atModeAssociation(atModeAttributes)
+            atModeAssociation(atModeAttributes),
+            browserAssociation(browserAttributes)
         ],
         options
     );

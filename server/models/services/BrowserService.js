@@ -1,5 +1,9 @@
 const ModelService = require('./ModelService');
-const { BROWSER_ATTRIBUTES, BROWSER_VERSION_ATTRIBUTES } = require('./helpers');
+const {
+    BROWSER_ATTRIBUTES,
+    BROWSER_VERSION_ATTRIBUTES,
+    AT_ATTRIBUTES
+} = require('./helpers');
 const { Sequelize, Browser, BrowserVersion } = require('../');
 const { Op } = Sequelize;
 
@@ -23,6 +27,15 @@ const browserVersionAssociation = browserVersionAttributes => ({
     attributes: browserVersionAttributes
 });
 
+/**
+ * @param atAttributes - At attributes
+ * @returns {{association: string, attributes: string[]}}
+ */
+const atAssociation = atAttributes => ({
+    association: 'ats',
+    attributes: atAttributes
+});
+
 // Browser
 
 /**
@@ -30,6 +43,7 @@ const browserVersionAssociation = browserVersionAttributes => ({
  * @param {number} id - unique id of the Browser model being queried
  * @param {string[]} browserAttributes  - Browser attributes to be returned in the result
  * @param {string[]} browserVersionAttributes  - BrowserVersion attributes to be returned in the result
+ * @param {string[]} atAttributes  - At attributes to be returned in the result
  * @param {object} options - Generic options for Sequelize
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
@@ -38,13 +52,17 @@ const getBrowserById = async (
     id,
     browserAttributes = BROWSER_ATTRIBUTES,
     browserVersionAttributes = BROWSER_VERSION_ATTRIBUTES,
+    atAttributes = AT_ATTRIBUTES,
     options = {}
 ) => {
     return ModelService.getById(
         Browser,
         id,
         browserAttributes,
-        [browserVersionAssociation(browserVersionAttributes)],
+        [
+            browserVersionAssociation(browserVersionAttributes),
+            atAssociation(atAttributes)
+        ],
         options
     );
 };
@@ -54,6 +72,7 @@ const getBrowserById = async (
  * @param {object} filter - use this define conditions to be passed to Sequelize's where clause
  * @param {string[]} browserAttributes  - Browser attributes to be returned in the result
  * @param {string[]} browserVersionAttributes  - BrowserVersion attributes to be returned in the result
+ * @param {string[]} atAttributes  - At attributes to be returned in the result
  * @param {object} pagination - pagination options for query
  * @param {number} [pagination.page=0] - page to be queried in the pagination result (affected by {@param pagination.enablePagination})
  * @param {number} [pagination.limit=10] - amount of results to be returned per page (affected by {@param pagination.enablePagination})
@@ -68,6 +87,7 @@ const getBrowsers = async (
     filter = {},
     browserAttributes = BROWSER_ATTRIBUTES,
     browserVersionAttributes = BROWSER_VERSION_ATTRIBUTES,
+    atAttributes = AT_ATTRIBUTES,
     pagination = {},
     options = {}
 ) => {
@@ -80,7 +100,10 @@ const getBrowsers = async (
         Browser,
         where,
         browserAttributes,
-        [browserVersionAssociation(browserVersionAttributes)],
+        [
+            browserVersionAssociation(browserVersionAttributes),
+            atAssociation(atAttributes)
+        ],
         pagination,
         options
     );
@@ -90,6 +113,7 @@ const getBrowsers = async (
  * @param {object} createParams - values to be used to create the Browser record
  * @param {string[]} browserAttributes  - Browser attributes to be returned in the result
  * @param {string[]} browserVersionAttributes  - BrowserVersion attributes to be returned in the result
+ * @param {string[]} atAttributes  - At attributes to be returned in the result
  * @param {object} options - Generic options for Sequelize
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
@@ -98,6 +122,7 @@ const createBrowser = async (
     { name },
     browserAttributes = BROWSER_ATTRIBUTES,
     browserVersionAttributes = BROWSER_VERSION_ATTRIBUTES,
+    atAttributes = AT_ATTRIBUTES,
     options = {}
 ) => {
     const browserResult = await ModelService.create(Browser, { name }, options);
@@ -108,7 +133,10 @@ const createBrowser = async (
         Browser,
         id,
         browserAttributes,
-        [browserVersionAssociation(browserVersionAttributes)],
+        [
+            browserVersionAssociation(browserVersionAttributes),
+            atAssociation(atAttributes)
+        ],
         options
     );
 };
@@ -118,6 +146,7 @@ const createBrowser = async (
  * @param {object} updateParams - values to be used to update columns for the record being referenced for {@param id}
  * @param {string[]} browserAttributes  - Browser attributes to be returned in the result
  * @param {string[]} browserVersionAttributes  - BrowserVersion attributes to be returned in the result
+ * @param {string[]} atAttributes  - At attributes to be returned in the result
  * @param {object} options - Generic options for Sequelize
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
@@ -127,6 +156,7 @@ const updateBrowser = async (
     { name },
     browserAttributes = BROWSER_ATTRIBUTES,
     browserVersionAttributes = BROWSER_VERSION_ATTRIBUTES,
+    atAttributes = AT_ATTRIBUTES,
     options = {}
 ) => {
     await ModelService.update(Browser, { id }, { name }, options);
@@ -135,7 +165,10 @@ const updateBrowser = async (
         Browser,
         id,
         browserAttributes,
-        [browserVersionAssociation(browserVersionAttributes)],
+        [
+            browserVersionAssociation(browserVersionAttributes),
+            atAssociation(atAttributes)
+        ],
         options
     );
 };

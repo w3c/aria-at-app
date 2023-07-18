@@ -26,6 +26,7 @@ describe('AtModel Data Checks', () => {
         );
         expect(at).toHaveProperty('atVersions');
         expect(at).toHaveProperty('modes');
+        expect(at).toHaveProperty('browsers');
     });
 
     it('should return valid at for id query with no associations', async () => {
@@ -33,7 +34,7 @@ describe('AtModel Data Checks', () => {
         const _id = 1;
 
         // A2
-        const at = await AtService.getAtById(_id, null, [], []);
+        const at = await AtService.getAtById(_id, null, [], [], []);
         const { id, name } = at;
 
         // A3
@@ -46,6 +47,7 @@ describe('AtModel Data Checks', () => {
         );
         expect(at).not.toHaveProperty('atVersions');
         expect(at).not.toHaveProperty('modes');
+        expect(at).not.toHaveProperty('browsers');
     });
 
     it('should not be valid at query', async () => {
@@ -83,6 +85,19 @@ describe('AtModel Data Checks', () => {
         // A3
         expect(modes).toBeInstanceOf(Array);
         expect(modes.length).toBeGreaterThanOrEqual(1);
+    });
+
+    it('should contain valid at with browsers array', async () => {
+        // A1
+        const _id = 1;
+
+        // A2
+        const at = await AtService.getAtById(_id);
+        const { browsers } = at;
+
+        // A3
+        expect(browsers).toBeInstanceOf(Array);
+        expect(browsers.length).toBeGreaterThanOrEqual(1);
     });
 
     it('should create and remove a new at', async () => {
@@ -160,7 +175,8 @@ describe('AtModel Data Checks', () => {
                     id: expect.any(Number),
                     name: expect.any(String),
                     atVersions: expect.any(Array),
-                    modes: expect.any(Array)
+                    modes: expect.any(Array),
+                    browsers: expect.any(Array)
                 })
             ])
         );
@@ -182,7 +198,8 @@ describe('AtModel Data Checks', () => {
                     id: expect.any(Number),
                     name: expect.stringMatching(/nvd/gi),
                     atVersions: expect.any(Array),
-                    modes: expect.any(Array)
+                    modes: expect.any(Array),
+                    browsers: expect.any(Array)
                 })
             ])
         );
@@ -190,7 +207,7 @@ describe('AtModel Data Checks', () => {
 
     it('should return collection of ats with paginated structure', async () => {
         // A1
-        const result = await AtService.getAts('', {}, ['name'], [], [], {
+        const result = await AtService.getAts('', {}, ['name'], [], [], [], {
             enablePagination: true
         });
 

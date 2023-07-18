@@ -33,17 +33,20 @@ app.set('views', resolve(handlebarsPath, 'views'));
 const millisecondsUntilStale = 5000;
 
 // TODO: Provide through resolvers
-const validAtBrowserCombinations = {
-    JAWS: new Set(['Firefox', 'Chrome']),
-    NVDA: new Set(['Firefox', 'Chrome']),
-    'VoiceOver for macOS': new Set(['Firefox', 'Chrome', 'Safari'])
-};
 
 const queryReports = async () => {
     const { data, errors } = await apolloServer.executeOperation({
         query: gql`
             query {
-                testPlanReports(statuses: [DRAFT, CANDIDATE, RECOMMENDED]) {
+                ats {
+                    id
+                    name
+                    browsers {
+                        id
+                        name
+                    }
+                }
+                testPlanReports(statuses: [CANDIDATE, RECOMMENDED]) {
                     id
                     metrics
                     status
@@ -85,7 +88,11 @@ const queryReports = async () => {
 
     const reportsHashed = hash(data.testPlanReports);
 
-    return { allTestPlanReports: data.testPlanReports, reportsHashed };
+    return {
+        allTestPlanReports: data.testPlanReports,
+        reportsHashed,
+        ats: data.ats
+    };
 };
 
 // As of now, a full query for the complete list of reports is needed to build
@@ -99,10 +106,7 @@ const getLatestReportsForPattern = ({ allTestPlanReports, pattern }) => {
     let title;
 
     const testPlanReports = allTestPlanReports.filter(report => {
-        if (
-            report.testPlanVersion.testPlan.id === pattern &&
-            report.status !== 'DRAFT'
-        ) {
+        if (report.testPlanVersion.testPlan.id === pattern) {
             title = report.testPlanVersion.title;
             return true;
         }
@@ -197,56 +201,8 @@ const getLatestReportsForPattern = ({ allTestPlanReports, pattern }) => {
     };
 };
 
-// This function gets all the AT + Browser Combinations which have been added to the Test Queue at
-// some point; this means if the combination has never been added, a valid combination will be
-// marked as 'Not Applicable' rather than 'Data Not Yet Available'.
-/*const getAllAtBrowserCombinations = reports => {
-    const combinations = {};
-
-    reports.forEach(report => {
-        if (!(report.at.name in combinations)) {
-            combinations[report.at.name] = new Set();
-        }
-        combinations[report.at.name].add(report.browser.name);
-    });
-
-    return combinations;
-};*/
-
-// TODO: Provide through resolvers
-// Check if the applicable ATs reported for the tests found for a report link to an already known
-// reference of which ATs match against which browsers
-const getAllAtBrowserCombinations = reports => {
-    const combinations = {};
-    const loggedAtIds = [];
-
-    const report = reports[0];
-    report.testPlanVersion.tests.forEach(test => {
-        const atIds = test.ats.map(at => at.id);
-
-        if (!loggedAtIds.includes(1) && atIds.includes('1')) {
-            combinations[Object.keys(validAtBrowserCombinations)[0]] =
-                Object.values(validAtBrowserCombinations)[0];
-            loggedAtIds.push(1);
-        }
-
-        if (!loggedAtIds.includes(2) && atIds.includes('2')) {
-            combinations[Object.keys(validAtBrowserCombinations)[1]] =
-                Object.values(validAtBrowserCombinations)[1];
-            loggedAtIds.push(2);
-        }
-
-        if (!loggedAtIds.includes(3) && atIds.includes('3')) {
-            combinations[Object.keys(validAtBrowserCombinations)[2]] =
-                Object.values(validAtBrowserCombinations)[2];
-            loggedAtIds.push(3);
-        }
-    });
-
-    return combinations;
-};
-
 const renderEmbed = ({
+    ats,
     allTestPlanReports,
     queryTitle,
     pattern,
@@ -261,8 +217,17 @@ const renderEmbed = ({
         status,
         reportsByAt
     } = getLatestReportsForPattern({ pattern, allTestPlanReports });
-    const allAtBrowserCombinations =
-        getAllAtBrowserCombinations(allTestPlanReports);
+    const allAtBrowserCombinations = Object.fromEntries(
+        ats.map(at => {
+            return [
+                at.name,
+                at.browsers.map(browser => {
+                    return browser.name;
+                })
+            ];
+        })
+    );
+
     return hbs.renderView(resolve(handlebarsPath, 'views/main.hbs'), {
         layout: 'index',
         dataEmpty: Object.keys(reportsByAt).length === 0,
@@ -298,8 +263,10 @@ app.get('/reports/:pattern', async (req, res) => {
     const protocol = /dev|vagrant/.test(process.env.ENVIRONMENT)
         ? 'http://'
         : 'https://';
-    const { allTestPlanReports, reportsHashed } = await queryReportsCached();
+    const { allTestPlanReports, reportsHashed, ats } =
+        await queryReportsCached();
     const embedRendered = await renderEmbedCached({
+        ats,
         allTestPlanReports,
         reportsHashed,
         queryTitle,

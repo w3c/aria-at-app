@@ -27,11 +27,22 @@ module.exports = function (sequelize, DataTypes) {
 
     Model.BROWSER_VERSION_ASSOCIATION = { as: 'browserVersions' };
 
+    Model.ATS_ASSOCIATION = {
+        through: 'AtBrowsers',
+        as: 'ats'
+    };
+
     Model.associate = function (models) {
         Model.hasMany(models.BrowserVersion, {
             ...Model.BROWSER_VERSION_ASSOCIATION,
             foreignKey: 'browserId',
             sourceKey: 'id'
+        });
+
+        Model.belongsToMany(models.At, {
+            ...Model.ATS_ASSOCIATION,
+            foreignKey: 'browserId',
+            otherKey: 'atId'
         });
     };
 
