@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
 
 export const DATA_MANAGEMENT_PAGE_QUERY = gql`
-    query TestManagementPage {
+    query DataManagementPage {
         me {
             id
             username
@@ -31,44 +31,41 @@ export const DATA_MANAGEMENT_PAGE_QUERY = gql`
             phase
             gitSha
             gitMessage
-            testPlan {
-                directory
-            }
             updatedAt
             draftPhaseReachedAt
             candidatePhaseReachedAt
             recommendedPhaseReachedAt
+            testPlan {
+                directory
+            }
+            testPlanReports {
+                id
+                at {
+                    id
+                    name
+                }
+                browser {
+                    id
+                    name
+                }
+                issues {
+                    link
+                    isOpen
+                    feedbackType
+                }
+            }
         }
         testPlanReports {
             id
-            status
             at {
-                id
-                name
-            }
-            latestAtVersionReleasedAt {
-                id
-                name
-                releasedAt
-            }
-            browser {
                 id
                 name
             }
             testPlanVersion {
                 id
-                title
-                gitSha
-                gitMessage
                 testPlan {
                     directory
                 }
-                updatedAt
-            }
-            issues {
-                link
-                isOpen
-                feedbackType
             }
         }
     }
@@ -91,13 +88,29 @@ export const UPDATE_TEST_PLAN_VERSION_PHASE = gql`
                     phase
                     gitSha
                     gitMessage
-                    testPlan {
-                        directory
-                    }
                     updatedAt
                     draftPhaseReachedAt
                     candidatePhaseReachedAt
                     recommendedPhaseReachedAt
+                    testPlan {
+                        directory
+                    }
+                    testPlanReports {
+                        id
+                        at {
+                            id
+                            name
+                        }
+                        browser {
+                            id
+                            name
+                        }
+                        issues {
+                            link
+                            isOpen
+                            feedbackType
+                        }
+                    }
                 }
             }
         }
