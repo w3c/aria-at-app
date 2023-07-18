@@ -12,7 +12,7 @@ export const buildTestPageUrl = (gitSha, directory, testReferencePath) => {
 export const derivePhaseName = name => {
     switch (name) {
         case 'RD':
-            return 'R&D Complete';
+            return 'R&D';
         case 'DRAFT':
             return 'Draft';
         case 'CANDIDATE':
