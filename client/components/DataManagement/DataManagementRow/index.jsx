@@ -989,7 +989,7 @@ const DataManagementRow = ({
                                 <>
                                     <br />
                                     <br />
-                                    The included reports will cover:
+                                    The included reports cover:
                                     <ul>
                                         {advanceModalData.coveredReports.map(
                                             e => {
