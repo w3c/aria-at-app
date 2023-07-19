@@ -122,12 +122,13 @@ module.exports = {
                     }
                 }
 
-                if (needsUpdate)
+                if (needsUpdate) {
                     // eslint-disable-next-line no-console
                     console.info(
                         `=== Fixing unexpectedBehavior results for TestPlanRun:${testPlanRunId} ===`
                     );
-                await updateTestPlanRun(testPlanRunId, updateParams);
+                    await updateTestPlanRun(testPlanRunId, updateParams);
+                }
             }
 
             for (let i = 0; i < testPlanReportsData.length; i++) {
