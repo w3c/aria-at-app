@@ -2,34 +2,13 @@
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-    async up(queryInterface, Sequelize) {
+    async up(queryInterface) {
         return queryInterface.sequelize.transaction(async transaction => {
-            await queryInterface.addColumn(
-                'TestPlanReport',
-                'approvedAt',
-                {
-                    type: Sequelize.DataTypes.DATE,
-                    defaultValue: null,
-                    allowNull: true
-                },
-                { transaction }
-            );
-
-            await queryInterface.sequelize.query(
-                `UPDATE "TestPlanReport"
-                        SET "approvedAt" = "candidateStatusReachedAt"
-                        WHERE "candidateStatusReachedAt" IS NOT NULL`,
-                {
-                    transaction
-                }
-            );
-
-            await queryInterface.removeColumn(
+            await queryInterface.renameColumn(
                 'TestPlanReport',
                 'candidateStatusReachedAt',
-                {
-                    transaction
-                }
+                'approvedAt',
+                { transaction }
             );
             await queryInterface.removeColumn(
                 'TestPlanReport',
@@ -50,18 +29,10 @@ module.exports = {
 
     async down(queryInterface, Sequelize) {
         return queryInterface.sequelize.transaction(async transaction => {
-            await queryInterface.removeColumn('TestPlanReport', 'approvedAt', {
-                transaction
-            });
-
-            await queryInterface.addColumn(
+            await queryInterface.renameColumn(
                 'TestPlanReport',
+                'approvedAt',
                 'candidateStatusReachedAt',
-                {
-                    type: Sequelize.DataTypes.DATE,
-                    defaultValue: null,
-                    allowNull: true
-                },
                 { transaction }
             );
 
