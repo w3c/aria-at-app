@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useMutation } from '@apollo/client';
 import PropTypes from 'prop-types';
 import styled from '@emotion/styled';
@@ -198,7 +198,6 @@ const DataManagementRow = ({
         type: THEMES.WARNING,
         title: 'Error Updating Test Plan Status'
     });
-
     const [updateTestPlanVersionPhaseMutation] = useMutation(
         UPDATE_TEST_PLAN_VERSION_PHASE
     );
@@ -215,6 +214,10 @@ const DataManagementRow = ({
 
     const [showAdvanceModal, setShowAdvanceModal] = useState(false);
     const [advanceModalData, setAdvanceModalData] = useState({});
+
+    const draftVersionStringRef = useRef();
+    const candidateVersionStringRef = useRef();
+    const recommendedVersionStringRef = useRef();
 
     useEffect(() => {
         // TestPlanVersions separated by current TestPlan's phase
@@ -298,6 +301,23 @@ const DataManagementRow = ({
 
                     return testPlanVersions;
                 });
+
+                setTimeout(() => {
+                    if (phase === 'DRAFT' && draftVersionStringRef.current)
+                        draftVersionStringRef.current.focus();
+
+                    if (
+                        phase === 'CANDIDATE' &&
+                        candidateVersionStringRef.current
+                    )
+                        candidateVersionStringRef.current.focus();
+
+                    if (
+                        phase === 'RECOMMENDED' &&
+                        recommendedVersionStringRef.current
+                    )
+                        recommendedVersionStringRef.current.focus();
+                }, 250);
             }, 'Updating Test Plan Version Phase');
         } catch (e) {
             console.error(e.message);
@@ -632,6 +652,7 @@ const DataManagementRow = ({
                                     color="#2BA51C"
                                 />
                                 <a
+                                    ref={draftVersionStringRef}
                                     href={`/aria-at/${latestVersion.gitSha}/build/review/${latestVersion.testPlan.directory}.html`}
                                     target="_blank"
                                     rel="noreferrer"
@@ -804,6 +825,7 @@ const DataManagementRow = ({
                         <PhaseCell>
                             <span className="version-string">
                                 <a
+                                    ref={candidateVersionStringRef}
                                     href={`/aria-at/${latestVersion.gitSha}/build/review/${latestVersion.testPlan.directory}.html`}
                                     target="_blank"
                                     rel="noreferrer"
@@ -926,6 +948,7 @@ const DataManagementRow = ({
                                 color="#2BA51C"
                             />
                             <a
+                                ref={recommendedVersionStringRef}
                                 href={`/aria-at/${latestVersion.gitSha}/build/review/${latestVersion.testPlan.directory}.html`}
                                 target="_blank"
                                 rel="noreferrer"
