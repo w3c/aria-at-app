@@ -44,11 +44,6 @@ module.exports = {
                     testResults: testPlanRun.testResults
                 };
 
-                // eslint-disable-next-line no-console
-                console.info(
-                    `=== Id for TestPlanRun results:${testPlanRunId} ===`
-                );
-
                 if (!testPlanRunData[i].testResults) {
                     continue;
                 }
@@ -128,7 +123,11 @@ module.exports = {
                 }
 
                 if (needsUpdate)
-                    await updateTestPlanRun(testPlanRunId, updateParams);
+                    // eslint-disable-next-line no-console
+                    console.info(
+                        `=== Fixing unexpectedBehavior results for TestPlanRun:${testPlanRunId} ===`
+                    );
+                await updateTestPlanRun(testPlanRunId, updateParams);
             }
 
             for (let i = 0; i < testPlanReportsData.length; i++) {
