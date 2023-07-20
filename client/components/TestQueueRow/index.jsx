@@ -11,11 +11,10 @@ import nextId from 'react-id-generator';
 import { Button, Dropdown } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import ATAlert from '../ATAlert';
-import { capitalizeEachWord } from '../../utils/formatter';
 import {
     TEST_PLAN_REPORT_QUERY,
     ASSIGN_TESTER_MUTATION,
-    UPDATE_TEST_PLAN_REPORT_STATUS_MUTATION,
+    UPDATE_TEST_PLAN_REPORT_APPROVED_AT_MUTATION,
     REMOVE_TEST_PLAN_REPORT_MUTATION,
     REMOVE_TESTER_MUTATION,
     REMOVE_TESTER_RESULTS_MUTATION
@@ -54,8 +53,8 @@ const TestQueueRow = ({
     const [themedModalContent, setThemedModalContent] = useState(<></>);
 
     const [assignTester] = useMutation(ASSIGN_TESTER_MUTATION);
-    const [updateTestPlanReportStatus] = useMutation(
-        UPDATE_TEST_PLAN_REPORT_STATUS_MUTATION
+    const [updateTestPlanApprovedAt] = useMutation(
+        UPDATE_TEST_PLAN_REPORT_APPROVED_AT_MUTATION
     );
     const [removeTestPlanReport] = useMutation(
         REMOVE_TEST_PLAN_REPORT_MUTATION
@@ -376,28 +375,26 @@ const TestQueueRow = ({
         }
     };
 
-    const updateReportStatus = async status => {
+    const updateReportStatus = async () => {
         try {
             await triggerLoad(async () => {
-                if (status === 'CANDIDATE') {
-                    await updateTestPlanReportStatus({
-                        variables: {
-                            testReportId: testPlanReport.id,
-                            status: status
-                        }
-                    });
-                    await triggerPageUpdate();
-                } else {
-                    // Unnecessary unless we're introducing a new status which can also be viewed
-                    // on the Test Queue
-                    await updateTestPlanReportStatus({
-                        variables: {
-                            testReportId: testPlanReport.id,
-                            status: status
-                        }
-                    });
-                    await triggerTestPlanReportUpdate();
-                }
+                // if (status === 'CANDIDATE') {
+                await updateTestPlanApprovedAt({
+                    variables: {
+                        testReportId: testPlanReport.id
+                    }
+                });
+                await triggerPageUpdate();
+                // } else {
+                //     // Unnecessary unless we're introducing a new status which can also be viewed
+                //     // on the Test Queue
+                //     await updateTestPlanApprovedAt({
+                //         variables: {
+                //             testReportId: testPlanReport.id
+                //         }
+                //     });
+                //     await triggerTestPlanReportUpdate();
+                // }
             }, 'Updating Test Plan Status');
         } catch (e) {
             showThemedMessage(
@@ -408,46 +405,35 @@ const TestQueueRow = ({
         }
     };
 
-    const evaluateStatusAndResults = () => {
-        const { status: runStatus, conflictsLength } = testPlanReport;
+    const evaluateLabelStatus = () => {
+        const { conflictsLength } = testPlanReport;
+        const { phase } = testPlanVersion;
 
-        let status, results;
+        let labelStatus;
 
         if (isLoading) {
-            status = (
+            labelStatus = (
                 <span className="status-label not-started">Loading ...</span>
             );
         } else if (conflictsLength > 0) {
             let pluralizedStatus = `${conflictsLength} Conflict${
                 conflictsLength === 1 ? '' : 's'
             }`;
-            status = (
+            labelStatus = (
                 <span className="status-label conflicts">
                     {pluralizedStatus}
                 </span>
             );
-        } else if (runStatus === 'DRAFT' || !runStatus) {
-            status = <span className="status-label not-started">Draft</span>;
+        } else if (phase === 'DRAFT' || !phase) {
+            labelStatus = (
+                <span className="status-label not-started">Draft</span>
+            );
         }
 
-        return { status, results };
+        return labelStatus;
     };
 
-    const evaluateNewReportStatus = () => {
-        const { conflictsLength } = testPlanReport;
-
-        // If the results have been marked as draft and there is no conflict,
-        // they can be marked as "CANDIDATE"
-
-        if (conflictsLength === 0 && testPlanRunsWithResults.length > 0) {
-            return 'CANDIDATE';
-        }
-
-        return null;
-    };
-
-    const { status, results } = evaluateStatusAndResults();
-    const nextReportStatus = evaluateNewReportStatus();
+    const labelStatus = evaluateLabelStatus();
 
     const getRowId = tester =>
         [
@@ -530,10 +516,10 @@ const TestQueueRow = ({
                     </div>
                 </td>
                 <td>
-                    <div className="status-wrapper">{status}</div>
+                    <div className="status-wrapper">{labelStatus}</div>
                     {isSignedIn && isTester && (
                         <div className="secondary-actions">
-                            {isAdmin && !isLoading && nextReportStatus && (
+                            {isAdmin && !isLoading && (
                                 <>
                                     <Button
                                         ref={updateTestPlanStatusButtonRef}
@@ -541,19 +527,13 @@ const TestQueueRow = ({
                                         onClick={async () => {
                                             focusButtonRef.current =
                                                 updateTestPlanStatusButtonRef.current;
-                                            await updateReportStatus(
-                                                nextReportStatus
-                                            );
+                                            await updateReportStatus();
                                         }}
                                     >
-                                        Mark as{' '}
-                                        {capitalizeEachWord(nextReportStatus, {
-                                            splitChar: '_'
-                                        })}
+                                        Mark as Final
                                     </Button>
                                 </>
                             )}
-                            {results}
                         </div>
                     )}
                 </td>

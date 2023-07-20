@@ -10,12 +10,11 @@ const {
 
 const testPlanReportsResolver = async (
     _,
-    { statuses, testPlanVersionId, testPlanVersionIds, atId },
+    { phases = [], testPlanVersionId, testPlanVersionIds, atId },
     context,
     info
 ) => {
     const where = {};
-    if (statuses) where.status = statuses;
     if (testPlanVersionId) where.testPlanVersionId = testPlanVersionId;
     if (testPlanVersionIds) where.testPlanVersionId = testPlanVersionIds;
     if (atId) where.atId = atId;
@@ -45,7 +44,7 @@ const testPlanReportsResolver = async (
     if (testPlanReportRawAttributes.includes('conflictsLength'))
         testPlanReportAttributes.push('metrics');
 
-    return getTestPlanReports(
+    const testPlanReports = await getTestPlanReports(
         null,
         where,
         testPlanReportAttributes,
@@ -56,6 +55,12 @@ const testPlanReportsResolver = async (
         null,
         { order: [['createdAt', 'desc']] }
     );
+
+    if (phases.length) {
+        return testPlanReports.filter(testPlanReport =>
+            phases.includes(testPlanReport.testPlanVersion.phase)
+        );
+    } else return testPlanReports;
 };
 
 module.exports = testPlanReportsResolver;

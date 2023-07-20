@@ -244,10 +244,7 @@ const updateTestPlanReportTestPlanVersionResolver = async (
 
     // TODO: If no input.testPlanVersionId, infer it by whatever the latest is for this directory
     const [foundOrCreatedTestPlanReport, createdLocationsOfData] =
-        await getOrCreateTestPlanReport(input, {
-            // TODO: Pass a boolean on taking the current testPlanReport's status or use DRAFT
-            status: currentTestPlanReport.status
-        });
+        await getOrCreateTestPlanReport(input);
 
     const candidatePhaseReachedAt =
         currentTestPlanReport.candidatePhaseReachedAt;

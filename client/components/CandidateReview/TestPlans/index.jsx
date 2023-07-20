@@ -22,7 +22,7 @@ import {
     LoadingStatus,
     useTriggerLoad
 } from '@components/common/LoadingStatus';
-import { UPDATE_TEST_PLAN_REPORT_STATUS_MUTATION } from '@components/TestQueue/queries';
+// import { UPDATE_TEST_PLAN_REPORT_STATUS_MUTATION } from '@components/TestQueue/queries';
 import { UPDATE_TEST_PLAN_VERSION_RECOMMENDED_TARGET_DATE_MUTATION } from '@components/CandidateReview/queries';
 import UpdateTargetDateModal from '@components/common/UpdateTargetDateModal';
 import ClippedProgressBar from '@components/common/ClippedProgressBar';
@@ -199,9 +199,9 @@ const TestPlans = ({ testPlanVersions, triggerPageUpdate = () => {} }) => {
         title: 'Error Updating Test Plan Status'
     });
 
-    const [updateTestPlanReportStatus] = useMutation(
-        UPDATE_TEST_PLAN_REPORT_STATUS_MUTATION
-    );
+    // const [updateTestPlanReportStatus] = useMutation(
+    //     UPDATE_TEST_PLAN_REPORT_STATUS_MUTATION
+    // );
     const [updateTestPlanVersionRecommendedTargetDate] = useMutation(
         UPDATE_TEST_PLAN_VERSION_RECOMMENDED_TARGET_DATE_MUTATION
     );
@@ -240,12 +240,12 @@ const TestPlans = ({ testPlanVersions, triggerPageUpdate = () => {} }) => {
         try {
             const updateTestPlanReportPromises = testPlanReports.map(
                 testPlanReport => {
-                    return updateTestPlanReportStatus({
-                        variables: {
-                            testReportId: testPlanReport.id,
-                            status
-                        }
-                    });
+                    // return updateTestPlanReportStatus({
+                    //     variables: {
+                    //         testReportId: testPlanReport.id,
+                    //         status
+                    //     }
+                    // });
                 }
             );
 

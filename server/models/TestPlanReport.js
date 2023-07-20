@@ -1,9 +1,4 @@
 const MODEL_NAME = 'TestPlanReport';
-const STATUS = {
-    DRAFT: 'DRAFT',
-    CANDIDATE: 'CANDIDATE',
-    RECOMMENDED: 'RECOMMENDED'
-};
 
 module.exports = function (sequelize, DataTypes) {
     const Model = sequelize.define(
@@ -14,11 +9,6 @@ module.exports = function (sequelize, DataTypes) {
                 allowNull: false,
                 primaryKey: true,
                 autoIncrement: true
-            },
-            status: {
-                type: DataTypes.TEXT,
-                allowNull: false,
-                defaultValue: STATUS.DRAFT
             },
             testPlanVersionId: { type: DataTypes.INTEGER },
             testPlanId: { type: DataTypes.INTEGER },
@@ -37,6 +27,11 @@ module.exports = function (sequelize, DataTypes) {
                 type: DataTypes.JSONB,
                 defaultValue: {},
                 allowNull: false
+            },
+            approvedAt: {
+                type: DataTypes.DATE,
+                defaultValue: null,
+                allowNull: true
             }
         },
         {
@@ -44,10 +39,6 @@ module.exports = function (sequelize, DataTypes) {
             tableName: MODEL_NAME
         }
     );
-
-    Model.DRAFT = STATUS.DRAFT;
-    Model.CANDIDATE = STATUS.CANDIDATE;
-    Model.RECOMMENDED = STATUS.RECOMMENDED;
 
     Model.TEST_PLAN_VERSION_ASSOCIATION = { foreignKey: 'testPlanVersionId' };
 

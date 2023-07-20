@@ -188,28 +188,6 @@ const graphqlSchema = gql`
         releasedAt: Timestamp
     }
 
-    # TODO: Determine if needed following 2021 Working Mode changes
-    # https://github.com/w3c/aria-at/wiki/Working-Mode
-    # """
-    # To make sure Test Plans are relevant, they need to be reviewed by community
-    # stakeholders such as AT vendors.
-    # """
-    # enum TestPlanVersionStatus {
-    #     """
-    #     Default value meaning the source has been imported and the test plan
-    #     can be reviewed internally.
-    #     """
-    #     DRAFT
-    #     """
-    #     Receiving review from stakeholders.
-    #     """
-    #     CANDIDATE
-    #     """
-    #     Wide review phase complete and ready to record test results.
-    #     """
-    #     RECOMMENDED
-    # }
-
     """
     A suite of tests which keeps its identity as it evolves over time.
     """
@@ -236,25 +214,11 @@ const graphqlSchema = gql`
         Gets the most recent version imported from the test plan's directory.
         """
         latestTestPlanVersion: TestPlanVersion
-        # latestTestPlanVersion(
-        #     # TODO: Waiting for TestPlanVersionStatus to be implemented
-        #     status: TestPlanVersionStatus
-        #
-        #     # TODO: determine if we need to filter test plans with no results
-        #     testPlanReportStatuses: [TestPlanReportStatus]
-        # ): TestPlanVersion
 
         """
         Gets all historic versions of the test plan.
         """
         testPlanVersions: [TestPlanVersion]!
-        # testPlanVersions(
-        #     # TODO: Waiting for TestPlanVersionStatus to be implemented
-        #     status: TestPlanVersionStatus
-        #
-        #     # TODO: determine if we need to filter test plans with no results
-        #     testPlanReportStatuses: [TestPlanReportStatus]
-        # ): [TestPlanVersion]!
     }
 
     """
@@ -296,18 +260,8 @@ const graphqlSchema = gql`
         The title of the TestPlan at this point in time.
         """
         title: String
-        # TODO: Waiting for TestPlanVersionStatus to be needed
-        # status: TestPlanVersionStatus!
-
-        # TODO: decide whether to use this approach, since we think gitShas are
-        # a bit intimidating and hard to use.
-        # """
-        # A version label set in the ARIA-AT repo. The app will only import new
-        # versions when that label has changed.
-        # """
-        # label: String!
         """
-        See TestPlanVersionStatus type for more information.
+        See TestPlanVersionPhase type for more information.
         """
         phase: TestPlanVersionPhase!
         """
@@ -775,27 +729,6 @@ const graphqlSchema = gql`
     }
 
     """
-    The life-cycle of a TestPlanReport from the point it is created by an admin
-    until it is saved an available to the public on the reports page.
-    """
-    enum TestPlanReportStatus {
-        """
-        Accepting new TestPlanRuns from testers.
-        """
-        DRAFT
-        """
-        Testing is complete and consistent, and ready to be displayed in the
-        Candidate Tests and Reports section of the app.
-        """
-        CANDIDATE
-        """
-        Testing is complete and consistent, and ready to be displayed in the
-        Reports section of the app as being recommended.
-        """
-        RECOMMENDED
-    }
-
-    """
     Tests, as we envision them, should not leave any room for interpretation. If
     a conflict between results is found, the report cannot be published until
     the cause of the disparity is determined.
@@ -860,10 +793,6 @@ const graphqlSchema = gql`
         """
         id: ID!
         """
-        See TestPlanReportStatus type for more information.
-        """
-        status: TestPlanReportStatus!
-        """
         The snapshot of a TestPlan to use.
         """
         testPlanVersion: TestPlanVersion!
@@ -899,7 +828,7 @@ const graphqlSchema = gql`
         Scenario if the output or unexpected behaviors do not match, or even at
         the level of an Assertion, if the result of an assertion does not match.
 
-        These conflicts must be resolved before the status can change from
+        These conflicts must be resolved before the TestPlanVersion phase can change from
         DRAFT to CANDIDATE.
         """
         conflicts: [TestPlanReportConflict]!
@@ -938,6 +867,12 @@ const graphqlSchema = gql`
         The point at which an admin created the TestPlanReport.
         """
         createdAt: Timestamp!
+        """
+        This is marked with the date when an admin has determined that all conflicts on the
+        TestPlanReport have been resolved and indicates that the TestPlanReport is ready
+        to be included when the entire TestPlanVersion is advanced to the "CANDIDATE" phase.
+        """
+        approvedAt: Timestamp!
     }
 
     """
@@ -1039,11 +974,11 @@ const graphqlSchema = gql`
         testPlanVersion(id: ID): TestPlanVersion
         """
         Load multiple TestPlanReports, with the optional ability to filter by
-        status, atId and testPlanVersionId.
+        TestPlanVersionPhase, atId and testPlanVersionId.
         See TestPlanReport type for more information.
         """
         testPlanReports(
-            statuses: [TestPlanReportStatus]
+            phases: [TestPlanVersionPhase]
             testPlanVersionId: ID
             testPlanVersionIds: [ID]
             atId: ID
@@ -1132,10 +1067,11 @@ const graphqlSchema = gql`
         """
         deleteTestPlanRun(userId: ID!): PopulatedData!
         """
-        Update the report status. Remember that all conflicts must be resolved
-        when setting the status to CANDIDATE. Only available to admins.
+        Update the approvedAt date. This must be set before a TestPlanReport can
+        be advanced to CANDIDATE. All conflicts must also be resolved.
+        Only available to admins.
         """
-        updateStatus(status: TestPlanReportStatus!): PopulatedData!
+        updateApprovedAt: PopulatedData!
         """
         Update the report to a specific TestPlanVersion id.
         """
@@ -1145,12 +1081,6 @@ const graphqlSchema = gql`
             """
             input: TestPlanReportInput!
         ): PopulatedData!
-        """
-        Update the report status for multiple TestPlanReports. Remember that all
-        conflicts must be resolved when setting the status to CANDIDATE. Only
-        available to admins.
-        """
-        bulkUpdateStatus(status: TestPlanReportStatus!): [PopulatedData]!
         """
         Move the vendor review status from READY to IN PROGRESS
         or IN PROGRESS to APPROVED
@@ -1169,7 +1099,7 @@ const graphqlSchema = gql`
     type TestPlanVersionOperations {
         """
         Update the test plan version phase. Remember that all conflicts must be resolved
-        when setting the status to CANDIDATE. Only available to admins.
+        when setting the phase to CANDIDATE. Only available to admins.
         """
         updatePhase(
             phase: TestPlanVersionPhase!
@@ -1267,10 +1197,7 @@ const graphqlSchema = gql`
         Adds a report with the given TestPlanVersion, AT and Browser, and a
         state of "DRAFT", resulting in the report appearing in the Test Queue.
         In the case an identical report already exists, it will be returned
-        without changes and without affecting existing results. In the case an
-        identical report exists but with a status of "CANDIDATE" or "RECOMMENDED",
-        it will be given a status of "DRAFT" and will therefore be pulled back
-        into the queue with its results unaffected.
+        without changes and without affecting existing results.
         """
         findOrCreateTestPlanReport(
             """

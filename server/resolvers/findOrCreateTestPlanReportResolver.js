@@ -11,7 +11,7 @@ const findOrCreateTestPlanReportResolver = async (_, { input }, context) => {
     }
 
     const [testPlanReport, createdLocationsOfData] =
-        await getOrCreateTestPlanReport(input, { status: 'DRAFT' });
+        await getOrCreateTestPlanReport(input);
 
     const locationOfData = { testPlanReportId: testPlanReport.id };
     const preloaded = { testPlanReport };
