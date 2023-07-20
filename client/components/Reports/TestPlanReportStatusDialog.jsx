@@ -3,6 +3,10 @@ import PropTypes from 'prop-types';
 import { Modal, Table } from 'react-bootstrap';
 import styled from '@emotion/styled';
 import { getRequiredReports } from './isRequired';
+import AddTestToQueueWithConfirmation from '../AddTestToQueueWithConfirmation';
+import { useQuery } from '@apollo/client';
+import { ME_QUERY } from '../App/queries';
+import { evaluateAuth } from '../../utils/evaluateAuth';
 
 const TestPlanReportStatusModal = styled(Modal)`
     .modal-dialog {
@@ -17,9 +21,12 @@ const TestPlanReportStatusDialog = ({
     show,
     handleHide
 }) => {
-    if (testPlanReports.length === 0) {
-        return;
-    }
+    const { data } = useQuery(ME_QUERY, {
+        fetchPolicy: 'cache-and-network'
+    });
+
+    const auth = evaluateAuth(data && data.me ? data.me : {});
+    const { isSignedIn, isAdmin } = auth;
 
     // STUB: This is a placeholder, TODO: replace with TestPlanVersion.phase
     const testPlanVersionPhase =
@@ -30,29 +37,37 @@ const TestPlanReportStatusDialog = ({
         [testPlanReports]
     );
 
-    const [matchedReports, unmatchedReports] = useMemo(() => {
-        const matched = requiredReports.map(requiredReport => {
-            const { at, browser } = requiredReport;
-            const matchedReport = testPlanReports.find(
-                report =>
-                    report.at.name === at && report.browser.name === browser
-            );
-            return {
-                ...requiredReport,
-                recommendedStatusReachedAt: matchedReport
-                    ? matchedReport.recommendedStatusReachedAt
-                    : null
-            };
-        });
-        const unmatched = testPlanReports.filter(report => {
-            return !requiredReports.find(
-                requiredReport =>
-                    requiredReport.at === report.at.name &&
-                    requiredReport.browser === report.browser.name
-            );
-        });
-        return [matched, unmatched];
-    }, [testPlanReports, requiredReports]);
+    const [matchedReports, unmatchedTestPlanReports, unmatchedRequiredReports] =
+        useMemo(() => {
+            const matched = [];
+            const unmatchedTestPlan = [...testPlanReports]; // create a copy of testPlanReports
+            const unmatchedRequired = [...requiredReports]; // create a copy of requiredReports
+
+            for (let i = 0; i < requiredReports.length; i++) {
+                for (let j = 0; j < testPlanReports.length; j++) {
+                    if (
+                        requiredReports[i].at.name ===
+                            testPlanReports[j].at.name &&
+                        requiredReports[i].browser.name ===
+                            testPlanReports[j].browser.name
+                    ) {
+                        matched.push(testPlanReports[j]);
+
+                        // remove matched reports from unmatched arrays
+                        unmatchedTestPlan.splice(
+                            unmatchedTestPlan.indexOf(testPlanReports[j]),
+                            1
+                        );
+                        unmatchedRequired.splice(
+                            unmatchedRequired.indexOf(requiredReports[i]),
+                            1
+                        );
+                        break;
+                    }
+                }
+            }
+            return [matched, unmatchedTestPlan, unmatchedRequired];
+        }, [testPlanReports, requiredReports]);
 
     const renderTableRow = ({
         at,
@@ -60,19 +75,34 @@ const TestPlanReportStatusDialog = ({
         recommendedStatusReachedAt,
         required = 'Yes'
     }) => (
-        <tr key={`${at}-${browser}`}>
+        <tr key={`${at.name}-${browser.name}`}>
             <td>{required}</td>
-            <td>{at.name ?? at}</td>
-            <td>{browser.name ?? browser}</td>
+            <td>{at.name}</td>
+            <td>{browser.name}</td>
             <td>
                 {recommendedStatusReachedAt
-                    ? renderCompleteReportDate(recommendedStatusReachedAt)
-                    : 'Incomplete'}
+                    ? renderCompleteReportStatus(recommendedStatusReachedAt)
+                    : renderIncompleteReportStatus(at, browser)}
             </td>
         </tr>
     );
 
-    const renderCompleteReportDate = dateCompleted => {
+    const renderIncompleteReportStatus = (at, browser) => {
+        return (
+            <>
+                Missing{' '}
+                {(isSignedIn && isAdmin) ?? (
+                    <AddTestToQueueWithConfirmation
+                        at={at}
+                        browser={browser}
+                        testPlanVersion={testPlanVersion}
+                    />
+                )}
+            </>
+        );
+    };
+
+    const renderCompleteReportStatus = dateCompleted => {
         return (
             <span>
                 Report Completed on{' '}
@@ -131,7 +161,10 @@ const TestPlanReportStatusDialog = ({
                     </thead>
                     <tbody>
                         {matchedReports.map(report => renderTableRow(report))}
-                        {unmatchedReports.map(report =>
+                        {unmatchedRequiredReports.map(report =>
+                            renderTableRow(report)
+                        )}
+                        {unmatchedTestPlanReports.map(report =>
                             renderTableRow({ ...report, required: 'No' })
                         )}
                     </tbody>
@@ -151,7 +184,16 @@ TestPlanReportStatusDialog.propTypes = {
             id: PropTypes.string.isRequired,
             status: PropTypes.string.isRequired,
             runnableTests: PropTypes.arrayOf(PropTypes.object).isRequired,
-            finalizedTestResults: PropTypes.arrayOf(PropTypes.object).isRequired
+            finalizedTestResults: PropTypes.arrayOf(PropTypes.object)
+                .isRequired,
+            at: PropTypes.shape({
+                id: PropTypes.string.isRequired,
+                name: PropTypes.string.isRequired
+            }).isRequired,
+            browser: PropTypes.shape({
+                id: PropTypes.string.isRequired,
+                name: PropTypes.string.isRequired
+            }).isRequired
         }).isRequired
     ).isRequired,
     handleHide: PropTypes.func.isRequired,
