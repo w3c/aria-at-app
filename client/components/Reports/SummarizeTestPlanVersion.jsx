@@ -21,7 +21,6 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
     const { exampleUrl, designPatternUrl } = testPlanVersion.metadata;
     const [showTestPlanReportStatusDialog, setShowTestPlanReportStatusDialog] =
         useState(false);
-
     return (
         <FullHeightContainer id="main" as="main" tabIndex="-1">
             <Button onClick={() => setShowTestPlanReportStatusDialog(true)}>
@@ -90,6 +89,7 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
             </ul>
 
             {testPlanReports.map(testPlanReport => {
+                if (testPlanReport.status === 'DRAFT') return null;
                 const skippedTests = differenceBy(
                     testPlanReport.runnableTests,
                     testPlanReport.finalizedTestResults,

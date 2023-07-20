@@ -7,6 +7,7 @@ import AddTestToQueueWithConfirmation from '../AddTestToQueueWithConfirmation';
 import { useQuery } from '@apollo/client';
 import { ME_QUERY } from '../App/queries';
 import { evaluateAuth } from '../../utils/evaluateAuth';
+import getMetrics from './getMetrics';
 
 const TestPlanReportStatusModal = styled(Modal)`
     .modal-dialog {
@@ -70,7 +71,14 @@ const TestPlanReportStatusDialog = ({
                         requiredReports[i].browser.name ===
                             testPlanReports[j].browser.name
                     ) {
-                        matched.push(testPlanReports[j]);
+                        if (testPlanReports[j].status === 'DRAFT') {
+                            matched.push({
+                                ...testPlanReports[j],
+                                metrics: getMetrics(testPlanReports[j])
+                            });
+                        } else {
+                            matched.push(testPlanReports[j]);
+                        }
 
                         unmatchedTestPlan.splice(
                             unmatchedTestPlan.indexOf(testPlanReports[j]),
@@ -87,38 +95,53 @@ const TestPlanReportStatusDialog = ({
             return [matched, unmatchedTestPlan, unmatchedRequired];
         }, [testPlanReports, requiredReports]);
 
-    const renderTableRow = ({
+    const renderTableRow = (testPlanReport, required = 'Yes') => {
+        const { recommendedStatusReachedAt: dateCompleted } = testPlanReport;
+        return (
+            <tr
+                key={`${testPlanReport.at.name}-${testPlanReport.browser.name}`}
+            >
+                <td>{required}</td>
+                <td>{testPlanReport.at.name}</td>
+                <td>{testPlanReport.browser.name}</td>
+                <td>
+                    {dateCompleted
+                        ? renderCompleteReportStatus(dateCompleted)
+                        : renderIncompleteReportStatus(testPlanReport)}
+                </td>
+            </tr>
+        );
+    };
+
+    const renderIncompleteReportStatus = ({
+        metrics,
         at,
         browser,
-        // STUB: This will later be TestPlanReport.markedReadyAt, TODO: Replace with final implementation
-        recommendedStatusReachedAt: dateCompleted,
-        required = 'Yes'
-    }) => (
-        <tr key={`${at.name}-${browser.name}`}>
-            <td>{required}</td>
-            <td>{at.name}</td>
-            <td>{browser.name}</td>
-            <td>
-                {dateCompleted
-                    ? renderCompleteReportStatus(dateCompleted)
-                    : renderIncompleteReportStatus(at, browser)}
-            </td>
-        </tr>
-    );
-
-    const renderIncompleteReportStatus = (at, browser) => {
-        return (
-            <>
-                <IncompleteStatusReport>Missing</IncompleteStatusReport>
-                {isSignedIn && isAdmin ? (
-                    <AddTestToQueueWithConfirmation
-                        at={at}
-                        browser={browser}
-                        testPlanVersion={testPlanVersion}
-                    />
-                ) : null}
-            </>
-        );
+        runnableTests
+    }) => {
+        if (metrics) {
+            return (
+                <span>
+                    {metrics.testsCount === 0
+                        ? 0
+                        : runnableTests.length / metrics.testsCount}
+                    % complete
+                </span>
+            );
+        } else {
+            return (
+                <>
+                    <IncompleteStatusReport>Missing</IncompleteStatusReport>
+                    {isSignedIn && isAdmin ? (
+                        <AddTestToQueueWithConfirmation
+                            at={at}
+                            browser={browser}
+                            testPlanVersion={testPlanVersion}
+                        />
+                    ) : null}
+                </>
+            );
+        }
     };
 
     const renderCompleteReportStatus = dateCompleted => {
@@ -184,7 +207,7 @@ const TestPlanReportStatusDialog = ({
                             renderTableRow(report)
                         )}
                         {unmatchedTestPlanReports.map(report =>
-                            renderTableRow({ ...report, required: 'No' })
+                            renderTableRow(report, 'No')
                         )}
                     </tbody>
                 </TestPlanReportStatusTable>
