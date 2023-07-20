@@ -29,6 +29,11 @@ const TestPlanReportStatusTable = styled(Table)`
     }
 `;
 
+const IncompleteStatusReport = styled.span`
+    min-width: 5rem;
+    display: inline-block;
+`;
+
 const TestPlanReportStatusDialog = ({
     testPlanVersion,
     testPlanReports,
@@ -54,8 +59,8 @@ const TestPlanReportStatusDialog = ({
     const [matchedReports, unmatchedTestPlanReports, unmatchedRequiredReports] =
         useMemo(() => {
             const matched = [];
-            const unmatchedTestPlan = [...testPlanReports]; // create a copy of testPlanReports
-            const unmatchedRequired = [...requiredReports]; // create a copy of requiredReports
+            const unmatchedTestPlan = [...testPlanReports];
+            const unmatchedRequired = [...requiredReports];
 
             for (let i = 0; i < requiredReports.length; i++) {
                 for (let j = 0; j < testPlanReports.length; j++) {
@@ -67,7 +72,6 @@ const TestPlanReportStatusDialog = ({
                     ) {
                         matched.push(testPlanReports[j]);
 
-                        // remove matched reports from unmatched arrays
                         unmatchedTestPlan.splice(
                             unmatchedTestPlan.indexOf(testPlanReports[j]),
                             1
@@ -86,7 +90,8 @@ const TestPlanReportStatusDialog = ({
     const renderTableRow = ({
         at,
         browser,
-        recommendedStatusReachedAt,
+        // STUB: This will later be TestPlanReport.markedReadyAt, TODO: Replace with final implementation
+        recommendedStatusReachedAt: dateCompleted,
         required = 'Yes'
     }) => (
         <tr key={`${at.name}-${browser.name}`}>
@@ -94,8 +99,8 @@ const TestPlanReportStatusDialog = ({
             <td>{at.name}</td>
             <td>{browser.name}</td>
             <td>
-                {recommendedStatusReachedAt
-                    ? renderCompleteReportStatus(recommendedStatusReachedAt)
+                {dateCompleted
+                    ? renderCompleteReportStatus(dateCompleted)
                     : renderIncompleteReportStatus(at, browser)}
             </td>
         </tr>
@@ -104,7 +109,7 @@ const TestPlanReportStatusDialog = ({
     const renderIncompleteReportStatus = (at, browser) => {
         return (
             <>
-                <span className="w-25 d-inline-block">Missing</span>
+                <IncompleteStatusReport>Missing</IncompleteStatusReport>
                 {isSignedIn && isAdmin ? (
                     <AddTestToQueueWithConfirmation
                         at={at}

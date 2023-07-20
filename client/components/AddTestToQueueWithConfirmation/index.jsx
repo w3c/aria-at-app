@@ -38,6 +38,7 @@ function AddTestToQueueWithConfirmation({
                 }
             });
         }, 'Adding Test Plan to Test Queue');
+        setShowConfirmation(true);
     };
 
     return (

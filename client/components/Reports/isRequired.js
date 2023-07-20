@@ -1,42 +1,42 @@
 const requiredReports = {
     draft: [
         {
-            browser: { name: 'Chrome' },
-            at: { name: 'JAWS' }
+            browser: { name: 'Chrome', id: '2' },
+            at: { name: 'JAWS', id: '1' }
         },
         {
-            browser: { name: 'Chrome' },
-            at: { name: 'NVDA' }
+            browser: { name: 'Chrome', id: '2' },
+            at: { name: 'NVDA', id: '2' }
         },
         {
-            browser: { name: 'Safari' },
-            at: { name: 'VoiceOver for macOS' }
+            browser: { name: 'Safari', id: '3' },
+            at: { name: 'VoiceOver for macOS', id: '3' }
         }
     ],
     recommended: [
         {
-            browser: { name: 'Chrome' },
-            at: { name: 'JAWS' }
+            browser: { name: 'Chrome', id: '2' },
+            at: { name: 'JAWS', id: '1' }
         },
         {
-            browser: { name: 'Chrome' },
-            at: { name: 'NVDA' }
+            browser: { name: 'Chrome', id: '2' },
+            at: { name: 'NVDA', id: '2' }
         },
         {
-            browser: { name: 'Safari' },
-            at: { name: 'VoiceOver for macOS' }
+            browser: { name: 'Safari', id: '3' },
+            at: { name: 'VoiceOver for macOS', id: '3' }
         },
         {
-            browser: { name: 'Firefox' },
-            at: { name: 'NVDA' }
+            browser: { name: 'Firefox', id: '1' },
+            at: { name: 'NVDA', id: '2' }
         },
         {
-            browser: { name: 'Firefox' },
-            at: { name: 'JAWS' }
+            browser: { name: 'Firefox', id: '1' },
+            at: { name: 'JAWS', id: '1' }
         },
         {
-            browser: { name: 'Chrome' },
-            at: { name: 'VoiceOver for macOS' }
+            browser: { name: 'Chrome', id: '2' },
+            at: { name: 'VoiceOver for macOS', id: '3' }
         }
     ]
 };
