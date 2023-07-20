@@ -226,8 +226,7 @@ TestPlanReportStatusDialog.propTypes = {
             id: PropTypes.string.isRequired,
             status: PropTypes.string.isRequired,
             runnableTests: PropTypes.arrayOf(PropTypes.object).isRequired,
-            finalizedTestResults: PropTypes.arrayOf(PropTypes.object)
-                .isRequired,
+            finalizedTestResults: PropTypes.arrayOf(PropTypes.object),
             at: PropTypes.shape({
                 id: PropTypes.string.isRequired,
                 name: PropTypes.string.isRequired
