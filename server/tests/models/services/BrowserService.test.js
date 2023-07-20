@@ -25,6 +25,7 @@ describe('BrowserModel Data Checks', () => {
             })
         );
         expect(browser).toHaveProperty('browserVersions');
+        expect(browser).toHaveProperty('ats');
     });
 
     it('should return valid browser for id query with no associations', async () => {
@@ -32,7 +33,7 @@ describe('BrowserModel Data Checks', () => {
         const _id = 1;
 
         // A2
-        const browser = await BrowserService.getBrowserById(_id, null, []);
+        const browser = await BrowserService.getBrowserById(_id, null, [], []);
         const { id, name } = browser;
 
         // A3
@@ -44,6 +45,7 @@ describe('BrowserModel Data Checks', () => {
             })
         );
         expect(browser).not.toHaveProperty('browserVersions');
+        expect(browser).not.toHaveProperty('ats');
     });
 
     it('should not be valid browser query', async () => {
@@ -68,6 +70,19 @@ describe('BrowserModel Data Checks', () => {
         // A3
         expect(browserVersions).toBeInstanceOf(Array);
         expect(browserVersions.length).toBeGreaterThanOrEqual(1);
+    });
+
+    it('should contain valid browser with ats array', async () => {
+        // A1
+        const _id = 1;
+
+        // A2
+        const browser = await BrowserService.getBrowserById(_id);
+        const { ats } = browser;
+
+        // A3
+        expect(ats).toBeInstanceOf(Array);
+        expect(ats.length).toBeGreaterThanOrEqual(1);
     });
 
     it('should create and remove a new browser', async () => {
@@ -144,7 +159,8 @@ describe('BrowserModel Data Checks', () => {
                 expect.objectContaining({
                     id: expect.any(Number),
                     name: expect.any(String),
-                    browserVersions: expect.any(Array)
+                    browserVersions: expect.any(Array),
+                    ats: expect.any(Array)
                 })
             ])
         );
@@ -165,7 +181,8 @@ describe('BrowserModel Data Checks', () => {
                 expect.objectContaining({
                     id: expect.any(Number),
                     name: expect.stringMatching(/chr/gi),
-                    browserVersions: expect.any(Array)
+                    browserVersions: expect.any(Array),
+                    ats: expect.any(Array)
                 })
             ])
         );
@@ -173,9 +190,16 @@ describe('BrowserModel Data Checks', () => {
 
     it('should return collection of browsers with paginated structure', async () => {
         // A1
-        const result = await BrowserService.getBrowsers('', {}, ['name'], [], {
-            enablePagination: true
-        });
+        const result = await BrowserService.getBrowsers(
+            '',
+            {},
+            ['name'],
+            [],
+            [],
+            {
+                enablePagination: true
+            }
+        );
 
         // A3
         expect(result.data.length).toBeGreaterThanOrEqual(1);

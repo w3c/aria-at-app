@@ -177,6 +177,11 @@ describe('graphql', () => {
                         __typename
                         id
                         name
+                        ats {
+                            __typename
+                            id
+                            name
+                        }
                         browserVersions {
                             __typename
                             id
@@ -187,6 +192,11 @@ describe('graphql', () => {
                         __typename
                         id
                         name
+                        browsers {
+                            __typename
+                            id
+                            name
+                        }
                         atVersions {
                             __typename
                             id

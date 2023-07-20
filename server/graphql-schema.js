@@ -83,6 +83,10 @@ const graphqlSchema = gql`
         A fully-qualified version like "99.0.4844.84"
         """
         browserVersions: [BrowserVersion]!
+        """
+        The Ats which can be run with the specific browser, for example, Jaws can be run with Chrome but not Safari, and Safari works with VoiceOver only.
+        """
+        ats: [At]!
     }
 
     """
@@ -145,6 +149,10 @@ const graphqlSchema = gql`
         # """
         # modes: [AtMode]!
         atVersions: [AtVersion]!
+        """
+        The browsers which can run the At, for example, Safari can run VoiceOver but not Jaws because Jaws is Windows only.
+        """
+        browsers: [Browser]!
     }
 
     """

@@ -14,7 +14,7 @@ module.exports = {
         return object.allAtVersionsByAt[key].name;
     },
     combinationExists: function (object, atName, browserName) {
-        if (object.allAtBrowserCombinations[atName].has(browserName)) {
+        if (object.allAtBrowserCombinations[atName].includes(browserName)) {
             return true;
         }
         return false;
