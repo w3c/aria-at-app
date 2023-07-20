@@ -1,9 +1,6 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { Modal, Table } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
-import { getTestPlanTargetTitle } from './getTitles';
-import { style } from '../../resources/vrender.mjs';
 import styled from '@emotion/styled';
 import { getRequiredReports } from './isRequired';
 
@@ -20,10 +17,6 @@ const TestPlanReportStatusDialog = ({
     show,
     handleHide
 }) => {
-    console.log('testPlanReports', testPlanReports);
-
-    console.log(testPlanVersion);
-
     if (testPlanReports.length === 0) {
         return;
     }
@@ -149,6 +142,10 @@ const TestPlanReportStatusDialog = ({
 };
 
 TestPlanReportStatusDialog.propTypes = {
+    testPlanVersion: PropTypes.shape({
+        id: PropTypes.string.isRequired,
+        title: PropTypes.string.isRequired
+    }).isRequired,
     testPlanReports: PropTypes.arrayOf(
         PropTypes.shape({
             id: PropTypes.string.isRequired,
@@ -156,7 +153,9 @@ TestPlanReportStatusDialog.propTypes = {
             runnableTests: PropTypes.arrayOf(PropTypes.object).isRequired,
             finalizedTestResults: PropTypes.arrayOf(PropTypes.object).isRequired
         }).isRequired
-    ).isRequired
+    ).isRequired,
+    handleHide: PropTypes.func.isRequired,
+    show: PropTypes.bool.isRequired
 };
 
 export default TestPlanReportStatusDialog;
