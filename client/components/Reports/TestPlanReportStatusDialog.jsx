@@ -15,6 +15,20 @@ const TestPlanReportStatusModal = styled(Modal)`
     }
 `;
 
+const TestPlanReportStatusTableHeader = styled.th`
+    background-color: var(--bs-table-bg) !important;
+    font-size: 1.25rem;
+    font-weight: 600;
+`;
+
+const TestPlanReportStatusTable = styled(Table)`
+    td,
+    th {
+        padding-left: 1rem;
+        min-width: 165px;
+    }
+`;
+
 const TestPlanReportStatusDialog = ({
     testPlanVersion,
     testPlanReports,
@@ -90,14 +104,14 @@ const TestPlanReportStatusDialog = ({
     const renderIncompleteReportStatus = (at, browser) => {
         return (
             <>
-                Missing{' '}
-                {(isSignedIn && isAdmin) ?? (
+                <span className="w-25 d-inline-block">Missing</span>
+                {isSignedIn && isAdmin ? (
                     <AddTestToQueueWithConfirmation
                         at={at}
                         browser={browser}
                         testPlanVersion={testPlanVersion}
                     />
-                )}
+                ) : null}
             </>
         );
     };
@@ -124,13 +138,13 @@ const TestPlanReportStatusDialog = ({
             dialogClassName="p-3"
         >
             <Modal.Header closeButton className="pb-1">
-                <h3>
+                <h2>
                     Report Status for the &nbsp;<b>{testPlanVersion.title}</b>
                     &nbsp;Test Plan
-                </h3>
+                </h2>
             </Modal.Header>
 
-            <Modal.Body>
+            <Modal.Body className="pt-0">
                 <p>
                     This plan is in the
                     <span
@@ -145,12 +159,12 @@ const TestPlanReportStatusDialog = ({
                     Review phase. <b>{requiredReports.length} AT/browser</b>{' '}
                     pairs require reports in this phase.
                 </p>
-                <Table bordered responsive>
+                <TestPlanReportStatusTable bordered responsive>
                     <thead>
                         <tr>
-                            <th colSpan="5">
+                            <TestPlanReportStatusTableHeader colSpan="5">
                                 Reports for Draft Alert Test Plan
-                            </th>
+                            </TestPlanReportStatusTableHeader>
                         </tr>
                         <tr>
                             <th>Required</th>
@@ -168,7 +182,7 @@ const TestPlanReportStatusDialog = ({
                             renderTableRow({ ...report, required: 'No' })
                         )}
                     </tbody>
-                </Table>
+                </TestPlanReportStatusTable>
             </Modal.Body>
         </TestPlanReportStatusModal>
     );
