@@ -54,6 +54,11 @@ const updateStatusResolver = async (
             );
         }
 
+        const hasRequiredCandidateData = 
+        if (status === 'CANDIDATE') {
+            throw new Error('THIS IS THE ERROR MESSAGE');
+        }
+
         const metrics = getMetrics({
             testPlanReport: {
                 ...testPlanReport,
