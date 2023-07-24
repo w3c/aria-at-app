@@ -20,6 +20,7 @@ describe('TestPlanVersionModel', () => {
         // A3
         [
             'title',
+            'phase',
             'directory',
             'gitSha',
             'gitMessage',
