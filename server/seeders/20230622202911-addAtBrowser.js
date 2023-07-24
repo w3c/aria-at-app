@@ -1,11 +1,7 @@
 'use strict';
 
 module.exports = {
-    up: async (queryInterface, Sequelize) => {
-        await queryInterface.createTable('AtBrowsers', {
-            atId: { type: Sequelize.DataTypes.INTEGER },
-            browserId: { type: Sequelize.DataTypes.INTEGER }
-        });
+    up: async (queryInterface /* , Sequelize */) => {
         const jawsAtId = 1;
         const nvdaAtId = 2;
         const voiceOverAtId = 3;

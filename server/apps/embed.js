@@ -32,8 +32,6 @@ app.set('views', resolve(handlebarsPath, 'views'));
 // stale data for however long it takes for the query to complete.
 const millisecondsUntilStale = 5000;
 
-// TODO: Provide through resolvers
-
 const queryReports = async () => {
     const { data, errors } = await apolloServer.executeOperation({
         query: gql`
