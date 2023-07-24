@@ -10,7 +10,7 @@ const {
 
 const testPlanReportsResolver = async (
     _,
-    { phases = [], testPlanVersionId, testPlanVersionIds, atId },
+    { phases = [], testPlanVersionId, testPlanVersionIds, atId, isApproved },
     context,
     info
 ) => {
@@ -44,7 +44,7 @@ const testPlanReportsResolver = async (
     if (testPlanReportRawAttributes.includes('conflictsLength'))
         testPlanReportAttributes.push('metrics');
 
-    const testPlanReports = await getTestPlanReports(
+    let testPlanReports = await getTestPlanReports(
         null,
         where,
         testPlanReportAttributes,
@@ -55,6 +55,13 @@ const testPlanReportsResolver = async (
         null,
         { order: [['createdAt', 'desc']] }
     );
+
+    if (isApproved === undefined) {
+        // Do nothing
+    } else if (isApproved)
+        testPlanReports = testPlanReports.filter(report => !!report.approvedAt);
+    else if (!isApproved)
+        testPlanReports = testPlanReports.filter(report => !report.approvedAt);
 
     if (phases.length) {
         return testPlanReports.filter(testPlanReport =>

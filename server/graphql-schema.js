@@ -326,9 +326,15 @@ const graphqlSchema = gql`
         tests: [Test]!
         """
         The TestPlanReports attached to the TestPlanVersion. There will always
-        be a unique combination of AT + Browser + TestPlanVersion
+        be a unique combination of AT + Browser + TestPlanVersion.
+
+        isApproved is used to check if a TestPlanReport has been "Marked as Final",
+        indicated by TestPlanReport.approvedAt existence.
+        None value indicates to return all.
+        True value indicates to return the reports which only have an approvedAt date.
+        False value indicates to return the reports which have no approvedAt date.
         """
-        testPlanReports(isCurrentPhase: Boolean): [TestPlanReport]!
+        testPlanReports(isApproved: Boolean): [TestPlanReport]!
     }
 
     """
@@ -872,7 +878,7 @@ const graphqlSchema = gql`
         TestPlanReport have been resolved and indicates that the TestPlanReport is ready
         to be included when the entire TestPlanVersion is advanced to the "CANDIDATE" phase.
         """
-        approvedAt: Timestamp!
+        approvedAt: Timestamp
     }
 
     """
@@ -974,7 +980,7 @@ const graphqlSchema = gql`
         testPlanVersion(id: ID): TestPlanVersion
         """
         Load multiple TestPlanReports, with the optional ability to filter by
-        TestPlanVersionPhase, atId and testPlanVersionId.
+        TestPlanVersionPhase, atId, testPlanVersionId and if the report is approved.
         See TestPlanReport type for more information.
         """
         testPlanReports(
@@ -982,6 +988,7 @@ const graphqlSchema = gql`
             testPlanVersionId: ID
             testPlanVersionIds: [ID]
             atId: ID
+            isApproved: Boolean
         ): [TestPlanReport]!
         """
         Get a TestPlanReport by ID.

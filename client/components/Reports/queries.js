@@ -12,7 +12,7 @@ export const REPORTS_PAGE_QUERY = gql`
                 directory
             }
             metadata
-            testPlanReports(isCurrentPhase: true) {
+            testPlanReports(isApproved: true) {
                 id
                 metrics
                 at {
@@ -40,9 +40,8 @@ export const REPORT_PAGE_QUERY = gql`
                 directory
             }
             metadata
-            testPlanReports(isCurrentPhase: true) {
+            testPlanReports(isApproved: true) {
                 id
-                status
                 metrics
                 at {
                     id
@@ -113,7 +112,6 @@ export const REPORT_PAGE_QUERY = gql`
                     }
                     testPlanReport {
                         id
-                        status
                     }
                     testResults {
                         test {
