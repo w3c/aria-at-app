@@ -50,24 +50,3 @@ export const CANDIDATE_REVIEW_PAGE_QUERY = gql`
         }
     }
 `;
-
-export const UPDATE_TEST_PLAN_VERSION_RECOMMENDED_TARGET_DATE_MUTATION = gql`
-    mutation UpdateTestPlanReportRecommendedTargetDate(
-        $testPlanVersionId: ID!
-        $recommendedPhaseTargetDate: Timestamp!
-    ) {
-        testPlanVersion(id: $testPlanVersionId) {
-            updateRecommendedPhaseTargetDate(
-                recommendedPhaseTargetDate: $recommendedPhaseTargetDate
-            ) {
-                testPlanVersion {
-                    phase
-                    testPlanReports {
-                        id
-                        status
-                    }
-                }
-            }
-        }
-    }
-`;
