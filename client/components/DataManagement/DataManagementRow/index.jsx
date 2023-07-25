@@ -87,6 +87,7 @@ const PhaseCell = styled.div`
 
     > span.more {
         display: flex;
+        flex-direction: column;
         justify-content: center;
         align-items: center;
 
@@ -100,6 +101,28 @@ const PhaseCell = styled.div`
 
         color: #6a7989;
         background: #f6f8fa;
+
+        > span.more-issues-container {
+            display: flex;
+            flex-direction: row;
+
+            align-items: center;
+        }
+
+        > span.target-days-container {
+            text-align: center;
+
+            button {
+                appearance: none;
+                border: none;
+                background: none;
+                color: inherit;
+                font-weight: bold;
+
+                margin: 0;
+                padding: 0;
+            }
+        }
     }
 
     > button {
@@ -841,18 +864,36 @@ const DataManagementRow = ({
                                 recommendedLatestVersion;
                     }
 
+                    const currentDate = new Date();
+                    const recommendedPhaseTargetDate = new Date(
+                        latestVersion.recommendedPhaseTargetDate
+                    );
+
+                    let timeToTargetDate = 0;
+                    if (currentDate > recommendedPhaseTargetDate) {
+                        // Indicates that this is in the past
+                        timeToTargetDate = checkTimeBetweenDates(
+                            currentDate,
+                            recommendedPhaseTargetDate
+                        );
+                        timeToTargetDate = -timeToTargetDate;
+                    } else
+                        timeToTargetDate = checkTimeBetweenDates(
+                            recommendedPhaseTargetDate,
+                            currentDate
+                        );
+
                     const daysBetweenDates = checkTimeBetweenDates(
-                        new Date(),
+                        currentDate,
                         latestVersion.candidatePhaseReachedAt
                     );
-                    const daysToProvideFeedback = 120;
-
+                    const DAYS_TO_PROVIDE_FEEDBACK = 120;
                     const shouldShowAdvanceButton =
                         isAdmin &&
                         issuesCount === 0 &&
                         (recommendedTestPlanVersions.length ||
                             (!recommendedTestPlanVersions.length &&
-                                daysBetweenDates > daysToProvideFeedback));
+                                daysBetweenDates > DAYS_TO_PROVIDE_FEEDBACK));
 
                     let coveredReports = [];
                     latestVersion.testPlanReports.forEach(testPlanReport => {
@@ -918,14 +959,23 @@ const DataManagementRow = ({
                                 </Button>
                             )}
                             <span className="more">
-                                <ReportStatusDot className="issues" />{' '}
-                                {issuesCount} Open Issue
-                                {`${issuesCount === 1 ? '' : 's'}`}
-                                {`${
-                                    issuesCount >= 2
-                                        ? ` from ${uniqueAtsCount} ATs`
-                                        : ''
-                                }`}
+                                <span className="more-issues-container">
+                                    <ReportStatusDot className="issues" />{' '}
+                                    {issuesCount} Open Issue
+                                    {`${issuesCount === 1 ? '' : 's'}`}
+                                    {`${
+                                        issuesCount >= 2
+                                            ? ` from ${uniqueAtsCount} ATs`
+                                            : ''
+                                    }`}
+                                </span>
+                                <span className="target-days-container">
+                                    Target{' '}
+                                    <button onClick={() => {}}>
+                                        {Math.abs(timeToTargetDate)} Days
+                                    </button>{' '}
+                                    {timeToTargetDate < 0 ? 'Past' : 'Away'}
+                                </span>
                             </span>
                         </PhaseCell>
                     );

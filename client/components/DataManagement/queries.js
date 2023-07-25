@@ -34,6 +34,7 @@ export const DATA_MANAGEMENT_PAGE_QUERY = gql`
             updatedAt
             draftPhaseReachedAt
             candidatePhaseReachedAt
+            recommendedPhaseTargetDate
             recommendedPhaseReachedAt
             testPlan {
                 directory
@@ -78,6 +79,7 @@ export const UPDATE_TEST_PLAN_VERSION_PHASE = gql`
                     updatedAt
                     draftPhaseReachedAt
                     candidatePhaseReachedAt
+                    recommendedPhaseTargetDate
                     recommendedPhaseReachedAt
                     testPlan {
                         directory
