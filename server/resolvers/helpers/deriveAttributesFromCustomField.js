@@ -53,7 +53,6 @@ const deriveAttributesFromCustomField = (modelName, customFields) => {
             if (fields.includes('browser')) derived.push('browserId');
             if (fields.includes('testPlanVersion'))
                 derived.push('testPlanVersionId');
-            if (fields.includes('finalizedTestResults')) derived.push('status');
             break;
         }
         case 'draftTestPlanRuns': {

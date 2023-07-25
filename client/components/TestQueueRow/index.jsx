@@ -307,19 +307,24 @@ const TestQueueRow = ({
                     Open run as...
                 </Dropdown.Toggle>
                 <Dropdown.Menu role="menu">
-                    {draftTestPlanRuns.map(({ tester }) => {
-                        return (
-                            <Dropdown.Item
-                                role="menuitem"
-                                href={`/run/${getTestPlanRunIdByUserId(
-                                    tester.id
-                                )}?user=${tester.id}`}
-                                key={nextId()}
-                            >
-                                {tester.username}
-                            </Dropdown.Item>
-                        );
-                    })}
+                    {draftTestPlanRuns
+                        .slice() // because array was frozen
+                        .sort((a, b) =>
+                            a.tester.username < b.tester.username ? -1 : 1
+                        )
+                        .map(({ tester }) => {
+                            return (
+                                <Dropdown.Item
+                                    role="menuitem"
+                                    href={`/run/${getTestPlanRunIdByUserId(
+                                        tester.id
+                                    )}?user=${tester.id}`}
+                                    key={nextId()}
+                                >
+                                    {tester.username}
+                                </Dropdown.Item>
+                            );
+                        })}
                 </Dropdown.Menu>
             </Dropdown>
         );
