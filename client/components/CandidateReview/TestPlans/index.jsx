@@ -10,7 +10,8 @@ import {
     faCheck,
     faChevronUp,
     faChevronDown,
-    faCommentAlt
+    faCommentAlt,
+    faArrowRight
 } from '@fortawesome/free-solid-svg-icons';
 import alphabetizeObjectBy from '@client/utils/alphabetizeObjectBy';
 import {
@@ -143,9 +144,14 @@ const DisclosureContainer = styled.div`
 const CellSubRow = styled.span`
     display: flex;
     flex-direction: row;
-    gap: 1rem;
+    gap: 0.5rem;
     margin-top: 0.5rem;
     font-size: 0.875rem;
+
+    svg {
+        align-self: center;
+        margin: 0;
+    }
 `;
 
 const CenteredTh = styled.th`
