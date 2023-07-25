@@ -1,9 +1,6 @@
 'use strict';
 
 const {
-    updateTestPlanVersion
-} = require('../models/services/TestPlanVersionService');
-const {
     updateTestPlanReportTestPlanVersion
 } = require('../resolvers/TestPlanReportOperations');
 const BrowserLoader = require('../models/loaders/BrowserLoader');
@@ -181,12 +178,24 @@ module.exports = {
                     latestAtBrowserMatchings
                 } = highestTestPlanVersion;
 
-                await updateTestPlanVersion(highestTestPlanVersionId, {
-                    phase,
-                    candidatePhaseReachedAt,
-                    recommendedPhaseReachedAt,
-                    recommendedPhaseTargetDate
-                });
+                await queryInterface.sequelize.query(
+                    `UPDATE "TestPlanVersion"
+                             SET phase                        = ?,
+                                 "candidatePhaseReachedAt"    = ?,
+                                 "recommendedPhaseReachedAt"  = ?,
+                                 "recommendedPhaseTargetDate" = ?
+                             WHERE id = ?`,
+                    {
+                        replacements: [
+                            phase,
+                            candidatePhaseReachedAt,
+                            recommendedPhaseReachedAt,
+                            recommendedPhaseTargetDate,
+                            highestTestPlanVersionId
+                        ],
+                        transaction
+                    }
+                );
 
                 // Update the individual reports, so they can be included as part of the same phase
                 // by being a part of the same test plan version
