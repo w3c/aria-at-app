@@ -22,7 +22,7 @@ module.exports = function (sequelize, DataTypes) {
     );
 
     Model.AT_VERSION_ASSOCIATION = { as: 'atVersions' };
-
+    Model.BROWSERS_ASSOCIATION = { through: 'AtBrowsers', as: 'browsers' };
     Model.AT_MODE_ASSOCIATION = { as: 'modes' };
 
     Model.associate = function (models) {
@@ -30,6 +30,12 @@ module.exports = function (sequelize, DataTypes) {
             ...Model.AT_VERSION_ASSOCIATION,
             foreignKey: 'atId',
             sourceKey: 'id'
+        });
+
+        Model.belongsToMany(models.Browser, {
+            ...Model.BROWSERS_ASSOCIATION,
+            foreignKey: 'atId',
+            otherKey: 'browserId'
         });
 
         Model.hasMany(models.AtMode, {
