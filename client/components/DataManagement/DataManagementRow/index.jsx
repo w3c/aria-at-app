@@ -1032,26 +1032,35 @@ const DataManagementRow = ({
                                 </span>
                                 <span className="target-days-container">
                                     Target{' '}
-                                    <button
-                                        ref={updateTargetRef}
-                                        onClick={() => {
-                                            setShowUpdateTargetModal(true);
-                                            setUpdateTargetModalData({
-                                                testPlanVersionId:
-                                                    latestVersion.id,
-                                                title: `Change Recommended Phase Target Date for ${
-                                                    testPlan.title
-                                                }, V${convertDateToString(
-                                                    latestVersionDate,
-                                                    'YY.MM.DD'
-                                                )}`,
-                                                dateText:
-                                                    latestVersion.recommendedPhaseTargetDate
-                                            });
-                                        }}
-                                    >
-                                        {Math.abs(timeToTargetDate)} Days
-                                    </button>{' '}
+                                    {isAdmin ? (
+                                        <button
+                                            ref={updateTargetRef}
+                                            onClick={() => {
+                                                setShowUpdateTargetModal(true);
+                                                setUpdateTargetModalData({
+                                                    testPlanVersionId:
+                                                        latestVersion.id,
+                                                    title: `Change Recommended Phase Target Date for ${
+                                                        testPlan.title
+                                                    }, V${convertDateToString(
+                                                        latestVersionDate,
+                                                        'YY.MM.DD'
+                                                    )}`,
+                                                    dateText:
+                                                        latestVersion.recommendedPhaseTargetDate
+                                                });
+                                            }}
+                                        >
+                                            {Math.abs(timeToTargetDate)} Days
+                                        </button>
+                                    ) : (
+                                        <>
+                                            <b>
+                                                {Math.abs(timeToTargetDate)}{' '}
+                                                Days
+                                            </b>
+                                        </>
+                                    )}{' '}
                                     {timeToTargetDate < 0 ? 'Past' : 'Away'}
                                 </span>
                             </span>
