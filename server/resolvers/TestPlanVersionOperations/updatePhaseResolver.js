@@ -267,7 +267,8 @@ const updatePhaseResolver = async (
                 metrics: {
                     ...testPlanReport.metrics,
                     conflictsCount: conflicts.length
-                }
+                },
+                approvedAt: null
             });
         }
 
@@ -365,10 +366,13 @@ const updatePhaseResolver = async (
             archivedAtDate: null
         };
 
+    // If testPlanVersionDataToIncludeId's results are being used to update this earlier version,
+    // sunset it
     if (testPlanVersionDataToIncludeId)
         await updateTestPlanVersion(testPlanVersionDataToIncludeId, {
             archivedAtDate: new Date()
         });
+
     await updateTestPlanVersion(testPlanVersionId, updateParams);
     return populateData({ testPlanVersionId }, { context });
 };
