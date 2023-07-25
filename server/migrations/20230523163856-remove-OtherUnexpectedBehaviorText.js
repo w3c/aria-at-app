@@ -1,8 +1,8 @@
 'use strict';
-const populateData = require('../services/PopulatedData/populateData');
 const { updateTestPlanRun } = require('../models/services/TestPlanRunService');
 const {
-    updateTestPlanReport
+    updateTestPlanReport,
+    getTestPlanReportById
 } = require('../models/services/TestPlanReportService');
 const conflictsResolver = require('../resolvers/TestPlanReport/conflictsResolver');
 const BrowserLoader = require('../models/loaders/BrowserLoader');
@@ -127,7 +127,14 @@ module.exports = {
                     console.info(
                         `=== Fixing unexpectedBehavior results for TestPlanRun:${testPlanRunId} ===`
                     );
-                    await updateTestPlanRun(testPlanRunId, updateParams);
+                    await updateTestPlanRun(
+                        testPlanRunId,
+                        updateParams,
+                        null,
+                        [],
+                        [],
+                        []
+                    );
                 }
             }
 
@@ -136,11 +143,11 @@ module.exports = {
                 const status = testPlanReportsData[i].status;
                 if (status === 'DRAFT') {
                     let updateParams = {};
-                    const { testPlanReport } = await populateData(
-                        {
-                            testPlanReportId
-                        },
-                        {}
+                    const testPlanReport = await getTestPlanReportById(
+                        testPlanReportId,
+                        null,
+                        null,
+                        ['id', 'tests']
                     );
 
                     const conflicts = await conflictsResolver(
@@ -155,7 +162,13 @@ module.exports = {
                         }
                     };
 
-                    await updateTestPlanReport(testPlanReport.id, updateParams);
+                    await updateTestPlanReport(
+                        testPlanReport.id,
+                        updateParams,
+                        [],
+                        [],
+                        []
+                    );
                 }
             }
         });
