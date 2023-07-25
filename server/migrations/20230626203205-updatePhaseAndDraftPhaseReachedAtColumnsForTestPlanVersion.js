@@ -15,17 +15,6 @@ module.exports = {
                 { transaction }
             );
 
-            await queryInterface.addColumn(
-                'TestPlanVersion',
-                'draftPhaseReachedAt',
-                {
-                    type: Sequelize.DataTypes.DATE,
-                    defaultValue: null,
-                    allowNull: true
-                },
-                { transaction }
-            );
-
             // Need to get all the testPlanVersions that don't have testPlanReports attached to them
             // to consider them as just being R&D Complete, but not yet in the DRAFT phase
             const testPlanVersions = await queryInterface.sequelize.query(
@@ -65,17 +54,6 @@ module.exports = {
                         }
                     );
             }
-
-            await queryInterface.addColumn(
-                'TestPlanVersion',
-                'archivedAtDate',
-                {
-                    type: Sequelize.DataTypes.DATE,
-                    defaultValue: null,
-                    allowNull: true
-                },
-                { transaction }
-            );
         });
     },
 
@@ -90,21 +68,6 @@ module.exports = {
                     defaultValue: 'DRAFT'
                 },
                 { transaction }
-            );
-
-            await queryInterface.removeColumn(
-                'TestPlanVersion',
-                'draftPhaseReachedAt',
-                {
-                    transaction
-                }
-            );
-            await queryInterface.removeColumn(
-                'TestPlanVersion',
-                'archivedAtDate',
-                {
-                    transaction
-                }
             );
         });
     }
