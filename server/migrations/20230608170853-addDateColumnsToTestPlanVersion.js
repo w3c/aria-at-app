@@ -17,6 +17,17 @@ module.exports = {
 
             await queryInterface.addColumn(
                 'TestPlanVersion',
+                'draftPhaseReachedAt',
+                {
+                    type: Sequelize.DataTypes.DATE,
+                    defaultValue: null,
+                    allowNull: true
+                },
+                { transaction }
+            );
+
+            await queryInterface.addColumn(
+                'TestPlanVersion',
                 'candidatePhaseReachedAt',
                 {
                     type: Sequelize.DataTypes.DATE,
@@ -40,6 +51,17 @@ module.exports = {
             await queryInterface.addColumn(
                 'TestPlanVersion',
                 'recommendedPhaseTargetDate',
+                {
+                    type: Sequelize.DataTypes.DATE,
+                    defaultValue: null,
+                    allowNull: true
+                },
+                { transaction }
+            );
+
+            await queryInterface.addColumn(
+                'TestPlanVersion',
+                'archivedAtDate',
                 {
                     type: Sequelize.DataTypes.DATE,
                     defaultValue: null,
@@ -57,6 +79,13 @@ module.exports = {
             });
             await queryInterface.removeColumn(
                 'TestPlanVersion',
+                'draftPhaseReachedAt',
+                {
+                    transaction
+                }
+            );
+            await queryInterface.removeColumn(
+                'TestPlanVersion',
                 'candidatePhaseReachedAt',
                 {
                     transaction
@@ -72,6 +101,13 @@ module.exports = {
             await queryInterface.removeColumn(
                 'TestPlanVersion',
                 'recommendedPhaseTargetDate',
+                {
+                    transaction
+                }
+            );
+            await queryInterface.removeColumn(
+                'TestPlanVersion',
+                'archivedAtDate',
                 {
                     transaction
                 }
