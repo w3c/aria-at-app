@@ -236,8 +236,8 @@ const updatePhaseResolver = async (
             null,
             null,
             null,
-            null,
-            null,
+            undefined,
+            undefined,
             null,
             {
                 order: [['createdAt', 'desc']]
@@ -250,7 +250,35 @@ const updatePhaseResolver = async (
         (phase === 'CANDIDATE' || phase === 'RECOMMENDED')
     ) {
         // Stop update if no testPlanReports were found
-        throw new Error('No test plan reports found');
+        throw new Error('No test plan reports found.');
+    }
+
+    if (phase === 'CANDIDATE') {
+        const hasChromeJaws = testPlanReports.find(
+            ({ browser, at }) => browser.id == 2 && at.id == 1
+        );
+        const hasChromeNVDA = testPlanReports.find(
+            ({ browser, at }) => browser.id == 2 && at.id == 2
+        );
+        const hasSafariVoiceOver = testPlanReports.find(
+            ({ browser, at }) => browser.id == 3 && at.id == 3
+        );
+
+        const hasRequiredCandidateReports =
+            hasChromeJaws && hasChromeNVDA && hasSafariVoiceOver;
+
+        if (!hasRequiredCandidateReports) {
+            const missingCombinations = [
+                hasChromeJaws ? '' : 'Chrome and JAWS',
+                hasChromeNVDA ? '' : 'Chrome and NVDA',
+                hasSafariVoiceOver ? '' : 'Safari and VoiceOver'
+            ].flatMap(str => str);
+            throw new Error(
+                `Cannot set phase to candidate because the following` +
+                    ` required reports have not been collected:` +
+                    ` ${missingCombinations.join(', ')}.`
+            );
+        }
     }
 
     for (const testPlanReport of testPlanReports) {
