@@ -281,6 +281,20 @@ const updatePhaseResolver = async (
         }
     }
 
+    if (phase === 'RECOMENDED') {
+        const reportsByAtAndBrowser = {};
+
+        testPlanReports.forEach(testPlanReport => {
+            const { at, browser } = testPlanReports;
+            if (!reportsByAtAndBrowser[at.id]) {
+                reportsByAtAndBrowser[at.id] = {};
+            }
+
+            reportsByAtAndBrowser[at.id][browser.id] = testPlanReport;
+        });
+        const ats = await context.atLoader.getAll();
+    }
+
     for (const testPlanReport of testPlanReports) {
         const runnableTests = runnableTestsResolver(testPlanReport);
         let updateParams = {};
