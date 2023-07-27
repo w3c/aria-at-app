@@ -130,7 +130,45 @@ const DataManagement = () => {
                 <tbody>
                     {testPlans
                         .slice()
-                        .sort((a, b) => (a.title < b.title ? -1 : 1))
+                        .sort((a, b) => {
+                            // First sort by overall status descending: recommended plans,
+                            // then candidate plans, then draft plans, then R&D complete plans.
+                            const phaseOrder = {
+                                RECOMMENDED: 0,
+                                CANDIDATE: 1,
+                                DRAFT: 2,
+                                RD: 4
+                            };
+
+                            // prettier-ignore
+                            const getTestPlanVersionOverallPhase = t => {
+                                let testPlanVersionOverallPhase = 'RD';
+
+                                testPlanVersionOverallPhase = testPlanVersions.filter(({ phase, testPlan }) => testPlan.directory === t.directory && phase === 'RD').length ? 'RD' : testPlanVersionOverallPhase;
+                                testPlanVersionOverallPhase = testPlanVersions.filter(({ phase, testPlan }) => testPlan.directory === t.directory && phase === 'DRAFT').length ? 'DRAFT' : testPlanVersionOverallPhase;
+                                testPlanVersionOverallPhase = testPlanVersions.filter(({ phase, testPlan }) => testPlan.directory === t.directory && phase === 'CANDIDATE').length ? 'CANDIDATE' : testPlanVersionOverallPhase;
+                                testPlanVersionOverallPhase = testPlanVersions.filter(({ phase, testPlan }) => testPlan.directory === t.directory && phase === 'RECOMMENDED').length ? 'RECOMMENDED' : testPlanVersionOverallPhase;
+
+                                return testPlanVersionOverallPhase;
+                            };
+
+                            const testPlanVersionOverallA =
+                                getTestPlanVersionOverallPhase(a);
+                            const testPlanVersionOverallB =
+                                getTestPlanVersionOverallPhase(b);
+
+                            const phaseA = phaseOrder[testPlanVersionOverallA];
+                            const phaseB = phaseOrder[testPlanVersionOverallB];
+
+                            if (phaseA < phaseB) return -1;
+                            if (phaseA > phaseB) return 1;
+
+                            // Then sort by test plan name ascending.
+                            if (a.title < b.title) return -1;
+                            if (a.title > b.title) return 1;
+
+                            return 0;
+                        })
                         .map(testPlan => {
                             return (
                                 <DataManagementRow
