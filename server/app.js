@@ -4,6 +4,7 @@ const cacheMiddleware = require('apicache').middleware;
 const proxyMiddleware = require('rawgit/lib/middleware');
 const { session } = require('./middleware/session');
 const embedApp = require('./apps/embed');
+const testReviewApp = require('./apps/test-review');
 const authRoutes = require('./routes/auth');
 const testRoutes = require('./routes/tests');
 const path = require('path');
@@ -21,7 +22,10 @@ apolloServer.start().then(() => {
 });
 
 const listener = express();
-listener.use('/api', app).use('/embed', embedApp);
+listener
+    .use('/api', app)
+    .use('/embed', embedApp)
+    .use('/test-review', testReviewApp);
 
 const baseUrl = 'https://raw.githubusercontent.com';
 const onlyStatus200 = (req, res) => res.statusCode === 200;
