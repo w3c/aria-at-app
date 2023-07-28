@@ -4,7 +4,7 @@ module.exports = {
         if (!array.length) return 0;
         return array.length;
     },
-    formatArrayJoinSeparator: function(array, separator) {
+    formatArrayJoinSeparator: function (array, separator) {
         if (!array) return '';
         if (!array.length) return '';
         return array.join(separator);

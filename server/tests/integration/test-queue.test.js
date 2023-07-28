@@ -403,7 +403,7 @@ describe('test queue', () => {
 
     it('can be deleted along with associated runs', async () => {
         await dbCleaner(async () => {
-            const testPlanReportId = '3';
+            const testPlanReportId = '4';
             const queryBefore = await query(gql`
                 query {
                     testPlanReport(id: ${testPlanReportId}) {
