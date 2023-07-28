@@ -156,14 +156,17 @@ const ManageTestQueue = ({
             .flat();
 
         // to remove duplicate entries from different test plan versions of the same test plan being imported multiple times
-        const filteredTestPlanVersions = allTestPlanVersions.filter(
-            (v, i, a) =>
-                a.findIndex(
-                    t =>
-                        t.title === v.title &&
-                        t.testPlan.directory === v.testPlan.directory
-                ) === i
-        );
+        const filteredTestPlanVersions = allTestPlanVersions
+            .filter(
+                (v, i, a) =>
+                    a.findIndex(
+                        t =>
+                            t.title === v.title &&
+                            t.testPlan.directory === v.testPlan.directory
+                    ) === i
+            )
+            // sort by the testPlanVersion titles
+            .sort((a, b) => (a.title < b.title ? -1 : 1));
 
         // mark the first testPlanVersion as selected
         if (filteredTestPlanVersions.length) {
@@ -172,11 +175,7 @@ const ManageTestQueue = ({
         }
 
         setAllTestPlanVersions(allTestPlanVersions);
-        setFilteredTestPlanVersions(
-            filteredTestPlanVersions.sort((a, b) =>
-                a.title < b.title ? -1 : 1
-            )
-        );
+        setFilteredTestPlanVersions(filteredTestPlanVersions);
     }, [testPlanVersions]);
 
     useEffect(() => {
