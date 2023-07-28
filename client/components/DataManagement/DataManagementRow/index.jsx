@@ -555,7 +555,7 @@ const DataManagementRow = ({
                                 color="#2BA51C"
                             />
                             <a
-                                href={`/aria-at/${latestVersion.gitSha}/build/review/${latestVersion.testPlan.directory}.html`}
+                                href={`/test-review/${latestVersion.gitSha}/${latestVersion.testPlan.directory}`}
                                 target="_blank"
                                 rel="noreferrer"
                             >
@@ -653,7 +653,7 @@ const DataManagementRow = ({
                                 />
                                 <a
                                     ref={draftVersionStringRef}
-                                    href={`/aria-at/${latestVersion.gitSha}/build/review/${latestVersion.testPlan.directory}.html`}
+                                    href={`/test-review/${latestVersion.gitSha}/${latestVersion.testPlan.directory}`}
                                     target="_blank"
                                     rel="noreferrer"
                                 >
@@ -826,7 +826,7 @@ const DataManagementRow = ({
                             <span className="version-string">
                                 <a
                                     ref={candidateVersionStringRef}
-                                    href={`/aria-at/${latestVersion.gitSha}/build/review/${latestVersion.testPlan.directory}.html`}
+                                    href={`/test-review/${latestVersion.gitSha}/${latestVersion.testPlan.directory}`}
                                     target="_blank"
                                     rel="noreferrer"
                                 >
@@ -949,7 +949,7 @@ const DataManagementRow = ({
                             />
                             <a
                                 ref={recommendedVersionStringRef}
-                                href={`/aria-at/${latestVersion.gitSha}/build/review/${latestVersion.testPlan.directory}.html`}
+                                href={`/test-review/${latestVersion.gitSha}/${latestVersion.testPlan.directory}`}
                                 target="_blank"
                                 rel="noreferrer"
                             >

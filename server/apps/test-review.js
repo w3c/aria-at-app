@@ -106,6 +106,29 @@ const csvToJSON = csvString => {
     return result;
 };
 
+const convertTextToHTML = text => {
+    const blocks = text.split('\n\n');
+    let html = '';
+
+    for (let block of blocks) {
+        const lines = block.split('\n');
+        if (lines[0].startsWith('*')) {
+            html += '<ul>';
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (line.startsWith('*')) {
+                    html += '<li>' + line.substring(1).trim() + '</li>';
+                }
+            }
+            html += '</ul>';
+        } else {
+            html += '<p class="commit-message">' + lines.join('<br>') + '</p>';
+        }
+    }
+
+    return html;
+};
+
 const generateTests = async (pattern, commit, commitDate) => {
     const commandsCSVData = await fetch(
         `https://raw.githubusercontent.com/w3c/aria-at/${commit}/tests/${pattern}/data/commands.csv`
@@ -283,10 +306,11 @@ const generateTests = async (pattern, commit, commitDate) => {
         });
 
         for (const ref of testJSON.refs.split(' ')) {
-            helpLinks.push({
-                link: getRef(ref).value,
-                text: `ARIA specification: ${ref}`
-            });
+            if (ref)
+                helpLinks.push({
+                    link: getRef(ref).value,
+                    text: `ARIA specification: ${ref}`
+                });
         }
 
         const referenceValue = getRef('reference').value;
@@ -333,7 +357,7 @@ app.get('/:commit/:pattern', async (req, res) => {
             tests,
             pattern,
             setupScripts,
-            commitMessage: commitMessage,
+            commitMessage: convertTextToHTML(commitMessage),
             commitDate: moment(commitDate).format('YYYY.MM.DD')
         }
     );
