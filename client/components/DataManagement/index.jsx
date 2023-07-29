@@ -22,7 +22,6 @@ const DataManagement = () => {
     const [browsers, setBrowsers] = useState([]);
     const [testPlans, setTestPlans] = useState([]);
     const [testPlanVersions, setTestPlanVersions] = useState([]);
-    const [testPlanReports, setTestPlanReports] = useState([]);
 
     const auth = evaluateAuth(data && data.me ? data.me : {});
     const { isAdmin } = auth;
@@ -33,14 +32,12 @@ const DataManagement = () => {
                 ats = [],
                 browsers = [],
                 testPlanVersions = [],
-                testPlanReports = [],
                 testPlans = []
             } = data;
             setAts(ats);
             setBrowsers(browsers);
             setTestPlans(testPlans);
             setTestPlanVersions(testPlanVersions);
-            setTestPlanReports(testPlanReports);
             setPageReady(true);
         }
     }, [data]);
@@ -174,17 +171,12 @@ const DataManagement = () => {
                                 <DataManagementRow
                                     key={testPlan.id}
                                     isAdmin={isAdmin}
+                                    ats={ats}
                                     testPlan={testPlan}
                                     testPlanVersions={testPlanVersions.filter(
                                         testPlanVersion =>
                                             testPlanVersion.testPlan
                                                 .directory ===
-                                            testPlan.directory
-                                    )}
-                                    testPlanReports={testPlanReports.filter(
-                                        testPlanReport =>
-                                            testPlanReport.testPlanVersion
-                                                .testPlan.directory ===
                                             testPlan.directory
                                     )}
                                     setTestPlanVersions={setTestPlanVersions}

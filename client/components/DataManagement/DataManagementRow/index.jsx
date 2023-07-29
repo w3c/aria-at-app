@@ -181,9 +181,9 @@ const NoneText = styled.span`
 
 const DataManagementRow = ({
     isAdmin,
+    ats,
     testPlan,
     testPlanVersions,
-    testPlanReports,
     setTestPlanVersions
 }) => {
     const { triggerLoad, loadingMessage } = useTriggerLoad();
@@ -328,10 +328,7 @@ const DataManagementRow = ({
     };
 
     const renderCellForCoveredAts = () => {
-        // return <button>3 Desktop Screen Readers</button>;
-
-        const uniqueAtObjects = getUniqueAtObjects(testPlanReports);
-        const atNames = Object.values(uniqueAtObjects).map(at => at.name);
+        const atNames = ats.map(({ name }) => name);
 
         if (atNames.length > 1) {
             return (
@@ -1054,6 +1051,12 @@ const DataManagementRow = ({
 
 DataManagementRow.propTypes = {
     isAdmin: PropTypes.bool,
+    ats: PropTypes.arrayOf(
+        PropTypes.shape({
+            id: PropTypes.string,
+            name: PropTypes.name
+        })
+    ),
     testPlan: PropTypes.shape({
         id: PropTypes.string,
         title: PropTypes.string,
@@ -1072,14 +1075,6 @@ DataManagementRow.propTypes = {
             draftPhaseReachedAt: PropTypes.string,
             candidatePhaseReachedAt: PropTypes.string,
             recommendedPhaseReachedAt: PropTypes.string
-        })
-    ).isRequired,
-    testPlanReports: PropTypes.arrayOf(
-        PropTypes.shape({
-            id: PropTypes.string.isRequired,
-            at: PropTypes.object,
-            browser: PropTypes.object,
-            issues: PropTypes.array
         })
     ).isRequired,
     setTestPlanVersions: PropTypes.func
