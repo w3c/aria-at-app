@@ -16,6 +16,7 @@ describe('TestPlanReportModel Data Checks', () => {
         const {
             id,
             title,
+            phase,
             directory,
             gitSha,
             gitMessage,
@@ -28,6 +29,7 @@ describe('TestPlanReportModel Data Checks', () => {
 
         expect(id).toEqual(_id);
         expect(title).toBeTruthy();
+        expect(phase).toBeTruthy();
         expect(directory).toBeTruthy();
         expect(gitSha).toBeTruthy();
         expect(gitMessage).toBeTruthy();
@@ -55,6 +57,7 @@ describe('TestPlanReportModel Data Checks', () => {
         const {
             id,
             title,
+            phase,
             directory,
             gitSha,
             gitMessage,
@@ -66,6 +69,7 @@ describe('TestPlanReportModel Data Checks', () => {
 
         expect(id).toEqual(_id);
         expect(title).toBeTruthy();
+        expect(phase).toBeTruthy();
         expect(directory).toBeTruthy();
         expect(gitSha).toBeTruthy();
         expect(gitMessage).toBeTruthy();
@@ -90,6 +94,7 @@ describe('TestPlanReportModel Data Checks', () => {
             // A1
             const _id = 99;
             const _title = randomStringGenerator();
+            const _phase = 'RD';
             const _directory = 'checkbox';
             const _gitSha = randomStringGenerator();
             const _gitMessage = randomStringGenerator();
@@ -118,6 +123,7 @@ describe('TestPlanReportModel Data Checks', () => {
             const {
                 id: createdId,
                 title: createdTitle,
+                phase: createdPhase,
                 directory: createdDirectory,
                 gitSha: createdGitSha,
                 gitMessage: createdGitMessage,
@@ -140,6 +146,7 @@ describe('TestPlanReportModel Data Checks', () => {
             // After testPlanVersion created
             expect(createdId).toBe(_id);
             expect(createdTitle).toBe(_title);
+            expect(createdPhase).toBe(_phase);
             expect(createdDirectory).toBe(_directory);
             expect(createdGitSha).toBe(_gitSha);
             expect(createdGitMessage).toBe(_gitMessage);
