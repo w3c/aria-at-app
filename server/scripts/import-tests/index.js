@@ -51,10 +51,17 @@ const gitCloneDirectory = path.resolve(__dirname, 'tmp');
 const builtTestsDirectory = path.resolve(gitCloneDirectory, 'build', 'tests');
 const testsDirectory = path.resolve(gitCloneDirectory, 'tests');
 
+const gitRun = (args, cwd = gitCloneDirectory) => {
+    return spawn
+        .sync('git', args.split(' '), { cwd })
+        .stdout.toString()
+        .trimEnd();
+};
+
 const importTestPlanVersions = async () => {
     await client.connect();
 
-    const { gitCommitDate, gitMessage, gitSha } = await readRepo();
+    const { gitCommitDate } = await readRepo();
 
     console.log('Running `npm install` ...\n');
     const installOutput = spawn.sync('npm', ['install'], {
@@ -106,6 +113,14 @@ const importTestPlanVersions = async () => {
             )
         ).rows[0].nextval;
 
+        // Target the specific /tests/<pattern> directory to determine when a pattern's folder was
+        // actually last changed
+        const {
+            gitSha,
+            gitMessage,
+            gitCommitDate: updatedAt
+        } = readDirectoryGitInfo(sourceDirectoryPath);
+
         const tests = getTests({
             builtDirectoryPath,
             testPlanVersionId,
@@ -146,7 +161,7 @@ const importTestPlanVersions = async () => {
             gitSha,
             gitMessage,
             hashedTests,
-            updatedAt: gitCommitDate,
+            updatedAt,
             metadata: {
                 designPatternUrl,
                 exampleUrl
@@ -158,13 +173,6 @@ const importTestPlanVersions = async () => {
 };
 
 const readRepo = async () => {
-    const gitRun = args => {
-        return spawn
-            .sync('git', args.split(' '), { cwd: gitCloneDirectory })
-            .stdout.toString()
-            .trimEnd();
-    };
-
     fse.ensureDirSync(gitCloneDirectory);
 
     console.info('Cloning aria-at repo ...');
@@ -173,11 +181,19 @@ const readRepo = async () => {
 
     gitRun(`checkout ${args.commit ?? ariaAtDefaultBranch}`);
 
-    const gitSha = gitRun(`log --format=%H -n 1`);
-    const gitMessage = gitRun(`log --format=%B -n 1`);
     const gitCommitDate = new Date(gitRun(`log --format=%aI -n 1`));
 
-    return { gitSha, gitCommitDate, gitMessage };
+    return { gitCommitDate };
+};
+
+const readDirectoryGitInfo = directoryPath => {
+    const gitSha = gitRun(`log -1 --format=%H -- .`, directoryPath);
+    const gitMessage = gitRun(`log -1 --format=%s -- .`, directoryPath);
+    const gitCommitDate = new Date(
+        gitRun(`log -1 --format=%aI -- .`, directoryPath)
+    );
+
+    return { gitSha, gitMessage, gitCommitDate };
 };
 
 const getAppUrl = (directoryRelativePath, { gitSha, directoryPath }) => {
