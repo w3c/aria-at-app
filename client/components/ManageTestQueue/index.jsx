@@ -203,11 +203,16 @@ const ManageTestQueue = ({
         );
 
         // find the versions that apply and pre-set these
-        const matchingTestPlanVersions = allTestPlanVersions.filter(
-            item =>
-                item.title === retrievedTestPlan.title &&
-                item.testPlan.directory === retrievedTestPlan.testPlan.directory
-        );
+        const matchingTestPlanVersions = allTestPlanVersions
+            .filter(
+                item =>
+                    item.title === retrievedTestPlan.title &&
+                    item.testPlan.directory ===
+                        retrievedTestPlan.testPlan.directory
+            )
+            .sort((a, b) =>
+                new Date(a.updatedAt) > new Date(b.updatedAt) ? -1 : 1
+            );
         setMatchingTestPlanVersions(matchingTestPlanVersions);
         setSelectedTestPlanVersionId(matchingTestPlanVersions[0].id);
     };
