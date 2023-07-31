@@ -300,7 +300,6 @@ describe('graphql', () => {
                     conflictTestPlanReport: testPlanReport(id: 2) {
                         __typename
                         id
-                        status
                         createdAt
                         vendorReviewStatus
                         testPlanVersion {
@@ -403,6 +402,7 @@ describe('graphql', () => {
                             name
                             releasedAt
                         }
+                        approvedAt
                     }
                     testPlanReports {
                         id
@@ -522,18 +522,6 @@ describe('graphql', () => {
                                 locationOfData
                             }
                         }
-                        reportStatus: testPlanReport(id: 1) {
-                            __typename
-                            updateStatus(status: CANDIDATE) {
-                                locationOfData
-                            }
-                        }
-                        bulkReportStatus: testPlanReport(ids: [1]) {
-                            __typename
-                            bulkUpdateStatus(status: CANDIDATE) {
-                                locationOfData
-                            }
-                        }
                         #updateToTestPlanVersion: testPlanReport(id: 1) {
                         #    __typename
                         #    updateTestPlanReportTestPlanVersion(
@@ -578,6 +566,12 @@ describe('graphql', () => {
                                 testPlanReport {
                                     id
                                 }
+                            }
+                        }
+                        updateApprovedAtReport: testPlanReport(id: 2) {
+                            __typename
+                            updateApprovedAt {
+                                locationOfData
                             }
                         }
                         testPlanRun(id: 1) {

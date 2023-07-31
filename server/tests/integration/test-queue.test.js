@@ -14,7 +14,7 @@ describe('test queue', () => {
         const result = await query(
             gql`
                 query {
-                    testPlanReports(statuses: [DRAFT]) {
+                    testPlanReports(phases: [DRAFT]) {
                         id
                         conflicts {
                             source {
@@ -25,6 +25,7 @@ describe('test queue', () => {
                         }
                         testPlanVersion {
                             title
+                            phase
                             gitSha
                             gitMessage
                             tests {
@@ -52,6 +53,7 @@ describe('test queue', () => {
                     conflicts: expect.any(Array),
                     testPlanVersion: {
                         title: expect.any(String),
+                        phase: expect.any(String),
                         gitSha: expect.any(String),
                         gitMessage: expect.any(String),
                         tests: expect.arrayContaining([
@@ -191,14 +193,14 @@ describe('test queue', () => {
 
     it('can be finalized', async () => {
         await dbCleaner(async () => {
-            const testPlanReportId = '3';
-            // This report starts in a FINALIZED state. Let's set it to DRAFT.
+            const testPlanVersionId = '26';
+            // This version is in 'CANDIDATE' phase. Let's set it to DRAFT
             await mutate(gql`
                 mutation {
-                    testPlanReport(id: ${testPlanReportId}) {
-                        updateStatus(status: DRAFT) {
-                            testPlanReport {
-                                status
+                    testPlanVersion(id: ${testPlanVersionId}) {
+                        updatePhase(phase: DRAFT) {
+                            testPlanVersion {
+                                phase
                             }
                         }
                     }
@@ -207,46 +209,46 @@ describe('test queue', () => {
 
             const previous = await query(gql`
                 query {
-                    testPlanReport(id: ${testPlanReportId}) {
-                        status
+                    testPlanVersion(id: ${testPlanVersionId}) {
+                        phase
                     }
                 }
             `);
-            const previousStatus = previous.testPlanReport.status;
+            const previousPhase = previous.testPlanVersion.phase;
 
             const candidateResult = await mutate(gql`
                 mutation {
-                    testPlanReport(id: ${testPlanReportId}) {
-                        updateStatus(status: CANDIDATE) {
-                            testPlanReport {
-                                status
+                    testPlanVersion(id: ${testPlanVersionId}) {
+                        updatePhase(phase: CANDIDATE) {
+                            testPlanVersion {
+                                phase
                             }
                         }
                     }
                 }
             `);
-            const candidateResultStatus =
-                candidateResult.testPlanReport.updateStatus.testPlanReport
-                    .status;
+            const candidateResultPhase =
+                candidateResult.testPlanVersion.updatePhase.testPlanVersion
+                    .phase;
 
             const recommendedResult = await mutate(gql`
                 mutation {
-                    testPlanReport(id: ${testPlanReportId}) {
-                        updateStatus(status: RECOMMENDED) {
-                            testPlanReport {
-                                status
+                    testPlanVersion(id: ${testPlanVersionId}) {
+                        updatePhase(phase: RECOMMENDED) {
+                            testPlanVersion {
+                                phase
                             }
                         }
                     }
                 }
             `);
-            const recommendedResultStatus =
-                recommendedResult.testPlanReport.updateStatus.testPlanReport
-                    .status;
+            const recommendedResultPhase =
+                recommendedResult.testPlanVersion.updatePhase.testPlanVersion
+                    .phase;
 
-            expect(previousStatus).not.toBe('CANDIDATE');
-            expect(candidateResultStatus).toBe('CANDIDATE');
-            expect(recommendedResultStatus).toBe('RECOMMENDED');
+            expect(previousPhase).not.toBe('CANDIDATE');
+            expect(candidateResultPhase).toBe('CANDIDATE');
+            expect(recommendedResultPhase).toBe('RECOMMENDED');
         });
     });
 
@@ -333,7 +335,6 @@ describe('test queue', () => {
                                 populatedData {
                                     testPlanReport {
                                         id
-                                        status
                                         at {
                                             id
                                         }
@@ -343,6 +344,7 @@ describe('test queue', () => {
                                     }
                                     testPlanVersion {
                                         id
+                                        phase
                                     }
                                 }
                                 created {
@@ -371,7 +373,6 @@ describe('test queue', () => {
             expect(first.testPlanReport).toEqual(
                 expect.objectContaining({
                     id: expect.anything(),
-                    status: 'DRAFT',
                     at: expect.objectContaining({
                         id: atId
                     }),
@@ -382,7 +383,8 @@ describe('test queue', () => {
             );
             expect(first.testPlanVersion).toEqual(
                 expect.objectContaining({
-                    id: testPlanVersionId
+                    id: testPlanVersionId,
+                    phase: 'DRAFT'
                 })
             );
             expect(first.created.length).toBe(1);
