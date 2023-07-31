@@ -281,11 +281,11 @@ const updatePhaseResolver = async (
         }
     }
 
-    if (phase === 'RECOMENDED') {
+    if (phase === 'RECOMMENDED') {
         const reportsByAtAndBrowser = {};
 
         testPlanReports.forEach(testPlanReport => {
-            const { at, browser } = testPlanReports;
+            const { at, browser } = testPlanReport;
             if (!reportsByAtAndBrowser[at.id]) {
                 reportsByAtAndBrowser[at.id] = {};
             }
@@ -293,6 +293,26 @@ const updatePhaseResolver = async (
             reportsByAtAndBrowser[at.id][browser.id] = testPlanReport;
         });
         const ats = await context.atLoader.getAll();
+
+        const missingAtBrowserCombinations = [];
+
+        ats.forEach(at => {
+            at.browsers.forEach(browser => {
+                if (!reportsByAtAndBrowser[at.id][browser.id]) {
+                    missingAtBrowserCombinations.push(
+                        `${at.name} and ${browser.name}`
+                    );
+                }
+            });
+        });
+
+        if (missingAtBrowserCombinations.length) {
+            throw new Error(
+                `Cannot set phase to recommended because the following` +
+                    ` required reports have not been collected:` +
+                    ` ${missingAtBrowserCombinations.join(', ')}.`
+            );
+        }
     }
 
     for (const testPlanReport of testPlanReports) {
