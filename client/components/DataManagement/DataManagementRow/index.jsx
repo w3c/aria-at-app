@@ -575,10 +575,28 @@ const DataManagementRow = ({
                 );
             }
             case 'DRAFT': {
-                const otherTestPlanVersions = [
+                let latestVersion, latestVersionDate;
+
+                let otherTestPlanVersions = [
                     ...candidateTestPlanVersions,
                     ...recommendedTestPlanVersions
                 ];
+
+                if (testPlanVersions.length) {
+                    const {
+                        latestVersion: _latestVersion,
+                        latestVersionDate: _latestVersionDate
+                    } = getVersionData(testPlanVersions);
+
+                    latestVersion = _latestVersion;
+                    latestVersionDate = _latestVersionDate;
+
+                    if (otherTestPlanVersions.length)
+                        otherTestPlanVersions = otherTestPlanVersions.filter(
+                            other =>
+                                new Date(other.updatedAt) > latestVersionDate
+                        );
+                }
 
                 // If a version of the plan is not in the draft phase and there are no versions in
                 // later phases, show string "Not Started"
@@ -631,9 +649,6 @@ const DataManagementRow = ({
                 // If required reports are complete and user is an admin, show "Advance to
                 // Candidate" button.
                 if (testPlanVersions.length) {
-                    const { latestVersion, latestVersionDate } =
-                        getVersionData(testPlanVersions);
-
                     // If there is an earlier version that is candidate and that version has some
                     // test plan runs in the test queue, this button will run the process for
                     // updating existing reports and preserving data for tests that have not
@@ -717,7 +732,25 @@ const DataManagementRow = ({
                 return defaultView;
             }
             case 'CANDIDATE': {
-                const otherTestPlanVersions = [...recommendedTestPlanVersions];
+                let latestVersion, latestVersionDate;
+
+                let otherTestPlanVersions = [...recommendedTestPlanVersions];
+
+                if (testPlanVersions.length) {
+                    const {
+                        latestVersion: _latestVersion,
+                        latestVersionDate: _latestVersionDate
+                    } = getVersionData(testPlanVersions);
+
+                    latestVersion = _latestVersion;
+                    latestVersionDate = _latestVersionDate;
+
+                    if (otherTestPlanVersions.length)
+                        otherTestPlanVersions = otherTestPlanVersions.filter(
+                            other =>
+                                new Date(other.updatedAt) > latestVersionDate
+                        );
+                }
 
                 // If a version of the plan is not in the candidate phase and there has not yet been
                 // a recommended version, show string "Not Started"
@@ -780,9 +813,6 @@ const DataManagementRow = ({
                 //    sunset that version. This will also sunset any reports completed using that
                 //    version.
                 if (testPlanVersions.length) {
-                    const { latestVersion, latestVersionDate } =
-                        getVersionData(testPlanVersions);
-
                     const filteredTestPlanReports =
                         latestVersion.testPlanReports;
                     const uniqueAtObjects = getUniqueAtObjects(
