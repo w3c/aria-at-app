@@ -330,7 +330,16 @@ const getOrCreateTestPlanReport = async (
                 create: createTestPlanReport,
                 update: updateTestPlanReport,
                 values: { testPlanVersionId, atId, browserId },
-                returnAttributes: [null, [], [], [], [], [], [], []]
+                returnAttributes: [
+                    testPlanReportAttributes,
+                    [],
+                    [],
+                    [],
+                    [],
+                    [],
+                    [],
+                    []
+                ]
             }
         ],
         { transaction: options.transaction }

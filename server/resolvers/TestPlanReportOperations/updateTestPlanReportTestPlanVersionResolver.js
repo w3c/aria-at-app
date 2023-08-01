@@ -1,5 +1,6 @@
 const hash = require('object-hash');
 const { omit } = require('lodash');
+const { AuthenticationError } = require('apollo-server-express');
 const {
     getTestPlanReportById,
     getOrCreateTestPlanReport,
@@ -16,7 +17,6 @@ const {
 } = require('../../models/services/TestPlanRunService');
 const { findOrCreateTestResult } = require('../TestPlanRunOperations');
 const { submitTestResult, saveTestResult } = require('../TestResultOperations');
-const { AuthenticationError } = require('apollo-server-express');
 
 const compareTestContent = (currentTests, newTests) => {
     const hashTest = test => hash(omit(test, ['id']));

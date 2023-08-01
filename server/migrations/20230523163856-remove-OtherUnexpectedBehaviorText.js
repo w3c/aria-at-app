@@ -7,6 +7,7 @@ const {
 const conflictsResolver = require('../resolvers/TestPlanReport/conflictsResolver');
 const BrowserLoader = require('../models/loaders/BrowserLoader');
 const AtLoader = require('../models/loaders/AtLoader');
+const { TEST_PLAN_REPORT_ATTRIBUTES } = require('../models/services/helpers');
 
 module.exports = {
     up: queryInterface => {
@@ -138,6 +139,12 @@ module.exports = {
                 }
             }
 
+            // Exclude certain attributes called in testPlanReport query;
+            // needed to support future migrations
+            const testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES.filter(
+                e => !['approvedAt'].includes(e)
+            );
+
             for (let i = 0; i < testPlanReportsData.length; i++) {
                 const testPlanReportId = testPlanReportsData[i].id;
                 const status = testPlanReportsData[i].status;
@@ -145,7 +152,7 @@ module.exports = {
                     let updateParams = {};
                     const testPlanReport = await getTestPlanReportById(
                         testPlanReportId,
-                        null,
+                        testPlanReportAttributes,
                         null,
                         ['id', 'tests']
                     );
