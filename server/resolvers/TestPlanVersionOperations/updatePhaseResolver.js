@@ -272,7 +272,7 @@ const updatePhaseResolver = async (
                 hasChromeJaws ? '' : 'Chrome and JAWS',
                 hasChromeNVDA ? '' : 'Chrome and NVDA',
                 hasSafariVoiceOver ? '' : 'Safari and VoiceOver'
-            ].flatMap(str => str);
+            ].filter(str => str);
             throw new Error(
                 `Cannot set phase to candidate because the following` +
                     ` required reports have not been collected:` +

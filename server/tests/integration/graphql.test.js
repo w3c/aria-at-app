@@ -522,13 +522,13 @@ describe('graphql', () => {
                                 locationOfData
                             }
                         }
-                        reportStatus: testPlanReport(id: 1) {
+                        reportStatus: testPlanReport(id: 3) {
                             __typename
                             updateStatus(status: CANDIDATE) {
                                 locationOfData
                             }
                         }
-                        bulkReportStatus: testPlanReport(ids: [1]) {
+                        bulkReportStatus: testPlanReport(ids: [3]) {
                             __typename
                             bulkUpdateStatus(status: CANDIDATE) {
                                 locationOfData
