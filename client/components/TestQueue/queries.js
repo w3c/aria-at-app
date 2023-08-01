@@ -35,7 +35,7 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
             }
             updatedAt
         }
-        testPlanReports(phases: [DRAFT], isApproved: false) {
+        testPlanReports(isApproved: false) {
             id
             conflictsLength
             runnableTestsLength
