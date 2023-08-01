@@ -383,23 +383,12 @@ const TestQueueRow = ({
     const updateReportStatus = async () => {
         try {
             await triggerLoad(async () => {
-                // if (status === 'CANDIDATE') {
                 await updateTestPlanApprovedAt({
                     variables: {
                         testReportId: testPlanReport.id
                     }
                 });
                 await triggerPageUpdate();
-                // } else {
-                //     // Unnecessary unless we're introducing a new status which can also be viewed
-                //     // on the Test Queue
-                //     await updateTestPlanApprovedAt({
-                //         variables: {
-                //             testReportId: testPlanReport.id
-                //         }
-                //     });
-                //     await triggerTestPlanReportUpdate();
-                // }
             }, 'Updating Test Plan Status');
         } catch (e) {
             showThemedMessage(
