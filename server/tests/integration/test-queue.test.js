@@ -193,7 +193,18 @@ describe('test queue', () => {
 
     it('can be finalized', async () => {
         await dbCleaner(async () => {
-            const testPlanVersionId = '26';
+            const candidateTestPlanVersions = await query(gql`
+                query {
+                    testPlanVersions(phases: [CANDIDATE]) {
+                        id
+                        phase
+                    }
+                }
+            `);
+            const candidateTestPlanVersion =
+                candidateTestPlanVersions.testPlanVersions[0];
+
+            let testPlanVersionId = candidateTestPlanVersion.id;
             // This version is in 'CANDIDATE' phase. Let's set it to DRAFT
             await mutate(gql`
                 mutation {
@@ -246,6 +257,7 @@ describe('test queue', () => {
                 recommendedResult.testPlanVersion.updatePhase.testPlanVersion
                     .phase;
 
+            expect(candidateTestPlanVersion.phase).toBe('CANDIDATE');
             expect(previousPhase).not.toBe('CANDIDATE');
             expect(candidateResultPhase).toBe('CANDIDATE');
             expect(recommendedResultPhase).toBe('RECOMMENDED');
