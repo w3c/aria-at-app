@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
 import { differenceBy } from 'lodash';
@@ -11,7 +11,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome } from '@fortawesome/free-solid-svg-icons';
 import styled from '@emotion/styled';
 import DisclaimerInfo from '../DisclaimerInfo';
-import TestPlanReportStatusDialog from './TestPlanReportStatusDialog';
+import TestPlanReportStatusDialogWithButton from './TestPlanReportStatusDialogWithButton';
 
 const FullHeightContainer = styled(Container)`
     min-height: calc(100vh - 64px);
@@ -19,18 +19,8 @@ const FullHeightContainer = styled(Container)`
 
 const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
     const { exampleUrl, designPatternUrl } = testPlanVersion.metadata;
-    const [showTestPlanReportStatusDialog, setShowTestPlanReportStatusDialog] =
-        useState(false);
     return (
         <FullHeightContainer id="main" as="main" tabIndex="-1">
-            <Button onClick={() => setShowTestPlanReportStatusDialog(true)}>
-                Show Dialog
-            </Button>
-            <TestPlanReportStatusDialog
-                testPlanVersion={testPlanVersion}
-                show={showTestPlanReportStatusDialog}
-                handleHide={() => setShowTestPlanReportStatusDialog(false)}
-            />
             <Helmet>
                 <title>
                     {getTestPlanVersionTitle(testPlanVersion)} | ARIA-AT Reports
@@ -54,6 +44,9 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
                     {getTestPlanVersionTitle(testPlanVersion)}
                 </Breadcrumb.Item>
             </Breadcrumb>
+            <TestPlanReportStatusDialogWithButton
+                testPlanVersion={testPlanVersion}
+            />
             <h2>Introduction</h2>
 
             {testPlanReports.some(t => t.status === 'CANDIDATE') ? (

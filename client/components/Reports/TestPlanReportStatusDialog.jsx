@@ -8,6 +8,7 @@ import { useQuery } from '@apollo/client';
 import { ME_QUERY } from '../App/queries';
 import { evaluateAuth } from '../../utils/evaluateAuth';
 import getMetrics from './getMetrics';
+import { getTestPlanReportPercentComplete } from './getTestPlanRunPercentComplete';
 
 const TestPlanReportStatusModal = styled(Modal)`
     .modal-dialog {
@@ -47,7 +48,7 @@ const TestPlanReportStatusDialog = ({ testPlanVersion, show, handleHide }) => {
 
     const requiredReports = useMemo(
         () => getRequiredReports(testPlanVersion.phase),
-        [testPlanReports]
+        [testPlanVersion.phase]
     );
 
     const [matchedReports, unmatchedTestPlanReports, unmatchedRequiredReports] =
@@ -99,15 +100,6 @@ const TestPlanReportStatusDialog = ({ testPlanVersion, show, handleHide }) => {
                 <td>{renderReportStatus(testPlanReport)}</td>
             </tr>
         );
-    };
-
-    const calculatePercentComplete = (metrics, draftTestPlanRuns) => {
-        const assignedUserCount = draftTestPlanRuns.length;
-        const totalTestsPossible = metrics.testsCount * assignedUserCount;
-        const totalTestsCompleted = metrics.testsCount;
-        const percentage = (totalTestsCompleted / totalTestsPossible) * 100;
-        if (isNaN(percentage)) return 0;
-        return Math.floor(percentage);
     };
 
     const getMostRecentTestPlanRun = draftTestPlanRuns => {
@@ -176,18 +168,11 @@ const TestPlanReportStatusDialog = ({ testPlanVersion, show, handleHide }) => {
         }
     };
 
-    const renderReportStatus = ({
-        metrics,
-        draftTestPlanRuns,
-        at,
-        browser,
-        id
-    }) => {
+    const renderReportStatus = testPlanReport => {
+        const { metrics, draftTestPlanRuns, at, browser, id } = testPlanReport;
         if (metrics) {
-            const percentComplete = calculatePercentComplete(
-                metrics,
-                draftTestPlanRuns
-            );
+            const percentComplete =
+                getTestPlanReportPercentComplete(testPlanReport);
             if (percentComplete === 100) {
                 return renderCompleteReportStatus(draftTestPlanRuns, id);
             } else {
