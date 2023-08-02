@@ -55,19 +55,6 @@ export const DATA_MANAGEMENT_PAGE_QUERY = gql`
                 }
             }
         }
-        testPlanReports {
-            id
-            at {
-                id
-                name
-            }
-            testPlanVersion {
-                id
-                testPlan {
-                    directory
-                }
-            }
-        }
     }
 `;
 
