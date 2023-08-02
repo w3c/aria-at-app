@@ -149,22 +149,31 @@ const TestPlanReportStatusDialog = ({ testPlanVersion, show, handleHide }) => {
         percentComplete,
         metrics
     ) => {
-        if (draftTestPlanRuns.length === 0) return;
-        return (
-            <span>
-                {percentComplete}% complete by{' '}
-                {draftTestPlanRuns.length > 1 ? (
-                    draftTestPlanRuns.length
-                ) : (
-                    <a
-                        href={`https://github.com/${draftTestPlanRuns[0].tester.username}`}
-                    >
-                        {draftTestPlanRuns[0].tester.username}
-                    </a>
-                )}{' '}
-                with {metrics.conflictsCount} conflicts
-            </span>
-        );
+        const conflictsCount = metrics.conflictsCount ?? 0;
+        switch (draftTestPlanRuns.length) {
+            case 0:
+                return <span>In test queue with no testers assigned.</span>;
+            case 1:
+                return (
+                    <span>
+                        {percentComplete}% complete by{' '}
+                        <a
+                            href={`https://github.com/${draftTestPlanRuns[0].tester.username}`}
+                        >
+                            {draftTestPlanRuns[0].tester.username}
+                        </a>{' '}
+                        with {conflictsCount} conflicts
+                    </span>
+                );
+            default:
+                return (
+                    <span>
+                        {percentComplete}% complete by{' '}
+                        {draftTestPlanRuns.length} testers with {conflictsCount}{' '}
+                        conflicts
+                    </span>
+                );
+        }
     };
 
     const renderReportStatus = ({

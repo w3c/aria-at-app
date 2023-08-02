@@ -40,7 +40,7 @@ export const REPORT_PAGE_QUERY = gql`
                 directory
             }
             metadata
-            testPlanReports(isCurrentPhase: true) {
+            testPlanReports {
                 id
                 status
                 metrics
