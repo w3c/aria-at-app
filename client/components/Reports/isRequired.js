@@ -1,5 +1,5 @@
 const requiredReports = {
-    draft: [
+    DRAFT: [
         {
             browser: { name: 'Chrome', id: '2' },
             at: { name: 'JAWS', id: '1' }
@@ -13,7 +13,7 @@ const requiredReports = {
             at: { name: 'VoiceOver for macOS', id: '3' }
         }
     ],
-    recommended: [
+    CANDIDATE: [
         {
             browser: { name: 'Chrome', id: '2' },
             at: { name: 'JAWS', id: '1' }

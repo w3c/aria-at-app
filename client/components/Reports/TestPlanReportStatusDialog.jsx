@@ -48,12 +48,8 @@ const TestPlanReportStatusDialog = ({
     const auth = evaluateAuth(data && data.me ? data.me : {});
     const { isSignedIn, isAdmin } = auth;
 
-    // STUB: This is a placeholder, TODO: replace with TestPlanVersion.phase
-    const testPlanVersionPhase =
-        testPlanReports.length < 3 ? 'draft' : 'recommended';
-
     const requiredReports = useMemo(
-        () => getRequiredReports(testPlanVersionPhase),
+        () => getRequiredReports(testPlanVersion.phase),
         [testPlanReports]
     );
 
@@ -177,12 +173,12 @@ const TestPlanReportStatusDialog = ({
                     This plan is in the
                     <span
                         className={`status-label d-inline text-capitalize mx-2 ${
-                            testPlanVersionPhase === 'draft'
+                            testPlanVersion.phase === 'DRAFT'
                                 ? 'not-started'
                                 : 'complete'
                         }`}
                     >
-                        {testPlanVersionPhase}
+                        {testPlanVersion.phase}
                     </span>
                     Review phase. <b>{requiredReports.length} AT/browser</b>{' '}
                     pairs require reports in this phase.
@@ -219,7 +215,8 @@ const TestPlanReportStatusDialog = ({
 TestPlanReportStatusDialog.propTypes = {
     testPlanVersion: PropTypes.shape({
         id: PropTypes.string.isRequired,
-        title: PropTypes.string.isRequired
+        title: PropTypes.string.isRequired,
+        phase: PropTypes.oneOf(['DRAFT', 'CANDIDATE']).isRequired
     }).isRequired,
     testPlanReports: PropTypes.arrayOf(
         PropTypes.shape({
