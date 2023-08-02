@@ -58,7 +58,7 @@ module.exports = function (sequelize, DataTypes) {
                 defaultValue: null,
                 allowNull: true
             },
-            archivedAtDate: {
+            deprecatedAt: {
                 type: DataTypes.DATE,
                 defaultValue: null,
                 allowNull: true

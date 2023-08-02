@@ -566,7 +566,11 @@ const TestPlans = ({ testPlanVersions }) => {
                                                             testsCount > 1
                                                                 ? `s`
                                                                 : ''}
-                                                            )
+                                                            ) - V
+                                                        {convertDateToString(
+                                                            testPlanVersion.updatedAt,
+                                                            'YY.MM.DD'
+                                                        )}
                                                         </Link>
                                                         <CellSubRow>
                                                             <Dropdown className="dropdown-btn-mark-as">
@@ -834,6 +838,11 @@ const TestPlans = ({ testPlanVersions }) => {
                                         <td>
                                             {getTestPlanVersionTitle(
                                                 testPlanVersion
+                                            )}{' '}
+                                            - V
+                                            {convertDateToString(
+                                                testPlanVersion.updatedAt,
+                                                'YY.MM.DD'
                                             )}
                                         </td>
                                         <CenteredTd>

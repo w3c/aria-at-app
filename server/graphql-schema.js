@@ -286,9 +286,9 @@ const graphqlSchema = gql`
         """
         recommendedPhaseTargetDate: Timestamp
         """
-        The date when the TestPlanVersion was 'sunset'.
+        The date when the TestPlanVersion was deprecated.
         """
-        archivedAtDate: Timestamp
+        deprecatedAt: Timestamp
         """
         The TestPlan this TestPlanVersion is a snapshot of.
         """
@@ -328,13 +328,13 @@ const graphqlSchema = gql`
         The TestPlanReports attached to the TestPlanVersion. There will always
         be a unique combination of AT + Browser + TestPlanVersion.
 
-        isApproved is used to check if a TestPlanReport has been "Marked as Final",
+        isFinal is used to check if a TestPlanReport has been "Marked as Final",
         indicated by TestPlanReport.approvedAt existence.
         None value indicates to return all.
         True value indicates to return the reports which only have an approvedAt date.
         False value indicates to return the reports which have no approvedAt date.
         """
-        testPlanReports(isApproved: Boolean): [TestPlanReport]!
+        testPlanReports(isFinal: Boolean): [TestPlanReport]!
     }
 
     """
@@ -984,11 +984,11 @@ const graphqlSchema = gql`
         See TestPlanReport type for more information.
         """
         testPlanReports(
-            phases: [TestPlanVersionPhase]
+            testPlanVersionPhases: [TestPlanVersionPhase]
             testPlanVersionId: ID
             testPlanVersionIds: [ID]
             atId: ID
-            isApproved: Boolean
+            isFinal: Boolean
         ): [TestPlanReport]!
         """
         Get a TestPlanReport by ID.

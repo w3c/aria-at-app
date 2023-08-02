@@ -333,7 +333,7 @@ const updatePhaseResolver = async (
             candidatePhaseReachedAt: null,
             recommendedPhaseReachedAt: null,
             recommendedPhaseTargetDate: null,
-            archivedAtDate: null
+            deprecatedAt: null
         };
     else if (phase === 'DRAFT')
         updateParams = {
@@ -342,7 +342,7 @@ const updatePhaseResolver = async (
             candidatePhaseReachedAt: null,
             recommendedPhaseReachedAt: null,
             recommendedPhaseTargetDate: null,
-            archivedAtDate: null
+            deprecatedAt: null
         };
     else if (phase === 'CANDIDATE') {
         const candidatePhaseReachedAtValue =
@@ -357,20 +357,20 @@ const updatePhaseResolver = async (
             candidatePhaseReachedAt: candidatePhaseReachedAtValue,
             recommendedPhaseReachedAt: null,
             recommendedPhaseTargetDate: recommendedPhaseTargetDateValue,
-            archivedAtDate: null
+            deprecatedAt: null
         };
     } else if (phase === 'RECOMMENDED')
         updateParams = {
             ...updateParams,
             recommendedPhaseReachedAt: new Date(),
-            archivedAtDate: null
+            deprecatedAt: null
         };
 
     // If testPlanVersionDataToIncludeId's results are being used to update this earlier version,
-    // sunset it
+    // deprecate it
     if (testPlanVersionDataToIncludeId)
         await updateTestPlanVersion(testPlanVersionDataToIncludeId, {
-            archivedAtDate: new Date()
+            deprecatedAt: new Date()
         });
 
     await updateTestPlanVersion(testPlanVersionId, updateParams);

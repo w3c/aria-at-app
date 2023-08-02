@@ -4,7 +4,7 @@ const {
 
 const testPlanReportsResolver = async (
     { id: testPlanVersionId },
-    { isApproved }
+    { isFinal }
 ) => {
     const where = {
         testPlanVersionId
@@ -24,9 +24,9 @@ const testPlanReportsResolver = async (
         }
     );
 
-    if (isApproved === undefined) return reports;
-    else if (isApproved) return reports.filter(report => !!report.approvedAt);
-    else if (!isApproved) return reports.filter(report => !report.approvedAt);
+    if (isFinal === undefined) return reports;
+    else if (isFinal) return reports.filter(report => !!report.approvedAt);
+    else if (!isFinal) return reports.filter(report => !report.approvedAt);
 };
 
 module.exports = testPlanReportsResolver;

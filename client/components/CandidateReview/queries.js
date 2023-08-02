@@ -14,7 +14,7 @@ export const CANDIDATE_REVIEW_PAGE_QUERY = gql`
             updatedAt
             candidatePhaseReachedAt
             recommendedPhaseTargetDate
-            testPlanReports(isApproved: true) {
+            testPlanReports(isFinal: true) {
                 id
                 metrics
                 at {

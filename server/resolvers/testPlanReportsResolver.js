@@ -10,7 +10,13 @@ const {
 
 const testPlanReportsResolver = async (
     _,
-    { phases = [], testPlanVersionId, testPlanVersionIds, atId, isApproved },
+    {
+        testPlanVersionPhases = [],
+        testPlanVersionId,
+        testPlanVersionIds,
+        atId,
+        isFinal
+    },
     context,
     info
 ) => {
@@ -44,6 +50,12 @@ const testPlanReportsResolver = async (
     if (testPlanReportRawAttributes.includes('conflictsLength'))
         testPlanReportAttributes.push('metrics');
 
+    if (
+        testPlanVersionPhases.length &&
+        !testPlanVersionAttributes.includes('phase')
+    )
+        testPlanVersionAttributes.push('phase');
+
     let testPlanReports = await getTestPlanReports(
         null,
         where,
@@ -56,16 +68,16 @@ const testPlanReportsResolver = async (
         { order: [['createdAt', 'desc']] }
     );
 
-    if (isApproved === undefined) {
+    if (isFinal === undefined) {
         // Do nothing
-    } else if (isApproved)
+    } else if (isFinal)
         testPlanReports = testPlanReports.filter(report => !!report.approvedAt);
-    else if (!isApproved)
+    else if (!isFinal)
         testPlanReports = testPlanReports.filter(report => !report.approvedAt);
 
-    if (phases.length) {
+    if (testPlanVersionPhases.length) {
         return testPlanReports.filter(testPlanReport =>
-            phases.includes(testPlanReport.testPlanVersion.phase)
+            testPlanVersionPhases.includes(testPlanReport.testPlanVersion.phase)
         );
     } else return testPlanReports;
 };
