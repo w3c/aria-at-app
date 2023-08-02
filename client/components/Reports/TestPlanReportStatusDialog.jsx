@@ -89,7 +89,6 @@ const TestPlanReportStatusDialog = ({ testPlanVersion, show, handleHide }) => {
         }, [testPlanReports, requiredReports]);
 
     const renderTableRow = (testPlanReport, required = 'Yes') => {
-        const { recommendedStatusReachedAt: dateCompleted } = testPlanReport;
         return (
             <tr
                 key={`${testPlanReport.at.name}-${testPlanReport.browser.name}`}
@@ -97,30 +96,70 @@ const TestPlanReportStatusDialog = ({ testPlanVersion, show, handleHide }) => {
                 <td>{required}</td>
                 <td>{testPlanReport.at.name}</td>
                 <td>{testPlanReport.browser.name}</td>
-                <td>
-                    {dateCompleted
-                        ? renderCompleteReportStatus(dateCompleted)
-                        : renderIncompleteReportStatus(testPlanReport)}
-                </td>
+                <td>{renderReportStatus(testPlanReport)}</td>
             </tr>
         );
     };
 
-    const renderIncompleteReportStatus = ({
+    const calculatePercentComplete = (metrics, draftTestPlanRuns) => {
+        const assignedUserCount = draftTestPlanRuns.length;
+        const totalTestsPossible = metrics.testsCount * assignedUserCount;
+        const totalTestsCompleted = metrics.testsCount;
+        const percentage = (totalTestsCompleted / totalTestsPossible) * 100;
+        if (isNaN(percentage)) return 0;
+        return Math.floor(percentage);
+    };
+
+    const getMostRecentTestPlanRun = draftTestPlanRuns => {
+        let allTestResults = draftTestPlanRuns.flatMap(run => run.testResults);
+
+        let mostRecentTestResult = allTestResults.reduce(
+            (latestResult, currentResult) => {
+                let latestDate = new Date(latestResult.completedAt);
+                let currentDate = new Date(currentResult.completedAt);
+                return currentDate > latestDate ? currentResult : latestResult;
+            },
+            { completedAt: new Date(0) }
+        );
+
+        return mostRecentTestResult;
+    };
+
+    const getFormattedDate = dateString => {
+        let date = new Date(dateString);
+        let options = { year: 'numeric', month: 'short', day: 'numeric' };
+        let formattedDate = new Intl.DateTimeFormat('en-US', options).format(
+            date
+        );
+        return formattedDate;
+    };
+
+    const renderReportStatus = ({
         metrics,
+        draftTestPlanRuns,
         at,
         browser,
-        runnableTests
+        id
     }) => {
         if (metrics) {
-            return (
-                <span>
-                    {metrics.testsCount === 0
-                        ? 0
-                        : runnableTests.length / metrics.testsCount}
-                    % complete
-                </span>
+            const percentComplete = calculatePercentComplete(
+                metrics,
+                draftTestPlanRuns
             );
+            if (percentComplete === 100) {
+                const mostRecentRun =
+                    getMostRecentTestPlanRun(draftTestPlanRuns);
+                const formattedDate = getFormattedDate(
+                    mostRecentRun.completedAt
+                );
+                return (
+                    <a href={`/report/${testPlanVersion.id}/targets/${id}`}>
+                        Report completed on <b>{formattedDate}</b>
+                    </a>
+                );
+            } else {
+                return <span>{percentComplete}% complete</span>;
+            }
         } else {
             return (
                 <>
@@ -135,21 +174,6 @@ const TestPlanReportStatusDialog = ({ testPlanVersion, show, handleHide }) => {
                 </>
             );
         }
-    };
-
-    const renderCompleteReportStatus = dateCompleted => {
-        return (
-            <span>
-                Report Completed on{' '}
-                <b>
-                    {new Date(dateCompleted).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                    })}
-                </b>
-            </span>
-        );
     };
 
     return (
