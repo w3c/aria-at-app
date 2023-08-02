@@ -1,5 +1,43 @@
-import { TEST_QUEUE_PAGE_QUERY } from '../../components/TestQueue/queries';
+import {
+    ADD_TEST_QUEUE_MUTATION,
+    TEST_QUEUE_PAGE_QUERY
+} from '../../components/TestQueue/queries';
 import { DATA_MANAGEMENT_PAGE_QUERY } from '../../components/DataManagement/queries';
+
+export const TEST_QUEUE_MUTATION_MOCK = [
+    {
+        request: {
+            query: ADD_TEST_QUEUE_MUTATION,
+            variables: {
+                testPlanVersionId: 5,
+                atId: 3,
+                browserId: 2
+            }
+        },
+        result: {
+            data: {
+                findOrCreateTestPlanReport: {
+                    populatedData: {
+                        testPlanReport: {
+                            id: 109,
+                            status: 'DRAFT',
+                            at: {
+                                id: 3
+                            },
+                            browser: {
+                                id: 2
+                            }
+                        },
+                        testPlanVersion: {
+                            id: 5
+                        }
+                    },
+                    created: []
+                }
+            }
+        }
+    }
+];
 
 export const TEST_QUEUE_PAGE_NOT_POPULATED_MOCK_ADMIN = [
     {

@@ -49,6 +49,7 @@ function AddTestToQueueWithConfirmation({
                 disabled={false}
                 onClick={addTestToQueue}
                 className="w-auto"
+                data-testid="add-button"
             >
                 {buttonText}
             </Button>
