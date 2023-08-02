@@ -134,6 +134,39 @@ const TestPlanReportStatusDialog = ({ testPlanVersion, show, handleHide }) => {
         return formattedDate;
     };
 
+    const renderCompleteReportStatus = (draftTestPlanRuns, id) => {
+        const mostRecentRun = getMostRecentTestPlanRun(draftTestPlanRuns);
+        const formattedDate = getFormattedDate(mostRecentRun.completedAt);
+        return (
+            <a href={`/report/${testPlanVersion.id}/targets/${id}`}>
+                Report completed on <b>{formattedDate}</b>
+            </a>
+        );
+    };
+
+    const renderPartialCompleteReportStatus = (
+        draftTestPlanRuns,
+        percentComplete,
+        metrics
+    ) => {
+        if (draftTestPlanRuns.length === 0) return;
+        return (
+            <span>
+                {percentComplete}% complete by{' '}
+                {draftTestPlanRuns.length > 1 ? (
+                    draftTestPlanRuns.length
+                ) : (
+                    <a
+                        href={`https://github.com/${draftTestPlanRuns[0].tester.username}`}
+                    >
+                        {draftTestPlanRuns[0].tester.username}
+                    </a>
+                )}{' '}
+                with {metrics.conflictsCount} conflicts
+            </span>
+        );
+    };
+
     const renderReportStatus = ({
         metrics,
         draftTestPlanRuns,
@@ -147,18 +180,13 @@ const TestPlanReportStatusDialog = ({ testPlanVersion, show, handleHide }) => {
                 draftTestPlanRuns
             );
             if (percentComplete === 100) {
-                const mostRecentRun =
-                    getMostRecentTestPlanRun(draftTestPlanRuns);
-                const formattedDate = getFormattedDate(
-                    mostRecentRun.completedAt
-                );
-                return (
-                    <a href={`/report/${testPlanVersion.id}/targets/${id}`}>
-                        Report completed on <b>{formattedDate}</b>
-                    </a>
-                );
+                return renderCompleteReportStatus(draftTestPlanRuns, id);
             } else {
-                return <span>{percentComplete}% complete</span>;
+                return renderPartialCompleteReportStatus(
+                    draftTestPlanRuns,
+                    percentComplete,
+                    metrics
+                );
             }
         } else {
             return (
