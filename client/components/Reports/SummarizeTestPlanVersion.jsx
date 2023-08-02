@@ -215,7 +215,7 @@ SummarizeTestPlanVersion.propTypes = {
             id: PropTypes.string.isRequired,
             status: PropTypes.string.isRequired,
             runnableTests: PropTypes.arrayOf(PropTypes.object).isRequired,
-            finalizedTestResults: PropTypes.arrayOf(PropTypes.object).isRequired
+            finalizedTestResults: PropTypes.arrayOf(PropTypes.object)
         }).isRequired
     ).isRequired
 };

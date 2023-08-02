@@ -287,7 +287,7 @@ SummarizeTestPlanReport.propTypes = {
                         }).isRequired
                     ).isRequired
                 }).isRequired
-            ).isRequired,
+            ),
             draftTestPlanRuns: PropTypes.arrayOf(
                 PropTypes.shape({
                     tester: PropTypes.shape({
