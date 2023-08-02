@@ -35,15 +35,12 @@ const IncompleteStatusReport = styled.span`
     display: inline-block;
 `;
 
-const TestPlanReportStatusDialog = ({
-    testPlanVersion,
-    testPlanReports,
-    show,
-    handleHide
-}) => {
+const TestPlanReportStatusDialog = ({ testPlanVersion, show, handleHide }) => {
     const { data } = useQuery(ME_QUERY, {
         fetchPolicy: 'cache-and-network'
     });
+
+    const { testPlanReports } = testPlanVersion;
 
     const auth = evaluateAuth(data && data.me ? data.me : {});
     const { isSignedIn, isAdmin } = auth;
@@ -216,24 +213,24 @@ TestPlanReportStatusDialog.propTypes = {
     testPlanVersion: PropTypes.shape({
         id: PropTypes.string.isRequired,
         title: PropTypes.string.isRequired,
-        phase: PropTypes.oneOf(['DRAFT', 'CANDIDATE']).isRequired
-    }).isRequired,
-    testPlanReports: PropTypes.arrayOf(
-        PropTypes.shape({
-            id: PropTypes.string.isRequired,
-            status: PropTypes.string.isRequired,
-            runnableTests: PropTypes.arrayOf(PropTypes.object).isRequired,
-            finalizedTestResults: PropTypes.arrayOf(PropTypes.object),
-            at: PropTypes.shape({
+        phase: PropTypes.oneOf(['DRAFT', 'CANDIDATE']).isRequired,
+        testPlanReports: PropTypes.arrayOf(
+            PropTypes.shape({
                 id: PropTypes.string.isRequired,
-                name: PropTypes.string.isRequired
-            }).isRequired,
-            browser: PropTypes.shape({
-                id: PropTypes.string.isRequired,
-                name: PropTypes.string.isRequired
+                status: PropTypes.string.isRequired,
+                runnableTests: PropTypes.arrayOf(PropTypes.object).isRequired,
+                finalizedTestResults: PropTypes.arrayOf(PropTypes.object),
+                at: PropTypes.shape({
+                    id: PropTypes.string.isRequired,
+                    name: PropTypes.string.isRequired
+                }).isRequired,
+                browser: PropTypes.shape({
+                    id: PropTypes.string.isRequired,
+                    name: PropTypes.string.isRequired
+                }).isRequired
             }).isRequired
-        }).isRequired
-    ).isRequired,
+        ).isRequired
+    }).isRequired,
     handleHide: PropTypes.func.isRequired,
     show: PropTypes.bool.isRequired
 };

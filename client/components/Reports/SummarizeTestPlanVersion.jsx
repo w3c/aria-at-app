@@ -28,7 +28,6 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
             </Button>
             <TestPlanReportStatusDialog
                 testPlanVersion={testPlanVersion}
-                testPlanReports={testPlanReports}
                 show={showTestPlanReportStatusDialog}
                 handleHide={() => setShowTestPlanReportStatusDialog(false)}
             />
