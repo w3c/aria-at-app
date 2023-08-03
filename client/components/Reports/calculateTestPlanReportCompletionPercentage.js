@@ -3,11 +3,13 @@ export const calculateTestPlanReportCompletionPercentage = ({
     draftTestPlanRuns
 }) => {
     if (!metrics || !draftTestPlanRuns) return 0;
-    const assignedUserCount = draftTestPlanRuns.length;
+    const assignedUserCount = draftTestPlanRuns.length || 1;
     const totalTestsPossible = metrics.testsCount * assignedUserCount;
-    const totalTestsCompleted =
-        metrics.testsFailedCount + metrics.testsPassedCount;
+    let totalTestsCompleted = 0;
+    draftTestPlanRuns.forEach(draftTestPlanRun => {
+        totalTestsCompleted += draftTestPlanRun.testResults.length;
+    });
     const percentage = (totalTestsCompleted / totalTestsPossible) * 100;
-    if (isNaN(percentage)) return 0;
+    if (isNaN(percentage) || !isFinite(percentage)) return 0;
     return Math.floor(percentage);
 };
