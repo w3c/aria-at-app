@@ -7,8 +7,8 @@ import { render, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { MockedProvider } from '@apollo/client/testing';
 import { BrowserRouter } from 'react-router-dom';
-import TestPlanReportStatusDialog from '../components/Reports/TestPlanReportStatusDialog';
 import { InMemoryCache } from '@apollo/client';
+import TestPlanReportStatusDialog from '../components/TestPlanReportStatusDialog';
 
 const setup = (props, mocks = []) => {
     return render(
