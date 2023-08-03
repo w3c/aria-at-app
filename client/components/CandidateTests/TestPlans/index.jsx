@@ -37,6 +37,10 @@ const FullHeightContainer = styled(Container)`
     min-height: calc(100vh - 64px);
 `;
 
+const NoWrapButton = styled(Button)`
+    white-space: nowrap;
+`;
+
 const StatusText = styled.span`
     height: 1.625em;
     font-size: 0.875em;
@@ -497,6 +501,12 @@ const TestPlans = ({ testPlanVersions, triggerPageUpdate = () => {} }) => {
                             <thead>
                                 <tr>
                                     <th>Candidate Test Plans</th>
+                                    <CenteredTh>
+                                        Candidate Phase Start Date
+                                    </CenteredTh>
+                                    <CenteredTh>
+                                        Target Completion Date
+                                    </CenteredTh>
                                     <CenteredTh>Review Status</CenteredTh>
                                     <CenteredTh>Results Summary</CenteredTh>
                                 </tr>
@@ -620,28 +630,6 @@ const TestPlans = ({ testPlanVersions, triggerPageUpdate = () => {} }) => {
                                                             )
                                                         </Link>
                                                         <CellSubRow>
-                                                            <i>
-                                                                Candidate Phase
-                                                                Start Date{' '}
-                                                                <b>
-                                                                    {convertDateToString(
-                                                                        candidatePhaseReachedAt,
-                                                                        'MMM D, YYYY'
-                                                                    )}
-                                                                </b>
-                                                            </i>
-                                                            <i>
-                                                                Target
-                                                                Completion Date{' '}
-                                                                <b>
-                                                                    {convertDateToString(
-                                                                        recommendedPhaseTargetDate,
-                                                                        'MMM D, YYYY'
-                                                                    )}
-                                                                </b>
-                                                            </i>
-                                                        </CellSubRow>
-                                                        <CellSubRow>
                                                             <Dropdown className="dropdown-btn-mark-as">
                                                                 <Dropdown.Toggle
                                                                     variant="secondary"
@@ -679,7 +667,7 @@ const TestPlans = ({ testPlanVersions, triggerPageUpdate = () => {} }) => {
                                                                     </Dropdown.Item>
                                                                 </Dropdown.Menu>
                                                             </Dropdown>
-                                                            <Button
+                                                            <NoWrapButton
                                                                 ref={changeTargetDateButtonRef =>
                                                                     (changeTargetDateButtonRefs.current =
                                                                         {
@@ -711,9 +699,25 @@ const TestPlans = ({ testPlanVersions, triggerPageUpdate = () => {} }) => {
                                                             >
                                                                 Change Target
                                                                 Date
-                                                            </Button>
+                                                            </NoWrapButton>
                                                         </CellSubRow>
                                                     </td>
+                                                    <CenteredTd>
+                                                        <i>
+                                                            {convertDateToString(
+                                                                candidatePhaseReachedAt,
+                                                                'MMM D, YYYY'
+                                                            )}
+                                                        </i>
+                                                    </CenteredTd>
+                                                    <CenteredTd>
+                                                        <i>
+                                                            {convertDateToString(
+                                                                recommendedPhaseTargetDate,
+                                                                'MMM D, YYYY'
+                                                            )}
+                                                        </i>
+                                                    </CenteredTd>
                                                     <CenteredTd>
                                                         {getRowStatus({
                                                             issues: allIssues,
