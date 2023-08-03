@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Button } from 'react-bootstrap';
-import TestPlanReportStatusDialog from './TestPlanReportStatusDialog';
+import TestPlanReportStatusDialog from './index';
 import { getRequiredReports } from './isRequired';
 import { calculateTestPlanReportCompletionPercentage } from './calculateTestPlanReportCompletionPercentage';
 

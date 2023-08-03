@@ -14,7 +14,7 @@ import {
 import { derivePhaseName } from '@client/utils/aria';
 import { THEMES, useThemedModal } from '@client/hooks/useThemedModal';
 import BasicModal from '@components/common/BasicModal';
-import TestPlanReportStatusDialogWithButton from '../../Reports/TestPlanReportStatusDialogWithButton';
+import TestPlanReportStatusDialogWithButton from '../../TestPlanReportStatusDialog/WithButton';
 
 const StatusCell = styled.div`
     display: flex;
