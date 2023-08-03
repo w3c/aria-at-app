@@ -14,7 +14,7 @@ describe('test queue', () => {
         const result = await query(
             gql`
                 query {
-                    testPlanReports(phases: [DRAFT]) {
+                    testPlanReports(testPlanVersionPhases: [DRAFT]) {
                         id
                         conflicts {
                             source {

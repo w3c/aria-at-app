@@ -44,7 +44,9 @@ const queryReports = async () => {
                         name
                     }
                 }
-                testPlanReports(phases: [CANDIDATE, RECOMMENDED]) {
+                testPlanReports(
+                    testPlanVersionPhases: [CANDIDATE, RECOMMENDED]
+                ) {
                     id
                     metrics
                     at {
