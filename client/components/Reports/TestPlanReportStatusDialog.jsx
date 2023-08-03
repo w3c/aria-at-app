@@ -8,7 +8,7 @@ import { useQuery } from '@apollo/client';
 import { ME_QUERY } from '../App/queries';
 import { evaluateAuth } from '../../utils/evaluateAuth';
 import getMetrics from './getMetrics';
-import { getTestPlanReportPercentComplete } from './getTestPlanRunPercentComplete';
+import { calculateTestPlanReportCompletionPercentage } from './calculateTestPlanReportCompletionPercentage';
 
 const TestPlanReportStatusModal = styled(Modal)`
     .modal-dialog {
@@ -172,7 +172,7 @@ const TestPlanReportStatusDialog = ({ testPlanVersion, show, handleHide }) => {
         const { metrics, draftTestPlanRuns, at, browser, id } = testPlanReport;
         if (metrics) {
             const percentComplete =
-                getTestPlanReportPercentComplete(testPlanReport);
+                calculateTestPlanReportCompletionPercentage(testPlanReport);
             if (percentComplete === 100) {
                 return renderCompleteReportStatus(draftTestPlanRuns, id);
             } else {

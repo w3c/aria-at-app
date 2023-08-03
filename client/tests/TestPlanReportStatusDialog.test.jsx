@@ -8,11 +8,15 @@ import '@testing-library/jest-dom';
 import { MockedProvider } from '@apollo/client/testing';
 import { BrowserRouter } from 'react-router-dom';
 import TestPlanReportStatusDialog from '../components/Reports/TestPlanReportStatusDialog';
+import { InMemoryCache } from '@apollo/client';
 
 const setup = (props, mocks = []) => {
     return render(
         <BrowserRouter>
-            <MockedProvider mocks={mocks} addTypename={false}>
+            <MockedProvider
+                mocks={mocks}
+                cache={new InMemoryCache({ addTypename: false })}
+            >
                 <TestPlanReportStatusDialog {...props} />
             </MockedProvider>
         </BrowserRouter>

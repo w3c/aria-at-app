@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Button } from 'react-bootstrap';
 import TestPlanReportStatusDialog from './TestPlanReportStatusDialog';
 import { getRequiredReports } from './isRequired';
-import { getTestPlanReportPercentComplete } from './getTestPlanRunPercentComplete';
+import { calculateTestPlanReportCompletionPercentage } from './calculateTestPlanReportCompletionPercentage';
 
 const TestPlanReportStatusDialogWithButton = ({ testPlanVersion }) => {
     const [showDialog, setShowDialog] = useState(false);
@@ -25,7 +25,7 @@ const TestPlanReportStatusDialogWithButton = ({ testPlanVersion }) => {
             );
             if (matchingReport) {
                 const percentComplete =
-                    getTestPlanReportPercentComplete(matchingReport);
+                    calculateTestPlanReportCompletionPercentage(matchingReport);
                 if (percentComplete === 100) {
                     acc.completed++;
                 } else {
@@ -66,7 +66,9 @@ const TestPlanReportStatusDialogWithButton = ({ testPlanVersion }) => {
 
     return (
         <>
-            <Button onClick={() => setShowDialog(true)}>{buttonLabel}</Button>
+            <Button className="my-3" onClick={() => setShowDialog(true)}>
+                {buttonLabel}
+            </Button>
             <TestPlanReportStatusDialog
                 testPlanVersion={testPlanVersion}
                 show={showDialog}
