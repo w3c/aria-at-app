@@ -131,7 +131,7 @@ const TestPlanReportStatusDialog = ({ testPlanVersion, show, handleHide }) => {
         const formattedDate = getFormattedDate(mostRecentRun.completedAt);
         return (
             <a href={`/report/${testPlanVersion.id}/targets/${id}`}>
-                Report completed on <b>{formattedDate}</b>
+                Report completed on <strong>{formattedDate}</strong>
             </a>
         );
     };
@@ -206,7 +206,8 @@ const TestPlanReportStatusDialog = ({ testPlanVersion, show, handleHide }) => {
         >
             <Modal.Header closeButton className="pb-1">
                 <h2>
-                    Report Status for the &nbsp;<b>{testPlanVersion.title}</b>
+                    Report Status for the &nbsp;
+                    <strong>{testPlanVersion.title}</strong>
                     &nbsp;Test Plan
                 </h2>
             </Modal.Header>
@@ -223,8 +224,9 @@ const TestPlanReportStatusDialog = ({ testPlanVersion, show, handleHide }) => {
                     >
                         {testPlanVersion.phase}
                     </span>
-                    Review phase. <b>{requiredReports.length} AT/browser</b>{' '}
-                    pairs require reports in this phase.
+                    Review phase.{' '}
+                    <strong>{requiredReports.length} AT/browser</strong> pairs
+                    require reports in this phase.
                 </p>
                 <TestPlanReportStatusTable bordered responsive>
                     <thead>
