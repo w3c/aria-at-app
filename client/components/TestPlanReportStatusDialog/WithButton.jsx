@@ -5,6 +5,7 @@ import TestPlanReportStatusDialog from './index';
 import { getRequiredReports } from './isRequired';
 import { calculateTestPlanReportCompletionPercentage } from './calculateTestPlanReportCompletionPercentage';
 import styled from '@emotion/styled';
+import ReportStatusDot from '../common/ReportStatusDot';
 
 const TestPlanReportStatusDialogButton = styled(Button)`
     display: flex;
@@ -57,6 +58,7 @@ const TestPlanReportStatusDialogWithButton = ({ testPlanVersion }) => {
         if (counts.completed === requiredReports.length) {
             return (
                 <span>
+                    <ReportStatusDot className="reports-complete" />
                     Required Reports <strong>Complete</strong>
                 </span>
             );
@@ -66,6 +68,7 @@ const TestPlanReportStatusDialogWithButton = ({ testPlanVersion }) => {
         else if (counts.inProgress > 0 && counts.missing === 0) {
             return (
                 <span>
+                    <ReportStatusDot className="reports-in-progress" />
                     Required Reports <strong>In Progress</strong>
                 </span>
             );
@@ -78,6 +81,7 @@ const TestPlanReportStatusDialogWithButton = ({ testPlanVersion }) => {
         ) {
             return (
                 <span>
+                    <ReportStatusDot className="reports-missing" />
                     Some Required Reports <strong>Missing</strong>
                 </span>
             );
@@ -86,13 +90,19 @@ const TestPlanReportStatusDialogWithButton = ({ testPlanVersion }) => {
         else if (counts.missing === requiredReports.length) {
             return (
                 <span>
+                    <ReportStatusDot className="reports-not-started" />
                     Required Reports <strong>Not Started</strong>
                 </span>
             );
         }
         // Fallback case
         else {
-            return <span>Some Reports Complete</span>;
+            return (
+                <span>
+                    <ReportStatusDot className="reports-not-started" />
+                    Some Reports Complete
+                </span>
+            );
         }
     }, [requiredReports, testPlanReports]);
 
