@@ -64,16 +64,19 @@ const StatusCell = styled.div`
 `;
 
 const PhaseCell = styled.div`
+    padding: 0 !important; /* override padding for td and add margins into specific children */
+
     > span.version-string {
         display: flex;
         justify-content: center;
         align-items: center;
 
         //padding: 4px 8px;
+        margin: 0.75rem;
         height: 2rem;
         border-radius: 4px;
 
-        width: 100%;
+        width: calc(100% - 1.5rem);
         background: #f6f8fa;
     }
 
@@ -81,8 +84,7 @@ const PhaseCell = styled.div`
         display: block;
         font-size: 14px;
         text-align: center;
-        margin-top: 12px;
-
+        margin: 12px 0.75rem;
         color: #333f4d;
     }
 
@@ -103,8 +105,9 @@ const PhaseCell = styled.div`
         background: #f6f8fa;
     }
 
-    > button {
-        margin-top: 12px;
+    > .advance-button {
+        margin: 12px 0.75rem;
+        width: calc(100% - 1.5rem);
     }
 `;
 
@@ -330,7 +333,7 @@ const DataManagementRow = ({
 
         if (atNames.length > 1) {
             return (
-                <>
+                <div>
                     {atNames.map((item, index) => (
                         <React.Fragment key={index}>
                             <b>{item}</b>
@@ -343,7 +346,7 @@ const DataManagementRow = ({
                             ) : null}
                         </React.Fragment>
                     ))}
-                </>
+                </div>
             );
         } else if (atNames.length === 1) return <b>{atNames[0]}</b>;
         else return <NoneText>N/A</NoneText>;
@@ -548,6 +551,7 @@ const DataManagementRow = ({
                         {isAdmin && (
                             <Button
                                 ref={ref => setFocusRef(ref)}
+                                className="advance-button"
                                 variant="secondary"
                                 onClick={async () => {
                                     setShowAdvanceModal(true);
@@ -704,6 +708,7 @@ const DataManagementRow = ({
                                 <Button
                                     ref={ref => setFocusRef(ref)}
                                     variant="secondary"
+                                    className="advance-button"
                                     onClick={async () => {
                                         setShowAdvanceModal(true);
                                         setAdvanceModalData({
@@ -895,6 +900,7 @@ const DataManagementRow = ({
                             {shouldShowAdvanceButton && (
                                 <Button
                                     ref={ref => setFocusRef(ref)}
+                                    className="advance-button"
                                     variant="secondary"
                                     onClick={async () => {
                                         setShowAdvanceModal(true);
@@ -993,9 +999,11 @@ const DataManagementRow = ({
     return (
         <LoadingStatus message={loadingMessage}>
             <tr>
-                <th>
-                    <b>{testPlan.title}</b>
-                </th>
+                <td>
+                    <div>
+                        <b>{testPlan.title}</b>
+                    </div>
+                </td>
                 <td>{renderCellForCoveredAts()}</td>
                 <td>{renderCellForOverallStatus()}</td>
                 <td>{renderCellForPhase('RD', rdTestPlanVersions)}</td>
