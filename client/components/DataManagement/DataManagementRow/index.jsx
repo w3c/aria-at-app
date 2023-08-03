@@ -750,13 +750,19 @@ const DataManagementRow = ({
                     }
 
                     let coveredReports = [];
+                    let finalReportFound = false;
+
                     latestVersion.testPlanReports.forEach(testPlanReport => {
+                        const approvedAt = testPlanReport.approvedAt;
                         const atName = testPlanReport.at.name;
                         const browserName = testPlanReport.browser.name;
+
                         const value = `${atName}_${browserName}`;
 
-                        if (!coveredReports.includes(value))
+                        if (approvedAt && !coveredReports.includes(value)) {
+                            finalReportFound = true;
                             coveredReports.push(value);
+                        }
                     });
 
                     // Phase is "active"
@@ -788,23 +794,38 @@ const DataManagementRow = ({
                                     ref={ref => setFocusRef(ref)}
                                     variant="secondary"
                                     onClick={async () => {
-                                        setShowAdvanceModal(true);
-                                        setAdvanceModalData({
-                                            phase: derivePhaseName('CANDIDATE'),
-                                            version: convertDateToString(
-                                                latestVersionDate,
-                                                'YY.MM.DD'
-                                            ),
-                                            advanceFunc: () => {
-                                                setShowAdvanceModal(false);
-                                                handleClickUpdateTestPlanVersionPhase(
-                                                    latestVersion.id,
-                                                    'CANDIDATE',
-                                                    testPlanVersionDataToInclude
-                                                );
-                                            },
-                                            coveredReports
-                                        });
+                                        if (finalReportFound) {
+                                            setShowAdvanceModal(true);
+                                            setAdvanceModalData({
+                                                phase: derivePhaseName(
+                                                    'CANDIDATE'
+                                                ),
+                                                version: convertDateToString(
+                                                    latestVersionDate,
+                                                    'YY.MM.DD'
+                                                ),
+                                                advanceFunc: () => {
+                                                    setShowAdvanceModal(false);
+                                                    handleClickUpdateTestPlanVersionPhase(
+                                                        latestVersion.id,
+                                                        'CANDIDATE',
+                                                        testPlanVersionDataToInclude
+                                                    );
+                                                },
+                                                coveredReports
+                                            });
+                                        } else {
+                                            setShowThemedModal(true);
+                                            setThemedModalTitle(
+                                                'Error Updating Test Plan Version Phase'
+                                            );
+                                            setThemedModalContent(
+                                                <>
+                                                    No reports have been marked
+                                                    as final.
+                                                </>
+                                            );
+                                        }
                                     }}
                                 >
                                     Advance to Candidate

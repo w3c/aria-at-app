@@ -33,7 +33,11 @@ const Reports = () => {
     if (!data) return null;
 
     return (
-        <SummarizeTestPlanReports testPlanVersions={data.testPlanVersions} />
+        <SummarizeTestPlanReports
+            testPlanVersions={data.testPlanVersions.filter(
+                testPlanVersion => testPlanVersion.testPlanReports.length
+            )}
+        />
     );
 };
 

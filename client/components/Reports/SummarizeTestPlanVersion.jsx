@@ -100,7 +100,7 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
                                 `/targets/${testPlanReport.id}`
                             }
                         >
-                            <Button variant="secondary" className="mr-3">
+                            <Button variant="secondary" className="me-3">
                                 View Complete Results
                             </Button>
                         </LinkContainer>

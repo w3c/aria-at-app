@@ -253,6 +253,14 @@ const updatePhaseResolver = async (
         throw new Error('No test plan reports found.');
     }
 
+    if (
+        !testPlanReports.some(({ approvedAt }) => approvedAt) &&
+        (phase === 'CANDIDATE' || phase === 'RECOMMENDED')
+    ) {
+        // Do not update phase if no approved reports were found
+        throw new Error('No reports have been marked as final.');
+    }
+
     for (const testPlanReport of testPlanReports) {
         const runnableTests = runnableTestsResolver(testPlanReport);
         let updateParams = {};
@@ -286,9 +294,7 @@ const updatePhaseResolver = async (
 
             const finalizedTestResults = await finalizedTestResultsResolver(
                 {
-                    ...testPlanReport,
-                    phase,
-                    status: phase
+                    ...testPlanReport
                 },
                 null,
                 context

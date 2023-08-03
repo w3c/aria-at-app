@@ -21,8 +21,8 @@ export const DATA_MANAGEMENT_PAGE_QUERY = gql`
             name
         }
         testPlans {
-            directory
             id
+            directory
             title
         }
         testPlanVersions {
@@ -41,6 +41,7 @@ export const DATA_MANAGEMENT_PAGE_QUERY = gql`
             }
             testPlanReports {
                 id
+                approvedAt
                 at {
                     id
                     name
