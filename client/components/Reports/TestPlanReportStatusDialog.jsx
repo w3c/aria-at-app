@@ -261,12 +261,12 @@ TestPlanReportStatusDialog.propTypes = {
     testPlanVersion: PropTypes.shape({
         id: PropTypes.string.isRequired,
         title: PropTypes.string.isRequired,
-        phase: PropTypes.oneOf(['DRAFT', 'CANDIDATE']).isRequired,
+        phase: PropTypes.string.isRequired,
         testPlanReports: PropTypes.arrayOf(
             PropTypes.shape({
                 id: PropTypes.string.isRequired,
-                status: PropTypes.string.isRequired,
-                runnableTests: PropTypes.arrayOf(PropTypes.object).isRequired,
+                status: PropTypes.string,
+                runnableTests: PropTypes.arrayOf(PropTypes.object),
                 finalizedTestResults: PropTypes.arrayOf(PropTypes.object),
                 at: PropTypes.shape({
                     id: PropTypes.string.isRequired,

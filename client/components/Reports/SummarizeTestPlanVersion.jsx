@@ -11,7 +11,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome } from '@fortawesome/free-solid-svg-icons';
 import styled from '@emotion/styled';
 import DisclaimerInfo from '../DisclaimerInfo';
-import TestPlanReportStatusDialogWithButton from './TestPlanReportStatusDialogWithButton';
 
 const FullHeightContainer = styled(Container)`
     min-height: calc(100vh - 64px);
@@ -44,9 +43,6 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
                     {getTestPlanVersionTitle(testPlanVersion)}
                 </Breadcrumb.Item>
             </Breadcrumb>
-            <TestPlanReportStatusDialogWithButton
-                testPlanVersion={testPlanVersion}
-            />
             <h2>Introduction</h2>
 
             {testPlanReports.some(t => t.status === 'CANDIDATE') ? (

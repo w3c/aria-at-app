@@ -14,6 +14,7 @@ import {
 import { derivePhaseName } from '@client/utils/aria';
 import { THEMES, useThemedModal } from '@client/hooks/useThemedModal';
 import BasicModal from '@components/common/BasicModal';
+import TestPlanReportStatusDialogWithButton from '../../Reports/TestPlanReportStatusDialogWithButton';
 
 const StatusCell = styled.div`
     display: flex;
@@ -726,6 +727,9 @@ const DataManagementRow = ({
                                     Advance to Candidate
                                 </Button>
                             )}
+                            <TestPlanReportStatusDialogWithButton
+                                testPlanVersion={latestVersion}
+                            />
                         </PhaseCell>
                     );
                 }
@@ -977,6 +981,9 @@ const DataManagementRow = ({
                                 )}
                             </b>
                         </span>
+                        <TestPlanReportStatusDialogWithButton
+                            testPlanVersion={latestVersion}
+                        />
                     </PhaseCell>
                 );
             }
