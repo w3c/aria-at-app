@@ -206,6 +206,7 @@ describe('test queue', () => {
 
             let testPlanVersionId = candidateTestPlanVersion.id;
             // This version is in 'CANDIDATE' phase. Let's set it to DRAFT
+            // This will also remove the associated TestPlanReports approvedAt values
             await mutate(gql`
                 mutation {
                     testPlanVersion(id: ${testPlanVersionId}) {
@@ -222,10 +223,29 @@ describe('test queue', () => {
                 query {
                     testPlanVersion(id: ${testPlanVersionId}) {
                         phase
+                        testPlanReports {
+                            id
+                        }
                     }
                 }
             `);
             const previousPhase = previous.testPlanVersion.phase;
+            const previousPhaseTestPlanReportId =
+                previous.testPlanVersion.testPlanReports[0].id;
+
+            // Need to approve at least one of the associated reports
+            await mutate(gql`
+                mutation {
+                    testPlanReport(id: ${previousPhaseTestPlanReportId}) {
+                        updateApprovedAt {
+                            testPlanReport {
+                                id
+                                approvedAt
+                            }
+                        }
+                    }
+                }
+            `);
 
             const candidateResult = await mutate(gql`
                 mutation {

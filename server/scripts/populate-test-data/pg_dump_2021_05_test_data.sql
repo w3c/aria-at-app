@@ -82,7 +82,7 @@ INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "atId", "bro
 
 UPDATE "TestPlanVersion" SET "phase" = 'DRAFT', "draftPhaseReachedAt" = '2022-07-06' WHERE id = get_test_plan_version_id(text 'Toggle Button');
 UPDATE "TestPlanVersion" SET "phase" = 'DRAFT', "draftPhaseReachedAt" = '2022-07-06' WHERE id = get_test_plan_version_id(text 'Select Only Combobox Example');
-UPDATE "TestPlanVersion" SET "phase" = 'CANDIDATE', "candidatePhaseReachedAt" = '2022-07-06', "recommendedPhaseTargetDate" = '2023-01-02' WHERE id = get_test_plan_version_id(text 'Modal Dialog Example');
+UPDATE "TestPlanVersion" SET "phase" = 'CANDIDATE', "draftPhaseReachedAt" = '2022-07-06', "candidatePhaseReachedAt" = '2022-07-06', "recommendedPhaseTargetDate" = '2023-01-02' WHERE id = get_test_plan_version_id(text 'Modal Dialog Example');
 UPDATE "TestPlanVersion" SET "phase" = 'RECOMMENDED', "candidatePhaseReachedAt" = '2022-07-06', "recommendedPhaseTargetDate" = '2023-01-02', "recommendedPhaseReachedAt" = '2023-01-03' WHERE id = get_test_plan_version_id(text 'Checkbox Example (Mixed-State)');
 UPDATE "TestPlanVersion" SET "phase" = 'DRAFT', "draftPhaseReachedAt" = '2022-07-06' WHERE id = get_test_plan_version_id(text 'Alert Example');
 
