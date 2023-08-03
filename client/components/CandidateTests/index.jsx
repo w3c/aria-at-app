@@ -15,8 +15,8 @@ const CandidateTests = () => {
     if (error) {
         return (
             <PageStatus
-                title="Candidate Tests | ARIA-AT"
-                heading="Candidate Tests"
+                title="Candidate Review | ARIA-AT"
+                heading="Candidate Review"
                 message={error.message}
                 isError
             />
@@ -26,8 +26,8 @@ const CandidateTests = () => {
     if (loading) {
         return (
             <PageStatus
-                title="Loading - Candidate Tests | ARIA-AT"
-                heading="Candidate Tests"
+                title="Loading - Candidate Review | ARIA-AT"
+                heading="Candidate Review"
             />
         );
     }

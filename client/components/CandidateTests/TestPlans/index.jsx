@@ -267,9 +267,9 @@ const TestPlans = ({ testPlanVersions, triggerPageUpdate = () => {} }) => {
         return (
             <FullHeightContainer id="main" as="main" tabIndex="-1">
                 <Helmet>
-                    <title>Candidate Tests | ARIA-AT</title>
+                    <title>Candidate Review | ARIA-AT</title>
                 </Helmet>
-                <h1>Candidate Tests</h1>
+                <h1>Candidate Review</h1>
                 <p>
                     There are no results to show just yet. Please check back
                     soon!
@@ -993,9 +993,9 @@ const TestPlans = ({ testPlanVersions, triggerPageUpdate = () => {} }) => {
     return (
         <FullHeightContainer id="main" as="main" tabIndex="-1">
             <Helmet>
-                <title>Candidate Tests | ARIA-AT</title>
+                <title>Candidate Review | ARIA-AT</title>
             </Helmet>
-            <h1>Candidate Tests</h1>
+            <h1>Candidate Review</h1>
             <h2>Introduction</h2>
             <p>
                 This page summarizes the test results for each AT and Browser

@@ -107,7 +107,7 @@ const App = () => {
                                             '/candidate-test'
                                         )}
                                     >
-                                        Candidate Tests
+                                        Candidate Review
                                     </Nav.Link>
                                 </li>
                             )}
