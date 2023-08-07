@@ -282,6 +282,17 @@ module.exports = {
                 );
         };
 
+        /**
+         * Returns an object using test directories as the key, which holds an array containing data
+         * on the known commits.
+         * Example:
+         * {
+         *   alert: [ { sha: 'string', commitDate: 'dateString' }, { sha: ..., commitDate: ... }, ... ],
+         *   banner: [ { sha: 'string', commitDate: 'dateString' }, ... ],
+         *   ...
+         * }
+         * @returns {Promise<{}>}
+         */
         const getKnownGitCommits = async () => {
             const testDirectories = [
                 'alert',
@@ -352,8 +363,8 @@ module.exports = {
                     }
 
                     // eslint-disable-next-line no-console
-                    console.log(
-                        `Processed GitHub API commit data for tests/${testDirectory}`
+                    console.info(
+                        `Processed GitHub API commits history for tests/${testDirectory}`
                     );
                 } catch (error) {
                     console.error(
@@ -367,27 +378,21 @@ module.exports = {
             return knownGitCommits;
         };
 
+        /**
+         * Determines the TestPlanVersions which can be kept or removed.
+         * @param testPlanVersionsByHashedTests - TestPlanVersions separated by hashedTests
+         * @param knownGitCommits - Ideally, the result of {@link getKnownGitCommits}
+         * @returns {{testPlanVersionIdsByHashedTests: {}, testPlanVersionIdsByHashedTestsToKeep: {}, testPlanVersionIdsByHashedTestsToDelete: {}}}
+         */
         const processTestPlanVersionIdsByHashedTests = (
             testPlanVersionsByHashedTests,
             knownGitCommits
         ) => {
-            const areDatesOnSameDay = (date1, date2) => {
-                return (
-                    date1.getFullYear() === date2.getFullYear() &&
-                    date1.getMonth() === date2.getMonth() &&
-                    date1.getDate() === date2.getDate()
-                );
-            };
-
-            const sortByUpdatedAt = (a, b) => {
-                const dateA = new Date(a.updatedAt);
-                const dateB = new Date(b.updatedAt);
-                return dateB - dateA;
-            };
-
             for (const directory in knownGitCommits) {
                 const gitCommits = knownGitCommits[directory];
 
+                // Get the testPlanVersions filtered by the directory to compare against the git
+                // commits data
                 const filteredTestPlanVersionsByHashedTestsForDirectory =
                     Object.fromEntries(
                         Object.entries(testPlanVersionsByHashedTests).filter(
@@ -397,27 +402,26 @@ module.exports = {
                         )
                     );
 
+                // Sort the array for each hash object so the latest date is preferred when
+                // assigning the isPriority flag
                 for (const hash in filteredTestPlanVersionsByHashedTestsForDirectory) {
                     filteredTestPlanVersionsByHashedTestsForDirectory[
                         hash
-                    ].sort(sortByUpdatedAt);
+                    ].sort((a, b) => {
+                        const dateA = new Date(a.updatedAt);
+                        const dateB = new Date(b.updatedAt);
+                        return dateB - dateA;
+                    });
                 }
 
                 for (const gitCommit of gitCommits) {
-                    const { sha, commitDate } = gitCommit;
+                    const { sha } = gitCommit;
                     for (const hash in filteredTestPlanVersionsByHashedTestsForDirectory) {
                         for (const testPlanVersion of filteredTestPlanVersionsByHashedTestsForDirectory[
                             hash
                         ]) {
-                            // Check if the found commit is either on the same date or is the exact
-                            // sha
-                            if (
-                                sha === testPlanVersion.gitSha ||
-                                areDatesOnSameDay(
-                                    new Date(testPlanVersion.updatedAt),
-                                    new Date(commitDate)
-                                )
-                            ) {
+                            // Check if the found commit is the same git sha
+                            if (sha === testPlanVersion.gitSha) {
                                 if (
                                     !testPlanVersionsByHashedTests[hash].some(
                                         obj => obj.isPriority
@@ -518,7 +522,7 @@ module.exports = {
                 knownGitCommits
             );
 
-            const idsToDelete = Object.values(
+            const testPlanVersionIdsToDelete = Object.values(
                 testPlanVersionIdsByHashedTestsToDelete
             );
 
@@ -561,8 +565,9 @@ module.exports = {
                 }
             );
 
-            if (idsToDelete.length) {
-                const toRemove = idsToDelete.flat();
+            // Remove the TestPlanVersions not captured by removeTestPlanVersionDuplicates()
+            if (testPlanVersionIdsToDelete.length) {
+                const toRemove = testPlanVersionIdsToDelete.flat();
                 await queryInterface.sequelize.query(
                     `DELETE FROM "TestPlanVersion" WHERE id IN (?)`,
                     {
@@ -585,7 +590,15 @@ module.exports = {
                 }
             );
 
-            if (uniqueHashCount) {
+            if (uniqueHashCount && testPlanVersionIdsToDelete.length) {
+                // eslint-disable-next-line no-console
+                console.info(
+                    'Fixed',
+                    uniqueHashCount - testPlanVersionIdsToDelete.length,
+                    'of',
+                    uniqueHashCount - testPlanVersionIdsToDelete.length
+                );
+            } else if (uniqueHashCount) {
                 // eslint-disable-next-line no-console
                 console.info('Fixed', uniqueHashCount, 'of', uniqueHashCount);
             }

@@ -185,7 +185,7 @@ const TestQueueRow = ({
         );
 
         const latestTestPlanVersion = latestTestPlanVersions.filter(
-            version => version.latestTestPlanVersion.id === testPlanVersion.id
+            version => version.latestTestPlanVersion?.id === testPlanVersion.id
         );
         const updateTestPlanVersionButton = isAdmin &&
             latestTestPlanVersion.length === 0 && (
