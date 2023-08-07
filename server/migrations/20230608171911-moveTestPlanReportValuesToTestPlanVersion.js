@@ -22,8 +22,7 @@ const {
     submitTestResult,
     saveTestResult
 } = require('../resolvers/TestResultOperations');
-const hash = require('object-hash');
-const { omit } = require('lodash');
+const { hashTests } = require('../util/aria');
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
@@ -32,13 +31,6 @@ module.exports = {
         const browserLoader = BrowserLoader();
 
         const compareTestContent = (currentTests, newTests) => {
-            const hashTest = test => hash(omit(test, ['id']));
-            const hashTests = tests => {
-                return Object.fromEntries(
-                    tests.map(test => [hashTest(test), test])
-                );
-            };
-
             const currentTestsByHash = hashTests(currentTests);
             const newTestsByHash = hashTests(newTests);
 
