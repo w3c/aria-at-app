@@ -1,5 +1,6 @@
 'use strict';
 
+const fetch = require('node-fetch');
 const {
     createTestResultId,
     createScenarioResultId,
@@ -15,7 +16,7 @@ module.exports = {
          * hash
          * @param transaction - The Sequelize.Transaction object.
          * See {@https://sequelize.org/api/v6/class/src/sequelize.js~sequelize#instance-method-transaction}
-         * @returns {Promise<{testPlanVersionIdsByHashedTests: {}}>}
+         * @returns {Promise<{testPlanVersionsByHashedTests: {}}>}
          */
         const computeTestPlanVersionHashedTests = async transaction => {
             const results = await queryInterface.sequelize.query(
@@ -29,7 +30,7 @@ module.exports = {
                 testPlanVersionCount / testPlanVersionBatchSize
             );
 
-            let testPlanVersionIdsByHashedTests = {};
+            let testPlanVersionsByHashedTests = {};
 
             for (let i = 0; i < iterationsNeeded; i += 1) {
                 const multipleOf100 = i % testPlanVersionBatchSize === 0;
@@ -44,7 +45,7 @@ module.exports = {
                 const currentOffset = i * testPlanVersionBatchSize;
 
                 const [testPlanVersions] = await queryInterface.sequelize.query(
-                    `SELECT id, tests FROM "TestPlanVersion" ORDER BY id LIMIT ? OFFSET ?`,
+                    `SELECT id, directory, "gitSha", tests, "updatedAt" FROM "TestPlanVersion" ORDER BY id LIMIT ? OFFSET ?`,
                     {
                         replacements: [testPlanVersionBatchSize, currentOffset],
                         transaction
@@ -55,12 +56,15 @@ module.exports = {
                     testPlanVersions.map(async testPlanVersion => {
                         const hashedTests = hashTests(testPlanVersion.tests);
 
-                        if (!testPlanVersionIdsByHashedTests[hashedTests]) {
-                            testPlanVersionIdsByHashedTests[hashedTests] = [];
+                        if (!testPlanVersionsByHashedTests[hashedTests]) {
+                            testPlanVersionsByHashedTests[hashedTests] = [];
                         }
-                        testPlanVersionIdsByHashedTests[hashedTests].push(
-                            testPlanVersion.id
-                        );
+                        testPlanVersionsByHashedTests[hashedTests].push({
+                            id: testPlanVersion.id,
+                            gitSha: testPlanVersion.gitSha,
+                            directory: testPlanVersion.directory,
+                            updatedAt: testPlanVersion.updatedAt
+                        });
 
                         await queryInterface.sequelize.query(
                             `UPDATE "TestPlanVersion" SET "hashedTests" = ? WHERE id = ?`,
@@ -83,7 +87,7 @@ module.exports = {
                 );
             }
 
-            return { testPlanVersionIdsByHashedTests };
+            return { testPlanVersionsByHashedTests };
         };
 
         /**
@@ -278,6 +282,211 @@ module.exports = {
                 );
         };
 
+        const getKnownGitCommits = async () => {
+            const testDirectories = [
+                'alert',
+                'banner',
+                'breadcrumb',
+                'checkbox',
+                'checkbox-tri-state',
+                'combobox-autocomplete-both-updated',
+                'combobox-select-only',
+                'command-button',
+                'complementary',
+                'contentinfo',
+                'datepicker-spin-button',
+                'disclosure-faq',
+                'disclosure-navigation',
+                'form',
+                'horizontal-slider',
+                'link-css',
+                'link-img-alt',
+                'link-span-text',
+                'main',
+                'menu-button-actions',
+                'menu-button-actions-active-descendant',
+                'menu-button-navigation',
+                'menubar-editor',
+                'meter',
+                'minimal-data-grid',
+                'modal-dialog',
+                'radiogroup-aria-activedescendant',
+                'radiogroup-roving-tabindex',
+                'rating-slider',
+                'seek-slider',
+                'slider-multithumb',
+                'switch',
+                'tabs-manual-activation',
+                'toggle-button',
+                'vertical-temperature-slider'
+            ];
+            const knownGitCommits = {};
+
+            const { GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET } = process.env;
+
+            for (const testDirectory of testDirectories) {
+                if (!knownGitCommits[testDirectory])
+                    knownGitCommits[testDirectory] = [];
+
+                try {
+                    const url = `https://api.github.com/repos/w3c/aria-at/commits?path=tests/${testDirectory}`;
+                    const authorizationHeader = `Basic ${Buffer.from(
+                        `${GITHUB_CLIENT_ID}:${GITHUB_CLIENT_SECRET}`
+                    ).toString('base64')}`;
+                    const options = {
+                        headers: {
+                            Authorization: authorizationHeader
+                        }
+                    };
+
+                    const response = await fetch(url, options);
+                    const data = await response.json();
+
+                    for (const commitData of data) {
+                        if (commitData.commit?.author) {
+                            knownGitCommits[testDirectory].push({
+                                sha: commitData.sha,
+                                commitDate: commitData.commit.author.date
+                            });
+                        }
+                    }
+
+                    // eslint-disable-next-line no-console
+                    console.log(
+                        `Processed GitHub API commit data for tests/${testDirectory}`
+                    );
+                } catch (error) {
+                    console.error(
+                        'get.commits.error',
+                        testDirectory,
+                        error.message
+                    );
+                }
+            }
+
+            return knownGitCommits;
+        };
+
+        const processTestPlanVersionIdsByHashedTests = (
+            testPlanVersionsByHashedTests,
+            knownGitCommits
+        ) => {
+            const areDatesOnSameDay = (date1, date2) => {
+                return (
+                    date1.getFullYear() === date2.getFullYear() &&
+                    date1.getMonth() === date2.getMonth() &&
+                    date1.getDate() === date2.getDate()
+                );
+            };
+
+            const sortByUpdatedAt = (a, b) => {
+                const dateA = new Date(a.updatedAt);
+                const dateB = new Date(b.updatedAt);
+                return dateB - dateA;
+            };
+
+            for (const directory in knownGitCommits) {
+                const gitCommits = knownGitCommits[directory];
+
+                const filteredTestPlanVersionsByHashedTestsForDirectory =
+                    Object.fromEntries(
+                        Object.entries(testPlanVersionsByHashedTests).filter(
+                            // eslint-disable-next-line no-unused-vars
+                            ([key, arr]) =>
+                                arr.some(obj => obj.directory === directory)
+                        )
+                    );
+
+                for (const hash in filteredTestPlanVersionsByHashedTestsForDirectory) {
+                    filteredTestPlanVersionsByHashedTestsForDirectory[
+                        hash
+                    ].sort(sortByUpdatedAt);
+                }
+
+                for (const gitCommit of gitCommits) {
+                    const { sha, commitDate } = gitCommit;
+                    for (const hash in filteredTestPlanVersionsByHashedTestsForDirectory) {
+                        for (const testPlanVersion of filteredTestPlanVersionsByHashedTestsForDirectory[
+                            hash
+                        ]) {
+                            // Check if the found commit is either on the same date or is the exact
+                            // sha
+                            if (
+                                sha === testPlanVersion.gitSha ||
+                                areDatesOnSameDay(
+                                    new Date(testPlanVersion.updatedAt),
+                                    new Date(commitDate)
+                                )
+                            ) {
+                                if (
+                                    !testPlanVersionsByHashedTests[hash].some(
+                                        obj => obj.isPriority
+                                    )
+                                )
+                                    testPlanVersionsByHashedTests[hash].find(
+                                        obj => obj.id === testPlanVersion.id
+                                    ).isPriority = true;
+                            }
+                        }
+                    }
+                }
+            }
+
+            for (const key in testPlanVersionsByHashedTests) {
+                testPlanVersionsByHashedTests[key]
+                    .sort((a, b) => {
+                        const dateA = new Date(a.updatedAt);
+                        const dateB = new Date(b.updatedAt);
+                        return dateA - dateB;
+                    })
+                    .sort((a, b) => {
+                        return a.isPriority ? -1 : b.isPriority ? 1 : 0;
+                    });
+            }
+
+            const batchesWIsPriority = {};
+            const batchesWOIsPriority = {};
+
+            for (const hash in testPlanVersionsByHashedTests) {
+                const batch = testPlanVersionsByHashedTests[hash];
+
+                if (batch.some(testPlanVersion => testPlanVersion.isPriority)) {
+                    batchesWIsPriority[hash] = batch;
+                } else {
+                    batchesWOIsPriority[hash] = batch;
+                }
+            }
+
+            const getTestPlanVersionIdsByHashedTests = data => {
+                const getIdsFromKey = key => {
+                    return data[key].map(item => item.id);
+                };
+
+                // Get the ids for each key
+                const idsByKeys = {};
+                Object.keys(data).forEach(key => {
+                    idsByKeys[key] = getIdsFromKey(key);
+                });
+
+                return idsByKeys;
+            };
+
+            const testPlanVersionIdsByHashedTests =
+                getTestPlanVersionIdsByHashedTests(
+                    testPlanVersionsByHashedTests
+                );
+            const testPlanVersionIdsByHashedTestsToKeep =
+                getTestPlanVersionIdsByHashedTests(batchesWIsPriority);
+            const testPlanVersionIdsByHashedTestsToDelete =
+                getTestPlanVersionIdsByHashedTests(batchesWOIsPriority);
+
+            return {
+                testPlanVersionIdsByHashedTests,
+                testPlanVersionIdsByHashedTestsToKeep,
+                testPlanVersionIdsByHashedTestsToDelete
+            };
+        };
+
         return queryInterface.sequelize.transaction(async transaction => {
             await queryInterface.addColumn(
                 'TestPlanVersion',
@@ -287,15 +496,30 @@ module.exports = {
             );
 
             // Get the unique TestPlanVersions found for each hash
-            const { testPlanVersionIdsByHashedTests } =
+            const { testPlanVersionsByHashedTests } =
                 await computeTestPlanVersionHashedTests(transaction);
 
             const uniqueHashCount = Object.keys(
-                testPlanVersionIdsByHashedTests
+                testPlanVersionsByHashedTests
             ).length;
             const testPlanReportsBatchSize = 100;
             const iterationsNeeded = Math.ceil(
                 uniqueHashCount / testPlanReportsBatchSize
+            );
+
+            // Retrieve the latest known git commits info for each test plan directory
+            const knownGitCommits = await getKnownGitCommits();
+
+            const {
+                testPlanVersionIdsByHashedTests,
+                testPlanVersionIdsByHashedTestsToDelete
+            } = processTestPlanVersionIdsByHashedTests(
+                testPlanVersionsByHashedTests,
+                knownGitCommits
+            );
+
+            const idsToDelete = Object.values(
+                testPlanVersionIdsByHashedTestsToDelete
             );
 
             for (let i = 0; i < iterationsNeeded; i += 1) {
@@ -323,6 +547,43 @@ module.exports = {
                     transaction
                 );
             }
+
+            // Update TestPlanVersion -> TestPlanReport fkey to add cascade deletion on
+            // TestPlanVersion row deletion
+            await queryInterface.sequelize.query(
+                `alter table public."TestPlanReport"
+                        drop constraint "TestPlanReport_testPlan_fkey";
+
+                     alter table public."TestPlanReport"
+                        add constraint "TestPlanReport_testPlan_fkey" foreign key ("testPlanVersionId") references public."TestPlanVersion" on update cascade on delete cascade;`,
+                {
+                    transaction
+                }
+            );
+
+            if (idsToDelete.length) {
+                const toRemove = idsToDelete.flat();
+                await queryInterface.sequelize.query(
+                    `DELETE FROM "TestPlanVersion" WHERE id IN (?)`,
+                    {
+                        replacements: [toRemove],
+                        transaction
+                    }
+                );
+            }
+
+            // Update TestPlanVersion -> TestPlanReport fkey to remove cascade delete on
+            // TestPlanVersion row deletion
+            await queryInterface.sequelize.query(
+                `alter table public."TestPlanReport"
+                        drop constraint "TestPlanReport_testPlan_fkey";
+
+                     alter table public."TestPlanReport"
+                        add constraint "TestPlanReport_testPlan_fkey" foreign key ("testPlanVersionId") references public."TestPlanVersion" on update cascade;`,
+                {
+                    transaction
+                }
+            );
 
             if (uniqueHashCount) {
                 // eslint-disable-next-line no-console
