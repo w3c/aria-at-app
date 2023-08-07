@@ -552,21 +552,21 @@ module.exports = {
                 );
             }
 
-            // Update TestPlanVersion -> TestPlanReport fkey to add cascade deletion on
-            // TestPlanVersion row deletion
-            await queryInterface.sequelize.query(
-                `alter table public."TestPlanReport"
+            // Remove the TestPlanVersions not captured by removeTestPlanVersionDuplicates()
+            if (testPlanVersionIdsToDelete.length) {
+                // Update TestPlanVersion -> TestPlanReport fkey to add cascade deletion on
+                // TestPlanVersion row deletion
+                await queryInterface.sequelize.query(
+                    `alter table public."TestPlanReport"
                         drop constraint "TestPlanReport_testPlan_fkey";
 
                      alter table public."TestPlanReport"
                         add constraint "TestPlanReport_testPlan_fkey" foreign key ("testPlanVersionId") references public."TestPlanVersion" on update cascade on delete cascade;`,
-                {
-                    transaction
-                }
-            );
+                    {
+                        transaction
+                    }
+                );
 
-            // Remove the TestPlanVersions not captured by removeTestPlanVersionDuplicates()
-            if (testPlanVersionIdsToDelete.length) {
                 const toRemove = testPlanVersionIdsToDelete.flat();
                 await queryInterface.sequelize.query(
                     `DELETE FROM "TestPlanVersion" WHERE id IN (?)`,
@@ -575,29 +575,29 @@ module.exports = {
                         transaction
                     }
                 );
-            }
 
-            // Update TestPlanVersion -> TestPlanReport fkey to remove cascade delete on
-            // TestPlanVersion row deletion
-            await queryInterface.sequelize.query(
-                `alter table public."TestPlanReport"
+                // Update TestPlanVersion -> TestPlanReport fkey to remove cascade delete on
+                // TestPlanVersion row deletion
+                await queryInterface.sequelize.query(
+                    `alter table public."TestPlanReport"
                         drop constraint "TestPlanReport_testPlan_fkey";
 
                      alter table public."TestPlanReport"
                         add constraint "TestPlanReport_testPlan_fkey" foreign key ("testPlanVersionId") references public."TestPlanVersion" on update cascade;`,
-                {
-                    transaction
-                }
-            );
-
-            if (uniqueHashCount && testPlanVersionIdsToDelete.length) {
-                // eslint-disable-next-line no-console
-                console.info(
-                    'Fixed',
-                    uniqueHashCount - testPlanVersionIdsToDelete.length,
-                    'of',
-                    uniqueHashCount - testPlanVersionIdsToDelete.length
+                    {
+                        transaction
+                    }
                 );
+
+                if (uniqueHashCount) {
+                    // eslint-disable-next-line no-console
+                    console.info(
+                        'Fixed',
+                        uniqueHashCount - testPlanVersionIdsToDelete.length,
+                        'of',
+                        uniqueHashCount - testPlanVersionIdsToDelete.length
+                    );
+                }
             } else if (uniqueHashCount) {
                 // eslint-disable-next-line no-console
                 console.info('Fixed', uniqueHashCount, 'of', uniqueHashCount);
