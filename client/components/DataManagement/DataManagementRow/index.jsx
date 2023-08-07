@@ -697,9 +697,7 @@ const DataManagementRow = ({
                     } = getVersionData(otherTestPlanVersions);
 
                     const completionDate =
-                        otherLatestVersion.phase === 'CANDIDATE'
-                            ? otherLatestVersion.candidatePhaseReachedAt
-                            : otherLatestVersion.recommendedPhaseReachedAt;
+                        otherLatestVersion.candidatePhaseReachedAt;
 
                     return (
                         <PhaseCell>
