@@ -237,7 +237,7 @@ describe('test queue', () => {
             await mutate(gql`
                 mutation {
                     testPlanReport(id: ${previousPhaseTestPlanReportId}) {
-                        updateApprovedAt {
+                        markAsFinal {
                             testPlanReport {
                                 id
                                 approvedAt

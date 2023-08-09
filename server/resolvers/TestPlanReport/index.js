@@ -9,6 +9,7 @@ const atVersions = require('./atVersionsResolver');
 const at = require('./atResolver');
 const browser = require('./browserResolver');
 const latestAtVersionReleasedAt = require('./latestAtVersionReleasedAtResolver');
+const isFinal = require('./isFinalResolver');
 
 module.exports = {
     runnableTests,
@@ -21,5 +22,6 @@ module.exports = {
     atVersions,
     at,
     browser,
-    latestAtVersionReleasedAt
+    latestAtVersionReleasedAt,
+    isFinal
 };

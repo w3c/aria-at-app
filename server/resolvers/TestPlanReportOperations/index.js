@@ -1,6 +1,6 @@
 const assignTester = require('./assignTesterResolver');
 const deleteTestPlanRun = require('./deleteTestPlanRunResolver');
-const updateApprovedAt = require('./updateApprovedAtResolver');
+const markAsFinal = require('./markAsFinalResolver');
 const deleteTestPlanReport = require('./deleteTestPlanReportResolver');
 const promoteVendorReviewStatus = require('./promoteVendorReviewStatusResolver');
 const updateTestPlanReportTestPlanVersion = require('./updateTestPlanReportTestPlanVersionResolver');
@@ -8,7 +8,7 @@ const updateTestPlanReportTestPlanVersion = require('./updateTestPlanReportTestP
 module.exports = {
     assignTester,
     deleteTestPlanRun,
-    updateApprovedAt,
+    markAsFinal,
     deleteTestPlanReport,
     promoteVendorReviewStatus,
     updateTestPlanReportTestPlanVersion

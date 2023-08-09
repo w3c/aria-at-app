@@ -568,9 +568,9 @@ describe('graphql', () => {
                                 }
                             }
                         }
-                        updateApprovedAtReport: testPlanReport(id: 2) {
+                        markReportAsFinal: testPlanReport(id: 2) {
                             __typename
-                            updateApprovedAt {
+                            markAsFinal {
                                 locationOfData
                             }
                         }

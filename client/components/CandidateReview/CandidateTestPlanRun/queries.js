@@ -37,7 +37,7 @@ export const CANDIDATE_REPORTS_QUERY = gql`
         }
         testPlanReports(
             atId: $atId
-            phases: [CANDIDATE]
+            testPlanVersionPhases: [CANDIDATE]
             testPlanVersionId: $testPlanVersionId
             testPlanVersionIds: $testPlanVersionIds
         ) {

@@ -879,6 +879,10 @@ const graphqlSchema = gql`
         to be included when the entire TestPlanVersion is advanced to the "CANDIDATE" phase.
         """
         approvedAt: Timestamp
+        """
+        Indicated by TestPlanReport.approvedAt existence, after a report has been "marked as final".
+        """
+        isFinal: Boolean!
     }
 
     """
@@ -1074,11 +1078,11 @@ const graphqlSchema = gql`
         """
         deleteTestPlanRun(userId: ID!): PopulatedData!
         """
-        Update the approvedAt date. This must be set before a TestPlanReport can
+        Updates the approvedAt date. This must be set before a TestPlanReport can
         be advanced to CANDIDATE. All conflicts must also be resolved.
         Only available to admins.
         """
-        updateApprovedAt: PopulatedData!
+        markAsFinal: PopulatedData!
         """
         Update the report to a specific TestPlanVersion id.
         """

@@ -50,6 +50,10 @@ const testPlanReportsResolver = async (
     if (testPlanReportRawAttributes.includes('conflictsLength'))
         testPlanReportAttributes.push('metrics');
 
+    if (isFinal === undefined) {
+        // Do nothing
+    } else testPlanReportAttributes.push('approvedAt');
+
     if (
         testPlanVersionPhases.length &&
         !testPlanVersionAttributes.includes('phase')

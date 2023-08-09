@@ -4,7 +4,7 @@ const {
 } = require('../../models/services/TestPlanReportService');
 const populateData = require('../../services/PopulatedData/populateData');
 
-const updateApprovedAtResolver = async (
+const markAsFinalResolver = async (
     { parentContext: { id: testPlanReportId } },
     _,
     context
@@ -20,4 +20,4 @@ const updateApprovedAtResolver = async (
     return populateData({ testPlanReportId }, { context });
 };
 
-module.exports = updateApprovedAtResolver;
+module.exports = markAsFinalResolver;

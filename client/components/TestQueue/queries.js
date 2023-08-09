@@ -239,7 +239,7 @@ export const ASSIGN_TESTER_MUTATION = gql`
 export const UPDATE_TEST_PLAN_REPORT_APPROVED_AT_MUTATION = gql`
     mutation UpdateTestPlanReportApprovedAt($testReportId: ID!) {
         testPlanReport(id: $testReportId) {
-            updateApprovedAt {
+            markAsFinal {
                 testPlanReport {
                     approvedAt
                 }
