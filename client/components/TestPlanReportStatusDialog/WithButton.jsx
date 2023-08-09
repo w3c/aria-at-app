@@ -24,7 +24,10 @@ const TestPlanReportStatusDialogButton = styled(Button)`
     margin-top: auto;
 `;
 
-const TestPlanReportStatusDialogWithButton = ({ testPlanVersion }) => {
+const TestPlanReportStatusDialogWithButton = ({
+    testPlanVersion,
+    triggerUpdate = () => {}
+}) => {
     const [showDialog, setShowDialog] = useState(false);
     const { testPlanReports } = testPlanVersion;
 
@@ -119,12 +122,14 @@ const TestPlanReportStatusDialogWithButton = ({ testPlanVersion }) => {
                 testPlanVersion={testPlanVersion}
                 show={showDialog}
                 handleHide={() => setShowDialog(false)}
+                triggerUpdate={triggerUpdate}
             />
         </>
     );
 };
 
 TestPlanReportStatusDialogWithButton.propTypes = {
+    triggerUpdate: PropTypes.func,
     testPlanVersion: PropTypes.shape({
         id: PropTypes.string.isRequired,
         title: PropTypes.string.isRequired,

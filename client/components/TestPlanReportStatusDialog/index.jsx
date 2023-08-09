@@ -40,7 +40,12 @@ const IncompleteStatusReport = styled.span`
     display: inline-block;
 `;
 
-const TestPlanReportStatusDialog = ({ testPlanVersion, show, handleHide }) => {
+const TestPlanReportStatusDialog = ({
+    testPlanVersion,
+    show,
+    handleHide = () => {},
+    triggerUpdate = () => {}
+}) => {
     const { data } = useQuery(ME_QUERY, {
         fetchPolicy: 'cache-and-network'
     });
@@ -195,6 +200,7 @@ const TestPlanReportStatusDialog = ({ testPlanVersion, show, handleHide }) => {
                             at={at}
                             browser={browser}
                             testPlanVersion={testPlanVersion}
+                            triggerUpdate={triggerUpdate}
                         />
                     ) : null}
                 </>
@@ -283,6 +289,7 @@ TestPlanReportStatusDialog.propTypes = {
         ).isRequired
     }).isRequired,
     handleHide: PropTypes.func.isRequired,
+    triggerUpdate: PropTypes.func,
     show: PropTypes.bool.isRequired
 };
 

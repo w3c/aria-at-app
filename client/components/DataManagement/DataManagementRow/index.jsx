@@ -168,7 +168,8 @@ const DataManagementRow = ({
     ats,
     testPlan,
     testPlanVersions,
-    setTestPlanVersions
+    setTestPlanVersions,
+    triggerUpdate = () => {}
 }) => {
     const { triggerLoad, loadingMessage } = useTriggerLoad();
     const {
@@ -714,6 +715,7 @@ const DataManagementRow = ({
                             )}
                             <TestPlanReportStatusDialogWithButton
                                 testPlanVersion={latestVersion}
+                                triggerUpdate={triggerUpdate}
                             />
                         </PhaseCell>
                     );
@@ -1085,7 +1087,8 @@ DataManagementRow.propTypes = {
             recommendedPhaseReachedAt: PropTypes.string
         })
     ).isRequired,
-    setTestPlanVersions: PropTypes.func
+    setTestPlanVersions: PropTypes.func,
+    triggerUpdate: PropTypes.func
 };
 
 export default DataManagementRow;

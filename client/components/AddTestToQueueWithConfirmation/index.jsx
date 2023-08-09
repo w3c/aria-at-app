@@ -11,7 +11,8 @@ function AddTestToQueueWithConfirmation({
     browser,
     at,
     disabled = false,
-    buttonText = 'Add to Test Queue'
+    buttonText = 'Add to Test Queue',
+    triggerUpdate = () => {}
 }) {
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [addTestPlanReport] = useMutation(ADD_TEST_QUEUE_MUTATION);
@@ -62,7 +63,8 @@ function AddTestToQueueWithConfirmation({
                 title={feedbackModalTitle}
                 content={feedbackModalContent}
                 closeLabel="Ok"
-                handleClose={() => {
+                handleClose={async () => {
+                    await triggerUpdate();
                     setShowConfirmation(false);
                     setTimeout(() => {
                         if (buttonRef?.current) {
@@ -76,14 +78,15 @@ function AddTestToQueueWithConfirmation({
 }
 
 AddTestToQueueWithConfirmation.propTypes = {
-    testPlanVersion: PropTypes.object.isRequired,
-    browser: PropTypes.object.isRequired,
-    at: PropTypes.object.isRequired,
+    testPlanVersion: PropTypes.object,
+    browser: PropTypes.object,
+    at: PropTypes.object,
     buttonRef: PropTypes.object,
     onFocus: PropTypes.func,
     onBlur: PropTypes.func,
     disabled: PropTypes.bool,
-    buttonText: PropTypes.string
+    buttonText: PropTypes.string,
+    triggerUpdate: PropTypes.func
 };
 
 export default AddTestToQueueWithConfirmation;
