@@ -148,21 +148,21 @@ const TestPlanReportStatusDialog = ({ testPlanVersion, show, handleHide }) => {
             case 1:
                 return (
                     <span>
-                        {percentComplete}% complete by{' '}
+                        {percentComplete}% complete by&nbsp;
                         <a
                             href={`https://github.com/${draftTestPlanRuns[0].tester.username}`}
                         >
                             {draftTestPlanRuns[0].tester.username}
-                        </a>{' '}
-                        with {conflictsCount} conflicts
+                        </a>
+                        &nbsp;with {conflictsCount} conflicts
                     </span>
                 );
             default:
                 return (
                     <span>
-                        {percentComplete}% complete by{' '}
-                        {draftTestPlanRuns.length} testers with {conflictsCount}{' '}
-                        conflicts
+                        {percentComplete}% complete by &nbsp;
+                        {draftTestPlanRuns.length} testers with {conflictsCount}
+                        &nbsp; conflicts
                     </span>
                 );
         }
@@ -206,7 +206,7 @@ const TestPlanReportStatusDialog = ({ testPlanVersion, show, handleHide }) => {
         >
             <Modal.Header closeButton className="pb-1">
                 <h2>
-                    Report Status for the &nbsp;
+                    Report Status for the&nbsp;
                     <strong>{testPlanVersion.title}</strong>
                     &nbsp;Test Plan
                 </h2>
@@ -216,7 +216,7 @@ const TestPlanReportStatusDialog = ({ testPlanVersion, show, handleHide }) => {
                 <p>
                     This plan is in the
                     <span
-                        className={`status-label d-inline text-capitalize mx-2 ${
+                        className={`status-label d-inline text-capitalize ${
                             testPlanVersion.phase === 'DRAFT'
                                 ? 'not-started'
                                 : 'complete'
@@ -224,9 +224,9 @@ const TestPlanReportStatusDialog = ({ testPlanVersion, show, handleHide }) => {
                     >
                         {testPlanVersion.phase}
                     </span>
-                    Review phase.{' '}
-                    <strong>{requiredReports.length} AT/browser</strong> pairs
-                    require reports in this phase.
+                    &nbsp;Review phase.&nbsp;
+                    <strong>{requiredReports.length} AT/browser&nbsp;</strong>
+                    pairs require reports in this phase.
                 </p>
                 <TestPlanReportStatusTable bordered responsive>
                     <thead>
