@@ -214,7 +214,7 @@ const TestPlanReportStatusDialog = ({ testPlanVersion, show, handleHide }) => {
 
             <Modal.Body className="pt-0">
                 <p>
-                    This plan is in the
+                    This plan is in the&nbsp;
                     <span
                         className={`status-label d-inline text-capitalize ${
                             testPlanVersion.phase === 'DRAFT'
