@@ -1084,6 +1084,11 @@ const graphqlSchema = gql`
         """
         markAsFinal: PopulatedData!
         """
+        Remove the TestPlanReport's markedFinalAt date. This allows the TestPlanReport
+        to be worked on in the Test Queue page again if was previously marked as final.
+        """
+        unmarkAsFinal: PopulatedData!
+        """
         Update the report to a specific TestPlanVersion id.
         """
         updateTestPlanReportTestPlanVersion(

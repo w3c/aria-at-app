@@ -575,6 +575,12 @@ describe('graphql', () => {
                                 locationOfData
                             }
                         }
+                        unmarkReportAsFinal: testPlanReport(id: 2) {
+                            __typename
+                            unmarkAsFinal {
+                                locationOfData
+                            }
+                        }
                         testPlanRun(id: 1) {
                             __typename
                             findOrCreateTestResult(

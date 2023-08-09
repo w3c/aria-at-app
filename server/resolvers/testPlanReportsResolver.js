@@ -75,9 +75,13 @@ const testPlanReportsResolver = async (
     if (isFinal === undefined) {
         // Do nothing
     } else if (isFinal)
-        testPlanReports = testPlanReports.filter(report => !!report.markedFinalAt);
+        testPlanReports = testPlanReports.filter(
+            report => !!report.markedFinalAt
+        );
     else if (!isFinal)
-        testPlanReports = testPlanReports.filter(report => !report.markedFinalAt);
+        testPlanReports = testPlanReports.filter(
+            report => !report.markedFinalAt
+        );
 
     if (testPlanVersionPhases.length) {
         return testPlanReports.filter(testPlanReport =>
