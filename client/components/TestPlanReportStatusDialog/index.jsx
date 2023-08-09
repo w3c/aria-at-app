@@ -17,10 +17,14 @@ const TestPlanReportStatusModal = styled(Modal)`
     }
 `;
 
-const TestPlanReportStatusTableHeader = styled.th`
+const TestPlanReportStatusTableHeader = styled.h2`
     background-color: var(--bs-table-bg) !important;
     font-size: 1.25rem;
     font-weight: 600;
+    border: solid 1px #d2d5d9;
+    border-bottom: none;
+    padding: 0.5rem 1rem;
+    margin: 0.5rem 0 0 0;
 `;
 
 const TestPlanReportStatusTable = styled(Table)`
@@ -228,13 +232,12 @@ const TestPlanReportStatusDialog = ({ testPlanVersion, show, handleHide }) => {
                     <strong>{requiredReports.length} AT/browser&nbsp;</strong>
                     pairs require reports in this phase.
                 </p>
+
+                <TestPlanReportStatusTableHeader>
+                    Reports for Draft Alert Test Plan
+                </TestPlanReportStatusTableHeader>
                 <TestPlanReportStatusTable bordered responsive>
                     <thead>
-                        <tr>
-                            <TestPlanReportStatusTableHeader colSpan="5">
-                                Reports for Draft Alert Test Plan
-                            </TestPlanReportStatusTableHeader>
-                        </tr>
                         <tr>
                             <th>Required</th>
                             <th>AT</th>
