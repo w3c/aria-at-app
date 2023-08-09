@@ -159,10 +159,6 @@ const NoneText = styled.span`
     color: #6a7989;
 `;
 
-const TdWithChildFlexSupport = styled.td`
-    height: 0;
-`;
-
 const DataManagementRow = ({
     isAdmin,
     ats,
@@ -988,15 +984,11 @@ const DataManagementRow = ({
                 </td>
                 <td>{renderCellForCoveredAts()}</td>
                 <td>{renderCellForOverallStatus()}</td>
-                <TdWithChildFlexSupport>
-                    {renderCellForPhase('RD', rdTestPlanVersions)}
-                </TdWithChildFlexSupport>
-                <TdWithChildFlexSupport>
-                    {renderCellForPhase('DRAFT', draftTestPlanVersions)}
-                </TdWithChildFlexSupport>
-                <TdWithChildFlexSupport>
+                <td>{renderCellForPhase('RD', rdTestPlanVersions)}</td>
+                <td>{renderCellForPhase('DRAFT', draftTestPlanVersions)}</td>
+                <td>
                     {renderCellForPhase('CANDIDATE', candidateTestPlanVersions)}
-                </TdWithChildFlexSupport>
+                </td>
                 <td>
                     {renderCellForPhase(
                         'RECOMMENDED',

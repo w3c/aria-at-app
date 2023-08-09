@@ -1,6 +1,7 @@
 .data-management.table {
     padding: 0;
     margin: 0;
+    height: 100%;
 }
 
 .data-management.table thead tr th {
@@ -28,6 +29,7 @@
 .data-management.table tbody tr td {
     position: relative;
     padding: 0;
+    height: 100%;
 }
 
 .data-management.table tbody tr td > * {

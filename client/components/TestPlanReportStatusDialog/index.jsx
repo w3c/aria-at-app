@@ -226,13 +226,15 @@ const TestPlanReportStatusDialog = ({
                 <p>
                     This plan is in the&nbsp;
                     <span
-                        className={`status-label d-inline text-capitalize ${
+                        className={`status-label d-inline ${
                             testPlanVersion.phase === 'DRAFT'
                                 ? 'not-started'
                                 : 'complete'
                         }`}
                     >
-                        {testPlanVersion.phase}
+                        {/* text-transform: capitalize will not work on all-caps string */}
+                        {testPlanVersion.phase[0] +
+                            testPlanVersion.phase.slice(1).toLowerCase()}
                     </span>
                     &nbsp;Review phase.&nbsp;
                     <strong>{requiredReports.length} AT/browser&nbsp;</strong>
