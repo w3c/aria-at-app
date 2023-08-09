@@ -300,6 +300,7 @@ describe('graphql', () => {
                     conflictTestPlanReport: testPlanReport(id: 2) {
                         __typename
                         id
+                        isFinal
                         createdAt
                         vendorReviewStatus
                         testPlanVersion {
