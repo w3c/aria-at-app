@@ -23,7 +23,7 @@ import {
     useTriggerLoad
 } from '@components/common/LoadingStatus';
 import { UPDATE_TEST_PLAN_REPORT_STATUS_MUTATION } from '@components/TestQueue/queries';
-import { UPDATE_TEST_PLAN_VERSION_RECOMMENDED_TARGET_DATE_MUTATION } from '@components/CandidateTests/queries';
+import { UPDATE_TEST_PLAN_VERSION_RECOMMENDED_TARGET_DATE_MUTATION } from '@components/CandidateReview/queries';
 import UpdateTargetDateModal from '@components/common/UpdateTargetDateModal';
 import ClippedProgressBar from '@components/common/ClippedProgressBar';
 import {

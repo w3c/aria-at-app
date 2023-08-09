@@ -5,12 +5,12 @@ import Home from '@components/Home';
 import InvalidRequest from '@components/InvalidRequest';
 import NotFound from '@components/NotFound';
 import { Reports, Report } from '@components/Reports';
-import CandidateReview from '@components/CandidateTests';
+import CandidateReview from '@components/CandidateReview';
 import SignupInstructions from '@components/SignupInstructions';
 import TestQueue from '@components/TestQueue';
 import TestRun from '@components/TestRun';
 import UserSettings from '@components/UserSettings';
-import CandidateTestPlanRun from '@components/CandidateTests/CandidateTestPlanRun';
+import CandidateTestPlanRun from '@components/CandidateReview/CandidateTestPlanRun';
 import DataManagement from 'client/components/DataManagement';
 
 export default () => (
