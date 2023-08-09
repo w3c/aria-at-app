@@ -2,11 +2,11 @@ import React from 'react';
 import { useQuery } from '@apollo/client';
 import PageStatus from '../common/PageStatus';
 import TestPlans from './TestPlans';
-import { CANDIDATE_TESTS_PAGE_QUERY } from './queries';
+import { CANDIDATE_REVIEW_PAGE_QUERY } from './queries';
 
-const CandidateTests = () => {
+const CandidateReview = () => {
     const { loading, data, error, refetch } = useQuery(
-        CANDIDATE_TESTS_PAGE_QUERY,
+        CANDIDATE_REVIEW_PAGE_QUERY,
         {
             fetchPolicy: 'cache-and-network'
         }
@@ -44,4 +44,4 @@ const CandidateTests = () => {
     );
 };
 
-export default CandidateTests;
+export default CandidateReview;

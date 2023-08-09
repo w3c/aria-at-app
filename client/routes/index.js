@@ -5,7 +5,7 @@ import Home from '@components/Home';
 import InvalidRequest from '@components/InvalidRequest';
 import NotFound from '@components/NotFound';
 import { Reports, Report } from '@components/Reports';
-import CandidateTests from '@components/CandidateTests';
+import CandidateReview from '@components/CandidateTests';
 import SignupInstructions from '@components/SignupInstructions';
 import TestQueue from '@components/TestQueue';
 import TestRun from '@components/TestRun';
@@ -61,7 +61,7 @@ export default () => (
             path="/candidate-review"
             element={
                 <ConfirmAuth requiredPermission="VENDOR">
-                    <CandidateTests />
+                    <CandidateReview />
                 </ConfirmAuth>
             }
         />
