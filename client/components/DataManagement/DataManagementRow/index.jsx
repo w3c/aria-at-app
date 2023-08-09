@@ -67,6 +67,10 @@ const StatusCell = styled.div`
 const PhaseCell = styled.div`
     padding: 0 !important; /* override padding for td and add margins into specific children */
 
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+
     > span.version-string {
         display: flex;
         justify-content: center;
@@ -153,6 +157,10 @@ const NoneText = styled.span`
 
     font-style: italic;
     color: #6a7989;
+`;
+
+const TdWithChildFlexSupport = styled.td`
+    height: 0;
 `;
 
 const DataManagementRow = ({
@@ -978,11 +986,15 @@ const DataManagementRow = ({
                 </td>
                 <td>{renderCellForCoveredAts()}</td>
                 <td>{renderCellForOverallStatus()}</td>
-                <td>{renderCellForPhase('RD', rdTestPlanVersions)}</td>
-                <td>{renderCellForPhase('DRAFT', draftTestPlanVersions)}</td>
-                <td>
+                <TdWithChildFlexSupport>
+                    {renderCellForPhase('RD', rdTestPlanVersions)}
+                </TdWithChildFlexSupport>
+                <TdWithChildFlexSupport>
+                    {renderCellForPhase('DRAFT', draftTestPlanVersions)}
+                </TdWithChildFlexSupport>
+                <TdWithChildFlexSupport>
                     {renderCellForPhase('CANDIDATE', candidateTestPlanVersions)}
-                </td>
+                </TdWithChildFlexSupport>
                 <td>
                     {renderCellForPhase(
                         'RECOMMENDED',

@@ -20,6 +20,8 @@ const TestPlanReportStatusDialogButton = styled(Button)`
 
     color: #6a7989;
     background: #f6f8fa;
+
+    margin-top: auto;
 `;
 
 const TestPlanReportStatusDialogWithButton = ({ testPlanVersion }) => {
