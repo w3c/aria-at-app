@@ -58,7 +58,7 @@ export default () => (
         <Route exact path="/report/:testPlanVersionId/*" element={<Report />} />
         <Route
             exact
-            path="/candidate-tests"
+            path="/candidate-review"
             element={
                 <ConfirmAuth requiredPermission="VENDOR">
                     <CandidateTests />

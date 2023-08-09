@@ -102,9 +102,9 @@ const App = () => {
                                 <li>
                                     <Nav.Link
                                         as={Link}
-                                        to="/candidate-tests"
+                                        to="/candidate-review"
                                         aria-current={location.pathname.startsWith(
-                                            '/candidate-test'
+                                            '/candidate'
                                         )}
                                     >
                                         Candidate Review
