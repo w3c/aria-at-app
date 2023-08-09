@@ -329,10 +329,10 @@ const graphqlSchema = gql`
         be a unique combination of AT + Browser + TestPlanVersion.
 
         isFinal is used to check if a TestPlanReport has been "Marked as Final",
-        indicated by TestPlanReport.approvedAt existence.
+        indicated by TestPlanReport.markedFinalAt existence.
         None value indicates to return all.
-        True value indicates to return the reports which only have an approvedAt date.
-        False value indicates to return the reports which have no approvedAt date.
+        True value indicates to return the reports which only have an markedFinalAt date.
+        False value indicates to return the reports which have no markedFinalAt date.
         """
         testPlanReports(isFinal: Boolean): [TestPlanReport]!
     }
@@ -878,9 +878,9 @@ const graphqlSchema = gql`
         TestPlanReport have been resolved and indicates that the TestPlanReport is ready
         to be included when the entire TestPlanVersion is advanced to the "CANDIDATE" phase.
         """
-        approvedAt: Timestamp
+        markedFinalAt: Timestamp
         """
-        Indicated by TestPlanReport.approvedAt existence, after a report has been "marked as final".
+        Indicated by TestPlanReport.markedFinalAt existence, after a report has been "marked as final".
         """
         isFinal: Boolean!
     }
@@ -984,7 +984,7 @@ const graphqlSchema = gql`
         testPlanVersion(id: ID): TestPlanVersion
         """
         Load multiple TestPlanReports, with the optional ability to filter by
-        TestPlanVersionPhase, atId, testPlanVersionId and if the report is approved.
+        TestPlanVersionPhase, atId, testPlanVersionId and if the report is marked as final.
         See TestPlanReport type for more information.
         """
         testPlanReports(
@@ -1078,7 +1078,7 @@ const graphqlSchema = gql`
         """
         deleteTestPlanRun(userId: ID!): PopulatedData!
         """
-        Updates the approvedAt date. This must be set before a TestPlanReport can
+        Updates the markedFinalAt date. This must be set before a TestPlanReport can
         be advanced to CANDIDATE. All conflicts must also be resolved.
         Only available to admins.
         """

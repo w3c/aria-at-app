@@ -252,7 +252,7 @@ const updateTestPlanReport = async (
         testPlanTargetId,
         testPlanVersionId,
         vendorReviewStatus,
-        approvedAt
+        markedFinalAt
     },
     testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
@@ -270,7 +270,7 @@ const updateTestPlanReport = async (
             testPlanTargetId,
             testPlanVersionId,
             vendorReviewStatus,
-            approvedAt
+            markedFinalAt
         },
         options
     );

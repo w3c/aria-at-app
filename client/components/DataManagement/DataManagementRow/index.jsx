@@ -751,13 +751,13 @@ const DataManagementRow = ({
                     let finalReportFound = false;
 
                     latestVersion.testPlanReports.forEach(testPlanReport => {
-                        const approvedAt = testPlanReport.approvedAt;
+                        const markedFinalAt = testPlanReport.markedFinalAt;
                         const atName = testPlanReport.at.name;
                         const browserName = testPlanReport.browser.name;
 
                         const value = `${atName}_${browserName}`;
 
-                        if (approvedAt && !coveredReports.includes(value)) {
+                        if (markedFinalAt && !coveredReports.includes(value)) {
                             finalReportFound = true;
                             coveredReports.push(value);
                         }

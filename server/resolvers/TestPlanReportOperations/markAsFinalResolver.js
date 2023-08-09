@@ -39,7 +39,7 @@ const markAsFinalResolver = async (
         );
     }
 
-    await updateTestPlanReport(testPlanReportId, { approvedAt: new Date() });
+    await updateTestPlanReport(testPlanReportId, { markedFinalAt: new Date() });
 
     return populateData({ testPlanReportId }, { context });
 };

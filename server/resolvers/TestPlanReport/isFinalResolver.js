@@ -1,5 +1,5 @@
 const isFinalResolver = async testPlanReport => {
-    return !!testPlanReport.approvedAt;
+    return !!testPlanReport.markedFinalAt;
 };
 
 module.exports = isFinalResolver;

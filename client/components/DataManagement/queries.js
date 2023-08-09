@@ -41,7 +41,7 @@ export const DATA_MANAGEMENT_PAGE_QUERY = gql`
             }
             testPlanReports {
                 id
-                approvedAt
+                markedFinalAt
                 at {
                     id
                     name

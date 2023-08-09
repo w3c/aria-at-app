@@ -219,7 +219,7 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK_ADMIN = [
                         status: 'DRAFT',
                         conflictsLength: 0,
                         runnableTestsLength: 17,
-                        approvedAt: null,
+                        markedFinalAt: null,
                         at: { id: '1', name: 'JAWS' },
                         browser: { id: '2', name: 'Chrome' },
                         testPlanVersion: {
@@ -247,7 +247,7 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK_ADMIN = [
                         status: 'DRAFT',
                         conflictsLength: 0,
                         runnableTestsLength: 17,
-                        approvedAt: null,
+                        markedFinalAt: null,
                         at: { id: '3', name: 'VoiceOver for macOS' },
                         browser: { id: '3', name: 'Safari' },
                         testPlanVersion: {
@@ -275,7 +275,7 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK_ADMIN = [
                         status: 'DRAFT',
                         conflictsLength: 3,
                         runnableTestsLength: 17,
-                        approvedAt: null,
+                        markedFinalAt: null,
                         at: { id: '2', name: 'NVDA' },
                         browser: { id: '1', name: 'Firefox' },
                         testPlanVersion: {
@@ -455,7 +455,7 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK_TESTER = [
                         status: 'DRAFT',
                         conflictsLength: 0,
                         runnableTestsLength: 17,
-                        approvedAt: null,
+                        markedFinalAt: null,
                         at: {
                             id: '2',
                             name: 'NVDA'
@@ -499,7 +499,7 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK_TESTER = [
                         status: 'DRAFT',
                         conflictsLength: 0,
                         runnableTestsLength: 17,
-                        approvedAt: null,
+                        markedFinalAt: null,
                         at: {
                             id: '2',
                             name: 'JAWS'
@@ -535,7 +535,7 @@ export const TEST_QUEUE_PAGE_POPULATED_MOCK_TESTER = [
                         status: 'DRAFT',
                         conflictsLength: 0,
                         runnableTestsLength: 15,
-                        approvedAt: null,
+                        markedFinalAt: null,
                         at: {
                             id: '3',
                             name: 'VoiceOver for macOS'
@@ -906,7 +906,7 @@ export const DATA_MANAGEMENT_PAGE_POPULATED = [
                         testPlanReports: [
                             {
                                 id: '7',
-                                approvedAt: null,
+                                markedFinalAt: null,
                                 at: {
                                     id: '3',
                                     name: 'VoiceOver for macOS'
@@ -1039,7 +1039,7 @@ export const DATA_MANAGEMENT_PAGE_POPULATED = [
                         testPlanReports: [
                             {
                                 id: '1',
-                                approvedAt: null,
+                                markedFinalAt: null,
                                 at: {
                                     id: '1',
                                     name: 'JAWS'
@@ -1392,7 +1392,7 @@ export const DATA_MANAGEMENT_PAGE_POPULATED = [
                         testPlanReports: [
                             {
                                 id: '2',
-                                approvedAt: '2023-08-03T20:20:48.535Z',
+                                markedFinalAt: '2023-08-03T20:20:48.535Z',
                                 at: {
                                     id: '2',
                                     name: 'NVDA'
@@ -1423,7 +1423,7 @@ export const DATA_MANAGEMENT_PAGE_POPULATED = [
                         testPlanReports: [
                             {
                                 id: '6',
-                                approvedAt: '2022-07-06T00:00:00.000Z',
+                                markedFinalAt: '2022-07-06T00:00:00.000Z',
                                 at: {
                                     id: '3',
                                     name: 'VoiceOver for macOS'
@@ -1454,7 +1454,7 @@ export const DATA_MANAGEMENT_PAGE_POPULATED = [
                         testPlanReports: [
                             {
                                 id: '5',
-                                approvedAt: '2022-07-06T00:00:00.000Z',
+                                markedFinalAt: '2022-07-06T00:00:00.000Z',
                                 at: {
                                     id: '3',
                                     name: 'VoiceOver for macOS'
@@ -1467,7 +1467,7 @@ export const DATA_MANAGEMENT_PAGE_POPULATED = [
                             },
                             {
                                 id: '4',
-                                approvedAt: '2022-07-06T00:00:00.000Z',
+                                markedFinalAt: '2022-07-06T00:00:00.000Z',
                                 at: {
                                     id: '2',
                                     name: 'NVDA'
@@ -1480,7 +1480,7 @@ export const DATA_MANAGEMENT_PAGE_POPULATED = [
                             },
                             {
                                 id: '3',
-                                approvedAt: '2022-07-06T00:00:00.000Z',
+                                markedFinalAt: '2022-07-06T00:00:00.000Z',
                                 at: {
                                     id: '1',
                                     name: 'JAWS'

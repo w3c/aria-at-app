@@ -206,7 +206,7 @@ describe('test queue', () => {
 
             let testPlanVersionId = candidateTestPlanVersion.id;
             // This version is in 'CANDIDATE' phase. Let's set it to DRAFT
-            // This will also remove the associated TestPlanReports approvedAt values
+            // This will also remove the associated TestPlanReports markedFinalAt values
             await mutate(gql`
                 mutation {
                     testPlanVersion(id: ${testPlanVersionId}) {
@@ -240,7 +240,7 @@ describe('test queue', () => {
                         markAsFinal {
                             testPlanReport {
                                 id
-                                approvedAt
+                                markedFinalAt
                             }
                         }
                     }

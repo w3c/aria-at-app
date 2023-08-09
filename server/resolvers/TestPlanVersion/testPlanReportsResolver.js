@@ -25,8 +25,8 @@ const testPlanReportsResolver = async (
     );
 
     if (isFinal === undefined) return reports;
-    else if (isFinal) return reports.filter(report => !!report.approvedAt);
-    else if (!isFinal) return reports.filter(report => !report.approvedAt);
+    else if (isFinal) return reports.filter(report => !!report.markedFinalAt);
+    else if (!isFinal) return reports.filter(report => !report.markedFinalAt);
 };
 
 module.exports = testPlanReportsResolver;

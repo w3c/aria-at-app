@@ -254,10 +254,10 @@ const updatePhaseResolver = async (
     }
 
     if (
-        !testPlanReports.some(({ approvedAt }) => approvedAt) &&
+        !testPlanReports.some(({ markedFinalAt }) => markedFinalAt) &&
         (phase === 'CANDIDATE' || phase === 'RECOMMENDED')
     ) {
-        // Do not update phase if no approved reports were found
+        // Do not update phase if no reports marked as final were found
         throw new Error('No reports have been marked as final.');
     }
 
@@ -276,7 +276,7 @@ const updatePhaseResolver = async (
                     ...testPlanReport.metrics,
                     conflictsCount: conflicts.length
                 },
-                approvedAt: null
+                markedFinalAt: null
             });
         }
 

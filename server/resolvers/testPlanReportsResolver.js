@@ -52,7 +52,7 @@ const testPlanReportsResolver = async (
 
     if (isFinal === undefined) {
         // Do nothing
-    } else testPlanReportAttributes.push('approvedAt');
+    } else testPlanReportAttributes.push('markedFinalAt');
 
     if (
         testPlanVersionPhases.length &&
@@ -75,9 +75,9 @@ const testPlanReportsResolver = async (
     if (isFinal === undefined) {
         // Do nothing
     } else if (isFinal)
-        testPlanReports = testPlanReports.filter(report => !!report.approvedAt);
+        testPlanReports = testPlanReports.filter(report => !!report.markedFinalAt);
     else if (!isFinal)
-        testPlanReports = testPlanReports.filter(report => !report.approvedAt);
+        testPlanReports = testPlanReports.filter(report => !report.markedFinalAt);
 
     if (testPlanVersionPhases.length) {
         return testPlanReports.filter(testPlanReport =>

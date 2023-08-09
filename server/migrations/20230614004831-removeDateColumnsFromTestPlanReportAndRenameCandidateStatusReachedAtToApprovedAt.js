@@ -7,7 +7,7 @@ module.exports = {
             await queryInterface.renameColumn(
                 'TestPlanReport',
                 'candidateStatusReachedAt',
-                'approvedAt',
+                'markedFinalAt',
                 { transaction }
             );
             await queryInterface.removeColumn(
@@ -31,7 +31,7 @@ module.exports = {
         return queryInterface.sequelize.transaction(async transaction => {
             await queryInterface.renameColumn(
                 'TestPlanReport',
-                'approvedAt',
+                'markedFinalAt',
                 'candidateStatusReachedAt',
                 { transaction }
             );

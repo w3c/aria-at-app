@@ -142,7 +142,7 @@ module.exports = {
             // Exclude certain attributes called in testPlanReport query;
             // needed to support future migrations
             const testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES.filter(
-                e => !['approvedAt'].includes(e)
+                e => !['markedFinalAt'].includes(e)
             );
 
             for (let i = 0; i < testPlanReportsData.length; i++) {

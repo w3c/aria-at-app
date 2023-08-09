@@ -53,7 +53,7 @@ const TestQueueRow = ({
     const [themedModalContent, setThemedModalContent] = useState(<></>);
 
     const [assignTester] = useMutation(ASSIGN_TESTER_MUTATION);
-    const [updateTestPlanApprovedAt] = useMutation(
+    const [updateTestPlanMarkedFinalAt] = useMutation(
         UPDATE_TEST_PLAN_REPORT_APPROVED_AT_MUTATION
     );
     const [removeTestPlanReport] = useMutation(
@@ -383,7 +383,7 @@ const TestQueueRow = ({
     const updateReportStatus = async () => {
         try {
             await triggerLoad(async () => {
-                await updateTestPlanApprovedAt({
+                await updateTestPlanMarkedFinalAt({
                     variables: {
                         testReportId: testPlanReport.id
                     }

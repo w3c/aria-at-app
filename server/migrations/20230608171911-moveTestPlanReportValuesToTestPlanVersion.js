@@ -634,7 +634,7 @@ module.exports = {
                             newTestPlanVersionId: highestTestPlanVersionId,
                             testPlanReportAttributes:
                                 TEST_PLAN_REPORT_ATTRIBUTES.filter(
-                                    e => !['approvedAt'].includes(e)
+                                    e => !['markedFinalAt'].includes(e)
                                 )
                         });
                     }

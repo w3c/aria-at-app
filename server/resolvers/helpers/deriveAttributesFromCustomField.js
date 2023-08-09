@@ -53,7 +53,7 @@ const deriveAttributesFromCustomField = (modelName, customFields) => {
             if (fields.includes('browser')) derived.push('browserId');
             if (fields.includes('testPlanVersion'))
                 derived.push('testPlanVersionId');
-            if (fields.includes('isFinal')) derived.push('approvedAt');
+            if (fields.includes('isFinal')) derived.push('markedFinalAt');
             break;
         }
         case 'draftTestPlanRuns': {

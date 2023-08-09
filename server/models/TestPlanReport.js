@@ -28,7 +28,7 @@ module.exports = function (sequelize, DataTypes) {
                 defaultValue: {},
                 allowNull: false
             },
-            approvedAt: {
+            markedFinalAt: {
                 type: DataTypes.DATE,
                 defaultValue: null,
                 allowNull: true

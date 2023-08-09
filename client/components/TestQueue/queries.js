@@ -39,7 +39,7 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
             id
             conflictsLength
             runnableTestsLength
-            approvedAt
+            markedFinalAt
             at {
                 id
                 name
@@ -237,11 +237,11 @@ export const ASSIGN_TESTER_MUTATION = gql`
 `;
 
 export const UPDATE_TEST_PLAN_REPORT_APPROVED_AT_MUTATION = gql`
-    mutation UpdateTestPlanReportApprovedAt($testReportId: ID!) {
+    mutation UpdateTestPlanReportMarkedFinalAt($testReportId: ID!) {
         testPlanReport(id: $testReportId) {
             markAsFinal {
                 testPlanReport {
-                    approvedAt
+                    markedFinalAt
                 }
             }
         }

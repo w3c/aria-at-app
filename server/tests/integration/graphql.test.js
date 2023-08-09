@@ -402,7 +402,7 @@ describe('graphql', () => {
                             name
                             releasedAt
                         }
-                        approvedAt
+                        markedFinalAt
                     }
                     testPlanReports {
                         id
