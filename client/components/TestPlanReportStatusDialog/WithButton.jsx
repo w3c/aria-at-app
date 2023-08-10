@@ -28,6 +28,15 @@ const TestPlanReportStatusDialogWithButton = ({
     testPlanVersion,
     triggerUpdate = () => {}
 }) => {
+    if (
+        !testPlanVersion ||
+        !testPlanVersion.phase ||
+        (testPlanVersion.phase !== 'DRAFT' &&
+            testPlanVersion.phase !== 'CANDIDATE')
+    ) {
+        return;
+    }
+
     const [showDialog, setShowDialog] = useState(false);
     const { testPlanReports } = testPlanVersion;
 

@@ -101,10 +101,7 @@ const PhaseCell = styled.div`
         padding: 12px;
         font-size: 14px;
 
-        position: absolute;
-        left: 0;
-        bottom: 0;
-        right: 0;
+        margin-top: 6px;
 
         color: #6a7989;
         background: #f6f8fa;
@@ -905,6 +902,10 @@ const DataManagementRow = ({
                                     Advance to Recommended
                                 </Button>
                             )}
+                            <TestPlanReportStatusDialogWithButton
+                                testPlanVersion={latestVersion}
+                                triggerUpdate={triggerUpdate}
+                            />
                             <span className="more">
                                 <ReportStatusDot className="issues" />{' '}
                                 {issuesCount} Open Issue
@@ -965,9 +966,6 @@ const DataManagementRow = ({
                                 )}
                             </b>
                         </span>
-                        <TestPlanReportStatusDialogWithButton
-                            testPlanVersion={latestVersion}
-                        />
                     </PhaseCell>
                 );
             }

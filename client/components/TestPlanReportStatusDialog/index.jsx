@@ -169,9 +169,9 @@ const TestPlanReportStatusDialog = ({
             default:
                 return (
                     <span>
-                        {percentComplete}% complete by &nbsp;
+                        {percentComplete}% complete by&nbsp;
                         {draftTestPlanRuns.length} testers with {conflictsCount}
-                        &nbsp; conflicts
+                        &nbsp;conflicts
                     </span>
                 );
         }
