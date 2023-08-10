@@ -66,7 +66,18 @@ const CoveredAtListDialogWithButton = ({ ats }) => {
 };
 
 CoveredAtListDialogWithButton.propTypes = {
-    ats: PropTypes.arrayOf(PropTypes.shape({})).isRequired
+    ats: PropTypes.arrayOf(
+        PropTypes.shape({
+            id: PropTypes.string.isRequired,
+            name: PropTypes.string.isRequired,
+            atVersions: PropTypes.arrayOf(
+                PropTypes.shape({
+                    id: PropTypes.string.isRequired,
+                    name: PropTypes.string.isRequired
+                })
+            ).isRequired
+        })
+    ).isRequired
 };
 
 export default CoveredAtListDialogWithButton;
