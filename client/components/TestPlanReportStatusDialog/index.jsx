@@ -223,23 +223,27 @@ const TestPlanReportStatusDialog = ({
             </Modal.Header>
 
             <Modal.Body className="pt-0">
-                <p>
-                    This plan is in the&nbsp;
-                    <span
-                        className={`status-label d-inline ${
-                            testPlanVersion.phase === 'DRAFT'
-                                ? 'not-started'
-                                : 'complete'
-                        }`}
-                    >
-                        {/* text-transform: capitalize will not work on all-caps string */}
-                        {testPlanVersion.phase[0] +
-                            testPlanVersion.phase.slice(1).toLowerCase()}
-                    </span>
-                    &nbsp;Review phase.&nbsp;
-                    <strong>{requiredReports.length} AT/browser&nbsp;</strong>
-                    pairs require reports in this phase.
-                </p>
+                {testPlanVersion.phase && (
+                    <p>
+                        This plan is in the&nbsp;
+                        <span
+                            className={`status-label d-inline ${
+                                testPlanVersion.phase === 'DRAFT'
+                                    ? 'not-started'
+                                    : 'complete'
+                            }`}
+                        >
+                            {/* text-transform: capitalize will not work on all-caps string */}
+                            {testPlanVersion.phase[0] +
+                                testPlanVersion.phase.slice(1).toLowerCase()}
+                        </span>
+                        &nbsp;Review phase.&nbsp;
+                        <strong>
+                            {requiredReports.length} AT/browser&nbsp;
+                        </strong>
+                        pairs require reports in this phase.
+                    </p>
+                )}
 
                 <TestPlanReportStatusTableHeader>
                     Reports for Draft Alert Test Plan
