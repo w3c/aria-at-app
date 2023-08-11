@@ -55,6 +55,7 @@ export const DATA_MANAGEMENT_PAGE_QUERY = gql`
                 }
             }
         }
+<<<<<<< HEAD
         testPlanReports {
             id
             at {
@@ -68,6 +69,8 @@ export const DATA_MANAGEMENT_PAGE_QUERY = gql`
                 }
             }
         }
+=======
+>>>>>>> 69063e7fbfc9b295a75b8704121b9354b84d9c4b
     }
 `;
 
