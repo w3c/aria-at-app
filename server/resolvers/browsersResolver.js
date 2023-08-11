@@ -1,9 +1,5 @@
-const { getBrowsers } = require('../models/services/BrowserService');
-
-const browsersResolver = () => {
-    return getBrowsers(undefined, undefined, undefined, undefined, undefined, {
-        order: [['name', 'asc']]
-    });
+const browserResolver = async (_, __, context) => {
+    return context.browserLoader.getAll();
 };
 
-module.exports = browsersResolver;
+module.exports = browserResolver;

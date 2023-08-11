@@ -298,7 +298,7 @@ const updatePhaseResolver = async (
 
         ats.forEach(at => {
             at.browsers.forEach(browser => {
-                if (!reportsByAtAndBrowser[at.id][browser.id]) {
+                if (!reportsByAtAndBrowser[at.id]?.[browser.id]) {
                     missingAtBrowserCombinations.push(
                         `${at.name} and ${browser.name}`
                     );
