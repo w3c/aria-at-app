@@ -622,6 +622,11 @@ const TestPlans = ({ testPlanVersions, triggerPageUpdate = () => {} }) => {
                                                             {getTestPlanVersionTitle(
                                                                 testPlanVersion
                                                             )}{' '}
+                                                            V
+                                                            {convertDateToString(
+                                                                testPlanVersion.updatedAt,
+                                                                'YY.MM.DD'
+                                                            )}{' '}
                                                             ({testsCount} Test
                                                             {testsCount === 0 ||
                                                             testsCount > 1
