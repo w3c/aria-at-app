@@ -724,7 +724,7 @@ const CandidateTestPlanRun = () => {
                     show={true}
                     handleAction={async () => {
                         setThankYouModalShowing(false);
-                        navigate('/candidate-tests');
+                        navigate('/candidate-review');
                     }}
                     githubUrl={generateGithubUrl(
                         false,

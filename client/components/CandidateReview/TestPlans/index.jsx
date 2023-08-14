@@ -23,7 +23,7 @@ import {
     useTriggerLoad
 } from '@components/common/LoadingStatus';
 import { UPDATE_TEST_PLAN_REPORT_STATUS_MUTATION } from '@components/TestQueue/queries';
-import { UPDATE_TEST_PLAN_VERSION_RECOMMENDED_TARGET_DATE_MUTATION } from '@components/CandidateTests/queries';
+import { UPDATE_TEST_PLAN_VERSION_RECOMMENDED_TARGET_DATE_MUTATION } from '@components/CandidateReview/queries';
 import UpdateTargetDateModal from '@components/common/UpdateTargetDateModal';
 import ClippedProgressBar from '@components/common/ClippedProgressBar';
 import {
@@ -35,6 +35,10 @@ import './TestPlans.css';
 
 const FullHeightContainer = styled(Container)`
     min-height: calc(100vh - 64px);
+`;
+
+const NoWrapButton = styled(Button)`
+    white-space: nowrap;
 `;
 
 const StatusText = styled.span`
@@ -263,9 +267,9 @@ const TestPlans = ({ testPlanVersions, triggerPageUpdate = () => {} }) => {
         return (
             <FullHeightContainer id="main" as="main" tabIndex="-1">
                 <Helmet>
-                    <title>Candidate Tests | ARIA-AT</title>
+                    <title>Candidate Review | ARIA-AT</title>
                 </Helmet>
-                <h1>Candidate Tests</h1>
+                <h1>Candidate Review</h1>
                 <p>
                     There are no results to show just yet. Please check back
                     soon!
@@ -497,6 +501,12 @@ const TestPlans = ({ testPlanVersions, triggerPageUpdate = () => {} }) => {
                             <thead>
                                 <tr>
                                     <th>Candidate Test Plans</th>
+                                    <CenteredTh>
+                                        Candidate Phase Start Date
+                                    </CenteredTh>
+                                    <CenteredTh>
+                                        Target Completion Date
+                                    </CenteredTh>
                                     <CenteredTh>Review Status</CenteredTh>
                                     <CenteredTh>Results Summary</CenteredTh>
                                 </tr>
@@ -612,6 +622,11 @@ const TestPlans = ({ testPlanVersions, triggerPageUpdate = () => {} }) => {
                                                             {getTestPlanVersionTitle(
                                                                 testPlanVersion
                                                             )}{' '}
+                                                            V
+                                                            {convertDateToString(
+                                                                testPlanVersion.updatedAt,
+                                                                'YY.MM.DD'
+                                                            )}{' '}
                                                             ({testsCount} Test
                                                             {testsCount === 0 ||
                                                             testsCount > 1
@@ -619,28 +634,6 @@ const TestPlans = ({ testPlanVersions, triggerPageUpdate = () => {} }) => {
                                                                 : ''}
                                                             )
                                                         </Link>
-                                                        <CellSubRow>
-                                                            <i>
-                                                                Candidate Phase
-                                                                Start Date{' '}
-                                                                <b>
-                                                                    {convertDateToString(
-                                                                        candidatePhaseReachedAt,
-                                                                        'MMM D, YYYY'
-                                                                    )}
-                                                                </b>
-                                                            </i>
-                                                            <i>
-                                                                Target
-                                                                Completion Date{' '}
-                                                                <b>
-                                                                    {convertDateToString(
-                                                                        recommendedPhaseTargetDate,
-                                                                        'MMM D, YYYY'
-                                                                    )}
-                                                                </b>
-                                                            </i>
-                                                        </CellSubRow>
                                                         <CellSubRow>
                                                             <Dropdown className="dropdown-btn-mark-as">
                                                                 <Dropdown.Toggle
@@ -679,7 +672,7 @@ const TestPlans = ({ testPlanVersions, triggerPageUpdate = () => {} }) => {
                                                                     </Dropdown.Item>
                                                                 </Dropdown.Menu>
                                                             </Dropdown>
-                                                            <Button
+                                                            <NoWrapButton
                                                                 ref={changeTargetDateButtonRef =>
                                                                     (changeTargetDateButtonRefs.current =
                                                                         {
@@ -711,9 +704,25 @@ const TestPlans = ({ testPlanVersions, triggerPageUpdate = () => {} }) => {
                                                             >
                                                                 Change Target
                                                                 Date
-                                                            </Button>
+                                                            </NoWrapButton>
                                                         </CellSubRow>
                                                     </td>
+                                                    <CenteredTd>
+                                                        <i>
+                                                            {convertDateToString(
+                                                                candidatePhaseReachedAt,
+                                                                'MMM D, YYYY'
+                                                            )}
+                                                        </i>
+                                                    </CenteredTd>
+                                                    <CenteredTd>
+                                                        <i>
+                                                            {convertDateToString(
+                                                                recommendedPhaseTargetDate,
+                                                                'MMM D, YYYY'
+                                                            )}
+                                                        </i>
+                                                    </CenteredTd>
                                                     <CenteredTd>
                                                         {getRowStatus({
                                                             issues: allIssues,
@@ -989,9 +998,9 @@ const TestPlans = ({ testPlanVersions, triggerPageUpdate = () => {} }) => {
     return (
         <FullHeightContainer id="main" as="main" tabIndex="-1">
             <Helmet>
-                <title>Candidate Tests | ARIA-AT</title>
+                <title>Candidate Review | ARIA-AT</title>
             </Helmet>
-            <h1>Candidate Tests</h1>
+            <h1>Candidate Review</h1>
             <h2>Introduction</h2>
             <p>
                 This page summarizes the test results for each AT and Browser
