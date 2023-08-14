@@ -262,8 +262,6 @@ const updateTestPlanReport = async (
     userAttributes = USER_ATTRIBUTES,
     options = {}
 ) => {
-    console.log('updateTestPlan');
-
     await ModelService.update(
         TestPlanReport,
         { id },
