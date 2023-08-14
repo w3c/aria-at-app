@@ -260,7 +260,7 @@ const TestManagement = () => {
                                                     key={
                                                         tabularReport
                                                             .latestTestPlanVersion
-                                                            .id
+                                                            ?.id
                                                     }
                                                     testPlanVersion={
                                                         tabularReport.latestTestPlanVersion

@@ -118,7 +118,7 @@ const StatusSummaryRow = ({ reportResult, testPlanVersion }) => {
         <LoadingStatus message={loadingMessage}>
             <tr>
                 <th>
-                    {testPlanVersion.title}
+                    {testPlanVersion?.title}
                     {Object.entries(reportResult).length > 0 && (
                         <PhaseText className={phase.toLowerCase()}>
                             {phase}
