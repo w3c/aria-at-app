@@ -253,35 +253,35 @@ const updatePhaseResolver = async (
         throw new Error('No test plan reports found.');
     }
 
-    if (phase === 'CANDIDATE') {
-        const hasChromeJaws = testPlanReports.find(
-            ({ browser, at }) => browser.id == 2 && at.id == 1
-        );
-        const hasChromeNVDA = testPlanReports.find(
-            ({ browser, at }) => browser.id == 2 && at.id == 2
-        );
-        const hasSafariVoiceOver = testPlanReports.find(
-            ({ browser, at }) => browser.id == 3 && at.id == 3
-        );
+    // if (phase === 'CANDIDATE') {
+    //     const hasChromeJaws = testPlanReports.find(
+    //         ({ browser, at }) => browser.id == 2 && at.id == 1
+    //     );
+    //     const hasChromeNVDA = testPlanReports.find(
+    //         ({ browser, at }) => browser.id == 2 && at.id == 2
+    //     );
+    //     const hasSafariVoiceOver = testPlanReports.find(
+    //         ({ browser, at }) => browser.id == 3 && at.id == 3
+    //     );
 
-        const hasRequiredCandidateReports =
-            hasChromeJaws && hasChromeNVDA && hasSafariVoiceOver;
+    //     const hasRequiredCandidateReports =
+    //         hasChromeJaws && hasChromeNVDA && hasSafariVoiceOver;
 
-        if (!hasRequiredCandidateReports) {
-            const missingCombinations = [
-                hasChromeJaws ? '' : 'Chrome and JAWS',
-                hasChromeNVDA ? '' : 'Chrome and NVDA',
-                hasSafariVoiceOver ? '' : 'Safari and VoiceOver'
-            ].filter(str => str);
-            throw new Error(
-                `Cannot set phase to candidate because the following` +
-                    ` required reports have not been collected:` +
-                    ` ${missingCombinations.join(', ')}.`
-            );
-        }
-    }
+    //     if (!hasRequiredCandidateReports) {
+    //         const missingCombinations = [
+    //             hasChromeJaws ? '' : 'Chrome and JAWS',
+    //             hasChromeNVDA ? '' : 'Chrome and NVDA',
+    //             hasSafariVoiceOver ? '' : 'Safari and VoiceOver'
+    //         ].filter(str => str);
+    //         throw new Error(
+    //             `Cannot set phase to candidate because the following` +
+    //                 ` required reports have not been collected:` +
+    //                 ` ${missingCombinations.join(', ')}.`
+    //         );
+    //     }
+    // }
 
-    if (phase === 'RECOMMENDED') {
+    if (phase === 'CANDIDATE' || phase === 'RECOMMENDED') {
         const reportsByAtAndBrowser = {};
 
         testPlanReports.forEach(testPlanReport => {
@@ -292,12 +292,17 @@ const updatePhaseResolver = async (
 
             reportsByAtAndBrowser[at.id][browser.id] = testPlanReport;
         });
+
         const ats = await context.atLoader.getAll();
 
         const missingAtBrowserCombinations = [];
 
         ats.forEach(at => {
-            at.browsers.forEach(browser => {
+            const browsers =
+                phase === 'CANDIDATE'
+                    ? at.candidateBrowsers
+                    : at.recommendedBrowsers;
+            browsers.forEach(browser => {
                 if (!reportsByAtAndBrowser[at.id]?.[browser.id]) {
                     missingAtBrowserCombinations.push(
                         `${at.name} and ${browser.name}`
@@ -308,7 +313,7 @@ const updatePhaseResolver = async (
 
         if (missingAtBrowserCombinations.length) {
             throw new Error(
-                `Cannot set phase to recommended because the following` +
+                `Cannot set phase to ${phase.toLowerCase()} because the following` +
                     ` required reports have not been collected:` +
                     ` ${missingAtBrowserCombinations.join(', ')}.`
             );
