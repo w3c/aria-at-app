@@ -262,6 +262,8 @@ const updateTestPlanReport = async (
     userAttributes = USER_ATTRIBUTES,
     options = {}
 ) => {
+    console.log('updateTestPlan');
+
     await ModelService.update(
         TestPlanReport,
         { id },
@@ -358,6 +360,22 @@ const getOrCreateTestPlanReport = async (
         userAttributes,
         { transaction: options.transaction }
     );
+
+    // If a TestPlanReport is being intentionally created that was previously marked as final,
+    // This will allow it to be displayed in the Test Queue again to be worked on
+    if (!isNewTestPlanReport && testPlanReport.markedFinalAt) {
+        await updateTestPlanReport(
+            testPlanReportId,
+            { markedFinalAt: null },
+            testPlanReportAttributes,
+            testPlanRunAttributes,
+            testPlanVersionAttributes,
+            atAttributes,
+            browserAttributes,
+            userAttributes,
+            { transaction: options.transaction }
+        );
+    }
 
     const created = isNewTestPlanReport ? [{ testPlanReportId }] : [];
 
