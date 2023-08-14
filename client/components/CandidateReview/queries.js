@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client';
 
-export const CANDIDATE_TESTS_PAGE_QUERY = gql`
+export const CANDIDATE_REVIEW_PAGE_QUERY = gql`
     query {
         testPlanVersions(phases: [CANDIDATE]) {
             id
