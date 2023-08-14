@@ -557,11 +557,11 @@ module.exports = {
                 // Update TestPlanVersion -> TestPlanReport fkey to add cascade deletion on
                 // TestPlanVersion row deletion
                 await queryInterface.sequelize.query(
-                    `alter table public."TestPlanReport"
-                        drop constraint "TestPlanReport_testPlan_fkey";
+                    `alter table "TestPlanReport"
+                            drop constraint "TestPlanReport_testPlan_fkey";
 
-                     alter table public."TestPlanReport"
-                        add constraint "TestPlanReport_testPlan_fkey" foreign key ("testPlanVersionId") references public."TestPlanVersion" on update cascade on delete cascade;`,
+                         alter table "TestPlanReport"
+                            add constraint "TestPlanReport_testPlan_fkey" foreign key ("testPlanVersionId") references "TestPlanVersion" on update cascade on delete cascade;`,
                     {
                         transaction
                     }
@@ -579,11 +579,11 @@ module.exports = {
                 // Update TestPlanVersion -> TestPlanReport fkey to remove cascade delete on
                 // TestPlanVersion row deletion
                 await queryInterface.sequelize.query(
-                    `alter table public."TestPlanReport"
-                        drop constraint "TestPlanReport_testPlan_fkey";
+                    `alter table "TestPlanReport"
+                            drop constraint "TestPlanReport_testPlan_fkey";
 
-                     alter table public."TestPlanReport"
-                        add constraint "TestPlanReport_testPlan_fkey" foreign key ("testPlanVersionId") references public."TestPlanVersion" on update cascade;`,
+                         alter table "TestPlanReport"
+                            add constraint "TestPlanReport_testPlan_fkey" foreign key ("testPlanVersionId") references "TestPlanVersion" on update cascade;`,
                     {
                         transaction
                     }
