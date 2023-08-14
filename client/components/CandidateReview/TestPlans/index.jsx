@@ -10,8 +10,7 @@ import {
     faCheck,
     faChevronUp,
     faChevronDown,
-    faCommentAlt,
-    faArrowRight
+    faCommentAlt
 } from '@fortawesome/free-solid-svg-icons';
 import alphabetizeObjectBy from '@client/utils/alphabetizeObjectBy';
 import {
@@ -24,10 +23,6 @@ import './TestPlans.css';
 
 const FullHeightContainer = styled(Container)`
     min-height: calc(100vh - 64px);
-`;
-
-const NoWrapButton = styled(Button)`
-    white-space: nowrap;
 `;
 
 const StatusText = styled.span`
@@ -444,12 +439,10 @@ const TestPlans = ({ testPlanVersions }) => {
                             <tr>
                                 <th>Candidate Test Plans</th>
                                 <CenteredTh>
-                                        Candidate Phase Start Date
-                                    </CenteredTh>
-                                    <CenteredTh>
-                                        Target Completion Date
-                                    </CenteredTh>
-                                    <CenteredTh>Review Status</CenteredTh>
+                                    Candidate Phase Start Date
+                                </CenteredTh>
+                                <CenteredTh>Target Completion Date</CenteredTh>
+                                <CenteredTh>Review Status</CenteredTh>
                                 <CenteredTh>Results Summary</CenteredTh>
                             </tr>
                         </thead>
@@ -477,7 +470,7 @@ const TestPlans = ({ testPlanVersions }) => {
                                                         testPlanReport.at.id ===
                                                             testPlanTarget.at
                                                                 .id &&
-                                                        testPlanReport.at.id ==
+                                                        testPlanReport.at.id ===
                                                             atId &&
                                                         testPlanReport.browser
                                                             .id ===
@@ -546,167 +539,95 @@ const TestPlans = ({ testPlanVersions }) => {
                                             uniqueFilter(t, uniqueLinks, 'link')
                                         );
 
-                                        return (
-                                            dataExists && (
-                                                <tr key={testPlanVersion.id}>
-                                                    <td>
-                                                        <Link
-                                                            to={`/candidate-test-plan/${testPlanVersion.id}/${atId}`}
-                                                        >
-                                                            {getTestPlanVersionTitle(
-                                                                testPlanVersion
-                                                            )}{' '}
-                                                            V
-                                                            {convertDateToString(
-                                                                testPlanVersion.updatedAt,
-                                                                'YY.MM.DD'
-                                                            )}{' '}
-                                                            ({testsCount} Test
-                                                            {testsCount === 0 ||
-                                                            testsCount > 1
-                                                                ? `s`
-                                                                : ''}
+                                    return (
+                                        dataExists && (
+                                            <tr key={testPlanVersion.id}>
+                                                <th>
+                                                    <Link
+                                                        to={`/candidate-test-plan/${testPlanVersion.id}/${atId}`}
+                                                    >
+                                                        {getTestPlanVersionTitle(
+                                                            testPlanVersion
+                                                        )}{' '}
+                                                        V
+                                                        {convertDateToString(
+                                                            testPlanVersion.updatedAt,
+                                                            'YY.MM.DD'
+                                                        )}{' '}
+                                                        ({testsCount} Test
+                                                        {testsCount === 0 ||
+                                                        testsCount > 1
+                                                            ? `s`
+                                                            : ''}
+                                                        )
+                                                    </Link>
+                                                </th>
+                                                <CenteredTd>
+                                                    <i>
+                                                        {convertDateToString(
+                                                            candidatePhaseReachedAt,
+                                                            'MMM D, YYYY'
+                                                        )}
+                                                    </i>
+                                                </CenteredTd>
+                                                <CenteredTd>
+                                                    <i>
+                                                        {convertDateToString(
+                                                            recommendedPhaseTargetDate,
+                                                            'MMM D, YYYY'
+                                                        )}
+                                                    </i>
+                                                </CenteredTd>
+                                                <CenteredTd>
+                                                    {getRowStatus({
+                                                        issues: allIssues,
+                                                        isInProgressStatusExists:
+                                                            testPlanReports.some(
+                                                                testPlanReport =>
+                                                                    testPlanReport.vendorReviewStatus ===
+                                                                    'IN_PROGRESS'
+                                                            ),
+                                                        isApprovedStatusExists:
+                                                            testPlanReports.some(
+                                                                testPlanReport =>
+                                                                    testPlanReport.vendorReviewStatus ===
+                                                                    'APPROVED'
                                                             )
-                                                        </Link>
-                                                        <CellSubRow>
-                                                            <Dropdown className="dropdown-btn-mark-as">
-                                                                <Dropdown.Toggle
-                                                                    variant="secondary"
-                                                                    aria-label="Change report status"
-                                                                >
-                                                                    Mark as ...
-                                                                </Dropdown.Toggle>
-                                                                <Dropdown.Menu role="menu">
-                                                                    <Dropdown.Item
-                                                                        role="menuitem"
-                                                                        onClick={async () => {
-                                                                            await updateReportStatus(
-                                                                                testPlanReports,
-                                                                                'DRAFT'
-                                                                            );
-                                                                        }}
-                                                                    >
-                                                                        Draft
-                                                                    </Dropdown.Item>
-                                                                    <Dropdown.Item
-                                                                        role="menuitem"
-                                                                        onClick={async () => {
-                                                                            await updateReportStatus(
-                                                                                testPlanReports,
-                                                                                'RECOMMENDED'
-                                                                            );
-                                                                        }}
-                                                                        disabled={testPlanReports.some(
-                                                                            t =>
-                                                                                t.vendorReviewStatus !==
-                                                                                'APPROVED'
-                                                                        )}
-                                                                    >
-                                                                        Recommended
-                                                                    </Dropdown.Item>
-                                                                </Dropdown.Menu>
-                                                            </Dropdown>
-                                                            <NoWrapButton
-                                                                ref={changeTargetDateButtonRef =>
-                                                                    (changeTargetDateButtonRefs.current =
-                                                                        {
-                                                                            ...changeTargetDateButtonRefs.current,
-                                                                            [`${testPlanVersion.id}-${atId}`]:
-                                                                                changeTargetDateButtonRef
-                                                                        })
-                                                                }
-                                                                variant="secondary"
-                                                                className="dropdown-btn-mark-as"
-                                                                onClick={() => {
-                                                                    focusButtonRef.current =
-                                                                        changeTargetDateButtonRefs.current[
-                                                                            `${testPlanVersion.id}-${atId}`
-                                                                        ];
-                                                                    setUpdateTargetDateModalTitle(
-                                                                        `Change Target Date for ${testPlanVersion.title} for ${atName}`
-                                                                    );
-                                                                    setUpdateTargetDateModalDateText(
-                                                                        recommendedPhaseTargetDate
-                                                                    );
-                                                                    setShowUpdateTargetDateModal(
-                                                                        true
-                                                                    );
-                                                                    setTestPlanVersionToUpdate(
-                                                                        testPlanVersion
-                                                                    );
-                                                                }}
-                                                            >
-                                                                Change Target
-                                                                Date
-                                                            </NoWrapButton>
-                                                        </CellSubRow>
-                                                    </td>
-                                                    <CenteredTd>
+                                                    })}
+                                                </CenteredTd>
+                                                <CenteredTd>
+                                                    <Link
+                                                        to={`/candidate-test-plan/${testPlanVersion.id}/${atId}`}
+                                                    >
+                                                        <ClippedProgressBar
+                                                            progress={
+                                                                metrics.totalSupportPercent
+                                                            }
+                                                            label={`${metrics.totalSupportPercent}% completed`}
+                                                            clipped
+                                                        />
+                                                    </Link>
+                                                    <CellSubRow
+                                                        style={{
+                                                            justifyContent:
+                                                                'center'
+                                                        }}
+                                                    >
                                                         <i>
-                                                            {convertDateToString(
-                                                                candidatePhaseReachedAt,
-                                                                'MMM D, YYYY'
+                                                            {evaluateTestsAssertionsMessage(
+                                                                metrics
                                                             )}
                                                         </i>
-                                                    </CenteredTd>
-                                                    <CenteredTd>
-                                                        <i>
-                                                            {convertDateToString(
-                                                                recommendedPhaseTargetDate,
-                                                                'MMM D, YYYY'
-                                                            )}
-                                                        </i>
-                                                    </CenteredTd>
-                                                    <CenteredTd>
-                                                        {getRowStatus({
-                                                            issues: allIssues,
-                                                            isInProgressStatusExists:
-                                                                testPlanReports.some(
-                                                                    testPlanReport =>
-                                                                        testPlanReport.vendorReviewStatus ===
-                                                                        'IN_PROGRESS'
-                                                                ),
-                                                            isApprovedStatusExists:
-                                                                testPlanReports.some(
-                                                                    testPlanReport =>
-                                                                        testPlanReport.vendorReviewStatus ===
-                                                                        'APPROVED'
-                                                                )
-                                                        })}
-                                                    </CenteredTd>
-                                                    <CenteredTd>
-                                                        <Link
-                                                            to={`/candidate-test-plan/${testPlanVersion.id}/${atId}`}
-                                                        >
-                                                            <ClippedProgressBar
-                                                                progress={
-                                                                    metrics.totalSupportPercent
-                                                                }
-                                                                label={`${metrics.totalSupportPercent}% completed`}
-                                                                clipped
-                                                            />
-                                                        </Link>
-                                                        <CellSubRow
-                                                            style={{
-                                                                justifyContent:
-                                                                    'center'
-                                                            }}
-                                                        >
-                                                            <i>
-                                                                {evaluateTestsAssertionsMessage(
-                                                                    metrics
-                                                                )}
-                                                            </i>
-                                                        </CellSubRow>
-                                                    </CenteredTd>
-                                                </tr>
-                                            )
-                                        );
-                                    })}
-                            </tbody>
-                        </Table>
-                    </DisclosureContainer>
-                </DisclosureParent>
+                                                    </CellSubRow>
+                                                </CenteredTd>
+                                            </tr>
+                                        )
+                                    );
+                                })}
+                        </tbody>
+                    </Table>
+                </DisclosureContainer>
+            </DisclosureParent>
         );
     };
 
@@ -834,6 +755,11 @@ const TestPlans = ({ testPlanVersions }) => {
                                         <td>
                                             {getTestPlanVersionTitle(
                                                 testPlanVersion
+                                            )}{' '}
+                                            V
+                                            {convertDateToString(
+                                                testPlanVersion.updatedAt,
+                                                'YY.MM.DD'
                                             )}
                                         </td>
                                         <CenteredTd>
