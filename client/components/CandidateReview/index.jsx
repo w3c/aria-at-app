@@ -2,11 +2,11 @@ import React from 'react';
 import { useQuery } from '@apollo/client';
 import PageStatus from '../common/PageStatus';
 import TestPlans from './TestPlans';
-import { CANDIDATE_TESTS_PAGE_QUERY } from './queries';
+import { CANDIDATE_REVIEW_PAGE_QUERY } from './queries';
 
-const CandidateTests = () => {
+const CandidateReview = () => {
     const { loading, data, error, refetch } = useQuery(
-        CANDIDATE_TESTS_PAGE_QUERY,
+        CANDIDATE_REVIEW_PAGE_QUERY,
         {
             fetchPolicy: 'cache-and-network'
         }
@@ -15,8 +15,8 @@ const CandidateTests = () => {
     if (error) {
         return (
             <PageStatus
-                title="Candidate Tests | ARIA-AT"
-                heading="Candidate Tests"
+                title="Candidate Review | ARIA-AT"
+                heading="Candidate Review"
                 message={error.message}
                 isError
             />
@@ -26,8 +26,8 @@ const CandidateTests = () => {
     if (loading) {
         return (
             <PageStatus
-                title="Loading - Candidate Tests | ARIA-AT"
-                heading="Candidate Tests"
+                title="Loading - Candidate Review | ARIA-AT"
+                heading="Candidate Review"
             />
         );
     }
@@ -44,4 +44,4 @@ const CandidateTests = () => {
     );
 };
 
-export default CandidateTests;
+export default CandidateReview;
