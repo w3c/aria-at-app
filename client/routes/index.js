@@ -5,13 +5,13 @@ import Home from '@components/Home';
 import InvalidRequest from '@components/InvalidRequest';
 import NotFound from '@components/NotFound';
 import { Reports, Report } from '@components/Reports';
-import CandidateTests from '@components/CandidateTests';
+import CandidateReview from '@components/CandidateReview';
 import SignupInstructions from '@components/SignupInstructions';
 import TestQueue from '@components/TestQueue';
 import TestRun from '@components/TestRun';
 import UserSettings from '@components/UserSettings';
-import CandidateTestPlanRun from '@components/CandidateTests/CandidateTestPlanRun';
-import TestManagement from '@components/TestManagement';
+import CandidateTestPlanRun from '@components/CandidateReview/CandidateTestPlanRun';
+import DataManagement from 'client/components/DataManagement';
 
 export default () => (
     <Routes>
@@ -58,22 +58,14 @@ export default () => (
         <Route exact path="/report/:testPlanVersionId/*" element={<Report />} />
         <Route
             exact
-            path="/candidate-tests"
+            path="/candidate-review"
             element={
                 <ConfirmAuth requiredPermission="VENDOR">
-                    <CandidateTests />
+                    <CandidateReview />
                 </ConfirmAuth>
             }
         />
-        <Route
-            exact
-            path="/test-management"
-            element={
-                <ConfirmAuth requiredPermission="ADMIN">
-                    <TestManagement />
-                </ConfirmAuth>
-            }
-        />
+        <Route exact path="/data-management" element={<DataManagement />} />
         <Route exact path="/invalid-request" element={<InvalidRequest />} />
         <Route exact path="/404" element={<NotFound />} />
         <Route exact path="*" element={<Navigate to="/404" replace />} />

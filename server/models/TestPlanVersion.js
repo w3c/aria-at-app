@@ -1,5 +1,6 @@
 const MODEL_NAME = 'TestPlanVersion';
 const PHASE = {
+    RD: 'RD',
     DRAFT: 'DRAFT',
     CANDIDATE: 'CANDIDATE',
     RECOMMENDED: 'RECOMMENDED'
@@ -18,7 +19,7 @@ module.exports = function (sequelize, DataTypes) {
             phase: {
                 type: DataTypes.TEXT,
                 allowNull: false,
-                defaultValue: PHASE.DRAFT
+                defaultValue: PHASE.RD
             },
             title: { type: DataTypes.TEXT },
             directory: { type: DataTypes.TEXT },
@@ -37,6 +38,11 @@ module.exports = function (sequelize, DataTypes) {
             tests: { type: DataTypes.JSONB },
             testPlanId: { type: DataTypes.INTEGER },
             metadata: { type: DataTypes.JSONB },
+            draftPhaseReachedAt: {
+                type: DataTypes.DATE,
+                defaultValue: null,
+                allowNull: true
+            },
             candidatePhaseReachedAt: {
                 type: DataTypes.DATE,
                 defaultValue: null,
@@ -48,6 +54,11 @@ module.exports = function (sequelize, DataTypes) {
                 allowNull: true
             },
             recommendedPhaseTargetDate: {
+                type: DataTypes.DATE,
+                defaultValue: null,
+                allowNull: true
+            },
+            deprecatedAt: {
                 type: DataTypes.DATE,
                 defaultValue: null,
                 allowNull: true

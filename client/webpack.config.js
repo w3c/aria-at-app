@@ -70,7 +70,7 @@ module.exports = {
         hot: 'only',
         proxy: [
             {
-                context: ['/aria-at', '/api', '/embed'],
+                context: ['/aria-at', '/api', '/embed', '/test-review'],
                 target: 'http://localhost:8000'
             }
         ]

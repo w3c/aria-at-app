@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client';
 
-export const CANDIDATE_TESTS_PAGE_QUERY = gql`
+export const CANDIDATE_REVIEW_PAGE_QUERY = gql`
     query {
         testPlanVersions(phases: [CANDIDATE]) {
             id
@@ -14,9 +14,8 @@ export const CANDIDATE_TESTS_PAGE_QUERY = gql`
             updatedAt
             candidatePhaseReachedAt
             recommendedPhaseTargetDate
-            testPlanReports(isCurrentPhase: true) {
+            testPlanReports(isFinal: true) {
                 id
-                status
                 metrics
                 at {
                     id
@@ -46,27 +45,6 @@ export const CANDIDATE_TESTS_PAGE_QUERY = gql`
                     link
                     isOpen
                     feedbackType
-                }
-            }
-        }
-    }
-`;
-
-export const UPDATE_TEST_PLAN_VERSION_RECOMMENDED_TARGET_DATE_MUTATION = gql`
-    mutation UpdateTestPlanReportRecommendedTargetDate(
-        $testPlanVersionId: ID!
-        $recommendedPhaseTargetDate: Timestamp!
-    ) {
-        testPlanVersion(id: $testPlanVersionId) {
-            updateRecommendedPhaseTargetDate(
-                recommendedPhaseTargetDate: $recommendedPhaseTargetDate
-            ) {
-                testPlanVersion {
-                    phase
-                    testPlanReports {
-                        id
-                        status
-                    }
                 }
             }
         }

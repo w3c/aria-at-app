@@ -6,11 +6,7 @@ const deepCustomMerge = require('../../util/deepCustomMerge');
  * merged because each run might have skipped different tests.
  */
 const finalizedTestResultsResolver = async (testPlanReport, _, context) => {
-    if (
-        // CANDIDATE & RECOMMENDED status should be evaluated
-        testPlanReport.status === 'DRAFT' ||
-        !testPlanReport.testPlanRuns.length
-    ) {
+    if (!testPlanReport.testPlanRuns.length) {
         return null;
     }
 

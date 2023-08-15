@@ -81,11 +81,11 @@ const content = {
     }
 };
 
-const DisclaimerInfo = ({ reportStatus }) => {
+const DisclaimerInfo = ({ phase }) => {
     const [expanded, setExpanded] = useState(false);
 
-    const title = content[reportStatus].title;
-    const messageContent = content[reportStatus].messageContent;
+    const title = content[phase].title;
+    const messageContent = content[phase].messageContent;
 
     return (
         <Container>
@@ -112,7 +112,7 @@ const DisclaimerInfo = ({ reportStatus }) => {
 };
 
 DisclaimerInfo.propTypes = {
-    reportStatus: PropTypes.string
+    phase: PropTypes.string
 };
 
 export default DisclaimerInfo;
