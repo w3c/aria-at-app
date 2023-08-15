@@ -87,6 +87,14 @@ const graphqlSchema = gql`
         The Ats which can be run with the specific browser, for example, Jaws can be run with Chrome but not Safari, and Safari works with VoiceOver only.
         """
         ats: [At]!
+        """
+        The Ats which are required to move a TestPlanVersion to CANDIDATE phase.
+        """
+        candidateAts: [At]!
+        """
+        The Ats which are required to move a TestPlanVersion to RECOMMENDED phase.
+        """
+        recommendedAts: [At]!
     }
 
     """
@@ -153,6 +161,14 @@ const graphqlSchema = gql`
         The browsers which can run the At, for example, Safari can run VoiceOver but not Jaws because Jaws is Windows only.
         """
         browsers: [Browser]!
+        """
+        The browsers which are required to move a TestPlanVersion to CANDIDATE phase.
+        """
+        candidateBrowsers: [Browser]!
+        """
+        The browsers which are required to move a TestPlanVersion to RECOMMENDED phase.
+        """
+        recommendedBrowsers: [Browser]!
     }
 
     """
