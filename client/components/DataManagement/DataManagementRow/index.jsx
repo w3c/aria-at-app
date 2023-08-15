@@ -3,8 +3,6 @@ import { useMutation } from '@apollo/client';
 import PropTypes from 'prop-types';
 import styled from '@emotion/styled';
 import { Button } from 'react-bootstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCircleCheck } from '@fortawesome/free-solid-svg-icons';
 import {
     UPDATE_TEST_PLAN_VERSION_PHASE,
     UPDATE_TEST_PLAN_VERSION_RECOMMENDED_TARGET_DATE
@@ -19,6 +17,8 @@ import { derivePhaseName } from '@client/utils/aria';
 import { THEMES, useThemedModal } from '@client/hooks/useThemedModal';
 import BasicModal from '@components/common/BasicModal';
 import UpdateTargetDateModal from '@components/common/UpdateTargetDateModal';
+import VersionString from '../../common/VersionString';
+import PhasePill from '../../common/PhasePill';
 
 const StatusCell = styled.div`
     display: flex;
@@ -68,19 +68,6 @@ const StatusCell = styled.div`
 `;
 
 const PhaseCell = styled.div`
-    > span.version-string {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-
-        //padding: 4px 8px;
-        height: 2rem;
-        border-radius: 4px;
-
-        width: 100%;
-        background: #f6f8fa;
-    }
-
     > span.review-complete {
         display: block;
         font-size: 14px;
@@ -132,34 +119,6 @@ const PhaseCell = styled.div`
 
     > button {
         margin-top: 12px;
-    }
-`;
-
-const PhaseText = styled.span`
-    display: inline-block;
-    width: 100%;
-    padding: 2px 4px;
-    border-radius: 14px;
-
-    text-align: center;
-    overflow: hidden;
-    white-space: nowrap;
-    color: white;
-
-    &.rd {
-        background: #4177de;
-    }
-
-    &.draft {
-        background: #818f98;
-    }
-
-    &.candidate {
-        background: #ff6c00;
-    }
-
-    &.recommended {
-        background: #8441de;
     }
 `;
 
@@ -451,9 +410,7 @@ const DataManagementRow = ({
 
             return (
                 <>
-                    <PhaseText className={phase.toLowerCase()}>
-                        {derivePhaseName(phase)}
-                    </PhaseText>
+                    <PhasePill>{phase}</PhasePill>
                     <span>
                         {phaseText}{' '}
                         <b>{convertDateToString(versionDate, 'MMM D, YYYY')}</b>
@@ -609,25 +566,11 @@ const DataManagementRow = ({
                 insertActivePhaseForTestPlan(latestVersion);
                 return (
                     <PhaseCell>
-                        <span className="version-string">
-                            <FontAwesomeIcon
-                                icon={faCircleCheck}
-                                color="#2BA51C"
-                            />
-                            <a
-                                href={`/test-review/${latestVersion.gitSha}/${latestVersion.testPlan.directory}`}
-                                target="_blank"
-                                rel="noreferrer"
-                            >
-                                <b>
-                                    V
-                                    {convertDateToString(
-                                        latestVersionDate,
-                                        'YY.MM.DD'
-                                    )}
-                                </b>
-                            </a>
-                        </span>
+                        <VersionString
+                            date={latestVersionDate}
+                            iconColor="#2BA51C"
+                            linkHref={`/test-review/${latestVersion.gitSha}/${latestVersion.testPlan.directory}`}
+                        />
                         {isAdmin && (
                             <Button
                                 ref={ref => setFocusRef(ref)}
@@ -701,19 +644,10 @@ const DataManagementRow = ({
 
                     return (
                         <PhaseCell>
-                            <span className="version-string">
-                                <FontAwesomeIcon
-                                    icon={faCircleCheck}
-                                    color="#818F98"
-                                />
-                                <b>
-                                    V
-                                    {convertDateToString(
-                                        otherLatestVersionDate,
-                                        'YY.MM.DD'
-                                    )}
-                                </b>
-                            </span>
+                            <VersionString
+                                date={otherLatestVersionDate}
+                                iconColor="#818F98"
+                            />
                             <span className="review-complete">
                                 Review Completed{' '}
                                 <b>
@@ -767,26 +701,12 @@ const DataManagementRow = ({
                     insertActivePhaseForTestPlan(latestVersion);
                     return (
                         <PhaseCell>
-                            <span className="version-string">
-                                <FontAwesomeIcon
-                                    icon={faCircleCheck}
-                                    color="#2BA51C"
-                                />
-                                <a
-                                    ref={draftVersionStringRef}
-                                    href={`/test-review/${latestVersion.gitSha}/${latestVersion.testPlan.directory}`}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                >
-                                    <b>
-                                        V
-                                        {convertDateToString(
-                                            latestVersionDate,
-                                            'YY.MM.DD'
-                                        )}
-                                    </b>
-                                </a>
-                            </span>
+                            <VersionString
+                                date={latestVersionDate}
+                                iconColor="#2BA51C"
+                                linkRef={draftVersionStringRef}
+                                linkHref={`/test-review/${latestVersion.gitSha}/${latestVersion.testPlan.directory}`}
+                            />
                             {isAdmin && (
                                 <Button
                                     ref={ref => setFocusRef(ref)}
@@ -873,19 +793,10 @@ const DataManagementRow = ({
 
                     return (
                         <PhaseCell>
-                            <span className="version-string">
-                                <FontAwesomeIcon
-                                    icon={faCircleCheck}
-                                    color="#818F98"
-                                />
-                                <b>
-                                    V
-                                    {convertDateToString(
-                                        otherLatestVersionDate,
-                                        'YY.MM.DD'
-                                    )}
-                                </b>
-                            </span>
+                            <VersionString
+                                date={otherLatestVersionDate}
+                                iconColor="#818F98"
+                            />
                             <span className="review-complete">
                                 Review Completed{' '}
                                 <b>
@@ -989,26 +900,12 @@ const DataManagementRow = ({
                     insertActivePhaseForTestPlan(latestVersion);
                     return (
                         <PhaseCell>
-                            <span className="version-string">
-                                <a
-                                    ref={candidateVersionStringRef}
-                                    href={`/test-review/${latestVersion.gitSha}/${latestVersion.testPlan.directory}`}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                >
-                                    <FontAwesomeIcon
-                                        icon={faCircleCheck}
-                                        color="#2BA51C"
-                                    />
-                                    <b>
-                                        V
-                                        {convertDateToString(
-                                            latestVersionDate,
-                                            'YY.MM.DD'
-                                        )}
-                                    </b>
-                                </a>
-                            </span>
+                            <VersionString
+                                date={latestVersionDate}
+                                iconColor="#2BA51C"
+                                linkRef={candidateVersionStringRef}
+                                linkHref={`/test-review/${latestVersion.gitSha}/${latestVersion.testPlan.directory}`}
+                            />
                             {shouldShowAdvanceButton && (
                                 <Button
                                     ref={ref => setFocusRef(ref)}
@@ -1104,26 +1001,12 @@ const DataManagementRow = ({
                 insertActivePhaseForTestPlan(latestVersion);
                 return (
                     <PhaseCell>
-                        <span className="version-string">
-                            <FontAwesomeIcon
-                                icon={faCircleCheck}
-                                color="#2BA51C"
-                            />
-                            <a
-                                ref={recommendedVersionStringRef}
-                                href={`/test-review/${latestVersion.gitSha}/${latestVersion.testPlan.directory}`}
-                                target="_blank"
-                                rel="noreferrer"
-                            >
-                                <b>
-                                    V
-                                    {convertDateToString(
-                                        latestVersionDate,
-                                        'YY.MM.DD'
-                                    )}
-                                </b>
-                            </a>
-                        </span>
+                        <VersionString
+                            date={latestVersionDate}
+                            iconColor="#2BA51C"
+                            linkRef={recommendedVersionStringRef}
+                            linkHref={`/test-review/${latestVersion.gitSha}/${latestVersion.testPlan.directory}`}
+                        />
                         <span className="review-complete">
                             Approved{' '}
                             <b>
@@ -1143,7 +1026,9 @@ const DataManagementRow = ({
         <LoadingStatus message={loadingMessage}>
             <tr>
                 <th>
-                    <b>{testPlan.title}</b>
+                    <a href={`/data-management/${testPlan.directory}`}>
+                        <b>{testPlan.title}</b>
+                    </a>
                 </th>
                 <td>{renderCellForCoveredAts()}</td>
                 <td>{renderCellForOverallStatus()}</td>
