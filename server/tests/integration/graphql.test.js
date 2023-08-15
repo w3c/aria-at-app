@@ -187,6 +187,16 @@ describe('graphql', () => {
                             id
                             name
                         }
+                        candidateAts {
+                            __typename
+                            id
+                            name
+                        }
+                        recommendedAts {
+                            __typename
+                            id
+                            name
+                        }
                         browserVersions {
                             __typename
                             id
@@ -198,6 +208,16 @@ describe('graphql', () => {
                         id
                         name
                         browsers {
+                            __typename
+                            id
+                            name
+                        }
+                        candidateBrowsers {
+                            __typename
+                            id
+                            name
+                        }
+                        recommendedBrowsers {
                             __typename
                             id
                             name
@@ -522,13 +542,13 @@ describe('graphql', () => {
                                 locationOfData
                             }
                         }
-                        reportStatus: testPlanReport(id: 1) {
+                        reportStatus: testPlanReport(id: 3) {
                             __typename
                             updateStatus(status: CANDIDATE) {
                                 locationOfData
                             }
                         }
-                        bulkReportStatus: testPlanReport(ids: [1]) {
+                        bulkReportStatus: testPlanReport(ids: [3]) {
                             __typename
                             bulkUpdateStatus(status: CANDIDATE) {
                                 locationOfData

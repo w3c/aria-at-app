@@ -28,12 +28,14 @@ describe('embed', () => {
         // Load the iframe, twice, one with a normal load and a second time from
         // the cache
         const initialLoadTimeStart = Number(new Date());
-        const res = await sessionAgent.get('/embed/reports/modal-dialog');
+        const res = await sessionAgent.get('/embed/reports/checkbox-tri-state');
         const initialLoadTimeEnd = Number(new Date());
         const initialLoadTime = initialLoadTimeEnd - initialLoadTimeStart;
 
         const cachedTimeStart = Number(new Date());
-        const res2 = await sessionAgent.get('/embed/reports/modal-dialog');
+        const res2 = await sessionAgent.get(
+            '/embed/reports/checkbox-tri-state'
+        );
         const cachedTimeEnd = Number(new Date());
         const cachedTime = cachedTimeEnd - cachedTimeStart;
 
@@ -43,10 +45,11 @@ describe('embed', () => {
         const nonWarning = screen.queryByText('Recommended Report');
         const warning = screen.queryByText('Warning! Unapproved Report');
         const unsupportedAtBrowserCombination =
-            screen.getAllByText('Not Applicable');
-        const futureSupportedAtBrowserCombination = screen.getAllByText(
+            screen.queryAllByText('Not Applicable');
+        const futureSupportedAtBrowserCombination = screen.queryAllByText(
             'Data Not Yet Available'
         );
+
         const nonWarningContents = screen.queryByText(
             'The information in this report is generated from candidate tests',
             { exact: false }
@@ -70,8 +73,8 @@ describe('embed', () => {
         expect(initialLoadTime / 10).toBeGreaterThan(cachedTime);
         expect(nonWarning || warning).toBeTruthy();
         expect(nonWarningContents || warningContents).toBeTruthy();
-        expect(unsupportedAtBrowserCombination).toBeTruthy();
-        expect(futureSupportedAtBrowserCombination).toBeTruthy();
+        expect(unsupportedAtBrowserCombination.length).not.toBe(0);
+        expect(futureSupportedAtBrowserCombination.length).not.toBe(0);
         expect(viewReportButton).toBeTruthy();
         expect(viewReportButtonOnClick).toMatch(
             // Onclick should be like the following:
@@ -80,7 +83,7 @@ describe('embed', () => {
         );
         expect(copyEmbedButton).toBeTruthy();
         expect(copyEmbedButtonOnClick).toMatch(
-            /announceCopied\('https?:\/\/[\w.:]+\/embed\/reports\/modal-dialog'\)/
+            /announceCopied\('https?:\/\/[\w.:]+\/embed\/reports\/checkbox-tri-state'\)/
         );
         expect(cellWithData).toBeTruthy();
     });

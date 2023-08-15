@@ -8,6 +8,7 @@ const {
 const AtModel = require('../../models/At');
 const AtVersionModel = require('../../models/AtVersion');
 const AtModeModel = require('../../models/AtMode');
+const BrowserModel = require('../../models/Browser');
 
 describe('AtModel', () => {
     // A1
@@ -26,11 +27,13 @@ describe('AtModel', () => {
         // A1
         const AT_VERSION_ASSOCIATION = { as: 'atVersions' };
         const AT_MODE_ASSOCIATION = { as: 'modes' };
+        const BROWSER_ASSOCIATION = { through: 'AtBrowsers', as: 'browsers' };
 
         // A2
         beforeAll(() => {
             Model.hasMany(AtVersionModel, AT_VERSION_ASSOCIATION);
             Model.hasMany(AtModeModel, AT_MODE_ASSOCIATION);
+            Model.hasMany(BrowserModel, BROWSER_ASSOCIATION);
         });
 
         it('defined a hasMany association with AtVersion', () => {
