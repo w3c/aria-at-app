@@ -187,6 +187,16 @@ describe('graphql', () => {
                             id
                             name
                         }
+                        candidateAts {
+                            __typename
+                            id
+                            name
+                        }
+                        recommendedAts {
+                            __typename
+                            id
+                            name
+                        }
                         browserVersions {
                             __typename
                             id
@@ -198,6 +208,16 @@ describe('graphql', () => {
                         id
                         name
                         browsers {
+                            __typename
+                            id
+                            name
+                        }
+                        candidateBrowsers {
+                            __typename
+                            id
+                            name
+                        }
+                        recommendedBrowsers {
                             __typename
                             id
                             name
