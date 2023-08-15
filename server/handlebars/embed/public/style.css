@@ -43,10 +43,10 @@ h3#report-title {
     text-align: center;
 }
 
-#embed-report-status-container {
+#embed-report-phase-container {
     margin-bottom: 1em;
 }
-#embed-report-status-container summary:focus-visible {
+#embed-report-phase-container summary:focus-visible {
     outline-offset: -2px;
     outline: 2px solid #3a86d1;
 }

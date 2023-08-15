@@ -1,9 +1,8 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { useMutation } from '@apollo/client';
 import { Helmet } from 'react-helmet';
 import styled from '@emotion/styled';
-import { Container, Button, Dropdown, Table } from 'react-bootstrap';
+import { Container, Table } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -18,27 +17,12 @@ import {
     getTestPlanTargetTitle,
     getTestPlanVersionTitle
 } from '@components/Reports/getTitles';
-import {
-    LoadingStatus,
-    useTriggerLoad
-} from '@components/common/LoadingStatus';
-import { UPDATE_TEST_PLAN_REPORT_STATUS_MUTATION } from '@components/TestQueue/queries';
-import { UPDATE_TEST_PLAN_VERSION_RECOMMENDED_TARGET_DATE_MUTATION } from '@components/CandidateReview/queries';
-import UpdateTargetDateModal from '@components/common/UpdateTargetDateModal';
 import ClippedProgressBar from '@components/common/ClippedProgressBar';
-import {
-    convertDateToString,
-    convertStringFormatToAnotherFormat
-} from '@client/utils/formatter';
-import { useThemedModal, THEMES } from '@client/hooks/useThemedModal';
+import { convertDateToString } from '@client/utils/formatter';
 import './TestPlans.css';
 
 const FullHeightContainer = styled(Container)`
     min-height: calc(100vh - 64px);
-`;
-
-const NoWrapButton = styled(Button)`
-    white-space: nowrap;
 `;
 
 const StatusText = styled.span`
@@ -155,9 +139,14 @@ const DisclosureContainer = styled.div`
 const CellSubRow = styled.span`
     display: flex;
     flex-direction: row;
-    gap: 1rem;
+    gap: 0.5rem;
     margin-top: 0.5rem;
     font-size: 0.875rem;
+
+    svg {
+        align-self: center;
+        margin: 0;
+    }
 `;
 
 const CenteredTh = styled.th`
@@ -187,40 +176,12 @@ const None = styled.span`
     }
 `;
 
-const TestPlans = ({ testPlanVersions, triggerPageUpdate = () => {} }) => {
-    const { triggerLoad, loadingMessage } = useTriggerLoad();
-    const {
-        themedModal,
-        showThemedModal,
-        setShowThemedModal,
-        setThemedModalContent
-    } = useThemedModal({
-        type: THEMES.WARNING,
-        title: 'Error Updating Test Plan Status'
-    });
-
-    const [updateTestPlanReportStatus] = useMutation(
-        UPDATE_TEST_PLAN_REPORT_STATUS_MUTATION
-    );
-    const [updateTestPlanVersionRecommendedTargetDate] = useMutation(
-        UPDATE_TEST_PLAN_VERSION_RECOMMENDED_TARGET_DATE_MUTATION
-    );
-
-    const changeTargetDateButtonRefs = useRef({});
-    const focusButtonRef = useRef();
-
+const TestPlans = ({ testPlanVersions }) => {
     const [atExpandTableItems, setAtExpandTableItems] = useState({
         1: true,
         2: true,
         3: true
     });
-    const [showUpdateTargetDateModal, setShowUpdateTargetDateModal] =
-        useState(false);
-    const [updateTargetDateModalTitle, setUpdateTargetDateModalTitle] =
-        useState('');
-    const [updateTargetDateModalDateText, setUpdateTargetDateModalDateText] =
-        useState('');
-    const [testPlanVersionToUpdate, setTestPlanVersionToUpdate] = useState({});
 
     const none = <None>None</None>;
     const borderedNone = <None className="bordered">None</None>;
@@ -234,29 +195,6 @@ const TestPlans = ({ testPlanVersions, triggerPageUpdate = () => {} }) => {
                 ...atExpandTableItems,
                 [atId]: !atExpandTableItems[atId]
             });
-    };
-
-    const updateReportStatus = async (testPlanReports, status) => {
-        try {
-            const updateTestPlanReportPromises = testPlanReports.map(
-                testPlanReport => {
-                    return updateTestPlanReportStatus({
-                        variables: {
-                            testReportId: testPlanReport.id,
-                            status
-                        }
-                    });
-                }
-            );
-
-            await triggerLoad(async () => {
-                await Promise.all(updateTestPlanReportPromises);
-                await triggerPageUpdate();
-            }, 'Updating Test Plan Status');
-        } catch (e) {
-            setShowThemedModal(true);
-            setThemedModalContent(<>{e.message}</>);
-        }
     };
 
     const testPlanReportsExist = testPlanVersions.some(
@@ -470,310 +408,226 @@ const TestPlans = ({ testPlanVersions, triggerPageUpdate = () => {} }) => {
         );
 
         return (
-            <LoadingStatus message={loadingMessage}>
-                <DisclosureParent>
-                    <h3>
-                        <DisclosureButton
-                            id={`expand-at-${atId}-button`}
-                            type="button"
-                            aria-expanded={!!atExpandTableItems[atId]}
-                            aria-controls={`expand-at-${atId}`}
-                            onClick={() => onClickExpandAtTable(atId)}
-                        >
-                            {atName}
-                            <FontAwesomeIcon
-                                icon={
-                                    atExpandTableItems[atId]
-                                        ? faChevronUp
-                                        : faChevronDown
-                                }
-                                size="xs"
-                            />
-                        </DisclosureButton>
-                    </h3>
-                    <DisclosureContainer
-                        role="region"
-                        id={`expand-at-${atId}`}
-                        aria-labelledby={`expand-at-${atId}-button`}
-                        show={!!atExpandTableItems[atId]}
+            <DisclosureParent>
+                <h3>
+                    <DisclosureButton
+                        id={`expand-at-${atId}-button`}
+                        type="button"
+                        aria-expanded={!!atExpandTableItems[atId]}
+                        aria-controls={`expand-at-${atId}`}
+                        onClick={() => onClickExpandAtTable(atId)}
                     >
-                        <Table bordered responsive aria-label={atName}>
-                            <thead>
-                                <tr>
-                                    <th>Candidate Test Plans</th>
-                                    <CenteredTh>
-                                        Candidate Phase Start Date
-                                    </CenteredTh>
-                                    <CenteredTh>
-                                        Target Completion Date
-                                    </CenteredTh>
-                                    <CenteredTh>Review Status</CenteredTh>
-                                    <CenteredTh>Results Summary</CenteredTh>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {Object.values(testPlanVersions)
-                                    .sort((a, b) =>
-                                        a.title < b.title ? -1 : 1
-                                    )
-                                    .map(testPlanVersion => {
-                                        const testPlanReports =
-                                            testPlanVersion.testPlanReports;
-                                        const candidatePhaseReachedAt =
-                                            testPlanVersion.candidatePhaseReachedAt;
-                                        const recommendedPhaseTargetDate =
-                                            testPlanVersion.recommendedPhaseTargetDate;
+                        {atName}
+                        <FontAwesomeIcon
+                            icon={
+                                atExpandTableItems[atId]
+                                    ? faChevronUp
+                                    : faChevronDown
+                            }
+                            size="xs"
+                        />
+                    </DisclosureButton>
+                </h3>
+                <DisclosureContainer
+                    role="region"
+                    id={`expand-at-${atId}`}
+                    aria-labelledby={`expand-at-${atId}-button`}
+                    show={!!atExpandTableItems[atId]}
+                >
+                    <Table bordered responsive aria-label={atName}>
+                        <thead>
+                            <tr>
+                                <th>Candidate Test Plans</th>
+                                <CenteredTh>
+                                    Candidate Phase Start Date
+                                </CenteredTh>
+                                <CenteredTh>Target Completion Date</CenteredTh>
+                                <CenteredTh>Review Status</CenteredTh>
+                                <CenteredTh>Results Summary</CenteredTh>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {Object.values(testPlanVersions)
+                                .sort((a, b) => (a.title < b.title ? -1 : 1))
+                                .map(testPlanVersion => {
+                                    const testPlanReports =
+                                        testPlanVersion.testPlanReports;
+                                    const candidatePhaseReachedAt =
+                                        testPlanVersion.candidatePhaseReachedAt;
+                                    const recommendedPhaseTargetDate =
+                                        testPlanVersion.recommendedPhaseTargetDate;
 
-                                        const allMetrics = [];
+                                    const allMetrics = [];
 
-                                        let testsCount = 0;
-                                        let dataExists = false;
+                                    let testsCount = 0;
+                                    let dataExists = false;
 
-                                        Object.values(testPlanTargetsById).map(
-                                            testPlanTarget => {
-                                                const testPlanReport =
-                                                    testPlanReports.find(
-                                                        testPlanReport =>
-                                                            testPlanReport.at
-                                                                .id ===
-                                                                testPlanTarget
-                                                                    .at.id &&
-                                                            testPlanReport.at
-                                                                .id == atId &&
-                                                            testPlanReport
-                                                                .browser.id ===
-                                                                testPlanTarget
-                                                                    .browser.id
-                                                    );
-
-                                                if (testPlanReport) {
-                                                    const metrics =
-                                                        testPlanReport.metrics;
-                                                    allMetrics.push(metrics);
-
-                                                    if (
-                                                        !dataExists &&
+                                    Object.values(testPlanTargetsById).map(
+                                        testPlanTarget => {
+                                            const testPlanReport =
+                                                testPlanReports.find(
+                                                    testPlanReport =>
                                                         testPlanReport.at.id ===
-                                                            atId
-                                                    ) {
-                                                        dataExists = true;
-                                                    }
+                                                            testPlanTarget.at
+                                                                .id &&
+                                                        testPlanReport.at.id ===
+                                                            atId &&
+                                                        testPlanReport.browser
+                                                            .id ===
+                                                            testPlanTarget
+                                                                .browser.id
+                                                );
 
-                                                    testsCount =
-                                                        metrics.testsCount >
-                                                        testsCount
-                                                            ? metrics.testsCount
-                                                            : testsCount;
+                                            if (testPlanReport) {
+                                                const metrics =
+                                                    testPlanReport.metrics;
+                                                allMetrics.push(metrics);
+
+                                                if (
+                                                    !dataExists &&
+                                                    testPlanReport.at.id ===
+                                                        atId
+                                                ) {
+                                                    dataExists = true;
                                                 }
+
+                                                testsCount =
+                                                    metrics.testsCount >
+                                                    testsCount
+                                                        ? metrics.testsCount
+                                                        : testsCount;
                                             }
+                                        }
+                                    );
+
+                                    const metrics = {
+                                        testsCount,
+                                        browsersLength: allMetrics.length,
+                                        totalTestsFailedCount:
+                                            allMetrics.reduce(
+                                                (acc, obj) =>
+                                                    acc + obj.testsFailedCount,
+                                                0
+                                            ),
+                                        totalAssertionsFailedCount:
+                                            allMetrics.reduce(
+                                                (acc, obj) =>
+                                                    acc +
+                                                    obj.optionalAssertionsFailedCount +
+                                                    obj.requiredAssertionsFailedCount,
+                                                0
+                                            ),
+                                        totalSupportPercent:
+                                            Math.round(
+                                                allMetrics.reduce(
+                                                    (acc, obj) =>
+                                                        acc +
+                                                        obj.supportPercent,
+                                                    0
+                                                ) / allMetrics.length
+                                            ) || 0
+                                    };
+
+                                    // Make sure issues are unique
+                                    const uniqueLinks = [];
+                                    const allIssues = testPlanReports
+                                        .map(testPlanReport => [
+                                            ...testPlanReport.issues
+                                        ])
+                                        .flat()
+                                        .filter(t =>
+                                            uniqueFilter(t, uniqueLinks, 'link')
                                         );
 
-                                        const metrics = {
-                                            testsCount,
-                                            browsersLength: allMetrics.length,
-                                            totalTestsFailedCount:
-                                                allMetrics.reduce(
-                                                    (acc, obj) =>
-                                                        acc +
-                                                        obj.testsFailedCount,
-                                                    0
-                                                ),
-                                            totalAssertionsFailedCount:
-                                                allMetrics.reduce(
-                                                    (acc, obj) =>
-                                                        acc +
-                                                        obj.optionalAssertionsFailedCount +
-                                                        obj.requiredAssertionsFailedCount,
-                                                    0
-                                                ),
-                                            totalSupportPercent:
-                                                Math.round(
-                                                    allMetrics.reduce(
-                                                        (acc, obj) =>
-                                                            acc +
-                                                            obj.supportPercent,
-                                                        0
-                                                    ) / allMetrics.length
-                                                ) || 0
-                                        };
-
-                                        // Make sure issues are unique
-                                        const uniqueLinks = [];
-                                        const allIssues = testPlanReports
-                                            .map(testPlanReport => [
-                                                ...testPlanReport.issues
-                                            ])
-                                            .flat()
-                                            .filter(t =>
-                                                uniqueFilter(
-                                                    t,
-                                                    uniqueLinks,
-                                                    'link'
-                                                )
-                                            );
-
-                                        return (
-                                            dataExists && (
-                                                <tr key={testPlanVersion.id}>
-                                                    <td>
-                                                        <Link
-                                                            to={`/candidate-test-plan/${testPlanVersion.id}/${atId}`}
-                                                        >
-                                                            {getTestPlanVersionTitle(
-                                                                testPlanVersion
-                                                            )}{' '}
-                                                            V
-                                                            {convertDateToString(
-                                                                testPlanVersion.updatedAt,
-                                                                'YY.MM.DD'
-                                                            )}{' '}
-                                                            ({testsCount} Test
-                                                            {testsCount === 0 ||
-                                                            testsCount > 1
-                                                                ? `s`
-                                                                : ''}
+                                    return (
+                                        dataExists && (
+                                            <tr key={testPlanVersion.id}>
+                                                <th>
+                                                    <Link
+                                                        to={`/candidate-test-plan/${testPlanVersion.id}/${atId}`}
+                                                    >
+                                                        {getTestPlanVersionTitle(
+                                                            testPlanVersion
+                                                        )}{' '}
+                                                        V
+                                                        {convertDateToString(
+                                                            testPlanVersion.updatedAt,
+                                                            'YY.MM.DD'
+                                                        )}{' '}
+                                                        ({testsCount} Test
+                                                        {testsCount === 0 ||
+                                                        testsCount > 1
+                                                            ? `s`
+                                                            : ''}
+                                                        )
+                                                    </Link>
+                                                </th>
+                                                <CenteredTd>
+                                                    <i>
+                                                        {convertDateToString(
+                                                            candidatePhaseReachedAt,
+                                                            'MMM D, YYYY'
+                                                        )}
+                                                    </i>
+                                                </CenteredTd>
+                                                <CenteredTd>
+                                                    <i>
+                                                        {convertDateToString(
+                                                            recommendedPhaseTargetDate,
+                                                            'MMM D, YYYY'
+                                                        )}
+                                                    </i>
+                                                </CenteredTd>
+                                                <CenteredTd>
+                                                    {getRowStatus({
+                                                        issues: allIssues,
+                                                        isInProgressStatusExists:
+                                                            testPlanReports.some(
+                                                                testPlanReport =>
+                                                                    testPlanReport.vendorReviewStatus ===
+                                                                    'IN_PROGRESS'
+                                                            ),
+                                                        isApprovedStatusExists:
+                                                            testPlanReports.some(
+                                                                testPlanReport =>
+                                                                    testPlanReport.vendorReviewStatus ===
+                                                                    'APPROVED'
                                                             )
-                                                        </Link>
-                                                        <CellSubRow>
-                                                            <Dropdown className="dropdown-btn-mark-as">
-                                                                <Dropdown.Toggle
-                                                                    variant="secondary"
-                                                                    aria-label="Change report status"
-                                                                >
-                                                                    Mark as ...
-                                                                </Dropdown.Toggle>
-                                                                <Dropdown.Menu role="menu">
-                                                                    <Dropdown.Item
-                                                                        role="menuitem"
-                                                                        onClick={async () => {
-                                                                            await updateReportStatus(
-                                                                                testPlanReports,
-                                                                                'DRAFT'
-                                                                            );
-                                                                        }}
-                                                                    >
-                                                                        Draft
-                                                                    </Dropdown.Item>
-                                                                    <Dropdown.Item
-                                                                        role="menuitem"
-                                                                        onClick={async () => {
-                                                                            await updateReportStatus(
-                                                                                testPlanReports,
-                                                                                'RECOMMENDED'
-                                                                            );
-                                                                        }}
-                                                                        disabled={testPlanReports.some(
-                                                                            t =>
-                                                                                t.vendorReviewStatus !==
-                                                                                'APPROVED'
-                                                                        )}
-                                                                    >
-                                                                        Recommended
-                                                                    </Dropdown.Item>
-                                                                </Dropdown.Menu>
-                                                            </Dropdown>
-                                                            <NoWrapButton
-                                                                ref={changeTargetDateButtonRef =>
-                                                                    (changeTargetDateButtonRefs.current =
-                                                                        {
-                                                                            ...changeTargetDateButtonRefs.current,
-                                                                            [`${testPlanVersion.id}-${atId}`]:
-                                                                                changeTargetDateButtonRef
-                                                                        })
-                                                                }
-                                                                variant="secondary"
-                                                                className="dropdown-btn-mark-as"
-                                                                onClick={() => {
-                                                                    focusButtonRef.current =
-                                                                        changeTargetDateButtonRefs.current[
-                                                                            `${testPlanVersion.id}-${atId}`
-                                                                        ];
-                                                                    setUpdateTargetDateModalTitle(
-                                                                        `Change Target Date for ${testPlanVersion.title} for ${atName}`
-                                                                    );
-                                                                    setUpdateTargetDateModalDateText(
-                                                                        recommendedPhaseTargetDate
-                                                                    );
-                                                                    setShowUpdateTargetDateModal(
-                                                                        true
-                                                                    );
-                                                                    setTestPlanVersionToUpdate(
-                                                                        testPlanVersion
-                                                                    );
-                                                                }}
-                                                            >
-                                                                Change Target
-                                                                Date
-                                                            </NoWrapButton>
-                                                        </CellSubRow>
-                                                    </td>
-                                                    <CenteredTd>
+                                                    })}
+                                                </CenteredTd>
+                                                <CenteredTd>
+                                                    <Link
+                                                        to={`/candidate-test-plan/${testPlanVersion.id}/${atId}`}
+                                                    >
+                                                        <ClippedProgressBar
+                                                            progress={
+                                                                metrics.totalSupportPercent
+                                                            }
+                                                            label={`${metrics.totalSupportPercent}% completed`}
+                                                            clipped
+                                                        />
+                                                    </Link>
+                                                    <CellSubRow
+                                                        style={{
+                                                            justifyContent:
+                                                                'center'
+                                                        }}
+                                                    >
                                                         <i>
-                                                            {convertDateToString(
-                                                                candidatePhaseReachedAt,
-                                                                'MMM D, YYYY'
+                                                            {evaluateTestsAssertionsMessage(
+                                                                metrics
                                                             )}
                                                         </i>
-                                                    </CenteredTd>
-                                                    <CenteredTd>
-                                                        <i>
-                                                            {convertDateToString(
-                                                                recommendedPhaseTargetDate,
-                                                                'MMM D, YYYY'
-                                                            )}
-                                                        </i>
-                                                    </CenteredTd>
-                                                    <CenteredTd>
-                                                        {getRowStatus({
-                                                            issues: allIssues,
-                                                            isInProgressStatusExists:
-                                                                testPlanReports.some(
-                                                                    testPlanReport =>
-                                                                        testPlanReport.vendorReviewStatus ===
-                                                                        'IN_PROGRESS'
-                                                                ),
-                                                            isApprovedStatusExists:
-                                                                testPlanReports.some(
-                                                                    testPlanReport =>
-                                                                        testPlanReport.vendorReviewStatus ===
-                                                                        'APPROVED'
-                                                                )
-                                                        })}
-                                                    </CenteredTd>
-                                                    <CenteredTd>
-                                                        <Link
-                                                            to={`/candidate-test-plan/${testPlanVersion.id}/${atId}`}
-                                                        >
-                                                            <ClippedProgressBar
-                                                                progress={
-                                                                    metrics.totalSupportPercent
-                                                                }
-                                                                label={`${metrics.totalSupportPercent}% completed`}
-                                                                clipped
-                                                            />
-                                                        </Link>
-                                                        <CellSubRow
-                                                            style={{
-                                                                justifyContent:
-                                                                    'center'
-                                                            }}
-                                                        >
-                                                            <i>
-                                                                {evaluateTestsAssertionsMessage(
-                                                                    metrics
-                                                                )}
-                                                            </i>
-                                                        </CellSubRow>
-                                                    </CenteredTd>
-                                                </tr>
-                                            )
-                                        );
-                                    })}
-                            </tbody>
-                        </Table>
-                    </DisclosureContainer>
-                </DisclosureParent>
-            </LoadingStatus>
+                                                    </CellSubRow>
+                                                </CenteredTd>
+                                            </tr>
+                                        )
+                                    );
+                                })}
+                        </tbody>
+                    </Table>
+                </DisclosureContainer>
+            </DisclosureParent>
         );
     };
 
@@ -901,6 +755,11 @@ const TestPlans = ({ testPlanVersions, triggerPageUpdate = () => {} }) => {
                                         <td>
                                             {getTestPlanVersionTitle(
                                                 testPlanVersion
+                                            )}{' '}
+                                            V
+                                            {convertDateToString(
+                                                testPlanVersion.updatedAt,
+                                                'YY.MM.DD'
                                             )}
                                         </td>
                                         <CenteredTd>
@@ -969,32 +828,6 @@ const TestPlans = ({ testPlanVersions, triggerPageUpdate = () => {} }) => {
         );
     };
 
-    const onUpdateTargetDateAction = async ({ updatedDateText }) => {
-        onUpdateTargetDateModalClose();
-        try {
-            await triggerLoad(async () => {
-                await updateTestPlanVersionRecommendedTargetDate({
-                    variables: {
-                        testPlanVersionId: testPlanVersionToUpdate.id,
-                        recommendedPhaseTargetDate:
-                            convertStringFormatToAnotherFormat(updatedDateText)
-                    }
-                });
-                await triggerPageUpdate();
-                if (focusButtonRef.current) focusButtonRef.current.focus();
-            }, 'Updating Test Plan Recommended Target Date');
-        } catch (e) {
-            setShowThemedModal(true);
-            setThemedModalContent(<>{e.message}</>);
-        }
-    };
-
-    const onUpdateTargetDateModalClose = () => {
-        setUpdateTargetDateModalDateText('');
-        setShowUpdateTargetDateModal(false);
-        if (focusButtonRef.current) focusButtonRef.current.focus();
-    };
-
     return (
         <FullHeightContainer id="main" as="main" tabIndex="-1">
             <Helmet>
@@ -1010,16 +843,6 @@ const TestPlans = ({ testPlanVersions, triggerPageUpdate = () => {} }) => {
             {constructTableForAtById('2', 'NVDA')}
             {constructTableForAtById('3', 'VoiceOver for macOS')}
             {constructTableForResultsSummary()}
-            {showThemedModal && themedModal}
-            {showUpdateTargetDateModal && (
-                <UpdateTargetDateModal
-                    show={showUpdateTargetDateModal}
-                    title={updateTargetDateModalTitle}
-                    dateText={updateTargetDateModalDateText}
-                    handleAction={onUpdateTargetDateAction}
-                    handleClose={onUpdateTargetDateModalClose}
-                />
-            )}
         </FullHeightContainer>
     );
 };

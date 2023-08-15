@@ -5,12 +5,9 @@ import TestPlans from './TestPlans';
 import { CANDIDATE_REVIEW_PAGE_QUERY } from './queries';
 
 const CandidateReview = () => {
-    const { loading, data, error, refetch } = useQuery(
-        CANDIDATE_REVIEW_PAGE_QUERY,
-        {
-            fetchPolicy: 'cache-and-network'
-        }
-    );
+    const { loading, data, error } = useQuery(CANDIDATE_REVIEW_PAGE_QUERY, {
+        fetchPolicy: 'cache-and-network'
+    });
 
     if (error) {
         return (
@@ -36,12 +33,7 @@ const CandidateReview = () => {
 
     const testPlanVersions = data.testPlanVersions;
 
-    return (
-        <TestPlans
-            testPlanVersions={testPlanVersions}
-            triggerPageUpdate={refetch}
-        />
-    );
+    return <TestPlans testPlanVersions={testPlanVersions} />;
 };
 
 export default CandidateReview;
