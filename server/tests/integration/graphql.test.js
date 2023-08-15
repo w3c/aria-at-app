@@ -543,18 +543,6 @@ describe('graphql', () => {
                                 locationOfData
                             }
                         }
-                        #updateToTestPlanVersion: testPlanReport(id: 1) {
-                        #    __typename
-                        #    updateTestPlanReportTestPlanVersion(
-                        #        input: {
-                        #            testPlanVersionId: 34
-                        #            atId: 1
-                        #            browserId: 2
-                        #        }
-                        #    ) {
-                        #        locationOfData
-                        #    }
-                        #}
                         updateTestPlanVersionPhase: testPlanVersion(id: 26) {
                             __typename
                             updatePhase(phase: DRAFT) {

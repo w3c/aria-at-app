@@ -261,6 +261,45 @@ const updatePhaseResolver = async (
         throw new Error('No reports have been marked as final.');
     }
 
+    if (phase === 'CANDIDATE' || phase === 'RECOMMENDED') {
+        const reportsByAtAndBrowser = {};
+
+        testPlanReports.forEach(testPlanReport => {
+            const { at, browser } = testPlanReport;
+            if (!reportsByAtAndBrowser[at.id]) {
+                reportsByAtAndBrowser[at.id] = {};
+            }
+
+            reportsByAtAndBrowser[at.id][browser.id] = testPlanReport;
+        });
+
+        const ats = await context.atLoader.getAll();
+
+        const missingAtBrowserCombinations = [];
+
+        ats.forEach(at => {
+            const browsers =
+                phase === 'CANDIDATE'
+                    ? at.candidateBrowsers
+                    : at.recommendedBrowsers;
+            browsers.forEach(browser => {
+                if (!reportsByAtAndBrowser[at.id]?.[browser.id]) {
+                    missingAtBrowserCombinations.push(
+                        `${at.name} and ${browser.name}`
+                    );
+                }
+            });
+        });
+
+        if (missingAtBrowserCombinations.length) {
+            throw new Error(
+                `Cannot set phase to ${phase.toLowerCase()} because the following` +
+                    ` required reports have not been collected:` +
+                    ` ${missingAtBrowserCombinations.join(', ')}.`
+            );
+        }
+    }
+
     for (const testPlanReport of testPlanReports) {
         const runnableTests = runnableTestsResolver(testPlanReport);
         let updateParams = {};

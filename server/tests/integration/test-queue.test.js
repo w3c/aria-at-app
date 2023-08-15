@@ -191,7 +191,7 @@ describe('test queue', () => {
         });
     });
 
-    it('can be finalized', async () => {
+    it('can set test plan version to candidate and recommended', async () => {
         await dbCleaner(async () => {
             const candidateTestPlanVersions = await query(gql`
                 query {
