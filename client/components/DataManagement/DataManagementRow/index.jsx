@@ -1026,7 +1026,9 @@ const DataManagementRow = ({
         <LoadingStatus message={loadingMessage}>
             <tr>
                 <th>
-                    <b>{testPlan.title}</b>
+                    <a href={`/data-management/${testPlan.directory}`}>
+                        <b>{testPlan.title}</b>
+                    </a>
                 </th>
                 <td>{renderCellForCoveredAts()}</td>
                 <td>{renderCellForOverallStatus()}</td>

@@ -22,6 +22,7 @@ export const TEST_PLAN_VERSIONS_PAGE_QUERY = gql`
                 candidatePhaseReachedAt
                 recommendedPhaseReachedAt
                 testPlanReports {
+                    isFinal
                     at {
                         name
                     }

@@ -176,6 +176,8 @@ const TestPlanVersionsPage = () => {
         }
     };
 
+    const testPlan = data.testPlan;
+
     const ats = data.ats;
 
     const testPlanVersions = data.testPlan.testPlanVersions
@@ -184,14 +186,20 @@ const TestPlanVersionsPage = () => {
             return new Date(b.updatedAt) - new Date(a.updatedAt);
         });
 
+    const testPlanVersionsDesc = data.testPlan.testPlanVersions
+        .slice()
+        .sort((a, b) => {
+            return new Date(a.updatedAt) - new Date(b.updatedAt);
+        });
+
     const nonRDVersions = testPlanVersions.filter(each => each.phase !== 'RD');
 
     return (
         <Container id="main" as="main" tabIndex="-1">
             <Helmet>
-                <title>Test Plan Versions | ARIA-AT</title>
+                <title>{testPlan.title} Test Plan Versions | ARIA-AT</title>
             </Helmet>
-            <h1>Test Plan Versions</h1>
+            <h1>{testPlan.title} Test Plan Versions</h1>
             <PageCommitHistory>
                 <FontAwesomeIcon
                     icon={faCodeCommit}
@@ -206,53 +214,60 @@ const TestPlanVersionsPage = () => {
                     Commit History for aria-at/tests/{testPlanDirectory}
                 </a>
             </PageCommitHistory>
-            <ThemeTableHeader>Version Summary</ThemeTableHeader>
-            <ThemeTable bordered responsive>
-                <thead>
-                    <tr>
-                        <th>Version</th>
-                        <th>Latest Phase</th>
-                        <th>Phase Change Date</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {nonRDVersions.map(testPlanVersion => (
-                        <tr key={testPlanVersion.id}>
-                            <td>
-                                <VersionString
-                                    date={testPlanVersion.updatedAt}
-                                    iconColor={getIconColor(testPlanVersion)}
-                                    linkHref={`/test-review/${testPlanVersion.gitSha}/${testPlanVersion.testPlan.directory}`}
-                                />
-                            </td>
-                            <td>
-                                {(() => {
-                                    const phasePill = (
-                                        <PhasePill fullWidth={false}>
-                                            {testPlanVersion.phase}
-                                        </PhasePill>
-                                    );
-                                    const deprecatedPill = (
-                                        <PhasePill fullWidth={false}>
-                                            DEPRECATED
-                                        </PhasePill>
-                                    );
-                                    if (testPlanVersion.deprecatedAt) {
-                                        return (
-                                            <>
-                                                {deprecatedPill} during{' '}
-                                                {phasePill} review
-                                            </>
-                                        );
-                                    }
-                                    return phasePill;
-                                })()}
-                            </td>
-                            <td>{getPhaseChangeDate(testPlanVersion)}</td>
-                        </tr>
-                    ))}
-                </tbody>
-            </ThemeTable>
+            {!nonRDVersions.length ? null : (
+                <>
+                    <ThemeTableHeader>Version Summary</ThemeTableHeader>
+                    <ThemeTable bordered responsive>
+                        <thead>
+                            <tr>
+                                <th>Version</th>
+                                <th>Latest Phase</th>
+                                <th>Phase Change Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {nonRDVersions.map(testPlanVersion => (
+                                <tr key={testPlanVersion.id}>
+                                    <td>
+                                        <VersionString
+                                            date={testPlanVersion.updatedAt}
+                                            iconColor={getIconColor(
+                                                testPlanVersion
+                                            )}
+                                        />
+                                    </td>
+                                    <td>
+                                        {(() => {
+                                            const phasePill = (
+                                                <PhasePill fullWidth={false}>
+                                                    {testPlanVersion.phase}
+                                                </PhasePill>
+                                            );
+                                            const deprecatedPill = (
+                                                <PhasePill fullWidth={false}>
+                                                    DEPRECATED
+                                                </PhasePill>
+                                            );
+                                            if (testPlanVersion.deprecatedAt) {
+                                                return (
+                                                    <>
+                                                        {deprecatedPill} during{' '}
+                                                        {phasePill} review
+                                                    </>
+                                                );
+                                            }
+                                            return phasePill;
+                                        })()}
+                                    </td>
+                                    <td>
+                                        {getPhaseChangeDate(testPlanVersion)}
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </ThemeTable>
+                </>
+            )}
             {/* TODO: enable table when issues are present */}
             {/* <ThemeTableHeader>GitHub Issues</ThemeTableHeader>
             <ThemeTableUnavailable>No GitHub Issues</ThemeTableUnavailable> */}
@@ -266,7 +281,7 @@ const TestPlanVersionsPage = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {testPlanVersions.map(testPlanVersion => {
+                    {testPlanVersionsDesc.map(testPlanVersion => {
                         const versionString = (
                             <VersionString
                                 date={testPlanVersion.updatedAt}
@@ -292,10 +307,16 @@ const TestPlanVersionsPage = () => {
                 </tbody>
             </ThemeTable>
             {nonRDVersions.map(testPlanVersion => {
-                const vString = convertDateToString(
+                const vString = `V${convertDateToString(
                     testPlanVersion.updatedAt,
                     'YY.MM.DD'
-                );
+                )}`;
+                const hasFinalReports =
+                    (testPlanVersion.phase === 'CANDIDATE' ||
+                        testPlanVersion.phase === 'RECOMMENDED') &&
+                    !!testPlanVersion.testPlanReports.filter(
+                        report => report.isFinal
+                    ).length;
                 return (
                     <div key={testPlanVersion.id}>
                         <H3>
@@ -334,23 +355,21 @@ const TestPlanVersionsPage = () => {
                                         size="xs"
                                         color="#818F98"
                                     />
-                                    View tests in V
-                                    {convertDateToString(
-                                        testPlanVersion.updatedAt,
-                                        'YY.MM.DD'
-                                    )}
+                                    View tests in {vString}
                                 </a>
                             </li>
-                            <li>
-                                <a href={`/report/${testPlanVersion.id}`}>
-                                    <FontAwesomeIcon
-                                        icon={faArrowUpRightFromSquare}
-                                        size="xs"
-                                        color="#818F98"
-                                    />
-                                    View reports generated from {vString}
-                                </a>
-                            </li>
+                            {!hasFinalReports ? null : (
+                                <li>
+                                    <a href={`/report/${testPlanVersion.id}`}>
+                                        <FontAwesomeIcon
+                                            icon={faArrowUpRightFromSquare}
+                                            size="xs"
+                                            color="#818F98"
+                                        />
+                                        View reports generated from {vString}
+                                    </a>
+                                </li>
+                            )}
                         </PageUl>
                         <CoveredAtDl>
                             <dt>Covered AT</dt>
@@ -374,18 +393,32 @@ const TestPlanVersionsPage = () => {
                             </thead>
                             <tbody>
                                 {(() => {
-                                    // prettier-ignore
                                     let events = [
-                                        ['RECOMMENDED', testPlanVersion.recommendedPhaseReachedAt],
-                                        ['CANDIDATE', testPlanVersion.candidatePhaseReachedAt],
-                                        ['DRAFT', testPlanVersion.draftPhaseReachedAt],
-                                        ['DEPRECATED', testPlanVersion.deprecatedAt]
+                                        ['RD', testPlanVersion.updatedAt],
+                                        [
+                                            'DRAFT',
+                                            testPlanVersion.draftPhaseReachedAt
+                                        ],
+                                        [
+                                            'CANDIDATE',
+                                            testPlanVersion.candidatePhaseReachedAt
+                                        ],
+                                        [
+                                            'RECOMMENDED',
+                                            testPlanVersion.recommendedPhaseReachedAt
+                                        ],
+                                        [
+                                            'DEPRECATED',
+                                            testPlanVersion.deprecatedAt
+                                        ]
                                     ]
                                         .filter(event => event[1])
-                                        .sort(
-                                            (a, b) =>
-                                                new Date(b[1]) - new Date(a[1])
-                                        );
+                                        .sort((a, b) => {
+                                            const dateSort =
+                                                new Date(a[1]) - new Date(b[1]);
+                                            if (dateSort === 0) return 1; // maintain order above
+                                            return dateSort;
+                                        });
 
                                     return events.map(([phase, date]) => (
                                         <tr key={phase}>
