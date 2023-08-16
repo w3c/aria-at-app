@@ -46,18 +46,18 @@ const TestPlanReportStatusDialog = ({
     handleHide = () => {},
     triggerUpdate = () => {}
 }) => {
-    const { data } = useQuery(ME_QUERY, {
+    const { data: { me } = {} } = useQuery(ME_QUERY, {
         fetchPolicy: 'cache-and-network'
     });
 
     const { testPlanReports } = testPlanVersion;
 
-    const auth = evaluateAuth(data && data.me ? data.me : {});
+    const auth = evaluateAuth(me);
     const { isSignedIn, isAdmin } = auth;
 
     const requiredReports = useMemo(
-        () => getRequiredReports(testPlanVersion.phase),
-        [testPlanVersion.phase]
+        () => getRequiredReports(testPlanVersion?.phase),
+        [testPlanVersion]
     );
 
     const [matchedReports, unmatchedTestPlanReports, unmatchedRequiredReports] =
@@ -213,6 +213,7 @@ const TestPlanReportStatusDialog = ({
             show={show}
             onHide={handleHide}
             dialogClassName="p-3"
+            animation={false}
         >
             <Modal.Header closeButton className="pb-1">
                 <h2>

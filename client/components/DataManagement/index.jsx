@@ -177,7 +177,6 @@ const DataManagement = () => {
                                     key={testPlan.id}
                                     isAdmin={isAdmin}
                                     ats={ats}
-                                    triggerUpdate={refetch}
                                     testPlan={testPlan}
                                     testPlanVersions={testPlanVersions.filter(
                                         testPlanVersion =>

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Button } from 'react-bootstrap';
 import TestPlanReportStatusDialog from './index';
@@ -6,6 +6,8 @@ import { getRequiredReports } from './isRequired';
 import { calculateTestPlanReportCompletionPercentage } from './calculateTestPlanReportCompletionPercentage';
 import styled from '@emotion/styled';
 import ReportStatusDot from '../common/ReportStatusDot';
+import { TEST_PLAN_REPORT_STATUS_DIALOG_QUERY } from './queries';
+import { useQuery } from '@apollo/client';
 
 const TestPlanReportStatusDialogButton = styled(Button)`
     display: flex;
@@ -24,25 +26,24 @@ const TestPlanReportStatusDialogButton = styled(Button)`
     margin-top: auto;
 `;
 
-const TestPlanReportStatusDialogWithButton = ({
-    testPlanVersion,
-    triggerUpdate = () => {}
-}) => {
-    if (
-        !testPlanVersion ||
-        !testPlanVersion.phase ||
-        (testPlanVersion.phase !== 'DRAFT' &&
-            testPlanVersion.phase !== 'CANDIDATE')
-    ) {
-        return;
-    }
+const TestPlanReportStatusDialogWithButton = ({ testPlanVersionId }) => {
+    const {
+        data: { testPlanVersion } = {},
+        refetch,
+        loading
+    } = useQuery(TEST_PLAN_REPORT_STATUS_DIALOG_QUERY, {
+        variables: { testPlanVersionId },
+        fetchPolicy: 'cache-and-network'
+    });
+
+    const buttonRef = useRef(null);
 
     const [showDialog, setShowDialog] = useState(false);
-    const { testPlanReports } = testPlanVersion;
+    const { testPlanReports } = testPlanVersion ?? {};
 
     const requiredReports = useMemo(
-        () => getRequiredReports(testPlanVersion.phase),
-        [testPlanVersion.phase]
+        () => getRequiredReports(testPlanVersion?.phase),
+        [testPlanVersion?.phase]
     );
 
     const buttonLabel = useMemo(() => {
@@ -120,9 +121,20 @@ const TestPlanReportStatusDialogWithButton = ({
         }
     }, [requiredReports, testPlanReports]);
 
+    if (
+        loading ||
+        !testPlanVersion ||
+        !testPlanVersion.phase ||
+        (testPlanVersion.phase !== 'DRAFT' &&
+            testPlanVersion.phase !== 'CANDIDATE')
+    ) {
+        return;
+    }
+
     return (
         <>
             <TestPlanReportStatusDialogButton
+                ref={buttonRef}
                 onClick={() => setShowDialog(true)}
             >
                 {buttonLabel}
@@ -130,8 +142,11 @@ const TestPlanReportStatusDialogWithButton = ({
             <TestPlanReportStatusDialog
                 testPlanVersion={testPlanVersion}
                 show={showDialog}
-                handleHide={() => setShowDialog(false)}
-                triggerUpdate={triggerUpdate}
+                handleHide={() => {
+                    setShowDialog(false);
+                    buttonRef.current.focus();
+                }}
+                triggerUpdate={refetch}
             />
         </>
     );
@@ -139,27 +154,7 @@ const TestPlanReportStatusDialogWithButton = ({
 
 TestPlanReportStatusDialogWithButton.propTypes = {
     triggerUpdate: PropTypes.func,
-    testPlanVersion: PropTypes.shape({
-        id: PropTypes.string.isRequired,
-        title: PropTypes.string.isRequired,
-        phase: PropTypes.string.isRequired,
-        testPlanReports: PropTypes.arrayOf(
-            PropTypes.shape({
-                id: PropTypes.string.isRequired,
-                status: PropTypes.string,
-                runnableTests: PropTypes.arrayOf(PropTypes.object),
-                finalizedTestResults: PropTypes.arrayOf(PropTypes.object),
-                at: PropTypes.shape({
-                    id: PropTypes.string.isRequired,
-                    name: PropTypes.string.isRequired
-                }).isRequired,
-                browser: PropTypes.shape({
-                    id: PropTypes.string.isRequired,
-                    name: PropTypes.string.isRequired
-                }).isRequired
-            }).isRequired
-        ).isRequired
-    }).isRequired
+    testPlanVersionId: PropTypes.string.isRequired
 };
 
 export default TestPlanReportStatusDialogWithButton;

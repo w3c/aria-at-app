@@ -189,8 +189,7 @@ const DataManagementRow = ({
     ats,
     testPlan,
     testPlanVersions,
-    setTestPlanVersions,
-    triggerUpdate = () => {}
+    setTestPlanVersions
 }) => {
     const { triggerLoad, loadingMessage } = useTriggerLoad();
     const {
@@ -810,8 +809,7 @@ const DataManagementRow = ({
                                 </Button>
                             )}
                             <TestPlanReportStatusDialogWithButton
-                                testPlanVersion={latestVersion}
-                                triggerUpdate={triggerUpdate}
+                                testPlanVersionId={latestVersion.id}
                             />
                         </PhaseCell>
                     );
@@ -1024,8 +1022,7 @@ const DataManagementRow = ({
                                 </Button>
                             )}
                             <TestPlanReportStatusDialogWithButton
-                                testPlanVersion={latestVersion}
-                                triggerUpdate={triggerUpdate}
+                                testPlanVersionId={latestVersion.id}
                             />
                             <span className="more">
                                 <span className="more-issues-container">
