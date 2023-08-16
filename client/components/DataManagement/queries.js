@@ -21,8 +21,8 @@ export const DATA_MANAGEMENT_PAGE_QUERY = gql`
             name
         }
         testPlans {
-            directory
             id
+            directory
             title
         }
         testPlanVersions {
@@ -34,13 +34,14 @@ export const DATA_MANAGEMENT_PAGE_QUERY = gql`
             updatedAt
             draftPhaseReachedAt
             candidatePhaseReachedAt
+            recommendedPhaseTargetDate
             recommendedPhaseReachedAt
             testPlan {
                 directory
             }
             testPlanReports {
                 id
-                metrics
+                markedFinalAt
                 at {
                     id
                     name
@@ -53,29 +54,6 @@ export const DATA_MANAGEMENT_PAGE_QUERY = gql`
                     link
                     isOpen
                     feedbackType
-                }
-                draftTestPlanRuns {
-                    tester {
-                        username
-                    }
-                    testPlanReport {
-                        id
-                        status
-                    }
-                    testResults {
-                        test {
-                            id
-                        }
-                        atVersion {
-                            id
-                            name
-                        }
-                        browserVersion {
-                            id
-                            name
-                        }
-                        completedAt
-                    }
                 }
             }
         }
@@ -102,6 +80,52 @@ export const UPDATE_TEST_PLAN_VERSION_PHASE = gql`
                     updatedAt
                     draftPhaseReachedAt
                     candidatePhaseReachedAt
+                    recommendedPhaseTargetDate
+                    recommendedPhaseReachedAt
+                    testPlan {
+                        directory
+                    }
+                    testPlanReports {
+                        id
+                        at {
+                            id
+                            name
+                        }
+                        browser {
+                            id
+                            name
+                        }
+                        issues {
+                            link
+                            isOpen
+                            feedbackType
+                        }
+                    }
+                }
+            }
+        }
+    }
+`;
+
+export const UPDATE_TEST_PLAN_VERSION_RECOMMENDED_TARGET_DATE = gql`
+    mutation UpdateTestPlanReportRecommendedTargetDate(
+        $testPlanVersionId: ID!
+        $recommendedPhaseTargetDate: Timestamp!
+    ) {
+        testPlanVersion(id: $testPlanVersionId) {
+            updateRecommendedPhaseTargetDate(
+                recommendedPhaseTargetDate: $recommendedPhaseTargetDate
+            ) {
+                testPlanVersion {
+                    id
+                    title
+                    phase
+                    gitSha
+                    gitMessage
+                    updatedAt
+                    draftPhaseReachedAt
+                    candidatePhaseReachedAt
+                    recommendedPhaseTargetDate
                     recommendedPhaseReachedAt
                     testPlan {
                         directory

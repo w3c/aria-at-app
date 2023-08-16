@@ -7,8 +7,8 @@
         </div>
     {{/if}}
     {{#unless dataEmpty}}
-        {{#if (isCandidate status)}}
-        <details id="embed-report-status-container">
+        {{#if (isCandidate phase)}}
+        <details id="embed-report-phase-container">
             <summary id="candidate-title"><span>Warning! Unapproved Report</span></summary>
             <div id="candidate-content-container">
                 The information in this report is generated from candidate tests developed and run by the <a href="http://aria-at.w3.org">ARIA-AT Project</a>.
@@ -20,7 +20,7 @@
             </div>
         </details>
         {{else}}
-        <details id="embed-report-status-container">
+        <details id="embed-report-phase-container">
             <summary id="candidate-title" class="recommended"><span>Recommended Report</span></summary>
             <div id="candidate-content-container">
                 The information in this report is generated from recommended tests.

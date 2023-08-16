@@ -5,17 +5,22 @@ import styled from '@emotion/styled';
 import { Button } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleCheck } from '@fortawesome/free-solid-svg-icons';
-import { UPDATE_TEST_PLAN_VERSION_PHASE } from '../queries';
+import {
+    UPDATE_TEST_PLAN_VERSION_PHASE,
+    UPDATE_TEST_PLAN_VERSION_RECOMMENDED_TARGET_DATE
+} from '../queries';
 import { LoadingStatus, useTriggerLoad } from '../../common/LoadingStatus';
 import {
     checkTimeBetweenDates,
-    convertDateToString
+    convertDateToString,
+    convertStringFormatToAnotherFormat
 } from '../../../utils/formatter';
 import { derivePhaseName } from '@client/utils/aria';
 import { THEMES, useThemedModal } from '@client/hooks/useThemedModal';
 import BasicModal from '@components/common/BasicModal';
 import TestPlanReportStatusDialogWithButton from '../../TestPlanReportStatusDialog/WithButton';
 import ReportStatusDot from '../../common/ReportStatusDot';
+import UpdateTargetDateModal from '@components/common/UpdateTargetDateModal';
 
 const StatusCell = styled.div`
     display: flex;
@@ -95,21 +100,46 @@ const PhaseCell = styled.div`
 
     > span.more {
         display: flex;
+        flex-direction: column;
         justify-content: center;
         align-items: center;
 
-        padding: 12px;
+        padding: 4px;
         font-size: 14px;
 
-        margin-top: 6px;
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        right: 0;
 
         color: #6a7989;
         background: #f6f8fa;
+
+        > span.more-issues-container {
+            display: flex;
+            flex-direction: row;
+
+            align-items: center;
+        }
+
+        > span.target-days-container {
+            text-align: center;
+
+            button {
+                appearance: none;
+                border: none;
+                background: none;
+                color: inherit;
+                font-weight: bold;
+
+                margin: 0;
+                padding: 0;
+            }
+        }
     }
 
-    > .advance-button {
-        margin: 12px 0.75rem;
-        width: calc(100% - 1.5rem);
+    > button {
+        margin-top: 12px;
     }
 `;
 
@@ -138,6 +168,35 @@ const PhaseText = styled.span`
 
     &.recommended {
         background: #8441de;
+    }
+`;
+
+const ReportStatusDot = styled.span`
+    display: inline-block;
+    height: 10px;
+    width: 10px;
+    padding: 0;
+    margin-right: 8px;
+    border-radius: 50%;
+
+    &.issues {
+        background: #f2ba00;
+    }
+
+    &.reports-not-started {
+        background: #7c7c7c;
+    }
+
+    &.reports-in-progress {
+        background: #3876e8;
+    }
+
+    &.reports-complete {
+        background: #2ba51c;
+    }
+
+    &.reports-missing {
+        background: #ce1b4c;
     }
 `;
 
@@ -179,6 +238,9 @@ const DataManagementRow = ({
     const [updateTestPlanVersionPhaseMutation] = useMutation(
         UPDATE_TEST_PLAN_VERSION_PHASE
     );
+    const [updateTestPlanVersionRecommendedTargetDate] = useMutation(
+        UPDATE_TEST_PLAN_VERSION_RECOMMENDED_TARGET_DATE
+    );
 
     // State
     const [activePhases, setActivePhases] = useState({});
@@ -193,9 +255,13 @@ const DataManagementRow = ({
     const [showAdvanceModal, setShowAdvanceModal] = useState(false);
     const [advanceModalData, setAdvanceModalData] = useState({});
 
+    const [showUpdateTargetModal, setShowUpdateTargetModal] = useState(false);
+    const [updateTargetModalData, setUpdateTargetModalData] = useState({});
+
     const draftVersionStringRef = useRef();
     const candidateVersionStringRef = useRef();
     const recommendedVersionStringRef = useRef();
+    const updateTargetRef = useRef();
 
     useEffect(() => {
         // TestPlanVersions separated by current TestPlan's phase
@@ -302,12 +368,61 @@ const DataManagementRow = ({
         }
     };
 
+    const handleClickUpdateTestPlanVersionRecommendedPhaseTargetDate = async ({
+        updatedDateText
+    }) => {
+        setShowUpdateTargetModal(false);
+        try {
+            await triggerLoad(async () => {
+                const result = await updateTestPlanVersionRecommendedTargetDate(
+                    {
+                        variables: {
+                            testPlanVersionId:
+                                updateTargetModalData.testPlanVersionId,
+                            recommendedPhaseTargetDate:
+                                convertStringFormatToAnotherFormat(
+                                    updatedDateText
+                                )
+                        }
+                    }
+                );
+                const updatedTestPlanVersion =
+                    result.data.testPlanVersion.updateRecommendedPhaseTargetDate
+                        .testPlanVersion;
+                setTestPlanVersions(prevTestPlanVersions => {
+                    let testPlanVersions = [...prevTestPlanVersions];
+
+                    const index = testPlanVersions.findIndex(
+                        testPlanVersion =>
+                            testPlanVersion.id === updatedTestPlanVersion.id
+                    );
+                    if (index !== -1)
+                        testPlanVersions[index] = updatedTestPlanVersion;
+
+                    return testPlanVersions;
+                });
+
+                setTimeout(() => {
+                    if (updateTargetRef.current)
+                        updateTargetRef.current.focus();
+                }, 250);
+            }, 'Updating Test Plan Version Recommended Phase Target Date');
+        } catch (e) {
+            console.error(e.message);
+            setShowThemedModal(true);
+            setThemedModalTitle(
+                'Error Updating Test Plan Version Recommended Phase Target Date'
+            );
+            setThemedModalContent(<>{e.message}</>);
+        }
+    };
+
     const renderCellForCoveredAts = () => {
         const atNames = ats.map(({ name }) => name);
 
         if (atNames.length > 1) {
             return (
-                <div>
+                <>
                     {atNames.map((item, index) => (
                         <React.Fragment key={index}>
                             <b>{item}</b>
@@ -320,7 +435,7 @@ const DataManagementRow = ({
                             ) : null}
                         </React.Fragment>
                     ))}
-                </div>
+                </>
             );
         } else if (atNames.length === 1) return <b>{atNames[0]}</b>;
         else return <NoneText>N/A</NoneText>;
@@ -525,7 +640,6 @@ const DataManagementRow = ({
                         {isAdmin && (
                             <Button
                                 ref={ref => setFocusRef(ref)}
-                                className="advance-button"
                                 variant="secondary"
                                 onClick={async () => {
                                     setShowAdvanceModal(true);
@@ -592,9 +706,7 @@ const DataManagementRow = ({
                     } = getVersionData(otherTestPlanVersions);
 
                     const completionDate =
-                        otherLatestVersion.phase === 'CANDIDATE'
-                            ? otherLatestVersion.candidatePhaseReachedAt
-                            : otherLatestVersion.recommendedPhaseReachedAt;
+                        otherLatestVersion.candidatePhaseReachedAt;
 
                     return (
                         <PhaseCell>
@@ -645,13 +757,19 @@ const DataManagementRow = ({
                     }
 
                     let coveredReports = [];
+                    let finalReportFound = false;
+
                     latestVersion.testPlanReports.forEach(testPlanReport => {
+                        const markedFinalAt = testPlanReport.markedFinalAt;
                         const atName = testPlanReport.at.name;
                         const browserName = testPlanReport.browser.name;
+
                         const value = `${atName}_${browserName}`;
 
-                        if (!coveredReports.includes(value))
+                        if (markedFinalAt && !coveredReports.includes(value)) {
+                            finalReportFound = true;
                             coveredReports.push(value);
+                        }
                     });
 
                     // Phase is "active"
@@ -682,25 +800,39 @@ const DataManagementRow = ({
                                 <Button
                                     ref={ref => setFocusRef(ref)}
                                     variant="secondary"
-                                    className="advance-button"
                                     onClick={async () => {
-                                        setShowAdvanceModal(true);
-                                        setAdvanceModalData({
-                                            phase: derivePhaseName('CANDIDATE'),
-                                            version: convertDateToString(
-                                                latestVersionDate,
-                                                'YY.MM.DD'
-                                            ),
-                                            advanceFunc: () => {
-                                                setShowAdvanceModal(false);
-                                                handleClickUpdateTestPlanVersionPhase(
-                                                    latestVersion.id,
-                                                    'CANDIDATE',
-                                                    testPlanVersionDataToInclude
-                                                );
-                                            },
-                                            coveredReports
-                                        });
+                                        if (finalReportFound) {
+                                            setShowAdvanceModal(true);
+                                            setAdvanceModalData({
+                                                phase: derivePhaseName(
+                                                    'CANDIDATE'
+                                                ),
+                                                version: convertDateToString(
+                                                    latestVersionDate,
+                                                    'YY.MM.DD'
+                                                ),
+                                                advanceFunc: () => {
+                                                    setShowAdvanceModal(false);
+                                                    handleClickUpdateTestPlanVersionPhase(
+                                                        latestVersion.id,
+                                                        'CANDIDATE',
+                                                        testPlanVersionDataToInclude
+                                                    );
+                                                },
+                                                coveredReports
+                                            });
+                                        } else {
+                                            setShowThemedModal(true);
+                                            setThemedModalTitle(
+                                                'Error Updating Test Plan Version Phase'
+                                            );
+                                            setThemedModalContent(
+                                                <>
+                                                    No reports have been marked
+                                                    as final.
+                                                </>
+                                            );
+                                        }
                                     }}
                                 >
                                     Advance to Candidate
@@ -825,18 +957,36 @@ const DataManagementRow = ({
                                 recommendedLatestVersion;
                     }
 
+                    const currentDate = new Date();
+                    const recommendedPhaseTargetDate = new Date(
+                        latestVersion.recommendedPhaseTargetDate
+                    );
+
+                    let timeToTargetDate = 0;
+                    if (currentDate > recommendedPhaseTargetDate) {
+                        // Indicates that this is in the past
+                        timeToTargetDate = checkTimeBetweenDates(
+                            currentDate,
+                            recommendedPhaseTargetDate
+                        );
+                        timeToTargetDate = -timeToTargetDate;
+                    } else
+                        timeToTargetDate = checkTimeBetweenDates(
+                            recommendedPhaseTargetDate,
+                            currentDate
+                        );
+
                     const daysBetweenDates = checkTimeBetweenDates(
-                        new Date(),
+                        currentDate,
                         latestVersion.candidatePhaseReachedAt
                     );
-                    const daysToProvideFeedback = 120;
-
+                    const DAYS_TO_PROVIDE_FEEDBACK = 120;
                     const shouldShowAdvanceButton =
                         isAdmin &&
                         issuesCount === 0 &&
                         (recommendedTestPlanVersions.length ||
                             (!recommendedTestPlanVersions.length &&
-                                daysBetweenDates > daysToProvideFeedback));
+                                daysBetweenDates > DAYS_TO_PROVIDE_FEEDBACK));
 
                     let coveredReports = [];
                     latestVersion.testPlanReports.forEach(testPlanReport => {
@@ -875,7 +1025,6 @@ const DataManagementRow = ({
                             {shouldShowAdvanceButton && (
                                 <Button
                                     ref={ref => setFocusRef(ref)}
-                                    className="advance-button"
                                     variant="secondary"
                                     onClick={async () => {
                                         setShowAdvanceModal(true);
@@ -902,19 +1051,54 @@ const DataManagementRow = ({
                                     Advance to Recommended
                                 </Button>
                             )}
-                            <TestPlanReportStatusDialogWithButton
-                                testPlanVersion={latestVersion}
-                                triggerUpdate={triggerUpdate}
-                            />
+                          <TestPlanReportStatusDialogWithButton
+                            testPlanVersion={latestVersion}
+                            triggerUpdate={triggerUpdate}
+                          />
                             <span className="more">
-                                <ReportStatusDot className="issues" />{' '}
-                                {issuesCount} Open Issue
-                                {`${issuesCount === 1 ? '' : 's'}`}
-                                {`${
-                                    issuesCount >= 2
-                                        ? ` from ${uniqueAtsCount} ATs`
-                                        : ''
-                                }`}
+                                <span className="more-issues-container">
+                                    <ReportStatusDot className="issues" />{' '}
+                                    {issuesCount} Open Issue
+                                    {`${issuesCount === 1 ? '' : 's'}`}
+                                    {`${
+                                        issuesCount >= 2
+                                            ? ` from ${uniqueAtsCount} ATs`
+                                            : ''
+                                    }`}
+                                </span>
+                                <span className="target-days-container">
+                                    Target{' '}
+                                    {isAdmin ? (
+                                        <button
+                                            ref={updateTargetRef}
+                                            onClick={() => {
+                                                setShowUpdateTargetModal(true);
+                                                setUpdateTargetModalData({
+                                                    testPlanVersionId:
+                                                        latestVersion.id,
+                                                    title: `Change Recommended Phase Target Date for ${
+                                                        testPlan.title
+                                                    }, V${convertDateToString(
+                                                        latestVersionDate,
+                                                        'YY.MM.DD'
+                                                    )}`,
+                                                    dateText:
+                                                        latestVersion.recommendedPhaseTargetDate
+                                                });
+                                            }}
+                                        >
+                                            {Math.abs(timeToTargetDate)} Days
+                                        </button>
+                                    ) : (
+                                        <>
+                                            <b>
+                                                {Math.abs(timeToTargetDate)}{' '}
+                                                Days
+                                            </b>
+                                        </>
+                                    )}{' '}
+                                    {timeToTargetDate < 0 ? 'Past' : 'Away'}
+                                </span>
                             </span>
                         </PhaseCell>
                     );
@@ -975,11 +1159,9 @@ const DataManagementRow = ({
     return (
         <LoadingStatus message={loadingMessage}>
             <tr>
-                <td>
-                    <div>
-                        <b>{testPlan.title}</b>
-                    </div>
-                </td>
+                <th>
+                    <b>{testPlan.title}</b>
+                </th>
                 <td>{renderCellForCoveredAts()}</td>
                 <td>{renderCellForOverallStatus()}</td>
                 <td>{renderCellForPhase('RD', rdTestPlanVersions)}</td>
@@ -1043,6 +1225,17 @@ const DataManagementRow = ({
                     }}
                     handleClose={() => setShowAdvanceModal(false)}
                     staticBackdrop={true}
+                />
+            )}
+            {showUpdateTargetModal && (
+                <UpdateTargetDateModal
+                    show={showUpdateTargetModal}
+                    title={updateTargetModalData.title}
+                    dateText={updateTargetModalData.dateText}
+                    handleAction={
+                        handleClickUpdateTestPlanVersionRecommendedPhaseTargetDate
+                    }
+                    handleClose={() => setShowUpdateTargetModal(false)}
                 />
             )}
         </LoadingStatus>

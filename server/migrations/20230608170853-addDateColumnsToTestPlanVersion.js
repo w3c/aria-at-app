@@ -61,7 +61,7 @@ module.exports = {
 
             await queryInterface.addColumn(
                 'TestPlanVersion',
-                'archivedAtDate',
+                'deprecatedAt',
                 {
                     type: Sequelize.DataTypes.DATE,
                     defaultValue: null,
@@ -107,7 +107,7 @@ module.exports = {
             );
             await queryInterface.removeColumn(
                 'TestPlanVersion',
-                'archivedAtDate',
+                'deprecatedAt',
                 {
                     transaction
                 }

@@ -194,7 +194,7 @@ const getTestPlanReports = async (
  * @returns {Promise<*>}
  */
 const createTestPlanReport = async (
-    { status, testPlanVersionId, atId, browserId },
+    { testPlanVersionId, atId, browserId },
     testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
@@ -209,7 +209,6 @@ const createTestPlanReport = async (
     const testPlanReportResult = await ModelService.create(
         TestPlanReport,
         {
-            status,
             testPlanVersionId,
             atId,
             browserId,
@@ -249,11 +248,11 @@ const createTestPlanReport = async (
 const updateTestPlanReport = async (
     id,
     {
-        status,
         metrics,
         testPlanTargetId,
         testPlanVersionId,
-        vendorReviewStatus
+        vendorReviewStatus,
+        markedFinalAt
     },
     testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
@@ -267,11 +266,11 @@ const updateTestPlanReport = async (
         TestPlanReport,
         { id },
         {
-            status,
             metrics,
             testPlanTargetId,
             testPlanVersionId,
-            vendorReviewStatus
+            vendorReviewStatus,
+            markedFinalAt
         },
         options
     );
@@ -316,7 +315,6 @@ const removeTestPlanReport = async (
  */
 const getOrCreateTestPlanReport = async (
     { testPlanVersionId, atId, browserId },
-    { status } = {},
     testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
@@ -332,8 +330,16 @@ const getOrCreateTestPlanReport = async (
                 create: createTestPlanReport,
                 update: updateTestPlanReport,
                 values: { testPlanVersionId, atId, browserId },
-                updateValues: { status },
-                returnAttributes: [null, [], [], [], [], [], [], []]
+                returnAttributes: [
+                    testPlanReportAttributes,
+                    [],
+                    [],
+                    [],
+                    [],
+                    [],
+                    [],
+                    []
+                ]
             }
         ],
         { transaction: options.transaction }
@@ -352,6 +358,22 @@ const getOrCreateTestPlanReport = async (
         userAttributes,
         { transaction: options.transaction }
     );
+
+    // If a TestPlanReport is being intentionally created that was previously marked as final,
+    // This will allow it to be displayed in the Test Queue again to be worked on
+    if (!isNewTestPlanReport && testPlanReport.markedFinalAt) {
+        await updateTestPlanReport(
+            testPlanReportId,
+            { markedFinalAt: null },
+            testPlanReportAttributes,
+            testPlanRunAttributes,
+            testPlanVersionAttributes,
+            atAttributes,
+            browserAttributes,
+            userAttributes,
+            { transaction: options.transaction }
+        );
+    }
 
     const created = isNewTestPlanReport ? [{ testPlanReportId }] : [];
 

@@ -37,7 +37,7 @@ export const CANDIDATE_REPORTS_QUERY = gql`
         }
         testPlanReports(
             atId: $atId
-            statuses: [CANDIDATE]
+            testPlanVersionPhases: [CANDIDATE]
             testPlanVersionId: $testPlanVersionId
             testPlanVersionIds: $testPlanVersionIds
         ) {
@@ -65,6 +65,7 @@ export const CANDIDATE_REPORTS_QUERY = gql`
             testPlanVersion {
                 id
                 title
+                phase
                 gitSha
                 testPlan {
                     directory
@@ -142,7 +143,6 @@ export const CANDIDATE_REPORTS_QUERY = gql`
                 }
                 testPlanReport {
                     id
-                    status
                 }
                 testResults {
                     test {

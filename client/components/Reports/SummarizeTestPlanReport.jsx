@@ -30,11 +30,7 @@ const getTestersRunHistory = (
         const { testPlanReport, testResults, tester } = draftTestPlanRun;
 
         const testResult = testResults.find(item => item.test.id === testId);
-        if (
-            testPlanReportId === testPlanReport.id &&
-            testPlanReport.status === 'CANDIDATE' &&
-            testResult?.completedAt
-        ) {
+        if (testPlanReportId === testPlanReport.id && testResult?.completedAt) {
             lines.push(
                 <li
                     key={`${testResult.atVersion.id}-${testResult.browserVersion.id}-${testResult.test.id}-${tester.username}`}
@@ -167,9 +163,7 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
                                     Details for test:
                                 </span>
                                 {test.title}
-                                <DisclaimerInfo
-                                    reportStatus={testPlanReport.status}
-                                />
+                                <DisclaimerInfo phase={testPlanVersion.phase} />
                             </h2>
                             <div className="test-result-buttons">
                                 <Button
@@ -244,7 +238,6 @@ SummarizeTestPlanReport.propTypes = {
     testPlanReports: PropTypes.arrayOf(
         PropTypes.shape({
             id: PropTypes.string.isRequired,
-            status: PropTypes.string.isRequired,
             runnableTests: PropTypes.arrayOf(PropTypes.object.isRequired)
                 .isRequired,
             at: PropTypes.shape({
@@ -287,7 +280,7 @@ SummarizeTestPlanReport.propTypes = {
                         }).isRequired
                     ).isRequired
                 }).isRequired
-            ),
+            ).isRequired,
             draftTestPlanRuns: PropTypes.arrayOf(
                 PropTypes.shape({
                     tester: PropTypes.shape({

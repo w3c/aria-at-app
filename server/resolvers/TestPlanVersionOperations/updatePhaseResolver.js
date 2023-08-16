@@ -253,6 +253,53 @@ const updatePhaseResolver = async (
         throw new Error('No test plan reports found.');
     }
 
+    if (
+        !testPlanReports.some(({ markedFinalAt }) => markedFinalAt) &&
+        (phase === 'CANDIDATE' || phase === 'RECOMMENDED')
+    ) {
+        // Do not update phase if no reports marked as final were found
+        throw new Error('No reports have been marked as final.');
+    }
+
+    if (phase === 'CANDIDATE' || phase === 'RECOMMENDED') {
+        const reportsByAtAndBrowser = {};
+
+        testPlanReports.forEach(testPlanReport => {
+            const { at, browser } = testPlanReport;
+            if (!reportsByAtAndBrowser[at.id]) {
+                reportsByAtAndBrowser[at.id] = {};
+            }
+
+            reportsByAtAndBrowser[at.id][browser.id] = testPlanReport;
+        });
+
+        const ats = await context.atLoader.getAll();
+
+        const missingAtBrowserCombinations = [];
+
+        ats.forEach(at => {
+            const browsers =
+                phase === 'CANDIDATE'
+                    ? at.candidateBrowsers
+                    : at.recommendedBrowsers;
+            browsers.forEach(browser => {
+                if (!reportsByAtAndBrowser[at.id]?.[browser.id]) {
+                    missingAtBrowserCombinations.push(
+                        `${at.name} and ${browser.name}`
+                    );
+                }
+            });
+        });
+
+        if (missingAtBrowserCombinations.length) {
+            throw new Error(
+                `Cannot set phase to ${phase.toLowerCase()} because the following` +
+                    ` required reports have not been collected:` +
+                    ` ${missingAtBrowserCombinations.join(', ')}.`
+            );
+        }
+    }
+
     for (const testPlanReport of testPlanReports) {
         const runnableTests = runnableTestsResolver(testPlanReport);
         let updateParams = {};
@@ -267,7 +314,8 @@ const updatePhaseResolver = async (
                 metrics: {
                     ...testPlanReport.metrics,
                     conflictsCount: conflicts.length
-                }
+                },
+                markedFinalAt: null
             });
         }
 
@@ -285,9 +333,7 @@ const updatePhaseResolver = async (
 
             const finalizedTestResults = await finalizedTestResultsResolver(
                 {
-                    ...testPlanReport,
-                    phase,
-                    status: phase
+                    ...testPlanReport
                 },
                 null,
                 context
@@ -332,7 +378,7 @@ const updatePhaseResolver = async (
             candidatePhaseReachedAt: null,
             recommendedPhaseReachedAt: null,
             recommendedPhaseTargetDate: null,
-            archivedAtDate: null
+            deprecatedAt: null
         };
     else if (phase === 'DRAFT')
         updateParams = {
@@ -341,7 +387,7 @@ const updatePhaseResolver = async (
             candidatePhaseReachedAt: null,
             recommendedPhaseReachedAt: null,
             recommendedPhaseTargetDate: null,
-            archivedAtDate: null
+            deprecatedAt: null
         };
     else if (phase === 'CANDIDATE') {
         const candidatePhaseReachedAtValue =
@@ -356,19 +402,22 @@ const updatePhaseResolver = async (
             candidatePhaseReachedAt: candidatePhaseReachedAtValue,
             recommendedPhaseReachedAt: null,
             recommendedPhaseTargetDate: recommendedPhaseTargetDateValue,
-            archivedAtDate: null
+            deprecatedAt: null
         };
     } else if (phase === 'RECOMMENDED')
         updateParams = {
             ...updateParams,
             recommendedPhaseReachedAt: new Date(),
-            archivedAtDate: null
+            deprecatedAt: null
         };
 
+    // If testPlanVersionDataToIncludeId's results are being used to update this earlier version,
+    // deprecate it
     if (testPlanVersionDataToIncludeId)
         await updateTestPlanVersion(testPlanVersionDataToIncludeId, {
-            archivedAtDate: new Date()
+            deprecatedAt: new Date()
         });
+
     await updateTestPlanVersion(testPlanVersionId, updateParams);
     return populateData({ testPlanVersionId }, { context });
 };

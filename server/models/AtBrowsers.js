@@ -19,6 +19,14 @@ module.exports = function (sequelize, DataTypes) {
                     model: 'Browser',
                     key: 'id'
                 }
+            },
+            isCandidate: {
+                type: DataTypes.BOOLEAN,
+                allowNull: false
+            },
+            isRecommended: {
+                type: DataTypes.BOOLEAN,
+                allowNull: false
             }
         },
         {

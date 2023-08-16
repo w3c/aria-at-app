@@ -41,7 +41,6 @@ export const TEST_RUN_PAGE_QUERY = gql`
             }
             testPlanReport {
                 id
-                status
                 conflicts {
                     source {
                         test {
@@ -99,6 +98,7 @@ export const TEST_RUN_PAGE_QUERY = gql`
                 testPlanVersion {
                     id
                     title
+                    phase
                     gitSha
                     testPageUrl
                     testPlan {
@@ -150,7 +150,6 @@ export const TEST_RUN_PAGE_ANON_QUERY = gql`
     query TestPlanRunAnonPage($testPlanReportId: ID!) {
         testPlanReport(id: $testPlanReportId) {
             id
-            status
             conflicts {
                 source {
                     test {
@@ -208,6 +207,7 @@ export const TEST_RUN_PAGE_ANON_QUERY = gql`
             testPlanVersion {
                 id
                 title
+                phase
                 gitSha
                 testPageUrl
                 testPlan {
@@ -295,7 +295,6 @@ export const FIND_OR_CREATE_TEST_RESULT_MUTATION = gql`
                 }
                 testPlanReport {
                     id
-                    status
                     conflicts {
                         source {
                             test {
@@ -353,6 +352,7 @@ export const FIND_OR_CREATE_TEST_RESULT_MUTATION = gql`
                     testPlanVersion {
                         id
                         title
+                        phase
                         gitSha
                         testPageUrl
                         testPlan {
@@ -444,7 +444,6 @@ export const SAVE_TEST_RESULT_MUTATION = gql`
                 }
                 testPlanReport {
                     id
-                    status
                     conflicts {
                         source {
                             test {
@@ -502,6 +501,7 @@ export const SAVE_TEST_RESULT_MUTATION = gql`
                     testPlanVersion {
                         id
                         title
+                        phase
                         gitSha
                         testPageUrl
                         testPlan {
@@ -593,7 +593,6 @@ export const SUBMIT_TEST_RESULT_MUTATION = gql`
                 }
                 testPlanReport {
                     id
-                    status
                     conflicts {
                         source {
                             test {
@@ -651,6 +650,7 @@ export const SUBMIT_TEST_RESULT_MUTATION = gql`
                     testPlanVersion {
                         id
                         title
+                        phase
                         gitSha
                         testPageUrl
                         testPlan {

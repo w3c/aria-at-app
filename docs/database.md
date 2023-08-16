@@ -73,6 +73,11 @@ The prerequisite for the following steps is SSH access to the production server.
     ```
     psql -d aria_at_report -f <environment>_dump_<timestamp>.sql
     ```
+5. Run the migrations and seeders:
+    ```
+    yarn sequelize db:migrate;
+    yarn sequelize db:seed:all;
+    ```
 
 ## Test Database
 

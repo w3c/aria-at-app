@@ -35,11 +35,11 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
             }
             updatedAt
         }
-        testPlanReports(statuses: [DRAFT]) {
+        testPlanReports(isFinal: false) {
             id
-            status
             conflictsLength
             runnableTestsLength
+            markedFinalAt
             at {
                 id
                 name
@@ -51,6 +51,7 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
             testPlanVersion {
                 id
                 title
+                phase
                 gitSha
                 gitMessage
                 testPlan {
@@ -83,7 +84,6 @@ export const TEST_PLAN_REPORT_QUERY = gql`
     query TestPlanReport($testPlanReportId: ID!) {
         testPlanReport(id: $testPlanReportId) {
             id
-            status
             conflictsLength
             runnableTests {
                 id
@@ -201,7 +201,6 @@ export const ADD_TEST_QUEUE_MUTATION = gql`
             populatedData {
                 testPlanReport {
                     id
-                    status
                     at {
                         id
                     }
@@ -237,15 +236,12 @@ export const ASSIGN_TESTER_MUTATION = gql`
     }
 `;
 
-export const UPDATE_TEST_PLAN_REPORT_STATUS_MUTATION = gql`
-    mutation UpdateTestPlanReportStatus(
-        $testReportId: ID!
-        $status: TestPlanReportStatus!
-    ) {
+export const UPDATE_TEST_PLAN_REPORT_APPROVED_AT_MUTATION = gql`
+    mutation UpdateTestPlanReportMarkedFinalAt($testReportId: ID!) {
         testPlanReport(id: $testReportId) {
-            updateStatus(status: $status) {
+            markAsFinal {
                 testPlanReport {
-                    status
+                    markedFinalAt
                 }
             }
         }

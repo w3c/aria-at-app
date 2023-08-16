@@ -1,7 +1,7 @@
 const assignTester = require('./assignTesterResolver');
 const deleteTestPlanRun = require('./deleteTestPlanRunResolver');
-const updateStatus = require('./updateStatusResolver');
-const bulkUpdateStatus = require('./bulkUpdateStatusResolver');
+const markAsFinal = require('./markAsFinalResolver');
+const unmarkAsFinal = require('./unmarkAsFinalResolver');
 const deleteTestPlanReport = require('./deleteTestPlanReportResolver');
 const promoteVendorReviewStatus = require('./promoteVendorReviewStatusResolver');
 const updateTestPlanReportTestPlanVersion = require('./updateTestPlanReportTestPlanVersionResolver');
@@ -9,8 +9,8 @@ const updateTestPlanReportTestPlanVersion = require('./updateTestPlanReportTestP
 module.exports = {
     assignTester,
     deleteTestPlanRun,
-    updateStatus,
-    bulkUpdateStatus,
+    markAsFinal,
+    unmarkAsFinal,
     deleteTestPlanReport,
     promoteVendorReviewStatus,
     updateTestPlanReportTestPlanVersion
