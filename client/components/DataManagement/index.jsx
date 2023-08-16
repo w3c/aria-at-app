@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Container, Table, Alert } from 'react-bootstrap';
 import { useQuery } from '@apollo/client';
@@ -8,6 +8,9 @@ import ManageTestQueue from '../ManageTestQueue';
 import DataManagementRow from '@components/DataManagement/DataManagementRow';
 import './DataManagement.css';
 import { evaluateAuth } from '@client/utils/evaluateAuth';
+import SortableTableHeader, {
+    TABLE_SORT_ORDERS
+} from '../common/SortableTableHeader';
 
 const DataManagement = () => {
     const { loading, data, error, refetch } = useQuery(
@@ -22,6 +25,10 @@ const DataManagement = () => {
     const [browsers, setBrowsers] = useState([]);
     const [testPlans, setTestPlans] = useState([]);
     const [testPlanVersions, setTestPlanVersions] = useState([]);
+    const [sort, setSort] = useState({
+        key: 'phase',
+        direction: TABLE_SORT_ORDERS.ASC
+    });
 
     const auth = evaluateAuth(data && data.me ? data.me : {});
     const { isAdmin } = auth;
@@ -41,6 +48,80 @@ const DataManagement = () => {
             setPageReady(true);
         }
     }, [data]);
+
+    const sortedTestPlans = useMemo(() => {
+        const phaseOrder = {
+            RD: 0,
+            DRAFT: 1,
+            CANDIDATE: 2,
+            RECOMMENDED: 3
+        };
+        const directionMod = sort.direction === TABLE_SORT_ORDERS.ASC ? -1 : 1;
+
+        const getTestPlanVersionOverallPhase = t => {
+            return (
+                Object.keys(phaseOrder).find(phaseKey =>
+                    testPlanVersions.some(
+                        ({ phase, testPlan }) =>
+                            testPlan.directory === t.directory &&
+                            phase === phaseKey
+                    )
+                ) || 'RD'
+            );
+        };
+
+        const getUniqueAtObjectsCount = testPlanVersion => {
+            const uniqueAtIds = new Set(
+                testPlanVersion.flatMap(tpv =>
+                    tpv.testPlanReports.map(tpr => tpr.at.id)
+                )
+            );
+            return uniqueAtIds.size;
+        };
+
+        const sortByName = (a, b) =>
+            directionMod * (a.title < b.title ? -1 : 1);
+
+        const sortByAts = (a, b) => {
+            const countA = getUniqueAtObjectsCount(
+                testPlanVersions.filter(
+                    tpv => tpv.testPlan.directory === a.directory
+                )
+            );
+            const countB = getUniqueAtObjectsCount(
+                testPlanVersions.filter(
+                    tpv => tpv.testPlan.directory === b.directory
+                )
+            );
+            if (countA === countB) return sortByName(a, b);
+            return directionMod * (countA - countB);
+        };
+
+        const sortByPhase = (a, b) => {
+            const testPlanVersionOverallA = getTestPlanVersionOverallPhase(a);
+            const testPlanVersionOverallB = getTestPlanVersionOverallPhase(b);
+            if (testPlanVersionOverallA === testPlanVersionOverallB)
+                return sortByName(a, b);
+            return (
+                directionMod *
+                (phaseOrder[testPlanVersionOverallA] -
+                    phaseOrder[testPlanVersionOverallB])
+            );
+        };
+
+        return testPlans.slice().sort((a, b) => {
+            switch (sort.key) {
+                case 'ats':
+                    return sortByAts(a, b);
+                case 'phase':
+                    return sortByPhase(a, b);
+                case 'name':
+                    return sortByName(a, b);
+                default:
+                    return 0;
+            }
+        });
+    }, [sort, testPlans]);
 
     if (error) {
         return (
@@ -115,9 +196,24 @@ const DataManagement = () => {
             >
                 <thead>
                     <tr>
-                        <th>Test Plan</th>
-                        <th>Covered AT</th>
-                        <th>Overall Status</th>
+                        <SortableTableHeader
+                            title="Test Plan"
+                            onSort={direction =>
+                                setSort({ key: 'name', direction })
+                            }
+                        />
+                        <SortableTableHeader
+                            title="Covered AT"
+                            onSort={direction =>
+                                setSort({ key: 'ats', direction })
+                            }
+                        />
+                        <SortableTableHeader
+                            title="Overall Status"
+                            onSort={direction =>
+                                setSort({ key: 'phase', direction })
+                            }
+                        />
                         <th>R&D Version</th>
                         <th>Draft Review</th>
                         <th>Candidate Review</th>
@@ -125,69 +221,22 @@ const DataManagement = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {testPlans
-                        .slice()
-                        .sort((a, b) => {
-                            // First sort by overall status descending: recommended plans,
-                            // then candidate plans, then draft plans, then R&D complete plans.
-                            const phaseOrder = {
-                                RD: 0,
-                                DRAFT: 1,
-                                CANDIDATE: 2,
-                                RECOMMENDED: 3
-                            };
-
-                            const getTestPlanVersionOverallPhase = t => {
-                                let testPlanVersionOverallPhase = 'RD';
-
-                                Object.keys(phaseOrder).forEach(phaseKey => {
-                                    testPlanVersionOverallPhase =
-                                        testPlanVersions.filter(
-                                            ({ phase, testPlan }) =>
-                                                testPlan.directory ===
-                                                    t.directory &&
-                                                phase === phaseKey
-                                        ).length
-                                            ? phaseKey
-                                            : testPlanVersionOverallPhase;
-                                });
-                                return testPlanVersionOverallPhase;
-                            };
-
-                            const testPlanVersionOverallA =
-                                getTestPlanVersionOverallPhase(a);
-                            const testPlanVersionOverallB =
-                                getTestPlanVersionOverallPhase(b);
-
-                            const phaseA = phaseOrder[testPlanVersionOverallA];
-                            const phaseB = phaseOrder[testPlanVersionOverallB];
-
-                            if (phaseA > phaseB) return -1;
-                            if (phaseA < phaseB) return 1;
-
-                            // Then sort by test plan name ascending.
-                            if (a.title < b.title) return -1;
-                            if (a.title > b.title) return 1;
-
-                            return 0;
-                        })
-                        .map(testPlan => {
-                            return (
-                                <DataManagementRow
-                                    key={testPlan.id}
-                                    isAdmin={isAdmin}
-                                    ats={ats}
-                                    testPlan={testPlan}
-                                    testPlanVersions={testPlanVersions.filter(
-                                        testPlanVersion =>
-                                            testPlanVersion.testPlan
-                                                .directory ===
-                                            testPlan.directory
-                                    )}
-                                    setTestPlanVersions={setTestPlanVersions}
-                                />
-                            );
-                        })}
+                    {sortedTestPlans.map(testPlan => {
+                        return (
+                            <DataManagementRow
+                                key={testPlan.id}
+                                isAdmin={isAdmin}
+                                ats={ats}
+                                testPlan={testPlan}
+                                testPlanVersions={testPlanVersions.filter(
+                                    testPlanVersion =>
+                                        testPlanVersion.testPlan.directory ===
+                                        testPlan.directory
+                                )}
+                                setTestPlanVersions={setTestPlanVersions}
+                            />
+                        );
+                    })}
                 </tbody>
             </Table>
         </Container>
