@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Button } from 'react-bootstrap';
 import BasicModal from '../../common/BasicModal';
@@ -9,25 +9,10 @@ const CoveredAtListDialogWithButton = ({ ats }) => {
     const handleShow = () => setShow(true);
     const handleClose = () => setShow(false);
 
-    const [uniqueAtVersions, setUniqueAtVersions] = useState([]);
-
-    useEffect(() => {
-        const _uniqueAtVersions = [];
-        ats.forEach(at => {
-            at.atVersions.forEach(version => {
-                _uniqueAtVersions.push({
-                    name: at.name,
-                    version: version.name
-                });
-            });
-        });
-        setUniqueAtVersions(_uniqueAtVersions);
-    }, [ats]);
-
     const renderButtonLabel = () => {
         return (
             <span>
-                <strong>{uniqueAtVersions.length} Desktop</strong> Screenreaders
+                <strong>{ats.length} Desktop</strong> Screenreaders
             </span>
         );
     };
@@ -35,9 +20,9 @@ const CoveredAtListDialogWithButton = ({ ats }) => {
     const renderDialogContent = () => {
         return (
             <ul>
-                {uniqueAtVersions.map(at => (
-                    <li key={`${at.name}-${at.version}`}>
-                        <strong>{at.name}</strong> {at.version}
+                {ats.map(at => (
+                    <li key={`${at.name}`}>
+                        <strong>{at.name}</strong>
                     </li>
                 ))}
             </ul>
