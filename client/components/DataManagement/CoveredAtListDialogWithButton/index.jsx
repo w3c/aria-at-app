@@ -3,6 +3,15 @@ import PropTypes from 'prop-types';
 import { Button } from 'react-bootstrap';
 import BasicModal from '../../common/BasicModal';
 import { NoneText } from '../DataManagementRow';
+import styled from '@emotion/styled';
+
+const CoveredAtListModal = styled(BasicModal)`
+    .modal-header,
+    .modal-footer,
+    .modal-body {
+        padding: 1rem 2rem;
+    }
+`;
 
 const CoveredAtListDialogWithButton = ({ ats }) => {
     const [show, setShow] = useState(false);
@@ -12,7 +21,7 @@ const CoveredAtListDialogWithButton = ({ ats }) => {
     const renderButtonLabel = () => {
         return (
             <span>
-                <strong>{ats.length} Desktop</strong> Screenreaders
+                <strong>{ats.length} Desktop</strong> Screen readers
             </span>
         );
     };
@@ -38,7 +47,7 @@ const CoveredAtListDialogWithButton = ({ ats }) => {
             <Button variant="secondary" onClick={handleShow}>
                 {renderButtonLabel()}
             </Button>
-            <BasicModal
+            <CoveredAtListModal
                 title="Covered AT"
                 show={show}
                 closeButton={true}
