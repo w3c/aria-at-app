@@ -52,7 +52,7 @@ const TestPlanReportStatusDialog = ({
 
     const { testPlanReports } = testPlanVersion;
 
-    const auth = evaluateAuth(me);
+    const auth = evaluateAuth(me ?? {});
     const { isSignedIn, isAdmin } = auth;
 
     const requiredReports = useMemo(
