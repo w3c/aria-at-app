@@ -179,7 +179,6 @@ const TestPlanReportStatusDialog = ({
 
     const renderReportStatus = testPlanReport => {
         const { metrics, draftTestPlanRuns, at, browser, id } = testPlanReport;
-        console.log(id, metrics)
         if (metrics) {
             const percentComplete =
                 calculateTestPlanReportCompletionPercentage(testPlanReport);
