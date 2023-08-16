@@ -151,7 +151,7 @@ const TestPlanReportStatusDialog = ({
         metrics
     ) => {
         const conflictsCount = metrics.conflictsCount ?? 0;
-        switch (draftTestPlanRuns.length) {
+        switch (draftTestPlanRuns?.length) {
             case 0:
                 return <span>In test queue with no testers assigned.</span>;
             case 1:
@@ -179,6 +179,7 @@ const TestPlanReportStatusDialog = ({
 
     const renderReportStatus = testPlanReport => {
         const { metrics, draftTestPlanRuns, at, browser, id } = testPlanReport;
+        console.log(id, metrics)
         if (metrics) {
             const percentComplete =
                 calculateTestPlanReportCompletionPercentage(testPlanReport);
