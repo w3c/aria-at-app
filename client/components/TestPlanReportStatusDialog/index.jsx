@@ -9,6 +9,7 @@ import { ME_QUERY } from '../App/queries';
 import { evaluateAuth } from '../../utils/evaluateAuth';
 import getMetrics from '../Reports/getMetrics';
 import { calculateTestPlanReportCompletionPercentage } from './calculateTestPlanReportCompletionPercentage';
+import { convertDateToString } from '../../utils/formatter';
 
 const TestPlanReportStatusModal = styled(Modal)`
     .modal-dialog {
@@ -111,46 +112,25 @@ const TestPlanReportStatusDialog = ({
         );
     };
 
-    const getMostRecentTestPlanRun = draftTestPlanRuns => {
-        let allTestResults = draftTestPlanRuns.flatMap(run => run.testResults);
-
-        let mostRecentTestResult = allTestResults.reduce(
-            (latestResult, currentResult) => {
-                let latestDate = new Date(latestResult.completedAt);
-                let currentDate = new Date(currentResult.completedAt);
-                return currentDate > latestDate ? currentResult : latestResult;
-            },
-            { completedAt: new Date(0) }
+    const renderCompleteReportStatus = testPlanReport => {
+        const formattedDate = convertDateToString(
+            testPlanReport.markedFinalAt,
+            'MMM d, yyyy'
         );
-
-        return mostRecentTestResult;
-    };
-
-    const getFormattedDate = dateString => {
-        let date = new Date(dateString);
-        let options = { year: 'numeric', month: 'short', day: 'numeric' };
-        let formattedDate = new Intl.DateTimeFormat('en-US', options).format(
-            date
-        );
-        return formattedDate;
-    };
-
-    const renderCompleteReportStatus = (draftTestPlanRuns, id) => {
-        const mostRecentRun = getMostRecentTestPlanRun(draftTestPlanRuns);
-        const formattedDate = getFormattedDate(mostRecentRun.completedAt);
         return (
-            <a href={`/report/${testPlanVersion.id}/targets/${id}`}>
+            <a
+                href={`/report/${testPlanVersion.id}/targets/${testPlanReport.id}`}
+            >
                 Report completed on <strong>{formattedDate}</strong>
             </a>
         );
     };
 
-    const renderPartialCompleteReportStatus = (
-        draftTestPlanRuns,
-        percentComplete,
-        metrics
-    ) => {
+    const renderPartialCompleteReportStatus = testPlanReport => {
+        const { metrics, draftTestPlanRuns } = testPlanReport;
         const conflictsCount = metrics.conflictsCount ?? 0;
+        const percentComplete =
+            calculateTestPlanReportCompletionPercentage(testPlanReport);
         switch (draftTestPlanRuns?.length) {
             case 0:
                 return <span>In test queue with no testers assigned.</span>;
@@ -178,18 +158,16 @@ const TestPlanReportStatusDialog = ({
     };
 
     const renderReportStatus = testPlanReport => {
-        const { metrics, draftTestPlanRuns, at, browser, id } = testPlanReport;
+        const { metrics, at, browser, markedFinalAt } = testPlanReport;
+        const { phase } = testPlanVersion;
         if (metrics) {
-            const percentComplete =
-                calculateTestPlanReportCompletionPercentage(testPlanReport);
-            if (percentComplete === 100) {
-                return renderCompleteReportStatus(draftTestPlanRuns, id);
+            if (
+                markedFinalAt &&
+                (phase === 'CANDIDATE' || phase === 'RECOMMENDED')
+            ) {
+                return renderCompleteReportStatus(testPlanReport);
             } else {
-                return renderPartialCompleteReportStatus(
-                    draftTestPlanRuns,
-                    percentComplete,
-                    metrics
-                );
+                return renderPartialCompleteReportStatus(testPlanReport);
             }
         } else {
             return (
