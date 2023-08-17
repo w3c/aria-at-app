@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { Container, Table, Alert, Button } from 'react-bootstrap';
+import { Container, Table, Alert } from 'react-bootstrap';
 import { useQuery } from '@apollo/client';
 import { DATA_MANAGEMENT_PAGE_QUERY } from './queries';
 import PageStatus from '../common/PageStatus';
@@ -9,23 +9,12 @@ import DataManagementRow from '@components/DataManagement/DataManagementRow';
 import './DataManagement.css';
 import { evaluateAuth } from '@client/utils/evaluateAuth';
 import SortableTableHeader from '../common/SortableTableHeader';
-import { TABLE_SORT_ORDERS } from '../../utils/enums';
-import styled from '@emotion/styled';
-
-const StyledFilterButton = styled(Button)`
-    background: #e9ebee;
-    border-radius: 16px;
-    margin: 0 12px;
-    background-color: white;
-    font-weight: 400;
-    border-color: #eceef1;
-
-    &.active,
-    &:active {
-        background: #eaf3fe !important;
-        border-color: #88a6d4 !important;
-    }
-`;
+import {
+    DATA_MANAGEMENT_TABLE_FILTER_OPTIONS,
+    DATA_MANAGEMENT_TABLE_SORT_OPTIONS,
+    TABLE_SORT_ORDERS
+} from '../../utils/constants';
+import FilterButtons from '../common/FilterButtons';
 
 const DataManagement = () => {
     const { loading, data, error, refetch } = useQuery(
@@ -39,10 +28,12 @@ const DataManagement = () => {
     const [testPlans, setTestPlans] = useState([]);
     const [testPlanVersions, setTestPlanVersions] = useState([]);
     const [sort, setSort] = useState({
-        key: 'phase',
+        key: DATA_MANAGEMENT_TABLE_SORT_OPTIONS.PHASE,
         direction: TABLE_SORT_ORDERS.ASC
     });
-    const [filter, setFilter] = useState('all');
+    const [filter, setFilter] = useState(
+        DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.ALL
+    );
 
     const auth = evaluateAuth(data && data.me ? data.me : {});
     const { isAdmin } = auth;
@@ -101,15 +92,15 @@ const DataManagement = () => {
 
     const filteredTestPlans = useMemo(() => {
         switch (filter) {
-            case 'rd':
+            case DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.RD:
                 return rdTestPlans;
-            case 'draft':
+            case DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.DRAFT:
                 return draftTestPlans;
-            case 'candidate':
+            case DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.CANDIDATE:
                 return candidateTestPlans;
-            case 'recommended':
+            case DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.RECOMMENDED:
                 return recommendedTestPlans;
-            case 'all':
+            case DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.ALL:
             default:
                 return testPlans;
         }
@@ -136,8 +127,8 @@ const DataManagement = () => {
             );
         };
 
-        const sortByName = (a, b) =>
-            directionMod * (a.title < b.title ? -1 : 1);
+        const sortByName = (a, b, dir = directionMod) =>
+            dir * (a.title < b.title ? -1 : 1);
 
         const sortByAts = (a, b) => {
             const countA = ats.length; // Stubs based on current rendering in DataManagementRow
@@ -150,7 +141,7 @@ const DataManagement = () => {
             const testPlanVersionOverallA = getTestPlanVersionOverallPhase(a);
             const testPlanVersionOverallB = getTestPlanVersionOverallPhase(b);
             if (testPlanVersionOverallA === testPlanVersionOverallB)
-                return sortByName(a, b);
+                return sortByName(a, b, 1);
             return (
                 directionMod *
                 (phaseOrder[testPlanVersionOverallA] -
@@ -158,19 +149,22 @@ const DataManagement = () => {
             );
         };
 
-        return filteredTestPlans.slice().sort((a, b) => {
-            switch (sort.key) {
-                case 'ats':
-                    return sortByAts(a, b);
-                case 'phase':
-                    return sortByPhase(a, b);
-                case 'name':
-                    return sortByName(a, b);
-                default:
-                    return 0;
-            }
-        });
+        const sortFunctions = {
+            NAME: sortByName,
+            ATS: sortByAts,
+            PHASE: sortByPhase
+        };
+
+        return filteredTestPlans.slice().sort(sortFunctions[sort.key]);
     }, [sort, filteredTestPlans]);
+
+    const filterLabels = {
+        [DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.RD]: `R&D Complete (${rdTestPlans.length})`,
+        [DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.DRAFT]: `In Draft Review (${draftTestPlans.length})`,
+        [DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.CANDIDATE]: `In Candidate Review (${candidateTestPlans.length})`,
+        [DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.RECOMMENDED]: `Recommended Plans (${recommendedTestPlans.length})`,
+        [DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.ALL]: `All Plans (${testPlans.length})`
+    };
 
     if (error) {
         return (
@@ -253,43 +247,12 @@ const DataManagement = () => {
             )}
 
             <h2>Test Plans Status Summary</h2>
-            <ul className="d-flex align-items-center">
-                <StyledFilterButton
-                    variant="secondary"
-                    active={filter === 'all'}
-                    onClick={() => setFilter('all')}
-                >
-                    All Plans ({testPlans.length})
-                </StyledFilterButton>
-                <StyledFilterButton
-                    variant="secondary"
-                    active={filter === 'rd'}
-                    onClick={() => setFilter('rd')}
-                >
-                    R & D Complete ({rdTestPlans.length})
-                </StyledFilterButton>
-                <StyledFilterButton
-                    variant="secondary"
-                    active={filter === 'draft'}
-                    onClick={() => setFilter('draft')}
-                >
-                    In Draft Review ({draftTestPlans.length})
-                </StyledFilterButton>
-                <StyledFilterButton
-                    variant="secondary"
-                    active={filter === 'candidate'}
-                    onClick={() => setFilter('candidate')}
-                >
-                    In Candidate Review ({candidateTestPlans.length})
-                </StyledFilterButton>
-                <StyledFilterButton
-                    variant="secondary"
-                    active={filter === 'recommended'}
-                    onClick={() => setFilter('recommended')}
-                >
-                    Recommended Plans ({recommendedTestPlans.length})
-                </StyledFilterButton>
-            </ul>
+            <FilterButtons
+                filterOptions={DATA_MANAGEMENT_TABLE_FILTER_OPTIONS}
+                optionLabels={filterLabels}
+                activeFilter={filter}
+                onFilterChange={setFilter}
+            />
             <Table
                 className="data-management"
                 aria-label="Test Plans Status Summary Table"
@@ -300,23 +263,41 @@ const DataManagement = () => {
                     <tr>
                         <SortableTableHeader
                             title="Test Plan"
-                            active={sort.key === 'name'}
+                            active={
+                                sort.key ===
+                                DATA_MANAGEMENT_TABLE_SORT_OPTIONS.NAME
+                            }
                             onSort={direction =>
-                                setSort({ key: 'name', direction })
+                                setSort({
+                                    key: DATA_MANAGEMENT_TABLE_SORT_OPTIONS.NAME,
+                                    direction
+                                })
                             }
                         />
                         <SortableTableHeader
                             title="Covered AT"
-                            active={sort.key === 'ats'}
+                            active={
+                                sort.key ===
+                                DATA_MANAGEMENT_TABLE_SORT_OPTIONS.ATS
+                            }
                             onSort={direction =>
-                                setSort({ key: 'ats', direction })
+                                setSort({
+                                    key: DATA_MANAGEMENT_TABLE_SORT_OPTIONS.ATS,
+                                    direction
+                                })
                             }
                         />
                         <SortableTableHeader
                             title="Overall Status"
-                            active={sort.key === 'phase'}
+                            active={
+                                sort.key ===
+                                DATA_MANAGEMENT_TABLE_SORT_OPTIONS.PHASE
+                            }
                             onSort={direction =>
-                                setSort({ key: 'phase', direction })
+                                setSort({
+                                    key: DATA_MANAGEMENT_TABLE_SORT_OPTIONS.PHASE,
+                                    direction
+                                })
                             }
                         />
                         <th>R&D Version</th>

@@ -7,7 +7,7 @@ import {
     faArrowDownShortWide,
     faArrowUpShortWide
 } from '@fortawesome/free-solid-svg-icons';
-import { TABLE_SORT_ORDERS } from '../../../utils/enums';
+import { TABLE_SORT_ORDERS } from '../../../utils/constants';
 
 const SortableTableHeaderWrapper = styled.th`
     position: relative;

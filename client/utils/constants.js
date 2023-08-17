@@ -1,0 +1,18 @@
+export const TABLE_SORT_ORDERS = {
+    ASC: 'ASCENDING',
+    DESC: 'DESCENDING'
+};
+
+export const DATA_MANAGEMENT_TABLE_FILTER_OPTIONS = {
+    ALL: 'ALL',
+    RD: 'RD',
+    DRAFT: 'DRAFT',
+    CANDIDATE: 'CANDIDATE',
+    RECOMMENDED: 'RECOMMENDED'
+};
+
+export const DATA_MANAGEMENT_TABLE_SORT_OPTIONS = {
+    NAME: 'NAME',
+    ATS: 'ATS',
+    PHASE: 'PHASE'
+};
