@@ -11,10 +11,10 @@ import { evaluateAuth } from '@client/utils/evaluateAuth';
 import SortableTableHeader from '../common/SortableTableHeader';
 import {
     DATA_MANAGEMENT_TABLE_FILTER_OPTIONS,
-    DATA_MANAGEMENT_TABLE_SORT_OPTIONS,
-    TABLE_SORT_ORDERS
+    DATA_MANAGEMENT_TABLE_SORT_OPTIONS
 } from '../../utils/constants';
 import FilterButtons from '../common/FilterButtons';
+import { useDataManagementTableSorting } from './hooks';
 
 const DataManagement = () => {
     const { loading, data, error, refetch } = useQuery(
@@ -27,10 +27,6 @@ const DataManagement = () => {
     const [browsers, setBrowsers] = useState([]);
     const [testPlans, setTestPlans] = useState([]);
     const [testPlanVersions, setTestPlanVersions] = useState([]);
-    const [sort, setSort] = useState({
-        key: DATA_MANAGEMENT_TABLE_SORT_OPTIONS.PHASE,
-        direction: TABLE_SORT_ORDERS.ASC
-    });
     const [filter, setFilter] = useState(
         DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.ALL
     );
@@ -106,57 +102,8 @@ const DataManagement = () => {
         }
     }, [filter, testPlans]);
 
-    const sortedTestPlans = useMemo(() => {
-        const phaseOrder = {
-            RD: 0,
-            DRAFT: 1,
-            CANDIDATE: 2,
-            RECOMMENDED: 3
-        };
-        const directionMod = sort.direction === TABLE_SORT_ORDERS.ASC ? -1 : 1;
-
-        const getTestPlanVersionOverallPhase = t => {
-            return (
-                Object.keys(phaseOrder).find(phaseKey =>
-                    testPlanVersions.some(
-                        ({ phase, testPlan }) =>
-                            testPlan.directory === t.directory &&
-                            phase === phaseKey
-                    )
-                ) || 'RD'
-            );
-        };
-
-        const sortByName = (a, b, dir = directionMod) =>
-            dir * (a.title < b.title ? -1 : 1);
-
-        const sortByAts = (a, b) => {
-            const countA = ats.length; // Stubs based on current rendering in DataManagementRow
-            const countB = ats.length;
-            if (countA === countB) return sortByName(a, b);
-            return directionMod * (countA - countB);
-        };
-
-        const sortByPhase = (a, b) => {
-            const testPlanVersionOverallA = getTestPlanVersionOverallPhase(a);
-            const testPlanVersionOverallB = getTestPlanVersionOverallPhase(b);
-            if (testPlanVersionOverallA === testPlanVersionOverallB)
-                return sortByName(a, b, 1);
-            return (
-                directionMod *
-                (phaseOrder[testPlanVersionOverallA] -
-                    phaseOrder[testPlanVersionOverallB])
-            );
-        };
-
-        const sortFunctions = {
-            NAME: sortByName,
-            ATS: sortByAts,
-            PHASE: sortByPhase
-        };
-
-        return filteredTestPlans.slice().sort(sortFunctions[sort.key]);
-    }, [sort, filteredTestPlans]);
+    const { sortedTestPlans, updateSort, activeSort } =
+        useDataManagementTableSorting(filteredTestPlans, testPlanVersions, ats);
 
     const filterLabels = {
         [DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.RD]: `R&D Complete (${rdTestPlans.length})`,
@@ -264,11 +211,11 @@ const DataManagement = () => {
                         <SortableTableHeader
                             title="Test Plan"
                             active={
-                                sort.key ===
+                                activeSort.key ===
                                 DATA_MANAGEMENT_TABLE_SORT_OPTIONS.NAME
                             }
                             onSort={direction =>
-                                setSort({
+                                updateSort({
                                     key: DATA_MANAGEMENT_TABLE_SORT_OPTIONS.NAME,
                                     direction
                                 })
@@ -277,11 +224,11 @@ const DataManagement = () => {
                         <SortableTableHeader
                             title="Covered AT"
                             active={
-                                sort.key ===
+                                activeSort.key ===
                                 DATA_MANAGEMENT_TABLE_SORT_OPTIONS.ATS
                             }
                             onSort={direction =>
-                                setSort({
+                                updateSort({
                                     key: DATA_MANAGEMENT_TABLE_SORT_OPTIONS.ATS,
                                     direction
                                 })
@@ -290,11 +237,11 @@ const DataManagement = () => {
                         <SortableTableHeader
                             title="Overall Status"
                             active={
-                                sort.key ===
+                                activeSort.key ===
                                 DATA_MANAGEMENT_TABLE_SORT_OPTIONS.PHASE
                             }
                             onSort={direction =>
-                                setSort({
+                                updateSort({
                                     key: DATA_MANAGEMENT_TABLE_SORT_OPTIONS.PHASE,
                                     direction
                                 })
