@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { Container, Table, Alert } from 'react-bootstrap';
+import { Container, Table, Alert, Button } from 'react-bootstrap';
 import { useQuery } from '@apollo/client';
 import { DATA_MANAGEMENT_PAGE_QUERY } from './queries';
 import PageStatus from '../common/PageStatus';
@@ -10,8 +10,22 @@ import './DataManagement.css';
 import { evaluateAuth } from '@client/utils/evaluateAuth';
 import SortableTableHeader from '../common/SortableTableHeader';
 import { TABLE_SORT_ORDERS } from '../../utils/enums';
-import FilterButtons from '../common/FilterButtons';
-import FilterButton from '../common/FilterButtons/FilterButton';
+import styled from '@emotion/styled';
+
+const StyledFilterButton = styled(Button)`
+    background: #e9ebee;
+    border-radius: 16px;
+    margin: 0 12px;
+    background-color: white;
+    font-weight: 400;
+    border-color: #eceef1;
+
+    &.active,
+    &:active {
+        background: #eaf3fe !important;
+        border-color: #88a6d4 !important;
+    }
+`;
 
 const DataManagement = () => {
     const { loading, data, error, refetch } = useQuery(
@@ -28,8 +42,7 @@ const DataManagement = () => {
         key: 'phase',
         direction: TABLE_SORT_ORDERS.ASC
     });
-
-    const [filteredTestPlans, setFilteredTestPlans] = useState(testPlans);
+    const [filter, setFilter] = useState('all');
 
     const auth = evaluateAuth(data && data.me ? data.me : {});
     const { isAdmin } = auth;
@@ -49,10 +62,6 @@ const DataManagement = () => {
             setPageReady(true);
         }
     }, [data]);
-
-    useEffect(() => {
-        setFilteredTestPlans(testPlans);
-    }, [testPlans]);
 
     const [
         rdTestPlans,
@@ -89,6 +98,22 @@ const DataManagement = () => {
             [[], [], [], []]
         );
     }, [testPlans]);
+
+    const filteredTestPlans = useMemo(() => {
+        switch (filter) {
+            case 'rd':
+                return rdTestPlans;
+            case 'draft':
+                return draftTestPlans;
+            case 'candidate':
+                return candidateTestPlans;
+            case 'recommended':
+                return recommendedTestPlans;
+            case 'all':
+            default:
+                return testPlans;
+        }
+    }, [filter, testPlans]);
 
     const sortedTestPlans = useMemo(() => {
         const phaseOrder = {
@@ -228,37 +253,43 @@ const DataManagement = () => {
             )}
 
             <h2>Test Plans Status Summary</h2>
-            <FilterButtons onFilterChange={f => f()}>
-                <FilterButton
-                    filterFunction={() => setFilteredTestPlans(testPlans)}
+            <ul className="d-flex align-items-center">
+                <StyledFilterButton
+                    variant="secondary"
+                    active={filter === 'all'}
+                    onClick={() => setFilter('all')}
                 >
                     All Plans ({testPlans.length})
-                </FilterButton>
-                <FilterButton
-                    filterFunction={() => setFilteredTestPlans(rdTestPlans)}
+                </StyledFilterButton>
+                <StyledFilterButton
+                    variant="secondary"
+                    active={filter === 'rd'}
+                    onClick={() => setFilter('rd')}
                 >
                     R & D Complete ({rdTestPlans.length})
-                </FilterButton>
-                <FilterButton
-                    filterFunction={() => setFilteredTestPlans(draftTestPlans)}
+                </StyledFilterButton>
+                <StyledFilterButton
+                    variant="secondary"
+                    active={filter === 'draft'}
+                    onClick={() => setFilter('draft')}
                 >
                     In Draft Review ({draftTestPlans.length})
-                </FilterButton>
-                <FilterButton
-                    filterFunction={() =>
-                        setFilteredTestPlans(candidateTestPlans)
-                    }
+                </StyledFilterButton>
+                <StyledFilterButton
+                    variant="secondary"
+                    active={filter === 'candidate'}
+                    onClick={() => setFilter('candidate')}
                 >
                     In Candidate Review ({candidateTestPlans.length})
-                </FilterButton>
-                <FilterButton
-                    filterFunction={() =>
-                        setFilteredTestPlans(recommendedTestPlans)
-                    }
+                </StyledFilterButton>
+                <StyledFilterButton
+                    variant="secondary"
+                    active={filter === 'recommended'}
+                    onClick={() => setFilter('recommended')}
                 >
                     Recommended Plans ({recommendedTestPlans.length})
-                </FilterButton>
-            </FilterButtons>
+                </StyledFilterButton>
+            </ul>
             <Table
                 className="data-management"
                 aria-label="Test Plans Status Summary Table"
