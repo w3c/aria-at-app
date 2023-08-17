@@ -21,7 +21,7 @@ const CoveredAtListDialogWithButton = ({ ats }) => {
     const renderButtonLabel = () => {
         return (
             <span>
-                <strong>{ats.length} Desktop</strong> Screen readers
+                <strong>{ats.length} Desktop</strong> Screen Readers
             </span>
         );
     };
