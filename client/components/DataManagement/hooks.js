@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import {
+    DATA_MANAGEMENT_TABLE_FILTER_OPTIONS,
     DATA_MANAGEMENT_TABLE_SORT_OPTIONS,
     TABLE_SORT_ORDERS
 } from '../../utils/constants';
@@ -76,4 +77,79 @@ export const useDataManagementTableSorting = (
         updateSort,
         activeSort
     };
+};
+
+export const useDataManagementTableFiltering = (
+    testPlans,
+    testPlanVersions,
+    filter
+) => {
+    const [
+        rdTestPlans,
+        draftTestPlans,
+        candidateTestPlans,
+        recommendedTestPlans
+    ] = useMemo(() => {
+        return testPlans.reduce(
+            (acc, testPlan) => {
+                const testPlanVersion = testPlanVersions.find(
+                    ({ testPlan: { directory } }) =>
+                        directory === testPlan.directory
+                );
+                if (!testPlanVersion) return acc;
+                const phase = testPlanVersion.phase;
+                switch (phase) {
+                    case 'RD':
+                        acc[0].push(testPlan);
+                        break;
+                    case 'DRAFT':
+                        acc[1].push(testPlan);
+                        break;
+                    case 'CANDIDATE':
+                        acc[2].push(testPlan);
+                        break;
+                    case 'RECOMMENDED':
+                        acc[3].push(testPlan);
+                        break;
+                    default:
+                        break;
+                }
+                return acc;
+            },
+            [[], [], [], []]
+        );
+    }, [testPlans, testPlanVersions]);
+
+    const filteredTestPlans = useMemo(() => {
+        switch (filter) {
+            case DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.RD:
+                return rdTestPlans;
+            case DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.DRAFT:
+                return draftTestPlans;
+            case DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.CANDIDATE:
+                return candidateTestPlans;
+            case DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.RECOMMENDED:
+                return recommendedTestPlans;
+            case DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.ALL:
+            default:
+                return testPlans;
+        }
+    }, [
+        filter,
+        rdTestPlans,
+        draftTestPlans,
+        candidateTestPlans,
+        recommendedTestPlans,
+        testPlans
+    ]);
+
+    const filterLabels = {
+        [DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.RD]: `R&D Complete (${rdTestPlans.length})`,
+        [DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.DRAFT]: `In Draft Review (${draftTestPlans.length})`,
+        [DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.CANDIDATE]: `In Candidate Review (${candidateTestPlans.length})`,
+        [DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.RECOMMENDED]: `Recommended Plans (${recommendedTestPlans.length})`,
+        [DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.ALL]: `All Plans (${testPlans.length})`
+    };
+
+    return { filteredTestPlans, filterLabels };
 };
