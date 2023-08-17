@@ -18,6 +18,8 @@ import {
 import { derivePhaseName } from '@client/utils/aria';
 import { THEMES, useThemedModal } from '@client/hooks/useThemedModal';
 import BasicModal from '@components/common/BasicModal';
+import TestPlanReportStatusDialogWithButton from '../../TestPlanReportStatusDialog/WithButton';
+import ReportStatusDot from '../../common/ReportStatusDot';
 import UpdateTargetDateModal from '@components/common/UpdateTargetDateModal';
 
 const StatusCell = styled.div`
@@ -68,16 +70,23 @@ const StatusCell = styled.div`
 `;
 
 const PhaseCell = styled.div`
+    padding: 0 !important; /* override padding for td and add margins into specific children */
+
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+
     > span.version-string {
         display: flex;
         justify-content: center;
         align-items: center;
 
         //padding: 4px 8px;
+        margin: 0.75rem;
         height: 2rem;
         border-radius: 4px;
 
-        width: 100%;
+        width: calc(100% - 1.5rem);
         background: #f6f8fa;
     }
 
@@ -85,8 +94,7 @@ const PhaseCell = styled.div`
         display: block;
         font-size: 14px;
         text-align: center;
-        margin-top: 12px;
-
+        margin: 12px 0.75rem;
         color: #333f4d;
     }
 
@@ -99,10 +107,7 @@ const PhaseCell = styled.div`
         padding: 4px;
         font-size: 14px;
 
-        position: absolute;
-        left: 0;
-        bottom: 0;
-        right: 0;
+        margin-top: 6px;
 
         color: #6a7989;
         background: #f6f8fa;
@@ -130,8 +135,9 @@ const PhaseCell = styled.div`
         }
     }
 
-    > button {
-        margin-top: 12px;
+    > .advance-button {
+        margin: 12px 0.75rem;
+        width: calc(100% - 1.5rem);
     }
 `;
 
@@ -160,35 +166,6 @@ const PhaseText = styled.span`
 
     &.recommended {
         background: #8441de;
-    }
-`;
-
-const ReportStatusDot = styled.span`
-    display: inline-block;
-    height: 10px;
-    width: 10px;
-    padding: 0;
-    margin-right: 8px;
-    border-radius: 50%;
-
-    &.issues {
-        background: #f2ba00;
-    }
-
-    &.reports-not-started {
-        background: #7c7c7c;
-    }
-
-    &.reports-in-progress {
-        background: #3876e8;
-    }
-
-    &.reports-complete {
-        background: #2ba51c;
-    }
-
-    &.reports-missing {
-        background: #ce1b4c;
     }
 `;
 
@@ -413,7 +390,7 @@ const DataManagementRow = ({
 
         if (atNames.length > 1) {
             return (
-                <>
+                <div>
                     {atNames.map((item, index) => (
                         <React.Fragment key={index}>
                             <b>{item}</b>
@@ -426,7 +403,7 @@ const DataManagementRow = ({
                             ) : null}
                         </React.Fragment>
                     ))}
-                </>
+                </div>
             );
         } else if (atNames.length === 1) return <b>{atNames[0]}</b>;
         else return <NoneText>N/A</NoneText>;
@@ -631,6 +608,7 @@ const DataManagementRow = ({
                         {isAdmin && (
                             <Button
                                 ref={ref => setFocusRef(ref)}
+                                className="advance-button"
                                 variant="secondary"
                                 onClick={async () => {
                                     setShowAdvanceModal(true);
@@ -790,6 +768,7 @@ const DataManagementRow = ({
                             {isAdmin && (
                                 <Button
                                     ref={ref => setFocusRef(ref)}
+                                    className="advance-button"
                                     variant="secondary"
                                     onClick={async () => {
                                         if (finalReportFound) {
@@ -829,6 +808,9 @@ const DataManagementRow = ({
                                     Advance to Candidate
                                 </Button>
                             )}
+                            <TestPlanReportStatusDialogWithButton
+                                testPlanVersionId={latestVersion.id}
+                            />
                         </PhaseCell>
                     );
                 }
@@ -1012,6 +994,7 @@ const DataManagementRow = ({
                             {shouldShowAdvanceButton && (
                                 <Button
                                     ref={ref => setFocusRef(ref)}
+                                    className="advance-button"
                                     variant="secondary"
                                     onClick={async () => {
                                         setShowAdvanceModal(true);
@@ -1038,6 +1021,9 @@ const DataManagementRow = ({
                                     Advance to Recommended
                                 </Button>
                             )}
+                            <TestPlanReportStatusDialogWithButton
+                                testPlanVersionId={latestVersion.id}
+                            />
                             <span className="more">
                                 <span className="more-issues-container">
                                     <ReportStatusDot className="issues" />{' '}
@@ -1142,9 +1128,11 @@ const DataManagementRow = ({
     return (
         <LoadingStatus message={loadingMessage}>
             <tr>
-                <th>
-                    <b>{testPlan.title}</b>
-                </th>
+                <td>
+                    <div>
+                        <b>{testPlan.title}</b>
+                    </div>
+                </td>
                 <td>{renderCellForCoveredAts()}</td>
                 <td>{renderCellForOverallStatus()}</td>
                 <td>{renderCellForPhase('RD', rdTestPlanVersions)}</td>
@@ -1253,7 +1241,8 @@ DataManagementRow.propTypes = {
             recommendedPhaseReachedAt: PropTypes.string
         })
     ).isRequired,
-    setTestPlanVersions: PropTypes.func
+    setTestPlanVersions: PropTypes.func,
+    triggerUpdate: PropTypes.func
 };
 
 export default DataManagementRow;
