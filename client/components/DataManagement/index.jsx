@@ -8,9 +8,8 @@ import ManageTestQueue from '../ManageTestQueue';
 import DataManagementRow from '@components/DataManagement/DataManagementRow';
 import './DataManagement.css';
 import { evaluateAuth } from '@client/utils/evaluateAuth';
-import SortableTableHeader, {
-    TABLE_SORT_ORDERS
-} from '../common/SortableTableHeader';
+import SortableTableHeader from '../common/SortableTableHeader';
+import { TABLE_SORT_ORDERS } from '../../utils/enums';
 
 const DataManagement = () => {
     const { loading, data, error, refetch } = useQuery(
@@ -70,29 +69,12 @@ const DataManagement = () => {
             );
         };
 
-        const getUniqueAtObjectsCount = testPlanVersion => {
-            const uniqueAtIds = new Set(
-                testPlanVersion.flatMap(tpv =>
-                    tpv.testPlanReports.map(tpr => tpr.at.id)
-                )
-            );
-            return uniqueAtIds.size;
-        };
-
         const sortByName = (a, b) =>
             directionMod * (a.title < b.title ? -1 : 1);
 
         const sortByAts = (a, b) => {
-            const countA = getUniqueAtObjectsCount(
-                testPlanVersions.filter(
-                    tpv => tpv.testPlan.directory === a.directory
-                )
-            );
-            const countB = getUniqueAtObjectsCount(
-                testPlanVersions.filter(
-                    tpv => tpv.testPlan.directory === b.directory
-                )
-            );
+            const countA = ats.length; // Stubs based on current rendering in DataManagementRow
+            const countB = ats.length;
             if (countA === countB) return sortByName(a, b);
             return directionMod * (countA - countB);
         };
@@ -198,18 +180,21 @@ const DataManagement = () => {
                     <tr>
                         <SortableTableHeader
                             title="Test Plan"
+                            active={sort.key === 'name'}
                             onSort={direction =>
                                 setSort({ key: 'name', direction })
                             }
                         />
                         <SortableTableHeader
                             title="Covered AT"
+                            active={sort.key === 'ats'}
                             onSort={direction =>
                                 setSort({ key: 'ats', direction })
                             }
                         />
                         <SortableTableHeader
                             title="Overall Status"
+                            active={sort.key === 'phase'}
                             onSort={direction =>
                                 setSort({ key: 'phase', direction })
                             }
