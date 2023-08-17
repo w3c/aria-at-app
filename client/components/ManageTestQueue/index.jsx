@@ -76,11 +76,12 @@ const DisclosureContainer = styled.div`
         }
     }
 
-    .disclosure-row-test-plans {
+    .disclosure-row-controls {
         display: grid;
         grid-auto-flow: column;
         grid-template-columns: 1fr 1fr 1fr 1fr;
         grid-gap: 1rem;
+        align-items: end;
     }
 
     .disclosure-form-label {
@@ -106,6 +107,7 @@ const ManageTestQueue = ({
 
     const [showManageATs, setShowManageATs] = useState(false);
     const [showAddTestPlans, setShowAddTestPlans] = useState(false);
+    const [showManageReqReports, setShowManageReqReports] = useState(false);
     const [selectedManageAtId, setSelectedManageAtId] = useState('1');
     const [selectedManageAtVersions, setSelectedManageAtVersions] = useState(
         []
@@ -149,6 +151,8 @@ const ManageTestQueue = ({
 
     const onManageAtsClick = () => setShowManageATs(!showManageATs);
     const onAddTestPlansClick = () => setShowAddTestPlans(!showAddTestPlans);
+    const onManageReqReportsClick = () =>
+        setShowManageReqReports(!showManageReqReports);
 
     useEffect(() => {
         const allTestPlanVersions = testPlanVersions
@@ -504,7 +508,8 @@ const ManageTestQueue = ({
                 componentId="manage-test-queue"
                 title={[
                     'Manage Assistive Technology Versions',
-                    'Add Test Plans to the Test Queue'
+                    'Add Test Plans to the Test Queue',
+                    'Manage Required Reports'
                 ]}
                 disclosureContainerView={[
                     <DisclosureContainer key={`manage-test-queue-at-section`}>
@@ -586,7 +591,7 @@ const ManageTestQueue = ({
                             Select a Test Plan and version and an Assistive
                             Technology and Browser to add it to the Test Queue
                         </span>
-                        <div className="disclosure-row-test-plans">
+                        <div className="disclosure-row-controls">
                             <Form.Group className="form-group">
                                 <Form.Label className="disclosure-form-label">
                                     Test Plan
@@ -691,10 +696,93 @@ const ManageTestQueue = ({
                         >
                             Add Test Plan to Test Queue
                         </Button>
+                    </DisclosureContainer>,
+                    <DisclosureContainer
+                        key={`manage-test-queue-required-reports`}
+                    >
+                        <span>New Section</span>
+                        <div className="disclosure-row-controls">
+                            <Form.Group className="form-group">
+                                <Form.Label className="disclosure-form-label">
+                                    New Label
+                                </Form.Label>
+                                <Form.Select
+                                    onChange={e => {
+                                        // const { value } = e.target;
+                                        // updateMatchingTestPlanVersions(
+                                        //     value,
+                                        //     allTestPlanVersions
+                                        // );
+                                    }}
+                                >
+                                    <option key={`New Key`} value={`New Value`}>
+                                        New Title
+                                    </option>
+                                </Form.Select>
+                            </Form.Group>
+                            <Form.Group className="form-group">
+                                <Form.Label className="disclosure-form-label">
+                                    New Label
+                                </Form.Label>
+                                <Form.Select
+                                    onChange={e => {
+                                        // const { value } = e.target;
+                                        // updateMatchingTestPlanVersions(
+                                        //     value,
+                                        //     allTestPlanVersions
+                                        // );
+                                    }}
+                                >
+                                    <option key={`New Key`} value={`New Value`}>
+                                        New Title
+                                    </option>
+                                </Form.Select>
+                            </Form.Group>
+                            <Form.Group className="form-group">
+                                <Form.Label className="disclosure-form-label">
+                                    New Label
+                                </Form.Label>
+                                <Form.Select
+                                    onChange={e => {
+                                        // const { value } = e.target;
+                                        // updateMatchingTestPlanVersions(
+                                        //     value,
+                                        //     allTestPlanVersions
+                                        // );
+                                    }}
+                                >
+                                    <option key={`New Key`} value={`New Value`}>
+                                        New Title
+                                    </option>
+                                </Form.Select>
+                            </Form.Group>
+                            <Form.Group className="form-group">
+                                <Button
+                                    // ref={addTestPlanReportButtonRef}
+                                    variant="primary"
+                                    // disabled={
+                                    //     !selectedTestPlanVersionId ||
+                                    //     !selectedAtId ||
+                                    //     !selectedBrowserId
+                                    // }
+                                    // onClick={handleAddTestPlanToTestQueue}
+                                >
+                                    New Button Label
+                                </Button>
+                            </Form.Group>
+                        </div>
                     </DisclosureContainer>
                 ]}
-                onClick={[onManageAtsClick, onAddTestPlansClick]}
-                expanded={[showManageATs, showAddTestPlans]}
+                onClick={[
+                    onManageAtsClick,
+                    onAddTestPlansClick,
+                    onManageReqReportsClick
+                ]}
+                expanded={[
+                    showManageATs,
+                    showAddTestPlans,
+                    showManageReqReports
+                ]}
                 stacked
             />
 
