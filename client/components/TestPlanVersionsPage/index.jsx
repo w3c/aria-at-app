@@ -348,6 +348,8 @@ const TestPlanVersionsPage = () => {
                             </li>
                             <li>
                                 <a
+                                    target="_blank"
+                                    rel="noreferrer"
                                     href={`/test-review/${testPlanVersion.gitSha}/${testPlanDirectory}`}
                                 >
                                     <FontAwesomeIcon
