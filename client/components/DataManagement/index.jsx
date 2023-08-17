@@ -10,6 +10,8 @@ import './DataManagement.css';
 import { evaluateAuth } from '@client/utils/evaluateAuth';
 import SortableTableHeader from '../common/SortableTableHeader';
 import { TABLE_SORT_ORDERS } from '../../utils/enums';
+import FilterButtons from '../common/FilterButtons';
+import FilterButton from '../common/FilterButtons/FilterButton';
 
 const DataManagement = () => {
     const { loading, data, error, refetch } = useQuery(
@@ -29,6 +31,8 @@ const DataManagement = () => {
         direction: TABLE_SORT_ORDERS.ASC
     });
 
+    const [filteredTestPlans, setFilteredTestPlans] = useState(testPlans);
+
     const auth = evaluateAuth(data && data.me ? data.me : {});
     const { isAdmin } = auth;
 
@@ -47,6 +51,46 @@ const DataManagement = () => {
             setPageReady(true);
         }
     }, [data]);
+
+    useEffect(() => {
+        setFilteredTestPlans(testPlans);
+    }, [testPlans]);
+
+    const [
+        rdTestPlans,
+        draftTestPlans,
+        candidateTestPlans,
+        recommendedTestPlans
+    ] = useMemo(() => {
+        return testPlans.reduce(
+            (acc, testPlan) => {
+                const testPlanVersion = testPlanVersions.find(
+                    ({ testPlan: { directory } }) =>
+                        directory === testPlan.directory
+                );
+                if (!testPlanVersion) return acc;
+                const phase = testPlanVersion.phase;
+                switch (phase) {
+                    case 'RD':
+                        acc[0].push(testPlan);
+                        break;
+                    case 'DRAFT':
+                        acc[1].push(testPlan);
+                        break;
+                    case 'CANDIDATE':
+                        acc[2].push(testPlan);
+                        break;
+                    case 'RECOMMENDED':
+                        acc[3].push(testPlan);
+                        break;
+                    default:
+                        break;
+                }
+                return acc;
+            },
+            [[], [], [], []]
+        );
+    }, [testPlans]);
 
     const sortedTestPlans = useMemo(() => {
         const phaseOrder = {
@@ -91,7 +135,7 @@ const DataManagement = () => {
             );
         };
 
-        return testPlans.slice().sort((a, b) => {
+        return filteredTestPlans.slice().sort((a, b) => {
             switch (sort.key) {
                 case 'ats':
                     return sortByAts(a, b);
@@ -103,7 +147,7 @@ const DataManagement = () => {
                     return 0;
             }
         });
-    }, [sort, testPlans]);
+    }, [sort, filteredTestPlans]);
 
     if (error) {
         return (
@@ -170,6 +214,37 @@ const DataManagement = () => {
             )}
 
             <h2>Test Plans Status Summary</h2>
+            <FilterButtons onFilterChange={f => f()}>
+                <FilterButton
+                    filterFunction={() => setFilteredTestPlans(testPlans)}
+                >
+                    All Plans ({testPlans.length})
+                </FilterButton>
+                <FilterButton
+                    filterFunction={() => setFilteredTestPlans(rdTestPlans)}
+                >
+                    R & D Complete ({rdTestPlans.length})
+                </FilterButton>
+                <FilterButton
+                    filterFunction={() => setFilteredTestPlans(draftTestPlans)}
+                >
+                    In Draft Review ({draftTestPlans.length})
+                </FilterButton>
+                <FilterButton
+                    filterFunction={() =>
+                        setFilteredTestPlans(candidateTestPlans)
+                    }
+                >
+                    In Candidate Review ({candidateTestPlans.length})
+                </FilterButton>
+                <FilterButton
+                    filterFunction={() =>
+                        setFilteredTestPlans(recommendedTestPlans)
+                    }
+                >
+                    Recommended Plans ({recommendedTestPlans.length})
+                </FilterButton>
+            </FilterButtons>
             <Table
                 className="data-management"
                 aria-label="Test Plans Status Summary Table"
