@@ -75,7 +75,21 @@ const OutputTextArea = ({ commandIndex, atOutput, isSubmitted }) => {
 
 OutputTextArea.propTypes = {
     commandIndex: PropTypes.number.isRequired,
-    atOutput: PropTypes.object.isRequired,
+    atOutput: PropTypes.shape({
+        description: PropTypes.arrayOf(
+            PropTypes.oneOfType([
+                PropTypes.string,
+                PropTypes.shape({
+                    required: PropTypes.bool.isRequired,
+                    highlightRequired: PropTypes.bool.isRequired,
+                    description: PropTypes.string.isRequired
+                })
+            ])
+        ).isRequired,
+        value: PropTypes.string.isRequired,
+        change: PropTypes.func.isRequired,
+        focus: PropTypes.bool.isRequired
+    }).isRequired,
     isSubmitted: PropTypes.bool.isRequired
 };
 
