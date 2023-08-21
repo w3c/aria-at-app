@@ -41,6 +41,7 @@ export const DATA_MANAGEMENT_PAGE_QUERY = gql`
             }
             testPlanReports {
                 id
+                metrics
                 markedFinalAt
                 at {
                     id
@@ -54,6 +55,28 @@ export const DATA_MANAGEMENT_PAGE_QUERY = gql`
                     link
                     isOpen
                     feedbackType
+                }
+                draftTestPlanRuns {
+                    tester {
+                        username
+                    }
+                    testPlanReport {
+                        id
+                    }
+                    testResults {
+                        test {
+                            id
+                        }
+                        atVersion {
+                            id
+                            name
+                        }
+                        browserVersion {
+                            id
+                            name
+                        }
+                        completedAt
+                    }
                 }
             }
         }

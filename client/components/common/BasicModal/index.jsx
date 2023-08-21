@@ -41,7 +41,7 @@ const BasicModal = ({
                 show={show}
                 centered={centered}
                 animation={animation}
-                onHide={handleHide || handleClose}
+                onExit={handleHide || handleClose}
                 /* Disabled due to buggy implementation which jumps the page */
                 autoFocus={false}
                 aria-labelledby="basic-modal"

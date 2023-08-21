@@ -73,6 +73,7 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
             </ul>
 
             {testPlanReports.map(testPlanReport => {
+                if (testPlanReport.status === 'DRAFT') return null;
                 const skippedTests = differenceBy(
                     testPlanReport.runnableTests,
                     testPlanReport.finalizedTestResults,
@@ -199,7 +200,7 @@ SummarizeTestPlanVersion.propTypes = {
         PropTypes.shape({
             id: PropTypes.string.isRequired,
             runnableTests: PropTypes.arrayOf(PropTypes.object).isRequired,
-            finalizedTestResults: PropTypes.arrayOf(PropTypes.object).isRequired
+            finalizedTestResults: PropTypes.arrayOf(PropTypes.object)
         }).isRequired
     ).isRequired
 };
