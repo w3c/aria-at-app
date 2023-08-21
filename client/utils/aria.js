@@ -19,5 +19,7 @@ export const derivePhaseName = name => {
             return 'Candidate';
         case 'RECOMMENDED':
             return 'Recommended';
+        case 'DEPRECATED':
+            return 'Deprecated';
     }
 };

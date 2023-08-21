@@ -8,7 +8,7 @@ const StyledNone = styled.span`
 
 const none = <StyledNone>None</StyledNone>;
 
-const sum = arr => arr.reduce((total, item) => total + item, 0);
+const sum = arr => arr?.reduce((total, item) => total + item, 0) || 0;
 
 const countTests = ({
     testPlanReport, // Choose one to provide
@@ -17,25 +17,29 @@ const countTests = ({
     passedOnly
 }) => {
     const countScenarioResult = scenarioResult => {
-        return scenarioResult.assertionResults.every(
-            assertionResult => assertionResult.passed
+        return (
+            scenarioResult?.assertionResults?.every(
+                assertionResult => assertionResult.passed
+            ) || 0
         );
     };
 
     const countTestResult = testResult => {
         if (passedOnly)
-            return testResult.scenarioResults.every(countScenarioResult)
+            return testResult?.scenarioResults?.every(countScenarioResult)
                 ? 1
                 : 0;
         return testResult ? 1 : 0;
     };
     const countTestPlanReport = testPlanReport => {
-        return sum(testPlanReport.finalizedTestResults.map(countTestResult));
+        return sum(
+            testPlanReport?.finalizedTestResults?.map(countTestResult) || []
+        );
     };
 
     if (testPlanReport) return countTestPlanReport(testPlanReport);
     if (testResult) return countTestResult(testResult);
-    return countScenarioResult(scenarioResult, testResult);
+    return countScenarioResult(scenarioResult);
 };
 
 const countAssertions = ({
@@ -46,15 +50,18 @@ const countAssertions = ({
     passedOnly
 }) => {
     const countScenarioResult = scenarioResult => {
-        const all = scenarioResult[`${priority.toLowerCase()}AssertionResults`];
+        const all =
+            scenarioResult?.[`${priority.toLowerCase()}AssertionResults`] || [];
         if (passedOnly) return all.filter(each => each.passed).length;
         return all.length;
     };
     const countTestResult = testResult => {
-        return sum(testResult.scenarioResults.map(countScenarioResult));
+        return sum(testResult?.scenarioResults?.map(countScenarioResult) || []);
     };
     const countTestPlanReport = testPlanReport => {
-        return sum(testPlanReport.finalizedTestResults.map(countTestResult));
+        return sum(
+            testPlanReport?.finalizedTestResults?.map(countTestResult) || []
+        );
     };
 
     if (testPlanReport) return countTestPlanReport(testPlanReport);
@@ -68,13 +75,15 @@ const countUnexpectedBehaviors = ({
     testPlanReport // Choose one to provide
 }) => {
     const countScenarioResult = scenarioResult => {
-        return scenarioResult.unexpectedBehaviors.length;
+        return scenarioResult?.unexpectedBehaviors?.length || 0;
     };
     const countTestResult = testResult => {
-        return sum(testResult.scenarioResults.map(countScenarioResult));
+        return sum(testResult?.scenarioResults?.map(countScenarioResult) || []);
     };
     const countTestPlanReport = testPlanReport => {
-        return sum(testPlanReport.finalizedTestResults.map(countTestResult));
+        return sum(
+            testPlanReport?.finalizedTestResults?.map(countTestResult) || []
+        );
     };
 
     if (testPlanReport) return countTestPlanReport(testPlanReport);
@@ -117,7 +126,7 @@ const getMetrics = ({
         passedOnly: true
     });
     const testsCount =
-        testPlanReport?.runnableTests.length || countTests({ ...result });
+        testPlanReport?.runnableTests?.length || countTests({ ...result });
     const testsFailedCount = testsCount - testsPassedCount;
 
     const requiredFormatted = `${requiredAssertionsPassedCount} of ${requiredAssertionsCount} passed`;

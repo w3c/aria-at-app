@@ -89,8 +89,16 @@ const DataManagement = () => {
 
             {isAdmin ? (
                 <>
+                    <h2>Introduction</h2>
                     <p data-testid="data-management-instructions">
-                        Manage Test Plans in the Test Queue and their phases.
+                        This page provides a view of the latest test plan
+                        version information, and where they currently are in the{' '}
+                        <a href="https://github.com/w3c/aria-at/wiki/Working-Mode">
+                            ARIA-AT Community Group’s review process
+                        </a>
+                        .<br />
+                        Use this page to manage Test Plans in the Test Queue and
+                        their phases.
                     </p>
 
                     <ManageTestQueue
@@ -101,9 +109,17 @@ const DataManagement = () => {
                     />
                 </>
             ) : (
-                <p data-testid="data-management-instructions">
-                    View Test Plans in the Test Queue and their phases.
-                </p>
+                <>
+                    <h2>Introduction</h2>
+                    <p data-testid="data-management-instructions">
+                        This page provides a view of the latest test plan
+                        version information, and where they currently are in the{' '}
+                        <a href="https://github.com/w3c/aria-at/wiki/Working-Mode">
+                            ARIA-AT Community Group’s review process
+                        </a>
+                        .
+                    </p>
+                </>
             )}
 
             <h2>Test Plans Status Summary</h2>

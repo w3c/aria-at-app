@@ -11,13 +11,13 @@ import BasicThemedModal from '../common/BasicThemedModal';
 import {
     ADD_AT_VERSION_MUTATION,
     EDIT_AT_VERSION_MUTATION,
-    DELETE_AT_VERSION_MUTATION,
-    ADD_TEST_QUEUE_MUTATION
+    DELETE_AT_VERSION_MUTATION
 } from '../TestQueue/queries';
 import { gitUpdatedDateToString } from '../../utils/gitUtils';
 import { convertStringToDate } from '../../utils/formatter';
 import { LoadingStatus, useTriggerLoad } from '../common/LoadingStatus';
 import DisclosureComponent from '../common/DisclosureComponent';
+import AddTestToQueueWithConfirmation from '../AddTestToQueueWithConfirmation';
 
 const DisclosureContainer = styled.div`
     // Following directives are related to the ManageTestQueue component
@@ -103,7 +103,6 @@ const ManageTestQueue = ({
     const addAtVersionButtonRef = useRef();
     const editAtVersionButtonRef = useRef();
     const deleteAtVersionButtonRef = useRef();
-    const addTestPlanReportButtonRef = useRef();
 
     const [showManageATs, setShowManageATs] = useState(false);
     const [showAddTestPlans, setShowAddTestPlans] = useState(false);
@@ -147,7 +146,6 @@ const ManageTestQueue = ({
     const [addAtVersion] = useMutation(ADD_AT_VERSION_MUTATION);
     const [editAtVersion] = useMutation(EDIT_AT_VERSION_MUTATION);
     const [deleteAtVersion] = useMutation(DELETE_AT_VERSION_MUTATION);
-    const [addTestPlanReport] = useMutation(ADD_TEST_QUEUE_MUTATION);
 
     const onManageAtsClick = () => setShowManageATs(!showManageATs);
     const onAddTestPlansClick = () => setShowAddTestPlans(!showAddTestPlans);
@@ -455,40 +453,6 @@ const ManageTestQueue = ({
         }
     };
 
-    const handleAddTestPlanToTestQueue = async () => {
-        focusButtonRef.current = addTestPlanReportButtonRef.current;
-
-        const selectedTestPlanVersion = allTestPlanVersions.find(
-            item => item.id === selectedTestPlanVersionId
-        );
-        const selectedAt = ats.find(item => item.id === selectedAtId);
-        const selectedBrowser = browsers.find(
-            item => item.id === selectedBrowserId
-        );
-
-        await triggerLoad(async () => {
-            await addTestPlanReport({
-                variables: {
-                    testPlanVersionId: selectedTestPlanVersionId,
-                    atId: selectedAtId,
-                    browserId: selectedBrowserId
-                }
-            });
-            await triggerUpdate();
-        }, 'Adding Test Plan to Test Queue');
-
-        showFeedbackMessage(
-            'Successfully Added Test Plan',
-            <>
-                Successfully added <b>{selectedTestPlanVersion.title}</b> for{' '}
-                <b>
-                    {selectedAt.name} and {selectedBrowser.name}
-                </b>{' '}
-                to the Test Queue.
-            </>
-        );
-    };
-
     const showFeedbackMessage = (title, content) => {
         setFeedbackModalTitle(title);
         setFeedbackModalContent(content);
@@ -684,18 +648,21 @@ const ManageTestQueue = ({
                                 </Form.Select>
                             </Form.Group>
                         </div>
-                        <Button
-                            ref={addTestPlanReportButtonRef}
-                            variant="primary"
+                        <AddTestToQueueWithConfirmation
+                            testPlanVersion={allTestPlanVersions.find(
+                                item => item.id === selectedTestPlanVersionId
+                            )}
+                            at={ats.find(item => item.id === selectedAtId)}
+                            browser={browsers.find(
+                                item => item.id === selectedBrowserId
+                            )}
+                            triggerUpdate={triggerUpdate}
                             disabled={
                                 !selectedTestPlanVersionId ||
                                 !selectedAtId ||
                                 !selectedBrowserId
                             }
-                            onClick={handleAddTestPlanToTestQueue}
-                        >
-                            Add Test Plan to Test Queue
-                        </Button>
+                        />
                     </DisclosureContainer>,
                     <DisclosureContainer
                         key={`manage-test-queue-required-reports`}
@@ -758,14 +725,14 @@ const ManageTestQueue = ({
                             </Form.Group>
                             <Form.Group className="form-group">
                                 <Button
-                                    // ref={addTestPlanReportButtonRef}
-                                    variant="primary"
-                                    // disabled={
-                                    //     !selectedTestPlanVersionId ||
-                                    //     !selectedAtId ||
-                                    //     !selectedBrowserId
-                                    // }
-                                    // onClick={handleAddTestPlanToTestQueue}
+                                // ref={addTestPlanReportButtonRef}
+                                // variant="primary"
+                                // disabled={
+                                //     !selectedTestPlanVersionId ||
+                                //     !selectedAtId ||
+                                //     !selectedBrowserId
+                                // }
+                                // onClick={handleAddTestPlanToTestQueue}
                                 >
                                     New Button Label
                                 </Button>
