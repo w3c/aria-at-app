@@ -263,7 +263,7 @@ const graphqlSchema = gql`
         """
         The TestPlanVersion is now outdated and replaced by another version.
         """
-        SUNSET
+        DEPRECATED
     }
 
     """
