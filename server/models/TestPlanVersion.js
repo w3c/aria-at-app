@@ -4,7 +4,7 @@ const PHASE = {
     DRAFT: 'DRAFT',
     CANDIDATE: 'CANDIDATE',
     RECOMMENDED: 'RECOMMENDED',
-    SUNSET: 'SUNSET'
+    DEPRECATED: 'DEPRECATED'
 };
 
 module.exports = function (sequelize, DataTypes) {
