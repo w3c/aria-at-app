@@ -30,15 +30,23 @@ const FilterButtons = ({
     onFilterChange
 }) => {
     return (
-        <ul className="d-flex align-items-center my-3">
-            <li className="mr-3">Filter</li>
+        <ul
+            className="d-flex align-items-center my-3"
+            aria-label="Filter tests plans by status"
+            role="group"
+        >
+            <li className="mr-3" aria-hidden="true">
+                Filter
+            </li>
             {Object.keys(filterOptions).map(key => {
                 const option = filterOptions[key];
+                const isActive = activeFilter === option;
                 return (
                     <li key={key} className="mr-3">
                         <StyledFilterButton
                             variant="secondary"
-                            active={activeFilter === option}
+                            aria-pressed={isActive}
+                            active={isActive}
                             onClick={() => onFilterChange(option)}
                         >
                             {optionLabels[option]}
