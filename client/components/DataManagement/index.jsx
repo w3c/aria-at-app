@@ -140,6 +140,7 @@ const DataManagement = () => {
                 aria-label="Test Plans Status Summary Table"
                 bordered
                 hover
+                aria-rowcount={sortedTestPlans.length}
             >
                 <thead>
                     <tr>
@@ -189,7 +190,7 @@ const DataManagement = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {sortedTestPlans.map(testPlan => {
+                    {sortedTestPlans.map((testPlan, index) => {
                         return (
                             <DataManagementRow
                                 key={testPlan.id}
@@ -201,6 +202,7 @@ const DataManagement = () => {
                                         testPlanVersion.testPlan.directory ===
                                         testPlan.directory
                                 )}
+                                tableRowIndex={index}
                                 setTestPlanVersions={setTestPlanVersions}
                             />
                         );
