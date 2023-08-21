@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
-import { Modal, Table } from 'react-bootstrap';
+import { Modal } from 'react-bootstrap';
 import styled from '@emotion/styled';
 import { getRequiredReports } from './isRequired';
 import AddTestToQueueWithConfirmation from '../AddTestToQueueWithConfirmation';
