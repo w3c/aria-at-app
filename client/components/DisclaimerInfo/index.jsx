@@ -70,6 +70,14 @@ const recommendedMessageContent = (
     </>
 );
 
+const deprecatedTitle = 'Deprecated Report';
+const deprecatedMessageContent = (
+    <>
+        The information in this report is generated from previously set
+        candidate or recommended tests.
+    </>
+);
+
 const content = {
     CANDIDATE: {
         title: candidateTitle,
@@ -78,6 +86,10 @@ const content = {
     RECOMMENDED: {
         title: recommendedTitle,
         messageContent: recommendedMessageContent
+    },
+    DEPRECATED: {
+        title: deprecatedTitle,
+        messageContent: deprecatedMessageContent
     }
 };
 
