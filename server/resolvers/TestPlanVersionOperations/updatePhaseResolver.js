@@ -42,12 +42,10 @@ const updatePhaseResolver = async (
 
     // Immediately deprecate version without further checks
     if (phase === 'DEPRECATED') {
-        if (testPlanVersionId)
-            await updateTestPlanVersion(testPlanVersionId, {
-                phase: 'DEPRECATED',
-                deprecatedAt: new Date()
-            });
-        await updateTestPlanVersion(testPlanVersionId, { phase });
+        await updateTestPlanVersion(testPlanVersionId, {
+            phase: 'DEPRECATED',
+            deprecatedAt: new Date()
+        });
         return populateData({ testPlanVersionId }, { context });
     }
 
