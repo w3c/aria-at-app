@@ -84,8 +84,9 @@ const content = {
 const DisclaimerInfo = ({ phase }) => {
     const [expanded, setExpanded] = useState(false);
 
-    const title = content[phase].title;
-    const messageContent = content[phase].messageContent;
+    const title = content[phase]?.title || content.CANDIDATE.title;
+    const messageContent =
+        content[phase]?.messageContent || content.CANDIDATE.messageContent;
 
     return (
         <Container>
