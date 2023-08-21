@@ -153,7 +153,6 @@ const TestPlanReportStatusDialogWithButton = ({ testPlanVersionId }) => {
 };
 
 TestPlanReportStatusDialogWithButton.propTypes = {
-    triggerUpdate: PropTypes.func,
     testPlanVersionId: PropTypes.string.isRequired
 };
 

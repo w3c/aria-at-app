@@ -1123,8 +1123,7 @@ DataManagementRow.propTypes = {
             recommendedPhaseReachedAt: PropTypes.string
         })
     ).isRequired,
-    setTestPlanVersions: PropTypes.func,
-    triggerUpdate: PropTypes.func
+    setTestPlanVersions: PropTypes.func
 };
 
 export default DataManagementRow;
