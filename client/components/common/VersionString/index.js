@@ -15,6 +15,7 @@ const StyledPill = styled.span`
     white-space: nowrap;
     text-align: center;
 
+    // Needed for presenting component on Version History page
     &.full-width {
         width: 100%;
     }
@@ -23,11 +24,19 @@ const StyledPill = styled.span`
         width: 8em;
         margin-right: 10px;
     }
+
+    // Needed for presenting component on Data Management page
+    // Override full-width's width if both are set
+    &.auto-width {
+        width: auto;
+        margin: 0.75rem;
+    }
 `;
 
 const VersionString = ({
     date,
     fullWidth = true,
+    autoWidth = true,
     iconColor = '#818F98',
     linkRef,
     linkHref
@@ -63,17 +72,17 @@ const VersionString = ({
         possibleLink = body;
     }
 
-    return (
-        <StyledPill className={fullWidth ? 'full-width' : ''}>
-            {possibleLink}
-        </StyledPill>
-    );
+    let classes = fullWidth ? 'full-width' : '';
+    classes = autoWidth ? `${classes} auto-width` : classes;
+
+    return <StyledPill className={classes}>{possibleLink}</StyledPill>;
 };
 
 VersionString.propTypes = {
     date: PropTypes.oneOfType([PropTypes.string, PropTypes.instanceOf(Date)])
         .isRequired,
     fullWidth: PropTypes.bool,
+    autoWidth: PropTypes.bool,
     iconColor: PropTypes.string,
     linkRef: PropTypes.shape({ current: PropTypes.any }),
     linkHref: PropTypes.string

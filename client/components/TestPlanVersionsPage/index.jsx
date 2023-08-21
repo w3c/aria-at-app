@@ -234,6 +234,7 @@ const TestPlanVersionsPage = () => {
                                             iconColor={getIconColor(
                                                 testPlanVersion
                                             )}
+                                            autoWidth={false}
                                         />
                                     </td>
                                     <td>
@@ -287,6 +288,7 @@ const TestPlanVersionsPage = () => {
                                 date={testPlanVersion.updatedAt}
                                 iconColor={getIconColor(testPlanVersion)}
                                 fullWidth={false}
+                                autoWidth={false}
                             />
                         );
 
@@ -324,6 +326,7 @@ const TestPlanVersionsPage = () => {
                                 date={testPlanVersion.updatedAt}
                                 iconColor={getIconColor(testPlanVersion)}
                                 fullWidth={false}
+                                autoWidth={false}
                             />
                             <PhasePill fullWidth={false}>
                                 {getPhaseOrDeprecated(testPlanVersion)}
