@@ -13,8 +13,12 @@ import DataManagement from '../components/DataManagement';
 
 // eslint-disable-next-line jest/no-mocks-import
 import { DATA_MANAGEMENT_PAGE_POPULATED } from './__mocks__/GraphQLMocks';
-import { useDataManagementTableSorting } from '../components/DataManagement/hooks';
 import {
+    useDataManagementTableFiltering,
+    useDataManagementTableSorting
+} from '../components/DataManagement/hooks';
+import {
+    DATA_MANAGEMENT_TABLE_FILTER_OPTIONS,
     DATA_MANAGEMENT_TABLE_SORT_OPTIONS,
     TABLE_SORT_ORDERS
 } from '../utils/constants';
@@ -75,26 +79,29 @@ describe('Data Management page', () => {
     });
 });
 
+const testPlans = [
+    { title: 'Test A', directory: 'dirA' },
+    { title: 'Test B', directory: 'dirB' },
+    { title: 'Test C', directory: 'dirC' },
+    { title: 'Test D', directory: 'dirD' }
+];
+
+const testPlanVersions = [
+    { phase: 'RD', testPlan: { directory: 'dirA' } },
+    { phase: 'DRAFT', testPlan: { directory: 'dirB' } },
+    { phase: 'CANDIDATE', testPlan: { directory: 'dirC' } },
+    { phase: 'RECOMMENDED', testPlan: { directory: 'dirD' } }
+];
+
+const ats = []; // ATs are stubbed out for now
+
 describe('useDataManagementTableSorting hook', () => {
-    const testPlans = [
-        { title: 'Test A', directory: 'dirA' },
-        { title: 'Test B', directory: 'dirB' },
-        { title: 'Test C', directory: 'dirC' }
-    ];
-
-    const testPlanVersions = [
-        { phase: 'RD', testPlan: { directory: 'dirA' } },
-        { phase: 'DRAFT', testPlan: { directory: 'dirB' } },
-        { phase: 'CANDIDATE', testPlan: { directory: 'dirC' } }
-    ];
-
-    const ats = []; // ATs are stubbed out for now
-
     it('sorts by phase by default', () => {
         const { result } = renderHook(() =>
             useDataManagementTableSorting(testPlans, testPlanVersions, ats)
         );
         expect(result.current.sortedTestPlans).toEqual([
+            { title: 'Test D', directory: 'dirD' }, // RECOMMENDED
             { title: 'Test C', directory: 'dirC' }, // CANDIDATE
             { title: 'Test B', directory: 'dirB' }, // DRAFT
             { title: 'Test A', directory: 'dirA' } // RD
@@ -114,7 +121,96 @@ describe('useDataManagementTableSorting hook', () => {
         expect(result.current.sortedTestPlans).toEqual([
             { title: 'Test A', directory: 'dirA' },
             { title: 'Test B', directory: 'dirB' },
-            { title: 'Test C', directory: 'dirC' }
+            { title: 'Test C', directory: 'dirC' },
+            { title: 'Test D', directory: 'dirD' }
         ]);
+    });
+});
+
+describe('useDataManagementTableFiltering hook', () => {
+    it('shows all plans by default', () => {
+        const { result } = renderHook(() =>
+            useDataManagementTableFiltering(
+                testPlans,
+                testPlanVersions,
+                DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.ALL
+            )
+        );
+        expect(result.current.filteredTestPlans).toEqual(testPlans);
+        expect(
+            result.current.filterLabels[
+                DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.ALL
+            ]
+        ).toEqual(`All Plans (${testPlans.length})`);
+    });
+
+    it('can filter by RD phase', () => {
+        const { result } = renderHook(() =>
+            useDataManagementTableFiltering(
+                testPlans,
+                testPlanVersions,
+                DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.RD
+            )
+        );
+        expect(result.current.filteredTestPlans).toEqual([
+            { title: 'Test A', directory: 'dirA' } // RD
+        ]);
+        expect(
+            result.current.filterLabels[DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.RD]
+        ).toEqual(`R&D Complete (1)`);
+    });
+
+    it('can filter by DRAFT phase', () => {
+        const { result } = renderHook(() =>
+            useDataManagementTableFiltering(
+                testPlans,
+                testPlanVersions,
+                DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.DRAFT
+            )
+        );
+        expect(result.current.filteredTestPlans).toEqual([
+            { title: 'Test B', directory: 'dirB' } // DRAFT
+        ]);
+        expect(
+            result.current.filterLabels[
+                DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.DRAFT
+            ]
+        ).toEqual(`In Draft Review (1)`);
+    });
+
+    it('can filter by CANDIDATE phase', () => {
+        const { result } = renderHook(() =>
+            useDataManagementTableFiltering(
+                testPlans,
+                testPlanVersions,
+                DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.CANDIDATE
+            )
+        );
+        expect(result.current.filteredTestPlans).toEqual([
+            { title: 'Test C', directory: 'dirC' } // CANDIDATE
+        ]);
+        expect(
+            result.current.filterLabels[
+                DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.CANDIDATE
+            ]
+        ).toEqual(`In Candidate Review (1)`);
+    });
+
+    it('can filter by RECOMMENDED phase', () => {
+        const { result } = renderHook(() =>
+            useDataManagementTableFiltering(
+                testPlans,
+                testPlanVersions,
+                DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.RECOMMENDED
+            )
+        );
+        expect(result.current.filteredTestPlans).toEqual([
+            { title: 'Test D', directory: 'dirD' } // RECOMMENDED
+        ]);
+        expect(
+            result.current.filterLabels[
+                DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.RECOMMENDED
+            ]
+        ).toEqual(`Recommended Plans (1)`);
     });
 });
