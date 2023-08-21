@@ -665,7 +665,6 @@ const DataManagementRow = ({
                         const markedFinalAt = testPlanReport.markedFinalAt;
                         const atName = testPlanReport.at.name;
                         const browserName = testPlanReport.browser.name;
-
                         const value = `${atName}_${browserName}`;
 
                         if (markedFinalAt && !coveredReports.includes(value)) {
@@ -869,11 +868,12 @@ const DataManagementRow = ({
 
                     let coveredReports = [];
                     latestVersion.testPlanReports.forEach(testPlanReport => {
+                        const markedFinalAt = testPlanReport.markedFinalAt;
                         const atName = testPlanReport.at.name;
                         const browserName = testPlanReport.browser.name;
                         const value = `${atName}_${browserName}`;
 
-                        if (!coveredReports.includes(value))
+                        if (markedFinalAt && !coveredReports.includes(value))
                             coveredReports.push(value);
                     });
 

@@ -264,14 +264,17 @@ const updatePhaseResolver = async (
     if (phase === 'CANDIDATE' || phase === 'RECOMMENDED') {
         const reportsByAtAndBrowser = {};
 
-        testPlanReports.forEach(testPlanReport => {
-            const { at, browser } = testPlanReport;
-            if (!reportsByAtAndBrowser[at.id]) {
-                reportsByAtAndBrowser[at.id] = {};
-            }
+        testPlanReports
+            // Only check for reports which have been marked as final
+            .filter(testPlanReport => !!testPlanReport.markedFinalAt)
+            .forEach(testPlanReport => {
+                const { at, browser } = testPlanReport;
+                if (!reportsByAtAndBrowser[at.id]) {
+                    reportsByAtAndBrowser[at.id] = {};
+                }
 
-            reportsByAtAndBrowser[at.id][browser.id] = testPlanReport;
-        });
+                reportsByAtAndBrowser[at.id][browser.id] = testPlanReport;
+            });
 
         const ats = await context.atLoader.getAll();
 
@@ -294,7 +297,7 @@ const updatePhaseResolver = async (
         if (missingAtBrowserCombinations.length) {
             throw new Error(
                 `Cannot set phase to ${phase.toLowerCase()} because the following` +
-                    ` required reports have not been collected:` +
+                    ` required reports have not been collected or finalized:` +
                     ` ${missingAtBrowserCombinations.join(', ')}.`
             );
         }
