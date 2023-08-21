@@ -13,10 +13,10 @@ import TestQueue from '../components/TestQueue';
 
 // eslint-disable-next-line jest/no-mocks-import
 import {
-    TEST_QUEUE_PAGE_NOT_POPULATED_MOCK_ADMIN,
-    TEST_QUEUE_PAGE_NOT_POPULATED_MOCK_TESTER,
-    TEST_QUEUE_PAGE_POPULATED_MOCK_ADMIN,
-    TEST_QUEUE_PAGE_POPULATED_MOCK_TESTER
+    TEST_QUEUE_PAGE_ADMIN_NOT_POPULATED_MOCK_DATA,
+    TEST_QUEUE_PAGE_TESTER_NOT_POPULATED_MOCK_DATA,
+    TEST_QUEUE_PAGE_ADMIN_POPULATED_MOCK_DATA,
+    TEST_QUEUE_PAGE_TESTER_POPULATED_MOCK_DATA
 } from './__mocks__/GraphQLMocks';
 
 const setup = (mocks = []) => {
@@ -37,7 +37,7 @@ describe('Render TestQueue/index.jsx', () => {
 
     describe('[NOT ADMIN] when no test plan reports exist', () => {
         beforeEach(() => {
-            wrapper = setup(TEST_QUEUE_PAGE_NOT_POPULATED_MOCK_TESTER);
+            wrapper = setup(TEST_QUEUE_PAGE_TESTER_NOT_POPULATED_MOCK_DATA);
         });
 
         it('renders loading state on initialization', async () => {
@@ -94,7 +94,7 @@ describe('Render TestQueue/index.jsx', () => {
 
     describe('[NOT ADMIN] when test plan reports exist', () => {
         beforeEach(() => {
-            wrapper = setup(TEST_QUEUE_PAGE_POPULATED_MOCK_TESTER);
+            wrapper = setup(TEST_QUEUE_PAGE_TESTER_POPULATED_MOCK_DATA);
         });
 
         it('renders loading state on initialization', async () => {
@@ -167,7 +167,7 @@ describe('Render TestQueue/index.jsx', () => {
 
     describe('[IS ADMIN] when no test plan reports exist', () => {
         beforeEach(() => {
-            wrapper = setup(TEST_QUEUE_PAGE_NOT_POPULATED_MOCK_ADMIN);
+            wrapper = setup(TEST_QUEUE_PAGE_ADMIN_NOT_POPULATED_MOCK_DATA);
         });
 
         it('renders loading state on initialization', async () => {
@@ -233,7 +233,7 @@ describe('Render TestQueue/index.jsx', () => {
 
     describe('[IS ADMIN] when test plan reports exist', () => {
         beforeEach(() => {
-            wrapper = setup(TEST_QUEUE_PAGE_POPULATED_MOCK_ADMIN);
+            wrapper = setup(TEST_QUEUE_PAGE_ADMIN_POPULATED_MOCK_DATA);
         });
 
         it('renders loading state on initialization', async () => {
