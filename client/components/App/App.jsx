@@ -74,9 +74,9 @@ const App = () => {
                                 <Nav.Link
                                     as={Link}
                                     to="/data-management"
-                                    aria-current={
-                                        location.pathname === '/data-management'
-                                    }
+                                    aria-current={location.pathname.startsWith(
+                                        '/data-management'
+                                    )}
                                 >
                                     Data Management
                                 </Nav.Link>

@@ -12,7 +12,7 @@ import '@testing-library/jest-dom/extend-expect';
 import DataManagement from '../components/DataManagement';
 
 // eslint-disable-next-line jest/no-mocks-import
-import { DATA_MANAGEMENT_PAGE_POPULATED } from './__mocks__/GraphQLMocks';
+import { DATA_MANAGEMENT_PAGE_POPULATED_MOCK_DATA } from './__mocks__/GraphQLMocks';
 
 const setup = (mocks = []) => {
     return render(
@@ -31,7 +31,7 @@ describe('Data Management page', () => {
     let wrapper;
 
     beforeEach(() => {
-        wrapper = setup(DATA_MANAGEMENT_PAGE_POPULATED);
+        wrapper = setup(DATA_MANAGEMENT_PAGE_POPULATED_MOCK_DATA);
     });
 
     it('renders loading state on initialization', async () => {

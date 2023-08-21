@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
-import { Modal, Table } from 'react-bootstrap';
+import { Modal } from 'react-bootstrap';
 import styled from '@emotion/styled';
 import { getRequiredReports } from './isRequired';
 import AddTestToQueueWithConfirmation from '../AddTestToQueueWithConfirmation';
@@ -10,29 +10,12 @@ import { evaluateAuth } from '../../utils/evaluateAuth';
 import getMetrics from '../Reports/getMetrics';
 import { calculateTestPlanReportCompletionPercentage } from './calculateTestPlanReportCompletionPercentage';
 import { convertDateToString } from '../../utils/formatter';
+import { ThemeTable, ThemeTableHeader } from '../common/ThemeTable';
 
 const TestPlanReportStatusModal = styled(Modal)`
     .modal-dialog {
         max-width: 90%;
         width: max-content;
-    }
-`;
-
-const TestPlanReportStatusTableHeader = styled.h2`
-    background-color: var(--bs-table-bg) !important;
-    font-size: 1.25rem;
-    font-weight: 600;
-    border: solid 1px #d2d5d9;
-    border-bottom: none;
-    padding: 0.5rem 1rem;
-    margin: 0.5rem 0 0 0;
-`;
-
-const TestPlanReportStatusTable = styled(Table)`
-    td,
-    th {
-        padding-left: 1rem;
-        min-width: 165px;
     }
 `;
 
@@ -224,10 +207,10 @@ const TestPlanReportStatusDialog = ({
                     </p>
                 )}
 
-                <TestPlanReportStatusTableHeader>
+                <ThemeTableHeader>
                     Reports for Draft Alert Test Plan
-                </TestPlanReportStatusTableHeader>
-                <TestPlanReportStatusTable bordered responsive>
+                </ThemeTableHeader>
+                <ThemeTable bordered responsive>
                     <thead>
                         <tr>
                             <th>Required</th>
@@ -245,7 +228,7 @@ const TestPlanReportStatusDialog = ({
                             renderTableRow(report, 'No')
                         )}
                     </tbody>
-                </TestPlanReportStatusTable>
+                </ThemeTable>
             </Modal.Body>
         </TestPlanReportStatusModal>
     );

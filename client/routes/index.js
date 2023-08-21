@@ -12,6 +12,7 @@ import TestRun from '@components/TestRun';
 import UserSettings from '@components/UserSettings';
 import CandidateTestPlanRun from '@components/CandidateReview/CandidateTestPlanRun';
 import DataManagement from 'client/components/DataManagement';
+import TestPlanVersionsPage from '../components/TestPlanVersionsPage';
 
 export default () => (
     <Routes>
@@ -66,6 +67,11 @@ export default () => (
             }
         />
         <Route exact path="/data-management" element={<DataManagement />} />
+        <Route
+            exact
+            path="/data-management/:testPlanDirectory/"
+            element={<TestPlanVersionsPage />}
+        />
         <Route exact path="/invalid-request" element={<InvalidRequest />} />
         <Route exact path="/404" element={<NotFound />} />
         <Route exact path="*" element={<Navigate to="/404" replace />} />
