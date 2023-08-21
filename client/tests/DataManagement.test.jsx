@@ -3,7 +3,7 @@
  */
 
 import React from 'react';
-import { render, waitFor } from '@testing-library/react';
+import { render, renderHook, waitFor } from '@testing-library/react';
 import { InMemoryCache } from '@apollo/client';
 import { MockedProvider } from '@apollo/client/testing';
 import { BrowserRouter } from 'react-router-dom';
@@ -13,6 +13,12 @@ import DataManagement from '../components/DataManagement';
 
 // eslint-disable-next-line jest/no-mocks-import
 import { DATA_MANAGEMENT_PAGE_POPULATED_MOCK_DATA } from './__mocks__/GraphQLMocks';
+import { useDataManagementTableSorting } from '../components/DataManagement/hooks';
+import {
+    DATA_MANAGEMENT_TABLE_SORT_OPTIONS,
+    TABLE_SORT_ORDERS
+} from '../utils/constants';
+import { act } from 'react-dom/test-utils';
 
 const setup = (mocks = []) => {
     return render(
@@ -66,5 +72,49 @@ describe('Data Management page', () => {
         expect(draftElement.length).toBeGreaterThanOrEqual(1);
         expect(candidateElement.length).toBeGreaterThanOrEqual(1);
         expect(recommendedElement.length).toBeGreaterThanOrEqual(1);
+    });
+});
+
+describe('useDataManagementTableSorting hook', () => {
+    const testPlans = [
+        { title: 'Test A', directory: 'dirA' },
+        { title: 'Test B', directory: 'dirB' },
+        { title: 'Test C', directory: 'dirC' }
+    ];
+
+    const testPlanVersions = [
+        { phase: 'RD', testPlan: { directory: 'dirA' } },
+        { phase: 'DRAFT', testPlan: { directory: 'dirB' } },
+        { phase: 'CANDIDATE', testPlan: { directory: 'dirC' } }
+    ];
+
+    const ats = []; // ATs are stubbed out for now
+
+    it('sorts by phase by default', () => {
+        const { result } = renderHook(() =>
+            useDataManagementTableSorting(testPlans, testPlanVersions, ats)
+        );
+        expect(result.current.sortedTestPlans).toEqual([
+            { title: 'Test C', directory: 'dirC' }, // CANDIDATE
+            { title: 'Test B', directory: 'dirB' }, // DRAFT
+            { title: 'Test A', directory: 'dirA' } // RD
+        ]);
+    });
+
+    it('can sort by name', () => {
+        const { result } = renderHook(() =>
+            useDataManagementTableSorting(testPlans, testPlanVersions, ats)
+        );
+        act(() =>
+            result.current.updateSort({
+                key: DATA_MANAGEMENT_TABLE_SORT_OPTIONS.NAME,
+                direction: TABLE_SORT_ORDERS.DESC
+            })
+        );
+        expect(result.current.sortedTestPlans).toEqual([
+            { title: 'Test A', directory: 'dirA' },
+            { title: 'Test B', directory: 'dirB' },
+            { title: 'Test C', directory: 'dirC' }
+        ]);
     });
 });
