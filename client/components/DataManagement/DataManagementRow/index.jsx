@@ -152,7 +152,8 @@ const DataManagementRow = ({
     ats,
     testPlan,
     testPlanVersions,
-    setTestPlanVersions
+    setTestPlanVersions,
+    tableRowIndex
 }) => {
     const { triggerLoad, loadingMessage } = useTriggerLoad();
     const {
@@ -1015,7 +1016,7 @@ const DataManagementRow = ({
 
     return (
         <LoadingStatus message={loadingMessage}>
-            <tr>
+            <tr aria-rowindex={tableRowIndex}>
                 <th>
                     <a href={`/data-management/${testPlan.directory}`}>
                         <b>{testPlan.title}</b>
@@ -1129,6 +1130,7 @@ DataManagementRow.propTypes = {
             recommendedPhaseReachedAt: PropTypes.string
         })
     ).isRequired,
+    tableRowIndex: PropTypes.number.isRequired,
     setTestPlanVersions: PropTypes.func
 };
 

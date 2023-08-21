@@ -65,26 +65,59 @@ const SortableTableHeader = ({ title, active, onSort = () => {} }) => {
     };
 
     const getIcon = () => {
+        const ariaAttributes = {
+            'aria-hidden': 'true',
+            focusable: 'false'
+        };
+
         if (!active) {
-            return <InactiveIcon icon={faArrowDownShortWide} />;
+            return (
+                <InactiveIcon icon={faArrowDownShortWide} {...ariaAttributes} />
+            );
         }
 
         switch (currentSortOrder) {
             case TABLE_SORT_ORDERS.ASC:
-                return <FontAwesomeIcon icon={faArrowUpShortWide} />;
+                return (
+                    <FontAwesomeIcon
+                        icon={faArrowUpShortWide}
+                        {...ariaAttributes}
+                    />
+                );
             case TABLE_SORT_ORDERS.DESC:
-                return <FontAwesomeIcon icon={faArrowDownShortWide} />;
+                return (
+                    <FontAwesomeIcon
+                        icon={faArrowDownShortWide}
+                        {...ariaAttributes}
+                    />
+                );
             default:
-                return <FontAwesomeIcon icon={faArrowDownShortWide} />;
+                return (
+                    <FontAwesomeIcon
+                        icon={faArrowDownShortWide}
+                        {...ariaAttributes}
+                    />
+                );
+        }
+    };
+
+    const getAriaSort = () => {
+        if (!active) {
+            return 'none';
+        } else {
+            return currentSortOrder === TABLE_SORT_ORDERS.ASC
+                ? 'ascending'
+                : 'descending';
         }
     };
 
     return (
-        <SortableTableHeaderWrapper>
-            <SortableTableHeaderButton
-                onClick={handleClick}
-                aria-label={`Change the table sort order to sort by ${currentSortOrder} based on the ${title} column`}
-            >
+        <SortableTableHeaderWrapper
+            role="columnheader"
+            scope="col"
+            aria-sort={getAriaSort()}
+        >
+            <SortableTableHeaderButton onClick={handleClick}>
                 {title}
                 {getIcon()}
             </SortableTableHeaderButton>
