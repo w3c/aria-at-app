@@ -1,25 +1,38 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import styled from '@emotion/styled';
 import { Feedback } from '..';
 import { Form } from 'react-bootstrap';
+import { noOutputTextAreaValue } from './constants';
 
-const OutputTextAreaWrapper = styled.p`
+const OutputTextAreaWrapper = styled.div`
     > textarea {
         width: 100%;
     }
 `;
 
-const NoOutputCheckbox = styled(Form.Check.Label)`
+const NoOutputCheckbox = styled(Form.Check)`
     display: inline-block;
     float: right;
+    color: ${props => (props.disabled ? 'lightgray' : 'inherit')};
     > input {
+        cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
         margin-right: 4px;
     }
 `;
 
 const OutputTextArea = ({ commandIndex, atOutput, isSubmitted }) => {
-    const [noOutput, setNoOutput] = React.useState(false);
+    const [noOutput, setNoOutput] = React.useState(
+        atOutput.value === noOutputTextAreaValue
+    );
+
+    useEffect(() => {
+        if (noOutput) {
+            atOutput.change(noOutputTextAreaValue);
+        } else {
+            atOutput.change('');
+        }
+    }, [noOutput]);
 
     return (
         <OutputTextAreaWrapper>
@@ -38,16 +51,16 @@ const OutputTextArea = ({ commandIndex, atOutput, isSubmitted }) => {
                     </Feedback>
                 )}
             </label>
-            {!atOutput.value && (
-                <NoOutputCheckbox role="checkbox" aria-checked={noOutput}>
-                    <Form.Check.Input
-                        type="checkbox"
-                        onChange={() => setNoOutput(!noOutput)}
-                        value={noOutput}
-                    />
-                    No output
-                </NoOutputCheckbox>
-            )}
+            <NoOutputCheckbox
+                aria-checked={noOutput}
+                disabled={
+                    atOutput.value && atOutput.value !== noOutputTextAreaValue
+                }
+                label="No output"
+                id={`no-output-checkbox-${commandIndex}`}
+                type="checkbox"
+                onChange={() => setNoOutput(!noOutput)}
+            />
             <textarea
                 key={`SpeechOutput__textarea__${commandIndex}`}
                 id={`speechoutput-${commandIndex}`}
