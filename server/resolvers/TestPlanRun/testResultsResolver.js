@@ -36,12 +36,14 @@ const testResultsResolver = async (testPlanRun, _, context) => {
                     })
                 ),
                 unexpectedBehaviors: scenarioResult.unexpectedBehaviors?.map(
-                    unexpectedBehavior => ({
-                        ...unexpectedBehavior,
-                        text: unexpectedBehaviorsJson.find(
-                            each => each.id === unexpectedBehavior.id
-                        ).text
-                    })
+                    unexpectedBehaviorId => {
+                        return {
+                            id: unexpectedBehaviorId,
+                            text: unexpectedBehaviorsJson.find(
+                                each => each.id === unexpectedBehaviorId
+                            ).text
+                        };
+                    }
                 )
             }))
         };

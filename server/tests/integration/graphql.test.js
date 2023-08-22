@@ -349,8 +349,8 @@ describe('graphql', () => {
                                         __typename
                                         id
                                         text
-                                        otherUnexpectedBehaviorText
                                     }
+                                    unexpectedBehaviorNote
                                 }
                             }
                             testResultsLength
@@ -767,8 +767,8 @@ const getMutationInputs = async () => {
                 }
                 unexpectedBehaviors {
                     id
-                    otherUnexpectedBehaviorText
                 }
+                unexpectedBehaviorNote
             }
         }
 

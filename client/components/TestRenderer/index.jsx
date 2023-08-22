@@ -309,8 +309,10 @@ const TestRenderer = ({
                 output,
                 assertionResults,
                 unexpectedBehaviors,
+                unexpectedBehaviorNote,
                 highlightRequired = false, // atOutput
-                unexpectedBehaviorHighlightRequired = false
+                unexpectedBehaviorHighlightRequired = false,
+                expandUnexpected = false
             } = scenarioResults[i];
 
             if (output) commands[i].atOutput.value = output;
@@ -344,33 +346,34 @@ const TestRenderer = ({
                      * 5 = OTHER
                      */
                     const unexpectedBehavior = unexpectedBehaviors[k];
-                    if (unexpectedBehavior.id === 'EXCESSIVELY_VERBOSE')
+                    if (unexpectedBehavior === 'EXCESSIVELY_VERBOSE')
                         commands[i].unexpected.behaviors[0].checked = true;
-                    if (unexpectedBehavior.id === 'UNEXPECTED_CURSOR_POSITION')
+                    if (unexpectedBehavior === 'UNEXPECTED_CURSOR_POSITION')
                         commands[i].unexpected.behaviors[1].checked = true;
-                    if (unexpectedBehavior.id === 'SLUGGISH')
+                    if (unexpectedBehavior === 'SLUGGISH')
                         commands[i].unexpected.behaviors[2].checked = true;
-                    if (unexpectedBehavior.id === 'AT_CRASHED')
+                    if (unexpectedBehavior === 'AT_CRASHED')
                         commands[i].unexpected.behaviors[3].checked = true;
-                    if (unexpectedBehavior.id === 'BROWSER_CRASHED')
+                    if (unexpectedBehavior === 'BROWSER_CRASHED')
                         commands[i].unexpected.behaviors[4].checked = true;
-                    if (unexpectedBehavior.id === 'OTHER') {
+                    if (unexpectedBehavior === 'OTHER') {
                         commands[i].unexpected.behaviors[5].checked = true;
-                        commands[i].unexpected.behaviors[5].more.value =
-                            unexpectedBehavior.otherUnexpectedBehaviorText;
-                        commands[
-                            i
-                        ].unexpected.behaviors[5].more.highlightRequired =
-                            unexpectedBehavior.highlightRequired;
                     }
                 }
-            } else if (unexpectedBehaviors)
+            } else if (!expandUnexpected) {
                 // but not populated
                 commands[i].unexpected.hasUnexpected = 'doesNotHaveUnexpected';
-            else commands[i].unexpected.hasUnexpected = 'notSet';
+            } else if (expandUnexpected) {
+                commands[i].unexpected.hasUnexpected = 'hasUnexpected';
+                commands[i].unexpected.expand = true;
+            } else commands[i].unexpected.hasUnexpected = 'notSet';
 
             commands[i].unexpected.highlightRequired =
                 unexpectedBehaviorHighlightRequired;
+
+            commands[i].unexpected.note = {
+                value: unexpectedBehaviorNote ?? ''
+            };
         }
 
         return { ...state, commands, currentUserAction: 'validateResults' };
@@ -450,12 +453,6 @@ const TestRenderer = ({
                 const unexpectedError = item.unexpected.highlightRequired;
                 if (unexpectedError) return true;
 
-                const { behaviors } = item.unexpected;
-                const uncheckedBehaviorsMoreError = behaviors.some(item => {
-                    if (item.more) return item.more.highlightRequired;
-                    return false;
-                });
-                if (uncheckedBehaviorsMoreError) return true;
                 return false;
             });
         }
@@ -677,6 +674,23 @@ const TestRenderer = ({
                                                             )}
                                                         </li>
                                                     )
+                                                )}
+                                                {!details.unexpectedBehaviors
+                                                    .note.length ? (
+                                                    ''
+                                                ) : (
+                                                    <li>
+                                                        Explanation:&nbsp;
+                                                        <em>
+                                                            &quot;
+                                                            {
+                                                                details
+                                                                    .unexpectedBehaviors
+                                                                    .note
+                                                            }
+                                                            &quot;
+                                                        </em>
+                                                    </li>
                                                 )}
                                             </ResultsBulletList>
                                         </div>
@@ -1112,7 +1126,6 @@ const TestRenderer = ({
                                                             checked,
                                                             focus,
                                                             description,
-                                                            more,
                                                             change
                                                         } = option;
                                                         return (
@@ -1126,7 +1139,7 @@ const TestRenderer = ({
                                                                         description
                                                                     }
                                                                     id={`${description}-${commandIndex}`}
-                                                                    className={`undesirable-${commandIndex}`}
+                                                                    className={`unexpected-${commandIndex}`}
                                                                     tabIndex={
                                                                         optionIndex ===
                                                                         0
@@ -1137,10 +1150,10 @@ const TestRenderer = ({
                                                                         isSubmitted &&
                                                                         focus
                                                                     }
-                                                                    defaultChecked={
+                                                                    checked={
                                                                         checked
                                                                     }
-                                                                    onClick={e =>
+                                                                    onChange={e =>
                                                                         change(
                                                                             e
                                                                                 .target
@@ -1156,67 +1169,76 @@ const TestRenderer = ({
                                                                     }
                                                                 </label>
                                                                 <br />
-                                                                {more && (
-                                                                    <div>
-                                                                        <label
-                                                                            htmlFor={`${description}-${commandIndex}-input`}
-                                                                        >
-                                                                            {
-                                                                                more
-                                                                                    .description[0]
-                                                                            }
-                                                                            {isSubmitted && (
-                                                                                <Feedback
-                                                                                    className={`${
-                                                                                        more
-                                                                                            .description[1]
-                                                                                            .required &&
-                                                                                        'required'
-                                                                                    } ${
-                                                                                        more
-                                                                                            .description[1]
-                                                                                            .highlightRequired &&
-                                                                                        'highlight-required'
-                                                                                    }`}
-                                                                                >
-                                                                                    {
-                                                                                        more
-                                                                                            .description[1]
-                                                                                            .description
-                                                                                    }
-                                                                                </Feedback>
-                                                                            )}
-                                                                        </label>
-                                                                        <input
-                                                                            key={`${description}__${commandIndex}__input`}
-                                                                            type="text"
-                                                                            id={`${description}-${commandIndex}-input`}
-                                                                            name={`${description}-${commandIndex}-input`}
-                                                                            className={`undesirable-${description.toLowerCase()}-input`}
-                                                                            autoFocus={
-                                                                                isSubmitted &&
-                                                                                more.focus
-                                                                            }
-                                                                            value={
-                                                                                more.value
-                                                                            }
-                                                                            onChange={e =>
-                                                                                more.change(
-                                                                                    e
-                                                                                        .target
-                                                                                        .value
-                                                                                )
-                                                                            }
-                                                                            disabled={
-                                                                                !checked
-                                                                            }
-                                                                        />
-                                                                    </div>
-                                                                )}
                                                             </Fragment>
                                                         );
                                                     }
                                                 )}
+                                                <div>
+                                                    <label
+                                                        htmlFor={`unexpected-behavior-note`}
+                                                    >
+                                                        {
+                                                            unexpectedBehaviors
+                                                                .failChoice.note
+                                                                .description[0]
+                                                        }
+                                                        {isSubmitted && (
+                                                            <Feedback
+                                                                className={`${
+                                                                    unexpectedBehaviors
+                                                                        .failChoice
+                                                                        .note
+                                                                        .description[1]
+                                                                        .required &&
+                                                                    'required'
+                                                                } ${
+                                                                    unexpectedBehaviors
+                                                                        .failChoice
+                                                                        .note
+                                                                        .description[1]
+                                                                        .highlightRequired &&
+                                                                    'highlight-required'
+                                                                }`}
+                                                            >
+                                                                {
+                                                                    unexpectedBehaviors
+                                                                        .failChoice
+                                                                        .note
+                                                                        .description[1]
+                                                                        .description
+                                                                }
+                                                            </Feedback>
+                                                        )}
+                                                    </label>
+                                                    <input
+                                                        key={`unexpected-behavior-note-${commandIndex}`}
+                                                        type="text"
+                                                        id="unexpected-behavior-note"
+                                                        name="unexpected-behavior-note"
+                                                        className="unexpected-behavior-note"
+                                                        disabled={
+                                                            !unexpectedBehaviors
+                                                                .failChoice.note
+                                                                .enabled
+                                                        }
+                                                        autoFocus={
+                                                            isSubmitted &&
+                                                            unexpectedBehaviors
+                                                                .failChoice.note
+                                                                .focus
+                                                        }
+                                                        value={
+                                                            unexpectedBehaviors
+                                                                .failChoice.note
+                                                                .value
+                                                        }
+                                                        onChange={e =>
+                                                            unexpectedBehaviors.failChoice.note.change(
+                                                                e.target.value
+                                                            )
+                                                        }
+                                                    />
+                                                </div>
                                             </Fieldset>
                                         </Fieldset>
                                     </Fragment>

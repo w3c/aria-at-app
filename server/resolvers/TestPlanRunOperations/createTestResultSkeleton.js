@@ -41,7 +41,8 @@ const createTestResultSkeleton = ({
                             failedReason: null
                         };
                     }),
-                    unexpectedBehaviors: null
+                    unexpectedBehaviors: null,
+                    unexpectedBehaviorNote: null
                 };
             })
     };

@@ -35,8 +35,8 @@ export const TEST_RUN_PAGE_QUERY = gql`
                     unexpectedBehaviors {
                         id
                         text
-                        otherUnexpectedBehaviorText
                     }
+                    unexpectedBehaviorNote
                 }
             }
             testPlanReport {
@@ -71,8 +71,8 @@ export const TEST_RUN_PAGE_QUERY = gql`
                             output
                             unexpectedBehaviors {
                                 text
-                                otherUnexpectedBehaviorText
                             }
+                            unexpectedBehaviorNote
                         }
                         assertionResult {
                             passed
@@ -180,8 +180,8 @@ export const TEST_RUN_PAGE_ANON_QUERY = gql`
                         output
                         unexpectedBehaviors {
                             text
-                            otherUnexpectedBehaviorText
                         }
+                        unexpectedBehaviorNote
                     }
                     assertionResult {
                         passed

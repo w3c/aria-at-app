@@ -91,18 +91,23 @@ const ReviewConflicts = ({
             const { testPlanRun, scenarioResult } = result;
             let resultFormatted;
             if (scenarioResult.unexpectedBehaviors.length) {
-                resultFormatted = scenarioResult.unexpectedBehaviors
-                    .map(({ otherUnexpectedBehaviorText, text }) => {
-                        return `"${otherUnexpectedBehaviorText ?? text}"`;
-                    })
-                    .join(' and ');
+                resultFormatted =
+                    'the unexpected behavior ' +
+                    scenarioResult.unexpectedBehaviors
+                        .map(({ text }) => `"${text.toLowerCase()}"`)
+                        .join(' and ');
             } else {
                 resultFormatted = 'no unexpected behavior';
             }
+            let noteFormatted = scenarioResult.unexpectedBehaviorNote
+                ? ` with the explanation ` +
+                  `"${scenarioResult.unexpectedBehaviorNote}"`
+                : '';
             return (
                 <li key={testPlanRun.id}>
                     Tester {testPlanRun.tester.username} recorded output &quot;
-                    {scenarioResult.output}&quot; and noted {resultFormatted}.
+                    {scenarioResult.output}&quot; and noted&nbsp;
+                    {resultFormatted + noteFormatted}.
                 </li>
             );
         });
@@ -160,11 +165,10 @@ ReviewConflicts.propTypes = {
                             output: PropTypes.string.isRequired,
                             unexpectedBehaviors: PropTypes.arrayOf(
                                 PropTypes.shape({
-                                    text: PropTypes.string.isRequired,
-                                    otherUnexpectedBehaviorText:
-                                        PropTypes.string
+                                    text: PropTypes.string.isRequired
                                 })
-                            ).isRequired
+                            ).isRequired,
+                            unexpectedBehaviorNote: PropTypes.string
                         }),
                         assertionResult: PropTypes.shape({
                             passed: PropTypes.bool.isRequired,

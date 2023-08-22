@@ -399,7 +399,8 @@ const TestRun = () => {
     const remapScenarioResults = (
         rendererState,
         scenarioResults,
-        captureHighlightRequired = false
+        captureHighlightRequired = false,
+        save = false
     ) => {
         let newScenarioResults = [];
         if (!rendererState || !scenarioResults) {
@@ -449,6 +450,7 @@ const TestRun = () => {
             const { hasUnexpected, behaviors, highlightRequired } = unexpected;
             if (hasUnexpected === 'hasUnexpected') {
                 unexpectedBehaviors = [];
+                if (!save) scenarioResult.expandUnexpected = true;
                 /**
                  * 0 = EXCESSIVELY_VERBOSE
                  * 1 = UNEXPECTED_CURSOR_POSITION
@@ -461,38 +463,21 @@ const TestRun = () => {
                     const behavior = behaviors[i];
                     if (behavior.checked) {
                         if (i === 0)
-                            unexpectedBehaviors.push({
-                                id: 'EXCESSIVELY_VERBOSE'
-                            });
+                            unexpectedBehaviors.push('EXCESSIVELY_VERBOSE');
                         if (i === 1)
-                            unexpectedBehaviors.push({
-                                id: 'UNEXPECTED_CURSOR_POSITION'
-                            });
-                        if (i === 2)
-                            unexpectedBehaviors.push({ id: 'SLUGGISH' });
-                        if (i === 3)
-                            unexpectedBehaviors.push({ id: 'AT_CRASHED' });
-                        if (i === 4)
-                            unexpectedBehaviors.push({ id: 'BROWSER_CRASHED' });
-                        if (i === 5) {
-                            const moreResult = {
-                                id: 'OTHER',
-                                otherUnexpectedBehaviorText: behavior.more.value
-                            };
                             unexpectedBehaviors.push(
-                                captureHighlightRequired
-                                    ? {
-                                          ...moreResult,
-                                          highlightRequired:
-                                              behavior.more.highlightRequired
-                                      }
-                                    : moreResult
+                                'UNEXPECTED_CURSOR_POSITION'
                             );
-                        }
+                        if (i === 2) unexpectedBehaviors.push('SLUGGISH');
+                        if (i === 3) unexpectedBehaviors.push('AT_CRASHED');
+                        if (i === 4)
+                            unexpectedBehaviors.push('BROWSER_CRASHED');
+                        if (i === 5) unexpectedBehaviors.push('OTHER');
                     }
                 }
-            } else if (hasUnexpected === 'doesNotHaveUnexpected')
+            } else if (hasUnexpected === 'doesNotHaveUnexpected') {
                 unexpectedBehaviors = [];
+            }
 
             // re-assign scenario result due to read only values
             scenarioResult.output = atOutput.value ? atOutput.value : null;
@@ -502,6 +487,8 @@ const TestRun = () => {
             scenarioResult.unexpectedBehaviors = unexpectedBehaviors
                 ? [...unexpectedBehaviors]
                 : null;
+            scenarioResult.unexpectedBehaviorNote =
+                unexpected.note.value === '' ? null : unexpected.note.value;
             if (captureHighlightRequired)
                 scenarioResult.unexpectedBehaviorHighlightRequired =
                     highlightRequired;
@@ -517,8 +504,23 @@ const TestRun = () => {
             !rendererState ||
             !testResult.scenarioResults ||
             rendererState.commands.length !== testResult.scenarioResults.length
-        )
-            return testResult;
+        ) {
+            // Mapping unexpected behaviors to expected TestRenderer downstream format
+            const scenarioResults = testResult.scenarioResults.map(
+                scenarioResult => {
+                    return {
+                        ...scenarioResult,
+                        unexpectedBehaviors: scenarioResult.unexpectedBehaviors
+                            ? scenarioResult.unexpectedBehaviors.map(
+                                  behavior => behavior.id
+                              )
+                            : scenarioResult.unexpectedBehaviors
+                    };
+                }
+            );
+
+            return { ...testResult, scenarioResults };
+        }
 
         const scenarioResults = remapScenarioResults(
             rendererState,
@@ -547,7 +549,8 @@ const TestRun = () => {
                 const scenarioResults = remapScenarioResults(
                     testRunStateRef.current || recentTestRunStateRef.current,
                     currentTest.testResult?.scenarioResults,
-                    false
+                    false,
+                    true
                 );
 
                 await handleSaveOrSubmitTestResultAction(

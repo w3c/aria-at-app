@@ -472,8 +472,8 @@ describe('test queue', () => {
                                 output
                                 unexpectedBehaviors {
                                     text
-                                    otherUnexpectedBehaviorText
                                 }
+                                unexpectedBehaviorNote
                             }
                             assertionResult {
                                 passed
@@ -509,6 +509,7 @@ describe('test queue', () => {
                       },
                       "scenarioResult": {
                         "output": "automatically seeded sample output",
+                        "unexpectedBehaviorNote": null,
                         "unexpectedBehaviors": [],
                       },
                       "testPlanRun": {
@@ -525,6 +526,7 @@ describe('test queue', () => {
                       },
                       "scenarioResult": {
                         "output": "automatically seeded sample output",
+                        "unexpectedBehaviorNote": null,
                         "unexpectedBehaviors": [],
                       },
                       "testPlanRun": {
@@ -561,6 +563,7 @@ describe('test queue', () => {
                       },
                       "scenarioResult": {
                         "output": "automatically seeded sample output",
+                        "unexpectedBehaviorNote": null,
                         "unexpectedBehaviors": [],
                       },
                       "testPlanRun": {
@@ -577,6 +580,7 @@ describe('test queue', () => {
                       },
                       "scenarioResult": {
                         "output": "automatically seeded sample output",
+                        "unexpectedBehaviorNote": null,
                         "unexpectedBehaviors": [],
                       },
                       "testPlanRun": {
@@ -610,6 +614,7 @@ describe('test queue', () => {
                       "assertionResult": null,
                       "scenarioResult": {
                         "output": "automatically seeded sample output",
+                        "unexpectedBehaviorNote": null,
                         "unexpectedBehaviors": [],
                       },
                       "testPlanRun": {
@@ -623,9 +628,9 @@ describe('test queue', () => {
                       "assertionResult": null,
                       "scenarioResult": {
                         "output": "automatically seeded sample output",
+                        "unexpectedBehaviorNote": "Seeded other unexpected behavior",
                         "unexpectedBehaviors": [
                           {
-                            "otherUnexpectedBehaviorText": "Seeded other unexpected behavior",
                             "text": "Other",
                           },
                         ],
@@ -659,6 +664,7 @@ describe('test queue', () => {
                       "assertionResult": null,
                       "scenarioResult": {
                         "output": "automatically seeded sample output",
+                        "unexpectedBehaviorNote": null,
                         "unexpectedBehaviors": [],
                       },
                       "testPlanRun": {
@@ -672,13 +678,12 @@ describe('test queue', () => {
                       "assertionResult": null,
                       "scenarioResult": {
                         "output": "automatically seeded sample output",
+                        "unexpectedBehaviorNote": "Seeded other unexpected behavior",
                         "unexpectedBehaviors": [
                           {
-                            "otherUnexpectedBehaviorText": null,
                             "text": "Output is excessively verbose, e.g., includes redundant and/or irrelevant speech",
                           },
                           {
-                            "otherUnexpectedBehaviorText": "Seeded other unexpected behavior",
                             "text": "Other",
                           },
                         ],
@@ -715,6 +720,7 @@ describe('test queue', () => {
                       },
                       "scenarioResult": {
                         "output": "automatically seeded sample output",
+                        "unexpectedBehaviorNote": null,
                         "unexpectedBehaviors": [],
                       },
                       "testPlanRun": {
@@ -731,13 +737,12 @@ describe('test queue', () => {
                       },
                       "scenarioResult": {
                         "output": "automatically seeded sample output",
+                        "unexpectedBehaviorNote": "Seeded other unexpected behavior",
                         "unexpectedBehaviors": [
                           {
-                            "otherUnexpectedBehaviorText": null,
                             "text": "Output is excessively verbose, e.g., includes redundant and/or irrelevant speech",
                           },
                           {
-                            "otherUnexpectedBehaviorText": "Seeded other unexpected behavior",
                             "text": "Other",
                           },
                         ],

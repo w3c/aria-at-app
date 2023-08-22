@@ -116,6 +116,20 @@ const TestPlanResultsTable = ({ test, testResult, tableClassName = '' }) => {
                                                             </li>
                                                         )
                                                     )}
+                                                    {scenarioResult.unexpectedBehaviorNote ? (
+                                                        <div>
+                                                            Explanation:&nbsp;
+                                                            <em>
+                                                                &quot;
+                                                                {
+                                                                    scenarioResult.unexpectedBehaviorNote
+                                                                }
+                                                                &quot;
+                                                            </em>
+                                                        </div>
+                                                    ) : (
+                                                        ''
+                                                    )}
                                                 </ul>
                                             ) : (
                                                 'None'
