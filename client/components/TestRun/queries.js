@@ -99,6 +99,7 @@ export const TEST_RUN_PAGE_QUERY = gql`
                     id
                     title
                     phase
+                    updatedAt
                     gitSha
                     testPageUrl
                     testPlan {

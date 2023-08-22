@@ -22,15 +22,19 @@ export const TEST_PLAN_VERSIONS_PAGE_QUERY = gql`
                 candidatePhaseReachedAt
                 recommendedPhaseReachedAt
                 testPlanReports {
+                    id
                     isFinal
                     at {
                         name
                     }
                     issues {
                         author
+                        title
                         link
                         feedbackType
                         isOpen
+                        createdAt
+                        closedAt
                     }
                 }
             }

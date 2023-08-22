@@ -1,33 +1,30 @@
 const { GithubService } = require('../../services');
-const { Base64 } = require('js-base64');
-const moment = require('moment');
+const convertDateToString = require('../../util/convertDateToString');
 
 const issuesResolver = async testPlanReport => {
-    if (!testPlanReport.candidatePhaseReachedAt) return [];
-
-    const searchPrefix = `${testPlanReport.at.name} Feedback: "`;
-    const searchTestPlanVersionTitle =
-        testPlanReport.testPlanVersion.dataValues.title;
-    const searchTestPlanVersionDate = moment(
-        testPlanReport.testPlanVersion.updatedAt
-    ).format('DD-MM-YYYY');
-    const cacheId = Base64.encode(
-        `${testPlanReport.id}${searchPrefix}${searchTestPlanVersionTitle}${searchTestPlanVersionDate}`
-    );
-
-    const issues = await GithubService.getCandidateReviewIssuesByAt({
-        cacheId,
+    const issues = await GithubService.getAllIssues({
         atName: testPlanReport.at.name
     });
 
-    if (issues.length) {
-        const filteredIssues = issues.filter(
-            ({ title }) =>
-                title.includes(searchPrefix) &&
-                title.includes(searchTestPlanVersionTitle) &&
-                title.includes(searchTestPlanVersionDate)
-        );
-        return filteredIssues.map(issue => {
+    const { at, testPlanVersion } = testPlanReport;
+
+    const searchTestPlanTitle = testPlanVersion.title;
+
+    const searchVersionString = `V${convertDateToString(
+        testPlanVersion.updatedAt,
+        'YY.MM.DD'
+    )}`;
+
+    return issues
+        .filter(({ title }) => {
+            const searchAtName = title.match(/^(.+) (Feedback|Changes)/)?.[1];
+            return (
+                searchAtName === at.name &&
+                title.includes(searchTestPlanTitle) &&
+                title.includes(searchVersionString)
+            );
+        })
+        .map(issue => {
             const {
                 title,
                 user,
@@ -44,21 +41,24 @@ const issuesResolver = async testPlanReport => {
                 ? testNumberSubstring.match(/\d+/g)[0]
                 : null;
 
+            const feedbackType = title.includes('Changes Requested')
+                ? 'CHANGES_REQUESTED'
+                : 'FEEDBACK';
+
+            const labelNames = labels.map(label => label.name);
+
             return {
                 author: user.login,
+                title,
+                createdAt: issue.created_at,
+                closedAt: issue.closed_at,
                 link: `${html_url}#issue-${topCommentId}`,
-                feedbackType: labels
-                    .map(label => label.name)
-                    .includes('changes-requested')
-                    ? 'CHANGES_REQUESTED'
-                    : 'FEEDBACK',
+                isCandidateReview: labelNames.includes('candidate-review'),
+                feedbackType,
                 isOpen: state === 'open',
                 testNumberFilteredByAt
             };
         });
-    }
-
-    return [];
 };
 
 module.exports = issuesResolver;
