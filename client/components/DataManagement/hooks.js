@@ -94,13 +94,17 @@ export const useDataManagementTableFiltering = (
         };
 
         testPlans.forEach(testPlan => {
-            const testPlanVersion = testPlanVersions.find(
+            const matchingTestPlanVersions = testPlanVersions.filter(
                 ({ testPlan: { directory } }) =>
                     directory === testPlan.directory
             );
-            if (!testPlanVersion) return;
-            const phase = testPlanVersion.phase;
-            phaseGroups[phase].push(testPlan);
+
+            if (matchingTestPlanVersions.length === 0) return;
+
+            matchingTestPlanVersions.forEach(testPlanVersion => {
+                const phase = testPlanVersion.phase;
+                phaseGroups[phase].push(testPlan);
+            });
         });
 
         return phaseGroups;
@@ -115,20 +119,38 @@ export const useDataManagementTableFiltering = (
     }, [filter, phaseGroups, testPlans]);
 
     const filterLabels = {
-        [DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.RD]: `R&D Complete (${
-            phaseGroups[TEST_PLAN_VERSION_PHASES.RD].length
-        })`,
-        [DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.DRAFT]: `In Draft Review (${
-            phaseGroups[TEST_PLAN_VERSION_PHASES.DRAFT].length
-        })`,
-        [DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.CANDIDATE]: `In Candidate Review (${
-            phaseGroups[TEST_PLAN_VERSION_PHASES.CANDIDATE].length
-        })`,
-        [DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.RECOMMENDED]: `Recommended Plans (${
-            phaseGroups[TEST_PLAN_VERSION_PHASES.RECOMMENDED].length
-        })`,
         [DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.ALL]: `All Plans (${testPlans.length})`
     };
+
+    if (phaseGroups[TEST_PLAN_VERSION_PHASES.RD].length > 0) {
+        filterLabels[
+            DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.RD
+        ] = `R&D Complete (${phaseGroups[TEST_PLAN_VERSION_PHASES.RD].length})`;
+    }
+
+    if (phaseGroups[TEST_PLAN_VERSION_PHASES.DRAFT].length > 0) {
+        filterLabels[
+            DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.DRAFT
+        ] = `In Draft Review (${
+            phaseGroups[TEST_PLAN_VERSION_PHASES.DRAFT].length
+        })`;
+    }
+
+    if (phaseGroups[TEST_PLAN_VERSION_PHASES.CANDIDATE].length > 0) {
+        filterLabels[
+            DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.CANDIDATE
+        ] = `In Candidate Review (${
+            phaseGroups[TEST_PLAN_VERSION_PHASES.CANDIDATE].length
+        })`;
+    }
+
+    if (phaseGroups[TEST_PLAN_VERSION_PHASES.RECOMMENDED].length > 0) {
+        filterLabels[
+            DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.RECOMMENDED
+        ] = `Recommended Plans (${
+            phaseGroups[TEST_PLAN_VERSION_PHASES.RECOMMENDED].length
+        })`;
+    }
 
     return { filteredTestPlans, filterLabels };
 };
