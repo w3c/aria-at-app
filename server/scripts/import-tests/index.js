@@ -75,6 +75,12 @@ const importTestPlanVersions = async () => {
     });
     console.log('`npm run build` output', buildOutput.stdout.toString());
 
+    if (buildOutput.status !== 0) {
+      throw new Error(
+        'When executed within the ARIA-AT project, the command `npm run build` failed.'
+      );
+    }
+
     const ats = await At.findAll();
     await updateAtsJson(ats);
 
