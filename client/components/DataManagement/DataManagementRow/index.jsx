@@ -21,6 +21,7 @@ import ReportStatusDot from '../../common/ReportStatusDot';
 import UpdateTargetDateModal from '@components/common/UpdateTargetDateModal';
 import VersionString from '../../common/VersionString';
 import PhasePill from '../../common/PhasePill';
+import { getVersionData } from '../utils';
 
 const StatusCell = styled.div`
     display: flex;
@@ -206,27 +207,6 @@ const DataManagementRow = ({
             testPlanVersions.filter(({ phase }) => phase === 'RECOMMENDED')
         );
     }, [testPlanVersions]);
-
-    // Get the version information based on the latest or earliest date info from a group of
-    // TestPlanVersions
-    const getVersionData = (testPlanVersions, dateKey = 'updatedAt') => {
-        const earliestVersion = testPlanVersions.reduce((a, b) =>
-            new Date(a[dateKey]) < new Date(b[dateKey]) ? a : b
-        );
-        const earliestVersionDate = new Date(earliestVersion[dateKey]);
-
-        const latestVersion = testPlanVersions.reduce((a, b) =>
-            new Date(a[dateKey]) > new Date(b[dateKey]) ? a : b
-        );
-        const latestVersionDate = new Date(latestVersion[dateKey]);
-
-        return {
-            earliestVersion,
-            earliestVersionDate,
-            latestVersion,
-            latestVersionDate
-        };
-    };
 
     const getUniqueAtObjects = testPlanReports => {
         const uniqueAtObjects = {};
