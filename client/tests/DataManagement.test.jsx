@@ -15,7 +15,10 @@ import DataManagement from '../components/DataManagement';
 import { DATA_MANAGEMENT_PAGE_POPULATED_MOCK_DATA } from './__mocks__/GraphQLMocks';
 import {
     useDataManagementTableFiltering,
-    useDataManagementTableSorting
+    useDataManagementTableSorting,
+    useDerivedOverallPhaseByTestPlanId,
+    useTestPlanVersionsByPhase,
+    useTestPlansByPhase
 } from '../components/DataManagement/hooks';
 import {
     DATA_MANAGEMENT_TABLE_FILTER_OPTIONS,
@@ -106,8 +109,14 @@ const testPlanVersions = [
         candidatePhaseReachedAt: '2022-04-10T00:00:00.000Z'
     },
     {
-        phase: 'RECOMMENDED',
+        phase: 'RD',
         id: '104',
+        testPlan: { directory: 'dirD' },
+        updatedAt: '2022-03-18T18:34:51.000Z'
+    },
+    {
+        phase: 'RECOMMENDED',
+        id: '105',
         testPlan: { directory: 'dirD' },
         recommendedPhaseReachedAt: '2022-05-18T20:51:40.000Z'
     }
@@ -227,5 +236,50 @@ describe('useDataManagementTableFiltering hook', () => {
                 DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.RECOMMENDED
             ]
         ).toEqual(`Recommended Plans (1)`);
+    });
+});
+
+describe('useTestPlanVersionsByPhase hook', () => {
+    it('returns an object with test plan versions grouped by phase', () => {
+        const { result } = renderHook(() =>
+            useTestPlanVersionsByPhase(testPlanVersions)
+        );
+        const { testPlanVersionsByPhase } = result.current;
+        expect(testPlanVersionsByPhase).toEqual({
+            RD: [testPlanVersions[0], testPlanVersions[3]],
+            DRAFT: [testPlanVersions[1]],
+            CANDIDATE: [testPlanVersions[2]],
+            RECOMMENDED: [testPlanVersions[4]]
+        });
+    });
+});
+
+describe('useDerivedTestPlanOverallPhase hook', () => {
+    it('returns an object with the overall phase mapped to each test plan id', () => {
+        const { result } = renderHook(() =>
+            useDerivedOverallPhaseByTestPlanId(testPlans, testPlanVersions)
+        );
+        const { derivedOverallPhaseByTestPlanId } = result.current;
+        expect(derivedOverallPhaseByTestPlanId).toEqual({
+            1: 'RD',
+            2: 'DRAFT',
+            3: 'CANDIDATE',
+            4: 'RECOMMENDED'
+        });
+    });
+});
+
+describe('useTestPlansByPhase hook', () => {
+    it('returns an object with test plans grouped by overall phase', () => {
+        const { result } = renderHook(() =>
+            useTestPlansByPhase(testPlans, testPlanVersions)
+        );
+        const { testPlansByPhase } = result.current;
+        expect(testPlansByPhase).toEqual({
+            RD: [testPlans[0]],
+            DRAFT: [testPlans[1]],
+            CANDIDATE: [testPlans[2]],
+            RECOMMENDED: [testPlans[3]]
+        });
     });
 });
