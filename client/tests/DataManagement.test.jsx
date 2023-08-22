@@ -80,20 +80,40 @@ describe('Data Management page', () => {
 });
 
 const testPlans = [
-    { title: 'Test A', directory: 'dirA' },
-    { title: 'Test B', directory: 'dirB' },
-    { title: 'Test C', directory: 'dirC' },
-    { title: 'Test D', directory: 'dirD' }
+    { title: 'Test A', directory: 'dirA', id: '1' },
+    { title: 'Test B', directory: 'dirB', id: '2' },
+    { title: 'Test C', directory: 'dirC', id: '3' },
+    { title: 'Test D', directory: 'dirD', id: '4' }
 ];
 
 const testPlanVersions = [
-    { phase: 'RD', testPlan: { directory: 'dirA' } },
-    { phase: 'DRAFT', testPlan: { directory: 'dirB' } },
-    { phase: 'CANDIDATE', testPlan: { directory: 'dirC' } },
-    { phase: 'RECOMMENDED', testPlan: { directory: 'dirD' } }
+    {
+        phase: 'RD',
+        id: '101',
+        testPlan: { directory: 'dirA' },
+        updatedAt: '2022-03-17T18:34:51.000Z'
+    },
+    {
+        phase: 'DRAFT',
+        id: '102',
+        testPlan: { directory: 'dirB' },
+        draftStatusReachedAt: '2022-05-18T20:51:40.000Z'
+    },
+    {
+        phase: 'CANDIDATE',
+        id: '103',
+        testPlan: { directory: 'dirC' },
+        candidatePhaseReachedAt: '2022-04-10T00:00:00.000Z'
+    },
+    {
+        phase: 'RECOMMENDED',
+        id: '104',
+        testPlan: { directory: 'dirD' },
+        recommendedPhaseReachedAt: '2022-05-18T20:51:40.000Z'
+    }
 ];
 
-const ats = []; // ATs are stubbed out for now
+const ats = []; // ATs are stubbed until this model is defined
 
 describe('useDataManagementTableSorting hook', () => {
     it('sorts by phase by default', () => {
@@ -101,10 +121,10 @@ describe('useDataManagementTableSorting hook', () => {
             useDataManagementTableSorting(testPlans, testPlanVersions, ats)
         );
         expect(result.current.sortedTestPlans).toEqual([
-            { title: 'Test D', directory: 'dirD' }, // RECOMMENDED
-            { title: 'Test C', directory: 'dirC' }, // CANDIDATE
-            { title: 'Test B', directory: 'dirB' }, // DRAFT
-            { title: 'Test A', directory: 'dirA' } // RD
+            testPlans[3], // RECOMMENDED
+            testPlans[2], // CANDIDATE
+            testPlans[1], // DRAFT
+            testPlans[0] // RD
         ]);
     });
 
@@ -118,12 +138,7 @@ describe('useDataManagementTableSorting hook', () => {
                 direction: TABLE_SORT_ORDERS.DESC
             })
         );
-        expect(result.current.sortedTestPlans).toEqual([
-            { title: 'Test A', directory: 'dirA' },
-            { title: 'Test B', directory: 'dirB' },
-            { title: 'Test C', directory: 'dirC' },
-            { title: 'Test D', directory: 'dirD' }
-        ]);
+        expect(result.current.sortedTestPlans).toEqual(testPlans);
     });
 });
 
@@ -153,7 +168,7 @@ describe('useDataManagementTableFiltering hook', () => {
             )
         );
         expect(result.current.filteredTestPlans).toEqual([
-            { title: 'Test A', directory: 'dirA' } // RD
+            testPlans[0] // RD
         ]);
         expect(
             result.current.filterLabels[DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.RD]
@@ -169,7 +184,7 @@ describe('useDataManagementTableFiltering hook', () => {
             )
         );
         expect(result.current.filteredTestPlans).toEqual([
-            { title: 'Test B', directory: 'dirB' } // DRAFT
+            testPlans[1] // DRAFT
         ]);
         expect(
             result.current.filterLabels[
@@ -187,7 +202,7 @@ describe('useDataManagementTableFiltering hook', () => {
             )
         );
         expect(result.current.filteredTestPlans).toEqual([
-            { title: 'Test C', directory: 'dirC' } // CANDIDATE
+            testPlans[2] // CANDIDATE
         ]);
         expect(
             result.current.filterLabels[
@@ -205,7 +220,7 @@ describe('useDataManagementTableFiltering hook', () => {
             )
         );
         expect(result.current.filteredTestPlans).toEqual([
-            { title: 'Test D', directory: 'dirD' } // RECOMMENDED
+            testPlans[3] // RECOMMENDED
         ]);
         expect(
             result.current.filterLabels[
