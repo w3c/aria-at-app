@@ -30,77 +30,50 @@ export const useDerivedTestPlanOverallPhase = (testPlans, testPlanVersions) => {
     const { testPlanVersionsByPhase } =
         useTestPlanVersionsByPhase(testPlanVersions);
 
+    const getVersionDataByDirectory = (directory, phaseKey, phaseTimeKey) => {
+        if (
+            testPlanVersionsByPhase[phaseKey].some(
+                testPlanVersion =>
+                    testPlanVersion.testPlan.directory === directory
+            )
+        ) {
+            const { earliestVersion, latestVersion } = getVersionData(
+                testPlanVersionsByPhase[phaseKey],
+                phaseTimeKey
+            );
+            return phaseTimeKey ? earliestVersion?.phase : latestVersion?.phase;
+        }
+        return undefined;
+    };
+
     const derivedOverallPhaseByTestPlanId = useMemo(() => {
         const derivedOverallPhaseByTestPlanId = {};
+        const phases = [
+            {
+                phase: TEST_PLAN_VERSION_PHASES.RECOMMENDED,
+                timeKey: 'recommendedPhaseReachedAt'
+            },
+            {
+                phase: TEST_PLAN_VERSION_PHASES.CANDIDATE,
+                timeKey: 'candidatePhaseReachedAt'
+            },
+            {
+                phase: TEST_PLAN_VERSION_PHASES.DRAFT,
+                timeKey: 'draftPhaseReachedAt'
+            },
+            { phase: TEST_PLAN_VERSION_PHASES.RD }
+        ];
         for (const testPlan of testPlans) {
-            if (
-                testPlanVersionsByPhase[
-                    TEST_PLAN_VERSION_PHASES.RECOMMENDED
-                ].some(
-                    testPlanVersion =>
-                        testPlanVersion.testPlan.directory ===
-                        testPlan.directory
-                )
-            ) {
-                const { earliestVersion } = getVersionData(
-                    testPlanVersionsByPhase[
-                        TEST_PLAN_VERSION_PHASES.RECOMMENDED
-                    ],
-                    'recommendedPhaseReachedAt'
+            for (const { phase, timeKey } of phases) {
+                const derivedPhase = getVersionDataByDirectory(
+                    testPlan.directory,
+                    phase,
+                    timeKey
                 );
-
-                const { phase } = earliestVersion;
-                derivedOverallPhaseByTestPlanId[testPlan.id] = phase;
-                continue;
-            }
-
-            if (
-                testPlanVersionsByPhase[
-                    TEST_PLAN_VERSION_PHASES.CANDIDATE
-                ].some(
-                    testPlanVersion =>
-                        testPlanVersion.testPlan.directory ===
-                        testPlan.directory
-                )
-            ) {
-                const { earliestVersion } = getVersionData(
-                    testPlanVersionsByPhase[TEST_PLAN_VERSION_PHASES.CANDIDATE],
-                    'candidatePhaseReachedAt'
-                );
-                const { phase } = earliestVersion;
-                derivedOverallPhaseByTestPlanId[testPlan.id] = phase;
-                continue;
-            }
-
-            if (
-                testPlanVersionsByPhase[TEST_PLAN_VERSION_PHASES.DRAFT].some(
-                    testPlanVersion =>
-                        testPlanVersion.testPlan.directory ===
-                        testPlan.directory
-                )
-            ) {
-                const { earliestVersion } = getVersionData(
-                    testPlanVersionsByPhase[TEST_PLAN_VERSION_PHASES.DRAFT],
-                    'draftPhaseReachedAt'
-                );
-                const { phase } = earliestVersion;
-                derivedOverallPhaseByTestPlanId[testPlan.id] = phase;
-                continue;
-            }
-
-            if (
-                testPlanVersionsByPhase[TEST_PLAN_VERSION_PHASES.RD].some(
-                    testPlanVersion =>
-                        testPlanVersion.testPlan.directory ===
-                        testPlan.directory
-                )
-            ) {
-                const { latestVersion } = getVersionData(
-                    testPlanVersionsByPhase[TEST_PLAN_VERSION_PHASES.RD]
-                );
-                const { phase } = latestVersion;
-                derivedOverallPhaseByTestPlanId[testPlan.id] = phase;
-                continue;
+                if (derivedPhase) {
+                    derivedOverallPhaseByTestPlanId[testPlan.id] = derivedPhase;
+                    break;
+                }
             }
         }
         return derivedOverallPhaseByTestPlanId;
