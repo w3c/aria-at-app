@@ -41,11 +41,13 @@ const VersionString = ({
     linkRef,
     linkHref
 }) => {
+    const dateString = convertDateToString(date, 'YY.MM.DD');
+
     const body = (
-        <>
+        <span aria-label={`V${dateString}`}>
             <FontAwesomeIcon icon={faCircleCheck} color={iconColor} />
-            <b>V{convertDateToString(date, 'YY.MM.DD')}</b>
-        </>
+            <b>V{dateString}</b>
+        </span>
     );
 
     let possibleLink;
