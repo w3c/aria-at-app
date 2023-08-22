@@ -26,7 +26,10 @@ export const useTestPlanVersionsByPhase = testPlanVersions => {
     return { testPlanVersionsByPhase };
 };
 
-export const useDerivedTestPlanOverallPhase = (testPlans, testPlanVersions) => {
+export const useDerivedOverallPhaseByTestPlanId = (
+    testPlans,
+    testPlanVersions
+) => {
     const { testPlanVersionsByPhase } =
         useTestPlanVersionsByPhase(testPlanVersions);
 
@@ -83,10 +86,8 @@ export const useDerivedTestPlanOverallPhase = (testPlans, testPlanVersions) => {
 };
 
 export const useTestPlansByPhase = (testPlans, testPlanVersions) => {
-    const { derivedOverallPhaseByTestPlanId } = useDerivedTestPlanOverallPhase(
-        testPlans,
-        testPlanVersions
-    );
+    const { derivedOverallPhaseByTestPlanId } =
+        useDerivedOverallPhaseByTestPlanId(testPlans, testPlanVersions);
 
     const testPlansByPhase = useMemo(() => {
         const testPlansByPhase = {};
@@ -171,10 +172,8 @@ export const useDataManagementTableSorting = (
         direction: TABLE_SORT_ORDERS.ASC
     });
 
-    const { derivedOverallPhaseByTestPlanId } = useDerivedTestPlanOverallPhase(
-        testPlans,
-        testPlanVersions
-    );
+    const { derivedOverallPhaseByTestPlanId } =
+        useDerivedOverallPhaseByTestPlanId(testPlans, testPlanVersions);
 
     const sortedTestPlans = useMemo(() => {
         const phaseOrder = {
