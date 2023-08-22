@@ -38,7 +38,7 @@ const FilterButtons = ({
             <li className="mr-3" aria-hidden="true">
                 Filter
             </li>
-            {Object.keys(filterOptions).map(key => {
+            {Object.keys(optionLabels).map(key => {
                 const option = filterOptions[key];
                 const isActive = activeFilter === option;
                 return (
