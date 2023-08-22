@@ -516,14 +516,16 @@ const DataManagementRow = ({
                 // "active"
                 insertActivePhaseForTestPlan(latestVersion);
                 return (
-                    <PhaseCell>
+                    <PhaseCell role="list">
                         <VersionString
+                            role="listitem"
                             date={latestVersionDate}
                             iconColor="#2BA51C"
                             linkHref={`/test-review/${latestVersion.gitSha}/${latestVersion.testPlan.directory}`}
                         />
                         {isAdmin && (
                             <Button
+                                role="listitem"
                                 ref={ref => setFocusRef(ref)}
                                 className="advance-button"
                                 variant="secondary"
@@ -595,12 +597,13 @@ const DataManagementRow = ({
                         otherLatestVersion.candidatePhaseReachedAt;
 
                     return (
-                        <PhaseCell>
+                        <PhaseCell role="list">
                             <VersionString
+                                role="listitem"
                                 date={otherLatestVersionDate}
                                 iconColor="#818F98"
                             />
-                            <span className="review-complete">
+                            <span role="listitem" className="review-complete">
                                 Review Completed{' '}
                                 <b>
                                     {convertDateToString(
@@ -651,8 +654,9 @@ const DataManagementRow = ({
                     // Phase is "active"
                     insertActivePhaseForTestPlan(latestVersion);
                     return (
-                        <PhaseCell>
+                        <PhaseCell role="list">
                             <VersionString
+                                role="listitem"
                                 date={latestVersionDate}
                                 iconColor="#2BA51C"
                                 linkRef={draftVersionStringRef}
@@ -660,6 +664,7 @@ const DataManagementRow = ({
                             />
                             {isAdmin && (
                                 <Button
+                                    role="listitem"
                                     ref={ref => setFocusRef(ref)}
                                     className="advance-button"
                                     variant="secondary"
@@ -702,6 +707,7 @@ const DataManagementRow = ({
                                 </Button>
                             )}
                             <TestPlanReportStatusDialogWithButton
+                                role="listitem"
                                 testPlanVersionId={latestVersion.id}
                             />
                         </PhaseCell>
@@ -747,12 +753,13 @@ const DataManagementRow = ({
                         otherLatestVersion.recommendedPhaseReachedAt;
 
                     return (
-                        <PhaseCell>
+                        <PhaseCell role="list">
                             <VersionString
+                                role="listitem"
                                 date={otherLatestVersionDate}
                                 iconColor="#818F98"
                             />
-                            <span className="review-complete">
+                            <span role="listitem" className="review-complete">
                                 Review Completed{' '}
                                 <b>
                                     {convertDateToString(
@@ -867,8 +874,9 @@ const DataManagementRow = ({
                     // Phase is "active"
                     insertActivePhaseForTestPlan(latestVersion);
                     return (
-                        <PhaseCell>
+                        <PhaseCell role="list">
                             <VersionString
+                                role="listitem"
                                 date={latestVersionDate}
                                 iconColor="#2BA51C"
                                 linkRef={candidateVersionStringRef}
@@ -876,6 +884,7 @@ const DataManagementRow = ({
                             />
                             {shouldShowAdvanceButton && (
                                 <Button
+                                    role="listitem"
                                     ref={ref => setFocusRef(ref)}
                                     className="advance-button"
                                     variant="secondary"
@@ -905,10 +914,14 @@ const DataManagementRow = ({
                                 </Button>
                             )}
                             <TestPlanReportStatusDialogWithButton
+                                role="listitem"
                                 testPlanVersionId={latestVersion.id}
                             />
-                            <span className="more">
-                                <span className="more-issues-container">
+                            <span role="list" className="more">
+                                <span
+                                    role="listitem"
+                                    className="more-issues-container"
+                                >
                                     <ReportStatusDot className="issues" />{' '}
                                     {issuesCount} Open Issue
                                     {`${issuesCount === 1 ? '' : 's'}`}
@@ -918,7 +931,15 @@ const DataManagementRow = ({
                                             : ''
                                     }`}
                                 </span>
-                                <span className="target-days-container">
+                                <span
+                                    role="listitem"
+                                    className="target-days-container"
+                                    aria-label={`Target ${Math.abs(
+                                        timeToTargetDate
+                                    )} Days ${
+                                        timeToTargetDate < 0 ? 'Past' : 'Away'
+                                    }`}
+                                >
                                     Target{' '}
                                     {isAdmin ? (
                                         <button
@@ -972,14 +993,15 @@ const DataManagementRow = ({
                 // Phase is "active"
                 insertActivePhaseForTestPlan(latestVersion);
                 return (
-                    <PhaseCell>
+                    <PhaseCell role="list">
                         <VersionString
+                            role="listitem"
                             date={latestVersionDate}
                             iconColor="#2BA51C"
                             linkRef={recommendedVersionStringRef}
                             linkHref={`/test-review/${latestVersion.gitSha}/${latestVersion.testPlan.directory}`}
                         />
-                        <span className="review-complete">
+                        <span role="listitem" className="review-complete">
                             Approved{' '}
                             <b>
                                 {convertDateToString(
