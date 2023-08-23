@@ -17,7 +17,7 @@ import FilterButtons from '../common/FilterButtons';
 import {
     useDataManagementTableFiltering,
     useDataManagementTableSorting
-} from './hooks';
+} from './filterSortHooks';
 
 const DataManagement = () => {
     const { loading, data, error, refetch } = useQuery(
