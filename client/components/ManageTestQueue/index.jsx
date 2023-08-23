@@ -18,6 +18,13 @@ import { convertStringToDate } from '../../utils/formatter';
 import { LoadingStatus, useTriggerLoad } from '../common/LoadingStatus';
 import DisclosureComponent from '../common/DisclosureComponent';
 import AddTestToQueueWithConfirmation from '../AddTestToQueueWithConfirmation';
+import { ThemeTable, ThemeTableHeader } from '../common/ThemeTable';
+import PhasePill from '../common/PhasePill';
+
+const TransparentButton = styled.button`
+    border: none;
+    background-color: transparent;
+`;
 
 const DisclosureContainer = styled.div`
     // Following directives are related to the ManageTestQueue component
@@ -142,6 +149,23 @@ const ManageTestQueue = ({
 
     const [selectedAtId, setSelectedAtId] = useState('');
     const [selectedBrowserId, setSelectedBrowserId] = useState('');
+
+    const atBrowserCombinations = [
+        ...ats.flatMap(at =>
+            at.candidateBrowsers.map(browser => ({
+                at,
+                browser,
+                phase: 'CANDIDATE'
+            }))
+        ),
+        ...ats.flatMap(at =>
+            at.recommendedBrowsers.map(browser => ({
+                at,
+                browser,
+                phase: 'RECOMMENDED'
+            }))
+        )
+    ];
 
     const [addAtVersion] = useMutation(ADD_AT_VERSION_MUTATION);
     const [editAtVersion] = useMutation(EDIT_AT_VERSION_MUTATION);
@@ -684,11 +708,14 @@ const ManageTestQueue = ({
                     <DisclosureContainer
                         key={`manage-test-queue-required-reports`}
                     >
-                        <span>New Section</span>
+                        <span>
+                            Add required reports for a specific AT and Browser
+                            pair
+                        </span>
                         <div className="disclosure-row-controls">
                             <Form.Group className="form-group">
                                 <Form.Label className="disclosure-form-label">
-                                    New Label
+                                    Phase
                                 </Form.Label>
                                 <Form.Select
                                     onChange={e => {
@@ -706,7 +733,7 @@ const ManageTestQueue = ({
                             </Form.Group>
                             <Form.Group className="form-group">
                                 <Form.Label className="disclosure-form-label">
-                                    New Label
+                                    Assistive Technology
                                 </Form.Label>
                                 <Form.Select
                                     onChange={e => {
@@ -724,7 +751,7 @@ const ManageTestQueue = ({
                             </Form.Group>
                             <Form.Group className="form-group">
                                 <Form.Label className="disclosure-form-label">
-                                    New Label
+                                    Browser
                                 </Form.Label>
                                 <Form.Select
                                     onChange={e => {
@@ -751,10 +778,58 @@ const ManageTestQueue = ({
                                     // }
                                     // onClick={handleAddTestPlanToTestQueue}
                                 >
-                                    New Button Label
+                                    Add Required Reports
                                 </Button>
                             </Form.Group>
                         </div>
+                        <ThemeTableHeader>Required Reports</ThemeTableHeader>
+                        <ThemeTable bordered responsive>
+                            <thead>
+                                <tr>
+                                    <th>Phase</th>
+                                    <th>AT</th>
+                                    <th>Browser</th>
+                                    <th>Edit</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {atBrowserCombinations.map(
+                                    ({ at, browser, phase }) => {
+                                        return (
+                                            <tr
+                                                key={`${at.id}-${browser.id}-${phase}`}
+                                            >
+                                                <td>
+                                                    <PhasePill
+                                                        fullWidth={false}
+                                                    >
+                                                        {phase}
+                                                    </PhasePill>{' '}
+                                                </td>
+                                                <td>{at.name}</td>
+                                                <td>{browser.name}</td>
+                                                <td>
+                                                    <TransparentButton>
+                                                        <FontAwesomeIcon
+                                                            icon={faEdit}
+                                                            color="#818F98"
+                                                        />
+                                                        <span className='sr-only'>Edit</span>
+                                                    </TransparentButton>
+                                                    <TransparentButton>
+                                                        <FontAwesomeIcon
+                                                            icon={faTrashAlt}
+                                                            color="#ce1b4c"
+                                                        />
+                                                        <span className='sr-only'>Remove</span>
+                                                    </TransparentButton>
+                                                </td>
+                                            </tr>
+                                        );
+                                    }
+                                )}
+                            </tbody>
+                        </ThemeTable>
                     </DisclosureContainer>
                 ]}
                 onClick={[
