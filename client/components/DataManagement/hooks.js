@@ -187,7 +187,7 @@ export const useDataManagementTableSorting = (
             activeSort.direction === TABLE_SORT_ORDERS.ASC ? -1 : 1;
 
         const sortByName = (a, b, dir = directionMod) =>
-            dir * (a.title < b.title ? -1 : 1);
+            dir * (a.title < b.title ? 1 : -1);
 
         const sortByAts = (a, b) => {
             const countA = ats.length; // Stubs based on current rendering in DataManagementRow
@@ -202,7 +202,7 @@ export const useDataManagementTableSorting = (
             const testPlanVersionOverallB =
                 derivedOverallPhaseByTestPlanId[b.id] ?? 'NOT_STARTED';
             if (testPlanVersionOverallA === testPlanVersionOverallB) {
-                return sortByName(a, b, directionMod * -1);
+                return sortByName(a, b, directionMod);
             }
             return (
                 directionMod *
