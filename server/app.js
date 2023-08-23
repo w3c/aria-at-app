@@ -7,6 +7,7 @@ const embedApp = require('./apps/embed');
 const testReviewApp = require('./apps/test-review');
 const authRoutes = require('./routes/auth');
 const testRoutes = require('./routes/tests');
+const schedulerRoutes = require('./routes/scheduler');
 const path = require('path');
 const apolloServer = require('./graphql-server');
 const app = express();
@@ -16,6 +17,7 @@ app.use(session);
 app.use(bodyParser.json());
 app.use('/auth', authRoutes);
 app.use('/test', testRoutes);
+app.use('/jobs', schedulerRoutes);
 
 apolloServer.start().then(() => {
     apolloServer.applyMiddleware({ app });

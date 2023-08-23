@@ -70,6 +70,43 @@ const graphqlSchema = gql`
         atIds: [ID]!
     }
 
+    """
+    The possible statuses for a CollectionJob.
+    """
+    enum CollectionJobStatus {
+        QUEUED
+        RUNNING
+        COMPLETED
+        FAILED
+    }
+
+    type CollectionJob {
+        """
+        Job Scheduler server-provided ID.
+        """
+        id: ID!
+        """
+        The status of the job, which can be "QUEUED", "RUNNING", "COMPLETED" or
+        "FAILED".
+        """
+        status: CollectionJobStatus!
+    }
+
+    """
+    The fields of the CollectionJob type which can be updated after the
+    CollectionJob has been created.
+    """
+    input CollectionJobInput {
+        """
+        See CollectionJob type for more information.
+        """
+        id: ID!
+        """
+        See CollectionJob type for more information.
+        """
+        status: CollectionJobStatus!
+    }
+
     type Browser {
         """
         Postgres-provided numeric ID.
@@ -1043,6 +1080,14 @@ const graphqlSchema = gql`
         LocationOfDatInput type.
         """
         populateData(locationOfData: LocationOfDataInput!): PopulatedData!
+        """
+        Get a CollectionJob by ID.
+        """
+        collectionJob(id: ID!): CollectionJob
+        """
+        Get all CollectionJobs.
+        """
+        collectionJobs: [CollectionJob]!
     }
 
     # Mutation-specific types below
@@ -1280,6 +1325,18 @@ const graphqlSchema = gql`
         Add a viewer to a test
         """
         addViewer(testPlanVersionId: ID!, testId: ID!): User!
+        """
+        Create a CollectionJob
+        """
+        addCollectionJob(input: CollectionJobInput!): CollectionJob!
+        """
+        Update a CollectionJob
+        """
+        updateCollectionJob(input: CollectionJobInput!): CollectionJob!
+        """
+        Delete a CollectionJob
+        """
+        deleteCollectionJob(id: ID!): NoResponse!
     }
 `;
 
