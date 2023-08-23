@@ -4,9 +4,9 @@
 
 import React from 'react';
 import { render, fireEvent, screen } from '@testing-library/react';
-import { DATA_MANAGEMENT_TABLE_FILTER_OPTIONS } from '../utils/constants';
 import '@testing-library/jest-dom';
 import FilterButtons from '../components/common/FilterButtons';
+import { DATA_MANAGEMENT_TABLE_FILTER_OPTIONS } from '../components/DataManagement/utils';
 
 describe('FilterButtons', () => {
     const filterOptions = DATA_MANAGEMENT_TABLE_FILTER_OPTIONS;

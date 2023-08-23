@@ -4,8 +4,9 @@
 
 import React from 'react';
 import { render, fireEvent, screen } from '@testing-library/react';
-import SortableTableHeader from '../components/common/SortableTableHeader';
-import { TABLE_SORT_ORDERS } from '../utils/constants';
+import SortableTableHeader, {
+    TABLE_SORT_ORDERS
+} from '../components/common/SortableTableHeader';
 import '@testing-library/jest-dom';
 
 const renderComponent = props => render(<SortableTableHeader {...props} />);

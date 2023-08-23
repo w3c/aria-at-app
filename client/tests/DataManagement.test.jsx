@@ -13,19 +13,19 @@ import DataManagement from '../components/DataManagement';
 
 // eslint-disable-next-line jest/no-mocks-import
 import { DATA_MANAGEMENT_PAGE_POPULATED_MOCK_DATA } from './__mocks__/GraphQLMocks';
+import { act } from 'react-dom/test-utils';
 import {
     useDataManagementTableFiltering,
     useDataManagementTableSorting,
     useDerivedOverallPhaseByTestPlanId,
     useTestPlanVersionsByPhase,
     useTestPlansByPhase
-} from '../components/DataManagement/hooks';
+} from '../components/DataManagement/filterSortHooks';
 import {
     DATA_MANAGEMENT_TABLE_FILTER_OPTIONS,
-    DATA_MANAGEMENT_TABLE_SORT_OPTIONS,
-    TABLE_SORT_ORDERS
-} from '../utils/constants';
-import { act } from 'react-dom/test-utils';
+    DATA_MANAGEMENT_TABLE_SORT_OPTIONS
+} from '../components/DataManagement/utils';
+import { TABLE_SORT_ORDERS } from '../components/common/SortableTableHeader';
 
 const setup = (mocks = []) => {
     return render(
@@ -144,7 +144,7 @@ describe('useDataManagementTableSorting hook', () => {
         act(() =>
             result.current.updateSort({
                 key: DATA_MANAGEMENT_TABLE_SORT_OPTIONS.NAME,
-                direction: TABLE_SORT_ORDERS.DESC
+                direction: TABLE_SORT_ORDERS.ASC
             })
         );
         expect(result.current.sortedTestPlans).toEqual(testPlans);
