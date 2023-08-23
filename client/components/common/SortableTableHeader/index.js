@@ -56,48 +56,34 @@ const SortableTableHeader = ({ title, active, onSort = () => {} }) => {
     );
 
     const handleClick = () => {
-        const newSortOrder =
-            currentSortOrder === TABLE_SORT_ORDERS.ASC
-                ? TABLE_SORT_ORDERS.DESC
-                : TABLE_SORT_ORDERS.ASC;
-        setCurrentSortOrder(newSortOrder);
-        onSort(newSortOrder);
+        if (active) {
+            const newSortOrder =
+                currentSortOrder === TABLE_SORT_ORDERS.ASC
+                    ? TABLE_SORT_ORDERS.DESC
+                    : TABLE_SORT_ORDERS.ASC;
+            setCurrentSortOrder(newSortOrder);
+            onSort(newSortOrder);
+        } else {
+            onSort(currentSortOrder);
+        }
     };
 
     const getIcon = () => {
-        const ariaAttributes = {
+        const icon =
+            currentSortOrder === TABLE_SORT_ORDERS.ASC
+                ? faArrowUpShortWide
+                : faArrowDownShortWide;
+
+        const attribs = {
             'aria-hidden': 'true',
-            focusable: 'false'
+            focusable: 'false',
+            icon: icon
         };
 
-        if (!active) {
-            return (
-                <InactiveIcon icon={faArrowDownShortWide} {...ariaAttributes} />
-            );
-        }
-
-        switch (currentSortOrder) {
-            case TABLE_SORT_ORDERS.ASC:
-                return (
-                    <FontAwesomeIcon
-                        icon={faArrowUpShortWide}
-                        {...ariaAttributes}
-                    />
-                );
-            case TABLE_SORT_ORDERS.DESC:
-                return (
-                    <FontAwesomeIcon
-                        icon={faArrowDownShortWide}
-                        {...ariaAttributes}
-                    />
-                );
-            default:
-                return (
-                    <FontAwesomeIcon
-                        icon={faArrowDownShortWide}
-                        {...ariaAttributes}
-                    />
-                );
+        if (active) {
+            return <FontAwesomeIcon {...attribs} />;
+        } else {
+            return <InactiveIcon {...attribs} />;
         }
     };
 
