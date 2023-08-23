@@ -1,4 +1,7 @@
 // Get the version information based on the latest or earliest date info from a group of
+
+import { TEST_PLAN_VERSION_PHASES } from '../../utils/constants';
+
 // TestPlanVersions
 export const getVersionData = (testPlanVersions, dateKey = 'updatedAt') => {
     const earliestVersion = testPlanVersions.reduce((a, b) =>
@@ -17,4 +20,15 @@ export const getVersionData = (testPlanVersions, dateKey = 'updatedAt') => {
         latestVersion,
         latestVersionDate
     };
+};
+
+export const DATA_MANAGEMENT_TABLE_SORT_OPTIONS = {
+    NAME: 'NAME',
+    ATS: 'ATS',
+    PHASE: 'PHASE'
+};
+
+export const DATA_MANAGEMENT_TABLE_FILTER_OPTIONS = {
+    ALL: 'ALL',
+    ...TEST_PLAN_VERSION_PHASES
 };

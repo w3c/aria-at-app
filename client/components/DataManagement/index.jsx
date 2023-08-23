@@ -9,15 +9,15 @@ import DataManagementRow from '@components/DataManagement/DataManagementRow';
 import './DataManagement.css';
 import { evaluateAuth } from '@client/utils/evaluateAuth';
 import SortableTableHeader from '../common/SortableTableHeader';
-import {
-    DATA_MANAGEMENT_TABLE_FILTER_OPTIONS,
-    DATA_MANAGEMENT_TABLE_SORT_OPTIONS
-} from '../../utils/constants';
 import FilterButtons from '../common/FilterButtons';
 import {
     useDataManagementTableFiltering,
     useDataManagementTableSorting
 } from './filterSortHooks';
+import {
+    DATA_MANAGEMENT_TABLE_FILTER_OPTIONS,
+    DATA_MANAGEMENT_TABLE_SORT_OPTIONS
+} from './utils';
 
 const DataManagement = () => {
     const { loading, data, error, refetch } = useQuery(

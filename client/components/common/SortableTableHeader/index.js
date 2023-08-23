@@ -7,7 +7,6 @@ import {
     faArrowDownShortWide,
     faArrowUpShortWide
 } from '@fortawesome/free-solid-svg-icons';
-import { TABLE_SORT_ORDERS } from '../../../utils/constants';
 
 const SortableTableHeaderWrapper = styled.th`
     position: relative;
@@ -49,6 +48,11 @@ const SortableTableHeaderButton = styled(Button)`
 const InactiveIcon = styled(FontAwesomeIcon)`
     color: rgb(155, 155, 155);
 `;
+
+export const TABLE_SORT_ORDERS = {
+    ASC: 'ASCENDING',
+    DESC: 'DESCENDING'
+};
 
 const SortableTableHeader = ({ title, active, onSort = () => {} }) => {
     const [currentSortOrder, setCurrentSortOrder] = useState(
