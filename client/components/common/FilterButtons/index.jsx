@@ -6,7 +6,7 @@ import { Button } from 'react-bootstrap';
 const StyledFilterButton = styled(Button)`
     background: #e9ebee;
     border-radius: 16px;
-    margin: 0 12px;
+    margin-left: 12px;
     background-color: white;
     font-weight: 400;
 
@@ -35,14 +35,12 @@ const FilterButtons = ({
             aria-label="Filter tests plans by status"
             role="group"
         >
-            <li className="mr-3" aria-hidden="true">
-                Filter
-            </li>
+            <li aria-hidden="true">Filter</li>
             {Object.keys(optionLabels).map(key => {
                 const option = filterOptions[key];
                 const isActive = activeFilter === option;
                 return (
-                    <li key={key} className="mr-3">
+                    <li key={key}>
                         <StyledFilterButton
                             variant="secondary"
                             aria-pressed={isActive}
