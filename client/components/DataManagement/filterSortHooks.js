@@ -2,10 +2,10 @@ import { useMemo, useState } from 'react';
 import {
     DATA_MANAGEMENT_TABLE_FILTER_OPTIONS,
     DATA_MANAGEMENT_TABLE_SORT_OPTIONS,
-    TABLE_SORT_ORDERS,
-    TEST_PLAN_VERSION_PHASES
-} from '../../utils/constants';
-import { getVersionData } from './utils';
+    getVersionData
+} from './utils';
+import { TEST_PLAN_VERSION_PHASES } from '../../utils/constants';
+import { TABLE_SORT_ORDERS } from '../common/SortableTableHeader';
 
 export const useTestPlanVersionsByPhase = testPlanVersions => {
     const testPlanVersionsByPhase = useMemo(() => {
