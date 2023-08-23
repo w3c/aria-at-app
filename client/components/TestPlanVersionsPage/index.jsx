@@ -19,6 +19,7 @@ import {
     faCodeCommit
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { uniqBy as uniqueBy } from 'lodash';
 
 const H3 = styled.h3`
     padding-top: 3rem;
@@ -195,10 +196,16 @@ const TestPlanVersionsPage = () => {
 
     const nonRDVersions = testPlanVersions.filter(each => each.phase !== 'RD');
 
-    const issues = testPlanVersions.flatMap(testPlanVersion =>
-        testPlanVersion.testPlanReports.flatMap(
-            testPlanReport => testPlanReport.issues
-        )
+    const issues = uniqueBy(
+        testPlanVersions.flatMap(testPlanVersion =>
+            testPlanVersion.testPlanReports.flatMap(testPlanReport =>
+                testPlanReport.issues.map(issue => ({
+                    ...issue,
+                    at: testPlanReport.at
+                }))
+            )
+        ),
+        item => item.link
     );
 
     return (
@@ -288,6 +295,7 @@ const TestPlanVersionsPage = () => {
                             <th>Author</th>
                             <th>Issue</th>
                             <th>Status</th>
+                            <th>AT</th>
                             <th>Created On</th>
                             <th>Closed On</th>
                         </tr>
@@ -315,6 +323,7 @@ const TestPlanVersionsPage = () => {
                                         </a>
                                     </td>
                                     <td>{issue.isOpen ? 'Open' : 'Closed'}</td>
+                                    <td>{issue.at.name}</td>
                                     <td>
                                         {convertDateToString(
                                             issue.createdAt,

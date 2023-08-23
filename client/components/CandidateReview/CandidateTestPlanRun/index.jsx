@@ -332,6 +332,7 @@ const CandidateTestPlanRun = () => {
 
     const generalFeedbackUrl = createIssueLink({
         ...issue,
+        isCandidateReviewChangesRequested: false,
         testTitle: undefined,
         testRowNumber: undefined,
         testRenderedUrl: undefined
@@ -350,7 +351,7 @@ const CandidateTestPlanRun = () => {
     const feedbackGithubUrl = getIssueSearchLink(issueQuery);
 
     const changesRequestedGithubUrl = getIssueSearchLink({
-        issueQuery,
+        ...issueQuery,
         isCandidateReviewChangesRequested: true
     });
 
@@ -459,7 +460,6 @@ const CandidateTestPlanRun = () => {
                                     isCandidateReview: true,
                                     isCandidateReviewChangesRequested:
                                         index === 0,
-                                    username: data.me.username,
                                     atName: testPlanReport.at.name,
                                     testPlanTitle: testPlanVersion.title,
                                     versionString,

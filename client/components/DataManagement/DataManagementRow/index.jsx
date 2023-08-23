@@ -21,6 +21,7 @@ import ReportStatusDot from '../../common/ReportStatusDot';
 import UpdateTargetDateModal from '@components/common/UpdateTargetDateModal';
 import VersionString from '../../common/VersionString';
 import PhasePill from '../../common/PhasePill';
+import { uniq as unique, uniqBy as uniqueBy } from 'lodash';
 
 const StatusCell = styled.div`
     display: flex;
@@ -225,17 +226,6 @@ const DataManagementRow = ({
             latestVersion,
             latestVersionDate
         };
-    };
-
-    const getUniqueAtObjects = testPlanReports => {
-        const uniqueAtObjects = {};
-        testPlanReports.forEach(testPlanReport => {
-            const atId = testPlanReport.at.id;
-            if (!uniqueAtObjects[atId]) {
-                uniqueAtObjects[atId] = testPlanReport.at;
-            }
-        });
-        return uniqueAtObjects;
     };
 
     const handleClickUpdateTestPlanVersionPhase = async (
@@ -808,17 +798,26 @@ const DataManagementRow = ({
                 //    sunset that version. This will also sunset any reports completed using that
                 //    version.
                 if (testPlanVersions.length) {
-                    const filteredTestPlanReports =
-                        latestVersion.testPlanReports;
-                    const uniqueAtObjects = getUniqueAtObjects(
-                        filteredTestPlanReports
-                    );
-                    const uniqueAtsCount = Object.keys(uniqueAtObjects).length;
+                    const uniqueAtsCount = unique(
+                        testPlanVersions
+                            .flatMap(
+                                testPlanVersion =>
+                                    testPlanVersion.testPlanReports
+                            )
+                            .filter(
+                                testPlanReport => testPlanReport.issues.length
+                            )
+                            .map(testPlanReport => testPlanReport.at.id)
+                    ).length;
 
-                    const issuesCount = filteredTestPlanReports.reduce(
-                        (acc, obj) => acc + obj.issues.length,
-                        0
-                    );
+                    const issuesCount = uniqueBy(
+                        testPlanVersions.flatMap(testPlanVersion =>
+                            testPlanVersion.testPlanReports.flatMap(
+                                testPlanReport => testPlanReport.issues
+                            )
+                        ),
+                        item => item.link
+                    ).length;
 
                     // If there is an earlier version that is recommended and that version has some
                     // test plan runs in the test queue, this button will run the process for

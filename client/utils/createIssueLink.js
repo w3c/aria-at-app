@@ -27,9 +27,14 @@ const createIssueLink = ({
 
     let title;
     if (hasTest) {
-        const titleStart = isCandidateReviewChangesRequested
-            ? `${atName} Changes Requested`
-            : `${atName} Feedback`;
+        let titleStart;
+        if (isCandidateReview) {
+            titleStart = isCandidateReviewChangesRequested
+                ? `${atName} Changes Requested`
+                : `${atName} Feedback`;
+        } else {
+            titleStart = 'Feedback';
+        }
 
         title =
             `${titleStart}: "${testTitle}" (${testPlanTitle}, ` +
@@ -107,6 +112,13 @@ export const getIssueSearchLink = ({
     versionString,
     testRowNumber = null
 }) => {
+    let atKey;
+    if (atName === 'JAWS' || atName === 'NVDA') {
+        atKey = atName.toLowerCase();
+    } else {
+        atKey = 'vo';
+    }
+
     const query = [
         `label:app`,
         isCandidateReview ? `label:candidate-review` : '',
@@ -115,7 +127,7 @@ export const getIssueSearchLink = ({
             : 'label:feedback',
         `label:${atLabelMap[atName]}`,
         username ? `author:${username}` : '',
-        `"${atName} Feedback"`,
+        `label:${atKey}`,
         `"${testPlanTitle}"`,
         testRowNumber ? `Test ${testRowNumber}` : '',
         versionString

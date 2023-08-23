@@ -15,11 +15,17 @@ const issuesResolver = async testPlanReport => {
         'YY.MM.DD'
     )}`;
 
+    let searchAtName;
+    if (at.name === 'JAWS' || at.name === 'NVDA') {
+        searchAtName = at.name.toLowerCase();
+    } else {
+        searchAtName = 'vo';
+    }
+
     return issues
-        .filter(({ title }) => {
-            const searchAtName = title.match(/^(.+) (Feedback|Changes)/)?.[1];
+        .filter(({ title, labels }) => {
             return (
-                searchAtName === at.name &&
+                labels.find(({ name }) => name === searchAtName) &&
                 title.includes(searchTestPlanTitle) &&
                 title.includes(searchVersionString)
             );
@@ -41,11 +47,11 @@ const issuesResolver = async testPlanReport => {
                 ? testNumberSubstring.match(/\d+/g)[0]
                 : null;
 
-            const feedbackType = title.includes('Changes Requested')
+            const labelNames = labels.map(label => label.name);
+
+            const feedbackType = labelNames.includes('changes-requested')
                 ? 'CHANGES_REQUESTED'
                 : 'FEEDBACK';
-
-            const labelNames = labels.map(label => label.name);
 
             return {
                 author: user.login,

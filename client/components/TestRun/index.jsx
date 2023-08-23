@@ -346,8 +346,8 @@ const TestRun = () => {
             testRenderedUrl: currentTest.renderedUrl,
             atName: testPlanReport.at.name,
             browserName: testPlanReport.browser.name,
-            atVersion: currentAtVersion?.name,
-            browserVersion: currentBrowserVersion?.name,
+            atVersionName: currentAtVersion?.name,
+            browserVersionName: currentBrowserVersion?.name,
             conflictMarkdown: conflictMarkdownRef.current
         });
     }
