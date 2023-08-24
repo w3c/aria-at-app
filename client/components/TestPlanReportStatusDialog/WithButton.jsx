@@ -26,7 +26,10 @@ const TestPlanReportStatusDialogButton = styled(Button)`
     margin-top: auto;
 `;
 
-const TestPlanReportStatusDialogWithButton = ({ testPlanVersionId, ...restProps }) => {
+const TestPlanReportStatusDialogWithButton = ({
+    testPlanVersionId,
+    ...restProps
+}) => {
     const {
         data: { testPlanVersion } = {},
         refetch,
