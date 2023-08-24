@@ -106,7 +106,6 @@ const PhaseCell = styled.div`
         }
 
         > span.target-days-container {
-            width: max-content;
             text-align: center;
 
             button {
