@@ -30,7 +30,7 @@ const StatusCell = styled.div`
     justify-content: center;
     height: 100%;
 
-    span:nth-of-type(2) {
+    .review-text {
         margin-top: 1rem;
         font-size: 14px;
         text-align: center;
@@ -38,7 +38,7 @@ const StatusCell = styled.div`
         margin-bottom: 88px;
     }
 
-    span:nth-of-type(3) {
+    .versions-in-progress {
         display: flex;
         justify-content: center;
         padding: 12px;
@@ -347,31 +347,33 @@ const DataManagementRow = ({
 
             switch (phase) {
                 case 'RD':
-                    phaseText = 'Complete';
+                    phaseText = 'Complete ';
                     break;
                 case 'DRAFT':
                 case 'CANDIDATE':
-                    phaseText = 'Review Started';
+                    phaseText = 'Review Started ';
                     break;
                 case 'RECOMMENDED':
-                    phaseText = 'Since';
+                    phaseText = 'Since ';
                     break;
             }
+
+            const dateString = convertDateToString(versionDate, 'MMM D, YYYY');
 
             return (
                 <>
                     <PhasePill>{phase}</PhasePill>
-                    <span>
-                        {phaseText}&nbsp;
-                        <b>{convertDateToString(versionDate, 'MMM D, YYYY')}</b>
-                    </span>
+                    <p className="review-text">
+                        {phaseText}
+                        <b>{dateString}</b>
+                    </p>
                 </>
             );
         };
 
         const versionsInProgressView = versionsCount => {
             return versionsCount ? (
-                <span>
+                <span className="versions-in-progress">
                     <>
                         <span className="pill">+{versionsCount}</span> New
                         Version
