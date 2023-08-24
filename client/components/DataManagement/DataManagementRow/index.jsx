@@ -817,7 +817,10 @@ const DataManagementRow = ({
                     const issuesCount = uniqueBy(
                         testPlanVersions.flatMap(testPlanVersion =>
                             testPlanVersion.testPlanReports.flatMap(
-                                testPlanReport => testPlanReport.issues
+                                testPlanReport =>
+                                    testPlanReport.issues.filter(
+                                        issue => issue.isOpen
+                                    )
                             )
                         ),
                         item => item.link

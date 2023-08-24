@@ -335,7 +335,7 @@ const TestPlanVersionsPage = () => {
                                             <NoneText>N/A</NoneText>
                                         ) : (
                                             convertDateToString(
-                                                issue.createdAt,
+                                                issue.closedAt,
                                                 'MMM D, YYYY'
                                             )
                                         )}
