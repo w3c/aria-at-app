@@ -91,7 +91,7 @@ const PhaseCell = styled.div`
         justify-content: center;
         align-items: center;
 
-        padding: 4px;
+        padding: 0.5rem;
         font-size: 14px;
 
         margin-top: 6px;
@@ -100,8 +100,12 @@ const PhaseCell = styled.div`
         background: #f6f8fa;
 
         > span.more-issues-container {
-            display: grid;
-            grid-template-columns: max-content 1fr;
+            width: 100%;
+            text-align: center;
+
+            .issues {
+                margin-right: 4px;
+            }
 
             align-items: center;
         }

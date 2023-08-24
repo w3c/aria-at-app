@@ -97,9 +97,8 @@ const createIssueLink = ({
     }
 
     return (
-        `https://github.com/howard-e/aria-at-app/issues/new?title=${encodeURI(
-            title
-        )}&` + `labels=${labels}&body=${encodeURIComponent(body)}`
+        `https://github.com/w3c/aria-at/issues/new?title=${encodeURI(title)}&` +
+        `labels=${labels}&body=${encodeURIComponent(body)}`
     );
 };
 
@@ -135,9 +134,7 @@ export const getIssueSearchLink = ({
         .filter(str => str)
         .join(' ');
 
-    return `https://github.com/howard-e/aria-at-app/issues?q=${encodeURI(
-        query
-    )}`;
+    return `https://github.com/w3c/aria-at/issues?q=${encodeURI(query)}`;
 };
 
 export default createIssueLink;

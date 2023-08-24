@@ -32,7 +32,7 @@ const getAllIssuesFromGitHub = async () => {
     // eslint-disable-next-line no-constant-condition
     while (true) {
         const issuesEndpoint =
-            `https://api.github.com/repos/howard-e/aria-at-app/issues` +
+            `https://api.github.com/repos/w3c/aria-at/issues` +
             `?labels=app&state=all&per_page=100`;
         const url = `${issuesEndpoint}&page=${page}`;
         const auth = {
