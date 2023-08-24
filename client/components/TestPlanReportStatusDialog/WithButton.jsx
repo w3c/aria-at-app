@@ -26,7 +26,10 @@ const TestPlanReportStatusDialogButton = styled(Button)`
     margin-top: auto;
 `;
 
-const TestPlanReportStatusDialogWithButton = ({ testPlanVersionId }) => {
+const TestPlanReportStatusDialogWithButton = ({
+    testPlanVersionId,
+    ...restProps
+}) => {
     const {
         data: { testPlanVersion } = {},
         refetch,
@@ -136,6 +139,7 @@ const TestPlanReportStatusDialogWithButton = ({ testPlanVersionId }) => {
             <TestPlanReportStatusDialogButton
                 ref={buttonRef}
                 onClick={() => setShowDialog(true)}
+                {...restProps}
             >
                 {buttonLabel}
             </TestPlanReportStatusDialogButton>
